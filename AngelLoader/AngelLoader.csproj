@@ -1,0 +1,361 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AF85B663-5D2C-481A-B301-D9047D494C2C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>AngelLoader</RootNamespace>
+    <AssemblyName>AngelLoader</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>AngelLoader.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;Debug</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;Release</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Testing|AnyCPU'">
+    <OutputPath>bin\Release_Testing\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Testing|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AeroWizard, Version=2.2.3.0, Culture=neutral, PublicKeyToken=915e74f5d64b8f37, processorArchitecture=MSIL">
+      <HintPath>..\packages\AeroWizard.2.2.3\lib\net45\AeroWizard.dll</HintPath>
+    </Reference>
+    <Reference Include="FFmpeg.NET, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xFFmpeg.NET.3.1.0\lib\netstandard2.0\FFmpeg.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MouseKeyHook.5.6.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=2018.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.2018.3.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SevenZipSharp, Version=1.1.126.0, Culture=neutral, PublicKeyToken=c8ff6ba0184838bb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Squid-Box.SevenZipSharp.1.1.126\lib\net45\SevenZipSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AudioConverter.cs" />
+    <Compile Include="BusinessLogic.cs" />
+    <Compile Include="Common\CatAndTags.cs" />
+    <Compile Include="Common\CommonStatic.cs" />
+    <Compile Include="Common\DataClasses\MiscSupporting.cs" />
+    <Compile Include="Common\HTMLNamedEscapes.cs" />
+    <Compile Include="Common\Language.cs" />
+    <Compile Include="Common\Misc.cs" />
+    <Compile Include="Common\Comparers.cs" />
+    <Compile Include="Common\DataClasses\ConfigData.cs" />
+    <Compile Include="Common\Errors.cs" />
+    <Compile Include="Common\DataClasses\FanMissionData.cs" />
+    <Compile Include="CustomControls\ComboBoxCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\DropDownButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\ListBoxCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\ToolStripCustomControls.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\ProgressPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\ProgressPanel.Designer.cs">
+      <DependentUpon>ProgressPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\TextBoxCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FMCache.cs" />
+    <Compile Include="Forms\FilterRatingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FilterRatingForm.Designer.cs">
+      <DependentUpon>FilterRatingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FilterDateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FilterDateForm.Designer.cs">
+      <DependentUpon>FilterDateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FMBackupAndRestore.cs" />
+    <Compile Include="Forms\ImportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ImportForm.Designer.cs">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ImportFromDarkLoaderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ImportFromDarkLoaderForm.Designer.cs">
+      <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ini\ConfigIni.cs" />
+    <Compile Include="Ini\FMData.cs" />
+    <Compile Include="Ini\IniCommon.cs" />
+    <Compile Include="Common\Paths.cs" />
+    <Compile Include="CustomControls\DataGridViewCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\RichTextBoxCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\SplitContainerCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FilterTagsForm2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FilterTagsForm2.Designer.cs">
+      <DependentUpon>FilterTagsForm2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="WinAPI\Dialogs\Interop.cs" />
+    <Compile Include="WinAPI\Dialogs\FolderBrowserDialog.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Forms\SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WinAPI\InteropMisc.cs" />
+    <Compile Include="WinAPI\Taskbar\Interop.cs" />
+    <Compile Include="WinAPI\Taskbar\TaskBarProgress.cs" />
+    <Compile Include="Common\Utility\Extensions.cs" />
+    <Compile Include="Common\Utility\Methods.cs" />
+    <EmbeddedResource Include="CustomControls\ProgressPanel.resx">
+      <DependentUpon>ProgressPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FilterRatingForm.resx">
+      <DependentUpon>FilterRatingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FilterDateForm.resx">
+      <DependentUpon>FilterDateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FilterTagsForm2.resx">
+      <DependentUpon>FilterTagsForm2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportForm.resx">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx">
+      <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\add_48.png" />
+    <Content Include="Resources\arrow-left.png" />
+    <Content Include="Resources\arrow-right.png" />
+    <Content Include="Resources\arrow_down_48.png" />
+    <Content Include="Resources\arrow_left_48.png" />
+    <Content Include="Resources\arrow_right_48.png" />
+    <Content Include="Resources\arrow_up_48.png" />
+    <Content Include="Resources\FilterIcons\FilterByLastPlayed.png" />
+    <Content Include="Resources\FilterIcons\FilterByReleaseDate.png" />
+    <Content Include="Resources\FilterIcons\ClearFilters.png" />
+    <Content Include="Resources\FilterIcons\FilterByRating.png" />
+    <Content Include="Resources\FilterIcons\FilterByTags.png" />
+    <Content Include="Resources\FilterIcons\FinishedFilterIcon.png" />
+    <Content Include="Resources\FinishedOn\Finished_Expert.png" />
+    <Content Include="Resources\FinishedOn\Finished_Expert_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_Hard.png" />
+    <Content Include="Resources\FinishedOn\Finished_Hard_Expert.png" />
+    <Content Include="Resources\FinishedOn\Finished_Hard_Expert_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_Hard_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_None.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal_Expert.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal_Expert_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal_Hard.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Extreme.png" />
+    <Content Include="Resources\fullscreen_enter.png" />
+    <Content Include="Resources\fullscreen_exit.png" />
+    <Content Include="Resources\green_check_48x48.png" />
+    <Content Include="Resources\green_check_alone_reduced.png" />
+    <Content Include="Resources\Layout.png" />
+    <Content Include="Resources\RatingExample_FMSel_Number.png" />
+    <Content Include="Resources\RatingExample_FMSel_Stars.png" />
+    <Content Include="Resources\RatingExample_NDL.png" />
+    <Content Include="Resources\red_circle_question_mark.png" />
+    <Content Include="Resources\Refresh.png" />
+    <Content Include="Resources\remove_48.png" />
+    <Content Include="Resources\StarRating\Stars0.png" />
+    <Content Include="Resources\StarRating\Stars0_5.png" />
+    <Content Include="Resources\StarRating\Stars1.png" />
+    <Content Include="Resources\StarRating\Stars1_5.png" />
+    <Content Include="Resources\StarRating\Stars2.png" />
+    <Content Include="Resources\StarRating\Stars2_5.png" />
+    <Content Include="Resources\StarRating\Stars3.png" />
+    <Content Include="Resources\StarRating\Stars3_5.png" />
+    <Content Include="Resources\StarRating\Stars4.png" />
+    <Content Include="Resources\StarRating\Stars4_5.png" />
+    <Content Include="Resources\StarRating\Stars5.png" />
+    <Content Include="Resources\Thief1_large.png" />
+    <Content Include="Resources\Thief2_large.png" />
+    <Content Include="Resources\FilterIcons\UnfinishedFilterIcon.png" />
+    <Content Include="Resources\Thief3_large.png" />
+    <Content Include="Resources\zoom_in_48x48.png" />
+    <Content Include="Resources\zoom_out_48x48.png" />
+    <Content Include="Resources\zoom_reset_48x48.png" />
+    <None Include="Resources\blank.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\7z.Libs.18.05\build\net\7z.Libs.targets" Condition="Exists('..\packages\7z.Libs.18.05\build\net\7z.Libs.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\7z.Libs.18.05\build\net\7z.Libs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\7z.Libs.18.05\build\net\7z.Libs.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)AngelLoader.exe" "C:\AngelLoader\" /y
+xcopy "$(TargetDir)*.dll" "C:\AngelLoader\" /y
+xcopy "$(TargetDir)x86\7z.dll" "C:\AngelLoader\" /y
+
+xcopy "$(TargetDir)ffmpeg.exe" "C:\AngelLoader\" /y
+xcopy "$(TargetDir)ffprobe.exe" "C:\AngelLoader\" /y
+xcopy "$(TargetDir)ffmpeg.txt" "C:\AngelLoader\" /y
+
+xcopy "$(TargetDir)ffmpeg" "C:\AngelLoader\ffmpeg" /y /i
+
+rem ---</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)FenGen.exe" -fmdata "$(ProjectDir)\Common\DataClasses\FanMissionData.cs" "$(ProjectDir)\Ini\FMData.cs"
+xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
+  </PropertyGroup>
+</Project>

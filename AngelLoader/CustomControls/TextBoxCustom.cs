@@ -1,0 +1,54 @@
+﻿using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+using static AngelLoader.Common.Utility.Extensions;
+
+namespace AngelLoader.CustomControls
+{
+    // Also lifted straight from Autovid but with a couple improvements
+    public sealed class TextBoxCustom : TextBox
+    {
+        [Browsable(true)] public string DisallowedCharacters { get; set; } = "";
+
+        public void SetTextAndMoveCursorToEnd(string text)
+        {
+            Text = text;
+            Focus();
+            if (Text.Length > 0) SelectionStart = Text.Length;
+        }
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            if (!DisallowedCharacters.IsEmpty() && DisallowedCharacters.Contains(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+
+            base.OnKeyPress(e);
+        }
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            if (!DisallowedCharacters.IsEmpty())
+            {
+                var newText = Text;
+                foreach (char c in DisallowedCharacters) newText = newText.Replace(c.ToString(), "");
+
+                // Prevents control-key combinations (Ctrl+A for example) from breaking, since they also fire
+                // this event even though the text doesn't actually end up changing in that case.
+                if (newText != Text)
+                {
+                    var oldCaretPosition = SelectionStart;
+                    var oldTextLength = Text.Length;
+
+                    Text = newText;
+
+                    var newCaretPosition = oldCaretPosition - (oldTextLength - newText.Length);
+                    Select(newCaretPosition < 0 ? 0 : newCaretPosition, 0);
+                }
+            }
+
+            base.OnTextChanged(e);
+        }
+    }
+}
