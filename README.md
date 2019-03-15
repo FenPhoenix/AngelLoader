@@ -5,6 +5,20 @@
 - Needs FFmpeg in "ffmpeg" folder in solution base dir. Can use any recent Windows build, but I use a custom build with everything removed except mp3, ogg, and wav support (for size reduction - I don't want to be distributing a 40MB+ dependency). **TODO:** Host the custom build somewhere so others can use it
 - Needs to have DllExport stuff run manually; explain required settings for that
 
+**Things needed to build:**
+- Run DllExport_Configure.bat. It will download the package automatically and eventually you'll see a window.
+    - Choose AngelLoader.sln
+    - Choose "Project files"
+    - Check the Installed box for AngelLoader_Stub\AngelLoader_Stub.csproj. **Leave all the other Installed boxes unchecked.**
+    - Click the x86 checkbox. This is absolutely required: AngelLoader_Stub is going to be called into by Thief (an x86 application), and therefore AngelLoader_Stub **must** be exported as x86 or it will simply not work.
+    - When finished, the window should look something like this: [DllExport](https://www.dropbox.com/s/wabijv9on0h64ce/DllExport.png?dl=0)
+    - Click Apply.
+    - How the heck do you add an image to a github readme.
+ 
+- Download [FMScanner](https://github.com/FenPhoenix/FMScanner)
+    - Add FMScanner.csproj to the AngelLoader solution in Visual Studio
+    - Add a reference from AngelLoader.csproj to FMScanner.csproj in Visual Studio
+
 ## Description
 AngelLoader is a new fan mission loader for Thief 1, Thief 2, and Thief 3. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a standalone one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
 
