@@ -223,14 +223,11 @@ namespace AngelLoader.CustomControls
                                 {
                                     sb.Append(HorizontalLine);
                                 }
-                                else
+                                else if (!IsAlphaCaps(tag))
                                 {
-                                    if (!IsAlphaCaps(tag))
-                                    {
-                                        sb.Append("[GL");
-                                        sb.Append(subSB);
-                                        sb.Append(']');
-                                    }
+                                    sb.Append("[GL");
+                                    sb.Append(subSB);
+                                    sb.Append(']');
                                 }
                                 i = j;
                                 break;
@@ -303,7 +300,7 @@ namespace AngelLoader.CustomControls
                         {
                             if (j == i + 2 && text[j] == 'x')
                             {
-                                end++;
+                                end = Math.Min(end + 1, text.Length);
                                 subSB.Append(text[j]);
                             }
                             else if (text[j] == ';')
