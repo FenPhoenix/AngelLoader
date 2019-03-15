@@ -11,7 +11,7 @@
     - When finished, the window should look something like this: [DllExport](https://www.dropbox.com/s/wabijv9on0h64ce/DllExport.png?dl=0)
     - Click Apply.
     - How the heck do you add an image to a github readme.
-    - Sorry about this step, but there's absolutely nothing I can do about it: the author of DllExport refuses to use NuGet, opting instead for this apparently 100% custom thing. It's fine as far as it goes, but it does mean you have to write out a complicated-sounding explanation of how to set it up whenever you want other people to be able to use it. Meh. It is what it is.
+    - **TODO**: apparently this thing does do automatic restoring? Test this! If true, then these steps aren't necessary
  
 - Download [FMScanner](https://github.com/FenPhoenix/FMScanner)
     - Add FMScanner.csproj to the AngelLoader solution in Visual Studio
