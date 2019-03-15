@@ -16,10 +16,11 @@
     - Add FMScanner.csproj to the AngelLoader solution in Visual Studio
     - Add a reference from AngelLoader.csproj to FMScanner.csproj in Visual Studio
     
-- Download [FFmpeg](https://ffmpeg.zeranoe.com/builds/)
-    - Create a folder named "ffmpeg" in the solution base dir. Can use any recent Windows build, but I use a custom build with everything removed except mp3, ogg, and wav support (for size reduction - I don't want to be distributing a 40MB+ dependency). **TODO:** Host the custom build somewhere so others can use it
-    - Copy FFmpeg files to this folder
-    - This should be a NuGet package, but I can't figure out how to make a NuGet package consisting only of binaries, as no matter what I try it just gleefully vomits out an empty .dll along with the actual stuff
+- Download a 32-bit build of [FFmpeg](https://ffmpeg.zeranoe.com/builds/) (**must be 32-bit**)
+    - Create a folder named "ffmpeg" in the solution base dir.
+    - Extract the ffmpeg archive. It should have a bin folder in it. Copy all files from the bin folder to the ffmpeg folder you just created.
+    - Although you can use any recent Windows build, I use a custom build with everything removed except mp3, ogg, and wav support (for size reduction - I don't want to be distributing a 40MB+ dependency). **TODO:** Host the custom build somewhere so others can use it
+    - My custom build should be a NuGet package, but I can't figure out how to make a NuGet package consisting only of binaries, as no matter what I try it just gleefully vomits out an empty .dll along with the actual stuff
 
 ## Description
 AngelLoader is a new fan mission loader for Thief 1, Thief 2, and Thief 3. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a standalone one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
