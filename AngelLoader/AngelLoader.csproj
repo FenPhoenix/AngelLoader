@@ -332,7 +332,12 @@
     <Content Include="Resources\zoom_reset_48x48.png" />
     <None Include="Resources\blank.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\FMScanner\FMScanner\FMScanner.csproj">
+      <Project>{c1821715-157d-4a33-8170-2953714bb7c0}</Project>
+      <Name>FMScanner</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\7z.Libs.18.05\build\net\7z.Libs.targets" Condition="Exists('..\packages\7z.Libs.18.05\build\net\7z.Libs.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
