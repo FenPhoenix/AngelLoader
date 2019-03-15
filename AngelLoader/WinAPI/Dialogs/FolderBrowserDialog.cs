@@ -17,6 +17,7 @@ namespace AngelLoader.WinAPI.Dialogs
         {
             DialogResult result;
 
+            // Windows Vista is version 6.0
             if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
                 Environment.OSVersion.Version >= new Version(6, 0))
             {

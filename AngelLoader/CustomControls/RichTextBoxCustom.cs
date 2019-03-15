@@ -271,14 +271,11 @@ namespace AngelLoader.CustomControls
                                 {
                                     sb.Append(@"\line\line ");
                                 }
-                                else
+                                else if (!IsAlphaCaps(tag))
                                 {
-                                    if (!IsAlphaCaps(tag))
-                                    {
-                                        sb.Append("[/GL");
-                                        sb.Append(subSB);
-                                        sb.Append(']');
-                                    }
+                                    sb.Append("[/GL");
+                                    sb.Append(subSB);
+                                    sb.Append(']');
                                 }
                                 i = j;
                                 break;

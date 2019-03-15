@@ -1807,7 +1807,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                // These ones MUST NOT to be set on startup, because the source values won't be valid
+                // These ones MUST NOT be set on startup, because the source values won't be valid
                 Config.SortedColumn = (Column)FMsDGV.CurrentSortedColumn;
                 Config.SortDirection = FMsDGV.CurrentSortDirection;
 

@@ -32,20 +32,6 @@ namespace AngelLoader
         internal List<FanMission> FMsList = new List<FanMission>();
         private List<FanMission> FMDataIniList = new List<FanMission>();
 
-        private readonly string[] ThumbImageExts =
-        {
-            ".bmp",
-            ".gif",
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".tif",
-            ".tiff",
-            ".tga",
-            ".pcx",
-            ".dds"
-        };
-
         private CancellationTokenSource ScanCts;
         private CancellationTokenSource ExtractCts;
 
