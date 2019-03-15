@@ -302,6 +302,7 @@
         }
     }
 
+    // Test big squares at the start of all strings so I can easily see if I missed any
     internal static class LText
     {
         internal static class Global
@@ -336,7 +337,41 @@
         internal static class AlertMessages
         {
             internal static string Alert = "█Alert";
+            internal static string Warning = "█Warning";
+
             internal static string WebSearchURLIsInvalid = "█The specified site to search is not a valid URL.";
+
+            internal static class InstallFM
+            {
+                internal static string UnknownGameType = "█This FM's game type is unknown, so it can't be installed.";
+                internal static string UnsupportedGameType = "█This FM's game type is unsupported, so it can't be installed.";
+                internal static string ArchiveNotFound = "█FM archive not found. Unable to install.";
+                internal static string ExecutableNotFound = "█Executable file not specified or not found. Unable to install.";
+                internal static string FMInstallPathNotFound = "█FM install path not specified or not found. Unable to install.";
+                internal static string GameIsRunning = "█Game is running; unable to install. Please exit the game and then try again.";
+            }
+
+            internal static class UninstallFM
+            {
+                internal static string GameIsRunning = "█Game is running; unable to uninstall. Please exit the game and then try again.";
+                internal static string FMAlreadyUninstalled = "█This FM has already been uninstalled or its folder cannot be found. Mark it as uninstalled?";
+                internal static string ArchiveNotFound = "█This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Click Yes if this is okay, or No to cancel the uninstall.";
+                internal static string UninstallNotCompleted = "█The uninstall could not be completed. The FM will be marked as uninstalled but its folder may be in an unknown state.";
+                internal static string BackupSavesAndScreenshots = "█Back up saves and screenshots?";
+            }
+
+            internal static class FMFileConversion
+            {
+                internal static string GameIsRunning = "█Game is running; unable to convert files. Please exit the game and then try again.";
+            }
+
+            internal static class Play
+            {
+                internal static string ExecutableNotFound = "█Executable file not specified or not found. Unable to play.";
+                internal static string ExecutableNotFoundFM = "█Executable file not specified or not found. Unable to play FM.";
+                internal static string GameIsRunning = "█Game is already running. Exit it first!";
+                internal static string UnknownGameType = "█Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
+            }
         }
 
         internal static class Difficulties

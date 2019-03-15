@@ -929,13 +929,13 @@ namespace AngelLoader
 
             if (fm.Game == null)
             {
-                View.ShowAlert("This FM's game type is unknown, so it can't be installed.", "Alert");
+                View.ShowAlert(LText.AlertMessages.InstallFM.UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (fm.Game == Game.Unsupported)
             {
-                View.ShowAlert("This FM's game type is unsupported, so it can't be installed.", "Alert");
+                View.ShowAlert(LText.AlertMessages.InstallFM.UnsupportedGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -943,7 +943,7 @@ namespace AngelLoader
 
             if (fmArchivePath.IsEmpty())
             {
-                View.ShowAlert("FM archive not found. Unable to install.", "Alert");
+                View.ShowAlert(LText.AlertMessages.InstallFM.ArchiveNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -953,7 +953,8 @@ namespace AngelLoader
             var gameName = GetGameNameFromGameType((Game)fm.Game);
             if (!File.Exists(gameExe))
             {
-                View.ShowAlert(gameName + " executable not specified or not found. Unable to install.", "Alert");
+                View.ShowAlert(gameName + ":\r\n" +
+                               LText.AlertMessages.InstallFM.ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -961,15 +962,14 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                View.ShowAlert("FM install path not specified or not found. Unable to install.", "Alert");
+                View.ShowAlert(LText.AlertMessages.InstallFM.FMInstallPathNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (GameIsRunning(gameExe))
             {
-                View.ShowAlert(
-                    gameName + " is running; unable to install. Please exit the game and then try again.",
-                    "Alert");
+                View.ShowAlert(gameName + ":\r\n" +
+                               LText.AlertMessages.InstallFM.GameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1137,8 +1137,7 @@ namespace AngelLoader
             if (GameIsRunning(gameExe))
             {
                 View.ShowAlert(
-                    gameName + " is running; unable to uninstall. Please exit the game and then try again.",
-                    "Alert");
+                    gameName + ":\r\n" + LText.AlertMessages.UninstallFM.GameIsRunning, LText.AlertMessages.Alert);
                 return;
             }
 
@@ -1151,9 +1150,8 @@ namespace AngelLoader
                 var fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
                 {
-                    var yes = View.AskToContinue(
-                        "This FM has already been uninstalled or its folder cannot be found. " +
-                        "Mark it as uninstalled?", "Alert");
+                    var yes = View.AskToContinue(LText.AlertMessages.UninstallFM.FMAlreadyUninstalled,
+                        LText.AlertMessages.Alert);
                     if (yes)
                     {
                         fm.Installed = false;
@@ -1166,10 +1164,8 @@ namespace AngelLoader
 
                 if (fmArchivePath.IsEmpty())
                 {
-                    var cont = View.AskToContinue(
-                        "This FM's archive file was not found! If you continue with uninstalling this FM, you " +
-                        "won't be able to re-install it. Click Yes if this is okay, or No to cancel the uninstall.",
-                        "Warning");
+                    var cont = View.AskToContinue(LText.AlertMessages.UninstallFM.ArchiveNotFound,
+                        LText.AlertMessages.Warning);
 
                     if (!cont) return;
                 }
@@ -1194,7 +1190,8 @@ namespace AngelLoader
                     case BackupSaves.AlwaysAsk:
                         {
                             // TODO: Make this dialog have a "don't ask again" option
-                            var cont = View.AskToContinue("Back up saves and screenshots?", "AngelLoader");
+                            var cont = View.AskToContinue(
+                                LText.AlertMessages.UninstallFM.BackupSavesAndScreenshots, "AngelLoader");
                             if (cont) await BackupSavesAndScreenshots(fm);
                             break;
                         }
@@ -1207,9 +1204,8 @@ namespace AngelLoader
                 if (!await DeleteFMInstalledDirectory(fmInstalledPath))
                 {
                     // TODO: Make option to open the folder in Explorer and delete it manually?
-                    View.ShowAlert(
-                        "The uninstall could not be completed. The FM will be marked as uninstalled " +
-                        "but its folder may be in an unknown state.", "Alert");
+                    View.ShowAlert(LText.AlertMessages.UninstallFM.UninstallNotCompleted,
+                        LText.AlertMessages.Alert);
                 }
 
                 fm.Installed = false;
@@ -1291,15 +1287,16 @@ namespace AngelLoader
             if (GameIsRunning(gameExe))
             {
                 View.ShowAlert(
-                    gameName + " is running; unable to convert files. Please exit the game and then try again.",
-                    "Alert");
+                    gameName + ":\r\n" + LText.AlertMessages.FMFileConversion.GameIsRunning,
+                    LText.AlertMessages.Alert);
                 return;
             }
 
             if (!FMIsReallyInstalled(fm))
             {
+                // TODO: This should probably be an option
                 View.ShowAlert("This FM is marked as installed, but its folder cannot be found. " +
-                               "It will now be marked as uninstalled.", "Alert");
+                               "It will now be marked as uninstalled.", LText.AlertMessages.Alert);
                 fm.Installed = false;
                 View.RefreshSelectedFM(refreshReadme: false);
                 return;
@@ -1331,16 +1328,16 @@ namespace AngelLoader
             var gameName = GetGameNameFromGameType((Game)fm.Game);
             if (GameIsRunning(gameExe))
             {
-                View.ShowAlert(
-                    gameName + " is running; unable to convert files. Please exit the game and then try again.",
-                    "Alert");
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.FMFileConversion.GameIsRunning,
+                    LText.AlertMessages.Alert);
                 return;
             }
 
             if (!FMIsReallyInstalled(fm))
             {
+                // TODO: This should probably be an option
                 View.ShowAlert("This FM is marked as installed, but its folder cannot be found. " +
-                               "It will now be marked as uninstalled.", "Alert");
+                               "It will now be marked as uninstalled.", LText.AlertMessages.Alert);
                 fm.Installed = false;
                 View.RefreshSelectedFM(refreshReadme: false);
                 return;
@@ -1416,7 +1413,8 @@ namespace AngelLoader
 
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
-                View.ShowAlert(gameName + " executable not specified or not found. Unable to play.", "Alert");
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.ExecutableNotFound,
+                    LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1426,7 +1424,8 @@ namespace AngelLoader
 
             if (GameIsRunning(gameExe))
             {
-                View.ShowAlert(gameName + " is already running. Exit it first!", "Alert");
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.GameIsRunning,
+                    LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1496,9 +1495,7 @@ namespace AngelLoader
         {
             if (fm.Game == null)
             {
-                View.ShowAlert(
-                    "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.",
-                    "Alert");
+                View.ShowAlert(LText.AlertMessages.Play.UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1510,7 +1507,8 @@ namespace AngelLoader
 
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
-                View.ShowAlert(gameName + " executable not specified or not found. Unable to play FM.", "Alert");
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.ExecutableNotFoundFM,
+                    LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1520,7 +1518,8 @@ namespace AngelLoader
 
             if (GameIsRunning(gameExe))
             {
-                View.ShowAlert(gameName + " is already running. Exit it first!", "Alert");
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.GameIsRunning,
+                    LText.AlertMessages.Alert);
                 return false;
             }
 
