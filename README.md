@@ -14,6 +14,8 @@
     - For the minimal build:
         - Just extract the ffmpeg folder to the solution base dir.
     - My custom build should be a NuGet package, but I can't figure out how to make a NuGet package consisting only of binaries, as no matter what I try it just gleefully vomits out an empty .dll along with the actual stuff
+    
+- The build wants FenGen.exe but that's not included because it's an _extremely_ Internal Tool<sup>TM</sup> and liable to screw up spectacularly if you don't have an intimate knowledge of its internal functionings. It's not strictly needed, it just generates the FM data readers and writers which you can edit by hand if you absolutely need to. (It generates them in order to avoid runtime reflection, unnecessary IndexOf()s and string concatenations, etc. and therefore achieve the fastest possible performance, which is critical for a file of unbounded length that must be read on startup)
 
 ## Description
 AngelLoader is a new fan mission loader for Thief 1, Thief 2, and Thief 3. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a standalone one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
