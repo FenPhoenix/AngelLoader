@@ -1,5 +1,7 @@
 # AngelLoader
 
+**NOTE:** This is currently in pre-release state, and anything about it is subject to change before version 1.0. If you compile and use this, be aware of that.
+
 **TODO:** Write up instructions for getting it set up and compiling
 
 **Things needed to build:**
