@@ -197,13 +197,13 @@ namespace AngelLoader.Common.DataClasses
 
         internal bool ShowJunk;
 
-        internal void DeepCopyTo(Filter ret)
+        internal void DeepCopyTo(Filter dest)
         {
-            ret.Clear();
-            ret.Title = Title;
-            ret.Author = Author;
-            ret.SetRatingFromAndTo(RatingFrom, RatingTo);
-            ret.ShowJunk = ShowJunk;
+            dest.Clear();
+            dest.Title = Title;
+            dest.Author = Author;
+            dest.SetRatingFromAndTo(RatingFrom, RatingTo);
+            dest.ShowJunk = ShowJunk;
 
             var relFrom = ReleaseDateFrom == null
                 ? (DateTime?)null
@@ -214,7 +214,7 @@ namespace AngelLoader.Common.DataClasses
                 : new DateTime(ReleaseDateTo.Value.Year, ReleaseDateTo.Value.Month,
                     ReleaseDateTo.Value.Day, 0, 0, 0, ReleaseDateTo.Value.Kind);
 
-            ret.SetReleaseDateFromAndTo(relFrom, relTo);
+            dest.SetReleaseDateFromAndTo(relFrom, relTo);
 
             var lpFrom = LastPlayedFrom == null
                 ? (DateTime?)null
@@ -225,11 +225,11 @@ namespace AngelLoader.Common.DataClasses
                 : new DateTime(LastPlayedTo.Value.Year, LastPlayedTo.Value.Month,
                     LastPlayedTo.Value.Day, 0, 0, 0, LastPlayedTo.Value.Kind);
 
-            ret.SetLastPlayedFromAndTo(lpFrom, lpTo);
+            dest.SetLastPlayedFromAndTo(lpFrom, lpTo);
 
-            foreach (var finished in Finished) ret.Finished.Add(finished);
-            foreach (var game in Games) ret.Games.Add(game);
-            DeepCopyTagsFilter(Tags, ret.Tags);
+            foreach (var finished in Finished) dest.Finished.Add(finished);
+            foreach (var game in Games) dest.Games.Add(game);
+            DeepCopyTagsFilter(Tags, dest.Tags);
         }
     }
 

@@ -236,7 +236,10 @@ namespace AngelLoader.Forms
 
             #region Set up form and control state
 
+            // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
+
+            #region SplitContainers
 
             // Fine-tuning defaults without having to mess with the UI, because with all the anchoring, changing
             // the position of anything will mess it all up.
@@ -249,6 +252,15 @@ namespace AngelLoader.Forms
 
             MainSplitContainer.SplitterDistancePercent = mainPercent;
             TopSplitContainer.SplitterDistancePercent = topPercent;
+
+            MainSplitContainer.InjectSibling(TopSplitContainer);
+            TopSplitContainer.InjectSibling(MainSplitContainer);
+
+            #endregion
+
+            #region Columns
+
+            FinishedColumn.Width = FinishedColumnWidth;
 
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
@@ -263,12 +275,14 @@ namespace AngelLoader.Forms
                 SortMode = DataGridViewColumnSortMode.Programmatic
             };
 
-            FinishedColumn.Width = FinishedColumnWidth;
-
             UpdateRatingLists(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             UpdateRatingColumn(startup: true);
 
             FMsDGV.FillColumns(Config.Columns);
+
+            #endregion
+
+            #region Readme
 
             // Set both at once to avoid an elusive bug that happens when you start up, the readme is blank, then
             // you shut down without loading a readme, whereupon it will save out ZoomFactor which is still 1.0.
@@ -277,10 +291,11 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.StoredZoomFactor = Config.ReadmeZoomFactor;
             ReadmeRichTextBox.ZoomFactor = ReadmeRichTextBox.StoredZoomFactor;
 
-            MainSplitContainer.InjectSibling(TopSplitContainer);
-            TopSplitContainer.InjectSibling(MainSplitContainer);
+            #endregion
 
             ProgressBox.Inject(this);
+
+            #region Filters
 
             FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = 20;
 
@@ -290,6 +305,11 @@ namespace AngelLoader.Forms
             FilterByReleaseDateLabel.Visible = false;
             FilterByLastPlayedLabel.Visible = false;
             FilterByRatingLabel.Visible = false;
+
+            Config.Filter.DeepCopyTo(FMsDGV.Filter);
+            SetUIFilterValues(FMsDGV.Filter);
+
+            #endregion
 
             ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
 
@@ -310,10 +330,22 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #endregion
+            TopRightTabControl.SelectedTab =
+                Config.TopRightTab == TopRightTab.EditFM ? EditFMTabPage :
+                Config.TopRightTab == TopRightTab.Comment ? CommentTabPage :
+                Config.TopRightTab == TopRightTab.Tags ? TagsTabPage :
+                StatisticsTabPage;
 
-            // Set values before the form is shown so that we don't see them being set
-            SetInitialValues();
+            ChangeGameOrganization();
+
+            await ScanNewFMsForGameType();
+
+            SortFMTable(Config.SortedColumn, Config.SortDirection);
+            // Even if the filter is empty, do this anyway to cause a refresh.
+            // It'll early-out on an empty filter anyway.
+            SetFilter();
+
+            #endregion
 
             Show();
         }
@@ -340,35 +372,6 @@ namespace AngelLoader.Forms
 
             Size = Config.MainWindowSize;
             NominalWindowSize = Config.MainWindowSize;
-        }
-
-        internal async void SetInitialValues()
-        {
-            #region Filters
-
-            Config.Filter.DeepCopyTo(FMsDGV.Filter);
-            SetUIFilterValues(FMsDGV.Filter);
-
-            #endregion
-
-            #region Top right tabs
-
-            TopRightTabControl.SelectedTab =
-                Config.TopRightTab == TopRightTab.EditFM ? EditFMTabPage :
-                Config.TopRightTab == TopRightTab.Comment ? CommentTabPage :
-                Config.TopRightTab == TopRightTab.Tags ? TagsTabPage :
-                StatisticsTabPage;
-
-            #endregion
-
-            ChangeGameOrganization();
-
-            await ScanNewFMsForGameType();
-
-            SortFMTable(Config.SortedColumn, Config.SortDirection);
-            // Even if the filter is empty, do this anyway to cause a refresh.
-            // It'll early-out on an empty filter anyway.
-            SetFilter();
         }
 
         private void SetUIFilterValues(Filter filter)
