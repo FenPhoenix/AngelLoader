@@ -43,7 +43,7 @@ namespace AngelLoader
 
         internal async Task Init()
         {
-            Directory.CreateDirectory(Paths.Resources);
+            Directory.CreateDirectory(Paths.Data);
 
             bool openSettings;
             if (File.Exists(Paths.ConfigIni))

@@ -69,15 +69,15 @@ namespace AngelLoader.Common
 
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");
 
-        internal static readonly string Resources = Path.Combine(Startup, "AngelLoaderResources");
+        internal static readonly string Data = Path.Combine(Startup, "Data");
 
         /// <summary>
         /// For caching readmes and whatever else we want from non-installed FM archives
         /// </summary>
-        internal static readonly string FMsCache = Path.Combine(Resources, "FMsCache");
+        internal static readonly string FMsCache = Path.Combine(Data, "FMsCache");
 
-        internal static readonly string ConfigIni = Path.Combine(Resources, "Config.ini");
-        internal static readonly string FMDataIni = Path.Combine(Resources, "FMData.ini");
+        internal static readonly string ConfigIni = Path.Combine(Data, "Config.ini");
+        internal static readonly string FMDataIni = Path.Combine(Data, "FMData.ini");
 
         internal static readonly string FFmpegExe = Path.Combine(Startup, "ffmpeg", "ffmpeg.exe");
         internal static readonly string FFprobeExe = Path.Combine(Startup, "ffmpeg", "ffprobe.exe");
