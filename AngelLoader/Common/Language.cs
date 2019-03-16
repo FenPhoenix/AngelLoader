@@ -536,9 +536,9 @@
             internal static string ReportScanningBetweenNumAndTotal = "█ of ";
             internal static string ReportScanningLast = "█...";
             internal static string CancelingInstall = "█Canceling install...";
+            internal static string ImportingFromDarkLoader = "█Importing from DarkLoader...";
         }
 
-        // Better hold off on this until the Settings window is more or less finalized
         internal static class SettingsWindow
         {
             internal static string TitleText = "█Settings";

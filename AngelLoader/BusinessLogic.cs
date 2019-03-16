@@ -859,6 +859,20 @@ namespace AngelLoader
             }
         }
 
+        internal async Task<bool>
+        ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves)
+        {
+            var (success, fms) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves);
+            if (!success)
+            {
+                // log it
+                return false;
+            }
+
+            MergeDarkLoaderFMData(fms);
+            return true;
+        }
+
         internal void MergeDarkLoaderFMData(List<FanMission> importedFMs)
         {
             var checkedList = new List<FanMission>();

@@ -183,6 +183,7 @@
     <Compile Include="Forms\ImportFromDarkLoaderForm.Designer.cs">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportDarkLoader.cs" />
     <Compile Include="Ini\ConfigIni.cs" />
     <Compile Include="Ini\FMData.cs" />
     <Compile Include="Ini\IniCommon.cs" />

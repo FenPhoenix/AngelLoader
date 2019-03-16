@@ -3500,18 +3500,31 @@ namespace AngelLoader.Forms
 
         private async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
         {
-            using (var f = new ImportFromDarkLoaderForm(Model))
+            using (var f = new ImportFromDarkLoaderForm())
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
 
-                if (f.ImportedFMs.Count == 0) return;
+                if (!f.ImportFMData && !f.ImportSaves)
+                {
+                    MessageBox.Show("Nothing was imported.", "Import");
+                    return;
+                }
 
-                var fms = new List<FanMission>();
-                fms.AddRange(f.ImportedFMs);
-
-                // Don't bother deep-copying fms so we can carry it out of the using block, because the merge
-                // constitutes a deep copy anyway
-                Model.MergeDarkLoaderFMData(fms);
+                ProgressBox.ShowImportDarkLoader();
+                try
+                {
+                    bool success =
+                        await Model.ImportFromDarkLoader(f.DarkLoaderIniFile, f.ImportFMData, f.ImportSaves);
+                    if (!success)
+                    {
+                        // log it
+                        return;
+                    }
+                }
+                finally
+                {
+                    ProgressBox.Hide();
+                }
             }
 
             // DarkLoader might have the wrong game type or no game type, so scan for that

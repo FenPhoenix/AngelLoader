@@ -16,7 +16,8 @@ namespace AngelLoader.CustomControls
             ScanAllFMs,
             InstallFM,
             UninstallFM,
-            ConvertFiles
+            ConvertFiles,
+            ImportFromDarkLoader
         }
 
         private MainForm Owner;
@@ -33,6 +34,12 @@ namespace AngelLoader.CustomControls
         internal void Inject(MainForm owner) => Owner = owner;
 
         #region Show methods
+
+        internal void ShowImportDarkLoader()
+        {
+            _progressTask = ProgressTask.ImportFromDarkLoader;
+            ShowProgressWindow(_progressTask);
+        }
 
         internal void ShowScanningAllFMs()
         {
@@ -67,14 +74,11 @@ namespace AngelLoader.CustomControls
             Center();
 
             ProgressMessageLabel.Text =
-                progressTask == ProgressTask.ScanAllFMs
-                ? LText.ProgressBox.Scanning :
-                progressTask == ProgressTask.InstallFM
-                ? LText.ProgressBox.InstallingFM :
-                progressTask == ProgressTask.UninstallFM
-                ? LText.ProgressBox.UninstallingFM :
-                progressTask == ProgressTask.ConvertFiles
-                ? LText.ProgressBox.ConvertingFiles :
+                progressTask == ProgressTask.ScanAllFMs ? LText.ProgressBox.Scanning :
+                progressTask == ProgressTask.InstallFM ? LText.ProgressBox.InstallingFM :
+                progressTask == ProgressTask.UninstallFM ? LText.ProgressBox.UninstallingFM :
+                progressTask == ProgressTask.ConvertFiles ? LText.ProgressBox.ConvertingFiles :
+                progressTask == ProgressTask.ImportFromDarkLoader ? LText.ProgressBox.ImportingFromDarkLoader :
                 "";
 
             CurrentThingLabel.Text = progressTask == ProgressTask.ScanAllFMs
@@ -82,15 +86,11 @@ namespace AngelLoader.CustomControls
                 : "";
 
             if (progressTask == ProgressTask.UninstallFM ||
-                progressTask == ProgressTask.ConvertFiles)
+                progressTask == ProgressTask.ConvertFiles ||
+                progressTask == ProgressTask.ImportFromDarkLoader)
             {
-                ProgressProgressBar.Hide();
+                ProgressBar.Hide();
                 TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);
-            }
-
-            if (progressTask == ProgressTask.UninstallFM ||
-                progressTask == ProgressTask.ConvertFiles)
-            {
                 ProgressCancelButton.Hide();
             }
             else
@@ -99,7 +99,7 @@ namespace AngelLoader.CustomControls
                 ProgressPercentLabel.Text = "";
             }
 
-            ProgressProgressBar.SetValueInstant(0);
+            ProgressBar.SetValueInstant(0);
 
             Owner.EnableEverything(false);
             Enabled = true;
@@ -118,11 +118,11 @@ namespace AngelLoader.CustomControls
             ProgressMessageLabel.Text = "";
             CurrentThingLabel.Text = "";
             ProgressPercentLabel.Text = "";
-            ProgressProgressBar.SetValueInstant(0);
+            ProgressBar.SetValueInstant(0);
 
             // We're not actually showing these right here because their parent control is hidden, but we're just
             // turning their visibility back on so we won't forget later
-            ProgressProgressBar.Show();
+            ProgressBar.Show();
             ProgressCancelButton.Show();
 
             Enabled = false;
@@ -135,7 +135,7 @@ namespace AngelLoader.CustomControls
 
         internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
-            ProgressProgressBar.SetValueInstant(percent.Clamp(0, 100));
+            ProgressBar.SetValueInstant(percent.Clamp(0, 100));
             var first = LText.ProgressBox.ReportScanningFirst;
             var between = LText.ProgressBox.ReportScanningBetweenNumAndTotal;
             var last = LText.ProgressBox.ReportScanningLast;
@@ -148,7 +148,7 @@ namespace AngelLoader.CustomControls
 
         internal void ReportFMExtractProgress(int percent)
         {
-            ProgressProgressBar.SetValueInstant(percent.Clamp(0, 100));
+            ProgressBar.SetValueInstant(percent.Clamp(0, 100));
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + "%";
 
@@ -158,7 +158,7 @@ namespace AngelLoader.CustomControls
         internal void SetCancelingFMInstall()
         {
             ProgressMessageLabel.Text = LText.ProgressBox.CancelingInstall;
-            ProgressProgressBar.SetValueInstant(0);
+            ProgressBar.SetValueInstant(0);
             ProgressPercentLabel.Text = "";
         }
 

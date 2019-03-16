@@ -32,7 +32,7 @@
             this.ProgressPercentLabel = new System.Windows.Forms.Label();
             this.ProgressMessageLabel = new System.Windows.Forms.Label();
             this.CurrentThingLabel = new System.Windows.Forms.Label();
-            this.ProgressProgressBar = new System.Windows.Forms.ProgressBar();
+            this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // ProgressCancelButton
@@ -75,10 +75,10 @@
             // 
             // ProgressProgressBar
             // 
-            this.ProgressProgressBar.Location = new System.Drawing.Point(8, 56);
-            this.ProgressProgressBar.Name = "ProgressProgressBar";
-            this.ProgressProgressBar.Size = new System.Drawing.Size(408, 23);
-            this.ProgressProgressBar.TabIndex = 3;
+            this.ProgressBar.Location = new System.Drawing.Point(8, 56);
+            this.ProgressBar.Name = "ProgressBar";
+            this.ProgressBar.Size = new System.Drawing.Size(408, 23);
+            this.ProgressBar.TabIndex = 3;
             // 
             // ProgressPanel
             // 
@@ -88,7 +88,7 @@
             this.Controls.Add(this.ProgressCancelButton);
             this.Controls.Add(this.ProgressPercentLabel);
             this.Controls.Add(this.ProgressMessageLabel);
-            this.Controls.Add(this.ProgressProgressBar);
+            this.Controls.Add(this.ProgressBar);
             this.Controls.Add(this.CurrentThingLabel);
             this.Name = "ProgressPanel";
             this.Size = new System.Drawing.Size(424, 128);
@@ -102,6 +102,6 @@
         private System.Windows.Forms.Label ProgressPercentLabel;
         private System.Windows.Forms.Label ProgressMessageLabel;
         private System.Windows.Forms.Label CurrentThingLabel;
-        private System.Windows.Forms.ProgressBar ProgressProgressBar;
+        private System.Windows.Forms.ProgressBar ProgressBar;
     }
 }
