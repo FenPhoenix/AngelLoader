@@ -112,6 +112,9 @@ namespace AngelLoader
 
             var fmArchivePath = FindFMArchive(fm);
 
+            // In weird situations this could be true, so just say none and at least don't crash
+            if (fmArchivePath.IsEmpty()) return new CacheData();
+
             SevenZipExtract(fmArchivePath, fmCachePath, readmes);
 
             if (fmArchivePath.ExtEqualsI(".zip") && Directory.Exists(fmCachePath))

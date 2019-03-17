@@ -232,7 +232,7 @@ namespace AngelLoader.Forms
             // Model.Init() success means Config is now populated
 
             Model.FindFMs();
-            FMsList = Model.FMsList;
+            FMsList = Model.FMsViewList;
 
             #region Set up form and control state
 
@@ -535,7 +535,10 @@ namespace AngelLoader.Forms
                 EditFMReleaseDateCheckBox.Text = LText.EditFMTab.ReleaseDate;
                 EditFMLastPlayedCheckBox.Text = LText.EditFMTab.LastPlayed;
                 EditFMRatingLabel.Text = LText.EditFMTab.Rating;
-                EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
+
+                // For some reason this counts as a selected index change?!
+                using (new DisableEvents(this)) EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
+
                 EditFMFinishedOnButton.SetL10nText(LText.EditFMTab.FinishedOn, 138);
                 EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
                 EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
@@ -1623,6 +1626,8 @@ namespace AngelLoader.Forms
 
         private async void ScanAllFMsButton_Click(object sender, EventArgs e)
         {
+            if (FMsList.Count == 0) return;
+
             var scanOptions = new ScanOptions
             {
                 ScanTitle = true,
@@ -1797,7 +1802,7 @@ namespace AngelLoader.Forms
 
                     // The reference gets broken somehow, even though it's only FMsList.Clear() and not
                     // FMsList = new List<FanMission>() (could be the Union()s?)
-                    FMsList = Model.FMsList;
+                    FMsList = Model.FMsViewList;
                 }
                 if (gameOrganizationChanged)
                 {
@@ -1848,11 +1853,15 @@ namespace AngelLoader.Forms
 
         private void UpdateRatingLists(bool fmSelStyle)
         {
-            for (int i = 0; i <= 10; i++)
+            // Just in case, since changing a ComboBox item's text counts as a selected index change maybe? Argh!
+            using (new DisableEvents(this))
             {
-                string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                RatingRCSubMenu.DropDownItems[i + 1].Text = num;
-                EditFMRatingComboBox.Items[i + 1] = num;
+                for (int i = 0; i <= 10; i++)
+                {
+                    string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
+                    RatingRCSubMenu.DropDownItems[i + 1].Text = num;
+                    EditFMRatingComboBox.Items[i + 1] = num;
+                }
             }
         }
 
@@ -2147,6 +2156,8 @@ namespace AngelLoader.Forms
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
+            if (FMsList.Count == 0) ScanAllFMsButton.Enabled = false;
+
             InstallUninstallMenuItem.Text = LText.FMContextMenu.InstallFM;
             InstallUninstallMenuItem.Enabled = false;
             InstallUninstallFMButton.Enabled = false;
@@ -2227,6 +2238,9 @@ namespace AngelLoader.Forms
             bool fmIsT3 = fm.Game == Game.Thief3;
 
             #region Toggles
+
+            // We should never get here when FMsList.Count == 0, but hey
+            if (FMsList.Count > 0) ScanAllFMsButton.Enabled = true;
 
             FinishedOnNormalMenuItem.Text = fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal;
             FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;

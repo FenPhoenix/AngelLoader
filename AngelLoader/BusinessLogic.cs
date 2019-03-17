@@ -29,7 +29,7 @@ namespace AngelLoader
         private readonly MainForm View;
         private readonly ProgressPanel ProgressBox;
 
-        internal List<FanMission> FMsList = new List<FanMission>();
+        internal List<FanMission> FMsViewList = new List<FanMission>();
         private List<FanMission> FMDataIniList = new List<FanMission>();
 
         private CancellationTokenSource ScanCts;
@@ -266,7 +266,7 @@ namespace AngelLoader
 
             // This will also clear the Checked status of all FMs. Crucial if we're running this again.
             FMDataIniList.Clear();
-            FMsList.Clear();
+            FMsViewList.Clear();
 
             t.Start();
 
@@ -509,10 +509,19 @@ namespace AngelLoader
                 // Archive dirs: Thief1(personal)+Thief2(personal)
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
                 // Good enough?
-                if (!fmArchives.ContainsI(item.Archive) && !item.Installed) continue;
+                if (!fmArchives.ContainsI(item.Archive) &&
+                    (!item.Installed ||
+                     // This is new and hasn't been timed, but whatever
+                     (item.Game == Game.Thief1 && !t1InstalledFMDirs.ContainsI(item.InstalledDir)) ||
+                     (item.Game == Game.Thief2 && !t2InstalledFMDirs.ContainsI(item.InstalledDir)) ||
+                     (item.Game == Game.Thief3 && !t3InstalledFMDirs.ContainsI(item.InstalledDir))))
+                {
+                    continue;
+                }
+
                 if (GameIsKnownAndSupported(item) && GetFMInstallsBasePath(item).IsEmpty()) continue;
 
-                FMsList.Add(item);
+                FMsViewList.Add(item);
 
                 item.Title =
                     !item.Title.IsEmpty() ? item.Title :
@@ -867,10 +876,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal async Task<bool> ScanAllFMs(ScanOptions scanOptions)
-        {
-            return await ScanFMs(FMsList, scanOptions);
-        }
+        internal async Task<bool> ScanAllFMs(ScanOptions scanOptions) => await ScanFMs(FMsViewList, scanOptions);
 
         internal void CancelScan()
         {
@@ -888,7 +894,7 @@ namespace AngelLoader
             // TODO: This can be canceled, so make sure the world won't explode if the user cancels
             // and leaves some FMs in an un-game-type-scanned state.
             var fmsToScan = new List<FanMission>();
-            foreach (var fm in FMsList)
+            foreach (var fm in FMsViewList)
             {
                 if (fm.Game == null) fmsToScan.Add(fm);
             }
