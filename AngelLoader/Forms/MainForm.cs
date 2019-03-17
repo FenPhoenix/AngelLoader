@@ -3218,6 +3218,10 @@ namespace AngelLoader.Forms
             var button = EditFMFinishedOnButton;
             var menu = FinishedOnMenu;
 
+            // Menu could be stuck to a submenu, so show, hide, show to get it unstuck and showing in the right
+            // place
+            menu.Show();
+            menu.Hide();
             menu.Show(button, 0, button.Height);
         }
 
