@@ -43,11 +43,6 @@ namespace AngelLoader
         // Don't replace \r\n or \\ escapes because we use those in the exact same way so no conversion needed
         private static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
 
-        // TODO: Consider importing DL's stats (textures, objects, etc.)
-        // But then DL and AngelLoader each have a couple stats the other doesn't, so I'd have to allow unknowns
-        // or else I'd have to set another bit that tells us to scan the mission for stats-only upon selection.
-        // Or just scan the missions right here after importing, that way I can also get a guaranteed correct
-        // game type, as noted below.
         internal static async Task<(bool Success, List<FanMission> FMs)>
         Import(string iniFile, bool importFMData, bool importSaves)
         {
@@ -294,6 +289,65 @@ namespace AngelLoader
             });
 
             return true;
+        }
+
+        internal static List<int> MergeDarkLoaderFMData(List<FanMission> importedFMs, List<FanMission> mainList)
+        {
+            var checkedList = new List<FanMission>();
+            var importedFMIndexes = new List<int>();
+            int initCount = mainList.Count;
+            int indexPastEnd = initCount - 1;
+
+            for (int iFMi = 0; iFMi < importedFMs.Count; iFMi++)
+            {
+                var iFM = importedFMs[iFMi];
+
+                bool existingFound = false;
+                for (int i = 0; i < initCount; i++)
+                {
+                    var fm = mainList[i];
+
+                    if (!fm.Checked &&
+                        fm.Archive.EqualsI(iFM.Archive))
+                    {
+                        if (!iFM.Title.IsEmpty()) fm.Title = iFM.Title;
+                        if (iFM.ReleaseDate != null) fm.ReleaseDate = iFM.ReleaseDate;
+                        fm.LastPlayed = iFM.LastPlayed;
+                        fm.FinishedOn = iFM.FinishedOn;
+                        fm.Comment = iFM.Comment;
+
+                        fm.Checked = true;
+
+                        // So we only loop through checked FMs when we reset them
+                        checkedList.Add(fm);
+
+                        importedFMIndexes.Add(i);
+
+                        existingFound = true;
+                        break;
+                    }
+                }
+                if (!existingFound)
+                {
+                    mainList.Add(new FanMission
+                    {
+                        Archive = iFM.Archive,
+                        InstalledDir = iFM.InstalledDir,
+                        Title = !iFM.Title.IsEmpty() ? iFM.Title : iFM.Archive,
+                        ReleaseDate = iFM.ReleaseDate,
+                        LastPlayed = iFM.LastPlayed,
+                        FinishedOn = iFM.FinishedOn,
+                        Comment = iFM.Comment
+                    });
+                    indexPastEnd++;
+                    importedFMIndexes.Add(indexPastEnd);
+                }
+            }
+
+            // Reset temp bool
+            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
+
+            return importedFMIndexes;
         }
     }
 }

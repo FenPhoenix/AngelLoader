@@ -914,35 +914,6 @@ namespace AngelLoader
             }
         }
 
-        // TODO: Refactor these together later when it becomes apparent how that can best be done
-        internal async Task ScanFMsAfterDarkLoaderImport(List<int> indexes)
-        {
-            // TODO: This can be canceled, so make sure the world won't explode if the user cancels
-            // and leaves some FMs in an un-game-type-scanned state.
-            var fmsToScan = new List<FanMission>();
-            foreach (int index in indexes) fmsToScan.Add(FMDataIniList[index]);
-            if (fmsToScan.Count > 0)
-            {
-                var scanOptions = new ScanOptions
-                {
-                    ScanTitle = false,
-                    ScanCampaignMissionNames = false,
-                    ScanAuthor = false,
-                    ScanVersion = false,
-                    ScanLanguages = false,
-                    ScanGameType = true,
-                    ScanNewDarkRequired = false,
-                    ScanNewDarkMinimumVersion = false,
-                    ScanCustomResources = true,
-                    ScanSize = false,
-                    ScanReleaseDate = false,
-                    ScanTags = false
-                };
-
-                await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
-            }
-        }
-
         internal async Task<bool>
         ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves)
         {
@@ -956,12 +927,25 @@ namespace AngelLoader
                     return false;
                 }
 
-                var importedIndexes = MergeDarkLoaderFMData(fms);
+                var importedIndexes = ImportDarkLoader.MergeDarkLoaderFMData(fms, FMDataIniList);
 
                 ProgressBox.ShowScanningAllFMs();
 
-                // DarkLoader might have the wrong game type or no game type, so scan for that
-                await ScanFMsAfterDarkLoaderImport(importedIndexes);
+                // DarkLoader might have the wrong game type or no game type, so scan for that.
+                // Also scan for custom resources because DL's and ours are slightly different.
+                // TODO: This can be canceled, so make sure the world won't explode if the user cancels
+                // and leaves some FMs in an un-scanned state.
+                var fmsToScan = new List<FanMission>();
+                foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
+                if (fmsToScan.Count > 0)
+                {
+                    var scanOptions = ScanOptions.AllFalse;
+                    scanOptions.ScanGameType = true;
+                    scanOptions.ScanCustomResources = true;
+
+                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+                }
+
                 WriteFullFMDataIni();
             }
             finally
@@ -970,65 +954,6 @@ namespace AngelLoader
             }
 
             return true;
-        }
-
-        internal List<int> MergeDarkLoaderFMData(List<FanMission> importedFMs)
-        {
-            var checkedList = new List<FanMission>();
-            var importedFMIndexes = new List<int>();
-            int initCount = FMDataIniList.Count;
-            int indexPastEnd = initCount - 1;
-
-            for (int iFMi = 0; iFMi < importedFMs.Count; iFMi++)
-            {
-                var iFM = importedFMs[iFMi];
-
-                bool existingFound = false;
-                for (int i = 0; i < initCount; i++)
-                {
-                    var fm = FMDataIniList[i];
-
-                    if (!fm.Checked &&
-                        fm.Archive.EqualsI(iFM.Archive))
-                    {
-                        if (!iFM.Title.IsEmpty()) fm.Title = iFM.Title;
-                        if (iFM.ReleaseDate != null) fm.ReleaseDate = iFM.ReleaseDate;
-                        fm.LastPlayed = iFM.LastPlayed;
-                        fm.FinishedOn = iFM.FinishedOn;
-                        fm.Comment = iFM.Comment;
-
-                        fm.Checked = true;
-
-                        // So we only loop through checked FMs when we reset them
-                        checkedList.Add(fm);
-
-                        importedFMIndexes.Add(i);
-
-                        existingFound = true;
-                        break;
-                    }
-                }
-                if (!existingFound)
-                {
-                    FMDataIniList.Add(new FanMission
-                    {
-                        Archive = iFM.Archive,
-                        InstalledDir = iFM.InstalledDir,
-                        Title = !iFM.Title.IsEmpty() ? iFM.Title : iFM.Archive,
-                        ReleaseDate = iFM.ReleaseDate,
-                        LastPlayed = iFM.LastPlayed,
-                        FinishedOn = iFM.FinishedOn,
-                        Comment = iFM.Comment
-                    });
-                    indexPastEnd++;
-                    importedFMIndexes.Add(indexPastEnd);
-                }
-            }
-
-            // Reset temp bool
-            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
-
-            return importedFMIndexes;
         }
 
         #region Install, Uninstall, Play
