@@ -498,9 +498,9 @@ namespace AngelLoader.Forms
 
                 #region Play original games menu
 
-                PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1;
-                PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2;
-                PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3;
+                PlayOriginalThief1MenuItem.Text = LText.BottomArea.PlayOriginalGameMenu.Thief1;
+                PlayOriginalThief2MenuItem.Text = LText.BottomArea.PlayOriginalGameMenu.Thief2;
+                PlayOriginalThief3MenuItem.Text = LText.BottomArea.PlayOriginalGameMenu.Thief3;
 
                 #endregion
 
@@ -3528,7 +3528,7 @@ namespace AngelLoader.Forms
 
                 if (!f.ImportFMData && !f.ImportSaves)
                 {
-                    MessageBox.Show(LText.Import.NothingWasImported, LText.AlertMessages.Alert);
+                    MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                     return;
                 }
 
