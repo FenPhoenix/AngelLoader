@@ -295,8 +295,6 @@
 
                 internal static string IgnoreArticles = "█Ignore the following leading articles when sorting by title:";
 
-                internal static string DefaultArticles = "█a, an, the";
-
                 internal static string MoveArticlesToEnd = "█Move articles to the end of names when displaying them";
 
                 internal static string RatingDisplayStyle = "█Rating display style";
