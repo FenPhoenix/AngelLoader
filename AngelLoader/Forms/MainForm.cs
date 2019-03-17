@@ -2983,7 +2983,21 @@ namespace AngelLoader.Forms
 
         private void ReadmeRichTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyValue == '0') ReadmeRichTextBox.ResetZoomFactor();
+            if (e.Control)
+            {
+                if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
+                {
+                    ReadmeRichTextBox.ZoomIn();
+                }
+                else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
+                {
+                    ReadmeRichTextBox.ZoomOut();
+                }
+                else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
+                {
+                    ReadmeRichTextBox.ResetZoomFactor();
+                }
+            }
         }
 
         private void ZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
