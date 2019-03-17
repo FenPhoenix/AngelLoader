@@ -198,7 +198,6 @@ namespace AngelLoader
                             if (content.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != eI))
                             {
                                 htmlRefFiles.Add(new NameAndIndex { Index = eI, Name = e.FullName });
-                                eI++;
                             }
                         }
                     }
