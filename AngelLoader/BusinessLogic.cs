@@ -702,7 +702,8 @@ namespace AngelLoader
             return archiveName;
         }
 
-        internal async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions)
+        internal async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions,
+            bool overwriteUnscannedFields = true)
         {
             void ReportProgress(ProgressReport pr)
             {
@@ -728,13 +729,15 @@ namespace AngelLoader
                         fms.Add(fmArchivePath);
                     }
                 }
-                else
+                else if (GameIsKnownAndSupported(fm))
                 {
-                    Debug.Assert(fm.Game != null, "fm.Game != null");
-
                     var fmInstalledPath = GetFMInstallsBasePath(fm);
 
                     fms.Add(Path.Combine(fmInstalledPath, fm.InstalledDir));
+                }
+                else
+                {
+                    continue;
                 }
 
                 if (ScanCts.IsCancellationRequested)
@@ -780,57 +783,78 @@ namespace AngelLoader
 
                 if (sel == null) continue;
 
-                bool fmIsArchive = new[] { ".zip", ".7z" }.Any(fm.ArchiveName.ExtEqualsI);
+                bool fmIsArchive = fm.ArchiveName.ExtEqualsI(".zip") || fm.ArchiveName.ExtEqualsI(".7z");
 
                 if (fmIsArchive) sel.RefreshCache = true;
 
-                var game = fm.Game != Games.Unsupported;
+                var gameSup = fm.Game != Games.Unsupported;
 
-                sel.Title = !fm.Title.IsEmpty()
-                    ? fm.Title
-                    : fm.ArchiveName.RemoveExtension();
-
-                if (game)
+                if (overwriteUnscannedFields || scanOptions.ScanTitle)
                 {
-                    sel.AltTitles = new List<string> { fm.Title };
-                    sel.AltTitles.AddRange(fm.AlternateTitles);
+                    sel.Title = !fm.Title.IsEmpty() ? fm.Title : fm.ArchiveName.RemoveExtension();
+
+                    if (gameSup)
+                    {
+                        sel.AltTitles = new List<string> { fm.Title };
+                        sel.AltTitles.AddRange(fm.AlternateTitles);
+                    }
+                    else
+                    {
+                        sel.AltTitles = new List<string>();
+                    }
                 }
-                else
+
+                if (overwriteUnscannedFields || scanOptions.ScanSize)
                 {
-                    sel.AltTitles = new List<string>();
+                    sel.SizeString = gameSup ? fm.Size.ConvertSize() : "";
+                    sel.SizeBytes = (ulong)(gameSup ? fm.Size ?? 0 : 0);
+                }
+                if (overwriteUnscannedFields || scanOptions.ScanReleaseDate)
+                {
+                    sel.ReleaseDate = gameSup ? fm.LastUpdateDate : null;
+                }
+                if (overwriteUnscannedFields || scanOptions.ScanCustomResources)
+                {
+                    sel.HasMap = gameSup ? fm.HasMap : null;
+                    sel.HasAutomap = gameSup ? fm.HasAutomap : null;
+                    sel.HasScripts = gameSup ? fm.HasCustomScripts : null;
+                    sel.HasTextures = gameSup ? fm.HasCustomTextures : null;
+                    sel.HasSounds = gameSup ? fm.HasCustomSounds : null;
+                    sel.HasObjects = gameSup ? fm.HasCustomObjects : null;
+                    sel.HasCreatures = gameSup ? fm.HasCustomCreatures : null;
+                    sel.HasMotions = gameSup ? fm.HasCustomMotions : null;
+                    sel.HasMovies = gameSup ? fm.HasMovies : null;
+                    sel.HasSubtitles = gameSup ? fm.HasCustomSubtitles : null;
                 }
 
-                sel.SizeString = game ? fm.Size.ConvertSize() : "";
-                sel.SizeBytes = (ulong)(game ? fm.Size ?? 0 : 0);
+                if (overwriteUnscannedFields || scanOptions.ScanAuthor)
+                {
+                    sel.Author = gameSup ? fm.Author : "";
+                }
 
-                sel.ReleaseDate = game ? fm.LastUpdateDate : null;
+                if (overwriteUnscannedFields || scanOptions.ScanGameType)
+                {
+                    sel.Game =
+                        fm.Game == Games.Unsupported ? Game.Unsupported :
+                        fm.Game == Games.TDP ? Game.Thief1 :
+                        fm.Game == Games.TMA ? Game.Thief2 :
+                        fm.Game == Games.TDS ? Game.Thief3 :
+                        (Game?)null;
+                }
 
-                sel.HasMap = game ? fm.HasMap : null;
-                sel.HasAutomap = game ? fm.HasAutomap : null;
-                sel.HasScripts = game ? fm.HasCustomScripts : null;
-                sel.HasTextures = game ? fm.HasCustomTextures : null;
-                sel.HasSounds = game ? fm.HasCustomSounds : null;
-                sel.HasObjects = game ? fm.HasCustomObjects : null;
-                sel.HasCreatures = game ? fm.HasCustomCreatures : null;
-                sel.HasMotions = game ? fm.HasCustomMotions : null;
-                sel.HasMovies = game ? fm.HasMovies : null;
-                sel.HasSubtitles = game ? fm.HasCustomSubtitles : null;
+                if (overwriteUnscannedFields || scanOptions.ScanLanguages)
+                {
+                    sel.Languages = gameSup ? fm.Languages : new string[0];
+                    sel.LanguagesString = gameSup ? fm.Languages != null ? string.Join(", ", fm.Languages) : "" : "";
+                }
 
-                sel.Author = game ? fm.Author : "";
+                if (overwriteUnscannedFields || scanOptions.ScanTags)
+                {
+                    sel.TagsString = gameSup ? fm.TagsString : "";
 
-                sel.Game =
-                    fm.Game == Games.Unsupported ? Game.Unsupported :
-                    fm.Game == Games.TDP ? Game.Thief1 :
-                    fm.Game == Games.TMA ? Game.Thief2 :
-                    fm.Game == Games.TDS ? Game.Thief3 :
-                    (Game?)null;
-
-                sel.Languages = game ? fm.Languages : new string[0];
-                sel.LanguagesString = game ? fm.Languages != null ? string.Join(", ", fm.Languages) : "" : "";
-                sel.TagsString = game ? fm.TagsString : "";
-
-                sel.Tags.Clear();
-                if (game) AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
+                    sel.Tags.Clear();
+                    if (gameSup) AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
+                }
             }
 
             WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
@@ -859,24 +883,101 @@ namespace AngelLoader
             }
         }
 
+        internal async Task ScanNewFMsForGameType()
+        {
+            // TODO: This can be canceled, so make sure the world won't explode if the user cancels
+            // and leaves some FMs in an un-game-type-scanned state.
+            var fmsToScan = new List<FanMission>();
+            foreach (var fm in FMsList)
+            {
+                if (fm.Game == null) fmsToScan.Add(fm);
+            }
+            if (fmsToScan.Count > 0)
+            {
+                var scanOptions = new ScanOptions
+                {
+                    ScanTitle = false,
+                    ScanCampaignMissionNames = false,
+                    ScanAuthor = false,
+                    ScanVersion = false,
+                    ScanLanguages = false,
+                    ScanGameType = true,
+                    ScanNewDarkRequired = false,
+                    ScanNewDarkMinimumVersion = false,
+                    ScanCustomResources = false,
+                    ScanSize = false,
+                    ScanReleaseDate = false,
+                    ScanTags = false
+                };
+
+                await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+            }
+        }
+
+        // TODO: Refactor these together later when it becomes apparent how that can best be done
+        internal async Task ScanFMsAfterDarkLoaderImport(List<int> indexes)
+        {
+            // TODO: This can be canceled, so make sure the world won't explode if the user cancels
+            // and leaves some FMs in an un-game-type-scanned state.
+            var fmsToScan = new List<FanMission>();
+            foreach (int index in indexes) fmsToScan.Add(FMDataIniList[index]);
+            if (fmsToScan.Count > 0)
+            {
+                var scanOptions = new ScanOptions
+                {
+                    ScanTitle = false,
+                    ScanCampaignMissionNames = false,
+                    ScanAuthor = false,
+                    ScanVersion = false,
+                    ScanLanguages = false,
+                    ScanGameType = true,
+                    ScanNewDarkRequired = false,
+                    ScanNewDarkMinimumVersion = false,
+                    ScanCustomResources = true,
+                    ScanSize = false,
+                    ScanReleaseDate = false,
+                    ScanTags = false
+                };
+
+                await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+            }
+        }
+
         internal async Task<bool>
         ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves)
         {
-            var (success, fms) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves);
-            if (!success)
+            ProgressBox.ShowImportDarkLoader();
+            try
             {
-                // log it
-                return false;
+                var (success, fms) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves);
+                if (!success)
+                {
+                    // log it
+                    return false;
+                }
+
+                var importedIndexes = MergeDarkLoaderFMData(fms);
+
+                ProgressBox.ShowScanningAllFMs();
+
+                // DarkLoader might have the wrong game type or no game type, so scan for that
+                await ScanFMsAfterDarkLoaderImport(importedIndexes);
+                WriteFullFMDataIni();
+            }
+            finally
+            {
+                ProgressBox.Hide();
             }
 
-            MergeDarkLoaderFMData(fms);
             return true;
         }
 
-        internal void MergeDarkLoaderFMData(List<FanMission> importedFMs)
+        internal List<int> MergeDarkLoaderFMData(List<FanMission> importedFMs)
         {
             var checkedList = new List<FanMission>();
+            var importedFMIndexes = new List<int>();
             int initCount = FMDataIniList.Count;
+            int indexPastEnd = initCount - 1;
 
             for (int iFMi = 0; iFMi < importedFMs.Count; iFMi++)
             {
@@ -897,8 +998,12 @@ namespace AngelLoader
                         fm.Comment = iFM.Comment;
 
                         fm.Checked = true;
+
                         // So we only loop through checked FMs when we reset them
                         checkedList.Add(fm);
+
+                        importedFMIndexes.Add(i);
+
                         existingFound = true;
                         break;
                     }
@@ -915,12 +1020,15 @@ namespace AngelLoader
                         FinishedOn = iFM.FinishedOn,
                         Comment = iFM.Comment
                     });
+                    indexPastEnd++;
+                    importedFMIndexes.Add(indexPastEnd);
                 }
             }
 
             // Reset temp bool
             for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
 
+            return importedFMIndexes;
         }
 
         #region Install, Uninstall, Play

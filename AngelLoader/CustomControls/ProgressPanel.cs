@@ -95,6 +95,7 @@ namespace AngelLoader.CustomControls
             }
             else
             {
+                ProgressBar.Show();
                 ProgressCancelButton.Show();
                 ProgressPercentLabel.Text = "";
             }

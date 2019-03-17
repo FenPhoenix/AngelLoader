@@ -181,7 +181,7 @@ namespace AngelLoader.Forms
 
         private void HookMouseDown(object sender, MouseEventExtArgs e)
         {
-            // !CanFocus will be false if there are modal windows open
+            // CanFocus will be false if there are modal windows open
             if (!CanFocus) return;
 
             if (CursorOutsideAddTagsDropDownArea())
@@ -338,7 +338,7 @@ namespace AngelLoader.Forms
 
             ChangeGameOrganization();
 
-            await ScanNewFMsForGameType();
+            await Model.ScanNewFMsForGameType();
 
             SortFMTable(Config.SortedColumn, Config.SortDirection);
             // Even if the filter is empty, do this anyway to cause a refresh.
@@ -707,35 +707,6 @@ namespace AngelLoader.Forms
             FilterByThief1Button.Checked = Config.Filter.Games.Contains(Game.Thief1);
             FilterByThief2Button.Checked = Config.Filter.Games.Contains(Game.Thief2);
             FilterByThief3Button.Checked = Config.Filter.Games.Contains(Game.Thief3);
-        }
-
-        private async Task ScanNewFMsForGameType()
-        {
-            // TODO: This can be canceled, so make sure the world won't explode if the user cancels
-            // and leaves some FMs in an un-game-type-scanned state.
-            var fmsToScan = new List<FanMission>();
-            foreach (var fm in FMsList)
-            {
-                if (fm.Game == null) fmsToScan.Add(fm);
-            }
-            if (fmsToScan.Count > 0)
-            {
-                var scanOptions = new ScanOptions
-                {
-                    ScanTitle = false,
-                    ScanCampaignMissionNames = false,
-                    ScanAuthor = false,
-                    ScanVersion = false,
-                    ScanLanguages = false,
-                    ScanGameType = true,
-                    ScanNewDarkRequired = false,
-                    ScanNewDarkMinimumVersion = false,
-                    ScanCustomResources = false,
-                    ScanSize = false
-                };
-
-                await Model.ScanFMs(fmsToScan, scanOptions);
-            }
         }
 
         private void UpdateConfig()
@@ -1663,7 +1634,9 @@ namespace AngelLoader.Forms
                 ScanNewDarkRequired = false,
                 ScanNewDarkMinimumVersion = false,
                 ScanCustomResources = true,
-                ScanSize = true
+                ScanSize = true,
+                ScanReleaseDate = true,
+                ScanTags = true
             };
 
             var success = await Model.ScanAllFMs(scanOptions);
@@ -1857,7 +1830,7 @@ namespace AngelLoader.Forms
                 // here
                 if (gamePathsChanged || archivePathsChanged || gameOrganizationChanged || articlesChanged)
                 {
-                    if (gamePathsChanged || archivePathsChanged) await ScanNewFMsForGameType();
+                    if (gamePathsChanged || archivePathsChanged) await Model.ScanNewFMsForGameType();
 
                     SortFMTable(Config.SortedColumn, Config.SortDirection);
                     SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
@@ -3513,26 +3486,13 @@ namespace AngelLoader.Forms
                     return;
                 }
 
-                ProgressBox.ShowImportDarkLoader();
-                try
+                bool success = await Model.ImportFromDarkLoader(f.DarkLoaderIniFile, f.ImportFMData, f.ImportSaves);
+                if (!success)
                 {
-                    bool success =
-                        await Model.ImportFromDarkLoader(f.DarkLoaderIniFile, f.ImportFMData, f.ImportSaves);
-                    if (!success)
-                    {
-                        // log it
-                        return;
-                    }
-                }
-                finally
-                {
-                    ProgressBox.Hide();
+                    // log it
+                    return;
                 }
             }
-
-            // DarkLoader might have the wrong game type or no game type, so scan for that
-            await ScanNewFMsForGameType();
-            Model.WriteFullFMDataIni();
         }
 
         private void ImportFromFMSelMenuItem_Click(object sender, EventArgs e)

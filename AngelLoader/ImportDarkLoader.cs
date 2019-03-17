@@ -217,8 +217,6 @@ namespace AngelLoader
 
                         #endregion
                     }
-
-                    Ini.Ini.WriteFMDataIni(fms, @"C:\DarkLoader_import_test.ini");
                 });
             }
 
