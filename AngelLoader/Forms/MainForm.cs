@@ -563,6 +563,11 @@ namespace AngelLoader.Forms
 
                 #region Readme area
 
+                MainToolTip.SetToolTip(ZoomInButton, LText.ReadmeArea.ZoomInToolTip);
+                MainToolTip.SetToolTip(ZoomOutButton, LText.ReadmeArea.ZoomOutToolTip);
+                MainToolTip.SetToolTip(ResetZoomButton, LText.ReadmeArea.ResetZoomToolTip);
+                MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
+
                 ViewHTMLReadmeButton.SetL10nText(LText.ReadmeArea.ViewHTMLReadme);
                 ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
 
@@ -2981,6 +2986,10 @@ namespace AngelLoader.Forms
             if (e.Control && e.KeyValue == '0') ReadmeRichTextBox.ResetZoomFactor();
         }
 
+        private void ZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
+
+        private void ZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();
+
         private void ResetZoomButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ResetZoomFactor();
 
         /// <exception cref="ArgumentException"></exception>
@@ -3017,13 +3026,19 @@ namespace AngelLoader.Forms
         private void ShowReadme(bool enabled)
         {
             ReadmeRichTextBox.Visible = enabled;
+            ZoomInButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
+            ZoomOutButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
             ResetZoomButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
             ReadmeFullScreenButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
         }
 
         private void ShowReadmeControls()
         {
+            ZoomInButton.Show();
+            ZoomOutButton.Show();
             ResetZoomButton.Show();
+            ZoomInButton.BringToFront();
+            ZoomOutButton.BringToFront();
             ResetZoomButton.BringToFront();
             ReadmeFullScreenButton.Show();
             ReadmeFullScreenButton.BringToFront();
@@ -3037,6 +3052,8 @@ namespace AngelLoader.Forms
 
         private void HideReadmeControls()
         {
+            ZoomInButton.Hide();
+            ZoomOutButton.Hide();
             ResetZoomButton.Hide();
             ReadmeFullScreenButton.Hide();
             ChooseReadmeComboBox.Hide();

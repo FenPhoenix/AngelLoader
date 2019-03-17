@@ -15,6 +15,30 @@ namespace AngelLoader.CustomControls
 
         #region Zoom stuff
 
+        internal void ZoomIn()
+        {
+            try
+            {
+                ZoomFactor += 0.1f;
+            }
+            catch (ArgumentException)
+            {
+                // leave it as is
+            }
+        }
+
+        internal void ZoomOut()
+        {
+            try
+            {
+                ZoomFactor -= 0.1f;
+            }
+            catch (ArgumentException)
+            {
+                // leave it as is
+            }
+        }
+
         internal void ResetZoomFactor()
         {
             this.SuspendDrawing();

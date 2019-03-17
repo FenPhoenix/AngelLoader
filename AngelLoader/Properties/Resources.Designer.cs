@@ -393,19 +393,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Fullscreen_Enter {
+        internal static System.Drawing.Bitmap Fullscreen {
             get {
-                object obj = ResourceManager.GetObject("Fullscreen_Enter", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Fullscreen_Exit {
-            get {
-                object obj = ResourceManager.GetObject("Fullscreen_Exit", resourceCulture);
+                object obj = ResourceManager.GetObject("Fullscreen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -646,6 +636,16 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap ZoomOut {
             get {
                 object obj = ResourceManager.GetObject("ZoomOut", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ZoomReset {
+            get {
+                object obj = ResourceManager.GetObject("ZoomReset", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

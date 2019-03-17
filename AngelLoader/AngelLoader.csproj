@@ -302,8 +302,7 @@
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Extreme.png" />
-    <Content Include="Resources\fullscreen_enter.png" />
-    <Content Include="Resources\fullscreen_exit.png" />
+    <Content Include="Resources\fullscreen_24.png" />
     <Content Include="Resources\green_check_48x48.png" />
     <Content Include="Resources\green_check_alone_reduced.png" />
     <Content Include="Resources\Layout.png" />
@@ -328,8 +327,11 @@
     <Content Include="Resources\Thief2_large.png" />
     <Content Include="Resources\FilterIcons\UnfinishedFilterIcon.png" />
     <Content Include="Resources\Thief3_large.png" />
+    <Content Include="Resources\zoom_in_24.png" />
     <Content Include="Resources\zoom_in_48x48.png" />
+    <Content Include="Resources\zoom_out_24.png" />
     <Content Include="Resources\zoom_out_48x48.png" />
+    <Content Include="Resources\zoom_reset_24.png" />
     <Content Include="Resources\zoom_reset_48x48.png" />
     <None Include="Resources\blank.png" />
   </ItemGroup>

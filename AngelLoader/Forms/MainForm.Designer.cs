@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InstallUninstallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,12 +80,7 @@
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.RefreshClearToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
-            this.RefreshFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.ClearFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparatorCustom3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.ResetLayoutButton = new System.Windows.Forms.Button();
-            this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
-            this.FilterBarScrollLeftButton = new System.Windows.Forms.Button();
             this.FMsDGV = new AngelLoader.CustomControls.DataGridViewCustom();
             this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
@@ -103,9 +98,6 @@
             this.FilterGamesLeftSepToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterGamesLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterGameButtonsToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
-            this.FilterByThief1Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FilterByThief2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FilterByThief3Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparator6 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterTitleLabel = new System.Windows.Forms.Label();
             this.FilterTitleTextBox = new System.Windows.Forms.TextBox();
@@ -115,18 +107,12 @@
             this.FilterAuthorTextBox = new System.Windows.Forms.TextBox();
             this.FilterIconButtonsToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
             this.toolStripSeparator5 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.FilterByReleaseDateButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByReleaseDateLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparatorCustom1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.FilterByLastPlayedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByLastPlayedLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.FilterByTagsButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparator4 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.FilterByFinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FilterByUnfinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparator1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByRatingLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterShowJunkCheckBox = new System.Windows.Forms.CheckBox();
@@ -173,17 +159,12 @@
             this.AddTagTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
             this.ViewHTMLReadmeButton = new System.Windows.Forms.Button();
-            this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
-            this.ResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ChooseReadmePanel = new System.Windows.Forms.Panel();
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -192,6 +173,27 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
+            this.RefreshFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.ClearFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.ResetLayoutButton = new System.Windows.Forms.Button();
+            this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
+            this.FilterBarScrollLeftButton = new System.Windows.Forms.Button();
+            this.FilterByThief1Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByThief2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByThief3Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByReleaseDateButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByLastPlayedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByTagsButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByFinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByUnfinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
+            this.ZoomInButton = new System.Windows.Forms.Button();
+            this.ZoomOutButton = new System.Windows.Forms.Button();
+            this.ResetZoomButton = new System.Windows.Forms.Button();
+            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -365,7 +367,7 @@
             // 
             this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
             this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
-            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(180, 22);
+            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(135, 22);
             this.FinishedOnRCSubMenu.Text = "Finished on";
             // 
             // FinishedOnMenu
@@ -376,6 +378,7 @@
             this.FinishedOnExpertMenuItem,
             this.FinishedOnExtremeMenuItem});
             this.FinishedOnMenu.Name = "FinishedOnMenu";
+            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
             this.FinishedOnMenu.Size = new System.Drawing.Size(117, 92);
             // 
             // FinishedOnNormalMenuItem
@@ -648,6 +651,8 @@
             this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.MainSplitContainer.Panel2.Controls.Add(this.ViewHTMLReadmeButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeFullScreenButton);
+            this.MainSplitContainer.Panel2.Controls.Add(this.ZoomInButton);
+            this.MainSplitContainer.Panel2.Controls.Add(this.ZoomOutButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ResetZoomButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
             this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmePanel);
@@ -705,87 +710,12 @@
             this.RefreshClearToolStripCustom.Size = new System.Drawing.Size(60, 26);
             this.RefreshClearToolStripCustom.TabIndex = 46;
             // 
-            // RefreshFiltersButton
-            // 
-            this.RefreshFiltersButton.AutoSize = false;
-            this.RefreshFiltersButton.BackColor = System.Drawing.SystemColors.Control;
-            this.RefreshFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.RefreshFiltersButton.Image = global::AngelLoader.Properties.Resources.Refresh;
-            this.RefreshFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.RefreshFiltersButton.Margin = new System.Windows.Forms.Padding(0);
-            this.RefreshFiltersButton.Name = "RefreshFiltersButton";
-            this.RefreshFiltersButton.Size = new System.Drawing.Size(25, 25);
-            this.RefreshFiltersButton.ToolTipText = "Refresh filtered list";
-            this.RefreshFiltersButton.Click += new System.EventHandler(this.RefreshFiltersButton_Click);
-            // 
-            // ClearFiltersButton
-            // 
-            this.ClearFiltersButton.AutoSize = false;
-            this.ClearFiltersButton.BackColor = System.Drawing.SystemColors.Control;
-            this.ClearFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ClearFiltersButton.Image = global::AngelLoader.Properties.Resources.ClearFilters;
-            this.ClearFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ClearFiltersButton.Margin = new System.Windows.Forms.Padding(0);
-            this.ClearFiltersButton.Name = "ClearFiltersButton";
-            this.ClearFiltersButton.Size = new System.Drawing.Size(25, 25);
-            this.ClearFiltersButton.ToolTipText = "Clear filters";
-            this.ClearFiltersButton.Click += new System.EventHandler(this.ClearFiltersButton_Click);
-            // 
             // toolStripSeparatorCustom3
             // 
             this.toolStripSeparatorCustom3.AutoSize = false;
             this.toolStripSeparatorCustom3.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.toolStripSeparatorCustom3.Name = "toolStripSeparatorCustom3";
             this.toolStripSeparatorCustom3.Size = new System.Drawing.Size(6, 26);
-            // 
-            // ResetLayoutButton
-            // 
-            this.ResetLayoutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ResetLayoutButton.BackgroundImage = global::AngelLoader.Properties.Resources.ResetLayout;
-            this.ResetLayoutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ResetLayoutButton.FlatAppearance.BorderSize = 0;
-            this.ResetLayoutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ResetLayoutButton.Location = new System.Drawing.Point(1090, 2);
-            this.ResetLayoutButton.Name = "ResetLayoutButton";
-            this.ResetLayoutButton.Size = new System.Drawing.Size(21, 21);
-            this.ResetLayoutButton.TabIndex = 35;
-            this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
-            this.ResetLayoutButton.UseVisualStyleBackColor = true;
-            this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
-            // 
-            // FilterBarScrollRightButton
-            // 
-            this.FilterBarScrollRightButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowRightSmall;
-            this.FilterBarScrollRightButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.FilterBarScrollRightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
-            this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
-            this.FilterBarScrollRightButton.Size = new System.Drawing.Size(14, 24);
-            this.FilterBarScrollRightButton.TabIndex = 40;
-            this.FilterBarScrollRightButton.UseVisualStyleBackColor = true;
-            this.FilterBarScrollRightButton.Visible = false;
-            this.FilterBarScrollRightButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
-            this.FilterBarScrollRightButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
-            this.FilterBarScrollRightButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
-            this.FilterBarScrollRightButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
-            this.FilterBarScrollRightButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
-            // 
-            // FilterBarScrollLeftButton
-            // 
-            this.FilterBarScrollLeftButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowLeftSmall;
-            this.FilterBarScrollLeftButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.FilterBarScrollLeftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
-            this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
-            this.FilterBarScrollLeftButton.Size = new System.Drawing.Size(14, 24);
-            this.FilterBarScrollLeftButton.TabIndex = 40;
-            this.FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
-            this.FilterBarScrollLeftButton.Visible = false;
-            this.FilterBarScrollLeftButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
-            this.FilterBarScrollLeftButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
-            this.FilterBarScrollLeftButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
-            this.FilterBarScrollLeftButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
-            this.FilterBarScrollLeftButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
             // 
             // FMsDGV
             // 
@@ -796,14 +726,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -819,26 +749,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle2;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -903,7 +833,7 @@
             this.SizeColumn.ReadOnly = true;
             this.SizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
-            // RatingColumn
+            // RatingTextColumn
             // 
             this.RatingTextColumn.HeaderText = "Rating";
             this.RatingTextColumn.MinimumWidth = 25;
@@ -1018,46 +948,6 @@
             this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(85, 26);
             this.FilterGameButtonsToolStrip.TabIndex = 33;
             // 
-            // FilterByThief1Button
-            // 
-            this.FilterByThief1Button.AutoSize = false;
-            this.FilterByThief1Button.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByThief1Button.CheckOnClick = true;
-            this.FilterByThief1Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief1Button.Image = global::AngelLoader.Properties.Resources.Thief1;
-            this.FilterByThief1Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByThief1Button.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByThief1Button.Name = "FilterByThief1Button";
-            this.FilterByThief1Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterByThief1Button.ToolTipText = "Thief 1";
-            this.FilterByThief1Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
-            // 
-            // FilterByThief2Button
-            // 
-            this.FilterByThief2Button.AutoSize = false;
-            this.FilterByThief2Button.CheckOnClick = true;
-            this.FilterByThief2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief2Button.Image = global::AngelLoader.Properties.Resources.Thief2;
-            this.FilterByThief2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByThief2Button.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByThief2Button.Name = "FilterByThief2Button";
-            this.FilterByThief2Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterByThief2Button.ToolTipText = "Thief 2";
-            this.FilterByThief2Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
-            // 
-            // FilterByThief3Button
-            // 
-            this.FilterByThief3Button.AutoSize = false;
-            this.FilterByThief3Button.CheckOnClick = true;
-            this.FilterByThief3Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByThief3Button.Image = global::AngelLoader.Properties.Resources.Thief3;
-            this.FilterByThief3Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByThief3Button.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByThief3Button.Name = "FilterByThief3Button";
-            this.FilterByThief3Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterByThief3Button.ToolTipText = "Thief 3";
-            this.FilterByThief3Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
-            // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.AutoSize = false;
@@ -1162,19 +1052,6 @@
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 26);
             // 
-            // FilterByReleaseDateButton
-            // 
-            this.FilterByReleaseDateButton.AutoSize = false;
-            this.FilterByReleaseDateButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByReleaseDateButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByReleaseDateButton.Image = global::AngelLoader.Properties.Resources.FilterByReleaseDate;
-            this.FilterByReleaseDateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByReleaseDateButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByReleaseDateButton.Name = "FilterByReleaseDateButton";
-            this.FilterByReleaseDateButton.Size = new System.Drawing.Size(25, 25);
-            this.FilterByReleaseDateButton.ToolTipText = "Release date";
-            this.FilterByReleaseDateButton.Click += new System.EventHandler(this.FilterByReleaseDateButton_Click);
-            // 
             // FilterByReleaseDateLabel
             // 
             this.FilterByReleaseDateLabel.ForeColor = System.Drawing.Color.Maroon;
@@ -1189,19 +1066,6 @@
             this.toolStripSeparatorCustom1.AutoSize = false;
             this.toolStripSeparatorCustom1.Name = "toolStripSeparatorCustom1";
             this.toolStripSeparatorCustom1.Size = new System.Drawing.Size(6, 26);
-            // 
-            // FilterByLastPlayedButton
-            // 
-            this.FilterByLastPlayedButton.AutoSize = false;
-            this.FilterByLastPlayedButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByLastPlayedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByLastPlayedButton.Image = global::AngelLoader.Properties.Resources.FilterByLastPlayed;
-            this.FilterByLastPlayedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByLastPlayedButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByLastPlayedButton.Name = "FilterByLastPlayedButton";
-            this.FilterByLastPlayedButton.Size = new System.Drawing.Size(25, 25);
-            this.FilterByLastPlayedButton.ToolTipText = "Last played";
-            this.FilterByLastPlayedButton.Click += new System.EventHandler(this.FilterByLastPlayedButton_Click);
             // 
             // FilterByLastPlayedLabel
             // 
@@ -1218,71 +1082,17 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 26);
             // 
-            // FilterByTagsButton
-            // 
-            this.FilterByTagsButton.AutoSize = false;
-            this.FilterByTagsButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByTagsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByTagsButton.Image = global::AngelLoader.Properties.Resources.FilterByTags;
-            this.FilterByTagsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByTagsButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByTagsButton.Name = "FilterByTagsButton";
-            this.FilterByTagsButton.Size = new System.Drawing.Size(25, 25);
-            this.FilterByTagsButton.ToolTipText = "Tags";
-            this.FilterByTagsButton.Click += new System.EventHandler(this.FilterByTagsButton_Click);
-            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.AutoSize = false;
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(6, 26);
             // 
-            // FilterByFinishedButton
-            // 
-            this.FilterByFinishedButton.AutoSize = false;
-            this.FilterByFinishedButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByFinishedButton.CheckOnClick = true;
-            this.FilterByFinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByFinishedButton.Image = global::AngelLoader.Properties.Resources.FilterByFinished;
-            this.FilterByFinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByFinishedButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByFinishedButton.Name = "FilterByFinishedButton";
-            this.FilterByFinishedButton.Size = new System.Drawing.Size(25, 25);
-            this.FilterByFinishedButton.ToolTipText = "Finished";
-            this.FilterByFinishedButton.Click += new System.EventHandler(this.FilterByFinishedButton_Click);
-            // 
-            // FilterByUnfinishedButton
-            // 
-            this.FilterByUnfinishedButton.AutoSize = false;
-            this.FilterByUnfinishedButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByUnfinishedButton.CheckOnClick = true;
-            this.FilterByUnfinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByUnfinishedButton.Image = global::AngelLoader.Properties.Resources.FilterByUnfinished;
-            this.FilterByUnfinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByUnfinishedButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByUnfinishedButton.Name = "FilterByUnfinishedButton";
-            this.FilterByUnfinishedButton.Size = new System.Drawing.Size(25, 25);
-            this.FilterByUnfinishedButton.ToolTipText = "Unfinished";
-            this.FilterByUnfinishedButton.Click += new System.EventHandler(this.FilterByUnfinishedButton_Click);
-            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.AutoSize = false;
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 26);
-            // 
-            // FilterByRatingButton
-            // 
-            this.FilterByRatingButton.AutoSize = false;
-            this.FilterByRatingButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterByRatingButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByRatingButton.Image = global::AngelLoader.Properties.Resources.FilterByRating;
-            this.FilterByRatingButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterByRatingButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterByRatingButton.Name = "FilterByRatingButton";
-            this.FilterByRatingButton.Size = new System.Drawing.Size(25, 25);
-            this.FilterByRatingButton.ToolTipText = "Rating";
-            this.FilterByRatingButton.Click += new System.EventHandler(this.FilterByRatingButton_Click);
             // 
             // FilterByRatingLabel
             // 
@@ -1822,44 +1632,12 @@
             this.ViewHTMLReadmeButton.Visible = false;
             this.ViewHTMLReadmeButton.Click += new System.EventHandler(this.ViewHTMLReadmeButton_Click);
             // 
-            // ReadmeFullScreenButton
-            // 
-            this.ReadmeFullScreenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ReadmeFullScreenButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ReadmeFullScreenButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("ReadmeFullScreenButton.BackgroundImage")));
-            this.ReadmeFullScreenButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
-            this.ReadmeFullScreenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1613, 8);
-            this.ReadmeFullScreenButton.Name = "ReadmeFullScreenButton";
-            this.ReadmeFullScreenButton.Size = new System.Drawing.Size(25, 25);
-            this.ReadmeFullScreenButton.TabIndex = 33;
-            this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
-            this.ReadmeFullScreenButton.Visible = false;
-            this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
-            // 
-            // ResetZoomButton
-            // 
-            this.ResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ResetZoomButton.BackgroundImage = global::AngelLoader.Properties.Resources.ResetZoom;
-            this.ResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ResetZoomButton.FlatAppearance.BorderSize = 0;
-            this.ResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ResetZoomButton.Location = new System.Drawing.Point(1584, 7);
-            this.ResetZoomButton.Name = "ResetZoomButton";
-            this.ResetZoomButton.Size = new System.Drawing.Size(24, 24);
-            this.ResetZoomButton.TabIndex = 4;
-            this.ResetZoomButton.UseVisualStyleBackColor = false;
-            this.ResetZoomButton.Visible = false;
-            this.ResetZoomButton.Click += new System.EventHandler(this.ResetZoomButton_Click);
-            // 
             // ChooseReadmeComboBox
             // 
             this.ChooseReadmeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ChooseReadmeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ChooseReadmeComboBox.FormattingEnabled = true;
-            this.ChooseReadmeComboBox.Location = new System.Drawing.Point(1408, 8);
+            this.ChooseReadmeComboBox.Location = new System.Drawing.Point(1350, 8);
             this.ChooseReadmeComboBox.Name = "ChooseReadmeComboBox";
             this.ChooseReadmeComboBox.Size = new System.Drawing.Size(170, 21);
             this.ChooseReadmeComboBox.TabIndex = 3;
@@ -1919,30 +1697,6 @@
             this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
             this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
             // 
-            // PlayOriginalThief1MenuItem
-            // 
-            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1;
-            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(180, 22);
-            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
-            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief2MenuItem
-            // 
-            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2;
-            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(180, 22);
-            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
-            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief3MenuItem
-            // 
-            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3;
-            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
-            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
             // AddTagMenu
             // 
             this.AddTagMenu.Name = "AddTagMenu";
@@ -1992,6 +1746,293 @@
             this.ProgressBox.Size = new System.Drawing.Size(424, 128);
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
+            // 
+            // RefreshFiltersButton
+            // 
+            this.RefreshFiltersButton.AutoSize = false;
+            this.RefreshFiltersButton.BackColor = System.Drawing.SystemColors.Control;
+            this.RefreshFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.RefreshFiltersButton.Image = global::AngelLoader.Properties.Resources.Refresh;
+            this.RefreshFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.RefreshFiltersButton.Margin = new System.Windows.Forms.Padding(0);
+            this.RefreshFiltersButton.Name = "RefreshFiltersButton";
+            this.RefreshFiltersButton.Size = new System.Drawing.Size(25, 25);
+            this.RefreshFiltersButton.ToolTipText = "Refresh filtered list";
+            this.RefreshFiltersButton.Click += new System.EventHandler(this.RefreshFiltersButton_Click);
+            // 
+            // ClearFiltersButton
+            // 
+            this.ClearFiltersButton.AutoSize = false;
+            this.ClearFiltersButton.BackColor = System.Drawing.SystemColors.Control;
+            this.ClearFiltersButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ClearFiltersButton.Image = global::AngelLoader.Properties.Resources.ClearFilters;
+            this.ClearFiltersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ClearFiltersButton.Margin = new System.Windows.Forms.Padding(0);
+            this.ClearFiltersButton.Name = "ClearFiltersButton";
+            this.ClearFiltersButton.Size = new System.Drawing.Size(25, 25);
+            this.ClearFiltersButton.ToolTipText = "Clear filters";
+            this.ClearFiltersButton.Click += new System.EventHandler(this.ClearFiltersButton_Click);
+            // 
+            // ResetLayoutButton
+            // 
+            this.ResetLayoutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ResetLayoutButton.BackgroundImage = global::AngelLoader.Properties.Resources.ResetLayout;
+            this.ResetLayoutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ResetLayoutButton.FlatAppearance.BorderSize = 0;
+            this.ResetLayoutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ResetLayoutButton.Location = new System.Drawing.Point(1090, 2);
+            this.ResetLayoutButton.Name = "ResetLayoutButton";
+            this.ResetLayoutButton.Size = new System.Drawing.Size(21, 21);
+            this.ResetLayoutButton.TabIndex = 35;
+            this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
+            this.ResetLayoutButton.UseVisualStyleBackColor = true;
+            this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
+            // 
+            // FilterBarScrollRightButton
+            // 
+            this.FilterBarScrollRightButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.FilterBarScrollRightButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.FilterBarScrollRightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
+            this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
+            this.FilterBarScrollRightButton.Size = new System.Drawing.Size(14, 24);
+            this.FilterBarScrollRightButton.TabIndex = 40;
+            this.FilterBarScrollRightButton.UseVisualStyleBackColor = true;
+            this.FilterBarScrollRightButton.Visible = false;
+            this.FilterBarScrollRightButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
+            this.FilterBarScrollRightButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
+            this.FilterBarScrollRightButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
+            this.FilterBarScrollRightButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
+            this.FilterBarScrollRightButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
+            // 
+            // FilterBarScrollLeftButton
+            // 
+            this.FilterBarScrollLeftButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowLeftSmall;
+            this.FilterBarScrollLeftButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.FilterBarScrollLeftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
+            this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
+            this.FilterBarScrollLeftButton.Size = new System.Drawing.Size(14, 24);
+            this.FilterBarScrollLeftButton.TabIndex = 40;
+            this.FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
+            this.FilterBarScrollLeftButton.Visible = false;
+            this.FilterBarScrollLeftButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
+            this.FilterBarScrollLeftButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
+            this.FilterBarScrollLeftButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
+            this.FilterBarScrollLeftButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
+            this.FilterBarScrollLeftButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
+            // 
+            // FilterByThief1Button
+            // 
+            this.FilterByThief1Button.AutoSize = false;
+            this.FilterByThief1Button.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterByThief1Button.CheckOnClick = true;
+            this.FilterByThief1Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByThief1Button.Image = global::AngelLoader.Properties.Resources.Thief1;
+            this.FilterByThief1Button.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByThief1Button.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByThief1Button.Name = "FilterByThief1Button";
+            this.FilterByThief1Button.Size = new System.Drawing.Size(25, 25);
+            this.FilterByThief1Button.ToolTipText = "Thief 1";
+            this.FilterByThief1Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
+            // 
+            // FilterByThief2Button
+            // 
+            this.FilterByThief2Button.AutoSize = false;
+            this.FilterByThief2Button.CheckOnClick = true;
+            this.FilterByThief2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByThief2Button.Image = global::AngelLoader.Properties.Resources.Thief2;
+            this.FilterByThief2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByThief2Button.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByThief2Button.Name = "FilterByThief2Button";
+            this.FilterByThief2Button.Size = new System.Drawing.Size(25, 25);
+            this.FilterByThief2Button.ToolTipText = "Thief 2";
+            this.FilterByThief2Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
+            // 
+            // FilterByThief3Button
+            // 
+            this.FilterByThief3Button.AutoSize = false;
+            this.FilterByThief3Button.CheckOnClick = true;
+            this.FilterByThief3Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByThief3Button.Image = global::AngelLoader.Properties.Resources.Thief3;
+            this.FilterByThief3Button.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByThief3Button.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByThief3Button.Name = "FilterByThief3Button";
+            this.FilterByThief3Button.Size = new System.Drawing.Size(25, 25);
+            this.FilterByThief3Button.ToolTipText = "Thief 3";
+            this.FilterByThief3Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
+            // 
+            // FilterByReleaseDateButton
+            // 
+            this.FilterByReleaseDateButton.AutoSize = false;
+            this.FilterByReleaseDateButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterByReleaseDateButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByReleaseDateButton.Image = global::AngelLoader.Properties.Resources.FilterByReleaseDate;
+            this.FilterByReleaseDateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByReleaseDateButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByReleaseDateButton.Name = "FilterByReleaseDateButton";
+            this.FilterByReleaseDateButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterByReleaseDateButton.ToolTipText = "Release date";
+            this.FilterByReleaseDateButton.Click += new System.EventHandler(this.FilterByReleaseDateButton_Click);
+            // 
+            // FilterByLastPlayedButton
+            // 
+            this.FilterByLastPlayedButton.AutoSize = false;
+            this.FilterByLastPlayedButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterByLastPlayedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByLastPlayedButton.Image = global::AngelLoader.Properties.Resources.FilterByLastPlayed;
+            this.FilterByLastPlayedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByLastPlayedButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByLastPlayedButton.Name = "FilterByLastPlayedButton";
+            this.FilterByLastPlayedButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterByLastPlayedButton.ToolTipText = "Last played";
+            this.FilterByLastPlayedButton.Click += new System.EventHandler(this.FilterByLastPlayedButton_Click);
+            // 
+            // FilterByTagsButton
+            // 
+            this.FilterByTagsButton.AutoSize = false;
+            this.FilterByTagsButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterByTagsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByTagsButton.Image = global::AngelLoader.Properties.Resources.FilterByTags;
+            this.FilterByTagsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByTagsButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByTagsButton.Name = "FilterByTagsButton";
+            this.FilterByTagsButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterByTagsButton.ToolTipText = "Tags";
+            this.FilterByTagsButton.Click += new System.EventHandler(this.FilterByTagsButton_Click);
+            // 
+            // FilterByFinishedButton
+            // 
+            this.FilterByFinishedButton.AutoSize = false;
+            this.FilterByFinishedButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterByFinishedButton.CheckOnClick = true;
+            this.FilterByFinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByFinishedButton.Image = global::AngelLoader.Properties.Resources.FilterByFinished;
+            this.FilterByFinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByFinishedButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByFinishedButton.Name = "FilterByFinishedButton";
+            this.FilterByFinishedButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterByFinishedButton.ToolTipText = "Finished";
+            this.FilterByFinishedButton.Click += new System.EventHandler(this.FilterByFinishedButton_Click);
+            // 
+            // FilterByUnfinishedButton
+            // 
+            this.FilterByUnfinishedButton.AutoSize = false;
+            this.FilterByUnfinishedButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterByUnfinishedButton.CheckOnClick = true;
+            this.FilterByUnfinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByUnfinishedButton.Image = global::AngelLoader.Properties.Resources.FilterByUnfinished;
+            this.FilterByUnfinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByUnfinishedButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByUnfinishedButton.Name = "FilterByUnfinishedButton";
+            this.FilterByUnfinishedButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterByUnfinishedButton.ToolTipText = "Unfinished";
+            this.FilterByUnfinishedButton.Click += new System.EventHandler(this.FilterByUnfinishedButton_Click);
+            // 
+            // FilterByRatingButton
+            // 
+            this.FilterByRatingButton.AutoSize = false;
+            this.FilterByRatingButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterByRatingButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByRatingButton.Image = global::AngelLoader.Properties.Resources.FilterByRating;
+            this.FilterByRatingButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByRatingButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByRatingButton.Name = "FilterByRatingButton";
+            this.FilterByRatingButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterByRatingButton.ToolTipText = "Rating";
+            this.FilterByRatingButton.Click += new System.EventHandler(this.FilterByRatingButton_Click);
+            // 
+            // ReadmeFullScreenButton
+            // 
+            this.ReadmeFullScreenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReadmeFullScreenButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ReadmeFullScreenButton.BackgroundImage = global::AngelLoader.Properties.Resources.Fullscreen;
+            this.ReadmeFullScreenButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
+            this.ReadmeFullScreenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1616, 7);
+            this.ReadmeFullScreenButton.Name = "ReadmeFullScreenButton";
+            this.ReadmeFullScreenButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeFullScreenButton.TabIndex = 33;
+            this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
+            this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
+            this.ReadmeFullScreenButton.Visible = false;
+            this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
+            // 
+            // ZoomInButton
+            // 
+            this.ZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ZoomInButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ZoomInButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomIn;
+            this.ZoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ZoomInButton.FlatAppearance.BorderSize = 0;
+            this.ZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ZoomInButton.Location = new System.Drawing.Point(1534, 7);
+            this.ZoomInButton.Name = "ZoomInButton";
+            this.ZoomInButton.Size = new System.Drawing.Size(20, 20);
+            this.ZoomInButton.TabIndex = 4;
+            this.MainToolTip.SetToolTip(this.ZoomInButton, "Zoom in");
+            this.ZoomInButton.UseVisualStyleBackColor = false;
+            this.ZoomInButton.Visible = false;
+            this.ZoomInButton.Click += new System.EventHandler(this.ZoomInButton_Click);
+            // 
+            // ZoomOutButton
+            // 
+            this.ZoomOutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ZoomOutButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ZoomOutButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomOut;
+            this.ZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ZoomOutButton.FlatAppearance.BorderSize = 0;
+            this.ZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ZoomOutButton.Location = new System.Drawing.Point(1558, 7);
+            this.ZoomOutButton.Name = "ZoomOutButton";
+            this.ZoomOutButton.Size = new System.Drawing.Size(20, 20);
+            this.ZoomOutButton.TabIndex = 4;
+            this.MainToolTip.SetToolTip(this.ZoomOutButton, "Zoom out");
+            this.ZoomOutButton.UseVisualStyleBackColor = false;
+            this.ZoomOutButton.Visible = false;
+            this.ZoomOutButton.Click += new System.EventHandler(this.ZoomOutButton_Click);
+            // 
+            // ResetZoomButton
+            // 
+            this.ResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ResetZoomButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomReset;
+            this.ResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ResetZoomButton.FlatAppearance.BorderSize = 0;
+            this.ResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ResetZoomButton.Location = new System.Drawing.Point(1582, 7);
+            this.ResetZoomButton.Name = "ResetZoomButton";
+            this.ResetZoomButton.Size = new System.Drawing.Size(20, 20);
+            this.ResetZoomButton.TabIndex = 4;
+            this.MainToolTip.SetToolTip(this.ResetZoomButton, "Reset zoom");
+            this.ResetZoomButton.UseVisualStyleBackColor = false;
+            this.ResetZoomButton.Visible = false;
+            this.ResetZoomButton.Click += new System.EventHandler(this.ResetZoomButton_Click);
+            // 
+            // PlayOriginalThief1MenuItem
+            // 
+            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1;
+            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
+            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
+            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief2MenuItem
+            // 
+            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2;
+            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
+            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
+            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief3MenuItem
+            // 
+            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3;
+            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
+            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
+            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2224,6 +2265,8 @@
         private System.Windows.Forms.ToolStripMenuItem ImportFromDarkLoaderMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportFromFMSelMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportFromNewDarkLoaderMenuItem;
+        private System.Windows.Forms.Button ZoomInButton;
+        private System.Windows.Forms.Button ZoomOutButton;
     }
 }
 

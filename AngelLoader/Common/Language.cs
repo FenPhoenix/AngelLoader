@@ -213,9 +213,11 @@
         internal static class ReadmeArea
         {
             internal static string ViewHTMLReadme = "█View HTML Readme";
+            internal static string ZoomInToolTip = "█Zoom in";
+            internal static string ZoomOutToolTip = "█Zoom out";
             internal static string ResetZoomToolTip = "█Reset zoom";
-            internal static string FullScreenToolTip = "█Full screen";
-            internal static string ExitFullScreenToolTip = "█Exit full screen";
+            internal static string FullScreenToolTip = "█Fullscreen";
+            internal static string ExitFullScreenToolTip = "█Exit fullscreen";
 
             internal static string NoReadmeFound = "█No readme found.";
             internal static string UnableToLoadReadme = "█Unable to load this readme.";
