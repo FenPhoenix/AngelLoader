@@ -15,7 +15,7 @@ In short, AngelLoader aims to be a complete successor to DarkLoader, being an al
 
 **TODO:** Write up instructions for getting it set up and compiling
 
-**Things needed to build:**
+## Building
 - Download [FMScanner](https://github.com/FenPhoenix/FMScanner)
     - Add FMScanner.csproj to the AngelLoader solution in Visual Studio
     - Add a reference from AngelLoader.csproj to FMScanner.csproj in Visual Studio
