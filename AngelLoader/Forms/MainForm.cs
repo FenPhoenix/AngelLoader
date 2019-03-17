@@ -3482,7 +3482,7 @@ namespace AngelLoader.Forms
 
                 if (!f.ImportFMData && !f.ImportSaves)
                 {
-                    MessageBox.Show("Nothing was imported.", "Import");
+                    MessageBox.Show(LText.Import.NothingWasImported, LText.AlertMessages.Alert);
                     return;
                 }
 

@@ -35,9 +35,9 @@
             this.AndButton = new System.Windows.Forms.Button();
             this.OrButton = new System.Windows.Forms.Button();
             this.NotButton = new System.Windows.Forms.Button();
-            this.AllLabel = new System.Windows.Forms.Label();
-            this.OrLabel = new System.Windows.Forms.Label();
-            this.NoneLabel = new System.Windows.Forms.Label();
+            this.IncludeAllLabel = new System.Windows.Forms.Label();
+            this.IncludeAnyLabel = new System.Windows.Forms.Label();
+            this.ExcludeLabel = new System.Windows.Forms.Label();
             this.FilterLabelsPanel = new System.Windows.Forms.Panel();
             this.RemoveAllNotButton = new System.Windows.Forms.Button();
             this.RemoveAllOrButton = new System.Windows.Forms.Button();
@@ -48,7 +48,9 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.FilterLabelsPanel.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // OriginTreeView
@@ -121,44 +123,44 @@
             this.NotButton.UseVisualStyleBackColor = true;
             this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
-            // AllLabel
+            // IncludeAllLabel
             // 
-            this.AllLabel.AutoSize = true;
-            this.AllLabel.Location = new System.Drawing.Point(0, 8);
-            this.AllLabel.Name = "AllLabel";
-            this.AllLabel.Size = new System.Drawing.Size(59, 13);
-            this.AllLabel.TabIndex = 2;
-            this.AllLabel.Text = "Include All:";
+            this.IncludeAllLabel.AutoSize = true;
+            this.IncludeAllLabel.Location = new System.Drawing.Point(0, 8);
+            this.IncludeAllLabel.Name = "IncludeAllLabel";
+            this.IncludeAllLabel.Size = new System.Drawing.Size(59, 13);
+            this.IncludeAllLabel.TabIndex = 2;
+            this.IncludeAllLabel.Text = "Include All:";
             // 
-            // OrLabel
+            // IncludeAnyLabel
             // 
-            this.OrLabel.AutoSize = true;
-            this.OrLabel.Location = new System.Drawing.Point(232, 8);
-            this.OrLabel.Name = "OrLabel";
-            this.OrLabel.Size = new System.Drawing.Size(66, 13);
-            this.OrLabel.TabIndex = 2;
-            this.OrLabel.Text = "Include Any:";
+            this.IncludeAnyLabel.AutoSize = true;
+            this.IncludeAnyLabel.Location = new System.Drawing.Point(232, 8);
+            this.IncludeAnyLabel.Name = "IncludeAnyLabel";
+            this.IncludeAnyLabel.Size = new System.Drawing.Size(66, 13);
+            this.IncludeAnyLabel.TabIndex = 2;
+            this.IncludeAnyLabel.Text = "Include Any:";
             // 
-            // NoneLabel
+            // ExcludeLabel
             // 
-            this.NoneLabel.AutoSize = true;
-            this.NoneLabel.Location = new System.Drawing.Point(464, 8);
-            this.NoneLabel.Name = "NoneLabel";
-            this.NoneLabel.Size = new System.Drawing.Size(48, 13);
-            this.NoneLabel.TabIndex = 2;
-            this.NoneLabel.Text = "Exclude:";
+            this.ExcludeLabel.AutoSize = true;
+            this.ExcludeLabel.Location = new System.Drawing.Point(464, 8);
+            this.ExcludeLabel.Name = "ExcludeLabel";
+            this.ExcludeLabel.Size = new System.Drawing.Size(48, 13);
+            this.ExcludeLabel.TabIndex = 2;
+            this.ExcludeLabel.Text = "Exclude:";
             // 
             // FilterLabelsPanel
             // 
             this.FilterLabelsPanel.Controls.Add(this.RemoveAllNotButton);
             this.FilterLabelsPanel.Controls.Add(this.RemoveAllOrButton);
             this.FilterLabelsPanel.Controls.Add(this.RemoveAllAndButton);
-            this.FilterLabelsPanel.Controls.Add(this.AllLabel);
-            this.FilterLabelsPanel.Controls.Add(this.NoneLabel);
+            this.FilterLabelsPanel.Controls.Add(this.IncludeAllLabel);
+            this.FilterLabelsPanel.Controls.Add(this.ExcludeLabel);
             this.FilterLabelsPanel.Controls.Add(this.RemoveSelectedNotButton);
             this.FilterLabelsPanel.Controls.Add(this.RemoveSelectedOrButton);
             this.FilterLabelsPanel.Controls.Add(this.RemoveSelectedAndButton);
-            this.FilterLabelsPanel.Controls.Add(this.OrLabel);
+            this.FilterLabelsPanel.Controls.Add(this.IncludeAnyLabel);
             this.FilterLabelsPanel.Location = new System.Drawing.Point(328, 0);
             this.FilterLabelsPanel.Name = "FilterLabelsPanel";
             this.FilterLabelsPanel.Size = new System.Drawing.Size(688, 24);
@@ -228,7 +230,7 @@
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(862, 664);
+            this.OKButton.Location = new System.Drawing.Point(861, 3);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 5;
@@ -239,7 +241,7 @@
             // 
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(942, 664);
+            this.Cancel_Button.Location = new System.Drawing.Point(942, 3);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 5;
@@ -256,6 +258,17 @@
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
+            this.flowLayoutPanel1.Controls.Add(this.OKButton);
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 660);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1020, 32);
+            this.flowLayoutPanel1.TabIndex = 7;
+            // 
             // FilterTagsForm2
             // 
             this.AcceptButton = this.OKButton;
@@ -263,9 +276,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(1024, 692);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.ResetButton);
-            this.Controls.Add(this.Cancel_Button);
-            this.Controls.Add(this.OKButton);
             this.Controls.Add(this.FilterLabelsPanel);
             this.Controls.Add(this.NotButton);
             this.Controls.Add(this.OrButton);
@@ -286,6 +298,7 @@
             this.Load += new System.EventHandler(this.FilterTagsForm2_Load);
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -299,9 +312,9 @@
         private System.Windows.Forms.Button AndButton;
         private System.Windows.Forms.Button OrButton;
         private System.Windows.Forms.Button NotButton;
-        private System.Windows.Forms.Label AllLabel;
-        private System.Windows.Forms.Label OrLabel;
-        private System.Windows.Forms.Label NoneLabel;
+        private System.Windows.Forms.Label IncludeAllLabel;
+        private System.Windows.Forms.Label IncludeAnyLabel;
+        private System.Windows.Forms.Label ExcludeLabel;
         private System.Windows.Forms.Panel FilterLabelsPanel;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Button Cancel_Button;
@@ -312,5 +325,6 @@
         private System.Windows.Forms.Button RemoveSelectedNotButton;
         private System.Windows.Forms.Button RemoveSelectedOrButton;
         private System.Windows.Forms.Button ResetButton;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }

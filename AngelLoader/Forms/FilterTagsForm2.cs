@@ -21,6 +21,22 @@ namespace AngelLoader.Forms
             Methods.DeepCopyGlobalTags(sourceTags, SourceTags);
 
             Methods.DeepCopyTagsFilter(tagsFilter, TagsFilter);
+
+            SetUITextToLocalized();
+        }
+
+        private void SetUITextToLocalized()
+        {
+            Text = LText.TagsFilterBox.TitleText;
+            IncludeAllLabel.Text = LText.TagsFilterBox.IncludeAll;
+            IncludeAnyLabel.Text = LText.TagsFilterBox.IncludeAny;
+            ExcludeLabel.Text = LText.TagsFilterBox.Exclude;
+            AndButton.Text = LText.TagsFilterBox.MoveToAll;
+            OrButton.Text = LText.TagsFilterBox.MoveToAny;
+            NotButton.Text = LText.TagsFilterBox.MoveToExclude;
+            ResetButton.Text = LText.TagsFilterBox.Reset;
+            OKButton.SetL10nText(LText.Global.OK, OKButton.Width);
+            Cancel_Button.SetL10nText(LText.Global.Cancel, Cancel_Button.Width);
         }
 
         private void FilterTagsForm2_Load(object sender, EventArgs e)
