@@ -286,6 +286,26 @@ namespace AngelLoader.CustomControls
             #endregion
         }
 
+        internal void SetUITextToLocalized()
+        {
+            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnsContextMenu.ResetAllColumnsToVisible;
+            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnsContextMenu.ResetAllColumnWidths;
+            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnsContextMenu.ResetAllColumnPositions;
+
+            ShowGameMenuItem.Text = LText.FMsList.Columns.Game;
+            ShowInstalledMenuItem.Text = LText.FMsList.Columns.Installed;
+            ShowTitleMenuItem.Text = LText.FMsList.Columns.Title;
+            ShowArchiveMenuItem.Text = LText.FMsList.Columns.Archive;
+            ShowAuthorMenuItem.Text = LText.FMsList.Columns.Author;
+            ShowSizeMenuItem.Text = LText.FMsList.Columns.Size;
+            ShowRatingMenuItem.Text = LText.FMsList.Columns.Rating;
+            ShowFinishedMenuItem.Text = LText.FMsList.Columns.Finished;
+            ShowReleaseDateMenuItem.Text = LText.FMsList.Columns.ReleaseDate;
+            ShowLastPlayedMenuItem.Text = LText.FMsList.Columns.LastPlayed;
+            ShowDisabledModsMenuItem.Text = LText.FMsList.Columns.DisabledMods;
+            ShowCommentMenuItem.Text = LText.FMsList.Columns.Comment;
+        }
+
         #region Main
 
         #region Column header resize

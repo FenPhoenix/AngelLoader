@@ -265,7 +265,7 @@ namespace AngelLoader.Forms
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
             {
-                HeaderText = LText.FMsListColumns.Rating,
+                HeaderText = LText.FMsList.Columns.Rating,
                 ImageLayout = DataGridViewImageCellLayout.Zoom,
                 MinimumWidth = 25,
                 Name = "RatingImageColumn",
@@ -450,32 +450,32 @@ namespace AngelLoader.Forms
 
                 #region Columns
 
-                GameTypeColumn.HeaderText = LText.FMsListColumns.Game;
-                InstalledColumn.HeaderText = LText.FMsListColumns.Installed;
-                TitleColumn.HeaderText = LText.FMsListColumns.Title;
-                ArchiveColumn.HeaderText = LText.FMsListColumns.Archive;
-                AuthorColumn.HeaderText = LText.FMsListColumns.Author;
-                SizeColumn.HeaderText = LText.FMsListColumns.Size;
-                RatingTextColumn.HeaderText = LText.FMsListColumns.Rating;
-                RatingImageColumn.HeaderText = LText.FMsListColumns.Rating;
-                FinishedColumn.HeaderText = LText.FMsListColumns.Finished;
-                ReleaseDateColumn.HeaderText = LText.FMsListColumns.ReleaseDate;
-                LastPlayedColumn.HeaderText = LText.FMsListColumns.LastPlayed;
-                DisabledModsColumn.HeaderText = LText.FMsListColumns.DisabledMods;
-                CommentColumn.HeaderText = LText.FMsListColumns.Comment;
+                GameTypeColumn.HeaderText = LText.FMsList.Columns.Game;
+                InstalledColumn.HeaderText = LText.FMsList.Columns.Installed;
+                TitleColumn.HeaderText = LText.FMsList.Columns.Title;
+                ArchiveColumn.HeaderText = LText.FMsList.Columns.Archive;
+                AuthorColumn.HeaderText = LText.FMsList.Columns.Author;
+                SizeColumn.HeaderText = LText.FMsList.Columns.Size;
+                RatingTextColumn.HeaderText = LText.FMsList.Columns.Rating;
+                RatingImageColumn.HeaderText = LText.FMsList.Columns.Rating;
+                FinishedColumn.HeaderText = LText.FMsList.Columns.Finished;
+                ReleaseDateColumn.HeaderText = LText.FMsList.Columns.ReleaseDate;
+                LastPlayedColumn.HeaderText = LText.FMsList.Columns.LastPlayed;
+                DisabledModsColumn.HeaderText = LText.FMsList.Columns.DisabledMods;
+                CommentColumn.HeaderText = LText.FMsList.Columns.Comment;
 
                 #endregion
 
                 #region Play / install / uninstall
 
-                PlayFMMenuItem.Text = LText.FMContextMenu.PlayFM;
+                PlayFMMenuItem.Text = LText.FMsList.FMContextMenu.PlayFM;
                 PlayFMButton.SetL10nText(LText.BottomArea.PlayFM);
 
                 var sayInstall = selFM == null || !selFM.Installed;
 
                 InstallUninstallMenuItem.Text = sayInstall
-                    ? LText.FMContextMenu.InstallFM
-                    : LText.FMContextMenu.UninstallFM;
+                    ? LText.FMsList.FMContextMenu.InstallFM
+                    : LText.FMsList.FMContextMenu.UninstallFM;
 
                 InstallUninstallFMButton.SetL10nText(sayInstall
                     ? LText.BottomArea.InstallFM
@@ -485,14 +485,14 @@ namespace AngelLoader.Forms
 
                 #region FM context menu
 
-                RatingRCSubMenu.Text = LText.FMContextMenu.Rating;
-                FinishedOnRCSubMenu.Text = LText.FMContextMenu.FinishedOn;
-                TasksRCSubMenu.Text = LText.FMContextMenu.Tasks;
+                RatingRCSubMenu.Text = LText.FMsList.FMContextMenu.Rating;
+                FinishedOnRCSubMenu.Text = LText.FMsList.FMContextMenu.FinishedOn;
+                TasksRCSubMenu.Text = LText.FMsList.FMContextMenu.Tasks;
 
                 RatingRCMenuUnrated.Text = LText.Global.Unrated;
 
-                ConvertWAVsTo16BitMenuItem.Text = LText.TasksMenu.ConvertWAVsTo16Bit;
-                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.TasksMenu.ConvertOGGsToWAVs;
+                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.TasksMenu.ConvertWAVsTo16Bit;
+                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.TasksMenu.ConvertOGGsToWAVs;
 
                 #endregion
 
@@ -583,6 +583,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                FMsDGV.SetUITextToLocalized();
                 ProgressBox.SetUITextToLocalized();
             }
             finally
@@ -1443,7 +1444,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.DisabledMods:
-                    e.Value = fm.DisableAllMods ? LText.FMsListAllModsDisabledMessage : fm.DisabledMods;
+                    e.Value = fm.DisableAllMods ? LText.FMsList.AllModsDisabledMessage : fm.DisabledMods;
                     break;
 
                 case Column.Comment:
@@ -2163,7 +2164,7 @@ namespace AngelLoader.Forms
         {
             if (FMsList.Count == 0) ScanAllFMsButton.Enabled = false;
 
-            InstallUninstallMenuItem.Text = LText.FMContextMenu.InstallFM;
+            InstallUninstallMenuItem.Text = LText.FMsList.FMContextMenu.InstallFM;
             InstallUninstallMenuItem.Enabled = false;
             InstallUninstallFMButton.Enabled = false;
             PlayFMMenuItem.Enabled = false;
@@ -2257,7 +2258,7 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton.Enabled = installable;
             PlayFMMenuItem.Enabled = installable;
             PlayFMButton.Enabled = installable;
-            InstallUninstallMenuItem.Text = fm.Installed ? LText.FMContextMenu.UninstallFM : LText.FMContextMenu.InstallFM;
+            InstallUninstallMenuItem.Text = fm.Installed ? LText.FMsList.FMContextMenu.UninstallFM : LText.FMsList.FMContextMenu.InstallFM;
             InstallUninstallFMButton.SetL10nText(fm.Installed ? LText.BottomArea.UninstallFM : LText.BottomArea.InstallFM);
 
             #endregion

@@ -121,38 +121,48 @@
         internal static string ClearFiltersButtonToolTip = "█Clear filters";
         internal static string ResetLayoutButtonToolTip = "█Reset layout";
 
-        internal static class FMsListColumns
+        internal static class FMsList
         {
-            internal static string Game = "█Game";
-            internal static string Installed = "█Installed";
-            internal static string Title = "█Title";
-            internal static string Archive = "█Archive";
-            internal static string Author = "█Author";
-            internal static string Size = "█Size";
-            internal static string Rating = "█Rating";
-            internal static string Finished = "█Finished";
-            internal static string ReleaseDate = "█Release Date";
-            internal static string LastPlayed = "█Last Played";
-            internal static string DisabledMods = "█Disabled Mods";
-            internal static string Comment = "█Comment";
-        }
+            internal static class Columns
+            {
+                internal static string Game = "█Game";
+                internal static string Installed = "█Installed";
+                internal static string Title = "█Title";
+                internal static string Archive = "█Archive";
+                internal static string Author = "█Author";
+                internal static string Size = "█Size";
+                internal static string Rating = "█Rating";
+                internal static string Finished = "█Finished";
+                internal static string ReleaseDate = "█Release Date";
+                internal static string LastPlayed = "█Last Played";
+                internal static string DisabledMods = "█Disabled Mods";
+                internal static string Comment = "█Comment";
+            }
 
-        internal static string FMsListAllModsDisabledMessage = "█* [All]";
+            internal static string AllModsDisabledMessage = "█* [All]";
 
-        internal static class FMContextMenu
-        {
-            internal static string PlayFM = "█Play FM";
-            internal static string InstallFM = "█Install FM";
-            internal static string UninstallFM = "█Uninstall FM";
-            internal static string Rating = "█Rating";
-            internal static string FinishedOn = "█Finished on";
-            internal static string Tasks = "█Tasks";
-        }
+            internal static class ColumnsContextMenu
+            {
+                internal static string ResetAllColumnsToVisible = "█Reset all columns to visible";
+                internal static string ResetAllColumnWidths = "█Reset all column widths";
+                internal static string ResetAllColumnPositions = "█Reset all column positions";
+            }
 
-        internal static class TasksMenu
-        {
-            internal static string ConvertWAVsTo16Bit = "█Convert .wav files to 16 bit";
-            internal static string ConvertOGGsToWAVs = "█Convert .ogg files to .wav";
+            internal static class FMContextMenu
+            {
+                internal static string PlayFM = "█Play FM";
+                internal static string InstallFM = "█Install FM";
+                internal static string UninstallFM = "█Uninstall FM";
+                internal static string Rating = "█Rating";
+                internal static string FinishedOn = "█Finished on";
+                internal static string Tasks = "█Tasks";
+            }
+
+            internal static class TasksMenu
+            {
+                internal static string ConvertWAVsTo16Bit = "█Convert .wav files to 16 bit";
+                internal static string ConvertOGGsToWAVs = "█Convert .ogg files to .wav";
+            }
         }
 
         internal static class PlayOriginalGameMenu

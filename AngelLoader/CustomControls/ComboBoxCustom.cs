@@ -49,6 +49,8 @@ namespace AngelLoader.CustomControls
 
         protected override void WndProc(ref Message m)
         {
+            // If the dropdown is going to go off the right side of the screen, try to reposition it so it always
+            // appears fully on-screen
             if (m.Msg == WM_CTLCOLORLISTBOX)
             {
                 var p = PointToScreen(new Point(0, Height));
@@ -65,6 +67,7 @@ namespace AngelLoader.CustomControls
 
         protected override void OnDropDown(EventArgs e)
         {
+            // Autosize dropdown to accomodate the longest item
             int finalWidth = 0;
             foreach (var item in Items)
             {
