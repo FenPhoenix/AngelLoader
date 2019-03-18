@@ -462,14 +462,14 @@ namespace AngelLoader.Forms
             }
             catch (FormatException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorInvalidDateFormat, LText.Global.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorInvalidDateFormat, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
                 return;
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorDateOutOfRange, LText.Global.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorDateOutOfRange, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
                 return;
@@ -688,13 +688,13 @@ namespace AngelLoader.Forms
             }
             catch (FormatException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorInvalidDateFormat, LText.Global.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorInvalidDateFormat, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorDateOutOfRange, LText.Global.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorDateOutOfRange, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

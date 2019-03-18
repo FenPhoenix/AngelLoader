@@ -28,8 +28,6 @@
             internal static string None = "None";
             internal static string CustomTagInCategory = "<custom>";
 
-            internal static string Error = "Error";
-
             internal static string KilobyteShort = "KB";
             internal static string MegabyteShort = "MB";
             internal static string GigabyteShort = "GB";
@@ -46,6 +44,7 @@
         {
             internal static string Alert = "Alert";
             internal static string Warning = "Warning";
+            internal static string Error = "Error";
 
             internal static string WebSearchURLIsInvalid = "The specified site to search is not a valid URL.";
 
@@ -165,52 +164,55 @@
             }
         }
 
-        internal static class StatisticsTab
+        internal static class TopRightTabs
         {
-            internal static string TabText = "Statistics";
+            internal static class Statistics
+            {
+                internal static string TabText = "Statistics";
 
-            internal static string CustomResources = "Custom resources:";
-            internal static string CustomResourcesNotScanned = "Custom resources not scanned.";
-            internal static string CustomResourcesNotSupportedForThief3 = "Custom resource detection is not supported for Thief 3 FMs.";
-            internal static string NoFMSelected = "No FM selected.";
+                internal static string CustomResources = "Custom resources:";
+                internal static string CustomResourcesNotScanned = "Custom resources not scanned.";
+                internal static string CustomResourcesNotSupportedForThief3 = "Custom resource detection is not supported for Thief 3 FMs.";
+                internal static string NoFMSelected = "No FM selected.";
 
-            internal static string Map = "Map";
-            internal static string Automap = "Automap";
-            internal static string Textures = "Textures";
-            internal static string Sounds = "Sounds";
-            internal static string Movies = "Movies";
-            internal static string Objects = "Objects";
-            internal static string Creatures = "Creatures";
-            internal static string Motions = "Motions";
-            internal static string Scripts = "Scripts";
-            internal static string Subtitles = "Subtitles";
-        }
+                internal static string Map = "Map";
+                internal static string Automap = "Automap";
+                internal static string Textures = "Textures";
+                internal static string Sounds = "Sounds";
+                internal static string Movies = "Movies";
+                internal static string Objects = "Objects";
+                internal static string Creatures = "Creatures";
+                internal static string Motions = "Motions";
+                internal static string Scripts = "Scripts";
+                internal static string Subtitles = "Subtitles";
+            }
 
-        internal static class EditFMTab
-        {
-            internal static string TabText = "Edit FM";
+            internal static class EditFM
+            {
+                internal static string TabText = "Edit FM";
 
-            internal static string Title = "Title:";
-            internal static string Author = "Author:";
-            internal static string ReleaseDate = "Release date:";
-            internal static string LastPlayed = "Last played:";
-            internal static string Rating = "Rating:";
-            internal static string FinishedOn = "Finished on...";
-            internal static string DisabledMods = "Disabled mods:";
-            internal static string DisableAllMods = "Disable all mods";
-        }
+                internal static string Title = "Title:";
+                internal static string Author = "Author:";
+                internal static string ReleaseDate = "Release date:";
+                internal static string LastPlayed = "Last played:";
+                internal static string Rating = "Rating:";
+                internal static string FinishedOn = "Finished on...";
+                internal static string DisabledMods = "Disabled mods:";
+                internal static string DisableAllMods = "Disable all mods";
+            }
 
-        internal static class CommentTab
-        {
-            internal static string TabText = "Comment";
-        }
+            internal static class Comment
+            {
+                internal static string TabText = "Comment";
+            }
 
-        internal static class TagsTab
-        {
-            internal static string TabText = "Tags";
-            internal static string AddTag = "Add tag";
-            internal static string AddFromList = "Add from list...";
-            internal static string RemoveTag = "Remove tag";
+            internal static class Tags
+            {
+                internal static string TabText = "Tags";
+                internal static string AddTag = "Add tag";
+                internal static string AddFromList = "Add from list...";
+                internal static string RemoveTag = "Remove tag";
+            }
         }
 
         internal static class ReadmeArea
@@ -356,7 +358,7 @@
             internal static string Exclude = "Exclude:";
         }
 
-        internal static class SetRatingFilterBox
+        internal static class RatingFilterBox
         {
             internal static string TitleText = "Set rating filter";
             internal static string From = "From:";

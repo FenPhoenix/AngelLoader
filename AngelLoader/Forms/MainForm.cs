@@ -506,58 +506,58 @@ namespace AngelLoader.Forms
 
                 #region Statistics tab
 
-                StatisticsTabPage.Text = LText.StatisticsTab.TabText;
+                StatisticsTabPage.Text = LText.TopRightTabs.Statistics.TabText;
 
                 CustomResourcesLabel.Text =
-                    selFM == null ? LText.StatisticsTab.NoFMSelected :
-                    selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
-                    FMCustomResourcesScanned(selFM) ? LText.StatisticsTab.CustomResources :
-                    LText.StatisticsTab.CustomResourcesNotScanned;
+                    selFM == null ? LText.TopRightTabs.Statistics.NoFMSelected :
+                    selFM.Game == Game.Thief3 ? LText.TopRightTabs.Statistics.CustomResourcesNotSupportedForThief3 :
+                    FMCustomResourcesScanned(selFM) ? LText.TopRightTabs.Statistics.CustomResources :
+                    LText.TopRightTabs.Statistics.CustomResourcesNotScanned;
 
-                CR_MapCheckBox.Text = LText.StatisticsTab.Map;
-                CR_AutomapCheckBox.Text = LText.StatisticsTab.Automap;
-                CR_TexturesCheckBox.Text = LText.StatisticsTab.Textures;
-                CR_SoundsCheckBox.Text = LText.StatisticsTab.Sounds;
-                CR_MoviesCheckBox.Text = LText.StatisticsTab.Movies;
-                CR_ObjectsCheckBox.Text = LText.StatisticsTab.Objects;
-                CR_CreaturesCheckBox.Text = LText.StatisticsTab.Creatures;
-                CR_MotionsCheckBox.Text = LText.StatisticsTab.Motions;
-                CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
-                CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
+                CR_MapCheckBox.Text = LText.TopRightTabs.Statistics.Map;
+                CR_AutomapCheckBox.Text = LText.TopRightTabs.Statistics.Automap;
+                CR_TexturesCheckBox.Text = LText.TopRightTabs.Statistics.Textures;
+                CR_SoundsCheckBox.Text = LText.TopRightTabs.Statistics.Sounds;
+                CR_MoviesCheckBox.Text = LText.TopRightTabs.Statistics.Movies;
+                CR_ObjectsCheckBox.Text = LText.TopRightTabs.Statistics.Objects;
+                CR_CreaturesCheckBox.Text = LText.TopRightTabs.Statistics.Creatures;
+                CR_MotionsCheckBox.Text = LText.TopRightTabs.Statistics.Motions;
+                CR_ScriptsCheckBox.Text = LText.TopRightTabs.Statistics.Scripts;
+                CR_SubtitlesCheckBox.Text = LText.TopRightTabs.Statistics.Subtitles;
 
                 #endregion
 
                 #region Edit FM tab
 
-                EditFMTabPage.Text = LText.EditFMTab.TabText;
-                EditFMTitleLabel.Text = LText.EditFMTab.Title;
-                EditFMAuthorLabel.Text = LText.EditFMTab.Author;
-                EditFMReleaseDateCheckBox.Text = LText.EditFMTab.ReleaseDate;
-                EditFMLastPlayedCheckBox.Text = LText.EditFMTab.LastPlayed;
-                EditFMRatingLabel.Text = LText.EditFMTab.Rating;
+                EditFMTabPage.Text = LText.TopRightTabs.EditFM.TabText;
+                EditFMTitleLabel.Text = LText.TopRightTabs.EditFM.Title;
+                EditFMAuthorLabel.Text = LText.TopRightTabs.EditFM.Author;
+                EditFMReleaseDateCheckBox.Text = LText.TopRightTabs.EditFM.ReleaseDate;
+                EditFMLastPlayedCheckBox.Text = LText.TopRightTabs.EditFM.LastPlayed;
+                EditFMRatingLabel.Text = LText.TopRightTabs.EditFM.Rating;
 
                 // For some reason this counts as a selected index change?!
                 using (new DisableEvents(this)) EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
 
-                EditFMFinishedOnButton.SetL10nText(LText.EditFMTab.FinishedOn, 138);
-                EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
-                EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
+                EditFMFinishedOnButton.SetL10nText(LText.TopRightTabs.EditFM.FinishedOn, 138);
+                EditFMDisabledModsLabel.Text = LText.TopRightTabs.EditFM.DisabledMods;
+                EditFMDisableAllModsCheckBox.Text = LText.TopRightTabs.EditFM.DisableAllMods;
 
                 #endregion
 
                 #region Comment tab
 
-                CommentTabPage.Text = LText.CommentTab.TabText;
+                CommentTabPage.Text = LText.TopRightTabs.Comment.TabText;
 
                 #endregion
 
                 #region Tags tab
 
-                TagsTabPage.Text = LText.TagsTab.TabText;
+                TagsTabPage.Text = LText.TopRightTabs.Tags.TabText;
                 // Set these directly, because they shouldn't be resizing themselves or the layout will break
-                AddTagButton.Text = LText.TagsTab.AddTag;
-                AddTagFromListButton.Text = LText.TagsTab.AddFromList;
-                RemoveTagButton.Text = LText.TagsTab.RemoveTag;
+                AddTagButton.Text = LText.TopRightTabs.Tags.AddTag;
+                AddTagFromListButton.Text = LText.TopRightTabs.Tags.AddFromList;
+                RemoveTagButton.Text = LText.TopRightTabs.Tags.RemoveTag;
 
                 #endregion
 
@@ -2175,7 +2175,7 @@ namespace AngelLoader.Forms
             ViewHTMLReadmeButton.Hide();
             WebSearchButton.Enabled = false;
 
-            BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
+            BlankStatsPanelWithMessage(LText.TopRightTabs.Statistics.NoFMSelected);
 
             AltTitlesMenu.Items.Clear();
 
@@ -2285,15 +2285,15 @@ namespace AngelLoader.Forms
 
             if (fmIsT3)
             {
-                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
+                BlankStatsPanelWithMessage(LText.TopRightTabs.Statistics.CustomResourcesNotSupportedForThief3);
             }
             else if (!FMCustomResourcesScanned(fm))
             {
-                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
+                BlankStatsPanelWithMessage(LText.TopRightTabs.Statistics.CustomResourcesNotScanned);
             }
             else
             {
-                CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
+                CustomResourcesLabel.Text = LText.TopRightTabs.Statistics.CustomResources;
 
                 CR_MapCheckBox.Checked = fm.HasMap == true;
                 CR_AutomapCheckBox.Checked = fm.HasAutomap == true;

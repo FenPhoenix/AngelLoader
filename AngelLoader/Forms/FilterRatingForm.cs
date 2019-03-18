@@ -31,9 +31,9 @@ namespace AngelLoader.Forms
 
         private void SetUITextToLocalized()
         {
-            Text = LText.SetRatingFilterBox.TitleText;
-            FromLabel.Text = LText.SetRatingFilterBox.From;
-            ToLabel.Text = LText.SetRatingFilterBox.To;
+            Text = LText.RatingFilterBox.TitleText;
+            FromLabel.Text = LText.RatingFilterBox.From;
+            ToLabel.Text = LText.RatingFilterBox.To;
 
             ResetButton.Text = LText.Global.Reset;
             OKButton.Text = LText.Global.OK;
