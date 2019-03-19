@@ -215,6 +215,13 @@ namespace AngelLoader.Forms
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
         internal async Task Init()
         {
+#if Release
+            DebugLabel.Hide();
+            DebugLabel2.Hide();
+            TestButton.Hide();
+            Test2Button.Hide();
+#endif
+
             AppMouseHook = Hook.AppEvents();
             AppMouseHook.MouseDownExt += HookMouseDown;
             AppMouseHook.MouseUpExt += HookMouseUp;
