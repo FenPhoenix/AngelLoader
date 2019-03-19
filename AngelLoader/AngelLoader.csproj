@@ -209,6 +209,7 @@
     <Compile Include="Forms\FilterTagsForm2.Designer.cs">
       <DependentUpon>FilterTagsForm2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ini\LanguageIni.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
