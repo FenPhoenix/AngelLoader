@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows.Forms;
 using AngelLoader.Common;
+using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Forms
 {

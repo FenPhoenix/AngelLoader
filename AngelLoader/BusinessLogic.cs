@@ -75,11 +75,17 @@ namespace AngelLoader
 
             // TODO: Read languages.
             // Have to read it here because which language to use will be stored in the config file.
-            // After reading, set Config.Articles (a List<string>) to the language's default articles
-            var engLangIni = Path.Combine(Paths.Startup, "English.ini");
-            if (File.Exists(engLangIni))
+            // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
+            // name in its own language
+            var langFiles = Directory.GetFiles(Paths.Startup, "*.ini", SearchOption.TopDirectoryOnly);
+            for (int i = 0; i < langFiles.Length; i++)
             {
-                ReadLocalizationIni(engLangIni);
+                var fn = langFiles[i].GetFileNameFast().RemoveExtension();
+                if (fn.EqualsI(Config.Language))
+                {
+                    ReadLocalizationIni(langFiles[i]);
+                    break;
+                }
             }
         }
 

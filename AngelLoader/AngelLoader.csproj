@@ -131,7 +131,7 @@
     <Compile Include="Common\CommonStatic.cs" />
     <Compile Include="Common\DataClasses\MiscSupporting.cs" />
     <Compile Include="Common\HTMLNamedEscapes.cs" />
-    <Compile Include="Common\Localization.cs" />
+    <Compile Include="Common\DataClasses\Localization.cs" />
     <Compile Include="Common\Misc.cs" />
     <Compile Include="Common\Comparers.cs" />
     <Compile Include="Common\DataClasses\ConfigData.cs" />
@@ -369,7 +369,7 @@ rem ---</PostBuildEvent>
   <PropertyGroup>
     <PreBuildEvent>rem Autogenerate code
 "$(SolutionDir)\FenGen\FenGen.exe" -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
-"$(SolutionDir)\FenGen\FenGen.exe" -language "$(ProjectDir)Common\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)English.ini"
+"$(SolutionDir)\FenGen\FenGen.exe" -language "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)English.ini"
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
   </PropertyGroup>

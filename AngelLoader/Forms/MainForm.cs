@@ -442,9 +442,9 @@ namespace AngelLoader.Forms
 
                 #region Clear/refresh/reset area
 
-                RefreshFiltersButton.ToolTipText = LText.RefreshFilteredListButtonToolTip;
-                ClearFiltersButton.ToolTipText = LText.ClearFiltersButtonToolTip;
-                MainToolTip.SetToolTip(ResetLayoutButton, LText.ResetLayoutButtonToolTip);
+                RefreshFiltersButton.ToolTipText = LText.FilterBar.RefreshFilteredListButtonToolTip;
+                ClearFiltersButton.ToolTipText = LText.FilterBar.ClearFiltersButtonToolTip;
+                MainToolTip.SetToolTip(ResetLayoutButton, LText.FilterBar.ResetLayoutButtonToolTip);
 
                 #endregion
 

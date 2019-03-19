@@ -1,6 +1,6 @@
 using System.IO;
 using System.Text;
-using AngelLoader.Common;
+using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.Attributes;
 
@@ -21,7 +21,11 @@ namespace AngelLoader.Ini
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("OK="))
+                        if (lt.StartsWithFast_NoNullChecks("LanguageName="))
+                        {
+                            LText.Global.LanguageName = lt.Substring(13);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("OK="))
                         {
                             LText.Global.OK = lt.Substring(3);
                         }
@@ -308,6 +312,18 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("ShowJunk="))
                         {
                             LText.FilterBar.ShowJunk = lt.Substring(9);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("RefreshFilteredListButtonToolTip="))
+                        {
+                            LText.FilterBar.RefreshFilteredListButtonToolTip = lt.Substring(33);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ClearFiltersButtonToolTip="))
+                        {
+                            LText.FilterBar.ClearFiltersButtonToolTip = lt.Substring(26);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ResetLayoutButtonToolTip="))
+                        {
+                            LText.FilterBar.ResetLayoutButtonToolTip = lt.Substring(25);
                         }
                         else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

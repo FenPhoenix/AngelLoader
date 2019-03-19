@@ -1,7 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using static AngelLoader.Common.Attributes;
+﻿using static AngelLoader.Common.Attributes;
 
-namespace AngelLoader.Common
+namespace AngelLoader.Common.DataClasses
 {
     // TODO: Missing localized bits:
     // -Articles
@@ -17,9 +16,18 @@ namespace AngelLoader.Common
     [FenGenLocalizationClass]
     internal static class LText
     {
+        // Notes:
+        // -Attributes only work when applied to fields, not properties. I think I know why, but whatever, this
+        //  is good enough for now.
+        // -Comments don't support concatenation (try to fix later)
+        // -Strings must be inside sub-classes or they won't be picked up (that's the nature of ini files)
+
         internal static class Global
         {
-            internal static string OK { get; set; } = "OK";
+            [FenGenComment("This should be the name of this file's language in this file's language.\r\nExample: English should be English, French should be Français, etc.")]
+            internal static string LanguageName = "English";
+            [FenGenBlankLine]
+            internal static string OK = "OK";
             internal static string Cancel = "Cancel";
             internal static string BrowseEllipses = "Browse...";
             internal static string Add = "Add";
@@ -27,11 +35,11 @@ namespace AngelLoader.Common
             internal static string Remove = "Remove";
             internal static string RemoveEllipses = "Remove...";
             internal static string Reset = "Reset";
-
+            [FenGenBlankLine]
             internal static string Unrated = "Unrated";
             internal static string None = "None";
             internal static string CustomTagInCategory = "<custom>";
-
+            [FenGenBlankLine]
             internal static string KilobyteShort = "KB";
             internal static string MegabyteShort = "MB";
             internal static string GigabyteShort = "GB";
@@ -49,24 +57,24 @@ namespace AngelLoader.Common
             internal static string Alert = "Alert";
             internal static string Warning = "Warning";
             internal static string Error = "Error";
-
+            [FenGenBlankLine]
             internal static string WebSearchURLIsInvalid = "The specified site to search is not a valid URL.";
-
+            [FenGenBlankLine]
             internal static string Install_UnknownGameType = "This FM's game type is unknown, so it can't be installed.";
             internal static string Install_UnsupportedGameType = "This FM's game type is unsupported, so it can't be installed.";
             internal static string Install_ArchiveNotFound = "FM archive not found. Unable to install.";
             internal static string Install_ExecutableNotFound = "Executable file not specified or not found. Unable to install.";
             internal static string Install_FMInstallPathNotFound = "FM install path not specified or not found. Unable to install.";
             internal static string Install_GameIsRunning = "Game is running; unable to install. Please exit the game and then try again.";
-
+            [FenGenBlankLine]
             internal static string Uninstall_GameIsRunning = "Game is running; unable to uninstall. Please exit the game and then try again.";
             internal static string Uninstall_FMAlreadyUninstalled = "This FM has already been uninstalled or its folder cannot be found. Mark it as uninstalled?";
             internal static string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Click Yes if this is okay, or No to cancel the uninstall.";
             internal static string Uninstall_UninstallNotCompleted = "The uninstall could not be completed. The FM will be marked as uninstalled but its folder may be in an unknown state.";
             internal static string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
-
+            [FenGenBlankLine]
             internal static string FileConversion_GameIsRunning = "Game is running; unable to convert files. Please exit the game and then try again.";
-
+            [FenGenBlankLine]
             internal static string Play_ExecutableNotFound = "Executable file not specified or not found. Unable to play.";
             internal static string Play_ExecutableNotFoundFM = "Executable file not specified or not found. Unable to play FM.";
             internal static string Play_GameIsRunning = "Game is already running. Exit it first!";
@@ -94,23 +102,23 @@ namespace AngelLoader.Common
             internal static string Thief1ToolTip = "Thief 1";
             internal static string Thief2ToolTip = "Thief 2";
             internal static string Thief3ToolTip = "Thief 3";
-
+            [FenGenBlankLine]
             internal static string Title = "Title:";
             internal static string Author = "Author:";
-
+            [FenGenBlankLine]
             internal static string ReleaseDateToolTip = "Release date";
             internal static string LastPlayedToolTip = "Last played";
             internal static string TagsToolTip = "Tags";
             internal static string FinishedToolTip = "Finished";
             internal static string UnfinishedToolTip = "Unfinished";
             internal static string RatingToolTip = "Rating";
-
+            [FenGenBlankLine]
             internal static string ShowJunk = "Show junk";
+            [FenGenBlankLine]
+            internal static string RefreshFilteredListButtonToolTip = "Refresh filtered list";
+            internal static string ClearFiltersButtonToolTip = "Clear filters";
+            internal static string ResetLayoutButtonToolTip = "Reset layout";
         }
-
-        internal static string RefreshFilteredListButtonToolTip = "Refresh filtered list";
-        internal static string ClearFiltersButtonToolTip = "Clear filters";
-        internal static string ResetLayoutButtonToolTip = "Reset layout";
 
         internal static class FMsList
         {
@@ -126,20 +134,20 @@ namespace AngelLoader.Common
             internal static string LastPlayedColumn = "Last Played";
             internal static string DisabledModsColumn = "Disabled Mods";
             internal static string CommentColumn = "Comment";
-
+            [FenGenBlankLine]
             internal static string AllModsDisabledMessage = "* [All]";
-
+            [FenGenBlankLine]
             internal static string ColumnMenu_ResetAllColumnsToVisible = "Reset all columns to visible";
             internal static string ColumnMenu_ResetAllColumnWidths = "Reset all column widths";
             internal static string ColumnMenu_ResetAllColumnPositions = "Reset all column positions";
-
+            [FenGenBlankLine]
             internal static string FMMenu_PlayFM = "Play FM";
             internal static string FMMenu_InstallFM = "Install FM";
             internal static string FMMenu_UninstallFM = "Uninstall FM";
             internal static string FMMenu_Rating = "Rating";
             internal static string FMMenu_FinishedOn = "Finished on";
             internal static string FMMenu_Tasks = "Tasks";
-
+            [FenGenBlankLine]
             internal static string TasksMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
             internal static string TasksMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
         }
@@ -147,12 +155,12 @@ namespace AngelLoader.Common
         internal static class StatisticsTab
         {
             internal static string TabText = "Statistics";
-
+            [FenGenBlankLine]
             internal static string CustomResources = "Custom resources:";
             internal static string CustomResourcesNotScanned = "Custom resources not scanned.";
             internal static string CustomResourcesNotSupportedForThief3 = "Custom resource detection is not supported for Thief 3 FMs.";
             internal static string NoFMSelected = "No FM selected.";
-
+            [FenGenBlankLine]
             internal static string Map = "Map";
             internal static string Automap = "Automap";
             internal static string Textures = "Textures";
@@ -168,7 +176,7 @@ namespace AngelLoader.Common
         internal static class EditFMTab
         {
             internal static string TabText = "Edit FM";
-
+            [FenGenBlankLine]
             internal static string Title = "Title:";
             internal static string Author = "Author:";
             internal static string ReleaseDate = "Release date:";
@@ -187,6 +195,7 @@ namespace AngelLoader.Common
         internal static class TagsTab
         {
             internal static string TabText = "Tags";
+            [FenGenBlankLine]
             internal static string AddTag = "Add tag";
             internal static string AddFromList = "Add from list...";
             internal static string RemoveTag = "Remove tag";
@@ -199,7 +208,7 @@ namespace AngelLoader.Common
             internal static string ZoomOutToolTip = "Zoom out";
             internal static string ResetZoomToolTip = "Reset zoom";
             internal static string FullScreenToolTip = "Fullscreen";
-
+            [FenGenBlankLine]
             internal static string NoReadmeFound = "No readme found.";
             internal static string UnableToLoadReadme = "Unable to load this readme.";
         }
@@ -241,9 +250,9 @@ namespace AngelLoader.Common
         {
             internal static string TitleText = "Settings";
             internal static string StartupTitleText = "AngelLoader Initial Setup";
-
+            [FenGenBlankLine]
             internal static string Paths_TabText = "Paths";
-
+            [FenGenBlankLine]
             internal static string Paths_PathsToGameExes = "Paths to game executables";
             internal static string Paths_Thief1 = "Thief 1:";
             internal static string Paths_Thief2 = "Thief 2:";
@@ -252,51 +261,51 @@ namespace AngelLoader.Common
             internal static string Paths_BackupPath = "Backup path for saves and screenshots:";
             internal static string Paths_FMArchivePaths = "FM archive paths";
             internal static string Paths_IncludeSubfolders = "Include subfolders";
-
+            [FenGenBlankLine]
             internal static string Paths_AddArchivePathToolTip = "Add archive path...";
             internal static string Paths_RemoveArchivePathToolTip = "Remove selected archive path";
-
+            [FenGenBlankLine]
             internal static string Paths_ErrorSomePathsAreInvalid = "Some paths are invalid.";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_TabText = "FM Display";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_GameOrganization = "Game organization";
             internal static string FMDisplay_GameOrganizationByTab = "Each game in its own tab";
             internal static string FMDisplay_GameOrganizationOneList = "Everything in one list, and games are filters";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_Sorting = "Sorting";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_IgnoreArticles = "Ignore the following leading articles when sorting by title:";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_MoveArticlesToEnd = "Move articles to the end of names when displaying them";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_RatingDisplayStyle = "Rating display style";
             internal static string FMDisplay_RatingDisplayStyleNDL = "NewDarkLoader (0-10 in increments of 1)";
             internal static string FMDisplay_RatingDisplayStyleFMSel = "FMSel (0-5 in increments of 0.5)";
             internal static string FMDisplay_RatingDisplayStyleUseStars = "Use stars";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_DateFormat = "Date format";
             internal static string FMDisplay_CurrentCultureShort = "Current culture short";
             internal static string FMDisplay_CurrentCultureLong = "Current culture long";
             internal static string FMDisplay_Custom = "Custom:";
-
+            [FenGenBlankLine]
             internal static string FMDisplay_ErrorInvalidDateFormat = "Invalid date format.";
             internal static string FMDisplay_ErrorDateOutOfRange = "The date and time is outside the range of dates supported by the calendar used by the current culture.";
-
+            [FenGenBlankLine]
             internal static string Other_TabText = "Other";
-
+            [FenGenBlankLine]
             internal static string Other_FMFileConversion = "FM file conversion";
             internal static string Other_ConvertWAVsTo16BitOnInstall = "Convert .wavs to 16 bit on install";
             internal static string Other_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
-
+            [FenGenBlankLine]
             internal static string Other_BackUpSaves = "Back up saves and screenshots when uninstalling";
             internal static string Other_BackUpAlwaysAsk = "Always ask";
             internal static string Other_BackUpAlwaysBackUp = "Always back up";
-
+            [FenGenBlankLine]
             internal static string Other_Language = "Language";
-
+            [FenGenBlankLine]
             internal static string Other_LanguageTakeEffectNote = "This selection will take effect when you click OK.";
-
+            [FenGenBlankLine]
             internal static string Other_WebSearch = "Web search";
             internal static string Other_WebSearchURL = "Full URL to use when searching for an FM title:";
             internal static string Other_WebSearchTitleVar = "$TITLE$ : the title of the FM";
@@ -307,7 +316,7 @@ namespace AngelLoader.Common
         {
             internal static string ReleaseDateTitleText = "Set release date filter";
             internal static string LastPlayedTitleText = "Set last played filter";
-
+            [FenGenBlankLine]
             internal static string From = "From:";
             internal static string To = "To:";
             internal static string NoMinimum = "(no minimum)";
@@ -317,6 +326,7 @@ namespace AngelLoader.Common
         internal static class TagsFilterBox
         {
             internal static string TitleText = "Set tags filter";
+            [FenGenBlankLine]
             internal static string MoveToAll = "-> All";
             internal static string MoveToAny = "-> Any";
             internal static string MoveToExclude = "-> Exclude";
@@ -329,6 +339,7 @@ namespace AngelLoader.Common
         internal static class RatingFilterBox
         {
             internal static string TitleText = "Set rating filter";
+            [FenGenBlankLine]
             internal static string From = "From:";
             internal static string To = "To:";
         }
@@ -337,7 +348,7 @@ namespace AngelLoader.Common
         {
             internal static string NothingWasImported = "Nothing was imported.";
             internal static string SelectedFileIsNotAValidPath = "Selected file is not a valid path.";
-
+            [FenGenBlankLine]
             internal static string DarkLoader_SelectedFileIsNotDarkLoaderIni = "Selected file is not DarkLoader.ini.";
             internal static string DarkLoader_SelectedDarkLoaderIniWasNotFound = "Selected DarkLoader.ini was not found.";
         }

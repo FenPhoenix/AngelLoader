@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using AngelLoader.Common;
-using AngelLoader.Common.Utility;
+using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Forms
 {
