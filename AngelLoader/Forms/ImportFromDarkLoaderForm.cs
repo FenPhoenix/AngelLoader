@@ -27,7 +27,7 @@ namespace AngelLoader.Forms
             }
             catch (ArgumentException)
             {
-                MessageBox.Show(LText.Importing.DarkLoader.SelectedFileIsNotAValidPath);
+                MessageBox.Show(LText.Importing.SelectedFileIsNotAValidPath);
                 e.Cancel = true;
                 return;
             }
@@ -35,7 +35,7 @@ namespace AngelLoader.Forms
             if (!fileNameIsDLIni)
             {
                 // TODO: do something nicer here
-                MessageBox.Show(LText.Importing.DarkLoader.SelectedFileIsNotDarkLoaderIni);
+                MessageBox.Show(LText.Importing.DarkLoader_SelectedFileIsNotDarkLoaderIni);
                 e.Cancel = true;
                 return;
             }
@@ -43,7 +43,7 @@ namespace AngelLoader.Forms
             var iniFileExists = File.Exists(file);
             if (!iniFileExists)
             {
-                MessageBox.Show(LText.Importing.DarkLoader.SelectedDarkLoaderIniWasNotFound);
+                MessageBox.Show(LText.Importing.DarkLoader_SelectedDarkLoaderIniWasNotFound);
                 e.Cancel = true;
                 return;
             }

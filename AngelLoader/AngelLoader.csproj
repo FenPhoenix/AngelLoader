@@ -126,11 +126,12 @@
   <ItemGroup>
     <Compile Include="AudioConverter.cs" />
     <Compile Include="BusinessLogic.cs" />
+    <Compile Include="Common\Attributes.cs" />
     <Compile Include="Common\CatAndTags.cs" />
     <Compile Include="Common\CommonStatic.cs" />
     <Compile Include="Common\DataClasses\MiscSupporting.cs" />
     <Compile Include="Common\HTMLNamedEscapes.cs" />
-    <Compile Include="Common\Language.cs" />
+    <Compile Include="Common\Localization.cs" />
     <Compile Include="Common\Misc.cs" />
     <Compile Include="Common\Comparers.cs" />
     <Compile Include="Common\DataClasses\ConfigData.cs" />
@@ -209,7 +210,7 @@
     <Compile Include="Forms\FilterTagsForm2.Designer.cs">
       <DependentUpon>FilterTagsForm2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Ini\LanguageIni.cs" />
+    <Compile Include="Ini\LocalizationIni.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -361,10 +362,15 @@ xcopy "$(TargetDir)ffmpeg.txt" "C:\AngelLoader\" /y
 
 xcopy "$(TargetDir)ffmpeg" "C:\AngelLoader\ffmpeg" /y /i
 
+xcopy "$(ProjectDir)English.ini" "C:\AngelLoader\" /y
+
 rem ---</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>"$(SolutionDir)FenGen.exe" -fmdata "$(ProjectDir)\Common\DataClasses\FanMissionData.cs" "$(ProjectDir)\Ini\FMData.cs"
+    <PreBuildEvent>rem Autogenerate code
+"$(SolutionDir)\FenGen\FenGen.exe" -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
+"$(SolutionDir)\FenGen\FenGen.exe" -language "$(ProjectDir)Common\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)English.ini"
+
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
   </PropertyGroup>
 </Project>

@@ -265,7 +265,7 @@ namespace AngelLoader.Forms
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
             {
-                HeaderText = LText.FMsList.Columns.Rating,
+                HeaderText = LText.FMsList.RatingColumn,
                 ImageLayout = DataGridViewImageCellLayout.Zoom,
                 MinimumWidth = 25,
                 Name = "RatingImageColumn",
@@ -450,114 +450,114 @@ namespace AngelLoader.Forms
 
                 #region Columns
 
-                GameTypeColumn.HeaderText = LText.FMsList.Columns.Game;
-                InstalledColumn.HeaderText = LText.FMsList.Columns.Installed;
-                TitleColumn.HeaderText = LText.FMsList.Columns.Title;
-                ArchiveColumn.HeaderText = LText.FMsList.Columns.Archive;
-                AuthorColumn.HeaderText = LText.FMsList.Columns.Author;
-                SizeColumn.HeaderText = LText.FMsList.Columns.Size;
-                RatingTextColumn.HeaderText = LText.FMsList.Columns.Rating;
-                RatingImageColumn.HeaderText = LText.FMsList.Columns.Rating;
-                FinishedColumn.HeaderText = LText.FMsList.Columns.Finished;
-                ReleaseDateColumn.HeaderText = LText.FMsList.Columns.ReleaseDate;
-                LastPlayedColumn.HeaderText = LText.FMsList.Columns.LastPlayed;
-                DisabledModsColumn.HeaderText = LText.FMsList.Columns.DisabledMods;
-                CommentColumn.HeaderText = LText.FMsList.Columns.Comment;
+                GameTypeColumn.HeaderText = LText.FMsList.GameColumn;
+                InstalledColumn.HeaderText = LText.FMsList.InstalledColumn;
+                TitleColumn.HeaderText = LText.FMsList.TitleColumn;
+                ArchiveColumn.HeaderText = LText.FMsList.ArchiveColumn;
+                AuthorColumn.HeaderText = LText.FMsList.AuthorColumn;
+                SizeColumn.HeaderText = LText.FMsList.SizeColumn;
+                RatingTextColumn.HeaderText = LText.FMsList.RatingColumn;
+                RatingImageColumn.HeaderText = LText.FMsList.RatingColumn;
+                FinishedColumn.HeaderText = LText.FMsList.FinishedColumn;
+                ReleaseDateColumn.HeaderText = LText.FMsList.ReleaseDateColumn;
+                LastPlayedColumn.HeaderText = LText.FMsList.LastPlayedColumn;
+                DisabledModsColumn.HeaderText = LText.FMsList.DisabledModsColumn;
+                CommentColumn.HeaderText = LText.FMsList.CommentColumn;
 
                 #endregion
 
                 #region Play / install / uninstall
 
-                PlayFMMenuItem.Text = LText.FMsList.FMContextMenu.PlayFM;
-                PlayFMButton.SetL10nText(LText.BottomArea.PlayFM);
+                PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
+                PlayFMButton.SetL10nText(LText.MainButtons.PlayFM);
 
                 var sayInstall = selFM == null || !selFM.Installed;
 
                 InstallUninstallMenuItem.Text = sayInstall
-                    ? LText.FMsList.FMContextMenu.InstallFM
-                    : LText.FMsList.FMContextMenu.UninstallFM;
+                    ? LText.FMsList.FMMenu_InstallFM
+                    : LText.FMsList.FMMenu_UninstallFM;
 
                 InstallUninstallFMButton.SetL10nText(sayInstall
-                    ? LText.BottomArea.InstallFM
-                    : LText.BottomArea.UninstallFM);
+                    ? LText.MainButtons.InstallFM
+                    : LText.MainButtons.UninstallFM);
 
                 #endregion
 
                 #region FM context menu
 
-                RatingRCSubMenu.Text = LText.FMsList.FMContextMenu.Rating;
-                FinishedOnRCSubMenu.Text = LText.FMsList.FMContextMenu.FinishedOn;
-                TasksRCSubMenu.Text = LText.FMsList.FMContextMenu.Tasks;
+                RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating;
+                FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn;
+                TasksRCSubMenu.Text = LText.FMsList.FMMenu_Tasks;
 
                 RatingRCMenuUnrated.Text = LText.Global.Unrated;
 
-                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.TasksMenu.ConvertWAVsTo16Bit;
-                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.TasksMenu.ConvertOGGsToWAVs;
+                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.TasksMenu_ConvertWAVsTo16Bit;
+                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.TasksMenu_ConvertOGGsToWAVs;
 
                 #endregion
 
                 #region Play original games menu
 
-                PlayOriginalThief1MenuItem.Text = LText.BottomArea.PlayOriginalGameMenu.Thief1;
-                PlayOriginalThief2MenuItem.Text = LText.BottomArea.PlayOriginalGameMenu.Thief2;
-                PlayOriginalThief3MenuItem.Text = LText.BottomArea.PlayOriginalGameMenu.Thief3;
+                PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1;
+                PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2;
+                PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3;
 
                 #endregion
 
                 #region Statistics tab
 
-                StatisticsTabPage.Text = LText.TopRightTabs.Statistics.TabText;
+                StatisticsTabPage.Text = LText.StatisticsTab.TabText;
 
                 CustomResourcesLabel.Text =
-                    selFM == null ? LText.TopRightTabs.Statistics.NoFMSelected :
-                    selFM.Game == Game.Thief3 ? LText.TopRightTabs.Statistics.CustomResourcesNotSupportedForThief3 :
-                    FMCustomResourcesScanned(selFM) ? LText.TopRightTabs.Statistics.CustomResources :
-                    LText.TopRightTabs.Statistics.CustomResourcesNotScanned;
+                    selFM == null ? LText.StatisticsTab.NoFMSelected :
+                    selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
+                    FMCustomResourcesScanned(selFM) ? LText.StatisticsTab.CustomResources :
+                    LText.StatisticsTab.CustomResourcesNotScanned;
 
-                CR_MapCheckBox.Text = LText.TopRightTabs.Statistics.Map;
-                CR_AutomapCheckBox.Text = LText.TopRightTabs.Statistics.Automap;
-                CR_TexturesCheckBox.Text = LText.TopRightTabs.Statistics.Textures;
-                CR_SoundsCheckBox.Text = LText.TopRightTabs.Statistics.Sounds;
-                CR_MoviesCheckBox.Text = LText.TopRightTabs.Statistics.Movies;
-                CR_ObjectsCheckBox.Text = LText.TopRightTabs.Statistics.Objects;
-                CR_CreaturesCheckBox.Text = LText.TopRightTabs.Statistics.Creatures;
-                CR_MotionsCheckBox.Text = LText.TopRightTabs.Statistics.Motions;
-                CR_ScriptsCheckBox.Text = LText.TopRightTabs.Statistics.Scripts;
-                CR_SubtitlesCheckBox.Text = LText.TopRightTabs.Statistics.Subtitles;
+                CR_MapCheckBox.Text = LText.StatisticsTab.Map;
+                CR_AutomapCheckBox.Text = LText.StatisticsTab.Automap;
+                CR_TexturesCheckBox.Text = LText.StatisticsTab.Textures;
+                CR_SoundsCheckBox.Text = LText.StatisticsTab.Sounds;
+                CR_MoviesCheckBox.Text = LText.StatisticsTab.Movies;
+                CR_ObjectsCheckBox.Text = LText.StatisticsTab.Objects;
+                CR_CreaturesCheckBox.Text = LText.StatisticsTab.Creatures;
+                CR_MotionsCheckBox.Text = LText.StatisticsTab.Motions;
+                CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
+                CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
 
                 #endregion
 
                 #region Edit FM tab
 
-                EditFMTabPage.Text = LText.TopRightTabs.EditFM.TabText;
-                EditFMTitleLabel.Text = LText.TopRightTabs.EditFM.Title;
-                EditFMAuthorLabel.Text = LText.TopRightTabs.EditFM.Author;
-                EditFMReleaseDateCheckBox.Text = LText.TopRightTabs.EditFM.ReleaseDate;
-                EditFMLastPlayedCheckBox.Text = LText.TopRightTabs.EditFM.LastPlayed;
-                EditFMRatingLabel.Text = LText.TopRightTabs.EditFM.Rating;
+                EditFMTabPage.Text = LText.EditFMTab.TabText;
+                EditFMTitleLabel.Text = LText.EditFMTab.Title;
+                EditFMAuthorLabel.Text = LText.EditFMTab.Author;
+                EditFMReleaseDateCheckBox.Text = LText.EditFMTab.ReleaseDate;
+                EditFMLastPlayedCheckBox.Text = LText.EditFMTab.LastPlayed;
+                EditFMRatingLabel.Text = LText.EditFMTab.Rating;
 
                 // For some reason this counts as a selected index change?!
                 using (new DisableEvents(this)) EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
 
-                EditFMFinishedOnButton.SetL10nText(LText.TopRightTabs.EditFM.FinishedOn, 138);
-                EditFMDisabledModsLabel.Text = LText.TopRightTabs.EditFM.DisabledMods;
-                EditFMDisableAllModsCheckBox.Text = LText.TopRightTabs.EditFM.DisableAllMods;
+                EditFMFinishedOnButton.SetL10nText(LText.EditFMTab.FinishedOn, 138);
+                EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
+                EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
                 #endregion
 
                 #region Comment tab
 
-                CommentTabPage.Text = LText.TopRightTabs.Comment.TabText;
+                CommentTabPage.Text = LText.CommentTab.TabText;
 
                 #endregion
 
                 #region Tags tab
 
-                TagsTabPage.Text = LText.TopRightTabs.Tags.TabText;
+                TagsTabPage.Text = LText.TagsTab.TabText;
                 // Set these directly, because they shouldn't be resizing themselves or the layout will break
-                AddTagButton.Text = LText.TopRightTabs.Tags.AddTag;
-                AddTagFromListButton.Text = LText.TopRightTabs.Tags.AddFromList;
-                RemoveTagButton.Text = LText.TopRightTabs.Tags.RemoveTag;
+                AddTagButton.Text = LText.TagsTab.AddTag;
+                AddTagFromListButton.Text = LText.TagsTab.AddFromList;
+                RemoveTagButton.Text = LText.TagsTab.RemoveTag;
 
                 #endregion
 
@@ -575,11 +575,11 @@ namespace AngelLoader.Forms
 
                 #region Bottom area
 
-                PlayOriginalGameButton.SetL10nText(LText.BottomArea.PlayOriginalGame);
-                WebSearchButton.SetL10nText(LText.BottomArea.WebSearch);
-                ScanAllFMsButton.SetL10nText(LText.BottomArea.ScanAllFMs);
-                ImportButton.SetL10nText(LText.BottomArea.Import);
-                SettingsButton.SetL10nText(LText.BottomArea.Settings);
+                PlayOriginalGameButton.SetL10nText(LText.MainButtons.PlayOriginalGame);
+                WebSearchButton.SetL10nText(LText.MainButtons.WebSearch);
+                ScanAllFMsButton.SetL10nText(LText.MainButtons.ScanAllFMs);
+                ImportButton.SetL10nText(LText.MainButtons.Import);
+                SettingsButton.SetL10nText(LText.MainButtons.Settings);
 
                 #endregion
 
@@ -2164,7 +2164,7 @@ namespace AngelLoader.Forms
         {
             if (FMsList.Count == 0) ScanAllFMsButton.Enabled = false;
 
-            InstallUninstallMenuItem.Text = LText.FMsList.FMContextMenu.InstallFM;
+            InstallUninstallMenuItem.Text = LText.FMsList.FMMenu_InstallFM;
             InstallUninstallMenuItem.Enabled = false;
             InstallUninstallFMButton.Enabled = false;
             PlayFMMenuItem.Enabled = false;
@@ -2175,7 +2175,7 @@ namespace AngelLoader.Forms
             ViewHTMLReadmeButton.Hide();
             WebSearchButton.Enabled = false;
 
-            BlankStatsPanelWithMessage(LText.TopRightTabs.Statistics.NoFMSelected);
+            BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
 
             AltTitlesMenu.Items.Clear();
 
@@ -2258,8 +2258,8 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton.Enabled = installable;
             PlayFMMenuItem.Enabled = installable;
             PlayFMButton.Enabled = installable;
-            InstallUninstallMenuItem.Text = fm.Installed ? LText.FMsList.FMContextMenu.UninstallFM : LText.FMsList.FMContextMenu.InstallFM;
-            InstallUninstallFMButton.SetL10nText(fm.Installed ? LText.BottomArea.UninstallFM : LText.BottomArea.InstallFM);
+            InstallUninstallMenuItem.Text = fm.Installed ? LText.FMsList.FMMenu_UninstallFM : LText.FMsList.FMMenu_InstallFM;
+            InstallUninstallFMButton.SetL10nText(fm.Installed ? LText.MainButtons.UninstallFM : LText.MainButtons.InstallFM);
 
             #endregion
 
@@ -2285,15 +2285,15 @@ namespace AngelLoader.Forms
 
             if (fmIsT3)
             {
-                BlankStatsPanelWithMessage(LText.TopRightTabs.Statistics.CustomResourcesNotSupportedForThief3);
+                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
             }
             else if (!FMCustomResourcesScanned(fm))
             {
-                BlankStatsPanelWithMessage(LText.TopRightTabs.Statistics.CustomResourcesNotScanned);
+                BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
             }
             else
             {
-                CustomResourcesLabel.Text = LText.TopRightTabs.Statistics.CustomResources;
+                CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
 
                 CR_MapCheckBox.Checked = fm.HasMap == true;
                 CR_AutomapCheckBox.Checked = fm.HasAutomap == true;

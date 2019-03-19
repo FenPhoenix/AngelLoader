@@ -227,15 +227,15 @@ namespace AngelLoader.Forms
 
             #region Paths tab
 
-            PathsTabPage.Text = LText.SettingsWindow.PathsTab.TabText;
+            PathsTabPage.Text = LText.SettingsWindow.Paths_TabText;
 
-            PathsToGameExesGroupBox.Text = LText.SettingsWindow.PathsTab.PathsToGameExes;
-            Thief1ExePathLabel.Text = LText.SettingsWindow.PathsTab.Thief1;
-            Thief2ExePathLabel.Text = LText.SettingsWindow.PathsTab.Thief2;
-            Thief3ExePathLabel.Text = LText.SettingsWindow.PathsTab.Thief3;
+            PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
+            Thief1ExePathLabel.Text = LText.SettingsWindow.Paths_Thief1;
+            Thief2ExePathLabel.Text = LText.SettingsWindow.Paths_Thief2;
+            Thief3ExePathLabel.Text = LText.SettingsWindow.Paths_Thief3;
 
-            OtherGroupBox.Text = LText.SettingsWindow.PathsTab.Other;
-            BackupPathLabel.Text = LText.SettingsWindow.PathsTab.BackupPath;
+            OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
+            BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
             // Manual "flow layout" for textbox/browse button combos
             for (int i = 0; i < 4; i++)
@@ -264,56 +264,56 @@ namespace AngelLoader.Forms
                 textbox.Width += diff;
             }
 
-            FMArchivePathsGroupBox.Text = LText.SettingsWindow.PathsTab.FMArchivePaths;
-            IncludeSubfoldersCheckBox.Text = LText.SettingsWindow.PathsTab.IncludeSubfolders;
-            MainToolTip.SetToolTip(AddFMArchivePathButton, LText.SettingsWindow.PathsTab.AddArchivePathToolTip);
-            MainToolTip.SetToolTip(RemoveFMArchivePathButton, LText.SettingsWindow.PathsTab.RemoveArchivePathToolTip);
+            FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;
+            IncludeSubfoldersCheckBox.Text = LText.SettingsWindow.Paths_IncludeSubfolders;
+            MainToolTip.SetToolTip(AddFMArchivePathButton, LText.SettingsWindow.Paths_AddArchivePathToolTip);
+            MainToolTip.SetToolTip(RemoveFMArchivePathButton, LText.SettingsWindow.Paths_RemoveArchivePathToolTip);
 
             #endregion
 
             #region FM Display tab
 
-            FMDisplayTabPage.Text = LText.SettingsWindow.FMDisplayTab.TabText;
+            FMDisplayTabPage.Text = LText.SettingsWindow.FMDisplay_TabText;
 
-            GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplayTab.GameOrganization;
-            OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplayTab.GameOrganizationByTab;
-            SortGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplayTab.GameOrganizationOneList;
+            GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
+            OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationByTab;
+            SortGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationOneList;
 
-            SortingGroupBox.Text = LText.SettingsWindow.FMDisplayTab.Sorting;
-            EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.FMDisplayTab.IgnoreArticles;
-            MoveArticlesToEndCheckBox.Text = LText.SettingsWindow.FMDisplayTab.MoveArticlesToEnd;
+            SortingGroupBox.Text = LText.SettingsWindow.FMDisplay_Sorting;
+            EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.FMDisplay_IgnoreArticles;
+            MoveArticlesToEndCheckBox.Text = LText.SettingsWindow.FMDisplay_MoveArticlesToEnd;
 
-            RatingDisplayStyleGroupBox.Text = LText.SettingsWindow.FMDisplayTab.RatingDisplayStyle;
-            RatingNDLDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplayTab.RatingDisplayStyleNDL;
-            RatingFMSelDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplayTab.RatingDisplayStyleFMSel;
-            RatingUseStarsCheckBox.Text = LText.SettingsWindow.FMDisplayTab.RatingDisplayStyleUseStars;
+            RatingDisplayStyleGroupBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyle;
+            RatingNDLDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleNDL;
+            RatingFMSelDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleFMSel;
+            RatingUseStarsCheckBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleUseStars;
 
-            DateFormatGroupBox.Text = LText.SettingsWindow.FMDisplayTab.DateFormat;
-            DateCurrentCultureShortRadioButton.Text = LText.SettingsWindow.FMDisplayTab.CurrentCultureShort;
-            DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.FMDisplayTab.CurrentCultureLong;
-            DateCustomRadioButton.Text = LText.SettingsWindow.FMDisplayTab.Custom;
+            DateFormatGroupBox.Text = LText.SettingsWindow.FMDisplay_DateFormat;
+            DateCurrentCultureShortRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureShort;
+            DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureLong;
+            DateCustomRadioButton.Text = LText.SettingsWindow.FMDisplay_Custom;
 
             #endregion
 
             #region Other tab
 
-            OtherTabPage.Text = LText.SettingsWindow.OtherTab.TabText;
+            OtherTabPage.Text = LText.SettingsWindow.Other_TabText;
 
-            FMFileConversionGroupBox.Text = LText.SettingsWindow.OtherTab.FMFileConversion;
-            ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.OtherTab.ConvertWAVsTo16BitOnInstall;
-            ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.OtherTab.ConvertOGGsToWAVsOnInstall;
+            FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
+            ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
+            ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
 
-            BackupSavesGroupBox.Text = LText.SettingsWindow.OtherTab.BackUpSaves;
-            BackupSavesAlwaysAskRadioButton.Text = LText.SettingsWindow.OtherTab.BackUpAlwaysAsk;
-            BackupSavesAlwaysBackupRadioButton.Text = LText.SettingsWindow.OtherTab.BackUpAlwaysBackUp;
+            BackupSavesGroupBox.Text = LText.SettingsWindow.Other_BackUpSaves;
+            BackupSavesAlwaysAskRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
+            BackupSavesAlwaysBackupRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysBackUp;
 
-            LanguageGroupBox.Text = LText.SettingsWindow.OtherTab.Language;
-            LanguageTakeEffectLabel.Text = LText.SettingsWindow.OtherTab.LanguageTakeEffectNote;
+            LanguageGroupBox.Text = LText.SettingsWindow.Other_Language;
+            LanguageTakeEffectLabel.Text = LText.SettingsWindow.Other_LanguageTakeEffectNote;
 
-            WebSearchGroupBox.Text = LText.SettingsWindow.OtherTab.WebSearch;
-            WebSearchUrlLabel.Text = LText.SettingsWindow.OtherTab.WebSearchURL;
-            WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.OtherTab.WebSearchTitleVar;
-            MainToolTip.SetToolTip(WebSearchUrlResetButton, LText.SettingsWindow.OtherTab.WebSearchResetToolTip);
+            WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
+            WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
+            WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
+            MainToolTip.SetToolTip(WebSearchUrlResetButton, LText.SettingsWindow.Other_WebSearchResetToolTip);
 
             #endregion
         }
@@ -462,14 +462,14 @@ namespace AngelLoader.Forms
             }
             catch (FormatException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorInvalidDateFormat, LText.AlertMessages.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
                 return;
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorDateOutOfRange, LText.AlertMessages.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
                 return;
@@ -598,7 +598,7 @@ namespace AngelLoader.Forms
                     textBox.BackColor = Color.MistyRose;
                     textBox.Tag = PathError.True;
                 }
-                ErrorLabel.Text = LText.SettingsWindow.PathsTab.ErrorSomePathsAreInvalid;
+                ErrorLabel.Text = LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid;
                 ErrorLabel.Show();
             }
             else
@@ -688,13 +688,13 @@ namespace AngelLoader.Forms
             }
             catch (FormatException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorInvalidDateFormat, LText.AlertMessages.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplayTab.ErrorDateOutOfRange, LText.AlertMessages.Error,
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

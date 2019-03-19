@@ -76,7 +76,11 @@ namespace AngelLoader
             // TODO: Read languages.
             // Have to read it here because which language to use will be stored in the config file.
             // After reading, set Config.Articles (a List<string>) to the language's default articles
-            // TODO: Deal with default vs. custom articles for languages...
+            var engLangIni = Path.Combine(Paths.Startup, "English.ini");
+            if (File.Exists(engLangIni))
+            {
+                ReadLocalizationIni(engLangIni);
+            }
         }
 
         private bool CheckPaths()
@@ -982,13 +986,13 @@ namespace AngelLoader
 
             if (fm.Game == null)
             {
-                View.ShowAlert(LText.AlertMessages.InstallFM.UnknownGameType, LText.AlertMessages.Alert);
+                View.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (fm.Game == Game.Unsupported)
             {
-                View.ShowAlert(LText.AlertMessages.InstallFM.UnsupportedGameType, LText.AlertMessages.Alert);
+                View.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -996,7 +1000,7 @@ namespace AngelLoader
 
             if (fmArchivePath.IsEmpty())
             {
-                View.ShowAlert(LText.AlertMessages.InstallFM.ArchiveNotFound, LText.AlertMessages.Alert);
+                View.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1007,7 +1011,7 @@ namespace AngelLoader
             if (!File.Exists(gameExe))
             {
                 View.ShowAlert(gameName + ":\r\n" +
-                               LText.AlertMessages.InstallFM.ExecutableNotFound, LText.AlertMessages.Alert);
+                               LText.AlertMessages.Install_ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1015,14 +1019,14 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                View.ShowAlert(LText.AlertMessages.InstallFM.FMInstallPathNotFound, LText.AlertMessages.Alert);
+                View.ShowAlert(LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (GameIsRunning(gameExe))
             {
                 View.ShowAlert(gameName + ":\r\n" +
-                               LText.AlertMessages.InstallFM.GameIsRunning, LText.AlertMessages.Alert);
+                               LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1190,7 +1194,7 @@ namespace AngelLoader
             if (GameIsRunning(gameExe))
             {
                 View.ShowAlert(
-                    gameName + ":\r\n" + LText.AlertMessages.UninstallFM.GameIsRunning, LText.AlertMessages.Alert);
+                    gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning, LText.AlertMessages.Alert);
                 return;
             }
 
@@ -1203,7 +1207,7 @@ namespace AngelLoader
                 var fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
                 {
-                    var yes = View.AskToContinue(LText.AlertMessages.UninstallFM.FMAlreadyUninstalled,
+                    var yes = View.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
                         LText.AlertMessages.Alert);
                     if (yes)
                     {
@@ -1217,7 +1221,7 @@ namespace AngelLoader
 
                 if (fmArchivePath.IsEmpty())
                 {
-                    var cont = View.AskToContinue(LText.AlertMessages.UninstallFM.ArchiveNotFound,
+                    var cont = View.AskToContinue(LText.AlertMessages.Uninstall_ArchiveNotFound,
                         LText.AlertMessages.Warning);
 
                     if (!cont) return;
@@ -1244,7 +1248,7 @@ namespace AngelLoader
                         {
                             // TODO: Make this dialog have a "don't ask again" option
                             var cont = View.AskToContinue(
-                                LText.AlertMessages.UninstallFM.BackupSavesAndScreenshots, "AngelLoader");
+                                LText.AlertMessages.Uninstall_BackupSavesAndScreenshots, "AngelLoader");
                             if (cont) await BackupSavesAndScreenshots(fm);
                             break;
                         }
@@ -1257,7 +1261,7 @@ namespace AngelLoader
                 if (!await DeleteFMInstalledDirectory(fmInstalledPath))
                 {
                     // TODO: Make option to open the folder in Explorer and delete it manually?
-                    View.ShowAlert(LText.AlertMessages.UninstallFM.UninstallNotCompleted,
+                    View.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted,
                         LText.AlertMessages.Alert);
                 }
 
@@ -1340,7 +1344,7 @@ namespace AngelLoader
             if (GameIsRunning(gameExe))
             {
                 View.ShowAlert(
-                    gameName + ":\r\n" + LText.AlertMessages.FMFileConversion.GameIsRunning,
+                    gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
                     LText.AlertMessages.Alert);
                 return;
             }
@@ -1381,7 +1385,7 @@ namespace AngelLoader
             var gameName = GetGameNameFromGameType((Game)fm.Game);
             if (GameIsRunning(gameExe))
             {
-                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.FMFileConversion.GameIsRunning,
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
                     LText.AlertMessages.Alert);
                 return;
             }
@@ -1466,7 +1470,7 @@ namespace AngelLoader
 
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
-                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.ExecutableNotFound,
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_ExecutableNotFound,
                     LText.AlertMessages.Alert);
                 return false;
             }
@@ -1477,7 +1481,7 @@ namespace AngelLoader
 
             if (GameIsRunning(gameExe))
             {
-                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.GameIsRunning,
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GameIsRunning,
                     LText.AlertMessages.Alert);
                 return false;
             }
@@ -1548,7 +1552,7 @@ namespace AngelLoader
         {
             if (fm.Game == null)
             {
-                View.ShowAlert(LText.AlertMessages.Play.UnknownGameType, LText.AlertMessages.Alert);
+                View.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1560,7 +1564,7 @@ namespace AngelLoader
 
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
-                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.ExecutableNotFoundFM,
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_ExecutableNotFoundFM,
                     LText.AlertMessages.Alert);
                 return false;
             }
@@ -1571,7 +1575,7 @@ namespace AngelLoader
 
             if (GameIsRunning(gameExe))
             {
-                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play.GameIsRunning,
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GameIsRunning,
                     LText.AlertMessages.Alert);
                 return false;
             }

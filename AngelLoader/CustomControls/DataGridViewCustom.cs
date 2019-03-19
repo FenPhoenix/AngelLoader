@@ -288,22 +288,22 @@ namespace AngelLoader.CustomControls
 
         internal void SetUITextToLocalized()
         {
-            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnsContextMenu.ResetAllColumnsToVisible;
-            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnsContextMenu.ResetAllColumnWidths;
-            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnsContextMenu.ResetAllColumnPositions;
+            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
+            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
+            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
 
-            ShowGameMenuItem.Text = LText.FMsList.Columns.Game;
-            ShowInstalledMenuItem.Text = LText.FMsList.Columns.Installed;
-            ShowTitleMenuItem.Text = LText.FMsList.Columns.Title;
-            ShowArchiveMenuItem.Text = LText.FMsList.Columns.Archive;
-            ShowAuthorMenuItem.Text = LText.FMsList.Columns.Author;
-            ShowSizeMenuItem.Text = LText.FMsList.Columns.Size;
-            ShowRatingMenuItem.Text = LText.FMsList.Columns.Rating;
-            ShowFinishedMenuItem.Text = LText.FMsList.Columns.Finished;
-            ShowReleaseDateMenuItem.Text = LText.FMsList.Columns.ReleaseDate;
-            ShowLastPlayedMenuItem.Text = LText.FMsList.Columns.LastPlayed;
-            ShowDisabledModsMenuItem.Text = LText.FMsList.Columns.DisabledMods;
-            ShowCommentMenuItem.Text = LText.FMsList.Columns.Comment;
+            ShowGameMenuItem.Text = LText.FMsList.GameColumn;
+            ShowInstalledMenuItem.Text = LText.FMsList.InstalledColumn;
+            ShowTitleMenuItem.Text = LText.FMsList.TitleColumn;
+            ShowArchiveMenuItem.Text = LText.FMsList.ArchiveColumn;
+            ShowAuthorMenuItem.Text = LText.FMsList.AuthorColumn;
+            ShowSizeMenuItem.Text = LText.FMsList.SizeColumn;
+            ShowRatingMenuItem.Text = LText.FMsList.RatingColumn;
+            ShowFinishedMenuItem.Text = LText.FMsList.FinishedColumn;
+            ShowReleaseDateMenuItem.Text = LText.FMsList.ReleaseDateColumn;
+            ShowLastPlayedMenuItem.Text = LText.FMsList.LastPlayedColumn;
+            ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn;
+            ShowCommentMenuItem.Text = LText.FMsList.CommentColumn;
         }
 
         #region Main

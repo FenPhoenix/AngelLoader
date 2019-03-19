@@ -3,9 +3,8 @@
 
 # Fen custom
 *.exe
-ffmpeg/
-# [Dd]ll[Ee]xport.bat
-# [Dd]ll[Ee]xport_[Cc]onfigure.bat
+ffmpeg/**
+FenGen/**
 
 # User-specific files
 *.suo
