@@ -25,7 +25,7 @@ namespace AngelLoader.Forms
             SetUITextToLocalized();
         }
 
-        public void SetUITextToLocalized()
+        public void SetUITextToLocalized(bool suspendResume = true)
         {
             Text = LText.TagsFilterBox.TitleText;
             IncludeAllLabel.Text = LText.TagsFilterBox.IncludeAll;

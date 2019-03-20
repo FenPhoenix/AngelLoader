@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
+using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Forms
 {
@@ -35,7 +36,7 @@ namespace AngelLoader.Forms
             if (to != null) ToDateTimePicker.Value = (DateTime)to;
         }
 
-        public void SetUITextToLocalized()
+        public void SetUITextToLocalized(bool suspendResume = true)
         {
             FromLabel.Text = LText.DateFilterBox.From;
             ToLabel.Text = LText.DateFilterBox.To;

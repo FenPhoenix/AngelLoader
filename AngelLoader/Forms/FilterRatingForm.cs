@@ -30,7 +30,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void SetUITextToLocalized()
+        public void SetUITextToLocalized(bool suspendResume = true)
         {
             Text = LText.RatingFilterBox.TitleText;
             FromLabel.Text = LText.RatingFilterBox.From;

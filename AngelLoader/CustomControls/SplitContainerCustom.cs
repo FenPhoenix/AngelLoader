@@ -77,11 +77,11 @@ namespace AngelLoader.CustomControls
         /// If <paramref name="distance"/> is valid, sets the splitter distance. Otherwise, leaves it alone.
         /// </summary>
         /// <param name="distance"></param>
-        public void SetSplitterDistance(int distance)
+        public void SetSplitterDistance(int distance, bool refresh = true)
         {
             try
             {
-                this.SuspendDrawing();
+                if (refresh) this.SuspendDrawing();
                 SplitterDistance = distance;
             }
             catch (Exception)
@@ -90,7 +90,7 @@ namespace AngelLoader.CustomControls
             }
             finally
             {
-                this.ResumeDrawing();
+                if (refresh) this.ResumeDrawing();
             }
         }
 

@@ -163,7 +163,7 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        public void SetUITextToLocalized()
+        public void SetUITextToLocalized(bool suspendResume = true)
         {
             ProgressCancelButton.SetL10nText(LText.Global.Cancel, ProgressCancelButton.Width);
             ProgressCancelButton.CenterH(this);

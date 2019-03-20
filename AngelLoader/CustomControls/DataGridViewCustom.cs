@@ -286,7 +286,7 @@ namespace AngelLoader.CustomControls
             #endregion
         }
 
-        public void SetUITextToLocalized()
+        public void SetUITextToLocalized(bool suspendResume = true)
         {
             ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
             ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;

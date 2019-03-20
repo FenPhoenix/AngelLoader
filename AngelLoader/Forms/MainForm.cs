@@ -364,11 +364,11 @@ namespace AngelLoader.Forms
             SetWindowStateAndSize();
 
             // These also need to be set here for similar reasons.
-            MainSplitContainer.SetSplitterDistance(Config.MainHorizontalSplitterDistance);
-            TopSplitContainer.SetSplitterDistance(Config.TopVerticalSplitterDistance);
+            MainSplitContainer.SetSplitterDistance(Config.MainHorizontalSplitterDistance, refresh: false);
+            TopSplitContainer.SetSplitterDistance(Config.TopVerticalSplitterDistance, refresh: false);
 
             // Set this here because it might need to know the size of things after splitter adjustment
-            SetUITextToLocalized();
+            SetUITextToLocalized(suspendResume: false);
         }
 
         private void SetWindowStateAndSize()
@@ -405,14 +405,13 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void SetUITextToLocalized()
+        public void SetUITextToLocalized(bool suspendResume = true)
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
             var selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFM() : null;
 
-            this.SuspendDrawing();
-            this.SuspendLayout();
+            if (suspendResume) this.SuspendDrawing();
             try
             {
                 // TODO: Replace all magic numbers in here with saved default widths
@@ -598,12 +597,13 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                this.ResumeLayout();
-                this.ResumeDrawing();
+                if (suspendResume) this.ResumeDrawing();
             }
 
             // To refresh the FM size column strings to localized
-            RefreshFMsListKeepSelection();
+            // Quick hack: the only time we pass suspendResume = false is on startup, and we don't need to refresh
+            // then because we already will later
+            if (suspendResume) RefreshFMsListKeepSelection();
         }
 
         private void SetFMSizesToLocalized()

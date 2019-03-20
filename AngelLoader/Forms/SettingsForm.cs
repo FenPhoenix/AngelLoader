@@ -251,10 +251,9 @@ namespace AngelLoader.Forms
             SetUITextToLocalized();
         }
 
-        public void SetUITextToLocalized()
+        public void SetUITextToLocalized(bool suspendResume = true)
         {
-            this.SuspendDrawing();
-            this.SuspendLayout();
+            if (suspendResume) this.SuspendDrawing();
             try
             {
                 OKButton.SetL10nText(LText.Global.OK, OKButton.Width);
@@ -353,8 +352,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                this.ResumeLayout();
-                this.ResumeDrawing();
+                if (suspendResume) this.ResumeDrawing();
             }
         }
 

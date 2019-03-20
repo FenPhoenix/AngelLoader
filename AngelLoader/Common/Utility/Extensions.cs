@@ -539,7 +539,6 @@ namespace AngelLoader.Common.Utility
                 // Extra padding for a nicer look
                 button.Width += 12;
             }
-
         }
 
         #endregion
