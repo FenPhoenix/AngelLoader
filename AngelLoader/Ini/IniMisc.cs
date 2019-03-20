@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Text;
-using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.Common;
@@ -48,8 +46,8 @@ namespace AngelLoader.Ini
         {
             using (var sr = new StreamReader(file, Encoding.UTF8))
             {
-                string line;
                 bool inMeta = false;
+                string line;
                 while ((line = sr.ReadLine()) != null)
                 {
                     var lineT = line.Trim();
