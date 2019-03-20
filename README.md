@@ -1,5 +1,7 @@
 # AngelLoader
 
+<p align="center"><img src="http://fenphoenix.com/github/AngelLoader/MainWindow-600.png" /></p>
+
 **NOTE:** This is currently in pre-release state, and anything about it is subject to change before version 1.0. If you compile and use this, be aware of that.
 
 ## Description
