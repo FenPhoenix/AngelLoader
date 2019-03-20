@@ -364,7 +364,22 @@ namespace AngelLoader.Forms
                 MainTabControl.SelectedTab == OtherTabPage ? SettingsTab.Other :
                 SettingsTab.Paths;
 
-            if (DialogResult != DialogResult.OK) return;
+            if (DialogResult != DialogResult.OK)
+            {
+                try
+                {
+                    if (!LanguageComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
+                    {
+                        Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
+                        OwnerForm.SetUITextToLocalized();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // log it
+                }
+                return;
+            }
 
             FormatArticles();
 
