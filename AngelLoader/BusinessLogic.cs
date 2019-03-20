@@ -44,6 +44,7 @@ namespace AngelLoader
         internal async Task Init()
         {
             Directory.CreateDirectory(Paths.Data);
+            Directory.CreateDirectory(Paths.Languages);
 
             bool openSettings;
             if (File.Exists(Paths.ConfigIni))
@@ -76,7 +77,7 @@ namespace AngelLoader
             // Have to read langs here because which language to use will be stored in the config file.
             // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
             // name in its own language
-            var langFiles = Directory.GetFiles(Paths.Startup, "*.ini", SearchOption.TopDirectoryOnly);
+            var langFiles = Directory.GetFiles(Paths.Languages, "*.ini", SearchOption.TopDirectoryOnly);
             bool selFound = false;
             for (int i = 0; i < langFiles.Length; i++)
             {

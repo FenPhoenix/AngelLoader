@@ -360,9 +360,9 @@ xcopy "$(TargetDir)ffmpeg.exe" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)ffprobe.exe" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)ffmpeg.txt" "C:\AngelLoader\" /y
 
-xcopy "$(TargetDir)ffmpeg" "C:\AngelLoader\ffmpeg" /y /i
+xcopy "$(TargetDir)ffmpeg" "C:\AngelLoader\ffmpeg\" /y /i
 
-xcopy "$(ProjectDir)English.ini" "C:\AngelLoader\" /y
+xcopy "$(ProjectDir)English.ini" "C:\AngelLoader\Data\Languages\" /y
 
 rem ---</PostBuildEvent>
   </PropertyGroup>

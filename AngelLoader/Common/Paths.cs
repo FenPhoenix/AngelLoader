@@ -71,6 +71,8 @@ namespace AngelLoader.Common
 
         internal static readonly string Data = Path.Combine(Startup, "Data");
 
+        internal static readonly string Languages = Path.Combine(Data, "Languages");
+
         /// <summary>
         /// For caching readmes and whatever else we want from non-installed FM archives
         /// </summary>

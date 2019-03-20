@@ -820,7 +820,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             var s = LanguageComboBox;
-            Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Startup, s.SelectedBackingItem() + ".ini"));
+            Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
             SetUITextToLocalized();
             OwnerForm.SetUITextToLocalized();
         }
