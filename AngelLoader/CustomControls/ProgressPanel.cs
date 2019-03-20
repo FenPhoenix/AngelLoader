@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
@@ -7,7 +8,7 @@ using AngelLoader.WinAPI.Taskbar;
 
 namespace AngelLoader.CustomControls
 {
-    public partial class ProgressPanel : UserControl
+    public partial class ProgressPanel : UserControl, ILocalizable
     {
         #region Fields etc.
 
@@ -165,7 +166,7 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        internal void SetUITextToLocalized()
+        public void SetUITextToLocalized()
         {
             ProgressCancelButton.SetL10nText(LText.Global.Cancel, ProgressCancelButton.Width);
             ProgressCancelButton.CenterH(this);

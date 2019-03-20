@@ -8,7 +8,7 @@ namespace AngelLoader.Ini
 {
     internal static partial class Ini
     {
-        private static bool StartsWithFast_NoNullChecks(this string str, string value)
+        internal static bool StartsWithFast_NoNullChecks(this string str, string value)
         {
             if (str.Length < value.Length) return false;
 

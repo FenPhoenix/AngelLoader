@@ -142,7 +142,6 @@ namespace AngelLoader.Ini
 
                     config.Columns.Add(col);
                 }
-
                 #region Filter
 
                 else if (lineT.StartsWithI("FilterTitle="))
@@ -344,7 +343,6 @@ namespace AngelLoader.Ini
                 }
 
                 #endregion
-
                 else if (lineT.StartsWithI(nameof(config.EnableArticles) + "="))
                 {
                     config.EnableArticles = val.EqualsTrue();
@@ -596,6 +594,10 @@ namespace AngelLoader.Ini
                         config.BackupSaves = (BackupSaves)field.GetValue(null);
                     }
                 }
+                else if (lineT.StartsWithI(nameof(config.Language) + "="))
+                {
+                    config.Language = val;
+                }
                 else if (lineT.StartsWithI(nameof(config.WebSearchUrl) + "="))
                 {
                     config.WebSearchUrl = val;
@@ -682,6 +684,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.ConvertWAVsTo16BitOnInstall) + "=" + config.ConvertWAVsTo16BitOnInstall);
                 sw.WriteLine(nameof(config.ConvertOGGsToWAVsOnInstall) + "=" + config.ConvertOGGsToWAVsOnInstall);
                 sw.WriteLine(nameof(config.BackupSaves) + "=" + config.BackupSaves);
+                sw.WriteLine(nameof(config.Language) + "=" + config.Language);
                 sw.WriteLine(nameof(config.WebSearchUrl) + "=" + config.WebSearchUrl);
 
                 #endregion

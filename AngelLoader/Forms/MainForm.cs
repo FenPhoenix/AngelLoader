@@ -21,7 +21,7 @@ using Gma.System.MouseKeyHook;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm : Form, IEventDisabler, IMessageFilter
+    public partial class MainForm : Form, IEventDisabler, ILocalizable, IMessageFilter
     {
         #region Private fields
 
@@ -405,13 +405,14 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void SetUITextToLocalized()
+        public void SetUITextToLocalized()
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
             var selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFM() : null;
 
             this.SuspendDrawing();
+            this.SuspendLayout();
             try
             {
                 // TODO: Replace all magic numbers in here with saved default widths
@@ -592,11 +593,23 @@ namespace AngelLoader.Forms
 
                 FMsDGV.SetUITextToLocalized();
                 ProgressBox.SetUITextToLocalized();
+
+                SetFMSizesToLocalized();
             }
             finally
             {
+                this.ResumeLayout();
                 this.ResumeDrawing();
             }
+
+            // To refresh the FM size column strings to localized
+            RefreshFMsListKeepSelection();
+        }
+
+        private void SetFMSizesToLocalized()
+        {
+            // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture
+            foreach (var fm in FMsList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
         }
 
         private void MainForm_Deactivate(object sender, EventArgs e)
@@ -1665,7 +1678,7 @@ namespace AngelLoader.Forms
 
         internal async Task<bool> OpenSettings(bool startup = false)
         {
-            using (var sf = new SettingsForm(Config, startup))
+            using (var sf = new SettingsForm(this, Config, startup))
             {
                 // This needs to be separate so the below line can work
                 var result = sf.ShowDialog();
@@ -1797,6 +1810,8 @@ namespace AngelLoader.Forms
 
                 Config.BackupSaves = sf.OutConfig.BackupSaves;
 
+                Config.Language = sf.OutConfig.Language;
+
                 Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
 
                 #endregion
@@ -1834,10 +1849,10 @@ namespace AngelLoader.Forms
                     UpdateRatingColumn(startup: false);
                     UpdateRatingLabel();
                 }
-                if (languageChanged)
+                if ((archivePathsChanged || gamePathsChanged) && languageChanged)
                 {
-                    // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture
-                    foreach (var fm in FMsList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
+                    // Do this again if the FMs list might have changed
+                    SetFMSizesToLocalized();
                 }
 
                 #endregion

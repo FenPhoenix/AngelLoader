@@ -16,7 +16,7 @@ namespace AngelLoader.Common.DataClasses
         internal string T2Exe = null;
         internal string T3Exe = null;
 
-        // Don't write these out
+        // Session-only; don't write these out
         internal string T1FMInstallPath = null;
         internal string T2FMInstallPath = null;
         internal string T3FMInstallPath = null;
@@ -69,6 +69,9 @@ namespace AngelLoader.Common.DataClasses
 
         internal string Language = "English";
 
+        // Session-only; don't write out
+        internal Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
+
         internal SettingsTab SettingsTab = SettingsTab.Paths;
 
         internal TopRightTab TopRightTab = TopRightTab.Statistics;
@@ -82,7 +85,7 @@ namespace AngelLoader.Common.DataClasses
         internal string DateCustomFormat3;
         internal string DateCustomSeparator3;
         internal string DateCustomFormat4;
-        // Don't write this one out
+        // Session-only; don't write out
         internal string DateCustomFormatString;
 
         internal FormWindowState MainWindowState = FormWindowState.Maximized;

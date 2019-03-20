@@ -13,8 +13,10 @@ using AngelLoader.WinAPI.Dialogs;
 
 namespace AngelLoader.Forms
 {
-    internal sealed partial class SettingsForm : Form, IEventDisabler
+    internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable
     {
+        private readonly ILocalizable OwnerForm;
+
         private readonly ConfigData InConfig;
         internal readonly ConfigData OutConfig = new ConfigData();
 
@@ -34,9 +36,11 @@ namespace AngelLoader.Forms
 
         #region Constructor / closing
 
-        internal SettingsForm(ConfigData config, bool startup)
+        internal SettingsForm(ILocalizable ownerForm, ConfigData config, bool startup)
         {
             InitializeComponent();
+
+            OwnerForm = ownerForm;
 
             GameExePathTextBoxes = new[]
             {
@@ -212,110 +216,146 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            LanguageComboBox.SelectedItem =
-                LanguageComboBox.Items.Contains(InConfig.Language) ? InConfig.Language : "English";
+            #region Languages
+
+            using (new DisableEvents(this))
+            {
+                foreach (var item in InConfig.LanguageNames)
+                {
+                    LanguageComboBox.BackingItems.Add(item.Key);
+                    LanguageComboBox.Items.Add(item.Value);
+                }
+
+                if (LanguageComboBox.BackingItems.ContainsI("English"))
+                {
+                    LanguageComboBox.BackingItems.Remove("English");
+                    LanguageComboBox.BackingItems.Insert(0, "English");
+                    LanguageComboBox.Items.Remove("English");
+                    LanguageComboBox.Items.Insert(0, "English");
+                }
+                else
+                {
+                    LanguageComboBox.BackingItems.Insert(0, "English");
+                    LanguageComboBox.Items.Insert(0, "English");
+                }
+
+                LanguageComboBox.SelectBackingIndexOf(LanguageComboBox.BackingItems.Contains(InConfig.Language)
+                    ? InConfig.Language
+                    : "English");
+            }
+
+            #endregion
 
             WebSearchUrlTextBox.Text = InConfig.WebSearchUrl;
 
             SetUITextToLocalized();
         }
 
-        private void SetUITextToLocalized()
+        public void SetUITextToLocalized()
         {
-            OKButton.SetL10nText(LText.Global.OK, OKButton.Width);
-            Cancel_Button.SetL10nText(LText.Global.Cancel, Cancel_Button.Width);
-
-            #region Paths tab
-
-            PathsTabPage.Text = LText.SettingsWindow.Paths_TabText;
-
-            PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
-            Thief1ExePathLabel.Text = LText.SettingsWindow.Paths_Thief1;
-            Thief2ExePathLabel.Text = LText.SettingsWindow.Paths_Thief2;
-            Thief3ExePathLabel.Text = LText.SettingsWindow.Paths_Thief3;
-
-            OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
-            BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
-
-            // Manual "flow layout" for textbox/browse button combos
-            for (int i = 0; i < 4; i++)
+            this.SuspendDrawing();
+            this.SuspendLayout();
+            try
             {
-                var button =
-                    i == 0 ? Thief1ExePathBrowseButton :
-                    i == 1 ? Thief2ExePathBrowseButton :
-                    i == 2 ? Thief3ExePathBrowseButton :
-                    BackupPathBrowseButton;
+                OKButton.SetL10nText(LText.Global.OK, OKButton.Width);
+                Cancel_Button.SetL10nText(LText.Global.Cancel, Cancel_Button.Width);
 
-                var textbox =
-                    i == 0 ? Thief1ExePathTextBox :
-                    i == 1 ? Thief2ExePathTextBox :
-                    i == 2 ? Thief3ExePathTextBox :
-                    BackupPathTextBox;
+                #region Paths tab
 
-                int oldWidth = button.Width;
+                PathsTabPage.Text = LText.SettingsWindow.Paths_TabText;
 
-                button.SetL10nText(LText.Global.BrowseEllipses);
+                PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
+                Thief1ExePathLabel.Text = LText.SettingsWindow.Paths_Thief1;
+                Thief2ExePathLabel.Text = LText.SettingsWindow.Paths_Thief2;
+                Thief3ExePathLabel.Text = LText.SettingsWindow.Paths_Thief3;
 
-                int diff =
-                    button.Width > oldWidth ? -(button.Width - oldWidth) :
-                    button.Width < oldWidth ? oldWidth - button.Width : 0;
+                OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
+                BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
-                button.Left += diff;
-                textbox.Width += diff;
+                // Manual "flow layout" for textbox/browse button combos
+                for (int i = 0; i < 4; i++)
+                {
+                    var button =
+                        i == 0 ? Thief1ExePathBrowseButton :
+                        i == 1 ? Thief2ExePathBrowseButton :
+                        i == 2 ? Thief3ExePathBrowseButton :
+                        BackupPathBrowseButton;
+
+                    var textbox =
+                        i == 0 ? Thief1ExePathTextBox :
+                        i == 1 ? Thief2ExePathTextBox :
+                        i == 2 ? Thief3ExePathTextBox :
+                        BackupPathTextBox;
+
+                    int oldWidth = button.Width;
+
+                    button.SetL10nText(LText.Global.BrowseEllipses);
+
+                    int diff =
+                        button.Width > oldWidth ? -(button.Width - oldWidth) :
+                        button.Width < oldWidth ? oldWidth - button.Width : 0;
+
+                    button.Left += diff;
+                    textbox.Width += diff;
+                }
+
+                FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;
+                IncludeSubfoldersCheckBox.Text = LText.SettingsWindow.Paths_IncludeSubfolders;
+                MainToolTip.SetToolTip(AddFMArchivePathButton, LText.SettingsWindow.Paths_AddArchivePathToolTip);
+                MainToolTip.SetToolTip(RemoveFMArchivePathButton, LText.SettingsWindow.Paths_RemoveArchivePathToolTip);
+
+                #endregion
+
+                #region FM Display tab
+
+                FMDisplayTabPage.Text = LText.SettingsWindow.FMDisplay_TabText;
+
+                GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
+                OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationByTab;
+                SortGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationOneList;
+
+                SortingGroupBox.Text = LText.SettingsWindow.FMDisplay_Sorting;
+                EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.FMDisplay_IgnoreArticles;
+                MoveArticlesToEndCheckBox.Text = LText.SettingsWindow.FMDisplay_MoveArticlesToEnd;
+
+                RatingDisplayStyleGroupBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyle;
+                RatingNDLDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleNDL;
+                RatingFMSelDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleFMSel;
+                RatingUseStarsCheckBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleUseStars;
+
+                DateFormatGroupBox.Text = LText.SettingsWindow.FMDisplay_DateFormat;
+                DateCurrentCultureShortRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureShort;
+                DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureLong;
+                DateCustomRadioButton.Text = LText.SettingsWindow.FMDisplay_Custom;
+
+                #endregion
+
+                #region Other tab
+
+                OtherTabPage.Text = LText.SettingsWindow.Other_TabText;
+
+                FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
+                ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
+                ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
+
+                BackupSavesGroupBox.Text = LText.SettingsWindow.Other_BackUpSaves;
+                BackupSavesAlwaysAskRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
+                BackupSavesAlwaysBackupRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysBackUp;
+
+                LanguageGroupBox.Text = LText.SettingsWindow.Other_Language;
+
+                WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
+                WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
+                WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
+                MainToolTip.SetToolTip(WebSearchUrlResetButton, LText.SettingsWindow.Other_WebSearchResetToolTip);
+
+                #endregion
             }
-
-            FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;
-            IncludeSubfoldersCheckBox.Text = LText.SettingsWindow.Paths_IncludeSubfolders;
-            MainToolTip.SetToolTip(AddFMArchivePathButton, LText.SettingsWindow.Paths_AddArchivePathToolTip);
-            MainToolTip.SetToolTip(RemoveFMArchivePathButton, LText.SettingsWindow.Paths_RemoveArchivePathToolTip);
-
-            #endregion
-
-            #region FM Display tab
-
-            FMDisplayTabPage.Text = LText.SettingsWindow.FMDisplay_TabText;
-
-            GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
-            OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationByTab;
-            SortGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationOneList;
-
-            SortingGroupBox.Text = LText.SettingsWindow.FMDisplay_Sorting;
-            EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.FMDisplay_IgnoreArticles;
-            MoveArticlesToEndCheckBox.Text = LText.SettingsWindow.FMDisplay_MoveArticlesToEnd;
-
-            RatingDisplayStyleGroupBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyle;
-            RatingNDLDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleNDL;
-            RatingFMSelDisplayStyleRadioButton.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleFMSel;
-            RatingUseStarsCheckBox.Text = LText.SettingsWindow.FMDisplay_RatingDisplayStyleUseStars;
-
-            DateFormatGroupBox.Text = LText.SettingsWindow.FMDisplay_DateFormat;
-            DateCurrentCultureShortRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureShort;
-            DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureLong;
-            DateCustomRadioButton.Text = LText.SettingsWindow.FMDisplay_Custom;
-
-            #endregion
-
-            #region Other tab
-
-            OtherTabPage.Text = LText.SettingsWindow.Other_TabText;
-
-            FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
-            ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
-            ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
-
-            BackupSavesGroupBox.Text = LText.SettingsWindow.Other_BackUpSaves;
-            BackupSavesAlwaysAskRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
-            BackupSavesAlwaysBackupRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysBackUp;
-
-            LanguageGroupBox.Text = LText.SettingsWindow.Other_Language;
-            LanguageTakeEffectLabel.Text = LText.SettingsWindow.Other_LanguageTakeEffectNote;
-
-            WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
-            WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
-            WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
-            MainToolTip.SetToolTip(WebSearchUrlResetButton, LText.SettingsWindow.Other_WebSearchResetToolTip);
-
-            #endregion
+            finally
+            {
+                this.ResumeLayout();
+                this.ResumeDrawing();
+            }
         }
 
         private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -494,7 +534,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            OutConfig.Language = LanguageComboBox.SelectedItem.ToString();
+            OutConfig.Language = LanguageComboBox.SelectedBackingItem();
 
             OutConfig.WebSearchUrl = WebSearchUrlTextBox.Text;
         }
@@ -774,6 +814,15 @@ namespace AngelLoader.Forms
         private void WebSearchURLResetButton_Click(object sender, EventArgs e)
         {
             WebSearchUrlTextBox.Text = Defaults.WebSearchUrl;
+        }
+
+        private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            var s = LanguageComboBox;
+            Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Startup, s.SelectedBackingItem() + ".ini"));
+            SetUITextToLocalized();
+            OwnerForm.SetUITextToLocalized();
         }
     }
 }

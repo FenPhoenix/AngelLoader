@@ -82,7 +82,6 @@
             this.SortGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.OtherTabPage = new System.Windows.Forms.TabPage();
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
-            this.LanguageTakeEffectLabel = new System.Windows.Forms.Label();
             this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
             this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
@@ -697,34 +696,23 @@
             // 
             // LanguageGroupBox
             // 
-            this.LanguageGroupBox.Controls.Add(this.LanguageTakeEffectLabel);
             this.LanguageGroupBox.Controls.Add(this.LanguageComboBox);
             this.LanguageGroupBox.Location = new System.Drawing.Point(8, 188);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
-            this.LanguageGroupBox.Size = new System.Drawing.Size(424, 80);
+            this.LanguageGroupBox.Size = new System.Drawing.Size(424, 60);
             this.LanguageGroupBox.TabIndex = 2;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
-            // 
-            // LanguageTakeEffectLabel
-            // 
-            this.LanguageTakeEffectLabel.AutoSize = true;
-            this.LanguageTakeEffectLabel.Location = new System.Drawing.Point(16, 56);
-            this.LanguageTakeEffectLabel.Name = "LanguageTakeEffectLabel";
-            this.LanguageTakeEffectLabel.Size = new System.Drawing.Size(238, 13);
-            this.LanguageTakeEffectLabel.TabIndex = 2;
-            this.LanguageTakeEffectLabel.Text = "This selection will take effect when you click OK.";
             // 
             // LanguageComboBox
             // 
             this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.LanguageComboBox.FormattingEnabled = true;
-            this.LanguageComboBox.Items.AddRange(new object[] {
-            "English"});
             this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
             this.LanguageComboBox.Name = "LanguageComboBox";
             this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
             this.LanguageComboBox.TabIndex = 0;
+            this.LanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBox_SelectedIndexChanged);
             // 
             // WebSearchGroupBox
             // 
@@ -899,7 +887,6 @@
             this.GameOrganizationGroupBox.ResumeLayout(false);
             this.OtherTabPage.ResumeLayout(false);
             this.LanguageGroupBox.ResumeLayout(false);
-            this.LanguageGroupBox.PerformLayout();
             this.WebSearchGroupBox.ResumeLayout(false);
             this.WebSearchGroupBox.PerformLayout();
             this.BackupSavesGroupBox.ResumeLayout(false);
@@ -981,7 +968,6 @@
         private System.Windows.Forms.CheckBox MoveArticlesToEndCheckBox;
         private System.Windows.Forms.GroupBox LanguageGroupBox;
         private CustomControls.ComboBoxCustom LanguageComboBox;
-        private System.Windows.Forms.Label LanguageTakeEffectLabel;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }

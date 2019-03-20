@@ -6,7 +6,7 @@ using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Forms
 {
-    public partial class FilterRatingForm : Form, IEventDisabler
+    public partial class FilterRatingForm : Form, IEventDisabler, ILocalizable
     {
         internal int RatingFrom;
         internal int RatingTo;
@@ -30,7 +30,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void SetUITextToLocalized()
+        public void SetUITextToLocalized()
         {
             Text = LText.RatingFilterBox.TitleText;
             FromLabel.Text = LText.RatingFilterBox.From;

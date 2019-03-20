@@ -9,7 +9,7 @@ using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Forms
 {
-    public partial class FilterTagsForm2 : Form
+    public partial class FilterTagsForm2 : Form, ILocalizable
     {
         private readonly List<GlobalCatAndTags> SourceTags = new List<GlobalCatAndTags>();
         internal readonly TagsFilter TagsFilter = new TagsFilter();
@@ -25,7 +25,7 @@ namespace AngelLoader.Forms
             SetUITextToLocalized();
         }
 
-        private void SetUITextToLocalized()
+        public void SetUITextToLocalized()
         {
             Text = LText.TagsFilterBox.TitleText;
             IncludeAllLabel.Text = LText.TagsFilterBox.IncludeAll;

@@ -73,18 +73,49 @@ namespace AngelLoader
                 }
             }
 
-            // TODO: Read languages.
-            // Have to read it here because which language to use will be stored in the config file.
+            // Have to read langs here because which language to use will be stored in the config file.
             // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
             // name in its own language
             var langFiles = Directory.GetFiles(Paths.Startup, "*.ini", SearchOption.TopDirectoryOnly);
+            bool selFound = false;
             for (int i = 0; i < langFiles.Length; i++)
             {
-                var fn = langFiles[i].GetFileNameFast().RemoveExtension();
-                if (fn.EqualsI(Config.Language))
+                var f = langFiles[i];
+                var fn = f.GetFileNameFast().RemoveExtension();
+                if (!selFound && fn.EqualsI(Config.Language))
                 {
-                    ReadLocalizationIni(langFiles[i]);
-                    break;
+                    ReadLocalizationIni(f);
+                    selFound = true;
+                }
+                ReadLanguageName(f);
+            }
+        }
+
+        // Should probably go in Ini or something
+        private void ReadLanguageName(string file)
+        {
+            using (var sr = new StreamReader(file, Encoding.UTF8))
+            {
+                string line;
+                bool inMeta = false;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    var lineT = line.Trim();
+                    if (inMeta && lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.LanguageName) + "="))
+                    {
+                        var key = file.GetFileNameFast().RemoveExtension();
+                        var value = line.TrimStart().Substring(nameof(LText.Meta.LanguageName).Length + 1);
+                        Config.LanguageNames.Add(key, value);
+                        return;
+                    }
+                    else if (lineT == "[" + nameof(LText.Meta) + "]")
+                    {
+                        inMeta = true;
+                    }
+                    else if (!lineT.IsEmpty() && lineT[0] == '[' && lineT[lineT.Length - 1] == ']')
+                    {
+                        inMeta = false;
+                    }
                 }
             }
         }

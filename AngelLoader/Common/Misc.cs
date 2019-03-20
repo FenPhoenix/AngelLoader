@@ -71,6 +71,11 @@ namespace AngelLoader.Common
 
     #endregion
 
+    internal interface ILocalizable
+    {
+        void SetUITextToLocalized();
+    }
+
     internal static class Regexes
     {
         // Uh, nothing in here at the moment.

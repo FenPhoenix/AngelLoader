@@ -22,11 +22,14 @@ namespace AngelLoader.Common.DataClasses
         // -Comments don't support concatenation (try to fix later)
         // -Strings must be inside sub-classes or they won't be picked up (that's the nature of ini files)
 
-        internal static class Global
+        internal static class Meta
         {
             [FenGenComment("This should be the name of this file's language in this file's language.\r\nExample: English should be English, French should be Français, etc.")]
             internal static string LanguageName = "English";
-            [FenGenBlankLine]
+        }
+
+        internal static class Global
+        {
             internal static string OK = "OK";
             internal static string Cancel = "Cancel";
             internal static string BrowseEllipses = "Browse...";
@@ -303,8 +306,6 @@ namespace AngelLoader.Common.DataClasses
             internal static string Other_BackUpAlwaysBackUp = "Always back up";
             [FenGenBlankLine]
             internal static string Other_Language = "Language";
-            [FenGenBlankLine]
-            internal static string Other_LanguageTakeEffectNote = "This selection will take effect when you click OK.";
             [FenGenBlankLine]
             internal static string Other_WebSearch = "Web search";
             internal static string Other_WebSearchURL = "Full URL to use when searching for an FM title:";

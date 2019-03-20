@@ -15,16 +15,28 @@ namespace AngelLoader.Ini
             for (int i = 0; i < lines.Length; i++)
             {
                 var lineT = lines[i].Trim();
-                if (lineT == "[Global]")
+                if (lineT == "[Meta]")
                 {
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
                         if (lt.StartsWithFast_NoNullChecks("LanguageName="))
                         {
-                            LText.Global.LanguageName = lt.Substring(13);
+                            LText.Meta.LanguageName = lt.Substring(13);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("OK="))
+                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[Global]")
+                {
+                    while (i < lines.Length - 1)
+                    {
+                        var lt = lines[i + 1].TrimStart();
+                        if (lt.StartsWithFast_NoNullChecks("OK="))
                         {
                             LText.Global.OK = lt.Substring(3);
                         }
@@ -923,10 +935,6 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Other_Language="))
                         {
                             LText.SettingsWindow.Other_Language = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_LanguageTakeEffectNote="))
-                        {
-                            LText.SettingsWindow.Other_LanguageTakeEffectNote = lt.Substring(29);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Other_WebSearch="))
                         {

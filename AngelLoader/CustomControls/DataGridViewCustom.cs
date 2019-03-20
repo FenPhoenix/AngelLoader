@@ -8,7 +8,7 @@ using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.CustomControls
 {
-    public sealed class DataGridViewCustom : DataGridView
+    public sealed class DataGridViewCustom : DataGridView, ILocalizable
     {
         #region Fields / Properties
 
@@ -286,7 +286,7 @@ namespace AngelLoader.CustomControls
             #endregion
         }
 
-        internal void SetUITextToLocalized()
+        public void SetUITextToLocalized()
         {
             ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
             ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
