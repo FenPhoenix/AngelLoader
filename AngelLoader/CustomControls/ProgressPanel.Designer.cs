@@ -73,7 +73,7 @@
             this.CurrentThingLabel.Text = "Current thing";
             this.CurrentThingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // ProgressProgressBar
+            // ProgressBar
             // 
             this.ProgressBar.Location = new System.Drawing.Point(8, 56);
             this.ProgressBar.Name = "ProgressBar";

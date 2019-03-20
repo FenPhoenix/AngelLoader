@@ -90,18 +90,17 @@ namespace AngelLoader.CustomControls
                 progressTask == ProgressTask.ConvertFiles ||
                 progressTask == ProgressTask.ImportFromDarkLoader)
             {
-                ProgressBar.Hide();
+                ProgressBar.Style = ProgressBarStyle.Marquee;
                 TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);
                 ProgressCancelButton.Hide();
             }
             else
             {
-                ProgressBar.Show();
+                ProgressBar.Style = ProgressBarStyle.Blocks;
                 ProgressCancelButton.Show();
                 ProgressPercentLabel.Text = "";
+                ProgressBar.SetValueInstant(0);
             }
-
-            ProgressBar.SetValueInstant(0);
 
             Owner.EnableEverything(false);
             Enabled = true;
@@ -122,9 +121,7 @@ namespace AngelLoader.CustomControls
             ProgressPercentLabel.Text = "";
             ProgressBar.SetValueInstant(0);
 
-            // We're not actually showing these right here because their parent control is hidden, but we're just
-            // turning their visibility back on so we won't forget later
-            ProgressBar.Show();
+            ProgressBar.Style = ProgressBarStyle.Blocks;
             ProgressCancelButton.Show();
 
             Enabled = false;
