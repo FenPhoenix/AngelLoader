@@ -768,6 +768,10 @@ namespace AngelLoader.Ini
                         {
                             LText.ProgressBox.ImportingFromDarkLoader = lt.Substring(24);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("CachingReadmeFiles="))
+                        {
+                            LText.ProgressBox.CachingReadmeFiles = lt.Substring(19);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;

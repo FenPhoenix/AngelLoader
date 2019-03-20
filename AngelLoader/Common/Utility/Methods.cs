@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using AngelLoader.Common.DataClasses;
 using SevenZip;
@@ -55,14 +56,21 @@ namespace AngelLoader.Common.Utility
         {
             // ExtractFile() doesn't set these, so we have to set them ourselves.
             // ExtractArchive() sets them though, so we don't need to call this when using that.
-            var fi = new FileInfo(fileOnDiskFullPath)
+            try
             {
-                LastWriteTime = archiveFileInfo.LastWriteTime,
-                CreationTime = archiveFileInfo.CreationTime,
-                // Set this one to prevent files being readonly
-                Attributes = FileAttributes.Normal,
-                LastAccessTime = archiveFileInfo.LastAccessTime
-            };
+                var fi = new FileInfo(fileOnDiskFullPath)
+                {
+                    LastWriteTime = archiveFileInfo.LastWriteTime,
+                    CreationTime = archiveFileInfo.CreationTime,
+                    // Set this one to prevent files being readonly
+                    Attributes = FileAttributes.Normal,
+                    LastAccessTime = archiveFileInfo.LastAccessTime
+                };
+            }
+            catch (Exception ex)
+            {
+                // log it
+            }
         }
 
         internal static bool GameIsDark(FanMission fm) => fm.Game == Game.Thief1 || fm.Game == Game.Thief2;

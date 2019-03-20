@@ -345,16 +345,19 @@ namespace AngelLoader.Forms
 
             ChangeGameOrganization();
 
-            await Model.ScanNewFMsForGameType();
-
             SortFMTable(Config.SortedColumn, Config.SortDirection);
             // Even if the filter is empty, do this anyway to cause a refresh.
             // It'll early-out on an empty filter anyway.
-            SetFilter();
 
             #endregion
 
             Show();
+
+            // This must certainly need to come after Show() as well, right?!
+            await Model.ScanNewFMsForGameType();
+            
+            // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
+            await SetFilter();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -875,7 +878,7 @@ namespace AngelLoader.Forms
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private void SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false, bool forceSuppressSelectionChangedEvent = false)
+        private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false, bool forceSuppressSelectionChangedEvent = false)
         {
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
 
@@ -935,7 +938,7 @@ namespace AngelLoader.Forms
 
                 if (!suppressRefresh)
                 {
-                    RefreshFMsList(
+                    await RefreshFMsList(
                         refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(GetFMFromIndex(0))),
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null);
                 }
@@ -1261,7 +1264,7 @@ namespace AngelLoader.Forms
 
             // NOTE: GetFMFromIndex(0) takes 0 because RefreshFMsList() sets the selection to 0.
             // Remember this if you ever change that.
-            RefreshFMsList(
+            await RefreshFMsList(
                 refreshReadme: forceRefreshReadme || s.FilterShownIndexList.Count == 0 ||
                                (oldSelectedFM != null && !oldSelectedFM.Equals(GetFMFromIndex(0))),
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null);
@@ -1473,7 +1476,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void FMsDGV_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void FMsDGV_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
 
@@ -1486,11 +1489,11 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered)
             {
                 // SetFilter() calls a refresh on its own
-                SetFilter();
+                await SetFilter();
             }
             else
             {
-                RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true);
+                await RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true);
             }
         }
 
@@ -1605,7 +1608,7 @@ namespace AngelLoader.Forms
             if (Model.PlayFM(fm))
             {
                 fm.LastPlayed = DateTime.Now;
-                RefreshSelectedFM(refreshReadme: false);
+                await RefreshSelectedFM(refreshReadme: false);
             }
         }
 
@@ -1671,7 +1674,7 @@ namespace AngelLoader.Forms
             };
 
             var success = await Model.ScanAllFMs(scanOptions);
-            if (success) SetFilter(forceRefreshReadme: true);
+            if (success) await SetFilter(forceRefreshReadme: true);
         }
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await OpenSettings();
@@ -1838,7 +1841,7 @@ namespace AngelLoader.Forms
                     Config.ClearAllSelectedFMs();
                     Config.ClearAllFilters();
                     Config.GameTab = Game.Thief1;
-                    ClearAllUIAndInternalFilters();
+                    await ClearAllUIAndInternalFilters();
                     if (Config.GameOrganization == GameOrganization.ByTab)
                         Config.Filter.Games.Add(Game.Thief1);
                     ChangeGameOrganization();
@@ -1866,7 +1869,7 @@ namespace AngelLoader.Forms
                     if (gamePathsChanged || archivePathsChanged) await Model.ScanNewFMsForGameType();
 
                     SortFMTable(Config.SortedColumn, Config.SortDirection);
-                    SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+                    await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
                 }
                 else if (dateFormatChanged || languageChanged)
                 {
@@ -1925,7 +1928,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void OpenFilterTags()
+        private async Task OpenFilterTags()
         {
             using (var tf = new FilterTagsForm2(GlobalTags, FMsDGV.Filter.Tags))
             {
@@ -1935,16 +1938,16 @@ namespace AngelLoader.Forms
                 FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.Empty();
             }
 
-            SetFilter();
+            await SetFilter();
         }
 
         internal void SetDebugMessageText(string text) => DebugLabel.Text = text;
 
         #region Refresh FMs list
 
-        internal void RefreshSelectedFMRowOnly() => RefreshSelectedFM(false, true);
+        internal async Task RefreshSelectedFMRowOnly() => await RefreshSelectedFM(false, true);
 
-        internal void RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false)
+        internal async Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false)
         {
             var currentRow = FMsDGV.SelectedRows[0].Index;
 
@@ -1952,10 +1955,10 @@ namespace AngelLoader.Forms
 
             if (refreshGridRowOnly) return;
 
-            DisplaySelectedFM(GetFMFromIndex(currentRow), refreshReadme);
+            await DisplaySelectedFM(GetFMFromIndex(currentRow), refreshReadme);
         }
 
-        internal void RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false)
+        internal async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false)
         {
             var s = FMsDGV;
 
@@ -1998,7 +2001,7 @@ namespace AngelLoader.Forms
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
                     s.ResumeDrawing();
 
-                    DisplaySelectedFM(GetFMFromIndex(row), refreshReadme);
+                    await DisplaySelectedFM(GetFMFromIndex(row), refreshReadme);
 
                     InitialSelectedFMHasBeenSet = true;
                 }
@@ -2162,7 +2165,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void FMsDGV_SelectionChanged(object sender, EventArgs e)
+        private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             if (FMsDGV.SelectedRows.Count == 0)
@@ -2177,7 +2180,7 @@ namespace AngelLoader.Forms
                 if (!InitialSelectedFMHasBeenSet) return;
 
                 var fm = GetSelectedFM();
-                DisplaySelectedFM(fm, refreshReadme: true);
+                await DisplaySelectedFM(fm, refreshReadme: true);
             }
         }
 
@@ -2261,7 +2264,7 @@ namespace AngelLoader.Forms
         }
 
         // It's really hard to come up with a succinct name that makes it clear what this does and doesn't do
-        private void DisplaySelectedFM(FanMission fm, bool refreshReadme = false)
+        private async Task DisplaySelectedFM(FanMission fm, bool refreshReadme = false)
         {
             bool fmIsT3 = fm.Game == Game.Thief3;
 
@@ -2381,7 +2384,7 @@ namespace AngelLoader.Forms
 
             if (!refreshReadme) return;
 
-            var cacheData = Model.GetCacheableData(fm);
+            var cacheData = await Model.GetCacheableData(fm);
 
             #region Readme
 
@@ -2509,16 +2512,16 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void FilterTextBoxes_TextChanged(object sender, EventArgs e)
+        private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            SetFilter();
+            await SetFilter();
         }
 
-        private void FilterByGameCheckButtons_Click(object sender, EventArgs e)
+        private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            SetFilter();
+            await SetFilter();
         }
 
         private void SaveCurrentTabSelectedFM(TabPage tabPage)
@@ -2550,7 +2553,7 @@ namespace AngelLoader.Forms
             if (GamesTabControl.Visible) SaveCurrentTabSelectedFM(e.TabPage);
         }
 
-        private void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private async void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
 
@@ -2581,10 +2584,10 @@ namespace AngelLoader.Forms
             SetUIFilterValues(gameFilter);
 
             InitialSelectedFMHasBeenSet = false;
-            SetFilter();
+            await SetFilter();
         }
 
-        private void CommentTextBox_TextChanged(object sender, EventArgs e)
+        private async void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var s = (TextBox)sender;
@@ -2601,7 +2604,7 @@ namespace AngelLoader.Forms
             fm.Comment = s.Text.ToEscapes();
             fm.CommentSingleLine = s.Text.ToSingleLineComment(100);
 
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
         }
 
         private void CommentTextBox_Leave(object sender, EventArgs e)
@@ -2969,7 +2972,7 @@ namespace AngelLoader.Forms
 
         #region Choose readme
 
-        private void ChooseReadmeButton_Click(object sender, EventArgs e)
+        private async void ChooseReadmeButton_Click(object sender, EventArgs e)
         {
             if (ChooseReadmeListBox.Items.Count == 0) return;
 
@@ -2986,15 +2989,15 @@ namespace AngelLoader.Forms
                 ShowReadme(true);
             }
 
-            RefreshSelectedFM(refreshReadme: true);
+            await RefreshSelectedFM(refreshReadme: true);
         }
 
-        private void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private async void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
-            RefreshSelectedFM(refreshReadme: true);
+            await RefreshSelectedFM(refreshReadme: true);
         }
 
         private void ChooseReadmeComboBox_DropDownClosed(object sender, EventArgs e)
@@ -3114,20 +3117,20 @@ namespace AngelLoader.Forms
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
+        private async void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.Title = EditFMTitleTextBox.Text;
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
         }
 
-        private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
+        private async void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.Author = EditFMAuthorTextBox.Text;
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
         }
 
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
@@ -3136,7 +3139,7 @@ namespace AngelLoader.Forms
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
+        private async void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
@@ -3147,20 +3150,20 @@ namespace AngelLoader.Forms
                 ? EditFMReleaseDateDateTimePicker.Value
                 : (DateTime?)null;
 
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
+        private async void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
+        private async void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
@@ -3171,25 +3174,25 @@ namespace AngelLoader.Forms
                 ? EditFMLastPlayedDateTimePicker.Value
                 : (DateTime?)null;
 
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
+        private async void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.LastPlayed = EditFMLastPlayedDateTimePicker.Value;
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        private async void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.DisabledMods = EditFMDisabledModsTextBox.Text;
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
         }
 
         private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
@@ -3198,29 +3201,29 @@ namespace AngelLoader.Forms
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
+        private async void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
 
             var fm = GetSelectedFM();
             fm.DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
         }
 
-        private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private async void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.Rating = EditFMRatingComboBox.SelectedIndex - 1;
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
         }
 
         #endregion
 
-        private void RatingRCMenuItems_Click(object sender, EventArgs e)
+        private async void RatingRCMenuItems_Click(object sender, EventArgs e)
         {
             var fm = GetSelectedFM();
 
@@ -3229,7 +3232,7 @@ namespace AngelLoader.Forms
                 if (RatingRCSubMenu.DropDownItems[i] != sender) continue;
 
                 fm.Rating = i - 1;
-                RefreshSelectedFM(refreshReadme: false);
+                await RefreshSelectedFM(refreshReadme: false);
                 Model.WriteFullFMDataIni();
                 break;
             }
@@ -3247,7 +3250,7 @@ namespace AngelLoader.Forms
             menu.Show(button, 0, button.Height);
         }
 
-        private void FinishedOnMenuItems_Click(object sender, EventArgs e)
+        private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
             var fm = GetSelectedFM();
 
@@ -3259,7 +3262,7 @@ namespace AngelLoader.Forms
                 at <<= 1;
             }
 
-            RefreshSelectedFMRowOnly();
+            await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
         }
 
@@ -3343,25 +3346,25 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void FilterShowJunkCheckBox_CheckedChanged(object sender, EventArgs e)
+        private async void FilterShowJunkCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            SetFilter();
+            await SetFilter();
         }
 
-        private void FilterByFinishedButton_Click(object sender, EventArgs e) => SetFilter();
+        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SetFilter();
 
-        private void FilterByUnfinishedButton_Click(object sender, EventArgs e) => SetFilter();
+        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SetFilter();
 
-        private void FilterByRatingButton_Click(object sender, EventArgs e) => OpenFilterRating();
+        private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenFilterRating();
 
-        private void FilterByTagsButton_Click(object sender, EventArgs e) => OpenFilterTags();
+        private async void FilterByTagsButton_Click(object sender, EventArgs e) => await OpenFilterTags();
 
-        private void FilterByReleaseDateButton_Click(object sender, EventArgs e) => OpenDateFilter(lastPlayed: false);
+        private async void FilterByReleaseDateButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: false);
 
-        private void FilterByLastPlayedButton_Click(object sender, EventArgs e) => OpenDateFilter(lastPlayed: true);
+        private async void FilterByLastPlayedButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: true);
 
-        private void OpenDateFilter(bool lastPlayed)
+        private async Task OpenDateFilter(bool lastPlayed)
         {
             var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
             var fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
@@ -3389,7 +3392,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateDateLabel(lastPlayed);
-            SetFilter();
+            await SetFilter();
         }
 
         private void UpdateDateLabel(bool lastPlayed)
@@ -3422,7 +3425,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void OpenFilterRating()
+        private async Task OpenFilterRating()
         {
             var outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
             using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
@@ -3442,7 +3445,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateRatingLabel();
-            SetFilter();
+            await SetFilter();
         }
 
         private void UpdateRatingLabel()
@@ -3478,9 +3481,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void ClearFiltersButton_Click(object sender, EventArgs e) => ClearAllUIAndInternalFilters();
+        private async void ClearFiltersButton_Click(object sender, EventArgs e) => await ClearAllUIAndInternalFilters();
 
-        private void ClearAllUIAndInternalFilters()
+        private async Task ClearAllUIAndInternalFilters()
         {
             using (new DisableEvents(this))
             {
@@ -3511,10 +3514,10 @@ namespace AngelLoader.Forms
                 FMsDGV.Filter.Clear(oneList);
             }
 
-            SetFilter();
+            await SetFilter();
         }
 
-        private void RefreshFiltersButton_Click(object sender, EventArgs e) => SetFilter();
+        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SetFilter();
 
         private void ViewHTMLReadmeButton_Click(object sender, EventArgs e)
         {

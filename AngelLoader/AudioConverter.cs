@@ -25,6 +25,7 @@ namespace AngelLoader
         #region Audio conversion
 
         // TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
+        // TODO: Handle if any files (or containing folders) to be converted are read-only (set them to not)
 
         private string GetFMSoundPathByGame()
         {

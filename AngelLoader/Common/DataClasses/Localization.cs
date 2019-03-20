@@ -247,6 +247,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string ReportScanningLast = "...";
             internal static string CancelingInstall = "Canceling install...";
             internal static string ImportingFromDarkLoader = "Importing from DarkLoader...";
+            internal static string CachingReadmeFiles = "Caching readme files...";
         }
 
         internal static class SettingsWindow

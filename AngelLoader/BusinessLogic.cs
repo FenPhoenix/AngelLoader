@@ -1091,7 +1091,7 @@ namespace AngelLoader
             await RestoreSavesAndScreenshots(fm);
 
             // Not doing RefreshSelectedFMRowOnly() because that wouldn't update the install/uninstall buttons
-            View.RefreshSelectedFM(refreshReadme: false);
+            await View.RefreshSelectedFM(refreshReadme: false);
 
             ProgressBox.Hide();
 
@@ -1108,37 +1108,40 @@ namespace AngelLoader
 
                 using (var extractor = new SevenZipExtractor(fmArchivePath))
                 {
-                    uint filesCount = extractor.FilesCount;
-                    for (var i = 0; i < extractor.ArchiveFileData.Count; i++)
+                    extractor.Extracting += (sender, e) =>
                     {
-                        var f = extractor.ArchiveFileData[i];
-                        if (f.IsDirectory) continue;
-
-                        var fileName = f.FileName.Replace('/', '\\');
-
-                        if (fileName.Contains('\\'))
+                        if (!canceled && ExtractCts.Token.IsCancellationRequested)
                         {
-                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                fileName.Substring(0, fileName.LastIndexOf('\\'))));
+                            canceled = true;
                         }
-
-                        var fileNameFull = Path.Combine(fmInstalledPath, fileName);
-                        using (var fs = new FileStream(fileNameFull, FileMode.Create, FileAccess.Write))
+                        if (canceled)
                         {
-                            extractor.ExtractFile(f.Index, fs);
+                            ProgressBox.BeginInvoke(new Action(ProgressBox.SetCancelingFMInstall));
+                            return;
                         }
+                        ProgressBox.BeginInvoke(new Action(() => ProgressBox.ReportFMExtractProgress(e.PercentDone)));
+                    };
 
-                        SetFileAttributesFromZipEntry(extractor.ArchiveFileData[f.Index], fileNameFull);
-
-                        int percent = (int)((100 * (i + 1)) / filesCount);
-
-                        View.BeginInvoke(new Action(() => ProgressBox.ReportFMExtractProgress(percent)));
+                    extractor.FileExtractionFinished += (sender, e) =>
+                    {
+                        SetFileAttributesFromZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
 
                         if (ExtractCts.Token.IsCancellationRequested)
                         {
+                            ProgressBox.BeginInvoke(new Action(ProgressBox.SetCancelingFMInstall));
                             canceled = true;
-                            return;
+                            e.Cancel = true;
                         }
+                    };
+
+                    try
+                    {
+                        extractor.ExtractArchive(fmInstalledPath);
+                    }
+                    catch
+                    {
+                        // Throws a weird exception even if everything's fine
+                        // log it anyway
                     }
                 }
             });
@@ -1221,7 +1224,7 @@ namespace AngelLoader
                     if (yes)
                     {
                         fm.Installed = false;
-                        View.RefreshSelectedFM(refreshReadme: false);
+                        await View.RefreshSelectedFM(refreshReadme: false);
                     }
                     return;
                 }
@@ -1287,7 +1290,7 @@ namespace AngelLoader
                 }
 
                 WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
-                View.RefreshSelectedFM(refreshReadme: false);
+                await View.RefreshSelectedFM(refreshReadme: false);
             }
             finally
             {
@@ -1364,7 +1367,7 @@ namespace AngelLoader
                 View.ShowAlert("This FM is marked as installed, but its folder cannot be found. " +
                                "It will now be marked as uninstalled.", LText.AlertMessages.Alert);
                 fm.Installed = false;
-                View.RefreshSelectedFM(refreshReadme: false);
+                await View.RefreshSelectedFM(refreshReadme: false);
                 return;
             }
 
@@ -1405,7 +1408,7 @@ namespace AngelLoader
                 View.ShowAlert("This FM is marked as installed, but its folder cannot be found. " +
                                "It will now be marked as uninstalled.", LText.AlertMessages.Alert);
                 fm.Installed = false;
-                View.RefreshSelectedFM(refreshReadme: false);
+                await View.RefreshSelectedFM(refreshReadme: false);
                 return;
             }
 
@@ -1636,7 +1639,7 @@ namespace AngelLoader
         #region Cacheable FM data
 
         // TODO: Handle if there do exist files, but not all of them from the zip are there
-        internal CacheData GetCacheableData(FanMission fm)
+        internal async Task<CacheData> GetCacheableData(FanMission fm)
         {
             if (fm.Game == Game.Unsupported)
             {
@@ -1661,7 +1664,7 @@ namespace AngelLoader
 
             return FMIsReallyInstalled(fm)
                 ? FMCache.GetCacheableDataInFMInstalledDir(fm)
-                : FMCache.GetCacheableDataInFMCacheDir(fm);
+                : await FMCache.GetCacheableDataInFMCacheDir(fm, ProgressBox);
         }
 
         #endregion

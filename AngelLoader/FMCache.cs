@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.CustomControls;
 using SevenZip;
 using static AngelLoader.Common.Utility.Methods;
 
@@ -69,7 +72,7 @@ namespace AngelLoader
             return new CacheData { Readmes = readmes };
         }
 
-        internal static CacheData GetCacheableDataInFMCacheDir(FanMission fm)
+        internal static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, ProgressPanel progressBox)
         {
             var readmes = new List<string>();
 
@@ -115,8 +118,16 @@ namespace AngelLoader
             // In weird situations this could be true, so just say none and at least don't crash
             if (fmArchivePath.IsEmpty()) return new CacheData();
 
-            SevenZipExtract(fmArchivePath, fmCachePath, readmes);
+            if (fm.Archive.ExtEqualsI(".zip"))
+            {
+                ZipExtract(fmArchivePath, fmCachePath, readmes, progressBox);
+            }
+            else
+            {
+                await SevenZipExtract(fmArchivePath, fm.InstalledDir, fmCachePath, readmes, progressBox);
+            }
 
+            // TODO: Support .7z here too
             if (fmArchivePath.ExtEqualsI(".zip") && Directory.Exists(fmCachePath))
             {
                 ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
@@ -215,16 +226,17 @@ namespace AngelLoader
             }
         }
 
-        // TODO: If the archive is .7z then extract it all at once to a temp folder, then do the cache copy
-        // Otherwise it's glacial
-        private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
+        private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes,
+            ProgressPanel progressBox)
         {
-            using (var extractor = new SevenZipExtractor(fmArchivePath))
+            using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                ZipArchiveMode.Read, leaveOpen: false))
             {
-                for (var i = 0; i < extractor.ArchiveFileData.Count; i++)
+                for (var i = 0; i < archive.Entries.Count; i++)
                 {
-                    var fn = extractor.ArchiveFileData[i].FileName;
-                    if (!fn.IsValidReadme() || extractor.ArchiveFileData[i].Size == 0) continue;
+                    var entry = archive.Entries[i];
+                    var fn = entry.FullName;
+                    if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
                     string t3ReadmeDir = null;
                     if (fn.CountChars('/') + fn.CountChars('\\') == 1)
@@ -254,15 +266,74 @@ namespace AngelLoader
                         : fmCachePath);
 
                     var fileNameFull = Path.Combine(fmCachePath, fn);
-                    using (var fs = new FileStream(fileNameFull, FileMode.Create, FileAccess.Write))
-                    {
-                        extractor.ExtractFile(fn, fs);
-                        readmes.Add(fn);
-                    }
-
-                    SetFileAttributesFromZipEntry(extractor.ArchiveFileData[i], fileNameFull);
+                    entry.ExtractToFile(fileNameFull, overwrite: true);
+                    readmes.Add(fn);
                 }
             }
+        }
+
+        private static async Task SevenZipExtract(string fmArchivePath, string fmInstalledDir, string fmCachePath,
+            List<string> readmes, ProgressPanel progressBox)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    Directory.CreateDirectory(fmCachePath);
+
+                    using (var extractor = new SevenZipExtractor(fmArchivePath))
+                    {
+                        var indexesList = new List<int>();
+                        for (var i = 0; i < extractor.FilesCount; i++)
+                        {
+                            var entry = extractor.ArchiveFileData[i];
+                            var fn = entry.FileName;
+                            if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                                ((fn.CountChars('/') + fn.CountChars('\\') == 1 &&
+                                  (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
+                                   fn.StartsWithI(Paths.T3ReadmeDir1 + '\\') ||
+                                   fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
+                                   fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))) ||
+                                 (!fn.Contains('/') && !fn.Contains('\\'))))
+                            {
+                                indexesList.Add(i);
+                                readmes.Add(entry.FileName);
+                            }
+                        }
+
+                        if (indexesList.Count == 0) return;
+
+                        progressBox.BeginInvoke(new Action(progressBox.ShowCachingFM));
+
+                        extractor.Extracting += (sender, e) =>
+                        {
+                            progressBox.BeginInvoke(new Action(() => progressBox.ReportCachingProgress(e.PercentDone)));
+                        };
+
+                        extractor.FileExtractionFinished += (sender, e) =>
+                        {
+                            SetFileAttributesFromZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
+                        };
+
+                        try
+                        {
+                            extractor.ExtractFiles(fmCachePath, indexesList.ToArray());
+                        }
+                        catch
+                        {
+                            // log it
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // log it (them?!)
+                }
+                finally
+                {
+                    progressBox.BeginInvoke(new Action(progressBox.Hide));
+                }
+            });
         }
     }
 }
