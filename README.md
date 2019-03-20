@@ -1,4 +1,7 @@
-# AngelLoader
+<h1 align="center">
+AngelLoader
+</h1>
+<p align="center"><img src="http://fenphoenix.com/github/AngelLoader/MainWindow-600.png" /></p>
 
 **NOTE:** This is currently in pre-release state, and anything about it is subject to change before version 1.0. If you compile and use this, be aware of that.
 
@@ -28,4 +31,4 @@ In short, AngelLoader aims to be a complete successor to DarkLoader, being an al
         - Just extract the ffmpeg folder to the solution base dir.
     - My custom build should be a NuGet package, but I can't figure out how to make a NuGet package consisting only of binaries, as no matter what I try it just gleefully vomits out an empty .dll along with the actual stuff
     
-- The build wants FenGen.exe but that's not included because it's an _extremely_ Internal Tool<sup>TM</sup> and liable to screw up spectacularly if you don't have an intimate knowledge of its internal functionings. It's not strictly needed, it just generates the FM data readers and writers which you can edit by hand if you absolutely need to. (It generates them in order to avoid runtime reflection, unnecessary IndexOf()s and string concatenations, etc. and therefore achieve the fastest possible performance, which is critical for a file of unbounded length that must be read on startup)
+- The build wants FenGen.exe but that's not included because it's an _extremely_ Internal Tool<sup>TM</sup> and liable to screw up spectacularly if you don't have an intimate knowledge of its internal functionings. It's not strictly needed, it just regenerates some files that already exist and which you can edit by hand if you absolutely need to (eg., it generates ini readers and writers in order to avoid runtime reflection, unnecessary IndexOf()s and string concatenations, etc. and therefore achieve the fastest possible performance, which is critical for files of unbounded length that need to be read on startup).
