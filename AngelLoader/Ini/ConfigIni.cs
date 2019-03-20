@@ -47,9 +47,9 @@ namespace AngelLoader.Ini
         private static void ReadTags(string line, Filter filter, string prefix)
         {
             var tagsList =
-                line.StartsWithI(prefix + "FilterTagsAnd=") ? filter.Tags.AndTags :
-                line.StartsWithI(prefix + "FilterTagsOr=") ? filter.Tags.OrTags :
-                line.StartsWithI(prefix + "FilterTagsNot=") ? filter.Tags.NotTags :
+                line.StartsWithFast_NoNullChecks(prefix + "FilterTagsAnd=") ? filter.Tags.AndTags :
+                line.StartsWithFast_NoNullChecks(prefix + "FilterTagsOr=") ? filter.Tags.OrTags :
+                line.StartsWithFast_NoNullChecks(prefix + "FilterTagsNot=") ? filter.Tags.NotTags :
                 null;
 
             var val = line.Substring(line.IndexOf('=') + 1);
@@ -127,7 +127,7 @@ namespace AngelLoader.Ini
 
                 var val = lineT.Substring(lineT.IndexOf('=') + 1);
 
-                if (lineT.StartsWithI("Column") && line[6] != '=')
+                if (lineT.StartsWithFast_NoNullChecks("Column") && line[6] != '=')
                 {
                     var colName = lineT.Substring(6, lineT.IndexOf('=') - 6);
 
@@ -144,119 +144,119 @@ namespace AngelLoader.Ini
                 }
                 #region Filter
 
-                else if (lineT.StartsWithI("FilterTitle="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterTitle="))
                 {
                     config.Filter.Title = val;
                 }
-                else if (lineT.StartsWithI("T1FilterTitle="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterTitle="))
                 {
                     config.GameTabsState.T1Filter.Title = val;
                 }
-                else if (lineT.StartsWithI("T2FilterTitle="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterTitle="))
                 {
                     config.GameTabsState.T2Filter.Title = val;
                 }
-                else if (lineT.StartsWithI("T3FilterTitle="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterTitle="))
                 {
                     config.GameTabsState.T3Filter.Title = val;
                 }
-                else if (lineT.StartsWithI("FilterAuthor="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterAuthor="))
                 {
                     config.Filter.Author = val;
                 }
-                else if (lineT.StartsWithI("T1FilterAuthor="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterAuthor="))
                 {
                     config.GameTabsState.T1Filter.Author = val;
                 }
-                else if (lineT.StartsWithI("T2FilterAuthor="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterAuthor="))
                 {
                     config.GameTabsState.T2Filter.Author = val;
                 }
-                else if (lineT.StartsWithI("T3FilterAuthor="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterAuthor="))
                 {
                     config.GameTabsState.T3Filter.Author = val;
                 }
-                else if (lineT.StartsWithI("FilterReleaseDateFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateFrom="))
                 {
                     config.Filter.ReleaseDateFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T1FilterReleaseDateFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateFrom="))
                 {
                     config.GameTabsState.T1Filter.ReleaseDateFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T2FilterReleaseDateFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateFrom="))
                 {
                     config.GameTabsState.T2Filter.ReleaseDateFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T3FilterReleaseDateFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateFrom="))
                 {
                     config.GameTabsState.T3Filter.ReleaseDateFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("FilterReleaseDateTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateTo="))
                 {
                     config.Filter.ReleaseDateTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T1FilterReleaseDateTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateTo="))
                 {
                     config.GameTabsState.T1Filter.ReleaseDateTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T2FilterReleaseDateTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateTo="))
                 {
                     config.GameTabsState.T2Filter.ReleaseDateTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T3FilterReleaseDateTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateTo="))
                 {
                     config.GameTabsState.T3Filter.ReleaseDateTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("FilterLastPlayedFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedFrom="))
                 {
                     config.Filter.LastPlayedFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T1FilterLastPlayedFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedFrom="))
                 {
                     config.GameTabsState.T1Filter.LastPlayedFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T2FilterLastPlayedFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedFrom="))
                 {
                     config.GameTabsState.T2Filter.LastPlayedFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T3FilterLastPlayedFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedFrom="))
                 {
                     config.GameTabsState.T3Filter.LastPlayedFrom = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("FilterLastPlayedTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedTo="))
                 {
                     config.Filter.LastPlayedTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T1FilterLastPlayedTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedTo="))
                 {
                     config.GameTabsState.T1Filter.LastPlayedTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T2FilterLastPlayedTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedTo="))
                 {
                     config.GameTabsState.T2Filter.LastPlayedTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("T3FilterLastPlayedTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedTo="))
                 {
                     config.GameTabsState.T3Filter.LastPlayedTo = ReadNullableDate(val);
                 }
-                else if (lineT.StartsWithI("FilterTags") && line[10] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("FilterTags") && line[10] != '=')
                 {
                     ReadTags(lineT, config.Filter, "");
                 }
-                else if (lineT.StartsWithI("T1FilterTags") && line[12] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterTags") && line[12] != '=')
                 {
                     ReadTags(lineT, config.GameTabsState.T1Filter, "T1");
                 }
-                else if (lineT.StartsWithI("T2FilterTags") && line[12] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterTags") && line[12] != '=')
                 {
                     ReadTags(lineT, config.GameTabsState.T2Filter, "T2");
                 }
-                else if (lineT.StartsWithI("T3FilterTags") && line[12] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterTags") && line[12] != '=')
                 {
                     ReadTags(lineT, config.GameTabsState.T3Filter, "T3");
                 }
-                else if (lineT.StartsWithI("FilterGames="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterGames="))
                 {
                     var list = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -277,88 +277,88 @@ namespace AngelLoader.Ini
                         }
                     }
                 }
-                else if (lineT.StartsWithI("FilterRatingFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterRatingFrom="))
                 {
                     if (int.TryParse(val, out int result)) config.Filter.RatingFrom = result;
                 }
-                else if (lineT.StartsWithI("T1FilterRatingFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterRatingFrom="))
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T1Filter.RatingFrom = result;
                 }
-                else if (lineT.StartsWithI("T2FilterRatingFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterRatingFrom="))
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T2Filter.RatingFrom = result;
                 }
-                else if (lineT.StartsWithI("T3FilterRatingFrom="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterRatingFrom="))
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T3Filter.RatingFrom = result;
                 }
-                else if (lineT.StartsWithI("FilterRatingTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterRatingTo="))
                 {
                     if (int.TryParse(val, out int result)) config.Filter.RatingTo = result;
                 }
-                else if (lineT.StartsWithI("T1FilterRatingTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterRatingTo="))
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T1Filter.RatingTo = result;
                 }
-                else if (lineT.StartsWithI("T2FilterRatingTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterRatingTo="))
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T2Filter.RatingTo = result;
                 }
-                else if (lineT.StartsWithI("T3FilterRatingTo="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterRatingTo="))
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T3Filter.RatingTo = result;
                 }
-                else if (lineT.StartsWithI("FilterFinishedStates="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterFinishedStates="))
                 {
                     ReadFinishedStates(val, config.Filter);
                 }
-                else if (lineT.StartsWithI("T1FilterFinishedStates="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterFinishedStates="))
                 {
                     ReadFinishedStates(val, config.GameTabsState.T1Filter);
                 }
-                else if (lineT.StartsWithI("T2FilterFinishedStates="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterFinishedStates="))
                 {
                     ReadFinishedStates(val, config.GameTabsState.T2Filter);
                 }
-                else if (lineT.StartsWithI("T3FilterFinishedStates="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterFinishedStates="))
                 {
                     ReadFinishedStates(val, config.GameTabsState.T3Filter);
                 }
-                else if (lineT.StartsWithI("FilterShowJunk="))
+                else if (lineT.StartsWithFast_NoNullChecks("FilterShowJunk="))
                 {
                     config.Filter.ShowJunk = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI("T1FilterShowJunk="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterShowJunk="))
                 {
                     config.GameTabsState.T1Filter.ShowJunk = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI("T2FilterShowJunk="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterShowJunk="))
                 {
                     config.GameTabsState.T2Filter.ShowJunk = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI("T3FilterShowJunk="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterShowJunk="))
                 {
                     config.GameTabsState.T3Filter.ShowJunk = val.EqualsTrue();
                 }
 
                 #endregion
-                else if (lineT.StartsWithI(nameof(config.EnableArticles) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.EnableArticles) + "="))
                 {
                     config.EnableArticles = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI(nameof(config.Articles) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.Articles) + "="))
                 {
                     var articles = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                     for (var a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
                     config.Articles.Clear();
                     config.Articles.AddRange(articles.Distinct(StringComparer.OrdinalIgnoreCase));
                 }
-                else if (lineT.StartsWithI(nameof(config.MoveArticlesToEnd) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MoveArticlesToEnd) + "="))
                 {
                     config.MoveArticlesToEnd = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI(nameof(config.SortDirection) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SortDirection) + "="))
                 {
                     if (val.EqualsI("Ascending"))
                     {
@@ -369,7 +369,7 @@ namespace AngelLoader.Ini
                         config.SortDirection = SortOrder.Descending;
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.SortedColumn) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SortedColumn) + "="))
                 {
                     var field = typeof(Column).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -377,7 +377,7 @@ namespace AngelLoader.Ini
                         config.SortedColumn = (Column)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.RatingDisplayStyle) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.RatingDisplayStyle) + "="))
                 {
                     var field = typeof(RatingDisplayStyle).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -385,11 +385,11 @@ namespace AngelLoader.Ini
                         config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.RatingDisplayStyle) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.RatingDisplayStyle) + "="))
                 {
                     config.RatingUseStars = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI(nameof(config.TopRightTab) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTab) + "="))
                 {
                     var field = typeof(TopRightTab).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -397,7 +397,7 @@ namespace AngelLoader.Ini
                         config.TopRightTab = (TopRightTab)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.SettingsTab) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SettingsTab) + "="))
                 {
                     var field = typeof(SettingsTab).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -405,31 +405,31 @@ namespace AngelLoader.Ini
                         config.SettingsTab = (SettingsTab)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithI("FMArchivePath="))
+                else if (lineT.StartsWithFast_NoNullChecks("FMArchivePath="))
                 {
                     config.FMArchivePaths.Add(val.Trim());
                 }
-                else if (lineT.StartsWithI(nameof(config.FMArchivePathsIncludeSubfolders) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.FMArchivePathsIncludeSubfolders) + "="))
                 {
                     config.FMArchivePathsIncludeSubfolders = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI(nameof(config.FMsBackupPath) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.FMsBackupPath) + "="))
                 {
                     config.FMsBackupPath = val.Trim();
                 }
-                else if (lineT.StartsWithI(nameof(config.T1Exe) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T1Exe) + "="))
                 {
                     config.T1Exe = val.Trim();
                 }
-                else if (lineT.StartsWithI(nameof(config.T2Exe) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T2Exe) + "="))
                 {
                     config.T2Exe = val.Trim();
                 }
-                else if (lineT.StartsWithI(nameof(config.T3Exe) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T3Exe) + "="))
                 {
                     config.T3Exe = val.Trim();
                 }
-                else if (lineT.StartsWithI(nameof(config.GameOrganization) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.GameOrganization) + "="))
                 {
                     var field = typeof(GameOrganization).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -437,7 +437,7 @@ namespace AngelLoader.Ini
                         config.GameOrganization = (GameOrganization)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.GameTab) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.GameTab) + "="))
                 {
                     switch (val)
                     {
@@ -452,51 +452,51 @@ namespace AngelLoader.Ini
                             break;
                     }
                 }
-                else if (lineT.StartsWithI("T1SelFMInstDir="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1SelFMInstDir="))
                 {
                     config.GameTabsState.T1SelFM.InstalledName = val;
                 }
-                else if (lineT.StartsWithI("T2SelFMInstDir="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2SelFMInstDir="))
                 {
                     config.GameTabsState.T2SelFM.InstalledName = val;
                 }
-                else if (lineT.StartsWithI("T3SelFMInstDir="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3SelFMInstDir="))
                 {
                     config.GameTabsState.T3SelFM.InstalledName = val;
                 }
-                else if (lineT.StartsWithI("T1SelFMIndexFromTop="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.GameTabsState.T1SelFM.IndexFromTop = result;
                     }
                 }
-                else if (lineT.StartsWithI("T2SelFMIndexFromTop="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.GameTabsState.T2SelFM.IndexFromTop = result;
                     }
                 }
-                else if (lineT.StartsWithI("T3SelFMIndexFromTop="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.GameTabsState.T3SelFM.IndexFromTop = result;
                     }
                 }
-                else if (lineT.StartsWithI("SelFMInstDir="))
+                else if (lineT.StartsWithFast_NoNullChecks("SelFMInstDir="))
                 {
                     config.SelFM.InstalledName = val;
                 }
-                else if (lineT.StartsWithI("SelFMIndexFromTop="))
+                else if (lineT.StartsWithFast_NoNullChecks("SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.SelFM.IndexFromTop = result;
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.DateFormat) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateFormat) + "="))
                 {
                     var field = typeof(DateFormat).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -504,42 +504,42 @@ namespace AngelLoader.Ini
                         config.DateFormat = (DateFormat)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.DateCustomFormat1) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat1) + "="))
                 {
                     config.DateCustomFormat1 = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.DateCustomSeparator1) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateCustomSeparator1) + "="))
                 {
                     config.DateCustomSeparator1 = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.DateCustomFormat2) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat2) + "="))
                 {
                     config.DateCustomFormat2 = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.DateCustomSeparator2) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateCustomSeparator2) + "="))
                 {
                     config.DateCustomSeparator2 = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.DateCustomFormat3) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat3) + "="))
                 {
                     config.DateCustomFormat3 = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.DateCustomSeparator3) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateCustomSeparator3) + "="))
                 {
                     config.DateCustomSeparator3 = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.DateCustomFormat4) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat4) + "="))
                 {
                     config.DateCustomFormat4 = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.ReadmeZoomFactor) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ReadmeZoomFactor) + "="))
                 {
                     if (float.TryParse(val, out float result))
                     {
                         config.ReadmeZoomFactor = result;
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.MainWindowState) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainWindowState) + "="))
                 {
                     var field = typeof(FormWindowState).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -551,7 +551,7 @@ namespace AngelLoader.Ini
                         }
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.MainWindowSize) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainWindowSize) + "="))
                 {
                     if (!val.Contains(',')) continue;
 
@@ -564,29 +564,29 @@ namespace AngelLoader.Ini
                         config.MainWindowSize = new Size(width, height);
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.MainHorizontalSplitterDistance) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainHorizontalSplitterDistance) + "="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.MainHorizontalSplitterDistance = result;
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.TopVerticalSplitterDistance) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopVerticalSplitterDistance) + "="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.TopVerticalSplitterDistance = result;
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.ConvertWAVsTo16BitOnInstall) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ConvertWAVsTo16BitOnInstall) + "="))
                 {
                     config.ConvertWAVsTo16BitOnInstall = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI(nameof(config.ConvertOGGsToWAVsOnInstall) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ConvertOGGsToWAVsOnInstall) + "="))
                 {
                     config.ConvertOGGsToWAVsOnInstall = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithI(nameof(config.BackupSaves) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.BackupSaves) + "="))
                 {
                     var field = typeof(BackupSaves).GetField(val, BFlagsEnum);
                     if (field != null)
@@ -594,11 +594,11 @@ namespace AngelLoader.Ini
                         config.BackupSaves = (BackupSaves)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithI(nameof(config.Language) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.Language) + "="))
                 {
                     config.Language = val;
                 }
-                else if (lineT.StartsWithI(nameof(config.WebSearchUrl) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.WebSearchUrl) + "="))
                 {
                     config.WebSearchUrl = val;
                 }
