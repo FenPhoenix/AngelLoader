@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Common;
 
 namespace AngelLoader.Ini
 {
@@ -39,43 +42,34 @@ namespace AngelLoader.Ini
 
         #endregion
 
-        private static ColumnData ConvertStringToColumnData(string str)
+        // This kinda belongs in LanguageIni.cs, but it's separated to prevent it from being removed when that
+        // file is re-generated. I could make it so it doesn't get removed, but meh.
+        internal static void ReadLanguageName(string file)
         {
-            str = str.Trim().Trim(',');
-
-            // DisplayIndex,Width,Visible
-            // 0,100,True
-            var commas = str.CountChars(',');
-
-            if (commas == 0) return null;
-
-            var cProps = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            if (cProps.Length == 0) return null;
-
-            var ret = new ColumnData();
-            for (int i = 0; i < cProps.Length; i++)
+            using (var sr = new StreamReader(file, Encoding.UTF8))
             {
-                switch (i)
+                string line;
+                bool inMeta = false;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    case 0:
-                        if (int.TryParse(cProps[i], out int di))
-                        {
-                            ret.DisplayIndex = di;
-                        }
-                        break;
-                    case 1:
-                        if (int.TryParse(cProps[i], out int width))
-                        {
-                            ret.Width = width > Defaults.MinColumnWidth ? width : Defaults.MinColumnWidth;
-                        }
-                        break;
-                    case 2:
-                        ret.Visible = cProps[i].EqualsTrue();
-                        break;
+                    var lineT = line.Trim();
+                    if (inMeta && lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.LanguageName) + "="))
+                    {
+                        var key = file.GetFileNameFast().RemoveExtension();
+                        var value = line.TrimStart().Substring(nameof(LText.Meta.LanguageName).Length + 1);
+                        Config.LanguageNames.Add(key, value);
+                        return;
+                    }
+                    else if (lineT == "[" + nameof(LText.Meta) + "]")
+                    {
+                        inMeta = true;
+                    }
+                    else if (!lineT.IsEmpty() && lineT[0] == '[' && lineT[lineT.Length - 1] == ']')
+                    {
+                        inMeta = false;
+                    }
                 }
             }
-
-            return ret;
         }
     }
 }

@@ -19,6 +19,45 @@ namespace AngelLoader.Ini
         // Not autogenerating these, because there's too many special cases, and adding stuff by hand is not that
         // big of a deal really.
 
+        private static ColumnData ConvertStringToColumnData(string str)
+        {
+            str = str.Trim().Trim(',');
+
+            // DisplayIndex,Width,Visible
+            // 0,100,True
+            var commas = str.CountChars(',');
+
+            if (commas == 0) return null;
+
+            var cProps = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (cProps.Length == 0) return null;
+
+            var ret = new ColumnData();
+            for (int i = 0; i < cProps.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        if (int.TryParse(cProps[i], out int di))
+                        {
+                            ret.DisplayIndex = di;
+                        }
+                        break;
+                    case 1:
+                        if (int.TryParse(cProps[i], out int width))
+                        {
+                            ret.Width = width > Defaults.MinColumnWidth ? width : Defaults.MinColumnWidth;
+                        }
+                        break;
+                    case 2:
+                        ret.Visible = cProps[i].EqualsTrue();
+                        break;
+                }
+            }
+
+            return ret;
+        }
+
         private static DateTime? ReadNullableDate(string hexDate)
         {
             var success = long.TryParse(
@@ -93,7 +132,7 @@ namespace AngelLoader.Ini
             }
         }
 
-        internal static void ReadFinishedStates(string val, Filter filter)
+        private static void ReadFinishedStates(string val, Filter filter)
         {
             var list = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct(StringComparer.OrdinalIgnoreCase).ToList();

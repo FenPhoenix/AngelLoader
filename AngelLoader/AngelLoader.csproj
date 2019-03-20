@@ -187,7 +187,7 @@
     <Compile Include="ImportDarkLoader.cs" />
     <Compile Include="Ini\ConfigIni.cs" />
     <Compile Include="Ini\FMData.cs" />
-    <Compile Include="Ini\IniCommon.cs" />
+    <Compile Include="Ini\IniMisc.cs" />
     <Compile Include="Common\Paths.cs" />
     <Compile Include="CustomControls\DataGridViewCustom.cs">
       <SubType>Component</SubType>
