@@ -184,6 +184,12 @@
     <Compile Include="Forms\ImportFromDarkLoaderForm.Designer.cs">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ImportfromNDLForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ImportfromNDLForm.Designer.cs">
+      <DependentUpon>ImportfromNDLForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImportDarkLoader.cs" />
     <Compile Include="Ini\ConfigIni.cs" />
     <Compile Include="Ini\FMData.cs" />
@@ -248,6 +254,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportfromNDLForm.resx">
+      <DependentUpon>ImportfromNDLForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
