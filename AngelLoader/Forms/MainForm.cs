@@ -493,15 +493,18 @@ namespace AngelLoader.Forms
                 // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
                 InstallUninstallFMButton.SuspendDrawing();
 
-                var instTextMaxWidth = Math.Max(
-                    TextRenderer.MeasureText(LText.MainButtons.InstallFM, InstallUninstallFMButton.Font).Width,
-                    TextRenderer.MeasureText(LText.MainButtons.UninstallFM, InstallUninstallFMButton.Font).Width);
+                var instString = LText.MainButtons.InstallFM;
+                var uninstString = LText.MainButtons.UninstallFM;
+                var instButtonFont = InstallUninstallFMButton.Font;
+                var instStringWidth = TextRenderer.MeasureText(instString, instButtonFont).Width;
+                var uninstStringWidth = TextRenderer.MeasureText(uninstString, instButtonFont).Width;
+                var longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
 
-                InstallUninstallFMButton.Width = 2;
-                InstallUninstallFMButton.Width = instTextMaxWidth + 12 + 8;
+                InstallUninstallFMButton.SetTextAutoSize(longestString);
 
-                InstallUninstallFMButton.Text =
-                    sayInstall ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
+                InstallUninstallFMButton.Text = sayInstall
+                    ? LText.MainButtons.InstallFM
+                    : LText.MainButtons.UninstallFM;
 
                 InstallUninstallFMButton.ResumeDrawing();
 
