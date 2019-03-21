@@ -102,8 +102,8 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SevenZipSharp, Version=1.1.126.0, Culture=neutral, PublicKeyToken=c8ff6ba0184838bb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Squid-Box.SevenZipSharp.1.1.126\lib\net45\SevenZipSharp.dll</HintPath>
+    <Reference Include="SevenZipSharp, Version=1.1.136.0, Culture=neutral, PublicKeyToken=c8ff6ba0184838bb, processorArchitecture=MSIL">
+      <HintPath>..\packages\Squid-Box.SevenZipSharp.1.1.136\lib\net45\SevenZipSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -353,13 +353,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\7z.Libs.18.05\build\net\7z.Libs.targets" Condition="Exists('..\packages\7z.Libs.18.05\build\net\7z.Libs.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\7z.Libs.18.05\build\net\7z.Libs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\7z.Libs.18.05\build\net\7z.Libs.targets'))" />
-  </Target>
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)AngelLoader.exe" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)*.dll" "C:\AngelLoader\" /y
@@ -382,4 +375,11 @@ rem ---</PostBuildEvent>
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\7z.Libs.19.00.1\build\net\7z.Libs.targets" Condition="Exists('..\packages\7z.Libs.19.00.1\build\net\7z.Libs.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\7z.Libs.19.00.1\build\net\7z.Libs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\7z.Libs.19.00.1\build\net\7z.Libs.targets'))" />
+  </Target>
 </Project>
