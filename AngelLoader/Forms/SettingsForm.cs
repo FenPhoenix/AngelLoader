@@ -225,22 +225,24 @@ namespace AngelLoader.Forms
                     LanguageComboBox.Items.Add(item.Value);
                 }
 
-                if (LanguageComboBox.BackingItems.ContainsI("English"))
+                const string engLang = "English";
+
+                if (LanguageComboBox.BackingItems.ContainsI(engLang))
                 {
-                    LanguageComboBox.BackingItems.Remove("English");
-                    LanguageComboBox.BackingItems.Insert(0, "English");
-                    LanguageComboBox.Items.Remove("English");
-                    LanguageComboBox.Items.Insert(0, "English");
+                    LanguageComboBox.BackingItems.Remove(engLang);
+                    LanguageComboBox.BackingItems.Insert(0, engLang);
+                    LanguageComboBox.Items.Remove(engLang);
+                    LanguageComboBox.Items.Insert(0, engLang);
                 }
                 else
                 {
-                    LanguageComboBox.BackingItems.Insert(0, "English");
-                    LanguageComboBox.Items.Insert(0, "English");
+                    LanguageComboBox.BackingItems.Insert(0, engLang);
+                    LanguageComboBox.Items.Insert(0, engLang);
                 }
 
                 LanguageComboBox.SelectBackingIndexOf(LanguageComboBox.BackingItems.Contains(InConfig.Language)
                     ? InConfig.Language
-                    : "English");
+                    : engLang);
             }
 
             #endregion
