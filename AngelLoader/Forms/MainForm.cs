@@ -487,9 +487,25 @@ namespace AngelLoader.Forms
                     ? LText.FMsList.FMMenu_InstallFM
                     : LText.FMsList.FMMenu_UninstallFM;
 
-                InstallUninstallFMButton.SetTextAutoSize(sayInstall
-                    ? LText.MainButtons.InstallFM
-                    : LText.MainButtons.UninstallFM);
+                #region Install / Uninstall FM button
+
+                // Special-case this button to always be the width of the longer of the two localized strings for
+                // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
+                InstallUninstallFMButton.SuspendDrawing();
+
+                var instTextMaxWidth = Math.Max(
+                    TextRenderer.MeasureText(LText.MainButtons.InstallFM, InstallUninstallFMButton.Font).Width,
+                    TextRenderer.MeasureText(LText.MainButtons.UninstallFM, InstallUninstallFMButton.Font).Width);
+
+                InstallUninstallFMButton.Width = 2;
+                InstallUninstallFMButton.Width = instTextMaxWidth + 12 + 8;
+
+                InstallUninstallFMButton.Text =
+                    sayInstall ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
+
+                InstallUninstallFMButton.ResumeDrawing();
+
+                #endregion
 
                 #endregion
 
@@ -2190,6 +2206,8 @@ namespace AngelLoader.Forms
 
             InstallUninstallMenuItem.Text = LText.FMsList.FMMenu_InstallFM;
             InstallUninstallMenuItem.Enabled = false;
+            // Special-cased; don't autosize this one
+            InstallUninstallFMButton.Text = LText.MainButtons.InstallFM;
             InstallUninstallFMButton.Enabled = false;
             PlayFMMenuItem.Enabled = false;
             PlayFMButton.Enabled = false;
@@ -2285,9 +2303,10 @@ namespace AngelLoader.Forms
             InstallUninstallMenuItem.Text = fm.Installed
                 ? LText.FMsList.FMMenu_UninstallFM
                 : LText.FMsList.FMMenu_InstallFM;
-            InstallUninstallFMButton.SetTextAutoSize(fm.Installed
+            // Special-cased; don't autosize this one
+            InstallUninstallFMButton.Text = fm.Installed
                 ? LText.MainButtons.UninstallFM
-                : LText.MainButtons.InstallFM);
+                : LText.MainButtons.InstallFM;
 
             WebSearchButton.Enabled = true;
 

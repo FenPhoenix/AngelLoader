@@ -530,8 +530,12 @@ namespace AngelLoader.Common.Utility
         /// <param name="text"></param>
         /// <param name="minWidth"></param>
         /// <param name="padding"></param>
-        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, int padding = 12)
+        /// <param name="parent">If non-null, this control will have its drawing suspended/resumed during the resize</param>
+        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, int padding = 12,
+            Control parent = null)
         {
+            parent?.SuspendDrawing();
+
             // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.
             button.Text = "";
             button.Width = 2;
@@ -546,6 +550,7 @@ namespace AngelLoader.Common.Utility
                 // Extra padding for a nicer look
                 button.Width += padding;
             }
+            parent?.ResumeDrawing();
         }
 
         /// <summary>
