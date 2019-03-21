@@ -84,9 +84,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AeroWizard, Version=2.2.3.0, Culture=neutral, PublicKeyToken=915e74f5d64b8f37, processorArchitecture=MSIL">
-      <HintPath>..\packages\AeroWizard.2.2.3\lib\net45\AeroWizard.dll</HintPath>
-    </Reference>
     <Reference Include="FFmpeg.NET, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\xFFmpeg.NET.3.1.0\lib\netstandard2.0\FFmpeg.NET.dll</HintPath>
     </Reference>
