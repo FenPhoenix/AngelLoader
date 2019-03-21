@@ -167,7 +167,14 @@ namespace AngelLoader.CustomControls
             ProgressBar.SetValueInstant(percent.Clamp(0, 100));
             ProgressPercentLabel.Text = percent + "%";
 
-            TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            if (Visible)
+            {
+                TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            }
+            else
+            {
+                TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
+            }
         }
 
         internal void SetCancelingFMInstall()

@@ -120,7 +120,7 @@ namespace AngelLoader
 
             if (fm.Archive.ExtEqualsI(".zip"))
             {
-                ZipExtract(fmArchivePath, fmCachePath, readmes, progressBox);
+                ZipExtract(fmArchivePath, fmCachePath, readmes);
             }
             else
             {
@@ -226,8 +226,10 @@ namespace AngelLoader
             }
         }
 
-        private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes,
-            ProgressPanel progressBox)
+        // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
+        // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
+        // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
+        private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
             using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
                 ZipArchiveMode.Read, leaveOpen: false))

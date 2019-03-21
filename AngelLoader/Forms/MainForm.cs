@@ -355,7 +355,7 @@ namespace AngelLoader.Forms
 
             // This must certainly need to come after Show() as well, right?!
             await Model.ScanNewFMsForGameType();
-            
+
             // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
             await SetFilter();
         }
@@ -2283,10 +2283,12 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton.Enabled = installable;
             PlayFMMenuItem.Enabled = installable;
             PlayFMButton.Enabled = installable;
-            InstallUninstallMenuItem.Text = fm.Installed ? LText.FMsList.FMMenu_UninstallFM : LText.FMsList.FMMenu_InstallFM;
-            InstallUninstallFMButton.SetL10nText(fm.Installed ? LText.MainButtons.UninstallFM : LText.MainButtons.InstallFM);
-
-            #endregion
+            InstallUninstallMenuItem.Text = fm.Installed
+                ? LText.FMsList.FMMenu_UninstallFM
+                : LText.FMsList.FMMenu_InstallFM;
+            InstallUninstallFMButton.SetL10nText(fm.Installed
+                ? LText.MainButtons.UninstallFM
+                : LText.MainButtons.InstallFM);
 
             WebSearchButton.Enabled = true;
 
@@ -2294,6 +2296,8 @@ namespace AngelLoader.Forms
 
             CommentTextBox.Enabled = true;
             foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
+
+            #endregion
 
             #region FinishedOn
 
@@ -2335,6 +2339,8 @@ namespace AngelLoader.Forms
             }
 
             #endregion
+
+            #region Other tabs
 
             using (new DisableEvents(this))
             {
@@ -2381,6 +2387,8 @@ namespace AngelLoader.Forms
             }
 
             DisplayFMTags(fm);
+
+            #endregion
 
             if (!refreshReadme) return;
 
