@@ -127,7 +127,7 @@
             this.Name = "ImportFromDarkLoaderForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "ImportFromDarkLoaderForm";
+            this.Text = "Import from DarkLoader";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromDarkLoaderForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
