@@ -130,8 +130,6 @@
             // 
             // Thief1ExePathTextBox
             // 
-            this.Thief1ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief1ExePathTextBox.Location = new System.Drawing.Point(16, 40);
             this.Thief1ExePathTextBox.Name = "Thief1ExePathTextBox";
             this.Thief1ExePathTextBox.Size = new System.Drawing.Size(320, 20);
@@ -209,8 +207,6 @@
             // 
             // Thief3ExePathTextBox
             // 
-            this.Thief3ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief3ExePathTextBox.Location = new System.Drawing.Point(16, 120);
             this.Thief3ExePathTextBox.Name = "Thief3ExePathTextBox";
             this.Thief3ExePathTextBox.Size = new System.Drawing.Size(320, 20);
@@ -219,8 +215,6 @@
             // 
             // Thief2ExePathTextBox
             // 
-            this.Thief2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.Thief2ExePathTextBox.Location = new System.Drawing.Point(16, 80);
             this.Thief2ExePathTextBox.Name = "Thief2ExePathTextBox";
             this.Thief2ExePathTextBox.Size = new System.Drawing.Size(320, 20);
@@ -322,8 +316,6 @@
             // 
             // BackupPathTextBox
             // 
-            this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.BackupPathTextBox.Location = new System.Drawing.Point(16, 40);
             this.BackupPathTextBox.Name = "BackupPathTextBox";
             this.BackupPathTextBox.Size = new System.Drawing.Size(320, 20);

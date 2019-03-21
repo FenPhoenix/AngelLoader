@@ -35,8 +35,8 @@ namespace AngelLoader.Forms
             OrButton.Text = LText.TagsFilterBox.MoveToAny;
             NotButton.Text = LText.TagsFilterBox.MoveToExclude;
             ResetButton.Text = LText.TagsFilterBox.Reset;
-            OKButton.SetL10nText(LText.Global.OK, OKButton.Width);
-            Cancel_Button.SetL10nText(LText.Global.Cancel, Cancel_Button.Width);
+            OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
 
         private void FilterTagsForm2_Load(object sender, EventArgs e)

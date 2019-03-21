@@ -2,15 +2,15 @@
 
 namespace AngelLoader.Common.DataClasses
 {
+    // NOTE:
+    // Articles can't really be localized because they need to apply to an FM's title and most are in English.
+    // So I'm keeping the custom articles functionality just the way it is, that way another language's articles
+    // can be added to the list.
+
     // TODO: Missing localized bits:
-    // -Articles
-    //  -Articles can't really be localized because they need to apply to an FM's title and most are in English.
-    //   So custom articles look like the way to go after all (that way another language's articles can be added
-    //   to the list).
     // -Remove tag / remove all tags MessageBoxes (make less annoying)
     // -Hitches with localizability:
-    //  -Tags tab buttons don't really have room to change width
-    //  -Tags filter form buttons are squished between ListBoxes and can't really change width either
+    //  -Tags filter form buttons are squished between ListBoxes and can't really change width
     //  -Date and rating forms are not set up for easy resizability of controls either
 
     [FenGenLocalizationClass]

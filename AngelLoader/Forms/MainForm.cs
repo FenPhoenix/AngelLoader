@@ -479,7 +479,7 @@ namespace AngelLoader.Forms
                 #region Play / install / uninstall
 
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
-                PlayFMButton.SetL10nText(LText.MainButtons.PlayFM);
+                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM);
 
                 var sayInstall = selFM == null || !selFM.Installed;
 
@@ -487,7 +487,7 @@ namespace AngelLoader.Forms
                     ? LText.FMsList.FMMenu_InstallFM
                     : LText.FMsList.FMMenu_UninstallFM;
 
-                InstallUninstallFMButton.SetL10nText(sayInstall
+                InstallUninstallFMButton.SetTextAutoSize(sayInstall
                     ? LText.MainButtons.InstallFM
                     : LText.MainButtons.UninstallFM);
 
@@ -549,7 +549,7 @@ namespace AngelLoader.Forms
                 // For some reason this counts as a selected index change?!
                 using (new DisableEvents(this)) EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
 
-                EditFMFinishedOnButton.SetL10nText(LText.EditFMTab.FinishedOn, 138);
+                EditFMFinishedOnButton.SetTextAutoSize(LText.EditFMTab.FinishedOn, 138);
                 EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
                 EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
@@ -564,10 +564,9 @@ namespace AngelLoader.Forms
                 #region Tags tab
 
                 TagsTabPage.Text = LText.TagsTab.TabText;
-                // Set these directly, because they shouldn't be resizing themselves or the layout will break
-                AddTagButton.Text = LText.TagsTab.AddTag;
-                AddTagFromListButton.Text = LText.TagsTab.AddFromList;
-                RemoveTagButton.Text = LText.TagsTab.RemoveTag;
+                AddTagButton.SetTextAutoSize(AddTagTextBox, LText.TagsTab.AddTag);
+                AddTagFromListButton.SetTextAutoSize(LText.TagsTab.AddFromList);
+                RemoveTagButton.SetTextAutoSize(LText.TagsTab.RemoveTag);
 
                 #endregion
 
@@ -578,18 +577,18 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(ResetZoomButton, LText.ReadmeArea.ResetZoomToolTip);
                 MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
 
-                ViewHTMLReadmeButton.SetL10nText(LText.ReadmeArea.ViewHTMLReadme);
+                ViewHTMLReadmeButton.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
                 ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
 
                 #endregion
 
                 #region Bottom area
 
-                PlayOriginalGameButton.SetL10nText(LText.MainButtons.PlayOriginalGame);
-                WebSearchButton.SetL10nText(LText.MainButtons.WebSearch);
-                ScanAllFMsButton.SetL10nText(LText.MainButtons.ScanAllFMs);
-                ImportButton.SetL10nText(LText.MainButtons.Import);
-                SettingsButton.SetL10nText(LText.MainButtons.Settings);
+                PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame);
+                WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch);
+                ScanAllFMsButton.SetTextAutoSize(LText.MainButtons.ScanAllFMs);
+                ImportButton.SetTextAutoSize(LText.MainButtons.Import);
+                SettingsButton.SetTextAutoSize(LText.MainButtons.Settings);
 
                 #endregion
 
@@ -2286,7 +2285,7 @@ namespace AngelLoader.Forms
             InstallUninstallMenuItem.Text = fm.Installed
                 ? LText.FMsList.FMMenu_UninstallFM
                 : LText.FMsList.FMMenu_InstallFM;
-            InstallUninstallFMButton.SetL10nText(fm.Installed
+            InstallUninstallFMButton.SetTextAutoSize(fm.Installed
                 ? LText.MainButtons.UninstallFM
                 : LText.MainButtons.InstallFM);
 

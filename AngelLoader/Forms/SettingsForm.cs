@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -256,8 +255,8 @@ namespace AngelLoader.Forms
             if (suspendResume) this.SuspendDrawing();
             try
             {
-                OKButton.SetL10nText(LText.Global.OK, OKButton.Width);
-                Cancel_Button.SetL10nText(LText.Global.Cancel, Cancel_Button.Width);
+                OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
+                Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
 
                 #region Paths tab
 
@@ -280,22 +279,13 @@ namespace AngelLoader.Forms
                         i == 2 ? Thief3ExePathBrowseButton :
                         BackupPathBrowseButton;
 
-                    var textbox =
+                    var textBox =
                         i == 0 ? Thief1ExePathTextBox :
                         i == 1 ? Thief2ExePathTextBox :
                         i == 2 ? Thief3ExePathTextBox :
                         BackupPathTextBox;
 
-                    int oldWidth = button.Width;
-
-                    button.SetL10nText(LText.Global.BrowseEllipses);
-
-                    int diff =
-                        button.Width > oldWidth ? -(button.Width - oldWidth) :
-                        button.Width < oldWidth ? oldWidth - button.Width : 0;
-
-                    button.Left += diff;
-                    textbox.Width += diff;
+                    button.SetTextAutoSize(textBox, LText.Global.BrowseEllipses);
                 }
 
                 FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;

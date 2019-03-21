@@ -523,7 +523,14 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
-        internal static void SetL10nText(this Button button, string text, int minWidth = -1)
+        /// <summary>
+        /// Sets a <see cref="Button"/>'s text, and autosizes it horizontally to accomodate it.
+        /// </summary>
+        /// <param name="button"></param>
+        /// <param name="text"></param>
+        /// <param name="minWidth"></param>
+        /// <param name="padding"></param>
+        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, int padding = 12)
         {
             // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.
             button.Text = "";
@@ -537,8 +544,36 @@ namespace AngelLoader.Common.Utility
             else
             {
                 // Extra padding for a nicer look
-                button.Width += 12;
+                button.Width += padding;
             }
+        }
+
+        /// <summary>
+        /// Sets a <see cref="Button"/>'s text, and autosizes and repositions the <see cref="Button"/> and a
+        /// <see cref="TextBox"/> horizontally together to accomodate it.
+        /// </summary>
+        /// <param name="button"></param>
+        /// <param name="textBox"></param>
+        /// <param name="text"></param>
+        /// <param name="minWidth"></param>
+        /// <param name="padding"></param>
+        internal static void SetTextAutoSize(this Button button, TextBox textBox, string text, int minWidth = -1, int padding = 12)
+        {
+            var oldAnchor = button.Anchor;
+            button.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+
+            int oldWidth = button.Width;
+
+            button.SetTextAutoSize(text, minWidth, padding);
+
+            int diff =
+                button.Width > oldWidth ? -(button.Width - oldWidth) :
+                button.Width < oldWidth ? oldWidth - button.Width : 0;
+
+            button.Left += diff;
+            textBox.Width += diff;
+
+            button.Anchor = oldAnchor;
         }
 
         #endregion

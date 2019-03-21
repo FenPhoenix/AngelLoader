@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InstallUninstallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -167,9 +167,10 @@
             this.CommentTabPage = new System.Windows.Forms.TabPage();
             this.CommentTextBox = new System.Windows.Forms.TextBox();
             this.TagsTabPage = new System.Windows.Forms.TabPage();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.RemoveTagButton = new System.Windows.Forms.Button();
-            this.AddTagButton = new System.Windows.Forms.Button();
             this.AddTagFromListButton = new System.Windows.Forms.Button();
+            this.AddTagButton = new System.Windows.Forms.Button();
             this.AddTagTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
             this.ViewHTMLReadmeButton = new System.Windows.Forms.Button();
@@ -222,6 +223,7 @@
             this.EditFMTabPage.SuspendLayout();
             this.CommentTabPage.SuspendLayout();
             this.TagsTabPage.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.PlayOriginalGameMenu.SuspendLayout();
             this.ImportFromMenu.SuspendLayout();
@@ -801,14 +803,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -824,26 +826,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -1747,9 +1749,8 @@
             // TagsTabPage
             // 
             this.TagsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.TagsTabPage.Controls.Add(this.RemoveTagButton);
+            this.TagsTabPage.Controls.Add(this.flowLayoutPanel1);
             this.TagsTabPage.Controls.Add(this.AddTagButton);
-            this.TagsTabPage.Controls.Add(this.AddTagFromListButton);
             this.TagsTabPage.Controls.Add(this.AddTagTextBox);
             this.TagsTabPage.Controls.Add(this.TagsTreeView);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
@@ -1758,10 +1759,23 @@
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
             // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel1.Controls.Add(this.RemoveTagButton);
+            this.flowLayoutPanel1.Controls.Add(this.AddTagFromListButton);
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 248);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(536, 24);
+            this.flowLayoutPanel1.TabIndex = 3;
+            // 
             // RemoveTagButton
             // 
             this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveTagButton.Location = new System.Drawing.Point(387, 31);
+            this.RemoveTagButton.AutoSize = true;
+            this.RemoveTagButton.Location = new System.Drawing.Point(392, 0);
+            this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0);
             this.RemoveTagButton.Name = "RemoveTagButton";
             this.RemoveTagButton.Size = new System.Drawing.Size(144, 23);
             this.RemoveTagButton.TabIndex = 2;
@@ -1769,27 +1783,30 @@
             this.RemoveTagButton.UseVisualStyleBackColor = true;
             this.RemoveTagButton.Click += new System.EventHandler(this.RemoveTagButton_Click);
             // 
-            // AddTagButton
-            // 
-            this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagButton.Location = new System.Drawing.Point(259, 7);
-            this.AddTagButton.Name = "AddTagButton";
-            this.AddTagButton.Size = new System.Drawing.Size(120, 23);
-            this.AddTagButton.TabIndex = 2;
-            this.AddTagButton.Text = "Add tag";
-            this.AddTagButton.UseVisualStyleBackColor = true;
-            this.AddTagButton.Click += new System.EventHandler(this.AddTagButton_Click);
-            // 
             // AddTagFromListButton
             // 
             this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagFromListButton.Location = new System.Drawing.Point(387, 7);
+            this.AddTagFromListButton.AutoSize = true;
+            this.AddTagFromListButton.Location = new System.Drawing.Point(248, 0);
+            this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
             this.AddTagFromListButton.Name = "AddTagFromListButton";
             this.AddTagFromListButton.Size = new System.Drawing.Size(144, 23);
             this.AddTagFromListButton.TabIndex = 2;
             this.AddTagFromListButton.Text = "Add from list...";
             this.AddTagFromListButton.UseVisualStyleBackColor = true;
             this.AddTagFromListButton.Click += new System.EventHandler(this.TagPresetsButton_Click);
+            // 
+            // AddTagButton
+            // 
+            this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddTagButton.AutoSize = true;
+            this.AddTagButton.Location = new System.Drawing.Point(472, 7);
+            this.AddTagButton.Name = "AddTagButton";
+            this.AddTagButton.Size = new System.Drawing.Size(72, 23);
+            this.AddTagButton.TabIndex = 2;
+            this.AddTagButton.Text = "Add tag";
+            this.AddTagButton.UseVisualStyleBackColor = true;
+            this.AddTagButton.Click += new System.EventHandler(this.AddTagButton_Click);
             // 
             // AddTagTextBox
             // 
@@ -1798,7 +1815,7 @@
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
             this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(251, 20);
+            this.AddTagTextBox.Size = new System.Drawing.Size(464, 20);
             this.AddTagTextBox.TabIndex = 1;
             this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
             this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
@@ -1811,7 +1828,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
             this.TagsTreeView.Name = "TagsTreeView";
-            this.TagsTreeView.Size = new System.Drawing.Size(371, 240);
+            this.TagsTreeView.Size = new System.Drawing.Size(536, 216);
             this.TagsTreeView.TabIndex = 0;
             // 
             // ViewHTMLReadmeButton
@@ -2096,6 +2113,8 @@
             this.CommentTabPage.PerformLayout();
             this.TagsTabPage.ResumeLayout(false);
             this.TagsTabPage.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             this.ChooseReadmePanel.ResumeLayout(false);
             this.ChooseReadmePanel.PerformLayout();
             this.PlayOriginalGameMenu.ResumeLayout(false);
@@ -2267,6 +2286,7 @@
         private System.Windows.Forms.ToolStripMenuItem ImportFromNewDarkLoaderMenuItem;
         private System.Windows.Forms.Button ZoomInButton;
         private System.Windows.Forms.Button ZoomOutButton;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }
 
