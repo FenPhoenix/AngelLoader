@@ -67,6 +67,10 @@ namespace AngelLoader.Forms
                     InConfig.SettingsTab == SettingsTab.Other ? OtherTabPage :
                     PathsTabPage;
             }
+
+            // Language can change while the form is open, so store original sizes for later use as minimums
+            OKButton.Tag = OKButton.Size;
+            Cancel_Button.Tag = Cancel_Button.Size;
         }
 
         private void SettingsForm_Load(object sender, EventArgs e)
@@ -259,8 +263,8 @@ namespace AngelLoader.Forms
             {
                 Text = LText.SettingsWindow.TitleText;
 
-                OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
-                Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
+                OKButton.SetTextAutoSize(LText.Global.OK, ((Size)OKButton.Tag).Width);
+                Cancel_Button.SetTextAutoSize(LText.Global.Cancel, ((Size)Cancel_Button.Tag).Width);
 
                 #region Paths tab
 

@@ -318,8 +318,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
-
             #region Autosize menus
 
             // This is another hack to fix behavior caused by the UI designer. When you select a menu, it appears
@@ -336,6 +334,10 @@ namespace AngelLoader.Forms
             ImportFromMenu.Size = Size.Empty;
 
             #endregion
+
+            // Cheap 'n cheesy storage of initial size for minimum-width setting later
+            EditFMFinishedOnButton.Tag = EditFMFinishedOnButton.Size;
+            ChooseReadmeButton.Tag = ChooseReadmeButton.Size;
 
             TopRightTabControl.SelectedTab =
                 Config.TopRightTab == TopRightTab.EditFM ? EditFMTabPage :
@@ -370,8 +372,9 @@ namespace AngelLoader.Forms
             MainSplitContainer.SetSplitterDistance(Config.MainHorizontalSplitterDistance, refresh: false);
             TopSplitContainer.SetSplitterDistance(Config.TopVerticalSplitterDistance, refresh: false);
 
-            // Set this here because it might need to know the size of things after splitter adjustment
+            // Set these here because they depend on the splitter positions
             SetUITextToLocalized(suspendResume: false);
+            ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
         }
 
         private void SetWindowStateAndSize()
@@ -581,7 +584,7 @@ namespace AngelLoader.Forms
                 // For some reason this counts as a selected index change?!
                 using (new DisableEvents(this)) EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
 
-                EditFMFinishedOnButton.SetTextAutoSize(LText.EditFMTab.FinishedOn, 138);
+                EditFMFinishedOnButton.SetTextAutoSize(LText.EditFMTab.FinishedOn, ((Size)EditFMFinishedOnButton.Tag).Width);
                 EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
                 EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
@@ -615,6 +618,8 @@ namespace AngelLoader.Forms
 
                 ViewHTMLReadmeButton.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
                 ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
+
+                ChooseReadmeButton.SetTextAutoSize(LText.Global.OK, ((Size)ChooseReadmeButton.Tag).Width);
 
                 #endregion
 

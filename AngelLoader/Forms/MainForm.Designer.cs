@@ -78,6 +78,18 @@
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
+            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.RefreshClearToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
@@ -184,27 +196,18 @@
             this.ResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ChooseReadmePanel = new System.Windows.Forms.Panel();
+            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
             this.BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
+            this.PlayOriginalGameMenu.SuspendLayout();
+            this.ImportFromMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
@@ -229,8 +232,7 @@
             this.TagsTabPage.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
-            this.PlayOriginalGameMenu.SuspendLayout();
-            this.ImportFromMenu.SuspendLayout();
+            this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // FMRightClickMenu
@@ -644,6 +646,89 @@
             this.AddTagListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
             this.AddTagListBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
             this.AddTagListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AddTagListBox_MouseUp);
+            // 
+            // PlayOriginalGameMenu
+            // 
+            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayOriginalThief1MenuItem,
+            this.PlayOriginalThief2MenuItem,
+            this.PlayOriginalThief3MenuItem});
+            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
+            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
+            // 
+            // PlayOriginalThief1MenuItem
+            // 
+            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1;
+            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
+            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
+            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief2MenuItem
+            // 
+            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2;
+            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
+            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
+            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief3MenuItem
+            // 
+            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3;
+            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
+            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
+            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // AddTagMenu
+            // 
+            this.AddTagMenu.Name = "AddTagMenu";
+            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
+            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
+            // 
+            // AltTitlesMenu
+            // 
+            this.AltTitlesMenu.Name = "AltTitlesMenu";
+            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
+            // 
+            // ImportFromMenu
+            // 
+            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ImportFromDarkLoaderMenuItem,
+            this.ImportFromFMSelMenuItem,
+            this.ImportFromNewDarkLoaderMenuItem});
+            this.ImportFromMenu.Name = "ImportFromMenu";
+            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
+            // 
+            // ImportFromDarkLoaderMenuItem
+            // 
+            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
+            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
+            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
+            // 
+            // ImportFromFMSelMenuItem
+            // 
+            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
+            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromFMSelMenuItem.Text = "FMSel";
+            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
+            // 
+            // ImportFromNewDarkLoaderMenuItem
+            // 
+            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
+            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
+            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
+            // 
+            // ProgressBox
+            // 
+            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
+            this.ProgressBox.Name = "ProgressBox";
+            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
+            this.ProgressBox.TabIndex = 39;
+            this.ProgressBox.Visible = false;
             // 
             // MainSplitContainer
             // 
@@ -1977,18 +2062,29 @@
             // 
             // ChooseReadmePanel
             // 
-            this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeButton);
+            this.ChooseReadmePanel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.ChooseReadmePanel.Controls.Add(this.flowLayoutPanel2);
             this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeListBox);
             this.ChooseReadmePanel.Location = new System.Drawing.Point(2, 2);
             this.ChooseReadmePanel.Name = "ChooseReadmePanel";
             this.ChooseReadmePanel.Size = new System.Drawing.Size(320, 160);
             this.ChooseReadmePanel.TabIndex = 2;
             // 
+            // flowLayoutPanel2
+            // 
+            this.flowLayoutPanel2.Controls.Add(this.ChooseReadmeButton);
+            this.flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(1, 134);
+            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(320, 24);
+            this.flowLayoutPanel2.TabIndex = 3;
+            // 
             // ChooseReadmeButton
             // 
             this.ChooseReadmeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ChooseReadmeButton.AutoSize = true;
-            this.ChooseReadmeButton.Location = new System.Drawing.Point(246, 134);
+            this.ChooseReadmeButton.Location = new System.Drawing.Point(245, 0);
+            this.ChooseReadmeButton.Margin = new System.Windows.Forms.Padding(0);
             this.ChooseReadmeButton.Name = "ChooseReadmeButton";
             this.ChooseReadmeButton.Size = new System.Drawing.Size(75, 23);
             this.ChooseReadmeButton.TabIndex = 2;
@@ -2018,89 +2114,6 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ReadmeRichTextBox_KeyDown);
             // 
-            // PlayOriginalGameMenu
-            // 
-            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayOriginalThief1MenuItem,
-            this.PlayOriginalThief2MenuItem,
-            this.PlayOriginalThief3MenuItem});
-            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
-            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
-            // 
-            // PlayOriginalThief1MenuItem
-            // 
-            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1;
-            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
-            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief2MenuItem
-            // 
-            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2;
-            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
-            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief3MenuItem
-            // 
-            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3;
-            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
-            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // AddTagMenu
-            // 
-            this.AddTagMenu.Name = "AddTagMenu";
-            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
-            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
-            // 
-            // AltTitlesMenu
-            // 
-            this.AltTitlesMenu.Name = "AltTitlesMenu";
-            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
-            // 
-            // ImportFromMenu
-            // 
-            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ImportFromDarkLoaderMenuItem,
-            this.ImportFromFMSelMenuItem,
-            this.ImportFromNewDarkLoaderMenuItem});
-            this.ImportFromMenu.Name = "ImportFromMenu";
-            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
-            // 
-            // ImportFromDarkLoaderMenuItem
-            // 
-            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
-            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
-            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
-            // 
-            // ImportFromFMSelMenuItem
-            // 
-            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
-            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromFMSelMenuItem.Text = "FMSel";
-            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
-            // 
-            // ImportFromNewDarkLoaderMenuItem
-            // 
-            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
-            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
-            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
-            // 
-            // ProgressBox
-            // 
-            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
-            this.ProgressBox.Name = "ProgressBox";
-            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
-            this.ProgressBox.TabIndex = 39;
-            this.ProgressBox.Visible = false;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2128,6 +2141,8 @@
             this.BottomLeftButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomLeftButtonsFlowLayoutPanel.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
+            this.PlayOriginalGameMenu.ResumeLayout(false);
+            this.ImportFromMenu.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             this.MainSplitContainer.Panel2.PerformLayout();
@@ -2166,9 +2181,8 @@
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.ChooseReadmePanel.ResumeLayout(false);
-            this.ChooseReadmePanel.PerformLayout();
-            this.PlayOriginalGameMenu.ResumeLayout(false);
-            this.ImportFromMenu.ResumeLayout(false);
+            this.flowLayoutPanel2.ResumeLayout(false);
+            this.flowLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2341,6 +2355,7 @@
         private System.Windows.Forms.Button EditFMScanReleaseDateButton;
         private System.Windows.Forms.Button EditFMScanAuthorButton;
         private System.Windows.Forms.Button EditFMScanTitleButton;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
     }
 }
 
