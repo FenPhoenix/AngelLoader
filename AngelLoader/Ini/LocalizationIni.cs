@@ -768,6 +768,10 @@ namespace AngelLoader.Ini
                         {
                             LText.ProgressBox.ImportingFromDarkLoader = lt.Substring(24);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportingFromNewDarkLoader="))
+                        {
+                            LText.ProgressBox.ImportingFromNewDarkLoader = lt.Substring(27);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("CachingReadmeFiles="))
                         {
                             LText.ProgressBox.CachingReadmeFiles = lt.Substring(19);
@@ -1087,6 +1091,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("DarkLoader_SelectedDarkLoaderIniWasNotFound="))
                         {
                             LText.Importing.DarkLoader_SelectedDarkLoaderIniWasNotFound = lt.Substring(44);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_NoArchiveDirsFound="))
+                        {
+                            LText.Importing.DarkLoader_NoArchiveDirsFound = lt.Substring(30);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

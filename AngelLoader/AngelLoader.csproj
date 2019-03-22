@@ -169,25 +169,20 @@
       <DependentUpon>FilterDateForm.cs</DependentUpon>
     </Compile>
     <Compile Include="FMBackupAndRestore.cs" />
-    <Compile Include="Forms\ImportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ImportForm.Designer.cs">
-      <DependentUpon>ImportForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ImportFromDarkLoaderForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ImportFromDarkLoaderForm.Designer.cs">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ImportfromNDLForm.cs">
+    <Compile Include="Forms\ImportFromNDLForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ImportfromNDLForm.Designer.cs">
-      <DependentUpon>ImportfromNDLForm.cs</DependentUpon>
+    <Compile Include="Forms\ImportFromNDLForm.Designer.cs">
+      <DependentUpon>ImportFromNDLForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ImportDarkLoader.cs" />
+    <Compile Include="ImportNDL.cs" />
     <Compile Include="Ini\ConfigIni.cs" />
     <Compile Include="Ini\FMData.cs" />
     <Compile Include="Ini\IniMisc.cs" />
@@ -246,14 +241,11 @@
     <EmbeddedResource Include="Forms\FilterTagsForm2.resx">
       <DependentUpon>FilterTagsForm2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportForm.resx">
-      <DependentUpon>ImportForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportfromNDLForm.resx">
-      <DependentUpon>ImportfromNDLForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ImportFromNDLForm.resx">
+      <DependentUpon>ImportFromNDLForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

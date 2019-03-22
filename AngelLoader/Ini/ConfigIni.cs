@@ -58,31 +58,6 @@ namespace AngelLoader.Ini
             return ret;
         }
 
-        private static DateTime? ReadNullableDate(string hexDate)
-        {
-            var success = long.TryParse(
-                hexDate,
-                NumberStyles.HexNumber,
-                DateTimeFormatInfo.InvariantInfo,
-                out long result);
-
-            if (!success) return null;
-
-            try
-            {
-                var dateTime = DateTimeOffset
-                    .FromUnixTimeSeconds(result)
-                    .DateTime
-                    .ToLocalTime();
-
-                return dateTime;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return null;
-            }
-        }
-
         private static void ReadTags(string line, Filter filter, string prefix)
         {
             var tagsList =

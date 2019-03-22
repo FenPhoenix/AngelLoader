@@ -248,6 +248,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string ReportScanningLast = "...";
             internal static string CancelingInstall = "Canceling install...";
             internal static string ImportingFromDarkLoader = "Importing from DarkLoader...";
+            internal static string ImportingFromNewDarkLoader = "Importing from NewDarkLoader...";
             internal static string CachingReadmeFiles = "Caching readme files...";
         }
 
@@ -354,6 +355,8 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string DarkLoader_SelectedFileIsNotDarkLoaderIni = "Selected file is not DarkLoader.ini.";
             internal static string DarkLoader_SelectedDarkLoaderIniWasNotFound = "Selected DarkLoader.ini was not found.";
+            internal static string DarkLoader_NoArchiveDirsFound =
+                "No archive directories were specified in DarkLoader.ini. Unable to import.";
         }
     }
 }

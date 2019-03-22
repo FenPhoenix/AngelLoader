@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngelLoader.Common;
@@ -43,20 +44,22 @@ namespace AngelLoader
         // Don't replace \r\n or \\ escapes because we use those in the exact same way so no conversion needed
         private static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
 
-        internal static async Task<(bool Success, List<FanMission> FMs)>
+        internal static async Task<(ImportError Error, List<FanMission> FMs)>
         Import(string iniFile, bool importFMData, bool importSaves)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
+
+            ImportError error = ImportError.None;
 
             if (importFMData)
             {
                 bool missionDirsRead = false;
                 var archiveDirs = new List<string>();
 
-                await Task.Run(() =>
+                error = await Task.Run(() =>
                 {
-                    for (var i = 0; i < lines.Length; i++)
+                    for (int i = 0; i < lines.Length; i++)
                     {
                         var line = lines[i];
                         var lineTS = line.TrimStart();
@@ -66,10 +69,8 @@ namespace AngelLoader
 
                         // We need to know the archive dirs before doing anything, because we may need to recreate
                         // some lossy names (if any bad chars have been removed by DarkLoader).
-                        if (!missionDirsRead)
+                        if (!missionDirsRead && lineTB == "[mission directories]")
                         {
-                            if (lineTB != "[mission directories]") continue;
-
                             while (i < lines.Length - 1)
                             {
                                 var lt = lines[i + 1].Trim();
@@ -83,6 +84,12 @@ namespace AngelLoader
                                 }
                                 i++;
                             }
+
+                            if (archiveDirs.Count == 0 || archiveDirs.All(x => x.IsWhiteSpace()))
+                            {
+                                return ImportError.NoArchiveDirsFound;
+                            }
+
                             // Restart from the beginning of the file, this time skipping anything that isn't an
                             // FM entry
                             i = -1;
@@ -95,8 +102,8 @@ namespace AngelLoader
                         #region Read FM entries
 
                         if (!NonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
-                                lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
-                                DarkLoaderFMRegex.Match(lineTB).Success)
+                                  lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
+                                  DarkLoaderFMRegex.Match(lineTB).Success)
                         {
                             var lastIndexDot = lineTB.LastIndexOf('.');
                             var archive = lineTB.Substring(1, lastIndexDot - 1);
@@ -109,7 +116,7 @@ namespace AngelLoader
                                 {
                                     // DarkLoader only does zip format
                                     foreach (var f in Directory.EnumerateFiles(dir, "*.zip",
-                                            SearchOption.TopDirectoryOnly))
+                                              SearchOption.TopDirectoryOnly))
                                     {
                                         var fn = Path.GetFileNameWithoutExtension(f);
                                         if (RemoveDLArchiveBadChars(fn).EqualsI(archive))
@@ -212,15 +219,18 @@ namespace AngelLoader
 
                         #endregion
                     }
+                    return ImportError.None;
                 });
             }
+
+            if (error != ImportError.None) return (error, fms);
 
             if (importSaves)
             {
                 bool success = await ImportSaves(lines);
             }
 
-            return (true, fms);
+            return (ImportError.None, fms);
         }
 
         private static async Task<bool> ImportSaves(string[] lines)

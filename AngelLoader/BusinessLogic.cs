@@ -939,10 +939,17 @@ namespace AngelLoader
             ProgressBox.ShowImportDarkLoader();
             try
             {
-                var (success, fms) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves);
-                if (!success)
+                var (error, fms) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves);
+                if (error != ImportError.None)
                 {
                     // log it
+
+                    if (error == ImportError.NoArchiveDirsFound)
+                    {
+                        View.ShowAlert(LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert);
+                        return false;
+                    }
+
                     return false;
                 }
 
@@ -954,6 +961,44 @@ namespace AngelLoader
                 // Also scan for custom resources because DL's and ours are slightly different.
                 // TODO: This can be canceled, so make sure the world won't explode if the user cancels
                 // and leaves some FMs in an un-scanned state.
+                var fmsToScan = new List<FanMission>();
+                foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
+                if (fmsToScan.Count > 0)
+                {
+                    var scanOptions = ScanOptions.AllFalse;
+                    scanOptions.ScanGameType = true;
+                    scanOptions.ScanCustomResources = true;
+
+                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+                }
+
+                WriteFullFMDataIni();
+            }
+            finally
+            {
+                ProgressBox.Hide();
+            }
+
+            return true;
+        }
+
+        // TODO: These are almost the same, so combine them
+        internal async Task<bool> ImportFromNDL(string iniFile)
+        {
+            ProgressBox.ShowImportNDL();
+            try
+            {
+                var (success, fms) = await ImportNDL.Import(iniFile);
+                if (!success)
+                {
+                    // log it
+                    return false;
+                }
+
+                var importedIndexes = ImportNDL.MergeNDLFMData(fms, FMDataIniList);
+
+                ProgressBox.ShowScanningAllFMs();
+
                 var fmsToScan = new List<FanMission>();
                 foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
                 if (fmsToScan.Count > 0)

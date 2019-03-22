@@ -6,6 +6,8 @@ using System.Text;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 
+// TODO: Reader doesn't take into account NumericEmpty
+
 namespace AngelLoader.Ini
 {
     internal static partial class Ini

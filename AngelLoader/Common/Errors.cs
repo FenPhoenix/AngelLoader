@@ -6,6 +6,12 @@
         CamModIniNotFound
     }
 
+    internal enum ImportError
+    {
+        None,
+        NoArchiveDirsFound
+    }
+
     internal enum StubResponseError
     {
         RootTooLong,

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using AngelLoader.Common.DataClasses;
@@ -67,6 +69,31 @@ namespace AngelLoader.Ini
                         inMeta = false;
                     }
                 }
+            }
+        }
+
+        internal static DateTime? ReadNullableDate(string hexDate)
+        {
+            var success = long.TryParse(
+                hexDate,
+                NumberStyles.HexNumber,
+                DateTimeFormatInfo.InvariantInfo,
+                out long result);
+
+            if (!success) return null;
+
+            try
+            {
+                var dateTime = DateTimeOffset
+                    .FromUnixTimeSeconds(result)
+                    .DateTime
+                    .ToLocalTime();
+
+                return dateTime;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
             }
         }
     }

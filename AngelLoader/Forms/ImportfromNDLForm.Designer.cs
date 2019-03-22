@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class ImportfromNDLForm
+    partial class ImportFromNDLForm
     {
         /// <summary>
         /// Required designer variable.
@@ -168,7 +168,7 @@
             this.Controls.Add(this.Thief2GroupBox);
             this.Controls.Add(this.Thief1GroupBox);
             this.Controls.Add(this.ChooseNDLIniFilesLabel);
-            this.Name = "ImportfromNDLForm";
+            this.Name = "ImportFromNDLForm";
             this.Text = "Import from NewDarkLoader";
             this.Thief1GroupBox.ResumeLayout(false);
             this.Thief1GroupBox.PerformLayout();

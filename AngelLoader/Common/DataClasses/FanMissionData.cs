@@ -64,6 +64,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal string DisabledMods = "";
         internal bool DisableAllMods = false;
+
         internal bool? HasMap;
         internal bool? HasAutomap;
         internal bool? HasScripts;
