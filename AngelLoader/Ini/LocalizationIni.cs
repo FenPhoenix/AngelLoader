@@ -436,6 +436,10 @@ namespace AngelLoader.Ini
                         {
                             LText.FMsList.FMMenu_Tasks = lt.Substring(13);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_WebSearch="))
+                        {
+                            LText.FMsList.FMMenu_WebSearch = lt.Substring(17);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("TasksMenu_ConvertWAVsTo16Bit="))
                         {
                             LText.FMsList.TasksMenu_ConvertWAVsTo16Bit = lt.Substring(29);

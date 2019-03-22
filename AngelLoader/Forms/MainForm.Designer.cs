@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InstallUninstallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -195,6 +195,7 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
+            this.WebSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -238,29 +239,30 @@
             this.RatingRCSubMenu,
             this.FinishedOnRCSubMenu,
             this.FMRightClickMenuSep2,
-            this.TasksRCSubMenu});
+            this.TasksRCSubMenu,
+            this.WebSearchMenuItem});
             this.FMRightClickMenu.Name = "FMRightClickMenu";
-            this.FMRightClickMenu.Size = new System.Drawing.Size(136, 126);
+            this.FMRightClickMenu.Size = new System.Drawing.Size(181, 170);
             this.FMRightClickMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FMRightClickMenu_Opening);
             // 
             // PlayFMMenuItem
             // 
             this.PlayFMMenuItem.Name = "PlayFMMenuItem";
-            this.PlayFMMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.PlayFMMenuItem.Size = new System.Drawing.Size(180, 22);
             this.PlayFMMenuItem.Text = "Play FM";
             this.PlayFMMenuItem.Click += new System.EventHandler(this.PlayFMMenuItem_Click);
             // 
             // InstallUninstallMenuItem
             // 
             this.InstallUninstallMenuItem.Name = "InstallUninstallMenuItem";
-            this.InstallUninstallMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.InstallUninstallMenuItem.Size = new System.Drawing.Size(180, 22);
             this.InstallUninstallMenuItem.Text = "Install FM";
             this.InstallUninstallMenuItem.Click += new System.EventHandler(this.InstallUninstallMenuItem_Click);
             // 
             // FMRightClickMenuSep1
             // 
             this.FMRightClickMenuSep1.Name = "FMRightClickMenuSep1";
-            this.FMRightClickMenuSep1.Size = new System.Drawing.Size(132, 6);
+            this.FMRightClickMenuSep1.Size = new System.Drawing.Size(177, 6);
             // 
             // RatingRCSubMenu
             // 
@@ -278,7 +280,7 @@
             this.RatingRCMenu9,
             this.RatingRCMenu10});
             this.RatingRCSubMenu.Name = "RatingRCSubMenu";
-            this.RatingRCSubMenu.Size = new System.Drawing.Size(135, 22);
+            this.RatingRCSubMenu.Size = new System.Drawing.Size(180, 22);
             this.RatingRCSubMenu.Text = "Rating";
             // 
             // RatingRCMenuUnrated
@@ -369,7 +371,7 @@
             // 
             this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
             this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
-            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(135, 22);
+            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(180, 22);
             this.FinishedOnRCSubMenu.Text = "Finished on";
             // 
             // FinishedOnMenu
@@ -422,7 +424,7 @@
             // FMRightClickMenuSep2
             // 
             this.FMRightClickMenuSep2.Name = "FMRightClickMenuSep2";
-            this.FMRightClickMenuSep2.Size = new System.Drawing.Size(132, 6);
+            this.FMRightClickMenuSep2.Size = new System.Drawing.Size(177, 6);
             // 
             // TasksRCSubMenu
             // 
@@ -430,7 +432,7 @@
             this.ConvertWAVsTo16BitMenuItem,
             this.ConvertOGGsToWAVsToolStripMenuItem});
             this.TasksRCSubMenu.Name = "TasksRCSubMenu";
-            this.TasksRCSubMenu.Size = new System.Drawing.Size(135, 22);
+            this.TasksRCSubMenu.Size = new System.Drawing.Size(180, 22);
             this.TasksRCSubMenu.Text = "Tasks";
             // 
             // ConvertWAVsTo16BitMenuItem
@@ -803,14 +805,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -826,26 +828,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle2;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -2051,6 +2053,13 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
+            // WebSearchMenuItem
+            // 
+            this.WebSearchMenuItem.Name = "WebSearchMenuItem";
+            this.WebSearchMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.WebSearchMenuItem.Text = "Web search";
+            this.WebSearchMenuItem.Click += new System.EventHandler(this.WebSearchMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2287,6 +2296,7 @@
         private System.Windows.Forms.Button ZoomInButton;
         private System.Windows.Forms.Button ZoomOutButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.ToolStripMenuItem WebSearchMenuItem;
     }
 }
 

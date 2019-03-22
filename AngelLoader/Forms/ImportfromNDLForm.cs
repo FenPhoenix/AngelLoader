@@ -12,6 +12,8 @@ namespace AngelLoader.Forms
 {
     public partial class ImportFromNDLForm : Form
     {
+        internal string NDLIniFile = "";
+
         public ImportFromNDLForm()
         {
             InitializeComponent();

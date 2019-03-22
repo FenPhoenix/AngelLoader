@@ -523,6 +523,19 @@ namespace AngelLoader.Forms
                 ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.TasksMenu_ConvertWAVsTo16Bit;
                 ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.TasksMenu_ConvertOGGsToWAVs;
 
+                WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch;
+
+                #endregion
+
+                #region Finished On menu
+
+                var fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
+
+                FinishedOnNormalMenuItem.Text = fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal;
+                FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;
+                FinishedOnExpertMenuItem.Text = fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert;
+                FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
+
                 #endregion
 
                 #region Play original games menu
@@ -2299,17 +2312,20 @@ namespace AngelLoader.Forms
             FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
 
             var installable = GameIsKnownAndSupported(fm);
+
             InstallUninstallMenuItem.Enabled = installable;
-            InstallUninstallFMButton.Enabled = installable;
-            PlayFMMenuItem.Enabled = installable;
-            PlayFMButton.Enabled = installable;
             InstallUninstallMenuItem.Text = fm.Installed
                 ? LText.FMsList.FMMenu_UninstallFM
                 : LText.FMsList.FMMenu_InstallFM;
+
+            InstallUninstallFMButton.Enabled = installable;
             // Special-cased; don't autosize this one
             InstallUninstallFMButton.Text = fm.Installed
                 ? LText.MainButtons.UninstallFM
                 : LText.MainButtons.InstallFM;
+
+            PlayFMMenuItem.Enabled = installable;
+            PlayFMButton.Enabled = installable;
 
             WebSearchButton.Enabled = true;
 
@@ -3297,7 +3313,9 @@ namespace AngelLoader.Forms
 
         private void ReadmeFullScreenButton_Click(object sender, EventArgs e) => MainSplitContainer.ToggleFullScreen();
 
-        private void WebSearchButton_Click(object sender, EventArgs e)
+        private void WebSearchButton_Click(object sender, EventArgs e) => SearchWeb();
+
+        private void SearchWeb()
         {
             var fm = GetSelectedFM();
 
@@ -3580,22 +3598,28 @@ namespace AngelLoader.Forms
 
         private async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
         {
+            string iniFile;
+            bool importFMData;
+            bool importSaves;
             using (var f = new ImportFromDarkLoaderForm())
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
+                iniFile = f.DarkLoaderIniFile;
+                importFMData = f.ImportFMData;
+                importSaves = f.ImportSaves;
+            }
 
-                if (!f.ImportFMData && !f.ImportSaves)
-                {
-                    MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                    return;
-                }
+            if (!importFMData && !importSaves)
+            {
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                return;
+            }
 
-                bool success = await Model.ImportFromDarkLoader(f.DarkLoaderIniFile, f.ImportFMData, f.ImportSaves);
-                if (!success)
-                {
-                    // log it
-                    return;
-                }
+            bool success = await Model.ImportFromDarkLoader(iniFile, importFMData, importSaves);
+            if (!success)
+            {
+                // log it
+                return;
             }
         }
 
@@ -3604,9 +3628,23 @@ namespace AngelLoader.Forms
 
         }
 
-        private void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e)
+        private async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e)
         {
+            string iniFile;
+            using (var f = new ImportFromNDLForm())
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+                iniFile = f.NDLIniFile;
+            }
 
+            bool success = await Model.ImportFromNDL(iniFile);
+            if (!success)
+            {
+                // log it
+                return;
+            }
         }
+
+        private void WebSearchMenuItem_Click(object sender, EventArgs e) => SearchWeb();
     }
 }
