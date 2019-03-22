@@ -568,6 +568,18 @@ namespace AngelLoader.Ini
                         {
                             LText.EditFMTab.DisableAllMods = lt.Substring(15);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("RescanTitleToolTip="))
+                        {
+                            LText.EditFMTab.RescanTitleToolTip = lt.Substring(19);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("RescanAuthorToolTip="))
+                        {
+                            LText.EditFMTab.RescanAuthorToolTip = lt.Substring(20);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("RescanReleaseDateToolTip="))
+                        {
+                            LText.EditFMTab.RescanReleaseDateToolTip = lt.Substring(25);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;

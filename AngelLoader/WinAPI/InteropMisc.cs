@@ -11,21 +11,21 @@ namespace AngelLoader.WinAPI
 
         #region Scrollbar
 
-        internal const int WM_SCROLL = 276; // Horizontal scroll
-        internal const int WM_VSCROLL = 277; // Vertical scroll
-        internal const int SB_LINEUP = 0; // Scrolls one line up
-        internal const int SB_LINELEFT = 0;// Scrolls one cell left
-        internal const int SB_LINEDOWN = 1; // Scrolls one line down
-        internal const int SB_LINERIGHT = 1;// Scrolls one cell right
-        internal const int SB_PAGEUP = 2; // Scrolls one page up
-        internal const int SB_PAGELEFT = 2;// Scrolls one page left
-        internal const int SB_PAGEDOWN = 3; // Scrolls one page down
-        internal const int SB_PAGERIGHT = 3; // Scrolls one page right
-        internal const int SB_PAGETOP = 6; // Scrolls to the upper left
-        internal const int SB_LEFT = 6; // Scrolls to the left
-        internal const int SB_PAGEBOTTOM = 7; // Scrolls to the upper right
-        internal const int SB_RIGHT = 7; // Scrolls to the right
-        internal const int SB_ENDSCROLL = 8; // Ends scroll
+        internal const int WM_SCROLL = 276;
+        internal const int WM_VSCROLL = 277;
+        internal const int SB_LINEUP = 0;
+        internal const int SB_LINELEFT = 0;
+        internal const int SB_LINEDOWN = 1;
+        internal const int SB_LINERIGHT = 1;
+        internal const int SB_PAGEUP = 2;
+        internal const int SB_PAGELEFT = 2;
+        internal const int SB_PAGEDOWN = 3;
+        internal const int SB_PAGERIGHT = 3;
+        internal const int SB_PAGETOP = 6;
+        internal const int SB_LEFT = 6;
+        internal const int SB_PAGEBOTTOM = 7;
+        internal const int SB_RIGHT = 7;
+        internal const int SB_ENDSCROLL = 8;
         internal const int SBM_GETPOS = 225;
         internal const int SB_HORZ = 0;
 
@@ -65,6 +65,9 @@ namespace AngelLoader.WinAPI
 
         [DllImport("user32.dll")]
         internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
+
+        [DllImport("user32.dll")]
+        internal static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
 
         [DllImport("kernel32")]
         internal static extern uint GetCurrentThreadId();

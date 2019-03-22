@@ -585,6 +585,10 @@ namespace AngelLoader.Forms
                 EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
                 EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
+                MainToolTip.SetToolTip(EditFMScanTitleButton, LText.EditFMTab.RescanTitleToolTip);
+                MainToolTip.SetToolTip(EditFMScanAuthorButton, LText.EditFMTab.RescanAuthorToolTip);
+                MainToolTip.SetToolTip(EditFMScanReleaseDateButton, LText.EditFMTab.RescanReleaseDateToolTip);
+
                 #endregion
 
                 #region Comment tab
@@ -3646,5 +3650,26 @@ namespace AngelLoader.Forms
         }
 
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => SearchWeb();
+
+        private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
+        {
+            await ScanSelectedFM(ScanOptions.FalseDefault(scanTitle: true));
+        }
+
+        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
+        {
+            await ScanSelectedFM(ScanOptions.FalseDefault(scanAuthor: true));
+        }
+
+        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
+        {
+            await ScanSelectedFM(ScanOptions.FalseDefault(scanReleaseDate: true));
+        }
+
+        private async Task ScanSelectedFM(ScanOptions scanOptions)
+        {
+            bool success = await Model.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false);
+            if (success) await RefreshSelectedFM(refreshReadme: true);
+        }
     }
 }

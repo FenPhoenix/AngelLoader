@@ -481,6 +481,18 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
+        internal static void Block(this Form form)
+        {
+            if (!form.IsHandleCreated) return;
+            EnableWindow(form.Handle, false);
+        }
+
+        internal static void Unblock(this Form form)
+        {
+            if (!form.IsHandleCreated) return;
+            EnableWindow(form.Handle, true);
+        }
+
         /// <summary>
         /// Sets the progress bar's value instantly. Avoids the la-dee-dah catch-up-when-I-feel-like-it nature of
         /// the progress bar that makes it look annoying and unprofessional.

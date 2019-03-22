@@ -190,6 +190,10 @@ namespace AngelLoader.Common.DataClasses
             internal static string FinishedOn = "Finished on...";
             internal static string DisabledMods = "Disabled mods:";
             internal static string DisableAllMods = "Disable all mods";
+            [FenGenBlankLine]
+            internal static string RescanTitleToolTip = "Rescan title";
+            internal static string RescanAuthorToolTip = "Rescan author";
+            internal static string RescanReleaseDateToolTip = "Rescan release date";
         }
 
         internal static class CommentTab
