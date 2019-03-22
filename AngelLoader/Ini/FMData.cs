@@ -124,8 +124,8 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("Rating="))
                 {
                     var val = lineT.Substring(7);
-                    int.TryParse(val, out int result);
-                    fm.Rating = result;
+                    bool success = int.TryParse(val, out int result);
+                    fm.Rating = success ? result : -1;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("ReleaseDate="))
                 {
