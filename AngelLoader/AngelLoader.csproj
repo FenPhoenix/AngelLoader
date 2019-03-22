@@ -346,6 +346,7 @@
     <PostBuildEvent>xcopy "$(TargetDir)AngelLoader.exe" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)*.dll" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)x86\7z.dll" "C:\AngelLoader\" /y
+xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
 
 xcopy "$(TargetDir)ffmpeg.exe" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)ffprobe.exe" "C:\AngelLoader\" /y

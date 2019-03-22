@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Forms;
@@ -23,6 +22,10 @@ namespace AngelLoader
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            #region SevenZipSharp init
+
+            // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
+            // at any time
             var sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
             if (!File.Exists(sevenZipDllLocation))
             {
@@ -33,9 +36,13 @@ namespace AngelLoader
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
-            // NOTE: ~50ms to do this. If we modified SevenZipSharp, we could get that way down. Lowish priority,
-            // but it's a fair chunk of the startup time.
-            SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
+
+            // NOTE: Calling this takes ~50ms, but fortunately if we don't call it then it just looks in the app
+            // startup path. So we just make sure we copy 7z.dll to anywhere that could be an app startup path
+            // (so that includes our bin\x86\whatever dirs).
+            //SevenZip.SevenZipBase.SetLibraryPath(sevenZipDllLocation);
+
+            #endregion
 
             Application.Run(new AppContext());
 
