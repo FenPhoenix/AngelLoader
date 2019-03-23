@@ -175,8 +175,9 @@
     <Compile Include="Forms\ImportFromNDLForm.Designer.cs">
       <DependentUpon>ImportFromNDLForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImportDarkLoader.cs" />
-    <Compile Include="ImportNDL.cs" />
+    <Compile Include="Importing\ImportDarkLoader.cs" />
+    <Compile Include="Importing\ImportCommon.cs" />
+    <Compile Include="Importing\ImportNDL.cs" />
     <Compile Include="Ini\ConfigIni.cs" />
     <Compile Include="Ini\FMData.cs" />
     <Compile Include="Ini\IniMisc.cs" />

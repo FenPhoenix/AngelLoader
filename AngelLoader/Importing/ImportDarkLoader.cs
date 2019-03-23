@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Common;
 
-namespace AngelLoader
+namespace AngelLoader.Importing
 {
     internal static class ImportDarkLoader
     {
@@ -285,7 +284,7 @@ namespace AngelLoader
                     string savesPath = Path.Combine(i == 0 ? t1Dir : t2Dir, "allsaves");
                     if (!Directory.Exists(savesPath)) continue;
 
-                    var convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+                    var convertedPath = Path.Combine(Common.Common.Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
                     Directory.CreateDirectory(convertedPath);
 
                     // Converting takes too long, so just copy them to our backup folder and they'll be handled
@@ -299,65 +298,6 @@ namespace AngelLoader
             });
 
             return true;
-        }
-
-        internal static List<int> MergeDarkLoaderFMData(List<FanMission> importedFMs, List<FanMission> mainList)
-        {
-            var checkedList = new List<FanMission>();
-            var importedFMIndexes = new List<int>();
-            int initCount = mainList.Count;
-            int indexPastEnd = initCount - 1;
-
-            for (int iFMi = 0; iFMi < importedFMs.Count; iFMi++)
-            {
-                var iFM = importedFMs[iFMi];
-
-                bool existingFound = false;
-                for (int i = 0; i < initCount; i++)
-                {
-                    var fm = mainList[i];
-
-                    if (!fm.Checked &&
-                        fm.Archive.EqualsI(iFM.Archive))
-                    {
-                        if (!iFM.Title.IsEmpty()) fm.Title = iFM.Title;
-                        if (iFM.ReleaseDate != null) fm.ReleaseDate = iFM.ReleaseDate;
-                        fm.LastPlayed = iFM.LastPlayed;
-                        fm.FinishedOn = iFM.FinishedOn;
-                        fm.Comment = iFM.Comment;
-
-                        fm.Checked = true;
-
-                        // So we only loop through checked FMs when we reset them
-                        checkedList.Add(fm);
-
-                        importedFMIndexes.Add(i);
-
-                        existingFound = true;
-                        break;
-                    }
-                }
-                if (!existingFound)
-                {
-                    mainList.Add(new FanMission
-                    {
-                        Archive = iFM.Archive,
-                        InstalledDir = iFM.InstalledDir,
-                        Title = !iFM.Title.IsEmpty() ? iFM.Title : iFM.Archive,
-                        ReleaseDate = iFM.ReleaseDate,
-                        LastPlayed = iFM.LastPlayed,
-                        FinishedOn = iFM.FinishedOn,
-                        Comment = iFM.Comment
-                    });
-                    indexPastEnd++;
-                    importedFMIndexes.Add(indexPastEnd);
-                }
-            }
-
-            // Reset temp bool
-            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
-
-            return importedFMIndexes;
         }
     }
 }

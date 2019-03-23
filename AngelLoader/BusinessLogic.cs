@@ -15,6 +15,7 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.Forms;
+using AngelLoader.Importing;
 using FMScanner;
 using SevenZip;
 using static AngelLoader.Common.Common;
@@ -891,7 +892,7 @@ namespace AngelLoader
                     return false;
                 }
 
-                var importedIndexes = ImportDarkLoader.MergeDarkLoaderFMData(fms, FMDataIniList);
+                var importedIndexes = ImportCommon.MergeDarkLoaderFMData(fms, FMDataIniList);
 
                 ProgressBox.ShowScanningAllFMs();
 
@@ -931,7 +932,7 @@ namespace AngelLoader
                     return false;
                 }
 
-                var importedIndexes = ImportNDL.MergeNDLFMData(fms, FMDataIniList);
+                var importedIndexes = ImportCommon.MergeNDLFMData(fms, FMDataIniList);
 
                 ProgressBox.ShowScanningAllFMs();
 

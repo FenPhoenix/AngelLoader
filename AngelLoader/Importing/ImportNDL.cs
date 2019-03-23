@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
-using static AngelLoader.Ini.Ini;
 
-namespace AngelLoader
+namespace AngelLoader.Importing
 {
     internal static class ImportNDL
     {
@@ -43,11 +42,11 @@ namespace AngelLoader
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ReleaseDate="))
                             {
-                                fm.ReleaseDate = ReadNullableDate(lineFM.Substring(12));
+                                fm.ReleaseDate = Ini.Ini.ReadNullableDate(lineFM.Substring(12));
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("LastCompleted="))
                             {
-                                fm.LastPlayed = ReadNullableDate(lineFM.Substring(14));
+                                fm.LastPlayed = Ini.Ini.ReadNullableDate(lineFM.Substring(14));
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Finished="))
                             {
@@ -95,77 +94,6 @@ namespace AngelLoader
             });
 
             return (true, fms);
-        }
-
-        internal static List<int> MergeNDLFMData(List<FanMission> importedFMs, List<FanMission> mainList)
-        {
-            var checkedList = new List<FanMission>();
-            var importedFMIndexes = new List<int>();
-            int initCount = mainList.Count;
-            int indexPastEnd = initCount - 1;
-
-            for (int impFMi = 0; impFMi < importedFMs.Count; impFMi++)
-            {
-                var importedFM = importedFMs[impFMi];
-
-                bool existingFound = false;
-                for (int mainFMi = 0; mainFMi < initCount; mainFMi++)
-                {
-                    var mainFM = mainList[mainFMi];
-
-                    if (!mainFM.Checked &&
-                        mainFM.Archive.EqualsI(importedFM.Archive))
-                    {
-                        if (!importedFM.Title.IsEmpty()) mainFM.Title = importedFM.Title;
-                        if (importedFM.ReleaseDate != null) mainFM.ReleaseDate = importedFM.ReleaseDate;
-                        mainFM.LastPlayed = importedFM.LastPlayed;
-                        mainFM.FinishedOn = importedFM.FinishedOn;
-                        mainFM.Rating = importedFM.Rating;
-                        mainFM.Comment = importedFM.Comment;
-                        mainFM.DisabledMods = importedFM.DisabledMods;
-                        mainFM.DisableAllMods = importedFM.DisableAllMods;
-                        mainFM.TagsString = importedFM.TagsString;
-                        mainFM.SelectedReadme = importedFM.SelectedReadme;
-                        if (mainFM.SizeBytes == 0) mainFM.SizeBytes = importedFM.SizeBytes;
-
-                        mainFM.Checked = true;
-
-                        // So we only loop through checked FMs when we reset them
-                        checkedList.Add(mainFM);
-
-                        importedFMIndexes.Add(mainFMi);
-
-                        existingFound = true;
-                        break;
-                    }
-                }
-                if (!existingFound)
-                {
-                    mainList.Add(new FanMission
-                    {
-                        Archive = importedFM.Archive,
-                        InstalledDir = importedFM.InstalledDir,
-                        Title = !importedFM.Title.IsEmpty() ? importedFM.Title : importedFM.Archive,
-                        ReleaseDate = importedFM.ReleaseDate,
-                        LastPlayed = importedFM.LastPlayed,
-                        FinishedOn = importedFM.FinishedOn,
-                        Rating = importedFM.Rating,
-                        Comment = importedFM.Comment,
-                        DisabledMods = importedFM.DisabledMods,
-                        DisableAllMods = importedFM.DisableAllMods,
-                        TagsString = importedFM.TagsString,
-                        SelectedReadme = importedFM.SelectedReadme,
-                        SizeBytes = importedFM.SizeBytes
-                    });
-                    indexPastEnd++;
-                    importedFMIndexes.Add(indexPastEnd);
-                }
-            }
-
-            // Reset temp bool
-            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
-
-            return importedFMIndexes;
         }
     }
 }
