@@ -365,6 +365,23 @@ namespace AngelLoader.Common.Utility
             return path.Substring(Math.Max(i1, i2) + 1);
         }
 
+        internal static string GetDirNameFast(this string path)
+        {
+            if (path == null) return null;
+
+            while (path[path.Length - 1] == '\\' || path[path.Length - 1] == '/')
+            {
+                path = path.TrimEnd('\\').TrimEnd('/');
+            }
+
+            int i1 = path.LastIndexOf('\\');
+            int i2 = path.LastIndexOf('/');
+
+            if (i1 == -1 & i2 == -1) return path;
+
+            return path.Substring(Math.Max(i1, i2) + 1);
+        }
+
         internal static string GetTopmostDirName(this string path)
         {
             var i = path.LastIndexOf('\\');

@@ -642,7 +642,9 @@ namespace AngelLoader
 
             void ReportProgress(ProgressReport pr)
             {
-                ProgressBox.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, pr.FMName);
+                var fmIsZip = pr.FMName.ExtEqualsI(".zip") || pr.FMName.ExtEqualsI(".7z");
+                var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
+                ProgressBox.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
             }
 
             var scanningOne = fmsToScan.Count == 1;
