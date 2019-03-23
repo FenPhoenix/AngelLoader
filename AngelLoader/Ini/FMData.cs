@@ -191,6 +191,11 @@ namespace AngelLoader.Ini
                     int.TryParse(val, out int result);
                     fm.FinishedOn = result;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("FinishedOnUnknown="))
+                {
+                    var val = lineT.Substring(18);
+                    fm.FinishedOnUnknown = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("Comment="))
                 {
                     var val = lineT.Substring(8);
@@ -349,6 +354,10 @@ namespace AngelLoader.Ini
                     if (fm.FinishedOn != 0)
                     {
                         sw.WriteLine("FinishedOn=" + fm.FinishedOn.ToString());
+                    }
+                    if (fm.FinishedOnUnknown)
+                    {
+                        sw.WriteLine("FinishedOnUnknown=" + fm.FinishedOnUnknown.ToString());
                     }
                     if (!string.IsNullOrEmpty(fm.Comment))
                     {

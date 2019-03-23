@@ -894,8 +894,6 @@ namespace AngelLoader
 
                 var importedIndexes = ImportCommon.MergeDarkLoaderFMData(fms, FMDataIniList);
 
-                ProgressBox.ShowScanningAllFMs();
-
                 // DarkLoader might have the wrong game type or no game type, so scan for that.
                 // Also scan for custom resources because DL's and ours are slightly different.
                 // TODO: This can be canceled, so make sure the world won't explode if the user cancels
@@ -905,7 +903,6 @@ namespace AngelLoader
                 if (fmsToScan.Count > 0)
                 {
                     var scanOptions = ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
-
                     await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
                 }
 
@@ -934,14 +931,44 @@ namespace AngelLoader
 
                 var importedIndexes = ImportCommon.MergeNDLFMData(fms, FMDataIniList);
 
-                ProgressBox.ShowScanningAllFMs();
-
                 var fmsToScan = new List<FanMission>();
                 foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
                 if (fmsToScan.Count > 0)
                 {
                     var scanOptions = ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
+                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+                }
 
+                FindFMs();
+            }
+            finally
+            {
+                ProgressBox.Hide();
+            }
+
+            return true;
+        }
+
+        internal async Task<bool> ImportFromFMSel(string iniFile)
+        {
+            ProgressBox.ShowImportFMSel();
+            try
+            {
+                var (success, fms) = await ImportNDL.Import(iniFile);
+                if (!success)
+                {
+                    // log it
+                    return false;
+                }
+
+                var importedIndexes = ImportCommon.MergeFMSelFMData(fms, FMDataIniList);
+
+                var fmsToScan = new List<FanMission>();
+                foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
+                if (fmsToScan.Count > 0)
+                {
+                    var scanOptions = ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true,
+                        scanSize: true);
                     await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
                 }
 

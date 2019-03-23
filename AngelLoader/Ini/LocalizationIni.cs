@@ -240,6 +240,10 @@ namespace AngelLoader.Ini
                         {
                             LText.Difficulties.Extreme = lt.Substring(8);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Unknown="))
+                        {
+                            LText.Difficulties.Unknown = lt.Substring(8);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -787,6 +791,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("ImportingFromNewDarkLoader="))
                         {
                             LText.ProgressBox.ImportingFromNewDarkLoader = lt.Substring(27);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportingFromFMSel="))
+                        {
+                            LText.ProgressBox.ImportingFromFMSel = lt.Substring(19);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("CachingReadmeFiles="))
                         {

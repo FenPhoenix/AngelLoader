@@ -22,6 +22,7 @@ namespace AngelLoader.CustomControls
             ConvertFiles,
             ImportFromDarkLoader,
             ImportFromNDL,
+            ImportFromFMSel,
             CacheFM
         }
 
@@ -49,6 +50,12 @@ namespace AngelLoader.CustomControls
         internal void ShowImportNDL()
         {
             ProgressTask = ProgressTasks.ImportFromNDL;
+            ShowProgressWindow(ProgressTask);
+        }
+
+        internal void ShowImportFMSel()
+        {
+            ProgressTask = ProgressTasks.ImportFromFMSel;
             ShowProgressWindow(ProgressTask);
         }
 
@@ -97,6 +104,7 @@ namespace AngelLoader.CustomControls
                 progressTask == ProgressTasks.ConvertFiles ? LText.ProgressBox.ConvertingFiles :
                 progressTask == ProgressTasks.ImportFromDarkLoader ? LText.ProgressBox.ImportingFromDarkLoader :
                 progressTask == ProgressTasks.ImportFromNDL ? LText.ProgressBox.ImportingFromNewDarkLoader :
+                progressTask == ProgressTasks.ImportFromFMSel ? LText.ProgressBox.ImportingFromFMSel :
                 progressTask == ProgressTasks.CacheFM ? LText.ProgressBox.CachingReadmeFiles :
                 "";
 
@@ -107,7 +115,8 @@ namespace AngelLoader.CustomControls
             if (progressTask == ProgressTasks.UninstallFM ||
                 progressTask == ProgressTasks.ConvertFiles ||
                 progressTask == ProgressTasks.ImportFromDarkLoader ||
-                progressTask == ProgressTasks.ImportFromNDL)
+                progressTask == ProgressTasks.ImportFromNDL ||
+                progressTask == ProgressTasks.ImportFromFMSel)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);

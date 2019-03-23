@@ -92,6 +92,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Hard = "Hard";
             internal static string Expert = "Expert";
             internal static string Extreme = "Extreme";
+            internal static string Unknown = "Unknown";
         }
 
         internal static class GameTabs
@@ -254,6 +255,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string CancelingInstall = "Canceling install...";
             internal static string ImportingFromDarkLoader = "Importing from DarkLoader...";
             internal static string ImportingFromNewDarkLoader = "Importing from NewDarkLoader...";
+            internal static string ImportingFromFMSel = "Importing from FMSel...";
             internal static string CachingReadmeFiles = "Caching readme files...";
         }
 

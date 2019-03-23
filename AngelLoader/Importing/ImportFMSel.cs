@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader.Importing
 {
-    internal static class ImportNDL
+    internal static class ImportFMSel
     {
-        internal static async Task<(bool Success, List<FanMission> FMs)>
+        internal static async Task<(ImportError Error, List<FanMission> FMs)>
         Import(string iniFile)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
@@ -22,12 +23,6 @@ namespace AngelLoader.Importing
 
                     if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
                     {
-                        // NOTE: There can be a problem like:
-                        // installed name is CoolMission[1]
-                        // it gets written like [FM=CoolMission[1]]
-                        // it gets read and all [ and ] chars are removed
-                        // it gets written back out like [FM=CoolMission1]
-                        // Rare I guess, so just ignore?
                         var instName = line.Substring(4, line.Length - 5);
 
                         var fm = new FanMission { InstalledDir = instName };
@@ -39,27 +34,32 @@ namespace AngelLoader.Importing
                             {
                                 fm.Title = lineFM.Substring(9);
                             }
+                            else if (lineFM.StartsWithFast_NoNullChecks("Archive="))
+                            {
+                                fm.Archive = lineFM.Substring(8);
+                            }
                             else if (lineFM.StartsWithFast_NoNullChecks("ReleaseDate="))
                             {
                                 fm.ReleaseDate = ReadNullableHexDate(lineFM.Substring(12));
                             }
-                            else if (lineFM.StartsWithFast_NoNullChecks("LastCompleted="))
+                            else if (lineFM.StartsWithFast_NoNullChecks("LastStarted="))
                             {
-                                fm.LastPlayed = ReadNullableHexDate(lineFM.Substring(14));
+                                fm.LastPlayed = ReadNullableHexDate(lineFM.Substring(12));
                             }
-                            else if (lineFM.StartsWithFast_NoNullChecks("Finished="))
+                            else if (lineFM.StartsWithFast_NoNullChecks("Completed="))
                             {
-                                int.TryParse(lineFM.Substring(9), out int result);
-                                // result will be 0 on fail, which is the empty value so it's fine
-                                fm.FinishedOn = result;
+                                int.TryParse(lineFM.Substring(10), out int result);
+                                // Unfortunately FMSel doesn't let you choose the difficulty you finished on, so
+                                // we have to have this fallback value as a best-effort thing.
+                                if (result > 0) fm.FinishedOnUnknown = true;
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Rating="))
                             {
                                 fm.Rating = int.TryParse(lineFM.Substring(7), out int result) ? result : -1;
                             }
-                            else if (lineFM.StartsWithFast_NoNullChecks("Comment="))
+                            else if (lineFM.StartsWithFast_NoNullChecks("Notes="))
                             {
-                                fm.Comment = lineFM.Substring(8);
+                                fm.Comment = lineFM.Substring(6).Replace(@"\n", "\r\n");
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
                             {
@@ -81,18 +81,13 @@ namespace AngelLoader.Importing
                             {
                                 fm.SelectedReadme = lineFM.Substring(9);
                             }
-                            else if (lineFM.StartsWithFast_NoNullChecks("FMSize="))
-                            {
-                                ulong.TryParse(lineFM.Substring(7), out ulong result);
-                                fm.SizeBytes = result;
-                            }
                         }
                         fms.Add(fm);
                     }
                 }
             });
 
-            return (true, fms);
+            return (ImportError.None, fms);
         }
     }
 }

@@ -11,7 +11,6 @@ namespace AngelLoader.Importing
         FMSel
     }
 
-
     internal static class ImportCommon
     {
         internal static List<int> MergeDarkLoaderFMData(List<FanMission> importedFMs, List<FanMission> mainList)
@@ -58,14 +57,22 @@ namespace AngelLoader.Importing
                         mainFM.FinishedOn = importedFM.FinishedOn;
                         mainFM.Comment = importedFM.Comment;
 
-                        if (importType == ImportType.NewDarkLoader)
+                        if (importType == ImportType.NewDarkLoader ||
+                            importType == ImportType.FMSel)
                         {
                             mainFM.Rating = importedFM.Rating;
                             mainFM.DisabledMods = importedFM.DisabledMods;
                             mainFM.DisableAllMods = importedFM.DisableAllMods;
                             mainFM.TagsString = importedFM.TagsString;
                             mainFM.SelectedReadme = importedFM.SelectedReadme;
+                        }
+                        if (importType == ImportType.NewDarkLoader)
+                        {
                             if (mainFM.SizeBytes == 0) mainFM.SizeBytes = importedFM.SizeBytes;
+                        }
+                        else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
+                        {
+                            mainFM.FinishedOnUnknown = true;
                         }
 
                         mainFM.Checked = true;
@@ -95,14 +102,22 @@ namespace AngelLoader.Importing
                         Comment = importedFM.Comment,
                     };
 
-                    if (importType == ImportType.NewDarkLoader)
+                    if (importType == ImportType.NewDarkLoader ||
+                        importType == ImportType.FMSel)
                     {
                         newFM.Rating = importedFM.Rating;
                         newFM.DisabledMods = importedFM.DisabledMods;
                         newFM.DisableAllMods = importedFM.DisableAllMods;
                         newFM.TagsString = importedFM.TagsString;
                         newFM.SelectedReadme = importedFM.SelectedReadme;
+                    }
+                    if (importType == ImportType.NewDarkLoader)
+                    {
                         newFM.SizeBytes = importedFM.SizeBytes;
+                    }
+                    else if (importType == ImportType.FMSel)
+                    {
+                        newFM.FinishedOnUnknown = true;
                     }
 
                     mainList.Add(newFM);

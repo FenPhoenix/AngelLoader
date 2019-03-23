@@ -200,6 +200,7 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
+            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -385,16 +386,16 @@
             this.FinishedOnNormalMenuItem,
             this.FinishedOnHardMenuItem,
             this.FinishedOnExpertMenuItem,
-            this.FinishedOnExtremeMenuItem});
+            this.FinishedOnExtremeMenuItem,
+            this.FinishedOnUnknownMenuItem});
             this.FinishedOnMenu.Name = "FinishedOnMenu";
-            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
-            this.FinishedOnMenu.Size = new System.Drawing.Size(117, 92);
+            this.FinishedOnMenu.Size = new System.Drawing.Size(181, 136);
             // 
             // FinishedOnNormalMenuItem
             // 
             this.FinishedOnNormalMenuItem.CheckOnClick = true;
             this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
-            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(180, 22);
             this.FinishedOnNormalMenuItem.Tag = "";
             this.FinishedOnNormalMenuItem.Text = "Normal";
             this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
@@ -403,7 +404,7 @@
             // 
             this.FinishedOnHardMenuItem.CheckOnClick = true;
             this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
-            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(180, 22);
             this.FinishedOnHardMenuItem.Tag = "";
             this.FinishedOnHardMenuItem.Text = "Hard";
             this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
@@ -412,7 +413,7 @@
             // 
             this.FinishedOnExpertMenuItem.CheckOnClick = true;
             this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
-            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(180, 22);
             this.FinishedOnExpertMenuItem.Tag = "";
             this.FinishedOnExpertMenuItem.Text = "Expert";
             this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
@@ -421,7 +422,7 @@
             // 
             this.FinishedOnExtremeMenuItem.CheckOnClick = true;
             this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
-            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(180, 22);
             this.FinishedOnExtremeMenuItem.Tag = "";
             this.FinishedOnExtremeMenuItem.Text = "Extreme";
             this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
@@ -2127,6 +2128,15 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
+            // FinishedOnUnknownMenuItem
+            // 
+            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
+            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
+            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.FinishedOnUnknownMenuItem.Text = "Unknown";
+            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
+            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2369,6 +2379,7 @@
         private System.Windows.Forms.Button EditFMScanAuthorButton;
         private System.Windows.Forms.Button EditFMScanTitleButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.ToolStripMenuItem FinishedOnUnknownMenuItem;
     }
 }
 

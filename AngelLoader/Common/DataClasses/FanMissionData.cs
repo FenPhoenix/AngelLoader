@@ -33,9 +33,9 @@ namespace AngelLoader.Common.DataClasses
 
         internal bool Installed;
 
-        internal bool RefreshCache = false;
+        internal bool RefreshCache;
 
-        internal bool NoReadmes = false;
+        internal bool NoReadmes;
         internal string SelectedReadme = "";
 
         // [FenGen:DoNotSerialize]
@@ -57,13 +57,14 @@ namespace AngelLoader.Common.DataClasses
         private int _finishedOn = 0;
         // [FenGen:NumericEmpty=0]
         internal int FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0, 15); }
+        internal bool FinishedOnUnknown;
 
         // [FenGen:DoNotSerialize]
         internal string CommentSingleLine = "";
         internal string Comment = "";
 
         internal string DisabledMods = "";
-        internal bool DisableAllMods = false;
+        internal bool DisableAllMods;
 
         internal bool? HasMap;
         internal bool? HasAutomap;

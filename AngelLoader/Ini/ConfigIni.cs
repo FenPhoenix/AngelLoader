@@ -192,67 +192,67 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateFrom="))
                 {
-                    config.Filter.ReleaseDateFrom = ReadNullableDate(val);
+                    config.Filter.ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.T1Filter.ReleaseDateFrom = ReadNullableDate(val);
+                    config.GameTabsState.T1Filter.ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.T2Filter.ReleaseDateFrom = ReadNullableDate(val);
+                    config.GameTabsState.T2Filter.ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.T3Filter.ReleaseDateFrom = ReadNullableDate(val);
+                    config.GameTabsState.T3Filter.ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateTo="))
                 {
-                    config.Filter.ReleaseDateTo = ReadNullableDate(val);
+                    config.Filter.ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.T1Filter.ReleaseDateTo = ReadNullableDate(val);
+                    config.GameTabsState.T1Filter.ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.T2Filter.ReleaseDateTo = ReadNullableDate(val);
+                    config.GameTabsState.T2Filter.ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.T3Filter.ReleaseDateTo = ReadNullableDate(val);
+                    config.GameTabsState.T3Filter.ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedFrom="))
                 {
-                    config.Filter.LastPlayedFrom = ReadNullableDate(val);
+                    config.Filter.LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.T1Filter.LastPlayedFrom = ReadNullableDate(val);
+                    config.GameTabsState.T1Filter.LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.T2Filter.LastPlayedFrom = ReadNullableDate(val);
+                    config.GameTabsState.T2Filter.LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.T3Filter.LastPlayedFrom = ReadNullableDate(val);
+                    config.GameTabsState.T3Filter.LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedTo="))
                 {
-                    config.Filter.LastPlayedTo = ReadNullableDate(val);
+                    config.Filter.LastPlayedTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.T1Filter.LastPlayedTo = ReadNullableDate(val);
+                    config.GameTabsState.T1Filter.LastPlayedTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.T2Filter.LastPlayedTo = ReadNullableDate(val);
+                    config.GameTabsState.T2Filter.LastPlayedTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.T3Filter.LastPlayedTo = ReadNullableDate(val);
+                    config.GameTabsState.T3Filter.LastPlayedTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterTags") && line[10] != '=')
                 {

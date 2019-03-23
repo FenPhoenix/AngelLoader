@@ -177,10 +177,11 @@
     </Compile>
     <Compile Include="Importing\ImportDarkLoader.cs" />
     <Compile Include="Importing\ImportCommon.cs" />
+    <Compile Include="Importing\ImportFMSel.cs" />
     <Compile Include="Importing\ImportNDL.cs" />
     <Compile Include="Ini\ConfigIni.cs" />
     <Compile Include="Ini\FMData.cs" />
-    <Compile Include="Ini\IniMisc.cs" />
+    <Compile Include="Ini\IniCommon.cs" />
     <Compile Include="Common\Paths.cs" />
     <Compile Include="CustomControls\DataGridViewCustom.cs">
       <SubType>Component</SubType>
@@ -297,6 +298,7 @@
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Extreme.png" />
+    <Content Include="Resources\FinishedOn\Finished_Unknown.png" />
     <Content Include="Resources\fullscreen_24.png" />
     <Content Include="Resources\green_check_48x48.png" />
     <Content Include="Resources\green_check_alone_reduced.png" />

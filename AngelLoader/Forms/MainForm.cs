@@ -51,6 +51,7 @@ namespace AngelLoader.Forms
 
         private Bitmap[] StarIcons;
         private Dictionary<FinishedOn, Bitmap> FinishedOnIcons;
+        private Bitmap FinishedOnUnknownIcon;
 
         #endregion
 
@@ -555,6 +556,7 @@ namespace AngelLoader.Forms
                 FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;
                 FinishedOnExpertMenuItem.Text = fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert;
                 FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
+                FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown;
 
                 #endregion
 
@@ -1311,10 +1313,12 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmFinished = FMsList[s.FilterShownIndexList[i]].FinishedOn;
+                    var fm = FMsList[s.FilterShownIndexList[i]];
+                    var fmFinished = fm.FinishedOn;
+                    var fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
-                    if (fmFinished > 0 && !s.Filter.Finished.Contains(FinishedState.Finished) ||
-                       fmFinished <= 0 && !s.Filter.Finished.Contains(FinishedState.Unfinished))
+                    if (((fmFinished > 0 || fmFinishedOnUnknown) && !s.Filter.Finished.Contains(FinishedState.Finished)) ||
+                       ((fmFinished <= 0 && !fmFinishedOnUnknown) && !s.Filter.Finished.Contains(FinishedState.Unfinished)))
                     {
                         s.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -1435,6 +1439,7 @@ namespace AngelLoader.Forms
                     Resources.Finished_Extreme
                 }
             };
+            FinishedOnUnknownIcon = Resources.Finished_Unknown;
 
             // Prevents having to check the bool again forevermore even after we've already set the images.
             // Taking an extremely minor technique from a data-oriented design talk, heck yeah!
@@ -1529,7 +1534,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Finished:
-                    e.Value = FinishedOnIcons[(FinishedOn)fm.FinishedOn];
+                    e.Value = fm.FinishedOnUnknown ? FinishedOnUnknownIcon : FinishedOnIcons[(FinishedOn)fm.FinishedOn];
                     break;
 
                 case Column.ReleaseDate:
@@ -2304,10 +2309,8 @@ namespace AngelLoader.Forms
                     c.Enabled = false;
                 }
 
-                FinishedOnNormalMenuItem.Checked = false;
-                FinishedOnHardMenuItem.Checked = false;
-                FinishedOnExpertMenuItem.Checked = false;
-                FinishedOnExtremeMenuItem.Checked = false;
+                UncheckFinishedOnMenuItemsExceptUnknown();
+                FinishedOnUnknownMenuItem.Checked = false;
 
                 CommentTextBox.Text = "";
                 CommentTextBox.Enabled = false;
@@ -2354,6 +2357,7 @@ namespace AngelLoader.Forms
             FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;
             FinishedOnExpertMenuItem.Text = fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert;
             FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
+            // FinishedOnUnknownMenuItem text stays the same
 
             var installable = GameIsKnownAndSupported(fm);
 
@@ -2382,12 +2386,21 @@ namespace AngelLoader.Forms
 
             #region FinishedOn
 
-            var val = (FinishedOn)fm.FinishedOn;
-            // I don't have to disable events because I'm only wired up to Click, not Checked
-            FinishedOnNormalMenuItem.Checked = (val & FinishedOn.Normal) == FinishedOn.Normal;
-            FinishedOnHardMenuItem.Checked = (val & FinishedOn.Hard) == FinishedOn.Hard;
-            FinishedOnExpertMenuItem.Checked = (val & FinishedOn.Expert) == FinishedOn.Expert;
-            FinishedOnExtremeMenuItem.Checked = (val & FinishedOn.Extreme) == FinishedOn.Extreme;
+            if (fm.FinishedOnUnknown)
+            {
+                FinishedOnUnknownMenuItem.Checked = true;
+                UncheckFinishedOnMenuItemsExceptUnknown();
+            }
+            else
+            {
+                var val = (FinishedOn)fm.FinishedOn;
+                // I don't have to disable events because I'm only wired up to Click, not Checked
+                FinishedOnNormalMenuItem.Checked = (val & FinishedOn.Normal) == FinishedOn.Normal;
+                FinishedOnHardMenuItem.Checked = (val & FinishedOn.Hard) == FinishedOn.Hard;
+                FinishedOnExpertMenuItem.Checked = (val & FinishedOn.Expert) == FinishedOn.Expert;
+                FinishedOnExtremeMenuItem.Checked = (val & FinishedOn.Extreme) == FinishedOn.Extreme;
+                FinishedOnUnknownMenuItem.Checked = false;
+            }
 
             #endregion
 
@@ -3341,18 +3354,52 @@ namespace AngelLoader.Forms
 
         private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
+            var s = (ToolStripMenuItem)sender;
+
             var fm = GetSelectedFM();
 
             fm.FinishedOn = 0;
-            int at = 1;
-            foreach (ToolStripMenuItem item in FinishedOnMenu.Items)
+            fm.FinishedOnUnknown = false;
+
+            if (s == FinishedOnUnknownMenuItem)
             {
-                if (item.Checked) fm.FinishedOn |= at;
-                at <<= 1;
+                fm.FinishedOnUnknown = s.Checked;
+            }
+            else
+            {
+                int at = 1;
+                foreach (ToolStripMenuItem item in FinishedOnMenu.Items)
+                {
+                    if (item == FinishedOnUnknownMenuItem) continue;
+
+                    if (item.Checked) fm.FinishedOn |= at;
+                    at <<= 1;
+                }
+                if (fm.FinishedOn > 0)
+                {
+                    FinishedOnUnknownMenuItem.Checked = false;
+                    fm.FinishedOnUnknown = false;
+                }
             }
 
             await RefreshSelectedFMRowOnly();
             Model.WriteFullFMDataIni();
+        }
+
+        private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FinishedOnUnknownMenuItem.Checked)
+            {
+                UncheckFinishedOnMenuItemsExceptUnknown();
+            }
+        }
+
+        private void UncheckFinishedOnMenuItemsExceptUnknown()
+        {
+            FinishedOnNormalMenuItem.Checked = false;
+            FinishedOnHardMenuItem.Checked = false;
+            FinishedOnExpertMenuItem.Checked = false;
+            FinishedOnExtremeMenuItem.Checked = false;
         }
 
         private void ReadmeFullScreenButton_Click(object sender, EventArgs e) => MainSplitContainer.ToggleFullScreen();

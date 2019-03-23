@@ -72,7 +72,7 @@ namespace AngelLoader.Ini
             }
         }
 
-        internal static DateTime? ReadNullableDate(string hexDate)
+        internal static DateTime? ReadNullableHexDate(string hexDate)
         {
             var success = long.TryParse(
                 hexDate,
