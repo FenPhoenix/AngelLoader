@@ -124,9 +124,6 @@
   <data name="ResetLayout" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\layout.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ResetZoom" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\zoom_reset_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Thief1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_large.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -135,18 +132,6 @@
   </data>
   <data name="CheckCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\green_check_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ArrowDownLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\arrow_down_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ArrowLeftLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\arrow_left_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ArrowRightLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\arrow_right_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ArrowUpLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\arrow_up_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Stars0" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\starrating\stars0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

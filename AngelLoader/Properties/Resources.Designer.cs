@@ -73,26 +73,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ArrowDownLarge {
-            get {
-                object obj = ResourceManager.GetObject("ArrowDownLarge", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ArrowLeftLarge {
-            get {
-                object obj = ResourceManager.GetObject("ArrowLeftLarge", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap ArrowLeftSmall {
             get {
                 object obj = ResourceManager.GetObject("ArrowLeftSmall", resourceCulture);
@@ -103,29 +83,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ArrowRightLarge {
-            get {
-                object obj = ResourceManager.GetObject("ArrowRightLarge", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap ArrowRightSmall {
             get {
                 object obj = ResourceManager.GetObject("ArrowRightSmall", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ArrowUpLarge {
-            get {
-                object obj = ResourceManager.GetObject("ArrowUpLarge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -486,16 +446,6 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap ResetLayout {
             get {
                 object obj = ResourceManager.GetObject("ResetLayout", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ResetZoom {
-            get {
-                object obj = ResourceManager.GetObject("ResetZoom", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
