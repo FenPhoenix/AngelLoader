@@ -519,6 +519,8 @@ namespace AngelLoader
 
             #endregion
 
+            ViewListGamesNull.Clear();
+
             for (var i = 0; i < FMDataIniList.Count; i++)
             {
                 var item = FMDataIniList[i];
