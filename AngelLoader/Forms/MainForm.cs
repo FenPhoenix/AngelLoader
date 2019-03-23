@@ -215,7 +215,7 @@ namespace AngelLoader.Forms
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
         internal async Task Init()
         {
-#if Release
+#if Release && !Release_Testing
             DebugLabel.Hide();
             DebugLabel2.Hide();
             TestButton.Hide();
