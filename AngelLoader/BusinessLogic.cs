@@ -680,14 +680,10 @@ namespace AngelLoader
                     var fms = new List<string>();
                     foreach (var fm in fmsToScan)
                     {
-                        if (!fm.Archive.IsEmpty() && !FindFMArchive(fm).IsEmpty())
+                        var fmArchivePath = await Task.Run(() => FindFMArchive(fm));
+                        if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                         {
-                            var fmArchivePath = await Task.Run(() => FindFMArchive(fm));
-
-                            if (!fmArchivePath.IsEmpty())
-                            {
-                                fms.Add(fmArchivePath);
-                            }
+                            fms.Add(fmArchivePath);
                         }
                         else if (GameIsKnownAndSupported(fm))
                         {
