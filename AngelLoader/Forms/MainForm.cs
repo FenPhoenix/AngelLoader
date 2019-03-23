@@ -440,9 +440,6 @@ namespace AngelLoader.Forms
             }
             try
             {
-                // TODO: Replace all magic numbers in here with saved default widths
-                // This could be run not on startup, so we can't just save the actual button widths here
-
                 #region Game tabs
 
                 Thief1TabPage.Text = LText.GameTabs.Thief1;
