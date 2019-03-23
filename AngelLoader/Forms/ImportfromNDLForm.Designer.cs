@@ -30,12 +30,12 @@
         {
             this.ChooseNDLIniFilesLabel = new System.Windows.Forms.Label();
             this.Thief1GroupBox = new System.Windows.Forms.GroupBox();
-            this.Thief2GroupBox = new System.Windows.Forms.GroupBox();
-            this.Thief3GroupBox = new System.Windows.Forms.GroupBox();
-            this.Thief1IniTextBox = new System.Windows.Forms.TextBox();
             this.Thief1IniBrowseButton = new System.Windows.Forms.Button();
+            this.Thief1IniTextBox = new System.Windows.Forms.TextBox();
+            this.Thief2GroupBox = new System.Windows.Forms.GroupBox();
             this.Thief2IniBrowseButton = new System.Windows.Forms.Button();
             this.Thief2IniTextBox = new System.Windows.Forms.TextBox();
+            this.Thief3GroupBox = new System.Windows.Forms.GroupBox();
             this.Thief3IniBrowseButton = new System.Windows.Forms.Button();
             this.Thief3IniTextBox = new System.Windows.Forms.TextBox();
             this.OKButton = new System.Windows.Forms.Button();
@@ -65,6 +65,23 @@
             this.Thief1GroupBox.TabStop = false;
             this.Thief1GroupBox.Text = "Thief 1";
             // 
+            // Thief1IniBrowseButton
+            // 
+            this.Thief1IniBrowseButton.Location = new System.Drawing.Point(448, 23);
+            this.Thief1IniBrowseButton.Name = "Thief1IniBrowseButton";
+            this.Thief1IniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.Thief1IniBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.Thief1IniBrowseButton.TabIndex = 1;
+            this.Thief1IniBrowseButton.Text = "Browse...";
+            this.Thief1IniBrowseButton.UseVisualStyleBackColor = true;
+            // 
+            // Thief1IniTextBox
+            // 
+            this.Thief1IniTextBox.Location = new System.Drawing.Point(16, 24);
+            this.Thief1IniTextBox.Name = "Thief1IniTextBox";
+            this.Thief1IniTextBox.Size = new System.Drawing.Size(432, 20);
+            this.Thief1IniTextBox.TabIndex = 0;
+            // 
             // Thief2GroupBox
             // 
             this.Thief2GroupBox.Controls.Add(this.Thief2IniBrowseButton);
@@ -76,37 +93,11 @@
             this.Thief2GroupBox.TabStop = false;
             this.Thief2GroupBox.Text = "Thief 2";
             // 
-            // Thief3GroupBox
-            // 
-            this.Thief3GroupBox.Controls.Add(this.Thief3IniBrowseButton);
-            this.Thief3GroupBox.Controls.Add(this.Thief3IniTextBox);
-            this.Thief3GroupBox.Location = new System.Drawing.Point(8, 184);
-            this.Thief3GroupBox.Name = "Thief3GroupBox";
-            this.Thief3GroupBox.Size = new System.Drawing.Size(536, 72);
-            this.Thief3GroupBox.TabIndex = 1;
-            this.Thief3GroupBox.TabStop = false;
-            this.Thief3GroupBox.Text = "Thief 3";
-            // 
-            // Thief1IniTextBox
-            // 
-            this.Thief1IniTextBox.Location = new System.Drawing.Point(16, 24);
-            this.Thief1IniTextBox.Name = "Thief1IniTextBox";
-            this.Thief1IniTextBox.Size = new System.Drawing.Size(432, 20);
-            this.Thief1IniTextBox.TabIndex = 0;
-            // 
-            // Thief1IniBrowseButton
-            // 
-            this.Thief1IniBrowseButton.Location = new System.Drawing.Point(448, 23);
-            this.Thief1IniBrowseButton.Name = "Thief1IniBrowseButton";
-            this.Thief1IniBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.Thief1IniBrowseButton.TabIndex = 1;
-            this.Thief1IniBrowseButton.Text = "Browse...";
-            this.Thief1IniBrowseButton.UseVisualStyleBackColor = true;
-            // 
             // Thief2IniBrowseButton
             // 
             this.Thief2IniBrowseButton.Location = new System.Drawing.Point(447, 33);
             this.Thief2IniBrowseButton.Name = "Thief2IniBrowseButton";
+            this.Thief2IniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief2IniBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief2IniBrowseButton.TabIndex = 3;
             this.Thief2IniBrowseButton.Text = "Browse...";
@@ -119,10 +110,22 @@
             this.Thief2IniTextBox.Size = new System.Drawing.Size(432, 20);
             this.Thief2IniTextBox.TabIndex = 2;
             // 
+            // Thief3GroupBox
+            // 
+            this.Thief3GroupBox.Controls.Add(this.Thief3IniBrowseButton);
+            this.Thief3GroupBox.Controls.Add(this.Thief3IniTextBox);
+            this.Thief3GroupBox.Location = new System.Drawing.Point(8, 184);
+            this.Thief3GroupBox.Name = "Thief3GroupBox";
+            this.Thief3GroupBox.Size = new System.Drawing.Size(536, 72);
+            this.Thief3GroupBox.TabIndex = 1;
+            this.Thief3GroupBox.TabStop = false;
+            this.Thief3GroupBox.Text = "Thief 3";
+            // 
             // Thief3IniBrowseButton
             // 
             this.Thief3IniBrowseButton.Location = new System.Drawing.Point(447, 33);
             this.Thief3IniBrowseButton.Name = "Thief3IniBrowseButton";
+            this.Thief3IniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief3IniBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief3IniBrowseButton.TabIndex = 3;
             this.Thief3IniBrowseButton.Text = "Browse...";
@@ -140,6 +143,7 @@
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(384, 312);
             this.OKButton.Name = "OKButton";
+            this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 2;
             this.OKButton.Text = "OK";
@@ -150,12 +154,13 @@
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(464, 312);
             this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 2;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
-            // ImportfromNDLForm
+            // ImportFromNDLForm
             // 
             this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);

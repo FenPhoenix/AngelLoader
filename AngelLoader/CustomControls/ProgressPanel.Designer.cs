@@ -40,6 +40,7 @@
             this.ProgressCancelButton.AutoSize = true;
             this.ProgressCancelButton.Location = new System.Drawing.Point(168, 88);
             this.ProgressCancelButton.Name = "ProgressCancelButton";
+            this.ProgressCancelButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ProgressCancelButton.Size = new System.Drawing.Size(88, 23);
             this.ProgressCancelButton.TabIndex = 4;
             this.ProgressCancelButton.Text = "Cancel";

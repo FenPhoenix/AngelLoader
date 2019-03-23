@@ -80,6 +80,7 @@
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(7, 128);
             this.OKButton.Name = "OKButton";
+            this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 5;
             this.OKButton.Text = "OK";
@@ -91,6 +92,7 @@
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(86, 128);
             this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 6;
             this.Cancel_Button.Text = "Cancel";
@@ -100,6 +102,7 @@
             // 
             this.ResetButton.Location = new System.Drawing.Point(7, 88);
             this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(154, 22);
             this.ResetButton.TabIndex = 4;
             this.ResetButton.Text = "Reset";

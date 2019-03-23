@@ -364,7 +364,8 @@ namespace AngelLoader.Forms
             }
 
             // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
-            await SetFilter();
+            // Don't do Suspend/ResumeDrawing on startup because resume is slowish (having a refresh and all)
+            await SetFilter(suppressSuspendResume: true);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -422,7 +423,21 @@ namespace AngelLoader.Forms
             // make sure those controls' text is set correctly.
             var selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFM() : null;
 
-            if (suspendResume) this.SuspendDrawing();
+            if (suspendResume)
+            {
+                this.SuspendDrawing();
+            }
+            else
+            {
+                BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
+                BottomRightButtonsFlowLayoutPanel.SuspendLayout();
+                StatsCheckBoxesPanel.SuspendLayout();
+                EditFMTabPage.SuspendLayout();
+                CommentTabPage.SuspendLayout();
+                TagsTabPage.SuspendLayout();
+                MainSplitContainer.Panel2.SuspendLayout();
+                ChooseReadmePanel.SuspendLayout();
+            }
             try
             {
                 // TODO: Replace all magic numbers in here with saved default widths
@@ -645,7 +660,21 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (suspendResume) this.ResumeDrawing();
+                if (suspendResume)
+                {
+                    this.ResumeDrawing();
+                }
+                else
+                {
+                    BottomLeftButtonsFlowLayoutPanel.ResumeLayout();
+                    BottomRightButtonsFlowLayoutPanel.ResumeLayout();
+                    StatsCheckBoxesPanel.ResumeLayout();
+                    EditFMTabPage.ResumeLayout();
+                    CommentTabPage.ResumeLayout();
+                    TagsTabPage.ResumeLayout();
+                    MainSplitContainer.Panel2.ResumeLayout();
+                    ChooseReadmePanel.ResumeLayout();
+                }
             }
 
             // To refresh the FM size column strings to localized
@@ -923,7 +952,8 @@ namespace AngelLoader.Forms
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false, bool forceSuppressSelectionChangedEvent = false)
+        private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
 
@@ -985,7 +1015,8 @@ namespace AngelLoader.Forms
                 {
                     await RefreshFMsList(
                         refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(GetFMFromIndex(0))),
-                        suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null);
+                        suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
+                        suppressSuspendResume);
                 }
                 return;
             }
@@ -1312,7 +1343,8 @@ namespace AngelLoader.Forms
             await RefreshFMsList(
                 refreshReadme: forceRefreshReadme || s.FilterShownIndexList.Count == 0 ||
                                (oldSelectedFM != null && !oldSelectedFM.Equals(GetFMFromIndex(0))),
-                suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null);
+                suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
+                suppressSuspendResume);
         }
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
@@ -2003,7 +2035,8 @@ namespace AngelLoader.Forms
             await DisplaySelectedFM(GetFMFromIndex(currentRow), refreshReadme);
         }
 
-        internal async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false)
+        internal async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+            bool suppressSuspendResume = false)
         {
             var s = FMsDGV;
 
@@ -2011,12 +2044,12 @@ namespace AngelLoader.Forms
             {
                 // A small but measurable perf increase from this. Also prevents flickering when switching game
                 // tabs.
-                s.SuspendDrawing();
+                if (!suppressSuspendResume) s.SuspendDrawing();
                 s.RowCount = s.Filtered ? s.FilterShownIndexList.Count : FMsList.Count;
 
                 if (s.RowCount == 0)
                 {
-                    s.ResumeDrawing();
+                    if (!suppressSuspendResume) s.ResumeDrawing();
                     ClearShownData();
                     InitialSelectedFMHasBeenSet = true;
                 }
@@ -2044,7 +2077,7 @@ namespace AngelLoader.Forms
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
                     // and understand why it takes a sec. Otherwise, it looks like merely changing tabs brings
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
-                    s.ResumeDrawing();
+                    if (!suppressSuspendResume) s.ResumeDrawing();
 
                     await DisplaySelectedFM(GetFMFromIndex(row), refreshReadme);
 

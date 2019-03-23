@@ -94,6 +94,7 @@
             // 
             this.AndButton.Location = new System.Drawing.Point(240, 48);
             this.AndButton.Name = "AndButton";
+            this.AndButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AndButton.Size = new System.Drawing.Size(80, 24);
             this.AndButton.TabIndex = 1;
             this.AndButton.Text = "-> All";
@@ -105,6 +106,7 @@
             // 
             this.OrButton.Location = new System.Drawing.Point(240, 72);
             this.OrButton.Name = "OrButton";
+            this.OrButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OrButton.Size = new System.Drawing.Size(80, 24);
             this.OrButton.TabIndex = 1;
             this.OrButton.Text = "-> Any";
@@ -116,6 +118,7 @@
             // 
             this.NotButton.Location = new System.Drawing.Point(240, 96);
             this.NotButton.Name = "NotButton";
+            this.NotButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.NotButton.Size = new System.Drawing.Size(80, 24);
             this.NotButton.TabIndex = 1;
             this.NotButton.Text = "-> Exclude";
@@ -232,6 +235,7 @@
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(861, 3);
             this.OKButton.Name = "OKButton";
+            this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 5;
             this.OKButton.Text = "OK";
@@ -243,6 +247,7 @@
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(942, 3);
             this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 5;
             this.Cancel_Button.Text = "Cancel";
@@ -252,6 +257,7 @@
             // 
             this.ResetButton.Location = new System.Drawing.Point(240, 128);
             this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(80, 24);
             this.ResetButton.TabIndex = 6;
             this.ResetButton.Text = "Reset";

@@ -221,10 +221,9 @@ namespace AngelLoader
                  - Comment lines start with ;
                  - No section headers
                 */
-                while (!sr.EndOfStream)
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    var line = sr.ReadLine();
-
                     if (line.IsEmpty()) continue;
 
                     line = line.TrimStart();

@@ -558,28 +558,15 @@ namespace AngelLoader.Common.Utility
         /// <param name="button"></param>
         /// <param name="text"></param>
         /// <param name="minWidth"></param>
-        /// <param name="padding"></param>
-        /// <param name="parent">If non-null, this control will have its drawing suspended/resumed during the resize</param>
-        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, int padding = 12,
-            Control parent = null)
+        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1)
         {
-            parent?.SuspendDrawing();
-
             // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.
             button.Text = "";
             button.Width = 2;
             button.Text = text;
 
-            if (minWidth > -1)
-            {
-                if (button.Width < minWidth) button.Width = minWidth;
-            }
-            else
-            {
-                // Extra padding for a nicer look
-                button.Width += padding;
-            }
-            parent?.ResumeDrawing();
+            if (minWidth > -1 && button.Width < minWidth) button.Width = minWidth;
+
         }
 
         /// <summary>
@@ -590,15 +577,19 @@ namespace AngelLoader.Common.Utility
         /// <param name="textBox"></param>
         /// <param name="text"></param>
         /// <param name="minWidth"></param>
-        /// <param name="padding"></param>
-        internal static void SetTextAutoSize(this Button button, TextBox textBox, string text, int minWidth = -1, int padding = 12)
+        internal static void SetTextAutoSize(this Button button, TextBox textBox, string text, int minWidth = -1)
         {
+            // Quick fix for this not working if layout is suspended.
+            // This will then cause any other controls within the same parent to do their full layout.
+            // If this becomes a problem, come up with a better solution here.
+            button.Parent.ResumeLayout();
+
             var oldAnchor = button.Anchor;
             button.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
             int oldWidth = button.Width;
 
-            button.SetTextAutoSize(text, minWidth, padding);
+            button.SetTextAutoSize(text, minWidth);
 
             int diff =
                 button.Width > oldWidth ? -(button.Width - oldWidth) :

@@ -78,18 +78,6 @@
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
-            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.RefreshClearToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
@@ -200,14 +188,24 @@
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
+            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
             this.BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
-            this.PlayOriginalGameMenu.SuspendLayout();
-            this.ImportFromMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
@@ -233,6 +231,8 @@
             this.flowLayoutPanel1.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
+            this.PlayOriginalGameMenu.SuspendLayout();
+            this.ImportFromMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // FMRightClickMenu
@@ -492,9 +492,10 @@
             // ScanAllFMsButton
             // 
             this.ScanAllFMsButton.AutoSize = true;
-            this.ScanAllFMsButton.Location = new System.Drawing.Point(406, 3);
+            this.ScanAllFMsButton.Location = new System.Drawing.Point(426, 3);
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
-            this.ScanAllFMsButton.Size = new System.Drawing.Size(106, 36);
+            this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.ScanAllFMsButton.Size = new System.Drawing.Size(111, 36);
             this.ScanAllFMsButton.TabIndex = 1;
             this.ScanAllFMsButton.Text = "Scan all FMs...";
             this.ScanAllFMsButton.UseVisualStyleBackColor = true;
@@ -521,17 +522,18 @@
             this.BottomRightButtonsFlowLayoutPanel.Controls.Add(this.SettingsButton);
             this.BottomRightButtonsFlowLayoutPanel.Controls.Add(this.ImportButton);
             this.BottomRightButtonsFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomRightButtonsFlowLayoutPanel.Location = new System.Drawing.Point(1504, 0);
+            this.BottomRightButtonsFlowLayoutPanel.Location = new System.Drawing.Point(1467, 0);
             this.BottomRightButtonsFlowLayoutPanel.Name = "BottomRightButtonsFlowLayoutPanel";
-            this.BottomRightButtonsFlowLayoutPanel.Size = new System.Drawing.Size(165, 44);
+            this.BottomRightButtonsFlowLayoutPanel.Size = new System.Drawing.Size(202, 44);
             this.BottomRightButtonsFlowLayoutPanel.TabIndex = 37;
             // 
             // SettingsButton
             // 
             this.SettingsButton.AutoSize = true;
-            this.SettingsButton.Location = new System.Drawing.Point(87, 3);
+            this.SettingsButton.Location = new System.Drawing.Point(111, 3);
             this.SettingsButton.Name = "SettingsButton";
-            this.SettingsButton.Size = new System.Drawing.Size(75, 36);
+            this.SettingsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.SettingsButton.Size = new System.Drawing.Size(88, 36);
             this.SettingsButton.TabIndex = 31;
             this.SettingsButton.Text = "Settings...";
             this.SettingsButton.UseVisualStyleBackColor = true;
@@ -542,7 +544,8 @@
             this.ImportButton.AutoSize = true;
             this.ImportButton.Location = new System.Drawing.Point(3, 3);
             this.ImportButton.Name = "ImportButton";
-            this.ImportButton.Size = new System.Drawing.Size(78, 36);
+            this.ImportButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.ImportButton.Size = new System.Drawing.Size(102, 36);
             this.ImportButton.TabIndex = 35;
             this.ImportButton.Text = "Import from...";
             this.ImportButton.UseVisualStyleBackColor = true;
@@ -558,7 +561,7 @@
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.ScanAllFMsButton);
             this.BottomLeftButtonsFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.BottomLeftButtonsFlowLayoutPanel.Name = "BottomLeftButtonsFlowLayoutPanel";
-            this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(515, 44);
+            this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(540, 69);
             this.BottomLeftButtonsFlowLayoutPanel.TabIndex = 36;
             // 
             // PlayFMButton
@@ -566,7 +569,8 @@
             this.PlayFMButton.AutoSize = true;
             this.PlayFMButton.Location = new System.Drawing.Point(3, 3);
             this.PlayFMButton.Name = "PlayFMButton";
-            this.PlayFMButton.Size = new System.Drawing.Size(77, 36);
+            this.PlayFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.PlayFMButton.Size = new System.Drawing.Size(79, 36);
             this.PlayFMButton.TabIndex = 2;
             this.PlayFMButton.Text = "Play FM";
             this.PlayFMButton.UseVisualStyleBackColor = true;
@@ -575,9 +579,10 @@
             // InstallUninstallFMButton
             // 
             this.InstallUninstallFMButton.AutoSize = true;
-            this.InstallUninstallFMButton.Location = new System.Drawing.Point(86, 3);
+            this.InstallUninstallFMButton.Location = new System.Drawing.Point(88, 3);
             this.InstallUninstallFMButton.Name = "InstallUninstallFMButton";
-            this.InstallUninstallFMButton.Size = new System.Drawing.Size(82, 36);
+            this.InstallUninstallFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.InstallUninstallFMButton.Size = new System.Drawing.Size(86, 36);
             this.InstallUninstallFMButton.TabIndex = 2;
             this.InstallUninstallFMButton.Text = "Install FM";
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
@@ -586,9 +591,10 @@
             // PlayOriginalGameButton
             // 
             this.PlayOriginalGameButton.AutoSize = true;
-            this.PlayOriginalGameButton.Location = new System.Drawing.Point(174, 3);
+            this.PlayOriginalGameButton.Location = new System.Drawing.Point(180, 3);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
-            this.PlayOriginalGameButton.Size = new System.Drawing.Size(130, 36);
+            this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.PlayOriginalGameButton.Size = new System.Drawing.Size(135, 36);
             this.PlayOriginalGameButton.TabIndex = 31;
             this.PlayOriginalGameButton.Text = "Play original game...";
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
@@ -597,9 +603,10 @@
             // WebSearchButton
             // 
             this.WebSearchButton.AutoSize = true;
-            this.WebSearchButton.Location = new System.Drawing.Point(310, 3);
+            this.WebSearchButton.Location = new System.Drawing.Point(321, 3);
             this.WebSearchButton.Name = "WebSearchButton";
-            this.WebSearchButton.Size = new System.Drawing.Size(90, 36);
+            this.WebSearchButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.WebSearchButton.Size = new System.Drawing.Size(99, 36);
             this.WebSearchButton.TabIndex = 34;
             this.WebSearchButton.Text = "Web search";
             this.WebSearchButton.UseVisualStyleBackColor = true;
@@ -646,89 +653,6 @@
             this.AddTagListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
             this.AddTagListBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
             this.AddTagListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AddTagListBox_MouseUp);
-            // 
-            // PlayOriginalGameMenu
-            // 
-            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayOriginalThief1MenuItem,
-            this.PlayOriginalThief2MenuItem,
-            this.PlayOriginalThief3MenuItem});
-            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
-            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
-            // 
-            // PlayOriginalThief1MenuItem
-            // 
-            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1;
-            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
-            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief2MenuItem
-            // 
-            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2;
-            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
-            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief3MenuItem
-            // 
-            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3;
-            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
-            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // AddTagMenu
-            // 
-            this.AddTagMenu.Name = "AddTagMenu";
-            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
-            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
-            // 
-            // AltTitlesMenu
-            // 
-            this.AltTitlesMenu.Name = "AltTitlesMenu";
-            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
-            // 
-            // ImportFromMenu
-            // 
-            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ImportFromDarkLoaderMenuItem,
-            this.ImportFromFMSelMenuItem,
-            this.ImportFromNewDarkLoaderMenuItem});
-            this.ImportFromMenu.Name = "ImportFromMenu";
-            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
-            // 
-            // ImportFromDarkLoaderMenuItem
-            // 
-            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
-            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
-            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
-            // 
-            // ImportFromFMSelMenuItem
-            // 
-            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
-            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromFMSelMenuItem.Text = "FMSel";
-            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
-            // 
-            // ImportFromNewDarkLoaderMenuItem
-            // 
-            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
-            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
-            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
-            // 
-            // ProgressBox
-            // 
-            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
-            this.ProgressBox.Name = "ProgressBox";
-            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
-            this.ProgressBox.TabIndex = 39;
-            this.ProgressBox.Visible = false;
             // 
             // MainSplitContainer
             // 
@@ -1715,6 +1639,7 @@
             this.EditFMFinishedOnButton.AutoSize = true;
             this.EditFMFinishedOnButton.Location = new System.Drawing.Point(247, 144);
             this.EditFMFinishedOnButton.Name = "EditFMFinishedOnButton";
+            this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.EditFMFinishedOnButton.Size = new System.Drawing.Size(138, 23);
             this.EditFMFinishedOnButton.TabIndex = 9;
             this.EditFMFinishedOnButton.Text = "Finished on...";
@@ -1912,6 +1837,7 @@
             this.RemoveTagButton.Location = new System.Drawing.Point(392, 0);
             this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0);
             this.RemoveTagButton.Name = "RemoveTagButton";
+            this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.RemoveTagButton.Size = new System.Drawing.Size(144, 23);
             this.RemoveTagButton.TabIndex = 2;
             this.RemoveTagButton.Text = "Remove tag";
@@ -1925,6 +1851,7 @@
             this.AddTagFromListButton.Location = new System.Drawing.Point(248, 0);
             this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
             this.AddTagFromListButton.Name = "AddTagFromListButton";
+            this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagFromListButton.Size = new System.Drawing.Size(144, 23);
             this.AddTagFromListButton.TabIndex = 2;
             this.AddTagFromListButton.Text = "Add from list...";
@@ -1937,6 +1864,7 @@
             this.AddTagButton.AutoSize = true;
             this.AddTagButton.Location = new System.Drawing.Point(472, 7);
             this.AddTagButton.Name = "AddTagButton";
+            this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(72, 23);
             this.AddTagButton.TabIndex = 2;
             this.AddTagButton.Text = "Add tag";
@@ -1972,6 +1900,7 @@
             this.ViewHTMLReadmeButton.AutoSize = true;
             this.ViewHTMLReadmeButton.Location = new System.Drawing.Point(776, 144);
             this.ViewHTMLReadmeButton.Name = "ViewHTMLReadmeButton";
+            this.ViewHTMLReadmeButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ViewHTMLReadmeButton.Size = new System.Drawing.Size(144, 23);
             this.ViewHTMLReadmeButton.TabIndex = 38;
             this.ViewHTMLReadmeButton.Text = "View HTML Readme";
@@ -2086,6 +2015,7 @@
             this.ChooseReadmeButton.Location = new System.Drawing.Point(245, 0);
             this.ChooseReadmeButton.Margin = new System.Windows.Forms.Padding(0);
             this.ChooseReadmeButton.Name = "ChooseReadmeButton";
+            this.ChooseReadmeButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ChooseReadmeButton.Size = new System.Drawing.Size(75, 23);
             this.ChooseReadmeButton.TabIndex = 2;
             this.ChooseReadmeButton.Text = "OK";
@@ -2114,6 +2044,89 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ReadmeRichTextBox_KeyDown);
             // 
+            // PlayOriginalGameMenu
+            // 
+            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayOriginalThief1MenuItem,
+            this.PlayOriginalThief2MenuItem,
+            this.PlayOriginalThief3MenuItem});
+            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
+            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
+            // 
+            // PlayOriginalThief1MenuItem
+            // 
+            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1;
+            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
+            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
+            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief2MenuItem
+            // 
+            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2;
+            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
+            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
+            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief3MenuItem
+            // 
+            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3;
+            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
+            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
+            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // AddTagMenu
+            // 
+            this.AddTagMenu.Name = "AddTagMenu";
+            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
+            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
+            // 
+            // AltTitlesMenu
+            // 
+            this.AltTitlesMenu.Name = "AltTitlesMenu";
+            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
+            // 
+            // ImportFromMenu
+            // 
+            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ImportFromDarkLoaderMenuItem,
+            this.ImportFromFMSelMenuItem,
+            this.ImportFromNewDarkLoaderMenuItem});
+            this.ImportFromMenu.Name = "ImportFromMenu";
+            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
+            // 
+            // ImportFromDarkLoaderMenuItem
+            // 
+            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
+            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
+            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
+            // 
+            // ImportFromFMSelMenuItem
+            // 
+            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
+            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromFMSelMenuItem.Text = "FMSel";
+            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
+            // 
+            // ImportFromNewDarkLoaderMenuItem
+            // 
+            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
+            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
+            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
+            // 
+            // ProgressBox
+            // 
+            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
+            this.ProgressBox.Name = "ProgressBox";
+            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
+            this.ProgressBox.TabIndex = 39;
+            this.ProgressBox.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2141,8 +2154,6 @@
             this.BottomLeftButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomLeftButtonsFlowLayoutPanel.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
-            this.PlayOriginalGameMenu.ResumeLayout(false);
-            this.ImportFromMenu.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             this.MainSplitContainer.Panel2.PerformLayout();
@@ -2183,6 +2194,8 @@
             this.ChooseReadmePanel.ResumeLayout(false);
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
+            this.PlayOriginalGameMenu.ResumeLayout(false);
+            this.ImportFromMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

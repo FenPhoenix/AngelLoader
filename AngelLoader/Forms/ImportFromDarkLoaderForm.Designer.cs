@@ -81,6 +81,7 @@
             // 
             this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(456, 31);
             this.DarkLoaderIniBrowseButton.Name = "DarkLoaderIniBrowseButton";
+            this.DarkLoaderIniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.DarkLoaderIniBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.DarkLoaderIniBrowseButton.TabIndex = 2;
             this.DarkLoaderIniBrowseButton.Text = "Browse...";
@@ -92,6 +93,7 @@
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(384, 144);
             this.OKButton.Name = "OKButton";
+            this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 5;
             this.OKButton.Text = "OK";
@@ -102,6 +104,7 @@
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(464, 144);
             this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.Text = "Cancel";

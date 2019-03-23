@@ -141,6 +141,7 @@
             this.Thief1ExePathBrowseButton.AutoSize = true;
             this.Thief1ExePathBrowseButton.Location = new System.Drawing.Point(336, 39);
             this.Thief1ExePathBrowseButton.Name = "Thief1ExePathBrowseButton";
+            this.Thief1ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief1ExePathBrowseButton.TabIndex = 1;
             this.Thief1ExePathBrowseButton.Text = "Browse...";
@@ -188,6 +189,7 @@
             this.Thief3ExePathBrowseButton.AutoSize = true;
             this.Thief3ExePathBrowseButton.Location = new System.Drawing.Point(336, 119);
             this.Thief3ExePathBrowseButton.Name = "Thief3ExePathBrowseButton";
+            this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief3ExePathBrowseButton.TabIndex = 5;
             this.Thief3ExePathBrowseButton.Text = "Browse...";
@@ -199,6 +201,7 @@
             this.Thief2ExePathBrowseButton.AutoSize = true;
             this.Thief2ExePathBrowseButton.Location = new System.Drawing.Point(336, 79);
             this.Thief2ExePathBrowseButton.Name = "Thief2ExePathBrowseButton";
+            this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.Thief2ExePathBrowseButton.TabIndex = 3;
             this.Thief2ExePathBrowseButton.Text = "Browse...";
@@ -287,6 +290,7 @@
             this.OKButton.Location = new System.Drawing.Point(715, 8);
             this.OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
             this.OKButton.Name = "OKButton";
+            this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 1;
             this.OKButton.Text = "OK";
@@ -300,6 +304,7 @@
             this.Cancel_Button.Location = new System.Drawing.Point(796, 8);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
             this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.Text = "Cancel";
@@ -327,6 +332,7 @@
             this.BackupPathBrowseButton.AutoSize = true;
             this.BackupPathBrowseButton.Location = new System.Drawing.Point(336, 39);
             this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
+            this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
             this.BackupPathBrowseButton.TabIndex = 1;
             this.BackupPathBrowseButton.Text = "Browse...";
