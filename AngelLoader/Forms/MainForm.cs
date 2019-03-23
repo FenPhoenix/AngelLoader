@@ -356,7 +356,12 @@ namespace AngelLoader.Forms
             Show();
 
             // This must certainly need to come after Show() as well, right?!
-            await Model.ScanNewFMsForGameType();
+            if (Model.ViewListGamesNull.Count > 0)
+            {
+                // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
+                await Model.ScanNewFMsForGameType();
+                Model.ViewListGamesNull.Clear();
+            }
 
             // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
             await SetFilter();

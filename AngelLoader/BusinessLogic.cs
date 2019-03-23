@@ -520,8 +520,9 @@ namespace AngelLoader
 
             #endregion
 
-            foreach (var item in FMDataIniList)
+            for (var i = 0; i < FMDataIniList.Count; i++)
             {
+                var item = FMDataIniList[i];
                 // FMDataIniList: Thief1(personal)+Thief2(personal)+All(1098 set)
                 // Archive dirs: Thief1(personal)+Thief2(personal)
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
@@ -536,7 +537,10 @@ namespace AngelLoader
                     continue;
                 }
 
-                if (GameIsKnownAndSupported(item) && GetFMInstallsBasePath(item).IsEmpty()) continue;
+                // Perf so we don't have to iterate the list again later
+                var (isNull, isSupported) = GameIsKnownAndSupportedReportIfNull(item);
+                if (isNull) ViewListGamesNull.Add(i);
+                if (isSupported && GetFMInstallsBasePath(item).IsEmpty()) continue;
 
                 FMsViewList.Add(item);
 
@@ -555,6 +559,9 @@ namespace AngelLoader
 
             Trace.WriteLine("FindFMs() took: " + overallTimer.Elapsed);
         }
+
+        // Super quick-n-cheap hack for perf
+        internal List<int> ViewListGamesNull = new List<int>();
 
         internal async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions, bool overwriteUnscannedFields = true)
         {

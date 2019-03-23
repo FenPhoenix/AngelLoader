@@ -77,6 +77,11 @@ namespace AngelLoader.Common.Utility
 
         internal static bool GameIsKnownAndSupported(FanMission fm) => fm.Game != null && fm.Game != Game.Unsupported;
 
+        internal static (bool IsNull, bool IsSupported) GameIsKnownAndSupportedReportIfNull(FanMission fm)
+        {
+            return fm.Game == null ? (true, false) : fm.Game == Game.Unsupported ? (false, false) : (false, true);
+        }
+
         // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
         // FMs, we don't want to spend time converting back and forth. So Tags is session-only, and only gets
         // filled out for FMs that will be displayed. TagsString is the one that gets saved and loaded, and must
