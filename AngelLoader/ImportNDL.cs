@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
@@ -26,39 +21,6 @@ namespace AngelLoader
                 for (int i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i];
-                    var lineTS = line.TrimStart();
-                    var lineTB = lineTS.TrimEnd();
-
-                    #region Disabled
-
-                    //if (!archiveRootRead)
-                    //{
-                    //    if (lineTB != "[Config]") continue;
-
-                    //    while (i < lines.Length - 1)
-                    //    {
-                    //        var lt = lines[i + 1].Trim();
-                    //        if (lt.StartsWithFast_NoNullChecks("ArchiveRoot="))
-                    //        {
-                    //            archiveRoot = lt.Substring(12);
-                    //            archiveRootRead = true;
-                    //            i++;
-                    //            break;
-                    //        }
-                    //        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
-                    //        {
-                    //            break;
-                    //        }
-                    //        i++;
-                    //    }
-                    //    if (archiveRootRead)
-                    //    {
-                    //        i = -1;
-                    //        break;
-                    //    }
-                    //}
-
-                    #endregion
 
                     if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
                     {
@@ -115,7 +77,7 @@ namespace AngelLoader
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
                             {
-                                // Handle tags reading here
+                                fm.TagsString = lineFM.Substring(5);
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
                             {
@@ -137,9 +99,72 @@ namespace AngelLoader
 
         internal static List<int> MergeNDLFMData(List<FanMission> importedFMs, List<FanMission> mainList)
         {
+            var checkedList = new List<FanMission>();
             var importedFMIndexes = new List<int>();
+            int initCount = mainList.Count;
+            int indexPastEnd = initCount - 1;
 
-            // placeholder
+            for (int impFMi = 0; impFMi < importedFMs.Count; impFMi++)
+            {
+                var importedFM = importedFMs[impFMi];
+
+                bool existingFound = false;
+                for (int mainFMi = 0; mainFMi < initCount; mainFMi++)
+                {
+                    var mainFM = mainList[mainFMi];
+
+                    if (!mainFM.Checked &&
+                        mainFM.Archive.EqualsI(importedFM.Archive))
+                    {
+                        if (!importedFM.Title.IsEmpty()) mainFM.Title = importedFM.Title;
+                        if (importedFM.ReleaseDate != null) mainFM.ReleaseDate = importedFM.ReleaseDate;
+                        mainFM.LastPlayed = importedFM.LastPlayed;
+                        mainFM.FinishedOn = importedFM.FinishedOn;
+                        mainFM.Rating = importedFM.Rating;
+                        mainFM.Comment = importedFM.Comment;
+                        mainFM.DisabledMods = importedFM.DisabledMods;
+                        mainFM.DisableAllMods = importedFM.DisableAllMods;
+                        mainFM.TagsString = importedFM.TagsString;
+                        mainFM.SelectedReadme = importedFM.SelectedReadme;
+                        if (mainFM.SizeBytes == 0) mainFM.SizeBytes = importedFM.SizeBytes;
+
+                        mainFM.Checked = true;
+
+                        // So we only loop through checked FMs when we reset them
+                        checkedList.Add(mainFM);
+
+                        importedFMIndexes.Add(mainFMi);
+
+                        existingFound = true;
+                        break;
+                    }
+                }
+                if (!existingFound)
+                {
+                    mainList.Add(new FanMission
+                    {
+                        Archive = importedFM.Archive,
+                        InstalledDir = importedFM.InstalledDir,
+                        Title = !importedFM.Title.IsEmpty() ? importedFM.Title : importedFM.Archive,
+                        ReleaseDate = importedFM.ReleaseDate,
+                        LastPlayed = importedFM.LastPlayed,
+                        FinishedOn = importedFM.FinishedOn,
+                        Rating = importedFM.Rating,
+                        Comment = importedFM.Comment,
+                        DisabledMods = importedFM.DisabledMods,
+                        DisableAllMods = importedFM.DisableAllMods,
+                        TagsString = importedFM.TagsString,
+                        SelectedReadme = importedFM.SelectedReadme,
+                        SizeBytes = importedFM.SizeBytes
+                    });
+                    indexPastEnd++;
+                    importedFMIndexes.Add(indexPastEnd);
+                }
+            }
+
+            // Reset temp bool
+            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
+
             return importedFMIndexes;
         }
     }

@@ -2906,7 +2906,7 @@ namespace AngelLoader.Forms
             // Cock-blocked here too
             if (AddTagTextBox.Text.CountChars(':') <= 1)
             {
-                Model.AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
+                AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
                 UpdateFMTagsString(fm);
                 DisplayFMTags(fm);
                 Model.WriteFullFMDataIni();

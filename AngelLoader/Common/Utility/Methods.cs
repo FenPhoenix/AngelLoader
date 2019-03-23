@@ -110,6 +110,99 @@ namespace AngelLoader.Common.Utility
             fm.TagsString = finalValue;
         }
 
+        // Very awkward procedure that accesses global state in the name of only doing one iteration
+        // TODO: Test perf when 1000+ FMs each have a bunch of tags
+        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, List<CatAndTags> existingFMTags)
+        {
+            if (tagsToAdd.IsEmpty()) return;
+
+            var tagsArray = tagsToAdd.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var item in tagsArray)
+            {
+                string cat, tag;
+
+                var colonCount = item.CountChars(':');
+
+                // No way josé
+                if (colonCount > 1) continue;
+
+                if (colonCount == 1)
+                {
+                    var index = item.IndexOf(':');
+                    cat = item.Substring(0, index).Trim().ToLowerInvariant();
+                    tag = item.Substring(index + 1).Trim();
+                    if (cat.IsEmpty() || tag.IsEmpty()) continue;
+                }
+                else
+                {
+                    cat = "misc";
+                    tag = item.Trim();
+                }
+
+                // Note: We've already converted cat to lowercase, so we just do straight == to shave time off
+
+                #region FM tags
+
+                CatAndTags match = null;
+                for (int i = 0; i < existingFMTags.Count; i++)
+                {
+                    if (existingFMTags[i].Category == cat) match = existingFMTags[i];
+                }
+                if (match == null)
+                {
+                    existingFMTags.Add(new CatAndTags { Category = cat });
+                    existingFMTags[existingFMTags.Count - 1].Tags.Add(tag);
+                }
+                else
+                {
+                    if (!match.Tags.ContainsI(tag)) match.Tags.Add(tag);
+                }
+
+                #endregion
+
+                #region Global tags
+
+                GlobalCatAndTags globalMatch = null;
+                for (int i = 0; i < GlobalTags.Count; i++)
+                {
+                    if (GlobalTags[i].Category.Name == cat) globalMatch = GlobalTags[i];
+                }
+                if (globalMatch == null)
+                {
+                    GlobalTags.Add(new GlobalCatAndTags { Category = new GlobalCatOrTag { Name = cat, UsedCount = 1 } });
+                    GlobalTags[GlobalTags.Count - 1].Tags.Add(new GlobalCatOrTag { Name = tag, UsedCount = 1 });
+                }
+                else
+                {
+                    globalMatch.Category.UsedCount++;
+
+                    var ft = FirstTagOrNull(globalMatch.Tags, tag);
+                    if (ft == null)
+                    {
+                        globalMatch.Tags.Add(new GlobalCatOrTag { Name = tag, UsedCount = 1 });
+                    }
+                    else
+                    {
+                        ft.UsedCount++;
+                    }
+                }
+
+                #endregion
+            }
+        }
+
+        // Avoid the overhead of FirstOrDefault()
+        private static GlobalCatOrTag FirstTagOrNull(List<GlobalCatOrTag> tagsList, string tag)
+        {
+            for (int i = 0; i < tagsList.Count; i++)
+            {
+                if (tagsList[i].Name.EqualsI(tag)) return tagsList[i];
+            }
+
+            return null;
+        }
+
         // Break the frigging references!! Arrrrrrrgh!
         private static void DeepCopyCatAndTagsList(List<CatAndTags> source, List<CatAndTags> dest)
         {

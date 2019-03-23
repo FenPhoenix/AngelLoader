@@ -8,7 +8,7 @@ namespace AngelLoader.Common
         internal static readonly ConfigData Config = new ConfigData();
 
         // These are the FMSel preset tags. Conforming to standards here.
-        private static readonly List<GlobalCatAndTags> PresetTags = new List<GlobalCatAndTags>
+        internal static readonly List<GlobalCatAndTags> PresetTags = new List<GlobalCatAndTags>
         {
             new GlobalCatAndTags {Category = new GlobalCatOrTag {Name = "author", IsPreset = true}},
             new GlobalCatAndTags {Category = new GlobalCatOrTag {Name = "contest", IsPreset = true}},
@@ -58,6 +58,8 @@ namespace AngelLoader.Common
             }
         };
 
-        internal static List<GlobalCatAndTags> GlobalTags { get; } = PresetTags;
+        // Don't say this = PresetTags; that will make it a reference and we don't want that. It will be deep
+        // copied later.
+        internal static readonly List<GlobalCatAndTags> GlobalTags = new List<GlobalCatAndTags>();
     }
 }
