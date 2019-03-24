@@ -471,7 +471,7 @@ namespace AngelLoader.Forms
 
                 // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
                 var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
-                GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 1;
+                GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 5;
 
                 #endregion
 
