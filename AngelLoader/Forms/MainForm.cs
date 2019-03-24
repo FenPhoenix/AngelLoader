@@ -410,23 +410,33 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                FilterTitleTextBox.Text = filter.Title;
-                FilterAuthorTextBox.Text = filter.Author;
-                FilterShowJunkCheckBox.Checked = filter.ShowJunk;
+                FiltersFlowLayoutPanel.SuspendDrawing();
+                try
+                {
+                    FilterTitleTextBox.Text = filter.Title;
+                    FilterAuthorTextBox.Text = filter.Author;
+                    FilterShowJunkCheckBox.Checked = filter.ShowJunk;
 
-                FilterByTagsButton.Checked = !filter.Tags.Empty();
+                    FilterByTagsButton.Checked = !filter.Tags.Empty();
 
-                FilterByFinishedButton.Checked = filter.Finished.Contains(FinishedState.Finished);
-                FilterByUnfinishedButton.Checked = filter.Finished.Contains(FinishedState.Unfinished);
+                    FilterByFinishedButton.Checked = filter.Finished.Contains(FinishedState.Finished);
+                    FilterByUnfinishedButton.Checked = filter.Finished.Contains(FinishedState.Unfinished);
 
-                FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
-                UpdateRatingLabel();
+                    FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
+                    UpdateRatingLabel(suspendResume: false);
 
-                FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
-                UpdateDateLabel(lastPlayed: false);
+                    FilterByReleaseDateButton.Checked =
+                        filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
+                    UpdateDateLabel(lastPlayed: false, suspendResume: false);
 
-                FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
-                UpdateDateLabel(lastPlayed: true);
+                    FilterByLastPlayedButton.Checked =
+                        filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
+                    UpdateDateLabel(lastPlayed: true, suspendResume: false);
+                }
+                finally
+                {
+                    FiltersFlowLayoutPanel.ResumeDrawing();
+                }
             }
         }
 
@@ -3567,7 +3577,7 @@ namespace AngelLoader.Forms
             await SetFilter();
         }
 
-        private void UpdateDateLabel(bool lastPlayed)
+        private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
         {
             var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
             var fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
@@ -3576,7 +3586,7 @@ namespace AngelLoader.Forms
 
             // Normally you can see the re-layout kind of "sequentially happen", this stops that and makes it
             // snappy
-            FiltersFlowLayoutPanel.SuspendDrawing();
+            if (suspendResume) FiltersFlowLayoutPanel.SuspendDrawing();
             try
             {
                 if (button.Checked)
@@ -3593,7 +3603,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                FiltersFlowLayoutPanel.ResumeDrawing();
+                if (suspendResume) FiltersFlowLayoutPanel.ResumeDrawing();
             }
         }
 
@@ -3620,12 +3630,12 @@ namespace AngelLoader.Forms
             await SetFilter();
         }
 
-        private void UpdateRatingLabel()
+        private void UpdateRatingLabel(bool suspendResume = true)
         {
             var s = FilterByRatingButton;
 
             // For snappy visual layout performance
-            FiltersFlowLayoutPanel.SuspendDrawing();
+            if (suspendResume) FiltersFlowLayoutPanel.SuspendDrawing();
             try
             {
                 if (s.Checked)
@@ -3649,7 +3659,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                FiltersFlowLayoutPanel.ResumeDrawing();
+                if (suspendResume) FiltersFlowLayoutPanel.ResumeDrawing();
             }
         }
 
@@ -3659,31 +3669,39 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                bool oneList = Config.GameOrganization == GameOrganization.OneList;
-                if (oneList)
+                FiltersFlowLayoutPanel.SuspendDrawing();
+                try
                 {
-                    FilterByThief1Button.Checked = false;
-                    FilterByThief2Button.Checked = false;
-                    FilterByThief3Button.Checked = false;
+                    bool oneList = Config.GameOrganization == GameOrganization.OneList;
+                    if (oneList)
+                    {
+                        FilterByThief1Button.Checked = false;
+                        FilterByThief2Button.Checked = false;
+                        FilterByThief3Button.Checked = false;
+                    }
+                    FilterTitleTextBox.Text = "";
+                    FilterAuthorTextBox.Text = "";
+
+                    FilterByReleaseDateButton.Checked = false;
+                    FilterByReleaseDateLabel.Visible = false;
+
+                    FilterByLastPlayedButton.Checked = false;
+                    FilterByLastPlayedLabel.Visible = false;
+
+                    FilterByTagsButton.Checked = false;
+                    FilterByFinishedButton.Checked = false;
+                    FilterByUnfinishedButton.Checked = false;
+
+                    FilterByRatingButton.Checked = false;
+                    FilterByRatingLabel.Visible = false;
+
+                    FilterShowJunkCheckBox.Checked = false;
+                    FMsDGV.Filter.Clear(oneList);
                 }
-                FilterTitleTextBox.Text = "";
-                FilterAuthorTextBox.Text = "";
-
-                FilterByReleaseDateButton.Checked = false;
-                FilterByReleaseDateLabel.Visible = false;
-
-                FilterByLastPlayedButton.Checked = false;
-                FilterByLastPlayedLabel.Visible = false;
-
-                FilterByTagsButton.Checked = false;
-                FilterByFinishedButton.Checked = false;
-                FilterByUnfinishedButton.Checked = false;
-
-                FilterByRatingButton.Checked = false;
-                FilterByRatingLabel.Visible = false;
-
-                FilterShowJunkCheckBox.Checked = false;
-                FMsDGV.Filter.Clear(oneList);
+                finally
+                {
+                    FiltersFlowLayoutPanel.ResumeDrawing();
+                }
             }
 
             await SetFilter();
