@@ -22,7 +22,10 @@ namespace AngelLoader.CustomControls
         internal void AddFullItem(string item)
         {
             BackingItems.Add(item);
-            Items.Add(item.Contains('\\') ? item.Substring(item.LastIndexOf('\\') + 1) : item);
+            Items.Add(
+                item.Contains('\\') ? item.Substring(item.LastIndexOf('\\') + 1) :
+                item.Contains('/') ? item.Substring(item.LastIndexOf('/') + 1) :
+                item);
         }
 
         internal void AddRangeFull(List<string> items)

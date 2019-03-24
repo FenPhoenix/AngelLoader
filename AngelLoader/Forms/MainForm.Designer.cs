@@ -56,6 +56,7 @@
             this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenuSep2 = new System.Windows.Forms.ToolStripSeparator();
             this.TasksRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ConvertWAVsTo16BitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -137,6 +138,7 @@
             this.Thief3TabPage = new System.Windows.Forms.TabPage();
             this.TopRightTabControl = new System.Windows.Forms.TabControl();
             this.StatisticsTabPage = new System.Windows.Forms.TabPage();
+            this.StatsScanCustomResourcesButton = new System.Windows.Forms.Button();
             this.StatsCheckBoxesPanel = new System.Windows.Forms.Panel();
             this.CR_MapCheckBox = new System.Windows.Forms.CheckBox();
             this.CR_MoviesCheckBox = new System.Windows.Forms.CheckBox();
@@ -150,6 +152,7 @@
             this.CR_ObjectsCheckBox = new System.Windows.Forms.CheckBox();
             this.CustomResourcesLabel = new System.Windows.Forms.Label();
             this.EditFMTabPage = new System.Windows.Forms.TabPage();
+            this.EditFMScanForReadmesButton = new System.Windows.Forms.Button();
             this.EditFMScanReleaseDateButton = new System.Windows.Forms.Button();
             this.EditFMScanAuthorButton = new System.Windows.Forms.Button();
             this.EditFMScanTitleButton = new System.Windows.Forms.Button();
@@ -200,7 +203,6 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
-            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -389,13 +391,14 @@
             this.FinishedOnExtremeMenuItem,
             this.FinishedOnUnknownMenuItem});
             this.FinishedOnMenu.Name = "FinishedOnMenu";
-            this.FinishedOnMenu.Size = new System.Drawing.Size(181, 136);
+            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
+            this.FinishedOnMenu.Size = new System.Drawing.Size(126, 114);
             // 
             // FinishedOnNormalMenuItem
             // 
             this.FinishedOnNormalMenuItem.CheckOnClick = true;
             this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
-            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(125, 22);
             this.FinishedOnNormalMenuItem.Tag = "";
             this.FinishedOnNormalMenuItem.Text = "Normal";
             this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
@@ -404,7 +407,7 @@
             // 
             this.FinishedOnHardMenuItem.CheckOnClick = true;
             this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
-            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(125, 22);
             this.FinishedOnHardMenuItem.Tag = "";
             this.FinishedOnHardMenuItem.Text = "Hard";
             this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
@@ -413,7 +416,7 @@
             // 
             this.FinishedOnExpertMenuItem.CheckOnClick = true;
             this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
-            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(125, 22);
             this.FinishedOnExpertMenuItem.Tag = "";
             this.FinishedOnExpertMenuItem.Text = "Expert";
             this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
@@ -422,10 +425,19 @@
             // 
             this.FinishedOnExtremeMenuItem.CheckOnClick = true;
             this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
-            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(125, 22);
             this.FinishedOnExtremeMenuItem.Tag = "";
             this.FinishedOnExtremeMenuItem.Text = "Extreme";
             this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            // 
+            // FinishedOnUnknownMenuItem
+            // 
+            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
+            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
+            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnUnknownMenuItem.Text = "Unknown";
+            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
+            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
             // FMRightClickMenuSep2
             // 
@@ -1406,6 +1418,7 @@
             // 
             this.StatisticsTabPage.AutoScroll = true;
             this.StatisticsTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.StatisticsTabPage.Controls.Add(this.StatsScanCustomResourcesButton);
             this.StatisticsTabPage.Controls.Add(this.StatsCheckBoxesPanel);
             this.StatisticsTabPage.Controls.Add(this.CustomResourcesLabel);
             this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
@@ -1413,6 +1426,20 @@
             this.StatisticsTabPage.Size = new System.Drawing.Size(545, 284);
             this.StatisticsTabPage.TabIndex = 0;
             this.StatisticsTabPage.Text = "Statistics";
+            // 
+            // StatsScanCustomResourcesButton
+            // 
+            this.StatsScanCustomResourcesButton.AutoSize = true;
+            this.StatsScanCustomResourcesButton.Image = global::AngelLoader.Properties.Resources.ScanSmall;
+            this.StatsScanCustomResourcesButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 200);
+            this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
+            this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(154, 23);
+            this.StatsScanCustomResourcesButton.TabIndex = 33;
+            this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
+            this.StatsScanCustomResourcesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
+            this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.RescanCustomResourcesButton_Click);
             // 
             // StatsCheckBoxesPanel
             // 
@@ -1556,6 +1583,7 @@
             // 
             this.EditFMTabPage.AutoScroll = true;
             this.EditFMTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.EditFMTabPage.Controls.Add(this.EditFMScanForReadmesButton);
             this.EditFMTabPage.Controls.Add(this.EditFMScanReleaseDateButton);
             this.EditFMTabPage.Controls.Add(this.EditFMScanAuthorButton);
             this.EditFMTabPage.Controls.Add(this.EditFMScanTitleButton);
@@ -1580,10 +1608,25 @@
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
+            // EditFMScanForReadmesButton
+            // 
+            this.EditFMScanForReadmesButton.AutoSize = true;
+            this.EditFMScanForReadmesButton.Image = global::AngelLoader.Properties.Resources.ScanSmall;
+            this.EditFMScanForReadmesButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 248);
+            this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
+            this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(128, 23);
+            this.EditFMScanForReadmesButton.TabIndex = 13;
+            this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
+            this.EditFMScanForReadmesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
+            this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.EditFMScanForReadmesButton_Click);
+            // 
             // EditFMScanReleaseDateButton
             // 
-            this.EditFMScanReleaseDateButton.BackgroundImage = global::AngelLoader.Properties.Resources.Scan;
+            this.EditFMScanReleaseDateButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
             this.EditFMScanReleaseDateButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.EditFMScanReleaseDateButton.Image = ((System.Drawing.Image)(resources.GetObject("EditFMScanReleaseDateButton.Image")));
             this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
             this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
@@ -1594,8 +1637,9 @@
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.BackgroundImage = global::AngelLoader.Properties.Resources.Scan;
+            this.EditFMScanAuthorButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
             this.EditFMScanAuthorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.EditFMScanAuthorButton.Image = ((System.Drawing.Image)(resources.GetObject("EditFMScanAuthorButton.Image")));
             this.EditFMScanAuthorButton.Location = new System.Drawing.Point(512, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
@@ -1606,8 +1650,9 @@
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.BackgroundImage = global::AngelLoader.Properties.Resources.Scan;
+            this.EditFMScanTitleButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
             this.EditFMScanTitleButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.EditFMScanTitleButton.Image = ((System.Drawing.Image)(resources.GetObject("EditFMScanTitleButton.Image")));
             this.EditFMScanTitleButton.Location = new System.Drawing.Point(512, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
@@ -1726,7 +1771,7 @@
             // EditFMDisableAllModsCheckBox
             // 
             this.EditFMDisableAllModsCheckBox.AutoSize = true;
-            this.EditFMDisableAllModsCheckBox.Location = new System.Drawing.Point(8, 240);
+            this.EditFMDisableAllModsCheckBox.Location = new System.Drawing.Point(8, 216);
             this.EditFMDisableAllModsCheckBox.Name = "EditFMDisableAllModsCheckBox";
             this.EditFMDisableAllModsCheckBox.Size = new System.Drawing.Size(102, 17);
             this.EditFMDisableAllModsCheckBox.TabIndex = 3;
@@ -1738,7 +1783,7 @@
             // 
             this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 216);
+            this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
             this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(521, 20);
             this.EditFMDisabledModsTextBox.TabIndex = 1;
@@ -1748,7 +1793,7 @@
             // EditFMDisabledModsLabel
             // 
             this.EditFMDisabledModsLabel.AutoSize = true;
-            this.EditFMDisabledModsLabel.Location = new System.Drawing.Point(8, 200);
+            this.EditFMDisabledModsLabel.Location = new System.Drawing.Point(8, 176);
             this.EditFMDisabledModsLabel.Name = "EditFMDisabledModsLabel";
             this.EditFMDisabledModsLabel.Size = new System.Drawing.Size(79, 13);
             this.EditFMDisabledModsLabel.TabIndex = 0;
@@ -2128,15 +2173,6 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
-            // FinishedOnUnknownMenuItem
-            // 
-            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
-            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
-            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.FinishedOnUnknownMenuItem.Text = "Unknown";
-            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
-            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2380,6 +2416,8 @@
         private System.Windows.Forms.Button EditFMScanTitleButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.ToolStripMenuItem FinishedOnUnknownMenuItem;
+        private System.Windows.Forms.Button EditFMScanForReadmesButton;
+        private System.Windows.Forms.Button StatsScanCustomResourcesButton;
     }
 }
 

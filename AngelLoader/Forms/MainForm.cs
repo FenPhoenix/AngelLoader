@@ -252,6 +252,7 @@ namespace AngelLoader.Forms
             // Fine-tuning defaults without having to mess with the UI, because with all the anchoring, changing
             // the position of anything will mess it all up.
             TopSplitContainer.SplitterDistance = 1238;
+            MainSplitContainer.SplitterDistance = 309;
 
             float mainPercent = (float)(MainSplitContainer.SplitterDistance * 100) /
                                 MainSplitContainer.Height;
@@ -592,6 +593,8 @@ namespace AngelLoader.Forms
                 CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
                 CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
 
+                StatsScanCustomResourcesButton.SetTextAutoSize(LText.StatisticsTab.RescanCustomResources);
+
                 #endregion
 
                 #region Edit FM tab
@@ -613,6 +616,8 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(EditFMScanTitleButton, LText.EditFMTab.RescanTitleToolTip);
                 MainToolTip.SetToolTip(EditFMScanAuthorButton, LText.EditFMTab.RescanAuthorToolTip);
                 MainToolTip.SetToolTip(EditFMScanReleaseDateButton, LText.EditFMTab.RescanReleaseDateToolTip);
+
+                EditFMScanForReadmesButton.SetTextAutoSize(LText.EditFMTab.RescanForReadmes);
 
                 #endregion
 
@@ -943,6 +948,8 @@ namespace AngelLoader.Forms
         private void Test2Button_Click(object sender, EventArgs e)
         {
         }
+
+        internal void SetDebugMessageText(string text) => DebugLabel.Text = text;
 
         #endregion
 
@@ -2023,21 +2030,17 @@ namespace AngelLoader.Forms
             await SetFilter();
         }
 
-        internal void SetDebugMessageText(string text) => DebugLabel.Text = text;
-
         #region Refresh FMs list
 
         internal async Task RefreshSelectedFMRowOnly() => await RefreshSelectedFM(false, true);
 
         internal async Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false)
         {
-            var currentRow = FMsDGV.SelectedRows[0].Index;
-
-            FMsDGV.InvalidateRow(currentRow);
+            FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
             if (refreshGridRowOnly) return;
 
-            await DisplaySelectedFM(GetFMFromIndex(currentRow), refreshReadme);
+            await DisplaySelectedFM(refreshReadme);
         }
 
         internal async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
@@ -2084,7 +2087,7 @@ namespace AngelLoader.Forms
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
                     if (!suppressSuspendResume) s.ResumeDrawing();
 
-                    await DisplaySelectedFM(GetFMFromIndex(row), refreshReadme);
+                    await DisplaySelectedFM(refreshReadme);
 
                     InitialSelectedFMHasBeenSet = true;
                 }
@@ -2262,8 +2265,7 @@ namespace AngelLoader.Forms
                 // DOING SHIT WHILE I'M TRYING TO SET FIRST VALUES. Argh.
                 if (!InitialSelectedFMHasBeenSet) return;
 
-                var fm = GetSelectedFM();
-                await DisplaySelectedFM(fm, refreshReadme: true);
+                await DisplaySelectedFM(refreshReadme: true);
             }
         }
 
@@ -2286,6 +2288,7 @@ namespace AngelLoader.Forms
             WebSearchButton.Enabled = false;
 
             BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
+            StatsScanCustomResourcesButton.Hide();
 
             AltTitlesMenu.Items.Clear();
 
@@ -2347,8 +2350,10 @@ namespace AngelLoader.Forms
         }
 
         // It's really hard to come up with a succinct name that makes it clear what this does and doesn't do
-        private async Task DisplaySelectedFM(FanMission fm, bool refreshReadme = false)
+        private async Task DisplaySelectedFM(bool refreshReadme = false)
         {
+            var fm = GetSelectedFM();
+
             bool fmIsT3 = fm.Game == Game.Thief3;
 
             #region Toggles
@@ -2412,10 +2417,12 @@ namespace AngelLoader.Forms
             if (fmIsT3)
             {
                 BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
+                StatsScanCustomResourcesButton.Hide();
             }
             else if (!FMCustomResourcesScanned(fm))
             {
                 BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
+                StatsScanCustomResourcesButton.Show();
             }
             else
             {
@@ -2433,6 +2440,7 @@ namespace AngelLoader.Forms
                 CR_SubtitlesCheckBox.Checked = fm.HasSubtitles == true;
 
                 StatsCheckBoxesPanel.Show();
+                StatsScanCustomResourcesButton.Show();
             }
 
             #endregion
@@ -3756,10 +3764,22 @@ namespace AngelLoader.Forms
             await ScanSelectedFM(ScanOptions.FalseDefault(scanReleaseDate: true));
         }
 
+        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
+        {
+            await ScanSelectedFM(ScanOptions.FalseDefault(scanCustomResources: true));
+        }
+
         private async Task ScanSelectedFM(ScanOptions scanOptions)
         {
             bool success = await Model.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false);
             if (success) await RefreshSelectedFM(refreshReadme: true);
+        }
+
+        private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
+        {
+            var fm = GetSelectedFM();
+            fm.RefreshCache = true;
+            await DisplaySelectedFM(refreshReadme: true);
         }
     }
 }

@@ -177,6 +177,8 @@ namespace AngelLoader.Common.DataClasses
             internal static string Motions = "Motions";
             internal static string Scripts = "Scripts";
             internal static string Subtitles = "Subtitles";
+            [FenGenBlankLine]
+            internal static string RescanCustomResources = "Rescan custom resources";
         }
 
         internal static class EditFMTab
@@ -195,6 +197,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string RescanTitleToolTip = "Rescan title";
             internal static string RescanAuthorToolTip = "Rescan author";
             internal static string RescanReleaseDateToolTip = "Rescan release date";
+            internal static string RescanForReadmes = "Rescan for readmes";
         }
 
         internal static class CommentTab

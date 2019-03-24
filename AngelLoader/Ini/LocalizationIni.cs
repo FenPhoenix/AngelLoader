@@ -524,6 +524,10 @@ namespace AngelLoader.Ini
                         {
                             LText.StatisticsTab.Subtitles = lt.Substring(10);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("RescanCustomResources="))
+                        {
+                            LText.StatisticsTab.RescanCustomResources = lt.Substring(22);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -583,6 +587,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("RescanReleaseDateToolTip="))
                         {
                             LText.EditFMTab.RescanReleaseDateToolTip = lt.Substring(25);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("RescanForReadmes="))
+                        {
+                            LText.EditFMTab.RescanForReadmes = lt.Substring(17);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
