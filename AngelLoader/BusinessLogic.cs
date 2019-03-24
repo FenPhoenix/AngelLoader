@@ -828,7 +828,10 @@ namespace AngelLoader
             return true;
         }
 
-        internal async Task<bool> ScanAllFMs(ScanOptions scanOptions) => await ScanFMs(FMsViewList, scanOptions);
+        internal async Task<bool> ScanAllFMs(ScanOptions scanOptions, bool overwriteUnscannedFields = true)
+        {
+            return await ScanFMs(FMsViewList, scanOptions, overwriteUnscannedFields);
+        }
 
         internal void CancelScan()
         {

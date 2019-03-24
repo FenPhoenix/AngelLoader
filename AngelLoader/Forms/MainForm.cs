@@ -1746,23 +1746,33 @@ namespace AngelLoader.Forms
         {
             if (FMsList.Count == 0) return;
 
-            var scanOptions = new ScanOptions
+            ScanOptions scanOptions = null;
+            bool noneSelected;
+            using (var f = new ScanAllFMsForm())
             {
-                ScanTitle = true,
-                ScanCampaignMissionNames = false,
-                ScanAuthor = true,
-                ScanVersion = false,
-                ScanLanguages = true,
-                ScanGameType = true,
-                ScanNewDarkRequired = false,
-                ScanNewDarkMinimumVersion = false,
-                ScanCustomResources = true,
-                ScanSize = true,
-                ScanReleaseDate = true,
-                ScanTags = true
-            };
+                if (f.ShowDialog() != DialogResult.OK) return;
+                noneSelected = f.NoneSelected;
+                if (!noneSelected)
+                {
+                    scanOptions = ScanOptions.FalseDefault(
+                        scanTitle: f.ScanOptions.ScanTitle,
+                        scanAuthor: f.ScanOptions.ScanAuthor,
+                        scanGameType: f.ScanOptions.ScanGameType,
+                        scanCustomResources: f.ScanOptions.ScanCustomResources,
+                        scanSize: f.ScanOptions.ScanSize,
+                        scanReleaseDate: f.ScanOptions.ScanReleaseDate,
+                        scanTags: f.ScanOptions.ScanTags,
+                        scanLanguages: f.ScanOptions.ScanTags);
+                }
+            }
 
-            var success = await Model.ScanAllFMs(scanOptions);
+            if (noneSelected)
+            {
+                MessageBox.Show(LText.ScanAllFMsBox.NothingWasScanned, LText.AlertMessages.Alert);
+                return;
+            }
+
+            var success = await Model.ScanAllFMs(scanOptions, overwriteUnscannedFields: false);
             if (success) await SetFilter(forceRefreshReadme: true);
         }
 

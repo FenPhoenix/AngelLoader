@@ -368,5 +368,26 @@ namespace AngelLoader.Common.DataClasses
             internal static string DarkLoader_NoArchiveDirsFound =
                 "No archive directories were specified in DarkLoader.ini. Unable to import.";
         }
+
+        internal static class ScanAllFMsBox
+        {
+            internal static string TitleText = "Scan all FMs";
+            [FenGenBlankLine]
+            internal static string ScanAllFMsFor = "Scan all FMs for:";
+            [FenGenBlankLine]
+            internal static string Title = "Title";
+            internal static string Author = "Author";
+            internal static string Game = "Game";
+            internal static string CustomResources = "Custom resources";
+            internal static string Size = "Size";
+            internal static string ReleaseDate = "Release date";
+            internal static string Tags = "Tags";
+            [FenGenBlankLine]
+            internal static string SelectAll = "Select all";
+            internal static string SelectNone = "Select none";
+            internal static string Scan = "Scan";
+            [FenGenBlankLine]
+            internal static string NothingWasScanned = "No options were selected; no FMs have been scanned.";
+        }
     }
 }

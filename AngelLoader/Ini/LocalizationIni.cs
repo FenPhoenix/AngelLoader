@@ -1135,6 +1135,70 @@ namespace AngelLoader.Ini
                         i++;
                     }
                 }
+                else if (lineT == "[ScanAllFMsBox]")
+                {
+                    while (i < lines.Length - 1)
+                    {
+                        var lt = lines[i + 1].TrimStart();
+                        if (lt.StartsWithFast_NoNullChecks("TitleText="))
+                        {
+                            LText.ScanAllFMsBox.TitleText = lt.Substring(10);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ScanAllFMsFor="))
+                        {
+                            LText.ScanAllFMsBox.ScanAllFMsFor = lt.Substring(14);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Title="))
+                        {
+                            LText.ScanAllFMsBox.Title = lt.Substring(6);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Author="))
+                        {
+                            LText.ScanAllFMsBox.Author = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Game="))
+                        {
+                            LText.ScanAllFMsBox.Game = lt.Substring(5);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("CustomResources="))
+                        {
+                            LText.ScanAllFMsBox.CustomResources = lt.Substring(16);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Size="))
+                        {
+                            LText.ScanAllFMsBox.Size = lt.Substring(5);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ReleaseDate="))
+                        {
+                            LText.ScanAllFMsBox.ReleaseDate = lt.Substring(12);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Tags="))
+                        {
+                            LText.ScanAllFMsBox.Tags = lt.Substring(5);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("SelectAll="))
+                        {
+                            LText.ScanAllFMsBox.SelectAll = lt.Substring(10);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("SelectNone="))
+                        {
+                            LText.ScanAllFMsBox.SelectNone = lt.Substring(11);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Scan="))
+                        {
+                            LText.ScanAllFMsBox.Scan = lt.Substring(5);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("NothingWasScanned="))
+                        {
+                            LText.ScanAllFMsBox.NothingWasScanned = lt.Substring(18);
+                        }
+                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
             }
         }
     }
