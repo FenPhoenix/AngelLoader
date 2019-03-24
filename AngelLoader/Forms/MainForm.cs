@@ -1761,8 +1761,7 @@ namespace AngelLoader.Forms
                         scanCustomResources: f.ScanOptions.ScanCustomResources,
                         scanSize: f.ScanOptions.ScanSize,
                         scanReleaseDate: f.ScanOptions.ScanReleaseDate,
-                        scanTags: f.ScanOptions.ScanTags,
-                        scanLanguages: f.ScanOptions.ScanTags);
+                        scanTags: f.ScanOptions.ScanTags);
                 }
             }
 
