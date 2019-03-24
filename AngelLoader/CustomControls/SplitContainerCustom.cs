@@ -64,6 +64,7 @@ namespace AngelLoader.CustomControls
 
         public SplitContainerCustom()
         {
+            AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
             _storedPanel1MinSize = Panel1MinSize;
         }
