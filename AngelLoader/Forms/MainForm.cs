@@ -473,11 +473,17 @@ namespace AngelLoader.Forms
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
 
                 FilterByReleaseDateButton.ToolTipText = LText.FilterBar.ReleaseDateToolTip;
+                FilterByReleaseDateLabel.ToolTipText = LText.FilterBar.ReleaseDateToolTip;
+
                 FilterByLastPlayedButton.ToolTipText = LText.FilterBar.LastPlayedToolTip;
+                FilterByLastPlayedLabel.ToolTipText = LText.FilterBar.LastPlayedToolTip;
+
                 FilterByTagsButton.ToolTipText = LText.FilterBar.TagsToolTip;
                 FilterByFinishedButton.ToolTipText = LText.FilterBar.FinishedToolTip;
                 FilterByUnfinishedButton.ToolTipText = LText.FilterBar.UnfinishedToolTip;
+
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
+                FilterByRatingLabel.ToolTipText = LText.FilterBar.RatingToolTip;
 
                 FilterShowJunkCheckBox.Text = LText.FilterBar.ShowJunk;
 
