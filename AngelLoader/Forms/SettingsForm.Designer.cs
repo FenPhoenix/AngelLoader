@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.Thief1ExePathLabel = new System.Windows.Forms.Label();
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief1ExePathBrowseButton = new System.Windows.Forms.Button();
@@ -42,6 +43,8 @@
             this.FMArchivePathsListBox = new System.Windows.Forms.ListBox();
             this.FMArchivePathsGroupBox = new System.Windows.Forms.GroupBox();
             this.IncludeSubfoldersCheckBox = new System.Windows.Forms.CheckBox();
+            this.AddFMArchivePathButton = new System.Windows.Forms.Button();
+            this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.BackupPathLabel = new System.Windows.Forms.Label();
@@ -54,6 +57,7 @@
             this.FMDisplayTabPage = new System.Windows.Forms.TabPage();
             this.RatingDisplayStyleGroupBox = new System.Windows.Forms.GroupBox();
             this.RatingUseStarsCheckBox = new System.Windows.Forms.CheckBox();
+            this.RatingExamplePictureBox = new System.Windows.Forms.PictureBox();
             this.RatingFMSelDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.RatingNDLDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.DateFormatGroupBox = new System.Windows.Forms.GroupBox();
@@ -81,6 +85,7 @@
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
             this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
+            this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.WebSearchTitleExplanationLabel = new System.Windows.Forms.Label();
             this.WebSearchUrlTextBox = new System.Windows.Forms.TextBox();
             this.WebSearchUrlLabel = new System.Windows.Forms.Label();
@@ -93,10 +98,6 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.AddFMArchivePathButton = new System.Windows.Forms.Button();
-            this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
-            this.RatingExamplePictureBox = new System.Windows.Forms.PictureBox();
-            this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -104,6 +105,7 @@
             this.PathsTabPage.SuspendLayout();
             this.FMDisplayTabPage.SuspendLayout();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
             this.PreviewDatePanel.SuspendLayout();
             this.DateCustomFormatPanel.SuspendLayout();
@@ -116,7 +118,6 @@
             this.FMFileConversionGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // Thief1ExePathLabel
@@ -257,6 +258,30 @@
             this.IncludeSubfoldersCheckBox.TabIndex = 1;
             this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
             this.IncludeSubfoldersCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // AddFMArchivePathButton
+            // 
+            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Add;
+            this.AddFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
+            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
+            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.AddFMArchivePathButton.TabIndex = 3;
+            this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
+            this.AddFMArchivePathButton.Click += new System.EventHandler(this.AddFMArchivePathButton_Click);
+            // 
+            // RemoveFMArchivePathButton
+            // 
+            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.RemoveFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
+            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
+            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.RemoveFMArchivePathButton.TabIndex = 2;
+            this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
+            this.RemoveFMArchivePathButton.Click += new System.EventHandler(this.RemoveFMArchivePathButton_Click);
             // 
             // OKButton
             // 
@@ -405,6 +430,14 @@
             this.RatingUseStarsCheckBox.Text = "Use stars";
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
             this.RatingUseStarsCheckBox.CheckedChanged += new System.EventHandler(this.RatingUseStarsCheckBox_CheckedChanged);
+            // 
+            // RatingExamplePictureBox
+            // 
+            this.RatingExamplePictureBox.Location = new System.Drawing.Point(280, 84);
+            this.RatingExamplePictureBox.Name = "RatingExamplePictureBox";
+            this.RatingExamplePictureBox.Size = new System.Drawing.Size(79, 23);
+            this.RatingExamplePictureBox.TabIndex = 1;
+            this.RatingExamplePictureBox.TabStop = false;
             // 
             // RatingFMSelDisplayStyleRadioButton
             // 
@@ -693,6 +726,19 @@
             this.WebSearchGroupBox.TabStop = false;
             this.WebSearchGroupBox.Text = "Web search";
             // 
+            // WebSearchUrlResetButton
+            // 
+            this.WebSearchUrlResetButton.BackgroundImage = global::AngelLoader.Properties.Resources.Refresh;
+            this.WebSearchUrlResetButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.WebSearchUrlResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.WebSearchUrlResetButton.Location = new System.Drawing.Point(386, 48);
+            this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
+            this.WebSearchUrlResetButton.Size = new System.Drawing.Size(20, 20);
+            this.WebSearchUrlResetButton.TabIndex = 1;
+            this.MainToolTip.SetToolTip(this.WebSearchUrlResetButton, "Reset to default");
+            this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
+            this.WebSearchUrlResetButton.Click += new System.EventHandler(this.WebSearchURLResetButton_Click);
+            // 
             // WebSearchTitleExplanationLabel
             // 
             this.WebSearchTitleExplanationLabel.AutoSize = true;
@@ -798,51 +844,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
             // 
-            // AddFMArchivePathButton
-            // 
-            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Add;
-            this.AddFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
-            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
-            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.AddFMArchivePathButton.TabIndex = 3;
-            this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
-            this.AddFMArchivePathButton.Click += new System.EventHandler(this.AddFMArchivePathButton_Click);
-            // 
-            // RemoveFMArchivePathButton
-            // 
-            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
-            this.RemoveFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
-            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
-            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveFMArchivePathButton.TabIndex = 2;
-            this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
-            this.RemoveFMArchivePathButton.Click += new System.EventHandler(this.RemoveFMArchivePathButton_Click);
-            // 
-            // RatingExamplePictureBox
-            // 
-            this.RatingExamplePictureBox.Location = new System.Drawing.Point(280, 84);
-            this.RatingExamplePictureBox.Name = "RatingExamplePictureBox";
-            this.RatingExamplePictureBox.Size = new System.Drawing.Size(79, 23);
-            this.RatingExamplePictureBox.TabIndex = 1;
-            this.RatingExamplePictureBox.TabStop = false;
-            // 
-            // WebSearchUrlResetButton
-            // 
-            this.WebSearchUrlResetButton.BackgroundImage = global::AngelLoader.Properties.Resources.Refresh;
-            this.WebSearchUrlResetButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.WebSearchUrlResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.WebSearchUrlResetButton.Location = new System.Drawing.Point(386, 48);
-            this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
-            this.WebSearchUrlResetButton.Size = new System.Drawing.Size(20, 20);
-            this.WebSearchUrlResetButton.TabIndex = 1;
-            this.MainToolTip.SetToolTip(this.WebSearchUrlResetButton, "Reset to default");
-            this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
-            this.WebSearchUrlResetButton.Click += new System.EventHandler(this.WebSearchURLResetButton_Click);
-            // 
             // SettingsForm
             // 
             this.AcceptButton = this.OKButton;
@@ -853,6 +854,7 @@
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.MainTabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SettingsForm";
@@ -873,6 +875,7 @@
             this.FMDisplayTabPage.ResumeLayout(false);
             this.RatingDisplayStyleGroupBox.ResumeLayout(false);
             this.RatingDisplayStyleGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
             this.DateFormatGroupBox.ResumeLayout(false);
             this.DateFormatGroupBox.PerformLayout();
             this.PreviewDatePanel.ResumeLayout(false);
@@ -892,7 +895,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }

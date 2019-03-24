@@ -83,6 +83,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FFmpeg.NET, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\xFFmpeg.NET.3.1.0\lib\netstandard2.0\FFmpeg.NET.dll</HintPath>
@@ -282,6 +285,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\add_48.png" />
+    <Content Include="Resources\AngelLoader.ico" />
     <Content Include="Resources\arrow-left.png" />
     <Content Include="Resources\arrow-right.png" />
     <Content Include="Resources\arrow_down_48.png" />

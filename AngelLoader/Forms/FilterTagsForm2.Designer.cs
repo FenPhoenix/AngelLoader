@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterTagsForm2));
             this.OriginTreeView = new System.Windows.Forms.TreeView();
             this.AndTreeView = new System.Windows.Forms.TreeView();
             this.OrTreeView = new System.Windows.Forms.TreeView();
@@ -293,6 +294,7 @@
             this.Controls.Add(this.AndTreeView);
             this.Controls.Add(this.OriginTreeView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1040, 32767);
             this.MinimizeBox = false;

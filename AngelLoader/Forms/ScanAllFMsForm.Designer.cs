@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScanAllFMsForm));
             this.TitleCheckBox = new System.Windows.Forms.CheckBox();
             this.AuthorCheckBox = new System.Windows.Forms.CheckBox();
             this.GameCheckBox = new System.Windows.Forms.CheckBox();
@@ -225,6 +226,7 @@
             this.Controls.Add(this.AuthorCheckBox);
             this.Controls.Add(this.TitleCheckBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ScanAllFMsForm";

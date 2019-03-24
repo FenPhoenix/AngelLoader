@@ -2181,6 +2181,7 @@
             this.Controls.Add(this.ProgressBox);
             this.Controls.Add(this.EverythingPanel);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(894, 260);
             this.Name = "MainForm";

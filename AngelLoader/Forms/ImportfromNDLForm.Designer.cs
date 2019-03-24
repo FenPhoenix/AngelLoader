@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImportFromNDLForm));
             this.ChooseNDLIniFilesLabel = new System.Windows.Forms.Label();
             this.Thief1GroupBox = new System.Windows.Forms.GroupBox();
             this.Thief1IniBrowseButton = new System.Windows.Forms.Button();
@@ -173,6 +174,7 @@
             this.Controls.Add(this.Thief2GroupBox);
             this.Controls.Add(this.Thief1GroupBox);
             this.Controls.Add(this.ChooseNDLIniFilesLabel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ImportFromNDLForm";
             this.Text = "Import from NewDarkLoader";
             this.Thief1GroupBox.ResumeLayout(false);
