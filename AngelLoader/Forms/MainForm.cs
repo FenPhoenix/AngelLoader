@@ -363,13 +363,21 @@ namespace AngelLoader.Forms
             // This must certainly need to come after Show() as well, right?!
             if (Model.ViewListGamesNull.Count > 0)
             {
-                // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-                await Model.ScanNewFMsForGameType();
+                try
+                {
+                    // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
+                    await Model.ScanNewFMsForGameType();
+                }
+                catch (Exception ex)
+                {
+                    // log it
+                }
                 Model.ViewListGamesNull.Clear();
             }
 
             // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
             // Don't do Suspend/ResumeDrawing on startup because resume is slowish (having a refresh and all)
+            // TODO: Put this before Show() again and just have the cacher show the form if needed
             await SetFilter(suppressSuspendResume: true);
         }
 
