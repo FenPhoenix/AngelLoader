@@ -872,13 +872,15 @@ namespace AngelLoader
             }
         }
 
+        #region Importing
+
         internal async Task<bool>
         ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves)
         {
             ProgressBox.ShowImportDarkLoader();
             try
             {
-                var (error, fms) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves);
+                var (error, fmsToScan) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList);
                 if (error != ImportError.None)
                 {
                     // log it
@@ -892,21 +894,8 @@ namespace AngelLoader
                     return false;
                 }
 
-                var importedIndexes = ImportCommon.MergeDarkLoaderFMData(fms, FMDataIniList);
-
-                // DarkLoader might have the wrong game type or no game type, so scan for that.
-                // Also scan for custom resources because DL's and ours are slightly different.
-                // TODO: This can be canceled, so make sure the world won't explode if the user cancels
-                // and leaves some FMs in an un-scanned state.
-                var fmsToScan = new List<FanMission>();
-                foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
-                if (fmsToScan.Count > 0)
-                {
-                    var scanOptions = ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
-                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
-                }
-
-                FindFMs();
+                await ScanAndFind(fmsToScan,
+                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
             }
             finally
             {
@@ -916,30 +905,20 @@ namespace AngelLoader
             return true;
         }
 
-        // TODO: These are almost the same, so combine them
         internal async Task<bool> ImportFromNDL(string iniFile)
         {
             ProgressBox.ShowImportNDL();
             try
             {
-                var (success, fms) = await ImportNDL.Import(iniFile);
-                if (!success)
+                var (error, fmsToScan) = await ImportNDL.Import(iniFile, FMDataIniList);
+                if (error != ImportError.None)
                 {
                     // log it
                     return false;
                 }
 
-                var importedIndexes = ImportCommon.MergeNDLFMData(fms, FMDataIniList);
-
-                var fmsToScan = new List<FanMission>();
-                foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
-                if (fmsToScan.Count > 0)
-                {
-                    var scanOptions = ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
-                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
-                }
-
-                FindFMs();
+                await ScanAndFind(fmsToScan,
+                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
             }
             finally
             {
@@ -954,25 +933,15 @@ namespace AngelLoader
             ProgressBox.ShowImportFMSel();
             try
             {
-                var (success, fms) = await ImportNDL.Import(iniFile);
-                if (!success)
+                var (error, fmsToScan) = await ImportFMSel.Import(iniFile, FMDataIniList);
+                if (error != ImportError.None)
                 {
                     // log it
                     return false;
                 }
 
-                var importedIndexes = ImportCommon.MergeFMSelFMData(fms, FMDataIniList);
-
-                var fmsToScan = new List<FanMission>();
-                foreach (int index in importedIndexes) fmsToScan.Add(FMDataIniList[index]);
-                if (fmsToScan.Count > 0)
-                {
-                    var scanOptions = ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true,
-                        scanSize: true);
-                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
-                }
-
-                FindFMs();
+                await ScanAndFind(fmsToScan,
+                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true));
             }
             finally
             {
@@ -982,18 +951,22 @@ namespace AngelLoader
             return true;
         }
 
+        private async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions, bool overwriteUnscannedFields = false)
+        {
+            if (fms.Count == 0) return;
+
+            // TODO: This can be canceled, so make sure the world won't explode if the user cancels
+            await ScanFMs(fms, scanOptions, overwriteUnscannedFields);
+            FindFMs();
+        }
+
+        #endregion
+
         #region Install, Uninstall, Play
 
         internal async Task InstallOrUninstall(FanMission fm)
         {
-            if (fm.Installed)
-            {
-                await UninstallFM(fm);
-            }
-            else
-            {
-                await InstallFM(fm);
-            }
+            await (fm.Installed ? UninstallFM(fm) : InstallFM(fm));
         }
 
         internal async Task<bool> InstallFM(FanMission fm)

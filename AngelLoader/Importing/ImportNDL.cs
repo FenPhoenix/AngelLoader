@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using static AngelLoader.Ini.Ini;
 
@@ -8,8 +9,8 @@ namespace AngelLoader.Importing
 {
     internal static class ImportNDL
     {
-        internal static async Task<(bool Success, List<FanMission> FMs)>
-        Import(string iniFile)
+        internal static async Task<(ImportError Error, List<FanMission> FMs)>
+        Import(string iniFile, List<FanMission> mainList)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
@@ -92,7 +93,9 @@ namespace AngelLoader.Importing
                 }
             });
 
-            return (true, fms);
+            var importedFMsInMainList = ImportCommon.MergeImportedFMData(ImportType.NewDarkLoader, fms, mainList);
+
+            return (ImportError.None, importedFMsInMainList);
         }
     }
 }

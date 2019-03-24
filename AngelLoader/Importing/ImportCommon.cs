@@ -13,28 +13,15 @@ namespace AngelLoader.Importing
 
     internal static class ImportCommon
     {
-        internal static List<int> MergeDarkLoaderFMData(List<FanMission> importedFMs, List<FanMission> mainList)
-        {
-            return MergeImportedFMData(ImportType.DarkLoader, importedFMs, mainList);
-        }
-
-        internal static List<int> MergeNDLFMData(List<FanMission> importedFMs, List<FanMission> mainList)
-        {
-            return MergeImportedFMData(ImportType.NewDarkLoader, importedFMs, mainList);
-        }
-
-        internal static List<int> MergeFMSelFMData(List<FanMission> importedFMs, List<FanMission> mainList)
-        {
-            return MergeImportedFMData(ImportType.FMSel, importedFMs, mainList);
-        }
-
-        private static List<int> MergeImportedFMData(ImportType importType, List<FanMission> importedFMs,
+        internal static List<FanMission> MergeImportedFMData(ImportType importType, List<FanMission> importedFMs,
             List<FanMission> mainList)
         {
+            // Perf
             var checkedList = new List<FanMission>();
-            var importedFMIndexes = new List<int>();
             int initCount = mainList.Count;
-            int indexPastEnd = initCount - 1;
+
+            // We can't just send back the list we got in, because we will have deep-copied them to the main list
+            var importedFMsInMainList = new List<FanMission>();
 
             for (int impFMi = 0; impFMi < importedFMs.Count; impFMi++)
             {
@@ -47,7 +34,10 @@ namespace AngelLoader.Importing
 
                     if (!mainFM.Checked &&
                         (importType == ImportType.DarkLoader &&
-                        mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                         mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                        (importType == ImportType.FMSel &&
+                         (!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
+                          importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)) ||
                         (importType == ImportType.NewDarkLoader &&
                          mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
                     {
@@ -80,7 +70,7 @@ namespace AngelLoader.Importing
                         // So we only loop through checked FMs when we reset them
                         checkedList.Add(mainFM);
 
-                        importedFMIndexes.Add(mainFMi);
+                        importedFMsInMainList.Add(mainFM);
 
                         existingFound = true;
                         break;
@@ -121,15 +111,14 @@ namespace AngelLoader.Importing
                     }
 
                     mainList.Add(newFM);
-                    indexPastEnd++;
-                    importedFMIndexes.Add(indexPastEnd);
+                    importedFMsInMainList.Add(newFM);
                 }
             }
 
             // Reset temp bool
             for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
 
-            return importedFMIndexes;
+            return importedFMsInMainList;
         }
     }
 }
