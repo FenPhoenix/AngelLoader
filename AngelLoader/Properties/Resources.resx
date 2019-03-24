@@ -223,9 +223,6 @@
   <data name="ScanSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\scan_14.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AngelLoader" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\angelloader.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Thief1_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -243,9 +240,6 @@
   </data>
   <data name="Thief3_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief3_21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AngelLoader_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\angelloader_16.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Add" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -303,5 +297,8 @@
   </data>
   <data name="ZoomReset" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\zoomreset_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AngelLoader" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AngelLoader.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
