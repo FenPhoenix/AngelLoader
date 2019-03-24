@@ -251,8 +251,8 @@ namespace AngelLoader.Forms
 
             // Fine-tuning defaults without having to mess with the UI, because with all the anchoring, changing
             // the position of anything will mess it all up.
-            TopSplitContainer.SplitterDistance = 1238;
-            MainSplitContainer.SplitterDistance = 309;
+            TopSplitContainer.SplitterDistance = (int)(ClientSize.Width * 0.741);
+            MainSplitContainer.SplitterDistance = (int)(ClientSize.Height * 0.4325);
 
             float mainPercent = (float)(MainSplitContainer.SplitterDistance * 100) /
                                 MainSplitContainer.Height;
@@ -469,6 +469,10 @@ namespace AngelLoader.Forms
                 Thief2TabPage.Text = LText.GameTabs.Thief2;
                 Thief3TabPage.Text = LText.GameTabs.Thief3;
 
+                // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
+                var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
+                GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 1;
+
                 #endregion
 
                 #region Filter bar
@@ -528,7 +532,7 @@ namespace AngelLoader.Forms
                 #region Play / install / uninstall
 
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
-                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM);
+                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, preserveHeight: true);
 
                 var sayInstall = selFM == null || !selFM.Installed;
 
@@ -549,7 +553,7 @@ namespace AngelLoader.Forms
                 var uninstStringWidth = TextRenderer.MeasureText(uninstString, instButtonFont).Width;
                 var longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
 
-                InstallUninstallFMButton.SetTextAutoSize(longestString);
+                InstallUninstallFMButton.SetTextAutoSize(longestString, preserveHeight: true);
 
                 InstallUninstallFMButton.Text = sayInstall
                     ? LText.MainButtons.InstallFM
@@ -676,11 +680,11 @@ namespace AngelLoader.Forms
 
                 #region Bottom area
 
-                PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame);
-                WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch);
-                ScanAllFMsButton.SetTextAutoSize(LText.MainButtons.ScanAllFMs);
-                ImportButton.SetTextAutoSize(LText.MainButtons.Import);
-                SettingsButton.SetTextAutoSize(LText.MainButtons.Settings);
+                PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame, preserveHeight: true);
+                WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, preserveHeight: true);
+                ScanAllFMsButton.SetTextAutoSize(LText.MainButtons.ScanAllFMs, preserveHeight: true);
+                ImportButton.SetTextAutoSize(LText.MainButtons.Import, preserveHeight: true);
+                SettingsButton.SetTextAutoSize(LText.MainButtons.Settings, preserveHeight: true);
 
                 #endregion
 
@@ -2763,6 +2767,7 @@ namespace AngelLoader.Forms
         {
             MainSplitContainer.ResetSplitterDistance();
             TopSplitContainer.ResetSplitterDistance();
+            if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
         }
 
         #region Tags tab
@@ -3220,20 +3225,11 @@ namespace AngelLoader.Forms
 
         private void ShowReadmeControls()
         {
-            ZoomInButton.Show();
-            ZoomOutButton.Show();
-            ResetZoomButton.Show();
-            ZoomInButton.BringToFront();
-            ZoomOutButton.BringToFront();
-            ResetZoomButton.BringToFront();
-            ReadmeFullScreenButton.Show();
-            ReadmeFullScreenButton.BringToFront();
-            // Visible check needed so items don't get selected with a mere mouseover
-            if (ChooseReadmeComboBox.Items.Count > 0 && !ChooseReadmeComboBox.Visible)
-            {
-                ChooseReadmeComboBox.Show();
-                ChooseReadmeComboBox.BringToFront();
-            }
+            ZoomInButton.ShowIfHidden();
+            ZoomOutButton.ShowIfHidden();
+            ResetZoomButton.ShowIfHidden();
+            ReadmeFullScreenButton.ShowIfHidden();
+            if (ChooseReadmeComboBox.Items.Count > 0) ChooseReadmeComboBox.ShowIfHidden();
         }
 
         private void HideReadmeControls()
@@ -3821,6 +3817,14 @@ namespace AngelLoader.Forms
             var fm = GetSelectedFM();
             fm.RefreshCache = true;
             await DisplaySelectedFM(refreshReadme: true);
+        }
+
+        // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...
+        private void TopSplitContainer_Panel2_SizeChanged(object sender, EventArgs e)
+        {
+            AddTagTextBox.Width = AddTagButton.Left > AddTagTextBox.Left
+                ? ((AddTagButton.Left) - AddTagTextBox.Left) - 1
+                : 0;
         }
     }
 }

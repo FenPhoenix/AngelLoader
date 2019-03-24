@@ -558,15 +558,15 @@ namespace AngelLoader.Common.Utility
         /// <param name="button"></param>
         /// <param name="text"></param>
         /// <param name="minWidth"></param>
-        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1)
+        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, bool preserveHeight = false)
         {
             // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.
             button.Text = "";
             button.Width = 2;
+            if (!preserveHeight) button.Height = 2;
             button.Text = text;
 
             if (minWidth > -1 && button.Width < minWidth) button.Width = minWidth;
-
         }
 
         /// <summary>
@@ -596,9 +596,18 @@ namespace AngelLoader.Common.Utility
                 button.Width < oldWidth ? oldWidth - button.Width : 0;
 
             button.Left += diff;
-            textBox.Width += diff;
+            //textBox.Width += diff;
+            // For some reason the diff doesn't work when scaling is > 100% so, yeah
+            textBox.Width = button.Left > textBox.Left
+                ? ((button.Left) - textBox.Left) - 1
+                : 0;
 
             button.Anchor = oldAnchor;
+        }
+
+        internal static void ShowIfHidden(this Control control)
+        {
+            if (!control.Visible) control.Show();
         }
 
         #endregion

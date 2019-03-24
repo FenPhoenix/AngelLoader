@@ -1,6 +1,4 @@
-﻿using AngelLoader.Properties;
-
-namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms
 {
     partial class MainForm
     {
@@ -176,11 +174,11 @@ namespace AngelLoader.Forms
             this.CommentTabPage = new System.Windows.Forms.TabPage();
             this.CommentTextBox = new System.Windows.Forms.TextBox();
             this.TagsTabPage = new System.Windows.Forms.TabPage();
+            this.AddTagButton = new System.Windows.Forms.Button();
+            this.AddTagTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.RemoveTagButton = new System.Windows.Forms.Button();
             this.AddTagFromListButton = new System.Windows.Forms.Button();
-            this.AddTagButton = new System.Windows.Forms.Button();
-            this.AddTagTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
             this.ViewHTMLReadmeButton = new System.Windows.Forms.Button();
             this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
@@ -723,6 +721,7 @@ namespace AngelLoader.Forms
             // 
             this.TopSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.TopSplitContainer.Panel2.Controls.Add(this.TopRightTabControl);
+            this.TopSplitContainer.Panel2.SizeChanged += new System.EventHandler(this.TopSplitContainer_Panel2_SizeChanged);
             this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
             this.TopSplitContainer.SplitterDistance = 1116;
             this.TopSplitContainer.TabIndex = 32;
@@ -1854,9 +1853,9 @@ namespace AngelLoader.Forms
             // TagsTabPage
             // 
             this.TagsTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.TagsTabPage.Controls.Add(this.flowLayoutPanel1);
             this.TagsTabPage.Controls.Add(this.AddTagButton);
             this.TagsTabPage.Controls.Add(this.AddTagTextBox);
+            this.TagsTabPage.Controls.Add(this.flowLayoutPanel1);
             this.TagsTabPage.Controls.Add(this.TagsTreeView);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
@@ -1864,9 +1863,36 @@ namespace AngelLoader.Forms
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
             // 
+            // AddTagButton
+            // 
+            this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddTagButton.AutoSize = true;
+            this.AddTagButton.Location = new System.Drawing.Point(472, 7);
+            this.AddTagButton.Name = "AddTagButton";
+            this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.AddTagButton.Size = new System.Drawing.Size(72, 23);
+            this.AddTagButton.TabIndex = 2;
+            this.AddTagButton.Text = "Add tag";
+            this.AddTagButton.UseVisualStyleBackColor = true;
+            this.AddTagButton.Click += new System.EventHandler(this.AddTagButton_Click);
+            // 
+            // AddTagTextBox
+            // 
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddTagTextBox.DisallowedCharacters = ",;";
+            this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
+            this.AddTagTextBox.Name = "AddTagTextBox";
+            this.AddTagTextBox.Size = new System.Drawing.Size(464, 20);
+            this.AddTagTextBox.TabIndex = 1;
+            this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
+            this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
+            this.AddTagTextBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
+            // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel1.AutoSize = true;
             this.flowLayoutPanel1.Controls.Add(this.RemoveTagButton);
             this.flowLayoutPanel1.Controls.Add(this.AddTagFromListButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
@@ -1902,32 +1928,6 @@ namespace AngelLoader.Forms
             this.AddTagFromListButton.Text = "Add from list...";
             this.AddTagFromListButton.UseVisualStyleBackColor = true;
             this.AddTagFromListButton.Click += new System.EventHandler(this.TagPresetsButton_Click);
-            // 
-            // AddTagButton
-            // 
-            this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagButton.AutoSize = true;
-            this.AddTagButton.Location = new System.Drawing.Point(472, 7);
-            this.AddTagButton.Name = "AddTagButton";
-            this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AddTagButton.Size = new System.Drawing.Size(72, 23);
-            this.AddTagButton.TabIndex = 2;
-            this.AddTagButton.Text = "Add tag";
-            this.AddTagButton.UseVisualStyleBackColor = true;
-            this.AddTagButton.Click += new System.EventHandler(this.AddTagButton_Click);
-            // 
-            // AddTagTextBox
-            // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddTagTextBox.DisallowedCharacters = ",;";
-            this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
-            this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(464, 20);
-            this.AddTagTextBox.TabIndex = 1;
-            this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
-            this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
-            this.AddTagTextBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
             // 
             // TagsTreeView
             // 
@@ -2037,11 +2037,13 @@ namespace AngelLoader.Forms
             // ChooseReadmePanel
             // 
             this.ChooseReadmePanel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.ChooseReadmePanel.AutoSize = true;
+            this.ChooseReadmePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ChooseReadmePanel.Controls.Add(this.flowLayoutPanel2);
             this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeListBox);
             this.ChooseReadmePanel.Location = new System.Drawing.Point(2, 2);
             this.ChooseReadmePanel.Name = "ChooseReadmePanel";
-            this.ChooseReadmePanel.Size = new System.Drawing.Size(320, 160);
+            this.ChooseReadmePanel.Size = new System.Drawing.Size(324, 161);
             this.ChooseReadmePanel.TabIndex = 2;
             // 
             // flowLayoutPanel2
@@ -2174,8 +2176,8 @@ namespace AngelLoader.Forms
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1671, 716);
             this.Controls.Add(this.ProgressBox);
             this.Controls.Add(this.EverythingPanel);
