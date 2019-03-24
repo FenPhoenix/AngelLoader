@@ -28,17 +28,14 @@ namespace AngelLoader.CustomControls
         private readonly ToolStripMenuItem ResetColumnVisibilityMenuItem = new ToolStripMenuItem
         {
             Name = "ResetColumnVisibilityMenuItem",
-            Text = "Reset all columns to visible"
         };
         private readonly ToolStripMenuItem ResetAllColumnWidthsMenuItem = new ToolStripMenuItem
         {
             Name = "ResetAllColumnWidthsMenuItem",
-            Text = "Reset all column widths"
         };
         private readonly ToolStripMenuItem ResetColumnPositionsMenuItem = new ToolStripMenuItem
         {
             Name = "ResetColumnPositionsMenuItem",
-            Text = "Reset all column positions"
         };
         private readonly ToolStripSeparator ColumnHeaderRightClickMenuSeparator1 = new ToolStripSeparator
         {
@@ -50,7 +47,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowGameMenuItem",
-            Text = "Game"
         };
         private readonly ToolStripMenuItem ShowInstalledMenuItem = new ToolStripMenuItem
         {
@@ -58,7 +54,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowInstalledMenuItem",
-            Text = "Installed"
         };
         private readonly ToolStripMenuItem ShowTitleMenuItem = new ToolStripMenuItem
         {
@@ -66,7 +61,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowTitleMenuItem",
-            Text = "Title"
         };
         private readonly ToolStripMenuItem ShowArchiveMenuItem = new ToolStripMenuItem
         {
@@ -74,7 +68,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowArchiveMenuItem",
-            Text = "Archive"
         };
         private readonly ToolStripMenuItem ShowAuthorMenuItem = new ToolStripMenuItem
         {
@@ -82,7 +75,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowAuthorMenuItem",
-            Text = "Author"
         };
         private readonly ToolStripMenuItem ShowSizeMenuItem = new ToolStripMenuItem
         {
@@ -90,7 +82,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowSizeMenuItem",
-            Text = "Size"
         };
         private readonly ToolStripMenuItem ShowRatingMenuItem = new ToolStripMenuItem
         {
@@ -98,7 +89,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowRatingMenuItem",
-            Text = "Rating"
         };
         private readonly ToolStripMenuItem ShowFinishedMenuItem = new ToolStripMenuItem
         {
@@ -106,7 +96,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowFinishedMenuItem",
-            Text = "Finished"
         };
         private readonly ToolStripMenuItem ShowReleaseDateMenuItem = new ToolStripMenuItem
         {
@@ -114,7 +103,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowReleaseDateMenuItem",
-            Text = "Release Date"
         };
         private readonly ToolStripMenuItem ShowLastPlayedMenuItem = new ToolStripMenuItem
         {
@@ -122,7 +110,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowLastPlayedMenuItem",
-            Text = "Last Played"
         };
         private readonly ToolStripMenuItem ShowDisabledModsMenuItem = new ToolStripMenuItem
         {
@@ -130,7 +117,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowDisabledModsMenuItem",
-            Text = "Disabled Mods"
         };
         private readonly ToolStripMenuItem ShowCommentMenuItem = new ToolStripMenuItem
         {
@@ -138,7 +124,6 @@ namespace AngelLoader.CustomControls
             CheckOnClick = true,
             CheckState = CheckState.Checked,
             Name = "ShowCommentMenuItem",
-            Text = "Comment"
         };
 
         #endregion
