@@ -1369,9 +1369,9 @@ namespace AngelLoader.Forms
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
         {
             // Lazy-load these in an attempt to save some kind of startup time
-            Thief1Icon = Resources.Thief1;
-            Thief2Icon = Resources.Thief2;
-            Thief3Icon = Resources.Thief3;
+            Thief1Icon = Resources.Thief1_21;
+            Thief2Icon = Resources.Thief2_21;
+            Thief3Icon = Resources.Thief3_21;
             BlankIcon = Resources.Blank;
             CheckIcon = Resources.CheckCircle;
             RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;

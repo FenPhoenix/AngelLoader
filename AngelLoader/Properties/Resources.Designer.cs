@@ -81,6 +81,16 @@ namespace AngelLoader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon AngelLoader_16 {
+            get {
+                object obj = ResourceManager.GetObject("AngelLoader_16", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ArrowLeftSmall {
@@ -106,16 +116,6 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap Blank {
             get {
                 object obj = ResourceManager.GetObject("Blank", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CheckAlone {
-            get {
-                object obj = ResourceManager.GetObject("CheckAlone", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -593,9 +593,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief1 {
+        internal static System.Drawing.Bitmap Thief1_16 {
             get {
-                object obj = ResourceManager.GetObject("Thief1", resourceCulture);
+                object obj = ResourceManager.GetObject("Thief1_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -603,9 +603,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief2 {
+        internal static System.Drawing.Bitmap Thief1_21 {
             get {
-                object obj = ResourceManager.GetObject("Thief2", resourceCulture);
+                object obj = ResourceManager.GetObject("Thief1_21", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -613,9 +613,39 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Thief3 {
+        internal static System.Drawing.Bitmap Thief2_16 {
             get {
-                object obj = ResourceManager.GetObject("Thief3", resourceCulture);
+                object obj = ResourceManager.GetObject("Thief2_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Thief2_21 {
+            get {
+                object obj = ResourceManager.GetObject("Thief2_21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Thief3_16 {
+            get {
+                object obj = ResourceManager.GetObject("Thief3_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Thief3_21 {
+            get {
+                object obj = ResourceManager.GetObject("Thief3_21", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

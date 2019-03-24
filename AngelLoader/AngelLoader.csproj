@@ -284,14 +284,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\add_48.png" />
+    <Content Include="Resources\Add.png" />
     <Content Include="Resources\AngelLoader.ico" />
-    <Content Include="Resources\arrow-left.png" />
-    <Content Include="Resources\arrow-right.png" />
-    <Content Include="Resources\arrow_down_48.png" />
-    <Content Include="Resources\arrow_left_48.png" />
-    <Content Include="Resources\arrow_right_48.png" />
-    <Content Include="Resources\arrow_up_48.png" />
+    <Content Include="Resources\AngelLoader_16.ico" />
+    <Content Include="Resources\Arrow-left.png" />
+    <Content Include="Resources\Arrow-right.png" />
     <Content Include="Resources\FilterIcons\FilterByLastPlayed.png" />
     <Content Include="Resources\FilterIcons\FilterByReleaseDate.png" />
     <Content Include="Resources\FilterIcons\ClearFilters.png" />
@@ -315,19 +312,18 @@
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Unknown.png" />
-    <Content Include="Resources\fullscreen_24.png" />
-    <Content Include="Resources\green_check_48x48.png" />
-    <Content Include="Resources\green_check_alone_reduced.png" />
+    <Content Include="Resources\Fullscreen.png" />
+    <Content Include="Resources\GreenCheckCircle.png" />
     <Content Include="Resources\Layout.png" />
-    <Content Include="Resources\minus_48.png" />
+    <Content Include="Resources\Minus.png" />
     <Content Include="Resources\RatingExample_FMSel_Number.png" />
     <Content Include="Resources\RatingExample_FMSel_Stars.png" />
     <Content Include="Resources\RatingExample_NDL.png" />
-    <Content Include="Resources\red_circle_question_mark.png" />
+    <Content Include="Resources\QuestionMarkCircleRed.png" />
     <Content Include="Resources\Refresh.png" />
-    <Content Include="Resources\remove_48.png" />
-    <Content Include="Resources\scan_14.png" />
-    <Content Include="Resources\scan_24_1.png" />
+    <Content Include="Resources\Remove.png" />
+    <Content Include="Resources\Scan_14.png" />
+    <Content Include="Resources\Scan_24.png" />
     <Content Include="Resources\StarRating\Stars0.png" />
     <Content Include="Resources\StarRating\Stars0_5.png" />
     <Content Include="Resources\StarRating\Stars1.png" />
@@ -339,17 +335,20 @@
     <Content Include="Resources\StarRating\Stars4.png" />
     <Content Include="Resources\StarRating\Stars4_5.png" />
     <Content Include="Resources\StarRating\Stars5.png" />
+    <Content Include="Resources\Thief1_16.png" />
+    <Content Include="Resources\Thief1_21.png" />
     <Content Include="Resources\Thief1_large.png" />
+    <Content Include="Resources\Thief2_16.png" />
+    <Content Include="Resources\Thief2_21.png" />
     <Content Include="Resources\Thief2_large.png" />
     <Content Include="Resources\FilterIcons\UnfinishedFilterIcon.png" />
+    <Content Include="Resources\Thief3_16.png" />
+    <Content Include="Resources\Thief3_21.png" />
     <Content Include="Resources\Thief3_large.png" />
-    <Content Include="Resources\zoom_in_24.png" />
-    <Content Include="Resources\zoom_in_48x48.png" />
-    <Content Include="Resources\zoom_out_24.png" />
-    <Content Include="Resources\zoom_out_48x48.png" />
-    <Content Include="Resources\zoom_reset_24.png" />
-    <Content Include="Resources\zoom_reset_48x48.png" />
-    <None Include="Resources\blank.png" />
+    <Content Include="Resources\ZoomIn_24.png" />
+    <Content Include="Resources\ZoomOut_24.png" />
+    <Content Include="Resources\ZoomReset_24.png" />
+    <None Include="Resources\Blank.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FMScanner\FMScanner\FMScanner.csproj">
