@@ -51,7 +51,7 @@
             this.RatingRCMenu9 = new System.Windows.Forms.ToolStripMenuItem();
             this.RatingRCMenu10 = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedOnRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.FinishedOnMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
             this.FinishedOnNormalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -2307,7 +2307,7 @@
         private System.Windows.Forms.ToolStripMenuItem RatingRCMenu9;
         private System.Windows.Forms.ToolStripMenuItem RatingRCMenu10;
         private System.Windows.Forms.ToolStripMenuItem FinishedOnRCSubMenu;
-        private System.Windows.Forms.ContextMenuStrip FinishedOnMenu;
+        private AngelLoader.CustomControls.ContextMenuStripCustom FinishedOnMenu;
         private System.Windows.Forms.ToolStripMenuItem FinishedOnNormalMenuItem;
         private System.Windows.Forms.ToolStripMenuItem FinishedOnHardMenuItem;
         private System.Windows.Forms.ToolStripMenuItem FinishedOnExpertMenuItem;

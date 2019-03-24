@@ -336,6 +336,9 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnNormalMenuItem, FinishedOnHardMenuItem,
+                FinishedOnExpertMenuItem, FinishedOnExtremeMenuItem, FinishedOnUnknownMenuItem);
+
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
             EditFMFinishedOnButton.Tag = EditFMFinishedOnButton.Size;
             ChooseReadmeButton.Tag = ChooseReadmeButton.Size;

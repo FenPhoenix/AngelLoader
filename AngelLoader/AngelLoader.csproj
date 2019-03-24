@@ -131,6 +131,9 @@
     <Compile Include="CustomControls\ComboBoxCustom.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControls\ContextMenuStripCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\DropDownButton.cs">
       <SubType>Component</SubType>
     </Compile>
