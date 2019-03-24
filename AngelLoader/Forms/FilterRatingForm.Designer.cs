@@ -125,7 +125,7 @@
             this.Controls.Add(this.ToLabel);
             this.Controls.Add(this.FromLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FilterRatingForm";

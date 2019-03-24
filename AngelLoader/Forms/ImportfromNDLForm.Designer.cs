@@ -174,7 +174,7 @@
             this.Controls.Add(this.Thief2GroupBox);
             this.Controls.Add(this.Thief1GroupBox);
             this.Controls.Add(this.ChooseNDLIniFilesLabel);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.Name = "ImportFromNDLForm";
             this.Text = "Import from NewDarkLoader";
             this.Thief1GroupBox.ResumeLayout(false);
