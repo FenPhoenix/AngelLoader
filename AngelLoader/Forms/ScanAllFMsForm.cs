@@ -49,8 +49,8 @@ namespace AngelLoader.Forms
             SelectAllButton.SetTextAutoSize(LText.ScanAllFMsBox.SelectAll);
             SelectNoneButton.SetTextAutoSize(LText.ScanAllFMsBox.SelectNone);
 
-            ScanButton.SetTextAutoSize(LText.ScanAllFMsBox.Scan);
-            Cancel_Button.SetTextAutoSize(LText.Global.Cancel);
+            ScanButton.SetTextAutoSize(LText.ScanAllFMsBox.Scan, ScanButton.Width);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
 
         private void SelectAllButton_Click(object sender, EventArgs e) => SetCheckBoxValues(true);
