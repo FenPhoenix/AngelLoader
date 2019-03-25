@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
+using AngelLoader.Common.Utility;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader.Importing
@@ -59,7 +60,7 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Notes="))
                             {
-                                fm.Comment = lineFM.Substring(6).Replace(@"\n", "\r\n");
+                                fm.Comment = lineFM.Substring(6).Replace(@"\n", @"\r\n");
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
                             {
@@ -81,7 +82,14 @@ namespace AngelLoader.Importing
                             {
                                 fm.SelectedReadme = lineFM.Substring(9);
                             }
+                            else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                            {
+                                break;
+                            }
+                            i++;
+
                         }
+
                         fms.Add(fm);
                     }
                 }

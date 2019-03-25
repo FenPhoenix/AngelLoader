@@ -1116,6 +1116,10 @@ namespace AngelLoader.Ini
                         {
                             LText.Importing.SelectedFileIsNotAValidPath = lt.Substring(28);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportFromDarkLoader_TitleText="))
+                        {
+                            LText.Importing.ImportFromDarkLoader_TitleText = lt.Substring(31);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("DarkLoader_SelectedFileIsNotDarkLoaderIni="))
                         {
                             LText.Importing.DarkLoader_SelectedFileIsNotDarkLoaderIni = lt.Substring(42);
@@ -1127,6 +1131,34 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("DarkLoader_NoArchiveDirsFound="))
                         {
                             LText.Importing.DarkLoader_NoArchiveDirsFound = lt.Substring(30);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportFromNewDarkLoader_TitleText="))
+                        {
+                            LText.Importing.ImportFromNewDarkLoader_TitleText = lt.Substring(34);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportFromFMSel_TitleText="))
+                        {
+                            LText.Importing.ImportFromFMSel_TitleText = lt.Substring(26);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ChooseNewDarkLoaderIniFiles="))
+                        {
+                            LText.Importing.ChooseNewDarkLoaderIniFiles = lt.Substring(28);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ChooseFMSelIniFiles="))
+                        {
+                            LText.Importing.ChooseFMSelIniFiles = lt.Substring(20);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief1="))
+                        {
+                            LText.Importing.Thief1 = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief2="))
+                        {
+                            LText.Importing.Thief2 = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief3="))
+                        {
+                            LText.Importing.Thief3 = lt.Substring(7);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
+using AngelLoader.Common.Utility;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader.Importing
@@ -76,7 +77,8 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
                             {
-                                fm.TagsString = lineFM.Substring(5);
+                                var val = lineFM.Substring(5);
+                                if (!val.IsEmpty() && val != "[none]") fm.TagsString = val;
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
                             {
@@ -87,10 +89,17 @@ namespace AngelLoader.Importing
                                 ulong.TryParse(lineFM.Substring(7), out ulong result);
                                 fm.SizeBytes = result;
                             }
+                            else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[lineFM.Length - 1] == ']')
+                            {
+                                break;
+                            }
+                            i++;
                         }
+
                         fms.Add(fm);
                     }
                 }
+
             });
 
             var importedFMsInMainList = ImportCommon.MergeImportedFMData(ImportType.NewDarkLoader, fms, mainList);

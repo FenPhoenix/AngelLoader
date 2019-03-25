@@ -9,8 +9,8 @@ namespace AngelLoader.Forms
     public partial class ImportFromDarkLoaderForm : Form
     {
         internal string DarkLoaderIniFile = "";
-        internal bool ImportFMData = false;
-        internal bool ImportSaves = false;
+        internal bool ImportFMData;
+        internal bool ImportSaves;
 
         internal ImportFromDarkLoaderForm() => InitializeComponent();
 

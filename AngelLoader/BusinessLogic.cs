@@ -258,7 +258,7 @@ namespace AngelLoader
             return Directory.Exists(path) ? path : Path.Combine(gamePath, "FMs");
         }
 
-        internal void FindFMs(bool startup = true)
+        internal void FindFMs(bool startup = false)
         {
             var t = new Stopwatch();
 
@@ -560,6 +560,9 @@ namespace AngelLoader
             overallTimer.Stop();
 
             Trace.WriteLine("FindFMs() took: " + overallTimer.Elapsed);
+
+            // Link the lists back up because they get broken in here
+            View.LinkViewList();
         }
 
         // Super quick-n-cheap hack for perf

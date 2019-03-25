@@ -2142,26 +2142,26 @@
             this.ImportFromFMSelMenuItem,
             this.ImportFromNewDarkLoaderMenuItem});
             this.ImportFromMenu.Name = "ImportFromMenu";
-            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
+            this.ImportFromMenu.Size = new System.Drawing.Size(181, 92);
             // 
             // ImportFromDarkLoaderMenuItem
             // 
             this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
-            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
             this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
             // 
             // ImportFromFMSelMenuItem
             // 
             this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
-            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ImportFromFMSelMenuItem.Text = "FMSel";
             this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
             // 
             // ImportFromNewDarkLoaderMenuItem
             // 
             this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
-            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
             this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
             // 

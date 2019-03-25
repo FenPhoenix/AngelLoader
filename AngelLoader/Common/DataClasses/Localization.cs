@@ -363,10 +363,19 @@ namespace AngelLoader.Common.DataClasses
             internal static string NothingWasImported = "Nothing was imported.";
             internal static string SelectedFileIsNotAValidPath = "Selected file is not a valid path.";
             [FenGenBlankLine]
+            internal static string ImportFromDarkLoader_TitleText = "Import from DarkLoader";
             internal static string DarkLoader_SelectedFileIsNotDarkLoaderIni = "Selected file is not DarkLoader.ini.";
             internal static string DarkLoader_SelectedDarkLoaderIniWasNotFound = "Selected DarkLoader.ini was not found.";
             internal static string DarkLoader_NoArchiveDirsFound =
                 "No archive directories were specified in DarkLoader.ini. Unable to import.";
+            [FenGenBlankLine]
+            internal static string ImportFromNewDarkLoader_TitleText = "Import from NewDarkLoader";
+            internal static string ImportFromFMSel_TitleText = "Import from FMSel";
+            internal static string ChooseNewDarkLoaderIniFiles = "Choose NewDarkLoader .ini file(s):";
+            internal static string ChooseFMSelIniFiles = "Choose FMSel .ini file(s):";
+            internal static string Thief1 = "Thief 1";
+            internal static string Thief2 = "Thief 2";
+            internal static string Thief3 = "Thief 3";
         }
 
         internal static class ScanAllFMsBox

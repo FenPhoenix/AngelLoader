@@ -1,23 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader.Common;
+using AngelLoader.Common.DataClasses;
+using AngelLoader.Common.Utility;
+using AngelLoader.Importing;
 
 namespace AngelLoader.Forms
 {
-    public partial class ImportFromNDLForm : Form
+    public partial class ImportFromMultipleInisForm : Form, ILocalizable
     {
-        internal string NDLIniFile = "";
+        internal List<string> IniFiles;
+        private readonly ImportType ImportType;
 
-        public ImportFromNDLForm()
+        public ImportFromMultipleInisForm(ImportType importType)
         {
+            ImportType = importType;
             InitializeComponent();
+            SetUITextToLocalized();
         }
+
+        public void SetUITextToLocalized(bool suspendResume = true)
+        {
+            Text = ImportType == ImportType.NewDarkLoader
+                ? LText.Importing.ImportFromNewDarkLoader_TitleText
+                : LText.Importing.ImportFromFMSel_TitleText;
+
+            ChooseIniFilesLabel.Text = ImportType == ImportType.NewDarkLoader
+                ? LText.Importing.ChooseNewDarkLoaderIniFiles
+                : LText.Importing.ChooseFMSelIniFiles;
+
+            Thief1GroupBox.Text = LText.Importing.Thief1;
+            Thief2GroupBox.Text = LText.Importing.Thief2;
+            Thief3GroupBox.Text = LText.Importing.Thief3;
+            Thief1IniBrowseButton.SetTextAutoSize(Thief1IniTextBox, LText.Global.BrowseEllipses);
+            Thief2IniBrowseButton.SetTextAutoSize(Thief2IniTextBox, LText.Global.BrowseEllipses);
+            Thief3IniBrowseButton.SetTextAutoSize(Thief3IniTextBox, LText.Global.BrowseEllipses);
+
+            OKButton.SetTextAutoSize(LText.Global.OK);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel);
+        }
+
+        private void ImportFromMultipleInisForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (DialogResult != DialogResult.OK) return;
+
+            IniFiles = new List<string>
+            {
+                Thief1IniTextBox.Text.Trim(),
+                Thief2IniTextBox.Text.Trim(),
+                Thief3IniTextBox.Text.Trim()
+            };
+        }
+
+        private void ThiefIniBrowseButtons_Click(object sender, EventArgs e)
+        {
+            var s = (Button)sender;
+            var tb =
+                s == Thief1IniBrowseButton ? Thief1IniTextBox :
+                s == Thief2IniBrowseButton ? Thief2IniTextBox :
+                Thief3IniTextBox;
+
+            using (var d = new OpenFileDialog())
+            {
+                d.Filter = LText.BrowseDialogs.IniFiles + @"|*.ini|" + LText.BrowseDialogs.AllFiles + @"|*.*";
+                if (d.ShowDialog() != DialogResult.OK) return;
+
+                tb.Text = d.FileName;
+            }
+        }
+
+        #region NDL Research notes
 
         /* NewDarkLoader:
 
@@ -132,5 +185,7 @@ namespace AngelLoader.Forms
         const string kSizeBytes = "FMSize";
         ------------
         */
+
+        #endregion
     }
 }

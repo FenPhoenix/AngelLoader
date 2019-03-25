@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.Thief1ExePathLabel = new System.Windows.Forms.Label();
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief1ExePathBrowseButton = new System.Windows.Forms.Button();
@@ -382,7 +381,7 @@
             // ErrorLabel
             // 
             this.ErrorLabel.AutoSize = true;
-            this.errorProvider1.SetError(this.ErrorLabel, "sdf");
+            this.errorProvider1.SetError(this.ErrorLabel, "temp");
             this.ErrorLabel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.errorProvider1.SetIconAlignment(this.ErrorLabel, System.Windows.Forms.ErrorIconAlignment.MiddleLeft);
             this.ErrorLabel.Location = new System.Drawing.Point(24, 320);

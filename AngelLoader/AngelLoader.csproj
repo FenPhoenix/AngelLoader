@@ -175,11 +175,11 @@
     <Compile Include="Forms\ImportFromDarkLoaderForm.Designer.cs">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ImportFromNDLForm.cs">
+    <Compile Include="Forms\ImportFromMultipleInisForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ImportFromNDLForm.Designer.cs">
-      <DependentUpon>ImportFromNDLForm.cs</DependentUpon>
+    <Compile Include="Forms\ImportFromMultipleInisForm.Designer.cs">
+      <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ScanAllFMsForm.cs">
       <SubType>Form</SubType>
@@ -252,11 +252,12 @@
     <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFromNDLForm.resx">
-      <DependentUpon>ImportFromNDLForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ImportFromMultipleInisForm.resx">
+      <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScanAllFMsForm.resx">
       <DependentUpon>ScanAllFMsForm.cs</DependentUpon>
@@ -286,7 +287,6 @@
   <ItemGroup>
     <Content Include="Resources\Add.png" />
     <Content Include="Resources\AngelLoader.ico" />
-    <Content Include="Resources\AngelLoader_16.ico" />
     <Content Include="Resources\Arrow-left.png" />
     <Content Include="Resources\Arrow-right.png" />
     <Content Include="Resources\FilterIcons\FilterByLastPlayed.png" />

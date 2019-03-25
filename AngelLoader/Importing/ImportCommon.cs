@@ -4,7 +4,8 @@ using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Importing
 {
-    internal enum ImportType
+    // Has to be public so it can be passed to a public constructor on a form
+    public enum ImportType
     {
         DarkLoader,
         NewDarkLoader,
@@ -45,6 +46,7 @@ namespace AngelLoader.Importing
                         if (importedFM.ReleaseDate != null) mainFM.ReleaseDate = importedFM.ReleaseDate;
                         mainFM.LastPlayed = importedFM.LastPlayed;
                         mainFM.FinishedOn = importedFM.FinishedOn;
+                        if (importType != ImportType.FMSel) mainFM.FinishedOnUnknown = false;
                         mainFM.Comment = importedFM.Comment;
 
                         if (importType == ImportType.NewDarkLoader ||
@@ -56,13 +58,13 @@ namespace AngelLoader.Importing
                             mainFM.TagsString = importedFM.TagsString;
                             mainFM.SelectedReadme = importedFM.SelectedReadme;
                         }
-                        if (importType == ImportType.NewDarkLoader)
+                        if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
                         {
                             if (mainFM.SizeBytes == 0) mainFM.SizeBytes = importedFM.SizeBytes;
                         }
                         else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
                         {
-                            mainFM.FinishedOnUnknown = true;
+                            mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                         }
 
                         mainFM.Checked = true;
@@ -88,8 +90,7 @@ namespace AngelLoader.Importing
                             importedFM.InstalledDir,
                         ReleaseDate = importedFM.ReleaseDate,
                         LastPlayed = importedFM.LastPlayed,
-                        FinishedOn = importedFM.FinishedOn,
-                        Comment = importedFM.Comment,
+                        Comment = importedFM.Comment
                     };
 
                     if (importType == ImportType.NewDarkLoader ||
@@ -101,13 +102,14 @@ namespace AngelLoader.Importing
                         newFM.TagsString = importedFM.TagsString;
                         newFM.SelectedReadme = importedFM.SelectedReadme;
                     }
-                    if (importType == ImportType.NewDarkLoader)
+                    if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
                     {
                         newFM.SizeBytes = importedFM.SizeBytes;
+                        newFM.FinishedOn = importedFM.FinishedOn;
                     }
                     else if (importType == ImportType.FMSel)
                     {
-                        newFM.FinishedOnUnknown = true;
+                        newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                     }
 
                     mainList.Add(newFM);

@@ -14,6 +14,7 @@ using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using FMScanner;
@@ -212,6 +213,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        internal void LinkViewList() => FMsList = Model.FMsViewList;
+
         // Put anything that does anything in here, not in the constructor. Otherwise it's a world of pain and
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
         internal async Task Init()
@@ -239,8 +242,7 @@ namespace AngelLoader.Forms
 
             // Model.Init() success means Config is now populated
 
-            Model.FindFMs();
-            FMsList = Model.FMsViewList;
+            Model.FindFMs(startup: true);
 
             #region Set up form and control state
 
@@ -1955,11 +1957,7 @@ namespace AngelLoader.Forms
 
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    Model.FindFMs(startup: false);
-
-                    // The reference gets broken somehow, even though it's only FMsList.Clear() and not
-                    // FMsList = new List<FanMission>() (could be the Union()s?)
-                    FMsList = Model.FMsViewList;
+                    Model.FindFMs();
                 }
                 if (gameOrganizationChanged)
                 {
@@ -3760,28 +3758,52 @@ namespace AngelLoader.Forms
                 // log it
                 return;
             }
+
+            SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
+            await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
-        private void ImportFromFMSelMenuItem_Click(object sender, EventArgs e)
+        private async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e)
         {
-
+            await ImportFromNDLOrFMSel(ImportType.FMSel);
         }
 
         private async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e)
         {
-            string iniFile;
-            using (var f = new ImportFromNDLForm())
+            await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
+        }
+
+        private async Task ImportFromNDLOrFMSel(ImportType importType)
+        {
+            List<string> iniFiles = new List<string>();
+            using (var f = new ImportFromMultipleInisForm(importType))
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
-                iniFile = f.NDLIniFile;
+                foreach (var file in f.IniFiles) iniFiles.Add(file);
             }
 
-            bool success = await Model.ImportFromNDL(iniFile);
-            if (!success)
+            if (iniFiles.All(x => x.IsWhiteSpace()))
             {
-                // log it
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                 return;
             }
+
+            foreach (var file in iniFiles)
+            {
+                if (file.IsWhiteSpace()) continue;
+
+                bool success = await (importType == ImportType.FMSel
+                    ? Model.ImportFromFMSel(file)
+                    : Model.ImportFromNDL(file));
+                if (!success)
+                {
+                    // log it
+                    return;
+                }
+            }
+
+            SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
+            await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => SearchWeb();
