@@ -22,7 +22,7 @@ using Gma.System.MouseKeyHook;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm : Form, IEventDisabler, ILocalizable, IMessageFilter
+    public partial class MainForm : Form, IEventDisabler, IKeyPressDisabler, ILocalizable, IMessageFilter
     {
         #region Private fields
 
@@ -61,6 +61,8 @@ namespace AngelLoader.Forms
         private bool InitialSelectedFMHasBeenSet;
 
         public bool EventsDisabled { get; set; }
+
+        public bool KeyPressesDisabled { get; set; }
 
         #endregion
 
@@ -549,7 +551,7 @@ namespace AngelLoader.Forms
                 RatingRCMenuUnrated.Text = LText.Global.Unrated;
 
                 FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn;
-                
+
                 WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch;
 
                 #endregion
@@ -747,6 +749,12 @@ namespace AngelLoader.Forms
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (KeyPressesDisabled)
+            {
+                e.SuppressKeyPress = true;
+                return;
+            }
+
             if (e.KeyCode == Keys.Escape)
             {
                 FMsDGV.CancelColumnResize();
@@ -1801,7 +1809,8 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            var success = await Model.ScanAllFMs(scanOptions, overwriteUnscannedFields: false);
+            var success =
+                await Model.ScanFMs(FMsList, scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
             if (success) await SetFilter(forceRefreshReadme: true);
         }
 
@@ -2392,6 +2401,14 @@ namespace AngelLoader.Forms
         private async Task DisplaySelectedFM(bool refreshReadme = false)
         {
             var fm = GetSelectedFM();
+
+            if (GameIsKnownAndSupported(fm) && !fm.MarkedScanned)
+            {
+                using (new DisableKeyPresses(this))
+                {
+                    await ScanSelectedFM(GetDefaultScanOptions());
+                }
+            }
 
             bool fmIsT3 = fm.Game == Game.Thief3;
 
@@ -3836,7 +3853,8 @@ namespace AngelLoader.Forms
 
         private async Task ScanSelectedFM(ScanOptions scanOptions)
         {
-            bool success = await Model.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false);
+            bool success = await Model.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false,
+                markAsScanned: true);
             if (success) await RefreshSelectedFM(refreshReadme: true);
         }
 
@@ -3855,16 +3873,22 @@ namespace AngelLoader.Forms
                 : 0;
         }
 
-        private async void ScanFMMenuItem_Click(object sender, EventArgs e)
+        // TODO: This kind of code doesn't really belong in a view, meh
+        private static ScanOptions GetDefaultScanOptions()
         {
-            await ScanSelectedFM(ScanOptions.FalseDefault(
+            return ScanOptions.FalseDefault(
                 scanTitle: true,
                 scanAuthor: true,
                 scanGameType: true,
                 scanCustomResources: true,
                 scanSize: true,
                 scanReleaseDate: true,
-                scanTags: true));
+                scanTags: true);
+        }
+
+        private async void ScanFMMenuItem_Click(object sender, EventArgs e)
+        {
+            await ScanSelectedFM(GetDefaultScanOptions());
         }
     }
 }

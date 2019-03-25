@@ -67,6 +67,8 @@ namespace AngelLoader.Importing
                             mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                         }
 
+                        mainFM.MarkedScanned = true;
+
                         mainFM.Checked = true;
 
                         // So we only loop through checked FMs when we reset them
@@ -111,6 +113,8 @@ namespace AngelLoader.Importing
                     {
                         newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                     }
+
+                    newFM.MarkedScanned = true;
 
                     mainList.Add(newFM);
                     importedFMsInMainList.Add(newFM);

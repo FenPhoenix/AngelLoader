@@ -36,7 +36,17 @@ namespace AngelLoader.Ini
 
                 var fm = fmsList[fmsList.Count - 1];
 
-                if (lineT.StartsWithFast_NoNullChecks("Archive="))
+                if (lineT.StartsWithFast_NoNullChecks("RefreshCache="))
+                {
+                    var val = lineT.Substring(13);
+                    fm.RefreshCache = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("MarkedScanned="))
+                {
+                    var val = lineT.Substring(14);
+                    fm.MarkedScanned = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("Archive="))
                 {
                     var val = lineT.Substring(8);
                     fm.Archive = val;
@@ -97,11 +107,6 @@ namespace AngelLoader.Ini
                 {
                     var val = lineT.Substring(10);
                     fm.Installed = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("RefreshCache="))
-                {
-                    var val = lineT.Substring(13);
-                    fm.RefreshCache = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("NoReadmes="))
                 {
@@ -293,6 +298,14 @@ namespace AngelLoader.Ini
                 {
                     sw.WriteLine("[FM]");
 
+                    if (fm.RefreshCache)
+                    {
+                        sw.WriteLine("RefreshCache=" + fm.RefreshCache.ToString());
+                    }
+                    if (fm.MarkedScanned)
+                    {
+                        sw.WriteLine("MarkedScanned=" + fm.MarkedScanned.ToString());
+                    }
                     if (!string.IsNullOrEmpty(fm.Archive))
                     {
                         sw.WriteLine("Archive=" + fm.Archive);
@@ -320,10 +333,6 @@ namespace AngelLoader.Ini
                     if (fm.Installed)
                     {
                         sw.WriteLine("Installed=" + fm.Installed.ToString());
-                    }
-                    if (fm.RefreshCache)
-                    {
-                        sw.WriteLine("RefreshCache=" + fm.RefreshCache.ToString());
                     }
                     if (fm.NoReadmes)
                     {

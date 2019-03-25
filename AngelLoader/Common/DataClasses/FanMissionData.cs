@@ -20,6 +20,12 @@ namespace AngelLoader.Common.DataClasses
         // [FenGen:DoNotSerialize]
         internal bool Checked = false;
 
+        internal bool RefreshCache;
+
+        // Since our scanned values are very complex due to having the option to choose what to scan for as well
+        // as being able to import from three other loaders, we need a simple way to say "scan on select or not".
+        internal bool MarkedScanned;
+
         internal string Archive = "";
         internal string InstalledDir = "";
 
@@ -32,8 +38,6 @@ namespace AngelLoader.Common.DataClasses
         internal Game? Game;
 
         internal bool Installed;
-
-        internal bool RefreshCache;
 
         internal bool NoReadmes;
         internal string SelectedReadme = "";

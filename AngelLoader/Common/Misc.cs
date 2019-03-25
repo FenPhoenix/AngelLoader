@@ -47,9 +47,8 @@ namespace AngelLoader.Common
 
      Inside this block, put any code that changes the state of the controls in such a way that would normally
      run their event handlers. The guard clauses will exit them before anything happens. Problem solved. And
-     much better than a nasty wall of Control.Event1 -= Control_Event1; Control.Event1 += Control_Event1; etc.
-     Of course, it would be nicer if you could simply tell an event source to temporarily not fire events, but
-     there you are.
+     much better than a nasty wall of Control.Event1 -= Control_Event1; Control.Event1 += Control_Event1; etc.,
+     and has the added bonus of guaranteeing a reset of the value due to the using block.
     */
 
     internal interface IEventDisabler
@@ -67,6 +66,28 @@ namespace AngelLoader.Common
         }
 
         public void Dispose() => Obj.EventsDisabled = false;
+    }
+
+    #endregion
+
+    #region DisableKeyPresses
+
+    internal sealed class DisableKeyPresses : IDisposable
+    {
+        private readonly IKeyPressDisabler Obj;
+
+        internal DisableKeyPresses(IKeyPressDisabler obj)
+        {
+            Obj = obj;
+            Obj.KeyPressesDisabled = true;
+        }
+
+        public void Dispose() => Obj.KeyPressesDisabled = false;
+    }
+
+    internal interface IKeyPressDisabler
+    {
+        bool KeyPressesDisabled { get; set; }
     }
 
     #endregion

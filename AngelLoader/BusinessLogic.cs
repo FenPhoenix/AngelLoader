@@ -568,9 +568,10 @@ namespace AngelLoader
         // Super quick-n-cheap hack for perf
         internal List<int> ViewListGamesNull = new List<int>();
 
-        internal async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions, bool overwriteUnscannedFields = true)
+        internal async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions,
+            bool overwriteUnscannedFields = true, bool markAsScanned = false)
         {
-            return await ScanFMs(new List<FanMission> { fm }, scanOptions, overwriteUnscannedFields);
+            return await ScanFMs(new List<FanMission> { fm }, scanOptions, overwriteUnscannedFields, markAsScanned);
         }
 
         private string GetArchiveNameFromInstalledDir(FanMission fm, List<string> archives)
@@ -641,7 +642,7 @@ namespace AngelLoader
         }
 
         internal async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions,
-            bool overwriteUnscannedFields = true)
+            bool overwriteUnscannedFields = true, bool markAsScanned = false)
         {
             if (fmsToScan.Count == 0) return false;
 
@@ -674,8 +675,8 @@ namespace AngelLoader
                 {
                     if (scanningOne)
                     {
-                        View.BeginInvoke(new Action(View.Unblock));
                         ProgressBox.BeginInvoke(new Action(ProgressBox.ShowThis));
+                        View.BeginInvoke(new Action(View.Unblock));
                     }
                 };
                 timeOut.Start();
@@ -736,17 +737,19 @@ namespace AngelLoader
 
                     foreach (var fm in fmDataList)
                     {
-                        if (fm == null) continue;
+                        if (fm == null)
+                        {
+                            // We need to return fail for scanning one, else we get into an infinite loop because
+                            // of a refresh that gets called in that case
+                            if (scanningOne) return false;
+                            continue;
+                        }
 
                         var sel = fmsToScan.FirstOrDefault(x =>
                             x.Archive.RemoveExtension().EqualsI(fm.ArchiveName.RemoveExtension()) ||
                             x.InstalledDir.EqualsI(fm.ArchiveName.RemoveExtension()));
 
                         if (sel == null) continue;
-
-                        bool fmIsArchive = fm.ArchiveName.ExtEqualsI(".zip") || fm.ArchiveName.ExtEqualsI(".7z");
-
-                        if (fmIsArchive) sel.RefreshCache = true;
 
                         var gameSup = fm.Game != Games.Unsupported;
 
@@ -817,6 +820,8 @@ namespace AngelLoader
                             // add to those, not overwrite them
                             if (gameSup) AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
                         }
+
+                        sel.MarkedScanned = markAsScanned;
                     }
 
                     ProgressBox.Hide();
@@ -830,11 +835,6 @@ namespace AngelLoader
             }
 
             return true;
-        }
-
-        internal async Task<bool> ScanAllFMs(ScanOptions scanOptions, bool overwriteUnscannedFields = true)
-        {
-            return await ScanFMs(FMsViewList, scanOptions, overwriteUnscannedFields);
         }
 
         internal void CancelScan()
@@ -963,7 +963,7 @@ namespace AngelLoader
             if (fms.Count == 0) return;
 
             // TODO: This can be canceled, so make sure the world won't explode if the user cancels
-            await ScanFMs(fms, scanOptions, overwriteUnscannedFields);
+            await ScanFMs(fms, scanOptions, overwriteUnscannedFields, markAsScanned: true);
             FindFMs();
         }
 
