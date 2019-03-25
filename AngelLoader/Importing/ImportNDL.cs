@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AngelLoader.Common;
@@ -16,11 +17,44 @@ namespace AngelLoader.Importing
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
 
-            await Task.Run(() =>
+            var error = await Task.Run(() =>
             {
+                bool archiveDirRead = false;
+                string archiveDir = "";
+
                 for (int i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i];
+
+                    #region Read archive directory
+
+                    if (!archiveDirRead && line == "[Config]")
+                    {
+                        while (i < lines.Length - 1)
+                        {
+                            var lc = lines[i + 1];
+                            if (lc.StartsWithFast_NoNullChecks("ArchiveRoot="))
+                            {
+                                archiveDir = lc.Substring(12).Trim();
+                                break;
+                            }
+                            else if (!lc.IsEmpty() && lc[0] == '[' && lc[lc.Length - 1] == ']')
+                            {
+                                break;
+                            }
+                            i++;
+                        }
+
+                        if (archiveDir.IsEmpty()) return ImportError.NoArchiveDirsFound;
+
+                        i = -1;
+                        archiveDirRead = true;
+                        continue;
+                    }
+
+                    #endregion
+
+                    #region Read FM entries
 
                     if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
                     {
@@ -33,6 +67,27 @@ namespace AngelLoader.Importing
                         var instName = line.Substring(4, line.Length - 5);
 
                         var fm = new FanMission { InstalledDir = instName };
+
+                        // Unfortunately NDL doesn't store its archive names, so we have to do a file search
+                        // similar to DarkLoader
+                        try
+                        {
+                            // NDL always searches subdirectories as well
+                            foreach (var f in Directory.EnumerateFiles(archiveDir, "*",
+                                SearchOption.AllDirectories))
+                            {
+                                var fn = Path.GetFileNameWithoutExtension(f);
+                                if (fn.ToInstalledFMDirNameNDL().EqualsI(instName))
+                                {
+                                    fm.Archive = Path.GetFileName(f);
+                                    break;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // log it
+                        }
 
                         while (i < lines.Length - 1)
                         {
@@ -98,9 +153,14 @@ namespace AngelLoader.Importing
 
                         fms.Add(fm);
                     }
+
+                    #endregion
                 }
 
+                return ImportError.None;
             });
+
+            if (error != ImportError.None) return (error, fms);
 
             var importedFMsInMainList = ImportCommon.MergeImportedFMData(ImportType.NewDarkLoader, fms, mainList);
 

@@ -49,7 +49,7 @@ namespace AngelLoader.Importing
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
 
-            ImportError error = ImportError.None;
+            var error = ImportError.None;
 
             if (importFMData)
             {
