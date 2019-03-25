@@ -78,6 +78,7 @@ namespace AngelLoader.CustomControls
         /// If <paramref name="distance"/> is valid, sets the splitter distance. Otherwise, leaves it alone.
         /// </summary>
         /// <param name="distance"></param>
+        /// <param name="refresh"></param>
         public void SetSplitterDistance(int distance, bool refresh = true)
         {
             try

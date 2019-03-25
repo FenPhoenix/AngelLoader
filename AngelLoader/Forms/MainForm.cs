@@ -674,7 +674,6 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
 
                 ViewHTMLReadmeButton.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
-                ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
 
                 ChooseReadmeButton.SetTextAutoSize(LText.Global.OK, ((Size)ChooseReadmeButton.Tag).Width);
 
@@ -712,6 +711,10 @@ namespace AngelLoader.Forms
                     MainSplitContainer.Panel2.ResumeLayout();
                     ChooseReadmePanel.ResumeLayout();
                 }
+
+                // We can't do this while the layout is suspended, because then it won't have the right dimensions
+                // for centering
+                ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
             }
 
             // To refresh the FM size column strings to localized
