@@ -37,8 +37,8 @@ namespace AngelLoader.Forms
             Thief2IniBrowseButton.SetTextAutoSize(Thief2IniTextBox, LText.Global.BrowseEllipses);
             Thief3IniBrowseButton.SetTextAutoSize(Thief3IniTextBox, LText.Global.BrowseEllipses);
 
-            OKButton.SetTextAutoSize(LText.Global.OK);
-            Cancel_Button.SetTextAutoSize(LText.Global.Cancel);
+            OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
 
         private void ImportFromMultipleInisForm_FormClosing(object sender, FormClosingEventArgs e)
