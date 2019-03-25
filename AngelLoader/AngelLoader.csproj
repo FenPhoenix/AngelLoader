@@ -376,7 +376,7 @@ rem ---</PostBuildEvent>
   <PropertyGroup>
     <PreBuildEvent>rem Autogenerate code
 "$(SolutionDir)\FenGen\FenGen.exe" -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
-"$(SolutionDir)\FenGen\FenGen.exe" -language "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)English.ini"
+"$(SolutionDir)\FenGen\FenGen.exe" -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
   </PropertyGroup>

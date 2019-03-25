@@ -447,6 +447,7 @@ namespace AngelLoader.Forms
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
             var selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFM() : null;
+            bool sayInstall = selFM == null || !selFM.Installed;
 
             if (suspendResume)
             {
@@ -531,53 +532,24 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                #region Play / install / uninstall
-
+                #region FM context menu
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
-                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, preserveHeight: true);
-
-                var sayInstall = selFM == null || !selFM.Installed;
 
                 InstallUninstallMenuItem.Text = sayInstall
                     ? LText.FMsList.FMMenu_InstallFM
                     : LText.FMsList.FMMenu_UninstallFM;
 
-                #region Install / Uninstall FM button
+                ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM;
 
-                // Special-case this button to always be the width of the longer of the two localized strings for
-                // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
-                InstallUninstallFMButton.SuspendDrawing();
-
-                var instString = LText.MainButtons.InstallFM;
-                var uninstString = LText.MainButtons.UninstallFM;
-                var instButtonFont = InstallUninstallFMButton.Font;
-                var instStringWidth = TextRenderer.MeasureText(instString, instButtonFont).Width;
-                var uninstStringWidth = TextRenderer.MeasureText(uninstString, instButtonFont).Width;
-                var longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
-
-                InstallUninstallFMButton.SetTextAutoSize(longestString, preserveHeight: true);
-
-                InstallUninstallFMButton.Text = sayInstall
-                    ? LText.MainButtons.InstallFM
-                    : LText.MainButtons.UninstallFM;
-
-                InstallUninstallFMButton.ResumeDrawing();
-
-                #endregion
-
-                #endregion
-
-                #region FM context menu
-
-                RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating;
-                FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn;
-                TasksRCSubMenu.Text = LText.FMsList.FMMenu_Tasks;
-
-                RatingRCMenuUnrated.Text = LText.Global.Unrated;
-
+                ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio;
                 ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.TasksMenu_ConvertWAVsTo16Bit;
                 ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.TasksMenu_ConvertOGGsToWAVs;
 
+                RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating;
+                RatingRCMenuUnrated.Text = LText.Global.Unrated;
+
+                FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn;
+                
                 WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch;
 
                 #endregion
@@ -680,6 +652,31 @@ namespace AngelLoader.Forms
                 #endregion
 
                 #region Bottom area
+
+                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, preserveHeight: true);
+
+                #region Install / Uninstall FM button
+
+                // Special-case this button to always be the width of the longer of the two localized strings for
+                // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
+                InstallUninstallFMButton.SuspendDrawing();
+
+                var instString = LText.MainButtons.InstallFM;
+                var uninstString = LText.MainButtons.UninstallFM;
+                var instButtonFont = InstallUninstallFMButton.Font;
+                var instStringWidth = TextRenderer.MeasureText(instString, instButtonFont).Width;
+                var uninstStringWidth = TextRenderer.MeasureText(uninstString, instButtonFont).Width;
+                var longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
+
+                InstallUninstallFMButton.SetTextAutoSize(longestString, preserveHeight: true);
+
+                InstallUninstallFMButton.Text = sayInstall
+                    ? LText.MainButtons.InstallFM
+                    : LText.MainButtons.UninstallFM;
+
+                InstallUninstallFMButton.ResumeDrawing();
+
+                #endregion
 
                 PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame, preserveHeight: true);
                 WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, preserveHeight: true);
@@ -1637,7 +1634,7 @@ namespace AngelLoader.Forms
 
                 var fm = GetFMFromIndex(ht.RowIndex);
 
-                TasksRCSubMenu.Enabled = GameIsDark(fm) && fm.Installed;
+                ConvertAudioRCSubMenu.Enabled = GameIsDark(fm) && fm.Installed;
                 FMsDGV.Rows[ht.RowIndex].Selected = true;
             }
             else
@@ -2319,8 +2316,12 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton.Enabled = false;
             PlayFMMenuItem.Enabled = false;
             PlayFMButton.Enabled = false;
+
+            ScanFMMenuItem.Enabled = false;
+
             // Hide instead of clear to avoid zoom factor pain
             ShowReadme(false);
+
             ChooseReadmePanel.Hide();
             ViewHTMLReadmeButton.Hide();
             WebSearchButton.Enabled = false;
@@ -2420,6 +2421,8 @@ namespace AngelLoader.Forms
 
             PlayFMMenuItem.Enabled = installable;
             PlayFMButton.Enabled = installable;
+
+            ScanFMMenuItem.Enabled = installable;
 
             WebSearchButton.Enabled = true;
 
@@ -3850,6 +3853,18 @@ namespace AngelLoader.Forms
             AddTagTextBox.Width = AddTagButton.Left > AddTagTextBox.Left
                 ? ((AddTagButton.Left) - AddTagTextBox.Left) - 1
                 : 0;
+        }
+
+        private async void ScanFMMenuItem_Click(object sender, EventArgs e)
+        {
+            await ScanSelectedFM(ScanOptions.FalseDefault(
+                scanTitle: true,
+                scanAuthor: true,
+                scanGameType: true,
+                scanCustomResources: true,
+                scanSize: true,
+                scanReleaseDate: true,
+                scanTags: true));
         }
     }
 }

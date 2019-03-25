@@ -436,9 +436,13 @@ namespace AngelLoader.Ini
                         {
                             LText.FMsList.FMMenu_FinishedOn = lt.Substring(18);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_Tasks="))
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_ConvertAudio="))
                         {
-                            LText.FMsList.FMMenu_Tasks = lt.Substring(13);
+                            LText.FMsList.FMMenu_ConvertAudio = lt.Substring(20);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_ScanFM="))
+                        {
+                            LText.FMsList.FMMenu_ScanFM = lt.Substring(14);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_WebSearch="))
                         {

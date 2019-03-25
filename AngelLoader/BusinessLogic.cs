@@ -813,7 +813,8 @@ namespace AngelLoader
                         {
                             sel.TagsString = gameSup ? fm.TagsString : "";
 
-                            sel.Tags.Clear();
+                            // Don't clear the tags, because the user could have added a bunch and we should only
+                            // add to those, not overwrite them
                             if (gameSup) AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
                         }
                     }
