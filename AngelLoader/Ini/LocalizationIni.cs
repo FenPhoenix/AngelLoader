@@ -448,13 +448,13 @@ namespace AngelLoader.Ini
                         {
                             LText.FMsList.FMMenu_WebSearch = lt.Substring(17);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("TasksMenu_ConvertWAVsTo16Bit="))
+                        else if (lt.StartsWithFast_NoNullChecks("ConvertAudioMenu_ConvertWAVsTo16Bit="))
                         {
-                            LText.FMsList.TasksMenu_ConvertWAVsTo16Bit = lt.Substring(29);
+                            LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit = lt.Substring(36);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("TasksMenu_ConvertOGGsToWAVs="))
+                        else if (lt.StartsWithFast_NoNullChecks("ConvertAudioMenu_ConvertOGGsToWAVs="))
                         {
-                            LText.FMsList.TasksMenu_ConvertOGGsToWAVs = lt.Substring(28);
+                            LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs = lt.Substring(35);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

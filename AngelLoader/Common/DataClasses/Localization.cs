@@ -155,8 +155,8 @@ namespace AngelLoader.Common.DataClasses
             internal static string FMMenu_ScanFM = "Scan FM";
             internal static string FMMenu_WebSearch = "Web search";
             [FenGenBlankLine]
-            internal static string TasksMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
-            internal static string TasksMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
+            internal static string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
+            internal static string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
         }
 
         internal static class StatisticsTab

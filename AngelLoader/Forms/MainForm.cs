@@ -544,8 +544,8 @@ namespace AngelLoader.Forms
                 ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM;
 
                 ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio;
-                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.TasksMenu_ConvertWAVsTo16Bit;
-                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.TasksMenu_ConvertOGGsToWAVs;
+                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit;
+                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs;
 
                 RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating;
                 RatingRCMenuUnrated.Text = LText.Global.Unrated;
