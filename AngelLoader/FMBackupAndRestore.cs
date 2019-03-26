@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
+using CompressionLevel = SevenZip.CompressionLevel;
+using CompressionMode = SevenZip.CompressionMode;
 
 namespace AngelLoader
 {
@@ -17,7 +21,7 @@ namespace AngelLoader
     // backing up and restoring diffs, then we can just extract everything again.
     internal static class FMBackupAndRestore
     {
-        internal static async Task BackupFM(FanMission fm)
+        internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
             bool backupSavesAndScreens = fm.Game != Game.Thief3 || Config.T3UseCentralSaves;
             bool backupAll = Config.BackupFMData == BackupFMData.AllChangedFiles;
@@ -57,35 +61,238 @@ namespace AngelLoader
                     Path.Combine(Config.FMsBackupPath,
                         (fm.Archive.RemoveExtension() ?? fm.InstalledDir) + Paths.FMBackupSuffix);
 
-                Paths.PrepareTempPath(Paths.CompressorTemp);
-                try
+                var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories);
+
+                bool fmIsT3 = fm.Game == Game.Thief3;
+                var (changedList, addedList, removedList) =
+                    GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fmIsT3);
+
+                bool fmIsZip = fmArchivePath.ExtEqualsI(".zip");
+
+                if (fmIsZip)
                 {
-                    var compressor = new SevenZipCompressor(Paths.CompressorTemp)
-                    {
-                        ArchiveFormat = OutArchiveFormat.Zip,
-                        CompressionLevel = CompressionLevel.Normal,
-                        PreserveDirectoryRoot = true
-                    };
+                    var fmSelInfTempPath = Path.Combine(Paths.BaseTemp, "fmselInf");
 
-                    if (anySavesExist)
+                    try
                     {
-                        compressor.CompressDirectory(savesPath, bakFile);
-                        compressor.CompressionMode = CompressionMode.Append;
+                        Paths.PrepareTempPath(fmSelInfTempPath);
+
+                        using (var archive =
+                            new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
+                                ZipArchiveMode.Create))
+                        {
+                            var fmSelInfTemp = Path.Combine(fmSelInfTempPath, "fmsel.inf");
+                            using (var fmselInfSW = new StreamWriter(fmSelInfTemp, append: false))
+                            {
+                                foreach (var f in installedFMFiles)
+                                {
+                                    var fn = f.Substring(fmInstalledPath.Length)
+                                        .Trim(Path.DirectorySeparatorChar);
+                                    if (fn.StartsWithI("screenshots/") ||
+                                        fn.StartsWithI("screenshots\\") ||
+                                        (fmIsT3 &&
+                                         (fn.StartsWithI("SaveGames/") ||
+                                          fn.StartsWithI("SaveGames\\"))) ||
+                                        (fn.StartsWithI("saves/") ||
+                                         fn.StartsWithI("saves\\")))
+                                    {
+                                        var entry = archive.CreateEntry(fn);
+                                        using (var sr = new FileStream(f, FileMode.Open, FileAccess.Read))
+                                        using (var eo = entry.Open())
+                                        {
+                                            sr.CopyTo(eo);
+                                        }
+                                        entry.LastWriteTime = new FileInfo(f).LastWriteTime;
+                                    }
+                                    else
+                                    {
+                                        if (fn.EqualsI("fmsel.inf")) continue;
+                                        if (changedList.ContainsI(fn) || addedList.ContainsI(fn))
+                                        {
+                                            var entry = archive.CreateEntry(fn);
+                                            using (var sr = new FileStream(f, FileMode.Open, FileAccess.Read))
+                                            using (var eo = entry.Open())
+                                            {
+                                                sr.CopyTo(eo);
+                                            }
+                                            entry.LastWriteTime = new FileInfo(f).LastWriteTime;
+                                        }
+                                        else if (removedList.ContainsI(fn))
+                                        {
+                                            fmselInfSW.WriteLine("RemoveFile=" + fn);
+                                        }
+                                    }
+                                }
+                            }
+                            if (new FileInfo(fmSelInfTemp).Length > 0)
+                            {
+                                var entry = archive.CreateEntry("fmsel.inf");
+                                using (var sr = new FileStream(fmSelInfTemp, FileMode.Open, FileAccess.Read))
+                                using (var eo = entry.Open())
+                                {
+                                    sr.CopyTo(eo);
+                                }
+                            }
+                        }
                     }
-
-                    if (anyScreensExist)
+                    catch (Exception ex)
                     {
-                        compressor.CompressDirectory(screensPath, bakFile);
+                        // log it
+                    }
+                    finally
+                    {
+                        // Guaranteed cleanup
+                        Paths.PrepareTempPath(fmSelInfTempPath);
                     }
                 }
-                finally
+                else // TODO: SevenZipSharp version
                 {
-                    // Clean up after ourselves, just in case something went wrong and SevenZipCompressor didn't.
-                    // We don't want to be like some apps that pile junk in the temp folder and never delete it.
-                    // We're a good temp folder citizen.
-                    Paths.PrepareTempPath(Paths.CompressorTemp);
+                    try
+                    {
+                        Paths.PrepareTempPath(Paths.CompressorTemp);
+
+                        var compressor = new SevenZipCompressor(Paths.CompressorTemp)
+                        {
+                            ArchiveFormat = OutArchiveFormat.Zip,
+                            CompressionLevel = CompressionLevel.Normal,
+                            PreserveDirectoryRoot = true
+                        };
+
+                        if (anySavesExist)
+                        {
+                            compressor.CompressDirectory(savesPath, bakFile);
+                            compressor.CompressionMode = CompressionMode.Append;
+                        }
+
+                        if (anyScreensExist)
+                        {
+                            compressor.CompressDirectory(screensPath, bakFile);
+                        }
+                    }
+                    finally
+                    {
+                        // Clean up after ourselves, just in case something went wrong and SevenZipCompressor didn't.
+                        // We don't want to be like some apps that pile junk in the temp folder and never delete it.
+                        // We're a good temp folder citizen.
+                        Paths.PrepareTempPath(Paths.CompressorTemp);
+                    }
                 }
             });
+        }
+
+        private static (List<string> ChangedList, List<string> AddedList, List<string> RemovedList)
+        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, bool fmIsT3)
+        {
+            var changedList = new List<string>();
+            var addedList = new List<string>();
+            var removedList = new List<string>();
+
+            bool fmIsZip = fmArchivePath.ExtEqualsI(".zip");
+            if (fmIsZip)
+            {
+                using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                    ZipArchiveMode.Read, leaveOpen: false))
+                {
+                    foreach (var entry in archive.Entries)
+                    {
+                        if (entry.FullName.EqualsI("fmsel.inf") ||
+                            entry.FullName.StartsWithI("screenshots/") ||
+                            entry.FullName.StartsWithI("screenshots\\") ||
+                            (fmIsT3 &&
+                             (entry.FullName.StartsWithI("SaveGames/") ||
+                              entry.FullName.StartsWithI("SaveGames\\"))) ||
+                            (entry.FullName.StartsWithI("saves/") ||
+                             entry.FullName.StartsWithI("saves\\")))
+                        {
+                            continue;
+                        }
+
+                        var fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
+                        if (!File.Exists(fileInInstalledDir))
+                        {
+                            removedList.Add(entry.FullName);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                var fi = new FileInfo(fileInInstalledDir);
+                                if (fi.LastWriteTime != entry.LastWriteTime)
+                                {
+                                    changedList.Add(entry.FullName);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // log it
+                            }
+                        }
+                    }
+                    foreach (var f in Directory.EnumerateFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    {
+                        if (Path.GetFileName(f).EqualsI("fmsel.inf")) continue;
+
+                        var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
+                        if (archive.Entries.FirstOrDefault(x => x.FullName.EqualsI(fn)) == null)
+                        {
+                            addedList.Add(fn);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                using (var archive = new SevenZipExtractor(fmArchivePath))
+                {
+                    foreach (var entry in archive.ArchiveFileData)
+                    {
+                        if (entry.IsDirectory || entry.FileName.EqualsI("fmsel.inf") ||
+                            entry.FileName.StartsWithI("screenshots/") ||
+                            entry.FileName.StartsWithI("screenshots\\") ||
+                            (fmIsT3 &&
+                             (entry.FileName.StartsWithI("SaveGames/") ||
+                              entry.FileName.StartsWithI("SaveGames\\"))) ||
+                            (entry.FileName.StartsWithI("saves/") ||
+                             entry.FileName.StartsWithI("saves\\")))
+                        {
+                            continue;
+                        }
+
+                        var fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FileName);
+                        if (!File.Exists(fileInInstalledDir))
+                        {
+                            removedList.Add(entry.FileName);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                var fi = new FileInfo(fileInInstalledDir);
+                                if (fi.LastWriteTime != entry.LastWriteTime)
+                                {
+                                    changedList.Add(entry.FileName);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // log it
+                            }
+                        }
+                    }
+                    foreach (var f in Directory.EnumerateFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    {
+                        if (Path.GetFileName(f).EqualsI("fmsel.inf")) continue;
+
+                        var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
+                        if (!archive.ArchiveFileData.Any(x => !x.IsDirectory && x.FileName.EqualsI(fn)))
+                        {
+                            addedList.Add(fn);
+                        }
+                    }
+                }
+            }
+
+            return (changedList, addedList, removedList);
         }
 
         internal static async Task RestoreSavesAndScreenshots(FanMission fm)

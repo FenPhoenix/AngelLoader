@@ -1246,11 +1246,11 @@ namespace AngelLoader
                     // TODO: Make this dialog have a "don't ask again" option
                     var cont = View.AskToContinue(
                         LText.AlertMessages.Uninstall_BackupSavesAndScreenshots, "AngelLoader");
-                    if (cont) await BackupFM(fm);
+                    if (cont) await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }
                 else
                 {
-                    await BackupFM(fm);
+                    await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }
 
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open

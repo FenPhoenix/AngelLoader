@@ -91,6 +91,19 @@ namespace AngelLoader.Common
 
         internal static void PrepareTempPath(string path)
         {
+            #region Safety check
+
+            // Make sure we never delete any paths that are not safely tucked in our temp folder
+            var baseTemp = BaseTemp;
+            while (baseTemp[baseTemp.Length - 1] == '\\' || baseTemp[baseTemp.Length - 1] == '/')
+            {
+                baseTemp = baseTemp.TrimEnd('\\').TrimEnd('/');
+            }
+
+            if (!path.StartsWithI(baseTemp + '\\') && !path.StartsWithI(baseTemp + '/')) return;
+
+            #endregion
+
             if (Directory.Exists(path))
             {
                 foreach (var f in Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly))
