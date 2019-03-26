@@ -50,10 +50,10 @@ namespace AngelLoader.Common.DataClasses
         Unfinished
     }
 
-    internal enum BackupSaves
+    internal enum BackupFMData
     {
-        AlwaysAsk,
-        AlwaysBackup
+        SavesAndScreensOnly,
+        AllChangedFiles
     }
 
     internal enum GameOrganization

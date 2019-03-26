@@ -17,13 +17,10 @@ namespace AngelLoader
     // backing up and restoring diffs, then we can just extract everything again.
     internal static class FMBackupAndRestore
     {
-        internal static async Task BackupSavesAndScreenshots(FanMission fm)
+        internal static async Task BackupFM(FanMission fm)
         {
-            if (fm.Game == Game.Thief3 && Config.T3UseCentralSaves)
-            {
-                // log it
-                return;
-            }
+            bool backupSavesAndScreens = fm.Game != Game.Thief3 || Config.T3UseCentralSaves;
+            bool backupAll = Config.BackupFMData == BackupFMData.AllChangedFiles;
 
             if (!GameIsKnownAndSupported(fm))
             {
@@ -33,7 +30,7 @@ namespace AngelLoader
 
             await Task.Run(() =>
             {
-                if (fm.InstalledDir.IsEmpty()) return;
+                //if (fm.InstalledDir.IsEmpty()) return;
 
                 var thisFMInstallsBasePath = GetFMInstallsBasePath(fm);
                 var savesDir = fm.Game == Game.Thief3 ? "SaveGames" : "saves";
@@ -41,15 +38,20 @@ namespace AngelLoader
                 // Screenshots directory name is the same for T1/T2/T3
                 var screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, "screenshots");
 
-                bool anySavesExist =
-                    Directory.Exists(savesPath) &&
-                    Directory.GetFiles(savesPath, "*", SearchOption.AllDirectories).Length > 0;
+                bool anySavesExist = false;
+                bool anyScreensExist = false;
+                if (backupSavesAndScreens)
+                {
+                    anySavesExist =
+                       Directory.Exists(savesPath) &&
+                       Directory.GetFiles(savesPath, "*", SearchOption.AllDirectories).Length > 0;
 
-                bool anyScreensExist =
+                    anyScreensExist =
                     Directory.Exists(screensPath) &&
                     Directory.GetFiles(screensPath, "*", SearchOption.AllDirectories).Length > 0;
 
-                if (!anySavesExist && !anyScreensExist) return;
+                    if (!backupAll && !anyScreensExist) return;
+                }
 
                 var bakFile =
                     Path.Combine(Config.FMsBackupPath,

@@ -205,17 +205,19 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region Backup saves
+            #region Backup FM
 
-            switch (InConfig.BackupSaves)
+            switch (InConfig.BackupFMData)
             {
-                case BackupSaves.AlwaysAsk:
-                    BackupSavesAlwaysAskRadioButton.Checked = true;
+                case BackupFMData.SavesAndScreensOnly:
+                    BackupSavesAndScreensOnlyRadioButton.Checked = true;
                     break;
-                case BackupSaves.AlwaysBackup:
-                    BackupSavesAlwaysBackupRadioButton.Checked = true;
+                case BackupFMData.AllChangedFiles:
+                    BackupAllChangedDataRadioButton.Checked = true;
                     break;
             }
+
+            BackupAlwaysAskCheckBox.Checked = InConfig.BackupAlwaysAsk;
 
             #endregion
 
@@ -336,8 +338,9 @@ namespace AngelLoader.Forms
                 ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
 
                 BackupSavesGroupBox.Text = LText.SettingsWindow.Other_BackUpSaves;
-                BackupSavesAlwaysAskRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
-                BackupSavesAlwaysBackupRadioButton.Text = LText.SettingsWindow.Other_BackUpAlwaysBackUp;
+                BackupSavesAndScreensOnlyRadioButton.Text = LText.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly;
+                BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
+                BackupAlwaysAskCheckBox.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
 
                 LanguageGroupBox.Text = LText.SettingsWindow.Other_Language;
 
@@ -539,9 +542,11 @@ namespace AngelLoader.Forms
 
             #region Backup saves
 
-            OutConfig.BackupSaves = BackupSavesAlwaysAskRadioButton.Checked
-                ? BackupSaves.AlwaysAsk
-                : BackupSaves.AlwaysBackup;
+            OutConfig.BackupFMData = BackupSavesAndScreensOnlyRadioButton.Checked
+                ? BackupFMData.SavesAndScreensOnly
+                : BackupFMData.AllChangedFiles;
+
+            OutConfig.BackupAlwaysAsk = BackupAlwaysAskCheckBox.Checked;
 
             #endregion
 

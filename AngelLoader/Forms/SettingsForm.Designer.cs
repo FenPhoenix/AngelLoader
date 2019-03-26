@@ -89,14 +89,15 @@
             this.WebSearchUrlTextBox = new System.Windows.Forms.TextBox();
             this.WebSearchUrlLabel = new System.Windows.Forms.Label();
             this.BackupSavesGroupBox = new System.Windows.Forms.GroupBox();
-            this.BackupSavesAlwaysBackupRadioButton = new System.Windows.Forms.RadioButton();
-            this.BackupSavesAlwaysAskRadioButton = new System.Windows.Forms.RadioButton();
+            this.BackupAllChangedDataRadioButton = new System.Windows.Forms.RadioButton();
+            this.BackupSavesAndScreensOnlyRadioButton = new System.Windows.Forms.RadioButton();
             this.FMFileConversionGroupBox = new System.Windows.Forms.GroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new System.Windows.Forms.CheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new System.Windows.Forms.CheckBox();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.BackupAlwaysAskCheckBox = new System.Windows.Forms.CheckBox();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -315,9 +316,9 @@
             this.BackupPathLabel.AutoSize = true;
             this.BackupPathLabel.Location = new System.Drawing.Point(16, 24);
             this.BackupPathLabel.Name = "BackupPathLabel";
-            this.BackupPathLabel.Size = new System.Drawing.Size(198, 13);
+            this.BackupPathLabel.Size = new System.Drawing.Size(88, 13);
             this.BackupPathLabel.TabIndex = 7;
-            this.BackupPathLabel.Text = "Backup path for saves and screenshots:";
+            this.BackupPathLabel.Text = "FM backup path:";
             // 
             // BackupPathTextBox
             // 
@@ -695,7 +696,7 @@
             // LanguageGroupBox
             // 
             this.LanguageGroupBox.Controls.Add(this.LanguageComboBox);
-            this.LanguageGroupBox.Location = new System.Drawing.Point(8, 188);
+            this.LanguageGroupBox.Location = new System.Drawing.Point(8, 240);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
             this.LanguageGroupBox.Size = new System.Drawing.Size(424, 60);
             this.LanguageGroupBox.TabIndex = 2;
@@ -765,36 +766,37 @@
             // 
             // BackupSavesGroupBox
             // 
-            this.BackupSavesGroupBox.Controls.Add(this.BackupSavesAlwaysBackupRadioButton);
-            this.BackupSavesGroupBox.Controls.Add(this.BackupSavesAlwaysAskRadioButton);
+            this.BackupSavesGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
+            this.BackupSavesGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
+            this.BackupSavesGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
             this.BackupSavesGroupBox.Location = new System.Drawing.Point(8, 100);
             this.BackupSavesGroupBox.Name = "BackupSavesGroupBox";
-            this.BackupSavesGroupBox.Size = new System.Drawing.Size(424, 80);
+            this.BackupSavesGroupBox.Size = new System.Drawing.Size(424, 102);
             this.BackupSavesGroupBox.TabIndex = 1;
             this.BackupSavesGroupBox.TabStop = false;
-            this.BackupSavesGroupBox.Text = "Back up saves and screenshots when uninstalling";
+            this.BackupSavesGroupBox.Text = "Back up data when uninstalling";
             // 
-            // BackupSavesAlwaysBackupRadioButton
+            // BackupAllChangedDataRadioButton
             // 
-            this.BackupSavesAlwaysBackupRadioButton.AutoSize = true;
-            this.BackupSavesAlwaysBackupRadioButton.Location = new System.Drawing.Point(16, 48);
-            this.BackupSavesAlwaysBackupRadioButton.Name = "BackupSavesAlwaysBackupRadioButton";
-            this.BackupSavesAlwaysBackupRadioButton.Size = new System.Drawing.Size(100, 17);
-            this.BackupSavesAlwaysBackupRadioButton.TabIndex = 1;
-            this.BackupSavesAlwaysBackupRadioButton.Text = "Always back up";
-            this.BackupSavesAlwaysBackupRadioButton.UseVisualStyleBackColor = true;
+            this.BackupAllChangedDataRadioButton.AutoSize = true;
+            this.BackupAllChangedDataRadioButton.Location = new System.Drawing.Point(16, 48);
+            this.BackupAllChangedDataRadioButton.Name = "BackupAllChangedDataRadioButton";
+            this.BackupAllChangedDataRadioButton.Size = new System.Drawing.Size(102, 17);
+            this.BackupAllChangedDataRadioButton.TabIndex = 1;
+            this.BackupAllChangedDataRadioButton.Text = "All changed files";
+            this.BackupAllChangedDataRadioButton.UseVisualStyleBackColor = true;
             // 
-            // BackupSavesAlwaysAskRadioButton
+            // BackupSavesAndScreensOnlyRadioButton
             // 
-            this.BackupSavesAlwaysAskRadioButton.AutoSize = true;
-            this.BackupSavesAlwaysAskRadioButton.Checked = true;
-            this.BackupSavesAlwaysAskRadioButton.Location = new System.Drawing.Point(16, 24);
-            this.BackupSavesAlwaysAskRadioButton.Name = "BackupSavesAlwaysAskRadioButton";
-            this.BackupSavesAlwaysAskRadioButton.Size = new System.Drawing.Size(78, 17);
-            this.BackupSavesAlwaysAskRadioButton.TabIndex = 0;
-            this.BackupSavesAlwaysAskRadioButton.TabStop = true;
-            this.BackupSavesAlwaysAskRadioButton.Text = "Always ask";
-            this.BackupSavesAlwaysAskRadioButton.UseVisualStyleBackColor = true;
+            this.BackupSavesAndScreensOnlyRadioButton.AutoSize = true;
+            this.BackupSavesAndScreensOnlyRadioButton.Checked = true;
+            this.BackupSavesAndScreensOnlyRadioButton.Location = new System.Drawing.Point(16, 24);
+            this.BackupSavesAndScreensOnlyRadioButton.Name = "BackupSavesAndScreensOnlyRadioButton";
+            this.BackupSavesAndScreensOnlyRadioButton.Size = new System.Drawing.Size(158, 17);
+            this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 0;
+            this.BackupSavesAndScreensOnlyRadioButton.TabStop = true;
+            this.BackupSavesAndScreensOnlyRadioButton.Text = "Saves and screenshots only";
+            this.BackupSavesAndScreensOnlyRadioButton.UseVisualStyleBackColor = true;
             // 
             // FMFileConversionGroupBox
             // 
@@ -842,6 +844,18 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
+            // 
+            // BackupAlwaysAskCheckBox
+            // 
+            this.BackupAlwaysAskCheckBox.AutoSize = true;
+            this.BackupAlwaysAskCheckBox.Checked = true;
+            this.BackupAlwaysAskCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(16, 74);
+            this.BackupAlwaysAskCheckBox.Name = "BackupAlwaysAskCheckBox";
+            this.BackupAlwaysAskCheckBox.Size = new System.Drawing.Size(79, 17);
+            this.BackupAlwaysAskCheckBox.TabIndex = 2;
+            this.BackupAlwaysAskCheckBox.Text = "Always ask";
+            this.BackupAlwaysAskCheckBox.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 
@@ -953,8 +967,8 @@
         private System.Windows.Forms.GroupBox FMFileConversionGroupBox;
         private System.Windows.Forms.CheckBox ConvertOGGsToWAVsOnInstallCheckBox;
         private System.Windows.Forms.CheckBox ConvertWAVsTo16BitOnInstallCheckBox;
-        private System.Windows.Forms.RadioButton BackupSavesAlwaysBackupRadioButton;
-        private System.Windows.Forms.RadioButton BackupSavesAlwaysAskRadioButton;
+        private System.Windows.Forms.RadioButton BackupAllChangedDataRadioButton;
+        private System.Windows.Forms.RadioButton BackupSavesAndScreensOnlyRadioButton;
         private System.Windows.Forms.GroupBox BackupSavesGroupBox;
         private System.Windows.Forms.GroupBox WebSearchGroupBox;
         private System.Windows.Forms.TextBox WebSearchUrlTextBox;
@@ -968,5 +982,6 @@
         private System.Windows.Forms.GroupBox LanguageGroupBox;
         private CustomControls.ComboBoxCustom LanguageComboBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.CheckBox BackupAlwaysAskCheckBox;
     }
 }

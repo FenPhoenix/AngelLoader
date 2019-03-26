@@ -968,13 +968,17 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Other_BackUpSaves = lt.Substring(18);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_BackUpSavesAndScreenshotsOnly="))
+                        {
+                            LText.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly = lt.Substring(36);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_BackUpAllChangedFiles="))
+                        {
+                            LText.SettingsWindow.Other_BackUpAllChangedFiles = lt.Substring(28);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Other_BackUpAlwaysAsk="))
                         {
                             LText.SettingsWindow.Other_BackUpAlwaysAsk = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_BackUpAlwaysBackUp="))
-                        {
-                            LText.SettingsWindow.Other_BackUpAlwaysBackUp = lt.Substring(25);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Other_Language="))
                         {

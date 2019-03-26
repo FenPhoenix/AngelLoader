@@ -1948,7 +1948,8 @@ namespace AngelLoader.Forms
                 Config.ConvertWAVsTo16BitOnInstall = sf.OutConfig.ConvertWAVsTo16BitOnInstall;
                 Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
 
-                Config.BackupSaves = sf.OutConfig.BackupSaves;
+                Config.BackupFMData = sf.OutConfig.BackupFMData;
+                Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
 
                 Config.Language = sf.OutConfig.Language;
 

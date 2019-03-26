@@ -275,7 +275,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Paths_Thief2 = "Thief 2:";
             internal static string Paths_Thief3 = "Thief 3:";
             internal static string Paths_Other = "Other";
-            internal static string Paths_BackupPath = "Backup path for saves and screenshots:";
+            internal static string Paths_BackupPath = "FM backup path:";
             internal static string Paths_FMArchivePaths = "FM archive paths";
             internal static string Paths_IncludeSubfolders = "Include subfolders";
             [FenGenBlankLine]
@@ -315,9 +315,10 @@ namespace AngelLoader.Common.DataClasses
             internal static string Other_ConvertWAVsTo16BitOnInstall = "Convert .wavs to 16 bit on install";
             internal static string Other_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
             [FenGenBlankLine]
-            internal static string Other_BackUpSaves = "Back up saves and screenshots when uninstalling";
+            internal static string Other_BackUpSaves = "Back up data when uninstalling";
+            internal static string Other_BackUpSavesAndScreenshotsOnly = "Saves and screenshots only";
+            internal static string Other_BackUpAllChangedFiles = "All changed files";
             internal static string Other_BackUpAlwaysAsk = "Always ask";
-            internal static string Other_BackUpAlwaysBackUp = "Always back up";
             [FenGenBlankLine]
             internal static string Other_Language = "Language";
             [FenGenBlankLine]

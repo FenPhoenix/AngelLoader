@@ -1241,19 +1241,16 @@ namespace AngelLoader
                 // don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
                 // archive folder on initial setup, and hasn't imported from NDL by this point.
 
-                switch (Config.BackupSaves)
+                if (Config.BackupAlwaysAsk)
                 {
-                    case BackupSaves.AlwaysAsk:
-                        {
-                            // TODO: Make this dialog have a "don't ask again" option
-                            var cont = View.AskToContinue(
-                                LText.AlertMessages.Uninstall_BackupSavesAndScreenshots, "AngelLoader");
-                            if (cont) await BackupSavesAndScreenshots(fm);
-                            break;
-                        }
-                    case BackupSaves.AlwaysBackup:
-                        await BackupSavesAndScreenshots(fm);
-                        break;
+                    // TODO: Make this dialog have a "don't ask again" option
+                    var cont = View.AskToContinue(
+                        LText.AlertMessages.Uninstall_BackupSavesAndScreenshots, "AngelLoader");
+                    if (cont) await BackupFM(fm);
+                }
+                else
+                {
+                    await BackupFM(fm);
                 }
 
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
