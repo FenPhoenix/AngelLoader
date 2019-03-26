@@ -4,7 +4,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
@@ -19,6 +18,21 @@ namespace AngelLoader
     // TODO: Important! FMSel probably puts any other diffed stuff in its backup files too, so account for that.
     // If we want just the screens and saves, just extract those. If we implement a similar thing to FMSel for
     // backing up and restoring diffs, then we can just extract everything again.
+
+    // TODO: Allow import of NDL's .dml fixes
+    /* Process:
+    -Find dml backups (easy)
+    -If FM is installed, put it into the installed folder (always do this)
+    -then:
+     -if our bak file exists, put it into there, making sure to also remove it from the fmsel.inf remove list if
+      it's there
+     -else if our bak file doesn't exist:
+      -If NDL's bak file exists, create a new bak file in our folder and put everything in NDL's bak file, plus
+       our found .dml, into there, making sure to also remove it from the fmsel.inf remove list if it's there
+      -else if no bak files exist:
+       -Just create a new bak file in our folder, and put the dml in
+    */
+
     internal static class FMBackupAndRestore
     {
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
