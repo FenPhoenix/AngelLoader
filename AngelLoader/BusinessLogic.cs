@@ -1257,7 +1257,7 @@ namespace AngelLoader
                 }
 
                 // --- DEBUG
-                return;
+                //return;
 
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                 if (!await DeleteFMInstalledDirectory(fmInstalledPath))

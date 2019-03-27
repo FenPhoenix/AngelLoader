@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.Ini;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
@@ -107,7 +109,7 @@ namespace AngelLoader
                     {
                         foreach (var f in installedFMFiles)
                         {
-                            var fn = f.Substring(fmInstalledPath.Length).Replace("\\", "/").Trim('/');
+                            var fn = f.Substring(fmInstalledPath.Length).Replace('\\', '/').Trim('/');
                             if (IsSaveOrScreenshot(fn, fmIsT3) ||
                                 (!fn.EqualsI("fmsel.inf") && (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
                             {
@@ -120,9 +122,9 @@ namespace AngelLoader
                         {
                             var f = fullList[i];
                             if (!installedFMFiles.ContainsI(
-                                Path.Combine(fmInstalledPath, f).Replace("/", Path.DirectorySeparatorChar.ToString())))
+                                Path.Combine(fmInstalledPath, f).Replace('/', Path.DirectorySeparatorChar)))
                             {
-                                fmSelInfString += "RemoveFile=" + f.Replace("\\", "/") + "\r\n";
+                                fmSelInfString += "RemoveFile=" + f.Replace('\\', '/') + "\r\n";
                             }
                         }
 
@@ -179,10 +181,10 @@ namespace AngelLoader
                     for (var i = 0; i < archive.Entries.Count; i++)
                     {
                         var entry = archive.Entries[i];
-                        var efn = entry.FullName.Replace("\\", "/");
+                        var efn = entry.FullName.Replace('\\', '/');
 
                         if (efn.EqualsI("fmsel.inf") ||
-                            efn[efn.Length - 1] == '/' ||
+                            (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
                             IsSaveOrScreenshot(efn, fmIsT3))
                         {
                             continue;
@@ -191,7 +193,7 @@ namespace AngelLoader
                         fullList.Add(entry.FullName);
 
                         var fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
-                        if (installedFMFiles.ContainsI(fileInInstalledDir.Replace("/", Path.DirectorySeparatorChar.ToString())))
+                        if (installedFMFiles.ContainsI(fileInInstalledDir.Replace('/', Path.DirectorySeparatorChar)))
                         {
                             try
                             {
@@ -209,7 +211,7 @@ namespace AngelLoader
                     }
                     foreach (var f in installedFMFiles)
                     {
-                        var fn = f.Substring(fmInstalledPath.Length).Replace("\\", "/").Trim('/');
+                        var fn = f.Substring(fmInstalledPath.Length).Replace('\\', '/').Trim('/');
 
                         if (fn.EqualsI("fmsel.inf") || IsSaveOrScreenshot(fn, fmIsT3))
                         {
@@ -236,12 +238,12 @@ namespace AngelLoader
                     for (var i = 0; i < archive.ArchiveFileData.Count; i++)
                     {
                         var entry = archive.ArchiveFileData[i];
-                        var efn = entry.FileName.Replace("\\", "/");
+                        var efn = entry.FileName.Replace('\\', '/');
 
                         if (
                             efn.EqualsI("fmsel.inf") ||
                             // IsDirectory has been unreliable in the past, so check manually here too
-                            entry.IsDirectory || efn[efn.Length - 1] == '/' ||
+                            entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
                             IsSaveOrScreenshot(efn, fmIsT3))
                         {
                             continue;
@@ -270,13 +272,13 @@ namespace AngelLoader
                     {
                         if (Path.GetFileName(f).EqualsI("fmsel.inf")) continue;
 
-                        var fn = f.Substring(fmInstalledPath.Length).Replace("\\", "/").Trim('/');
+                        var fn = f.Substring(fmInstalledPath.Length).Replace('\\', '/').Trim('/');
 
                         bool found = false;
                         for (var i = 0; i < archive.ArchiveFileData.Count; i++)
                         {
                             var entry = archive.ArchiveFileData[i];
-                            var efn = entry.FileName.Replace("\\", "/");
+                            var efn = entry.FileName.Replace('\\', '/');
                             if (!entry.IsDirectory && efn.EqualsI(fn))
                             {
                                 found = true;
@@ -293,11 +295,15 @@ namespace AngelLoader
 
         internal static async Task RestoreSavesAndScreenshots(FanMission fm)
         {
-            if (fm.Game == Game.Thief3 && Config.T3UseCentralSaves)
-            {
-                // log it
-                return;
-            }
+            bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
+                                             (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
+            bool fmIsT3 = fm.Game == Game.Thief3;
+
+            //if (fm.Game == Game.Thief3 && Config.T3UseCentralSaves)
+            //{
+            //    // log it
+            //    return;
+            //}
 
             await Task.Run(() =>
             {
@@ -372,20 +378,121 @@ namespace AngelLoader
 
                 #endregion
 
-                using (var extractor = new SevenZipExtractor(fileToUse.Name))
+                var excludes = new List<string>();
+
+                var thisFMInstallsBasePath = GetFMInstallsBasePath(fm);
+                var fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
+
+                using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),
+                    ZipArchiveMode.Read))
                 {
-                    var thisFMInstallsBasePath = GetFMInstallsBasePath(fm);
-                    var fullFMInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
+                    var filesCount = archive.Entries.Count;
                     if (fileToUse.DarkLoader)
                     {
-                        var fmSavesPath = Path.Combine(fullFMInstalledPath, "saves");
-                        Directory.CreateDirectory(fmSavesPath);
-                        extractor.ExtractArchive(fmSavesPath);
+                        var fmSavesPath = Path.Combine(fmInstalledPath, "saves");
+                        for (var i = 0; i < filesCount; i++)
+                        {
+                            var f = archive.Entries[i];
+                            var fn = f.FullName.Replace('\\', '/');
+                            if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
+                                !fn.StartsWithI("saves/"))
+                            {
+                                continue;
+                            }
+
+                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                fn.Substring(0, fn.LastIndexOf('/'))));
+
+                            f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                        }
                     }
                     else
                     {
-                        // TODO: Important! See header todo (FMSel full diffs etc.)
-                        extractor.ExtractArchive(fullFMInstalledPath);
+                        var savesDir = fmIsT3 ? "SaveGames" : "saves";
+                        const string screensDir = "screenshots";
+                        if (restoreSavesAndScreensOnly)
+                        {
+                            for (var i = 0; i < filesCount; i++)
+                            {
+                                var f = archive.Entries[i];
+                                var fn = f.FullName.Replace('\\', '/');
+
+                                if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
+                                    (!fn.StartsWithI(savesDir + '/') && !fn.StartsWithI(screensDir + '/')))
+                                {
+                                    continue;
+                                }
+
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                    fn.Substring(0, fn.LastIndexOf('/'))));
+
+                                f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                            }
+                        }
+                        else
+                        {
+                            var fmSelInf = archive.GetEntry("fmsel.inf");
+                            // Cap the length, cause... well, nobody's going to put a 500MB binary file named
+                            // fmsel.inf, but hey...
+                            if (fmSelInf != null && fmSelInf.Length < ByteSize.MB * 5)
+                            {
+                                using (var eo = fmSelInf.Open())
+                                using (var sr = new StreamReader(eo))
+                                {
+                                    string line;
+                                    while ((line = sr.ReadLine()) != null)
+                                    {
+                                        if (line.StartsWithFast_NoNullChecks("RemoveFile="))
+                                        {
+                                            var val = line.Substring(11).Replace('\\', '/').Trim();
+                                            if (!val.StartsWithI(savesDir + '/') &&
+                                                !val.StartsWithI(screensDir + '/') &&
+                                                !val.EqualsI("fmsel.inf") &&
+                                                // Maliciously formed path checks
+                                                !val.StartsWith("/") &&
+                                                !val.Contains(':') &&
+                                                !val.Contains("./"))
+                                            {
+                                                excludes.Add(val);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            for (var i = 0; i < filesCount; i++)
+                            {
+                                var f = archive.Entries[i];
+                                var fn = f.FullName.Replace('\\', '/');
+
+                                if (fn.EqualsI("fmsel.inf") ||
+                                    (fn.Length > 0 && fn[fn.Length - 1] == '/') ||
+                                    excludes.Contains(fn))
+                                {
+                                    continue;
+                                }
+
+                                if (fn.Contains('/'))
+                                {
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                        fn.Substring(0, fn.LastIndexOf('/'))));
+                                }
+
+                                f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                            }
+                        }
+                    }
+                }
+
+                if (!restoreSavesAndScreensOnly)
+                {
+                    foreach (var f in Directory.EnumerateFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    {
+                        if (excludes.ContainsI(f.Substring(fmInstalledPath.Length)
+                            .Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
+                        {
+                            File.Delete(f);
+                        }
                     }
                 }
 
