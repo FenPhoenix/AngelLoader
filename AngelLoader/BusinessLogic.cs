@@ -1253,6 +1253,9 @@ namespace AngelLoader
                     await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }
 
+                // --- DEBUG
+                return;
+
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                 if (!await DeleteFMInstalledDirectory(fmInstalledPath))
                 {
