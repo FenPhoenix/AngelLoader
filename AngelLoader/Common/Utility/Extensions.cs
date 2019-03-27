@@ -52,12 +52,23 @@ namespace AngelLoader.Common.Utility
         /// <summary>
         /// Case-insensitive Contains for List&lt;string&gt;. Avoiding IEnumerable like the plague for speed.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="substring"></param>
+        /// <param name="list"></param>
+        /// <param name="str"></param>
         /// <returns></returns>
-        internal static bool ContainsI(this List<string> value, string substring)
+        internal static bool ContainsI(this List<string> list, string str)
         {
-            return value.Contains(substring, StringComparison.OrdinalIgnoreCase);
+            return list.Contains(str, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Case-insensitive Contains for string[]. Avoiding IEnumerable like the plague for speed.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        internal static bool ContainsI(this string[] array, string str)
+        {
+            return array.Contains(str, StringComparison.OrdinalIgnoreCase);
         }
 
         internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -33,6 +32,9 @@ namespace AngelLoader
       -else if no bak files exist:
        -Just create a new bak file in our folder, and put the dml in
     */
+
+    // NOTE: Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
+    //       for writing. Even if you put it after the using block, it throws. So always set this before writing!
 
     internal static class FMBackupAndRestore
     {
@@ -84,13 +86,7 @@ namespace AngelLoader
                         foreach (var f in savesAndScreensFiles)
                         {
                             var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
-                            var entry = archive.CreateEntry(fn);
-                            using (var sr = new FileStream(f, FileMode.Open, FileAccess.Read))
-                            using (var eo = entry.Open())
-                            {
-                                sr.CopyTo(eo);
-                            }
-                            entry.LastWriteTime = new FileInfo(f).LastWriteTime;
+                            AddEntry(archive, f, fn);
                         }
                     }
 
@@ -103,15 +99,6 @@ namespace AngelLoader
                 var (changedList, addedList, fullList) =
                     GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fmIsT3);
 
-                Trace.WriteLine("changedList:");
-                foreach (var item in changedList) Trace.WriteLine(item);
-                Trace.WriteLine("addedList:");
-                foreach (var item in addedList) Trace.WriteLine(item);
-                //Trace.WriteLine("removedList:");
-                //foreach (var item in removedList) Trace.WriteLine(item);
-
-                //Debugger.Break();
-
                 try
                 {
                     using (var archive =
@@ -121,39 +108,19 @@ namespace AngelLoader
                         foreach (var f in installedFMFiles)
                         {
                             var fn = f.Substring(fmInstalledPath.Length).Replace("\\", "/").Trim('/');
-                            if (fn.StartsWithI("screenshots/") ||
-                                (fmIsT3 && fn.StartsWithI("SaveGames/")) ||
-                                (!fmIsT3 && fn.StartsWithI("saves/")))
+                            if (IsSaveOrScreenshot(fn, fmIsT3) ||
+                                (!fn.EqualsI("fmsel.inf") && (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
                             {
-                                var entry = archive.CreateEntry(fn, CompressionLevel.Fastest);
-                                entry.LastWriteTime = new FileInfo(f).LastWriteTime;
-                                using (var fs = new FileStream(f, FileMode.Open, FileAccess.Read))
-                                using (var eo = entry.Open())
-                                {
-                                    fs.CopyTo(eo);
-                                }
-                            }
-                            else
-                            {
-                                if (fn.EqualsI("fmsel.inf")) continue;
-                                if (changedList.ContainsI(fn) || addedList.ContainsI(fn))
-                                {
-                                    var entry = archive.CreateEntry(fn, CompressionLevel.Fastest);
-                                    entry.LastWriteTime = new FileInfo(f).LastWriteTime;
-                                    using (var sr = new FileStream(f, FileMode.Open, FileAccess.Read))
-                                    using (var eo = entry.Open())
-                                    {
-                                        sr.CopyTo(eo);
-                                    }
-                                }
+                                AddEntry(archive, f, fn);
                             }
                         }
 
                         var fmSelInfString = "";
                         for (var i = 0; i < fullList.Count; i++)
                         {
-                            var f = fullList[i].Replace("/", "\\");
-                            if (!installedFMFiles.Contains(Path.Combine(fmInstalledPath, f)))
+                            var f = fullList[i];
+                            if (!installedFMFiles.ContainsI(
+                                Path.Combine(fmInstalledPath, f).Replace("/", Path.DirectorySeparatorChar.ToString())))
                             {
                                 fmSelInfString += "RemoveFile=" + f.Replace("\\", "/") + "\r\n";
                             }
@@ -177,12 +144,30 @@ namespace AngelLoader
             });
         }
 
+        private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName,
+            CompressionLevel compressionLevel = CompressionLevel.Fastest)
+        {
+            var entry = archive.CreateEntry(entryFileName, compressionLevel);
+            entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
+            using (var fs = new FileStream(fileNameOnDisk, FileMode.Open, FileAccess.Read))
+            using (var eo = entry.Open())
+            {
+                fs.CopyTo(eo);
+            }
+        }
+
+        private static bool IsSaveOrScreenshot(string path, bool fmIsT3)
+        {
+            return path.StartsWithI("screenshots/") ||
+                   (fmIsT3 && path.StartsWithI("SaveGames/")) ||
+                   (!fmIsT3 && path.StartsWithI("saves/"));
+        }
+
         private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
         GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, bool fmIsT3)
         {
             var changedList = new List<string>();
             var addedList = new List<string>();
-            //var removedList = new List<string>();
             var fullList = new List<string>();
 
             bool fmIsZip = fmArchivePath.ExtEqualsI(".zip");
@@ -191,18 +176,14 @@ namespace AngelLoader
                 using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
                     ZipArchiveMode.Read, leaveOpen: false))
                 {
-                    foreach (var entry in archive.Entries)
+                    for (var i = 0; i < archive.Entries.Count; i++)
                     {
-                        if (entry.FullName.EqualsI("fmsel.inf") ||
-                            entry.FullName[entry.FullName.Length - 1] == '\\' ||
-                            entry.FullName[entry.FullName.Length - 1] == '/' ||
-                            entry.FullName.StartsWithI("screenshots/") ||
-                            entry.FullName.StartsWithI("screenshots\\") ||
-                            (fmIsT3 &&
-                             (entry.FullName.StartsWithI("SaveGames/") ||
-                              entry.FullName.StartsWithI("SaveGames\\"))) ||
-                            (entry.FullName.StartsWithI("saves/") ||
-                             entry.FullName.StartsWithI("saves\\")))
+                        var entry = archive.Entries[i];
+                        var efn = entry.FullName.Replace("\\", "/");
+
+                        if (efn.EqualsI("fmsel.inf") ||
+                            efn[efn.Length - 1] == '/' ||
+                            IsSaveOrScreenshot(efn, fmIsT3))
                         {
                             continue;
                         }
@@ -210,11 +191,7 @@ namespace AngelLoader
                         fullList.Add(entry.FullName);
 
                         var fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
-                        //if (!File.Exists(fileInInstalledDir))
-                        //{
-                        //    removedList.Add(entry.FullName);
-                        //}
-                        if (File.Exists(fileInInstalledDir))
+                        if (installedFMFiles.ContainsI(fileInInstalledDir.Replace("/", Path.DirectorySeparatorChar.ToString())))
                         {
                             try
                             {
@@ -232,26 +209,23 @@ namespace AngelLoader
                     }
                     foreach (var f in installedFMFiles)
                     {
-                        var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
+                        var fn = f.Substring(fmInstalledPath.Length).Replace("\\", "/").Trim('/');
 
-                        if (fn.EqualsI("fmsel.inf") ||
-                            fn.StartsWithI("screenshots/") ||
-                            fn.StartsWithI("screenshots\\") ||
-                            (fmIsT3 &&
-                             (fn.StartsWithI("SaveGames/") ||
-                              fn.StartsWithI("SaveGames\\"))) ||
-                            (fn.StartsWithI("saves/") ||
-                             fn.StartsWithI("saves\\")))
+                        if (fn.EqualsI("fmsel.inf") || IsSaveOrScreenshot(fn, fmIsT3))
                         {
                             continue;
                         }
 
-                        if (archive.Entries.FirstOrDefault(x =>
-                                x.FullName.EqualsI(fn.Replace("/", "\\")) ||
-                                x.FullName.EqualsI(fn.Replace("\\", "/"))) == null)
+                        bool found = false;
+                        for (var i = 0; i < archive.Entries.Count; i++)
                         {
-                            addedList.Add(fn);
+                            if (archive.Entries[i].FullName.EqualsI(fn))
+                            {
+                                found = true;
+                                break;
+                            }
                         }
+                        if (!found) addedList.Add(fn);
                     }
                 }
             }
@@ -259,16 +233,16 @@ namespace AngelLoader
             {
                 using (var archive = new SevenZipExtractor(fmArchivePath))
                 {
-                    foreach (var entry in archive.ArchiveFileData)
+                    for (var i = 0; i < archive.ArchiveFileData.Count; i++)
                     {
-                        if (entry.IsDirectory || entry.FileName.EqualsI("fmsel.inf") ||
-                            entry.FileName.StartsWithI("screenshots/") ||
-                            entry.FileName.StartsWithI("screenshots\\") ||
-                            (fmIsT3 &&
-                             (entry.FileName.StartsWithI("SaveGames/") ||
-                              entry.FileName.StartsWithI("SaveGames\\"))) ||
-                            (entry.FileName.StartsWithI("saves/") ||
-                             entry.FileName.StartsWithI("saves\\")))
+                        var entry = archive.ArchiveFileData[i];
+                        var efn = entry.FileName.Replace("\\", "/");
+
+                        if (
+                            efn.EqualsI("fmsel.inf") ||
+                            // IsDirectory has been unreliable in the past, so check manually here too
+                            entry.IsDirectory || efn[efn.Length - 1] == '/' ||
+                            IsSaveOrScreenshot(efn, fmIsT3))
                         {
                             continue;
                         }
@@ -276,16 +250,12 @@ namespace AngelLoader
                         fullList.Add(entry.FileName);
 
                         var fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FileName);
-                        //if (!File.Exists(fileInInstalledDir))
-                        //{
-                        //    removedList.Add(entry.FileName);
-                        //}
                         if (File.Exists(fileInInstalledDir))
                         {
                             try
                             {
                                 var fi = new FileInfo(fileInInstalledDir);
-                                if (fi.LastWriteTime != entry.LastWriteTime)
+                                if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime())
                                 {
                                     changedList.Add(entry.FileName);
                                 }
@@ -301,10 +271,27 @@ namespace AngelLoader
                         if (Path.GetFileName(f).EqualsI("fmsel.inf")) continue;
 
                         var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
-                        if (!archive.ArchiveFileData.Any(x => !x.IsDirectory && x.FileName.EqualsI(fn)))
+                        for (var i = 0; i < archive.ArchiveFileData.Count; i++)
                         {
-                            addedList.Add(fn);
+                            var x = archive.ArchiveFileData[i];
+                            if (!x.IsDirectory && x.FileName.EqualsI(fn))
+                            {
+                                addedList.Add(fn);
+                                break;
+                            }
                         }
+
+                        bool found = false;
+                        for (var i = 0; i < archive.ArchiveFileData.Count; i++)
+                        {
+                            var x = archive.ArchiveFileData[i];
+                            if (!x.IsDirectory && x.FileName.EqualsI(fn))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) addedList.Add(fn);
                     }
                 }
             }
