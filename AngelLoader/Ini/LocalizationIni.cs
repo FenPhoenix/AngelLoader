@@ -188,6 +188,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Uninstall_BackupSavesAndScreenshots = lt.Substring(36);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_BackupAllData="))
+                        {
+                            LText.AlertMessages.Uninstall_BackupAllData = lt.Substring(24);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("FileConversion_GameIsRunning="))
                         {
                             LText.AlertMessages.FileConversion_GameIsRunning = lt.Substring(29);

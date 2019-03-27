@@ -1216,7 +1216,7 @@ namespace AngelLoader
                     return;
                 }
 
-                var fmArchivePath = FindFMArchive(fm);
+                var fmArchivePath = await Task.Run(() => FindFMArchive(fm));
 
                 if (fmArchivePath.IsEmpty())
                 {
@@ -1243,9 +1243,12 @@ namespace AngelLoader
 
                 if (Config.BackupAlwaysAsk)
                 {
+                    var message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
+                        ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
+                        : LText.AlertMessages.Uninstall_BackupAllData;
                     // TODO: Make this dialog have a "don't ask again" option
-                    var cont = View.AskToContinue(
-                        LText.AlertMessages.Uninstall_BackupSavesAndScreenshots, "AngelLoader");
+                    var (cancel, cont) = View.AskToContinueWithCancel(message, "AngelLoader");
+                    if (cancel) return;
                     if (cont) await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }
                 else

@@ -73,9 +73,10 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Uninstall_GameIsRunning = "Game is running; unable to uninstall. Please exit the game and then try again.";
             internal static string Uninstall_FMAlreadyUninstalled = "This FM has already been uninstalled or its folder cannot be found. Mark it as uninstalled?";
-            internal static string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Click Yes if this is okay, or No to cancel the uninstall.";
+            internal static string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Click Yes if this is okay, or No to cancel the uninstall.";
             internal static string Uninstall_UninstallNotCompleted = "The uninstall could not be completed. The FM will be marked as uninstalled but its folder may be in an unknown state.";
             internal static string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
+            internal static string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
             [FenGenBlankLine]
             internal static string FileConversion_GameIsRunning = "Game is running; unable to convert files. Please exit the game and then try again.";
             [FenGenBlankLine]

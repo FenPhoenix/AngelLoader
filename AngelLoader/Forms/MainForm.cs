@@ -2677,6 +2677,14 @@ namespace AngelLoader.Forms
             return result == DialogResult.Yes;
         }
 
+        public (bool Cancel, bool Continue)
+        AskToContinueWithCancel(string message, string title)
+        {
+            var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            if (result == DialogResult.Cancel) return (true, false);
+            return (false, result == DialogResult.Yes);
+        }
+
         public void ShowAlert(string message, string title)
         {
             MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
