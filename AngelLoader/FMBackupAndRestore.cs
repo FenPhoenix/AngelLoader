@@ -10,8 +10,6 @@ using AngelLoader.Common.Utility;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
-using CompressionLevel = SevenZip.CompressionLevel;
-using CompressionMode = SevenZip.CompressionMode;
 
 namespace AngelLoader
 {
@@ -37,7 +35,8 @@ namespace AngelLoader
     {
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
-            bool backupSavesAndScreens = fm.Game != Game.Thief3 || Config.T3UseCentralSaves;
+            bool backupSavesAndScreens = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
+                                         (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
             bool backupAll = Config.BackupFMData == BackupFMData.AllChangedFiles;
 
             if (!GameIsKnownAndSupported(fm))
@@ -68,7 +67,7 @@ namespace AngelLoader
                     Directory.Exists(screensPath) &&
                     Directory.GetFiles(screensPath, "*", SearchOption.AllDirectories).Length > 0;
 
-                    if (!backupAll && !anyScreensExist) return;
+                    if (!backupAll && !anyScreensExist && !anySavesExist) return;
                 }
 
                 var bakFile =
@@ -156,39 +155,10 @@ namespace AngelLoader
                     finally
                     {
                         // Guaranteed cleanup
-                        Paths.PrepareTempPath(fmSelInfTempPath);
-                    }
-                }
-                else // TODO: SevenZipSharp version
-                {
-                    try
-                    {
-                        Paths.PrepareTempPath(Paths.CompressorTemp);
-
-                        var compressor = new SevenZipCompressor(Paths.CompressorTemp)
-                        {
-                            ArchiveFormat = OutArchiveFormat.Zip,
-                            CompressionLevel = CompressionLevel.Normal,
-                            PreserveDirectoryRoot = true
-                        };
-
-                        if (anySavesExist)
-                        {
-                            compressor.CompressDirectory(savesPath, bakFile);
-                            compressor.CompressionMode = CompressionMode.Append;
-                        }
-
-                        if (anyScreensExist)
-                        {
-                            compressor.CompressDirectory(screensPath, bakFile);
-                        }
-                    }
-                    finally
-                    {
                         // Clean up after ourselves, just in case something went wrong and SevenZipCompressor didn't.
                         // We don't want to be like some apps that pile junk in the temp folder and never delete it.
                         // We're a good temp folder citizen.
-                        Paths.PrepareTempPath(Paths.CompressorTemp);
+                        Paths.PrepareTempPath(fmSelInfTempPath);
                     }
                 }
             });
