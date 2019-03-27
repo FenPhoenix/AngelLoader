@@ -247,9 +247,9 @@ namespace AngelLoader
                             continue;
                         }
 
-                        fullList.Add(entry.FileName);
+                        fullList.Add(efn);
 
-                        var fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FileName);
+                        var fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
                         if (File.Exists(fileInInstalledDir))
                         {
                             try
@@ -257,7 +257,7 @@ namespace AngelLoader
                                 var fi = new FileInfo(fileInInstalledDir);
                                 if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime())
                                 {
-                                    changedList.Add(entry.FileName);
+                                    changedList.Add(efn);
                                 }
                             }
                             catch (Exception ex)
@@ -270,22 +270,14 @@ namespace AngelLoader
                     {
                         if (Path.GetFileName(f).EqualsI("fmsel.inf")) continue;
 
-                        var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
-                        for (var i = 0; i < archive.ArchiveFileData.Count; i++)
-                        {
-                            var x = archive.ArchiveFileData[i];
-                            if (!x.IsDirectory && x.FileName.EqualsI(fn))
-                            {
-                                addedList.Add(fn);
-                                break;
-                            }
-                        }
+                        var fn = f.Substring(fmInstalledPath.Length).Replace("\\", "/").Trim('/');
 
                         bool found = false;
                         for (var i = 0; i < archive.ArchiveFileData.Count; i++)
                         {
-                            var x = archive.ArchiveFileData[i];
-                            if (!x.IsDirectory && x.FileName.EqualsI(fn))
+                            var entry = archive.ArchiveFileData[i];
+                            var efn = entry.FileName.Replace("\\", "/");
+                            if (!entry.IsDirectory && efn.EqualsI(fn))
                             {
                                 found = true;
                                 break;
