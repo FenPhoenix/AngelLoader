@@ -1866,6 +1866,24 @@ namespace AngelLoader
             return (readmeOnDisk, rType);
         }
 
+        internal void OpenFMFolder(FanMission fm)
+        {
+            var installsBasePath = GetFMInstallsBasePath(fm);
+            if (installsBasePath.IsEmpty())
+            {
+                View.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
+                return;
+            }
+            var fmDir = Path.Combine(installsBasePath, fm.InstalledDir);
+            if (!Directory.Exists(fmDir))
+            {
+                View.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
+                return;
+            }
+
+            Process.Start(fmDir);
+        }
+
         internal void UpdateConfig(
             FormWindowState mainWindowState,
             Size mainWindowSize,

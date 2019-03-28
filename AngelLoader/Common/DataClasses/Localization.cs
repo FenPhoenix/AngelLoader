@@ -92,6 +92,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Patch_AddDML_UnableToAdd = "Unable to add patch to fan mission folder.";
             internal static string Patch_RemoveDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to remove patch.";
             internal static string Patch_RemoveDML_UnableToRemove = "Unable to remove patch from fan mission folder.";
+            internal static string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
         }
 
         internal static class Difficulties
@@ -231,7 +232,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
             internal static string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";
             internal static string FMNotInstalled = "FM must be installed in order to use this section.";
-
+            internal static string OpenFMFolder = "Open FM folder";
         }
 
         internal static class ReadmeArea

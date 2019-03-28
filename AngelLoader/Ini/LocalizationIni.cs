@@ -236,6 +236,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Patch_RemoveDML_UnableToRemove = lt.Substring(31);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Patch_FMFolderNotFound="))
+                        {
+                            LText.AlertMessages.Patch_FMFolderNotFound = lt.Substring(23);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -699,6 +703,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("FMNotInstalled="))
                         {
                             LText.PatchTab.FMNotInstalled = lt.Substring(15);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("OpenFMFolder="))
+                        {
+                            LText.PatchTab.OpenFMFolder = lt.Substring(13);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

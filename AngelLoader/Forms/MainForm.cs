@@ -649,6 +649,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
                 PatchFMNotInstalledLabel.Text = LText.PatchTab.FMNotInstalled;
                 PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
+                PatchOpenFMFolderButton.SetTextAutoSize(LText.PatchTab.OpenFMFolder, PatchOpenFMFolderButton.Width);
 
                 #endregion
 
@@ -2405,7 +2406,7 @@ namespace AngelLoader.Forms
         private void HidePatchSection()
         {
             PatchDMLsListBox.Items.Clear();
-            PatchDMLsPanel.Hide();
+            PatchMainPanel.Hide();
             PatchFMNotInstalledLabel.Show();
         }
 
@@ -2585,7 +2586,7 @@ namespace AngelLoader.Forms
 
                 if (fm.Installed)
                 {
-                    PatchDMLsPanel.Show();
+                    PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();
                     PatchDMLsListBox.Items.Clear();
                     var (success, dmlFiles) = Model.GetDMLFiles(fm);
@@ -3989,5 +3990,7 @@ namespace AngelLoader.Forms
                 }
             }
         }
+
+        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Model.OpenFMFolder(GetSelectedFM());
     }
 }
