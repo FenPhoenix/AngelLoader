@@ -9,12 +9,12 @@ using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Forms
 {
-    public partial class FilterTagsForm2 : Form, ILocalizable
+    public partial class FilterTagsForm : Form, ILocalizable
     {
         private readonly List<GlobalCatAndTags> SourceTags = new List<GlobalCatAndTags>();
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
-        internal FilterTagsForm2(List<GlobalCatAndTags> sourceTags, TagsFilter tagsFilter)
+        internal FilterTagsForm(List<GlobalCatAndTags> sourceTags, TagsFilter tagsFilter)
         {
             InitializeComponent();
 
@@ -34,7 +34,7 @@ namespace AngelLoader.Forms
             AndButton.Text = LText.TagsFilterBox.MoveToAll;
             OrButton.Text = LText.TagsFilterBox.MoveToAny;
             NotButton.Text = LText.TagsFilterBox.MoveToExclude;
-            ResetButton.Text = LText.TagsFilterBox.Reset;
+            ResetButton.SetTextAutoSize(LText.TagsFilterBox.Reset, ResetButton.Width);
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }

@@ -210,11 +210,11 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FilterTagsForm2.cs">
+    <Compile Include="Forms\FilterTagsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FilterTagsForm2.Designer.cs">
-      <DependentUpon>FilterTagsForm2.cs</DependentUpon>
+    <Compile Include="Forms\FilterTagsForm.Designer.cs">
+      <DependentUpon>FilterTagsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Ini\LocalizationIni.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -246,8 +246,8 @@
     <EmbeddedResource Include="Forms\FilterDateForm.resx">
       <DependentUpon>FilterDateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterTagsForm2.resx">
-      <DependentUpon>FilterTagsForm2.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FilterTagsForm.resx">
+      <DependentUpon>FilterTagsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>

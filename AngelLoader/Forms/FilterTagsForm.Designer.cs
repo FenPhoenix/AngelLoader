@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class FilterTagsForm2
+    partial class FilterTagsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -49,8 +49,11 @@
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.toolStripCustom1 = new AngelLoader.CustomControls.ToolStripCustom();
+            this.toolStripSeparatorCustom1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterLabelsPanel.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
+            this.toolStripCustom1.SuspendLayout();
             this.SuspendLayout();
             // 
             // OriginTreeView
@@ -171,61 +174,67 @@
             // 
             // RemoveAllNotButton
             // 
-            this.RemoveAllNotButton.Location = new System.Drawing.Point(663, 0);
+            this.RemoveAllNotButton.BackgroundImage = global::AngelLoader.Properties.Resources.Remove;
+            this.RemoveAllNotButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveAllNotButton.Location = new System.Drawing.Point(666, 0);
             this.RemoveAllNotButton.Name = "RemoveAllNotButton";
-            this.RemoveAllNotButton.Size = new System.Drawing.Size(26, 23);
+            this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllNotButton.TabIndex = 6;
-            this.RemoveAllNotButton.Text = "-A";
             this.RemoveAllNotButton.UseVisualStyleBackColor = true;
             this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveAllOrButton
             // 
-            this.RemoveAllOrButton.Location = new System.Drawing.Point(431, 0);
+            this.RemoveAllOrButton.BackgroundImage = global::AngelLoader.Properties.Resources.Remove;
+            this.RemoveAllOrButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveAllOrButton.Location = new System.Drawing.Point(434, 0);
             this.RemoveAllOrButton.Name = "RemoveAllOrButton";
-            this.RemoveAllOrButton.Size = new System.Drawing.Size(26, 23);
+            this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllOrButton.TabIndex = 6;
-            this.RemoveAllOrButton.Text = "-A";
             this.RemoveAllOrButton.UseVisualStyleBackColor = true;
             this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveAllAndButton
             // 
-            this.RemoveAllAndButton.Location = new System.Drawing.Point(199, 0);
+            this.RemoveAllAndButton.BackgroundImage = global::AngelLoader.Properties.Resources.Remove;
+            this.RemoveAllAndButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveAllAndButton.Location = new System.Drawing.Point(202, 0);
             this.RemoveAllAndButton.Name = "RemoveAllAndButton";
-            this.RemoveAllAndButton.Size = new System.Drawing.Size(26, 23);
+            this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllAndButton.TabIndex = 6;
-            this.RemoveAllAndButton.Text = "-A";
             this.RemoveAllAndButton.UseVisualStyleBackColor = true;
             this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
             // RemoveSelectedNotButton
             // 
-            this.RemoveSelectedNotButton.Location = new System.Drawing.Point(636, 0);
+            this.RemoveSelectedNotButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveSelectedNotButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveSelectedNotButton.Location = new System.Drawing.Point(643, 0);
             this.RemoveSelectedNotButton.Name = "RemoveSelectedNotButton";
-            this.RemoveSelectedNotButton.Size = new System.Drawing.Size(28, 23);
+            this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedNotButton.TabIndex = 6;
-            this.RemoveSelectedNotButton.Text = "-";
             this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // RemoveSelectedOrButton
             // 
-            this.RemoveSelectedOrButton.Location = new System.Drawing.Point(404, 0);
+            this.RemoveSelectedOrButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveSelectedOrButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveSelectedOrButton.Location = new System.Drawing.Point(411, 0);
             this.RemoveSelectedOrButton.Name = "RemoveSelectedOrButton";
-            this.RemoveSelectedOrButton.Size = new System.Drawing.Size(28, 23);
+            this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedOrButton.TabIndex = 6;
-            this.RemoveSelectedOrButton.Text = "-";
             this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
             // RemoveSelectedAndButton
             // 
-            this.RemoveSelectedAndButton.Location = new System.Drawing.Point(172, 0);
+            this.RemoveSelectedAndButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveSelectedAndButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveSelectedAndButton.Location = new System.Drawing.Point(179, 0);
             this.RemoveSelectedAndButton.Name = "RemoveSelectedAndButton";
-            this.RemoveSelectedAndButton.Size = new System.Drawing.Size(28, 23);
+            this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedAndButton.TabIndex = 6;
-            this.RemoveSelectedAndButton.Text = "-";
             this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
@@ -234,7 +243,7 @@
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OKButton.AutoSize = true;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(861, 3);
+            this.OKButton.Location = new System.Drawing.Point(861, 4);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -247,7 +256,7 @@
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(942, 3);
+            this.Cancel_Button.Location = new System.Drawing.Point(942, 4);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -257,10 +266,11 @@
             // 
             // ResetButton
             // 
-            this.ResetButton.Location = new System.Drawing.Point(240, 128);
+            this.ResetButton.AutoSize = true;
+            this.ResetButton.Location = new System.Drawing.Point(772, 3);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.ResetButton.Size = new System.Drawing.Size(80, 24);
+            this.ResetButton.Size = new System.Drawing.Size(75, 23);
             this.ResetButton.TabIndex = 6;
             this.ResetButton.Text = "Reset";
             this.ResetButton.UseVisualStyleBackColor = true;
@@ -271,13 +281,35 @@
             this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
             this.flowLayoutPanel1.Controls.Add(this.OKButton);
+            this.flowLayoutPanel1.Controls.Add(this.toolStripCustom1);
+            this.flowLayoutPanel1.Controls.Add(this.ResetButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 660);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(1020, 32);
             this.flowLayoutPanel1.TabIndex = 7;
             // 
-            // FilterTagsForm2
+            // toolStripCustom1
+            // 
+            this.toolStripCustom1.GripMargin = new System.Windows.Forms.Padding(0);
+            this.toolStripCustom1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStripCustom1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSeparatorCustom1});
+            this.toolStripCustom1.Location = new System.Drawing.Point(850, 0);
+            this.toolStripCustom1.Name = "toolStripCustom1";
+            this.toolStripCustom1.Padding = new System.Windows.Forms.Padding(0);
+            this.toolStripCustom1.PaddingDrawNudge = 0;
+            this.toolStripCustom1.Size = new System.Drawing.Size(8, 30);
+            this.toolStripCustom1.TabIndex = 7;
+            this.toolStripCustom1.Text = "toolStripCustom1";
+            // 
+            // toolStripSeparatorCustom1
+            // 
+            this.toolStripSeparatorCustom1.AutoSize = false;
+            this.toolStripSeparatorCustom1.Name = "toolStripSeparatorCustom1";
+            this.toolStripSeparatorCustom1.Size = new System.Drawing.Size(6, 30);
+            // 
+            // FilterTagsForm
             // 
             this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -285,7 +317,6 @@
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(1024, 692);
             this.Controls.Add(this.flowLayoutPanel1);
-            this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.FilterLabelsPanel);
             this.Controls.Add(this.NotButton);
             this.Controls.Add(this.OrButton);
@@ -300,7 +331,7 @@
             this.MaximumSize = new System.Drawing.Size(1040, 32767);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(1040, 160);
-            this.Name = "FilterTagsForm2";
+            this.Name = "FilterTagsForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Tags Filter";
@@ -309,6 +340,8 @@
             this.FilterLabelsPanel.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            this.toolStripCustom1.ResumeLayout(false);
+            this.toolStripCustom1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -336,5 +369,7 @@
         private System.Windows.Forms.Button RemoveSelectedOrButton;
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private CustomControls.ToolStripCustom toolStripCustom1;
+        private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom1;
     }
 }

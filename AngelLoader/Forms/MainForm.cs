@@ -2077,7 +2077,7 @@ namespace AngelLoader.Forms
 
         private async Task OpenFilterTags()
         {
-            using (var tf = new FilterTagsForm2(GlobalTags, FMsDGV.Filter.Tags))
+            using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
             {
                 if (tf.ShowDialog() != DialogResult.OK) return;
 
