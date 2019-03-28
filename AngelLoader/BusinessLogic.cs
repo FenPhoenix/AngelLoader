@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -1510,6 +1511,89 @@ namespace AngelLoader
             return true;
         }
 
+        private static bool SetDarkFMSelectorToAngelLoader(Game game)
+        {
+            const string fmSelectorKey = "fm_selector";
+            var gameExe = GetGameExeFromGameType(game);
+            if (gameExe.IsEmpty())
+            {
+                return false;
+            }
+
+            var gamePath = Path.GetDirectoryName(gameExe);
+            if (gamePath.IsEmpty())
+            {
+                return false;
+            }
+
+            var camModIni = Path.Combine(gamePath, "cam_mod.ini");
+            if (!File.Exists(camModIni))
+            {
+                return false;
+            }
+
+            List<string> lines;
+            try
+            {
+                lines = File.ReadAllLines(camModIni).ToList();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            /*
+             Conforms to the way NewDark reads it:
+             - Zero or more whitespace characters allowed at the start of the line (before the key)
+             - The key-value separator is one or more whitespace characters
+             - Keys are case-insensitive
+             - If duplicate keys exist, later ones replace earlier ones
+             - Comment lines start with ;
+             - No section headers
+            */
+            int lastSelKeyIndex = -1;
+            for (int i = 0; i < lines.Count; i++)
+            {
+                var lt = lines[i].TrimStart();
+
+                if (Regex.Match(lt, @"^\s*" + fmSelectorKey + @"\s+" + Paths.StubFileName).Success)
+                {
+                    // We're already set as the loader, so don't do anything
+                    return true;
+                }
+
+                while (lt.Length > 0 && lt[0] == ';') lt = lt.TrimStart(';').Trim();
+
+                if (lt.EqualsI(fmSelectorKey) ||
+                    (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
+                    (lt[fmSelectorKey.Length] == ' ' || lt[fmSelectorKey.Length] == '\t')))
+                {
+                    if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";" + lines[i];
+                    lastSelKeyIndex = i;
+                }
+            }
+
+            if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
+            {
+                lines.Add(fmSelectorKey + " " + Paths.StubFileName);
+            }
+            else
+            {
+                lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + Paths.StubFileName);
+            }
+
+            try
+            {
+                File.WriteAllLines(camModIni, lines);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         // If only you could do this with a command-line switch. You can say -fm to always start with the loader,
         // and you can say -fm=name to always start with the named FM, but you can't specify WHICH loader to use
         // on the command line. Only way to do it is through a file. Meh.
@@ -1587,7 +1671,15 @@ namespace AngelLoader
 
             #endregion
 
-            if (fm.Game == Game.Thief3)
+            if (GameIsDark(fm))
+            {
+                var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
+                if (!success)
+                {
+                    // log it here
+                }
+            }
+            else if (fm.Game == Game.Thief3)
             {
                 var success = SetT3FMSelectorToAngelLoader();
                 if (!success)
