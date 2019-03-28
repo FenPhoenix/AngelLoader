@@ -1111,7 +1111,7 @@ namespace AngelLoader
 
                     extractor.FileExtractionFinished += (sender, e) =>
                     {
-                        SetFileAttributesFromZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
+                        SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
 
                         if (ExtractCts.Token.IsCancellationRequested)
                         {
@@ -1150,9 +1150,9 @@ namespace AngelLoader
                     int filesCount = archive.Entries.Count;
                     for (var i = 0; i < filesCount; i++)
                     {
-                        var f = archive.Entries[i];
+                        var entry = archive.Entries[i];
 
-                        var fileName = f.FullName.Replace('/', '\\');
+                        var fileName = entry.FullName.Replace('/', '\\');
 
                         if (fileName[fileName.Length - 1] == '\\') continue;
 
@@ -1162,7 +1162,9 @@ namespace AngelLoader
                                 fileName.Substring(0, fileName.LastIndexOf('\\'))));
                         }
 
-                        f.ExtractToFile(Path.Combine(fmInstalledPath, fileName), overwrite: true);
+                        entry.ExtractToFile(Path.Combine(fmInstalledPath, fileName), overwrite: true);
+
+                        UnSetReadOnly(Path.Combine(fmInstalledPath, entry.FullName));
 
                         int percent = (100 * (i + 1)) / filesCount;
 

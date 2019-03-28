@@ -314,7 +314,7 @@ namespace AngelLoader
 
                         extractor.FileExtractionFinished += (sender, e) =>
                         {
-                            SetFileAttributesFromZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
+                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
                         };
 
                         try

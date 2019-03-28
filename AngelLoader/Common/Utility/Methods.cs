@@ -52,7 +52,13 @@ namespace AngelLoader.Common.Utility
             return null;
         }
 
-        internal static void SetFileAttributesFromZipEntry(ArchiveFileInfo archiveFileInfo, string fileOnDiskFullPath)
+        internal static void UnSetReadOnly(string fileOnDiskFullPath)
+        {
+            // FileAttributes.Normal: prevents files from being readonly
+            var fi = new FileInfo(fileOnDiskFullPath) { Attributes = FileAttributes.Normal };
+        }
+
+        internal static void SetFileAttributesFromSevenZipEntry(ArchiveFileInfo archiveFileInfo, string fileOnDiskFullPath)
         {
             // ExtractFile() doesn't set these, so we have to set them ourselves.
             // ExtractArchive() sets them though, so we don't need to call this when using that.
@@ -62,7 +68,7 @@ namespace AngelLoader.Common.Utility
                 {
                     LastWriteTime = archiveFileInfo.LastWriteTime,
                     CreationTime = archiveFileInfo.CreationTime,
-                    // Set this one to prevent files being readonly
+                    // Set this one to prevent files from being readonly
                     Attributes = FileAttributes.Normal,
                     LastAccessTime = archiveFileInfo.LastAccessTime
                 };
