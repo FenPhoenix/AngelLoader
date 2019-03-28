@@ -28,12 +28,30 @@ namespace AngelLoader.Forms
         public void SetUITextToLocalized(bool suspendResume = true)
         {
             Text = LText.TagsFilterBox.TitleText;
+
             IncludeAllLabel.Text = LText.TagsFilterBox.IncludeAll;
             IncludeAnyLabel.Text = LText.TagsFilterBox.IncludeAny;
             ExcludeLabel.Text = LText.TagsFilterBox.Exclude;
-            AndButton.Text = LText.TagsFilterBox.MoveToAll;
-            OrButton.Text = LText.TagsFilterBox.MoveToAny;
-            NotButton.Text = LText.TagsFilterBox.MoveToExclude;
+
+            for (int i = 0; i < 3; i++)
+            {
+                var c1b = i == 0 ? RemoveSelectedAndButton : i == 1 ? RemoveSelectedOrButton : RemoveSelectedNotButton;
+                var cab = i == 0 ? RemoveAllAndButton : i == 1 ? RemoveAllOrButton : RemoveAllNotButton;
+                MainToolTip.SetToolTip(c1b, LText.TagsFilterBox.ClearSelectedToolTip);
+                MainToolTip.SetToolTip(cab, LText.TagsFilterBox.ClearAllToolTip);
+            }
+
+            AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll, AndButton.Width);
+            OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny, OrButton.Width);
+            NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude, NotButton.Width);
+            var newWidthAll = Math.Max(Math.Max(AndButton.Width, OrButton.Width), NotButton.Width);
+            for (int i = 0; i < 3; i++)
+            {
+                var button = i == 0 ? AndButton : i == 1 ? OrButton : NotButton;
+                button.Width = newWidthAll;
+                button.CenterH(MoveButtonsPanel);
+            }
+
             ResetButton.SetTextAutoSize(LText.TagsFilterBox.Reset, ResetButton.Width);
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);

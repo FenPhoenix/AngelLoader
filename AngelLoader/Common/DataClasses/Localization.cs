@@ -360,13 +360,15 @@ namespace AngelLoader.Common.DataClasses
         {
             internal static string TitleText = "Set tags filter";
             [FenGenBlankLine]
-            internal static string MoveToAll = "-> All";
-            internal static string MoveToAny = "-> Any";
-            internal static string MoveToExclude = "-> Exclude";
+            internal static string MoveToAll = "All";
+            internal static string MoveToAny = "Any";
+            internal static string MoveToExclude = "Exclude";
             internal static string Reset = "Reset";
             internal static string IncludeAll = "Include All:";
             internal static string IncludeAny = "Include Any:";
             internal static string Exclude = "Exclude:";
+            internal static string ClearSelectedToolTip = "Clear selected";
+            internal static string ClearAllToolTip = "Clear all";
         }
 
         internal static class RatingFilterBox

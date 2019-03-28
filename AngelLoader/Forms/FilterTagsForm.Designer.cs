@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.OriginTreeView = new System.Windows.Forms.TreeView();
             this.AndTreeView = new System.Windows.Forms.TreeView();
             this.OrTreeView = new System.Windows.Forms.TreeView();
@@ -51,9 +52,12 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.toolStripCustom1 = new AngelLoader.CustomControls.ToolStripCustom();
             this.toolStripSeparatorCustom1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.MoveButtonsPanel = new System.Windows.Forms.Panel();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.FilterLabelsPanel.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.toolStripCustom1.SuspendLayout();
+            this.MoveButtonsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // OriginTreeView
@@ -70,7 +74,7 @@
             // 
             this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.AndTreeView.Location = new System.Drawing.Point(328, 24);
+            this.AndTreeView.Location = new System.Drawing.Point(344, 24);
             this.AndTreeView.Name = "AndTreeView";
             this.AndTreeView.Size = new System.Drawing.Size(224, 632);
             this.AndTreeView.TabIndex = 0;
@@ -79,7 +83,7 @@
             // 
             this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.OrTreeView.Location = new System.Drawing.Point(560, 24);
+            this.OrTreeView.Location = new System.Drawing.Point(576, 24);
             this.OrTreeView.Name = "OrTreeView";
             this.OrTreeView.Size = new System.Drawing.Size(224, 632);
             this.OrTreeView.TabIndex = 0;
@@ -88,44 +92,53 @@
             // 
             this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.NotTreeView.Location = new System.Drawing.Point(792, 24);
+            this.NotTreeView.Location = new System.Drawing.Point(808, 24);
             this.NotTreeView.Name = "NotTreeView";
             this.NotTreeView.Size = new System.Drawing.Size(224, 632);
             this.NotTreeView.TabIndex = 0;
             // 
             // AndButton
             // 
-            this.AndButton.Location = new System.Drawing.Point(240, 48);
+            this.AndButton.AutoSize = true;
+            this.AndButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.AndButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.AndButton.Location = new System.Drawing.Point(16, 0);
             this.AndButton.Name = "AndButton";
-            this.AndButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AndButton.Size = new System.Drawing.Size(80, 24);
+            this.AndButton.Size = new System.Drawing.Size(80, 23);
             this.AndButton.TabIndex = 1;
-            this.AndButton.Text = "-> All";
+            this.AndButton.Text = "All";
             this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.AndButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.AndButton.UseVisualStyleBackColor = true;
             this.AndButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // OrButton
             // 
-            this.OrButton.Location = new System.Drawing.Point(240, 72);
+            this.OrButton.AutoSize = true;
+            this.OrButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.OrButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.OrButton.Location = new System.Drawing.Point(16, 23);
             this.OrButton.Name = "OrButton";
-            this.OrButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.OrButton.Size = new System.Drawing.Size(80, 24);
+            this.OrButton.Size = new System.Drawing.Size(80, 23);
             this.OrButton.TabIndex = 1;
-            this.OrButton.Text = "-> Any";
+            this.OrButton.Text = "Any";
             this.OrButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.OrButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.OrButton.UseVisualStyleBackColor = true;
             this.OrButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
             // NotButton
             // 
-            this.NotButton.Location = new System.Drawing.Point(240, 96);
+            this.NotButton.AutoSize = true;
+            this.NotButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.NotButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.NotButton.Location = new System.Drawing.Point(16, 46);
             this.NotButton.Name = "NotButton";
-            this.NotButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.NotButton.Size = new System.Drawing.Size(80, 24);
+            this.NotButton.Size = new System.Drawing.Size(80, 23);
             this.NotButton.TabIndex = 1;
-            this.NotButton.Text = "-> Exclude";
+            this.NotButton.Text = "Exclude";
             this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.NotButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.NotButton.UseVisualStyleBackColor = true;
             this.NotButton.Click += new System.EventHandler(this.AddTagsButtons_Click);
             // 
@@ -167,7 +180,7 @@
             this.FilterLabelsPanel.Controls.Add(this.RemoveSelectedOrButton);
             this.FilterLabelsPanel.Controls.Add(this.RemoveSelectedAndButton);
             this.FilterLabelsPanel.Controls.Add(this.IncludeAnyLabel);
-            this.FilterLabelsPanel.Location = new System.Drawing.Point(328, 0);
+            this.FilterLabelsPanel.Location = new System.Drawing.Point(344, 0);
             this.FilterLabelsPanel.Name = "FilterLabelsPanel";
             this.FilterLabelsPanel.Size = new System.Drawing.Size(688, 24);
             this.FilterLabelsPanel.TabIndex = 4;
@@ -243,7 +256,7 @@
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OKButton.AutoSize = true;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(861, 4);
+            this.OKButton.Location = new System.Drawing.Point(881, 4);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -256,7 +269,7 @@
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(942, 4);
+            this.Cancel_Button.Location = new System.Drawing.Point(962, 4);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -267,7 +280,7 @@
             // ResetButton
             // 
             this.ResetButton.AutoSize = true;
-            this.ResetButton.Location = new System.Drawing.Point(772, 3);
+            this.ResetButton.Location = new System.Drawing.Point(792, 3);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(75, 23);
@@ -286,7 +299,7 @@
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 660);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1020, 32);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1040, 32);
             this.flowLayoutPanel1.TabIndex = 7;
             // 
             // toolStripCustom1
@@ -295,7 +308,7 @@
             this.toolStripCustom1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStripCustom1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripSeparatorCustom1});
-            this.toolStripCustom1.Location = new System.Drawing.Point(850, 0);
+            this.toolStripCustom1.Location = new System.Drawing.Point(870, 0);
             this.toolStripCustom1.Name = "toolStripCustom1";
             this.toolStripCustom1.Padding = new System.Windows.Forms.Padding(0);
             this.toolStripCustom1.PaddingDrawNudge = 0;
@@ -309,18 +322,26 @@
             this.toolStripSeparatorCustom1.Name = "toolStripSeparatorCustom1";
             this.toolStripSeparatorCustom1.Size = new System.Drawing.Size(6, 30);
             // 
+            // MoveButtonsPanel
+            // 
+            this.MoveButtonsPanel.Controls.Add(this.AndButton);
+            this.MoveButtonsPanel.Controls.Add(this.OrButton);
+            this.MoveButtonsPanel.Controls.Add(this.NotButton);
+            this.MoveButtonsPanel.Location = new System.Drawing.Point(232, 104);
+            this.MoveButtonsPanel.Name = "MoveButtonsPanel";
+            this.MoveButtonsPanel.Size = new System.Drawing.Size(112, 552);
+            this.MoveButtonsPanel.TabIndex = 8;
+            // 
             // FilterTagsForm
             // 
             this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(1024, 692);
+            this.ClientSize = new System.Drawing.Size(1040, 692);
+            this.Controls.Add(this.MoveButtonsPanel);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.FilterLabelsPanel);
-            this.Controls.Add(this.NotButton);
-            this.Controls.Add(this.OrButton);
-            this.Controls.Add(this.AndButton);
             this.Controls.Add(this.NotTreeView);
             this.Controls.Add(this.OrTreeView);
             this.Controls.Add(this.AndTreeView);
@@ -328,9 +349,9 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(1040, 32767);
+            this.MaximumSize = new System.Drawing.Size(1056, 32767);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(1040, 160);
+            this.MinimumSize = new System.Drawing.Size(1056, 242);
             this.Name = "FilterTagsForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -342,6 +363,8 @@
             this.flowLayoutPanel1.PerformLayout();
             this.toolStripCustom1.ResumeLayout(false);
             this.toolStripCustom1.PerformLayout();
+            this.MoveButtonsPanel.ResumeLayout(false);
+            this.MoveButtonsPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -371,5 +394,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private CustomControls.ToolStripCustom toolStripCustom1;
         private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom1;
+        private System.Windows.Forms.Panel MoveButtonsPanel;
+        private System.Windows.Forms.ToolTip MainToolTip;
     }
 }

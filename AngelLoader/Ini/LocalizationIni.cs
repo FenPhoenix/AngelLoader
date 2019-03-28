@@ -1136,6 +1136,14 @@ namespace AngelLoader.Ini
                         {
                             LText.TagsFilterBox.Exclude = lt.Substring(8);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("ClearSelectedToolTip="))
+                        {
+                            LText.TagsFilterBox.ClearSelectedToolTip = lt.Substring(21);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ClearAllToolTip="))
+                        {
+                            LText.TagsFilterBox.ClearAllToolTip = lt.Substring(16);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
