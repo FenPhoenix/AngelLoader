@@ -589,7 +589,7 @@ namespace AngelLoader
             if (gamePath.IsEmpty()) return null;
 
             var fmDir = Path.Combine(gamePath, fm.InstalledDir);
-            var fmselInf = Path.Combine(fmDir, "fmsel.inf");
+            var fmselInf = Path.Combine(fmDir, Paths.FMSelInf);
 
             string FixUp(bool createFmselInf)
             {
@@ -1049,7 +1049,7 @@ namespace AngelLoader
 
             WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
 
-            using (var sw = new StreamWriter(Path.Combine(fmInstalledPath, "fmsel.inf"), append: false))
+            using (var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false))
             {
                 await sw.WriteLineAsync("Name=" + fm.InstalledDir);
                 await sw.WriteLineAsync("Archive=" + fm.Archive);

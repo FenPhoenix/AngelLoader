@@ -65,6 +65,8 @@ namespace AngelLoader.Common
         // get different extensions, we want to just match the phrase. Probably a YAGNI violation. Meh.
         internal static readonly string FMSelBak = ".FMSelBak.";
 
+        internal static readonly string FMSelInf = "fmsel.inf";
+
         internal static readonly string DarkLoaderSaveBakDir = "DarkLoader";
 
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");
