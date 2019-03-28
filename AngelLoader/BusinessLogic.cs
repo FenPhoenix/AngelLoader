@@ -1162,9 +1162,10 @@ namespace AngelLoader
                                 fileName.Substring(0, fileName.LastIndexOf('\\'))));
                         }
 
-                        entry.ExtractToFile(Path.Combine(fmInstalledPath, fileName), overwrite: true);
+                        var extractedName = Path.Combine(fmInstalledPath, fileName);
+                        entry.ExtractToFile(extractedName, overwrite: true);
 
-                        UnSetReadOnly(Path.Combine(fmInstalledPath, entry.FullName));
+                        UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
 
                         int percent = (100 * (i + 1)) / filesCount;
 
