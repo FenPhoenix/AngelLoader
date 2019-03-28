@@ -256,7 +256,8 @@ namespace AngelLoader.Common.DataClasses
         Statistics,
         EditFM,
         Comment,
-        Tags
+        Tags,
+        Patch
     }
 
     internal enum SettingsTab

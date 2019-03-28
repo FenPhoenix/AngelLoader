@@ -621,6 +621,28 @@ namespace AngelLoader.Common.Utility
             if (!control.Visible) control.Show();
         }
 
+        internal static void RemoveAndSelectNearest(this ListBox listBox)
+        {
+            if (listBox.SelectedIndex == -1) return;
+
+            var oldSelectedIndex = listBox.SelectedIndex;
+
+            listBox.Items.RemoveAt(listBox.SelectedIndex);
+
+            if (oldSelectedIndex < listBox.Items.Count && listBox.Items.Count > 1)
+            {
+                listBox.SelectedIndex = oldSelectedIndex;
+            }
+            else if (listBox.Items.Count > 1)
+            {
+                listBox.SelectedIndex = oldSelectedIndex - 1;
+            }
+            else if (listBox.Items.Count == 1)
+            {
+                listBox.SelectedIndex = 0;
+            }
+        }
+
         #endregion
     }
 }

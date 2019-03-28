@@ -116,6 +116,10 @@ namespace AngelLoader.Ini
                         {
                             LText.BrowseDialogs.IniFiles = lt.Substring(9);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("DMLFiles="))
+                        {
+                            LText.BrowseDialogs.DMLFiles = lt.Substring(9);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -211,6 +215,22 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Play_UnknownGameType="))
                         {
                             LText.AlertMessages.Play_UnknownGameType = lt.Substring(21);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Patch_AddDML_InstallDirNotFound="))
+                        {
+                            LText.AlertMessages.Patch_AddDML_InstallDirNotFound = lt.Substring(32);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Patch_AddDML_UnableToAdd="))
+                        {
+                            LText.AlertMessages.Patch_AddDML_UnableToAdd = lt.Substring(25);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Patch_RemoveDML_InstallDirNotFound="))
+                        {
+                            LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound = lt.Substring(35);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Patch_RemoveDML_UnableToRemove="))
+                        {
+                            LText.AlertMessages.Patch_RemoveDML_UnableToRemove = lt.Substring(31);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
@@ -643,6 +663,38 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("RemoveTag="))
                         {
                             LText.TagsTab.RemoveTag = lt.Substring(10);
+                        }
+                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[PatchTab]")
+                {
+                    while (i < lines.Length - 1)
+                    {
+                        var lt = lines[i + 1].TrimStart();
+                        if (lt.StartsWithFast_NoNullChecks("TabText="))
+                        {
+                            LText.PatchTab.TabText = lt.Substring(8);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DMLPatchesApplied="))
+                        {
+                            LText.PatchTab.DMLPatchesApplied = lt.Substring(18);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("AddDMLPatchToolTip="))
+                        {
+                            LText.PatchTab.AddDMLPatchToolTip = lt.Substring(19);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("RemoveDMLPatchToolTip="))
+                        {
+                            LText.PatchTab.RemoveDMLPatchToolTip = lt.Substring(22);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMNotInstalled="))
+                        {
+                            LText.PatchTab.FMNotInstalled = lt.Substring(15);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
@@ -1131,6 +1183,18 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("ImportFromDarkLoader_TitleText="))
                         {
                             LText.Importing.ImportFromDarkLoader_TitleText = lt.Substring(31);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_ChooseIni="))
+                        {
+                            LText.Importing.DarkLoader_ChooseIni = lt.Substring(21);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_ImportFMData="))
+                        {
+                            LText.Importing.DarkLoader_ImportFMData = lt.Substring(24);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_ImportSaves="))
+                        {
+                            LText.Importing.DarkLoader_ImportSaves = lt.Substring(23);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("DarkLoader_SelectedFileIsNotDarkLoaderIni="))
                         {

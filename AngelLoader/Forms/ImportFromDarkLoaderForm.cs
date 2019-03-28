@@ -1,18 +1,35 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Forms
 {
-    public partial class ImportFromDarkLoaderForm : Form
+    public partial class ImportFromDarkLoaderForm : Form, ILocalizable
     {
         internal string DarkLoaderIniFile = "";
         internal bool ImportFMData;
         internal bool ImportSaves;
 
         internal ImportFromDarkLoaderForm() => InitializeComponent();
+
+        private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e)
+        {
+            SetUITextToLocalized();
+        }
+
+        public void SetUITextToLocalized(bool suspendResume = true)
+        {
+            Text = LText.Importing.ImportFromDarkLoader_TitleText;
+            ChooseDarkLoaderIniLabel.Text = LText.Importing.DarkLoader_ChooseIni;
+            DarkLoaderIniBrowseButton.SetTextAutoSize(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
+            ImportFMDataCheckBox.Text = LText.Importing.DarkLoader_ImportFMData;
+            ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
+            OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
+        }
 
         private void ImportFromDarkLoaderForm_FormClosing(object sender, FormClosingEventArgs e)
         {

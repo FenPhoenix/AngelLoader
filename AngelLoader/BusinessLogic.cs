@@ -1620,6 +1620,73 @@ namespace AngelLoader
 
         #endregion
 
+        internal bool AddDML(FanMission fm, string sourceDMLPath)
+        {
+            if (!FMIsReallyInstalled(fm))
+            {
+                View.ShowAlert(LText.AlertMessages.Patch_AddDML_InstallDirNotFound, LText.AlertMessages.Alert);
+                return false;
+            }
+
+            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir);
+            try
+            {
+                var dmlFile = Path.GetFileName(sourceDMLPath);
+                if (dmlFile == null) return false;
+                File.Copy(sourceDMLPath, Path.Combine(installedFMPath, dmlFile), overwrite: true);
+            }
+            catch (Exception ex)
+            {
+                // log it
+                View.ShowAlert(LText.AlertMessages.Patch_AddDML_UnableToAdd, LText.AlertMessages.Alert);
+                return false;
+            }
+
+            return true;
+        }
+
+        internal bool RemoveDML(FanMission fm, string dmlFile)
+        {
+            if (!FMIsReallyInstalled(fm))
+            {
+                View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound, LText.AlertMessages.Alert);
+                return false;
+            }
+
+            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir);
+            try
+            {
+                File.Delete(Path.Combine(installedFMPath, dmlFile));
+            }
+            catch (Exception ex)
+            {
+                // log it
+                View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_UnableToRemove, LText.AlertMessages.Alert);
+                return false;
+            }
+
+            return true;
+        }
+
+        internal (bool Success, string[] DMLFiles)
+        GetDMLFiles(FanMission fm)
+        {
+            try
+            {
+                var dmlFiles = Directory.GetFiles(Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir),
+                    "*.dml", SearchOption.TopDirectoryOnly);
+                for (int i = 0; i < dmlFiles.Length; i++)
+                {
+                    dmlFiles[i] = Path.GetFileName(dmlFiles[i]);
+                }
+                return (true, dmlFiles);
+            }
+            catch (Exception ex)
+            {
+                return (false, new string[] { });
+            }
+        }
+
         private static bool FMIsReallyInstalled(FanMission fm)
         {
             return fm.Installed &&

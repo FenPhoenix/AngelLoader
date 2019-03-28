@@ -352,6 +352,7 @@ namespace AngelLoader.Forms
                 Config.TopRightTab == TopRightTab.EditFM ? EditFMTabPage :
                 Config.TopRightTab == TopRightTab.Comment ? CommentTabPage :
                 Config.TopRightTab == TopRightTab.Tags ? TagsTabPage :
+                Config.TopRightTab == TopRightTab.Patch ? PatchTabPage :
                 StatisticsTabPage;
 
             ChangeGameOrganization();
@@ -640,6 +641,17 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Patch tab
+
+                PatchTabPage.Text = LText.PatchTab.TabText;
+                PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
+                MainToolTip.SetToolTip(PatchAddDMLButton, LText.PatchTab.AddDMLPatchToolTip);
+                MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
+                PatchFMNotInstalledLabel.Text = LText.PatchTab.FMNotInstalled;
+                PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
+
+                #endregion
+
                 #region Readme area
 
                 MainToolTip.SetToolTip(ZoomInButton, LText.ReadmeArea.ZoomInToolTip);
@@ -882,6 +894,7 @@ namespace AngelLoader.Forms
                 selTopRightTab == EditFMTabPage ? TopRightTab.EditFM :
                 selTopRightTab == CommentTabPage ? TopRightTab.Comment :
                 selTopRightTab == TagsTabPage ? TopRightTab.Tags :
+                selTopRightTab == PatchTabPage ? TopRightTab.Patch :
                 TopRightTab.Statistics;
 
             var s = FMsDGV;
@@ -2370,11 +2383,20 @@ namespace AngelLoader.Forms
                 CommentTextBox.Text = "";
                 CommentTextBox.Enabled = false;
                 AddTagTextBox.Text = "";
+
+                TagsTreeView.Nodes.Clear();
+
+                foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
+
+                HidePatchSection();
             }
+        }
 
-            TagsTreeView.Nodes.Clear();
-
-            foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
+        private void HidePatchSection()
+        {
+            PatchDMLsListBox.Items.Clear();
+            PatchDMLsPanel.Hide();
+            PatchFMNotInstalledLabel.Show();
         }
 
         private void BlankStatsPanelWithMessage(string message)
@@ -2448,6 +2470,8 @@ namespace AngelLoader.Forms
 
             CommentTextBox.Enabled = true;
             foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
+
+            if (!fm.Installed) HidePatchSection();
 
             #endregion
 
@@ -2548,6 +2572,22 @@ namespace AngelLoader.Forms
                 CommentTextBox.Text = fm.Comment.FromEscapes();
 
                 AddTagTextBox.Text = "";
+
+                if (fm.Installed)
+                {
+                    PatchDMLsPanel.Show();
+                    PatchFMNotInstalledLabel.Hide();
+                    PatchDMLsListBox.Items.Clear();
+                    var (success, dmlFiles) = Model.GetDMLFiles(fm);
+                    if (success)
+                    {
+                        foreach (var f in dmlFiles)
+                        {
+                            if (f.IsEmpty()) continue;
+                            PatchDMLsListBox.Items.Add(f);
+                        }
+                    }
+                }
             }
 
             DisplayFMTags(fm);
@@ -3898,6 +3938,46 @@ namespace AngelLoader.Forms
         private async void ScanFMMenuItem_Click(object sender, EventArgs e)
         {
             await ScanSelectedFM(GetDefaultScanOptions());
+        }
+
+        private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
+        {
+            var s = PatchDMLsListBox;
+            if (s.SelectedIndex == -1) return;
+
+            bool success = Model.RemoveDML(GetSelectedFM(), s.SelectedItem.ToString());
+            if (!success) return;
+
+            s.RemoveAndSelectNearest();
+        }
+
+        private void PatchAddDMLButton_Click(object sender, EventArgs e)
+        {
+            var s = PatchDMLsListBox;
+
+            var dmlFiles = new List<string>();
+
+            using (var d = new OpenFileDialog())
+            {
+                d.Multiselect = true;
+                d.Filter = LText.BrowseDialogs.DMLFiles + @"|*.dml";
+                if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
+                dmlFiles.AddRange(d.FileNames);
+            }
+
+            foreach (var f in dmlFiles)
+            {
+                if (f.IsEmpty()) continue;
+
+                bool success = Model.AddDML(GetSelectedFM(), f);
+                if (!success) return;
+
+                var dml = Path.GetFileName(f);
+                if (!s.Items.Cast<string>().ToArray().ContainsI(dml))
+                {
+                    s.Items.Add(Path.GetFileName(f));
+                }
+            }
         }
     }
 }

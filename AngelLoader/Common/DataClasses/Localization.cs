@@ -54,6 +54,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string AllFiles = "All files (*.*)";
             internal static string ExeFiles = "Executable files (*.exe)";
             internal static string IniFiles = "ini files (*.ini)";
+            internal static string DMLFiles = "NewDark .dml patch files (*.dml)";
         }
 
         internal static class AlertMessages
@@ -84,6 +85,11 @@ namespace AngelLoader.Common.DataClasses
             internal static string Play_ExecutableNotFoundFM = "Executable file not specified or not found. Unable to play FM.";
             internal static string Play_GameIsRunning = "Game is already running. Exit it first!";
             internal static string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
+            [FenGenBlankLine]
+            internal static string Patch_AddDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to add patch.";
+            internal static string Patch_AddDML_UnableToAdd = "Unable to add patch to fan mission folder.";
+            internal static string Patch_RemoveDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to remove patch.";
+            internal static string Patch_RemoveDML_UnableToRemove = "Unable to remove patch from fan mission folder.";
         }
 
         internal static class Difficulties
@@ -214,6 +220,16 @@ namespace AngelLoader.Common.DataClasses
             internal static string AddTag = "Add tag";
             internal static string AddFromList = "Add from list...";
             internal static string RemoveTag = "Remove tag";
+        }
+
+        internal static class PatchTab
+        {
+            internal static string TabText = "Patch & Customize";
+            internal static string DMLPatchesApplied = ".dml patches applied to this FM:";
+            internal static string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
+            internal static string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";
+            internal static string FMNotInstalled = "FM must be installed in order to use this section.";
+
         }
 
         internal static class ReadmeArea
@@ -367,10 +383,12 @@ namespace AngelLoader.Common.DataClasses
             internal static string SelectedFileIsNotAValidPath = "Selected file is not a valid path.";
             [FenGenBlankLine]
             internal static string ImportFromDarkLoader_TitleText = "Import from DarkLoader";
+            internal static string DarkLoader_ChooseIni = "Choose DarkLoader.ini:";
+            internal static string DarkLoader_ImportFMData = "Import FM data";
+            internal static string DarkLoader_ImportSaves = "Import saves";
             internal static string DarkLoader_SelectedFileIsNotDarkLoaderIni = "Selected file is not DarkLoader.ini.";
             internal static string DarkLoader_SelectedDarkLoaderIniWasNotFound = "Selected DarkLoader.ini was not found.";
-            internal static string DarkLoader_NoArchiveDirsFound =
-                "No archive directories were specified in DarkLoader.ini. Unable to import.";
+            internal static string DarkLoader_NoArchiveDirsFound = "No archive directories were specified in DarkLoader.ini. Unable to import.";
             [FenGenBlankLine]
             internal static string ImportFromNewDarkLoader_TitleText = "Import from NewDarkLoader";
             internal static string ImportFromFMSel_TitleText = "Import from FMSel";

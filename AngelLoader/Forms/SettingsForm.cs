@@ -610,26 +610,7 @@ namespace AngelLoader.Forms
 
         private void RemoveFMArchivePathButton_Click(object sender, EventArgs e)
         {
-            var s = FMArchivePathsListBox;
-
-            var selectedIndex = s.SelectedIndex;
-
-            if (selectedIndex == -1) return;
-
-            s.Items.RemoveAt(s.SelectedIndex);
-
-            if (selectedIndex < s.Items.Count && s.Items.Count > 1)
-            {
-                s.SelectedIndex = selectedIndex;
-            }
-            else if (s.Items.Count > 1)
-            {
-                s.SelectedIndex = selectedIndex - 1;
-            }
-            else if (s.Items.Count == 1)
-            {
-                s.SelectedIndex = 0;
-            }
+            FMArchivePathsListBox.RemoveAndSelectNearest();
         }
 
         #endregion
