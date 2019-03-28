@@ -1895,6 +1895,7 @@ namespace AngelLoader
             GameTabsState gameTabsState,
             Game gameTab,
             TopRightTab topRightTab,
+            TopRightTabOrder topRightTabOrder,
             float readmeZoomFactor)
         {
             Config.MainWindowState = mainWindowState;
@@ -1911,6 +1912,12 @@ namespace AngelLoader
             filter.DeepCopyTo(Config.Filter);
 
             Config.TopRightTab = topRightTab;
+
+            Config.TopRightTabOrder.StatsTabPosition = topRightTabOrder.StatsTabPosition;
+            Config.TopRightTabOrder.EditFMTabPosition = topRightTabOrder.EditFMTabPosition;
+            Config.TopRightTabOrder.CommentTabPosition = topRightTabOrder.CommentTabPosition;
+            Config.TopRightTabOrder.TagsTabPosition = topRightTabOrder.TagsTabPosition;
+            Config.TopRightTabOrder.PatchTabPosition = topRightTabOrder.PatchTabPosition;
 
             switch (Config.GameOrganization)
             {

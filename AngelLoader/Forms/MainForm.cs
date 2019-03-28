@@ -10,8 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
-using static AngelLoader.Common.Common;
-using static AngelLoader.Common.Utility.Methods;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Importing;
@@ -19,6 +17,8 @@ using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using FMScanner;
 using Gma.System.MouseKeyHook;
+using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Forms
 {
@@ -250,6 +250,18 @@ namespace AngelLoader.Forms
 
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
+
+            var indexes = new SortedDictionary<int, TabPage>
+            {
+                { Config.TopRightTabOrder.StatsTabPosition, StatisticsTabPage },
+                { Config.TopRightTabOrder.EditFMTabPosition, EditFMTabPage },
+                { Config.TopRightTabOrder.CommentTabPosition, CommentTabPage },
+                { Config.TopRightTabOrder.TagsTabPosition, TagsTabPage },
+                { Config.TopRightTabOrder.PatchTabPosition, PatchTabPage }
+            };
+
+            TopRightTabControl.TabPages.Clear();
+            foreach (var item in indexes) TopRightTabControl.TabPages.Add(item.Value);
 
             #region SplitContainers
 
@@ -908,20 +920,29 @@ namespace AngelLoader.Forms
                 selTopRightTab == PatchTabPage ? TopRightTab.Patch :
                 TopRightTab.Statistics;
 
-            var s = FMsDGV;
             var selectedFM = GetSelectedFMPosInfo();
+
+            var topRightTabOrder = new TopRightTabOrder
+            {
+                StatsTabPosition = TopRightTabControl.TabPages.IndexOf(StatisticsTabPage),
+                EditFMTabPosition = TopRightTabControl.TabPages.IndexOf(EditFMTabPage),
+                CommentTabPosition = TopRightTabControl.TabPages.IndexOf(CommentTabPage),
+                TagsTabPosition = TopRightTabControl.TabPages.IndexOf(TagsTabPage),
+                PatchTabPosition = TopRightTabControl.TabPages.IndexOf(PatchTabPage),
+            };
 
             Model.UpdateConfig(
                 NominalWindowState,
                 NominalWindowSize,
                 MainSplitContainer.SplitterDistanceReal,
                 TopSplitContainer.SplitterDistance,
-                s.ColumnsToColumnData(), s.CurrentSortedColumn, s.CurrentSortDirection,
-                s.Filter,
+                FMsDGV.ColumnsToColumnData(), FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection,
+                FMsDGV.Filter,
                 selectedFM,
-                s.GameTabsState,
+                FMsDGV.GameTabsState,
                 gameTab,
                 topRightTab,
+                topRightTabOrder,
                 ReadmeRichTextBox.ZoomFactor);
         }
 

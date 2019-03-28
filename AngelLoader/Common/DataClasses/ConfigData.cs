@@ -76,6 +76,8 @@ namespace AngelLoader.Common.DataClasses
 
         internal TopRightTab TopRightTab = TopRightTab.Statistics;
 
+        internal TopRightTabOrder TopRightTabOrder = new TopRightTabOrder();
+
         internal DateFormat DateFormat = DateFormat.CurrentCultureShort;
         // Clunky, but removes the need for parsing
         internal string DateCustomFormat1;

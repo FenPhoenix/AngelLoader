@@ -620,6 +620,31 @@ namespace AngelLoader.Ini
                 {
                     config.WebSearchUrl = val;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.StatsTabPosition) + "="))
+                {
+                    int.TryParse(val, out int result);
+                    config.TopRightTabOrder.StatsTabPosition = result;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.EditFMTabPosition) + "="))
+                {
+                    int.TryParse(val, out int result);
+                    config.TopRightTabOrder.EditFMTabPosition = result;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.CommentTabPosition) + "="))
+                {
+                    int.TryParse(val, out int result);
+                    config.TopRightTabOrder.CommentTabPosition = result;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.TagsTabPosition) + "="))
+                {
+                    int.TryParse(val, out int result);
+                    config.TopRightTabOrder.TagsTabPosition = result;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.PatchTabPosition) + "="))
+                {
+                    int.TryParse(val, out int result);
+                    config.TopRightTabOrder.PatchTabPosition = result;
+                }
             }
 
             var sep1 = config.DateCustomSeparator1.EscapeAllChars();
@@ -819,6 +844,12 @@ namespace AngelLoader.Ini
 
                 sw.WriteLine(nameof(config.GameTab) + "=" + config.GameTab);
                 sw.WriteLine(nameof(config.TopRightTab) + "=" + config.TopRightTab);
+
+                sw.WriteLine(nameof(config.TopRightTabOrder.StatsTabPosition) + "=" + config.TopRightTabOrder.StatsTabPosition);
+                sw.WriteLine(nameof(config.TopRightTabOrder.EditFMTabPosition) + "=" + config.TopRightTabOrder.EditFMTabPosition);
+                sw.WriteLine(nameof(config.TopRightTabOrder.CommentTabPosition) + "=" + config.TopRightTabOrder.CommentTabPosition);
+                sw.WriteLine(nameof(config.TopRightTabOrder.TagsTabPosition) + "=" + config.TopRightTabOrder.TagsTabPosition);
+                sw.WriteLine(nameof(config.TopRightTabOrder.PatchTabPosition) + "=" + config.TopRightTabOrder.PatchTabPosition);
 
                 sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(CultureInfo.InvariantCulture));
 

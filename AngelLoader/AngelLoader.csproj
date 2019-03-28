@@ -143,6 +143,9 @@
     <Compile Include="CustomControls\ListBoxCustom.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControls\TabControlCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\ToolStripCustomControls.cs">
       <SubType>Component</SubType>
     </Compile>
