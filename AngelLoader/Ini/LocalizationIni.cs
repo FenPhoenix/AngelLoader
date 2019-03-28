@@ -144,6 +144,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Error = lt.Substring(6);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("AppClosing_OperationInProgress="))
+                        {
+                            LText.AlertMessages.AppClosing_OperationInProgress = lt.Substring(31);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("WebSearchURLIsInvalid="))
                         {
                             LText.AlertMessages.WebSearchURLIsInvalid = lt.Substring(22);

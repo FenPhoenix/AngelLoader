@@ -223,7 +223,9 @@ namespace AngelLoader.CustomControls
 
         internal void Center() => this.CenterHV(Owner, clientSize: true);
 
-        private void ProgressCancelButton_Click(object sender, EventArgs e)
+        private void ProgressCancelButton_Click(object sender, EventArgs e) => Cancel();
+
+        internal void Cancel()
         {
             switch (ProgressTask)
             {

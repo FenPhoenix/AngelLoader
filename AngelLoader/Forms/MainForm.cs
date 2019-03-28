@@ -784,6 +784,16 @@ namespace AngelLoader.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
+            // separate and detached thread to complete. Argh. Threading sucks.
+            if (!EverythingPanel.Enabled)
+            {
+                MessageBox.Show(LText.AlertMessages.AppClosing_OperationInProgress, LText.AlertMessages.Alert,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Cancel = true;
+                return;
+            }
+
             Application.RemoveMessageFilter(this);
             // Mouse hook will dispose along with the form
 
