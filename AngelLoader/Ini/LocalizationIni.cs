@@ -220,6 +220,14 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Play_UnknownGameType = lt.Substring(21);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("DromEd_ExecutableNotFound="))
+                        {
+                            LText.AlertMessages.DromEd_ExecutableNotFound = lt.Substring(26);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DromEd_UnknownGameType="))
+                        {
+                            LText.AlertMessages.DromEd_UnknownGameType = lt.Substring(23);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Patch_AddDML_InstallDirNotFound="))
                         {
                             LText.AlertMessages.Patch_AddDML_InstallDirNotFound = lt.Substring(32);
@@ -459,6 +467,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_UninstallFM="))
                         {
                             LText.FMsList.FMMenu_UninstallFM = lt.Substring(19);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_OpenInDromEd="))
+                        {
+                            LText.FMsList.FMMenu_OpenInDromEd = lt.Substring(20);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_Rating="))
                         {

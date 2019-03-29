@@ -554,6 +554,8 @@ namespace AngelLoader.Forms
                     ? LText.FMsList.FMMenu_InstallFM
                     : LText.FMsList.FMMenu_UninstallFM;
 
+                OpenInDromEdMenuItem.Text = LText.FMsList.FMMenu_OpenInDromEd;
+
                 ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM;
 
                 ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio;
@@ -1929,10 +1931,12 @@ namespace AngelLoader.Forms
                 Config.T1FMInstallPath = !Config.T1Exe.IsWhiteSpace()
                     ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error error1)
                     : "";
+                Config.T1DromEdDetected = !Model.GetDromEdExe(Game.Thief1).IsEmpty();
 
                 Config.T2FMInstallPath = !Config.T2Exe.IsWhiteSpace()
                     ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error error2)
                     : "";
+                Config.T2DromEdDetected = !Model.GetDromEdExe(Game.Thief2).IsEmpty();
 
                 if (!Config.T3Exe.IsWhiteSpace())
                 {
@@ -2372,6 +2376,9 @@ namespace AngelLoader.Forms
             PlayFMMenuItem.Enabled = false;
             PlayFMButton.Enabled = false;
 
+            OpenInDromedSep.Visible = false;
+            OpenInDromEdMenuItem.Visible = false;
+
             ScanFMMenuItem.Enabled = false;
 
             // Hide instead of clear to avoid zoom factor pain
@@ -2484,6 +2491,18 @@ namespace AngelLoader.Forms
             InstallUninstallMenuItem.Text = fm.Installed
                 ? LText.FMsList.FMMenu_UninstallFM
                 : LText.FMsList.FMMenu_InstallFM;
+
+            if ((fm.Game == Game.Thief1 && fm.Installed && Config.T1DromEdDetected) ||
+                (fm.Game == Game.Thief2 && fm.Installed && Config.T2DromEdDetected))
+            {
+                OpenInDromedSep.Visible = true;
+                OpenInDromEdMenuItem.Visible = true;
+            }
+            else
+            {
+                OpenInDromedSep.Visible = false;
+                OpenInDromEdMenuItem.Visible = false;
+            }
 
             InstallUninstallFMButton.Enabled = installable;
             // Special-cased; don't autosize this one
@@ -4013,5 +4032,7 @@ namespace AngelLoader.Forms
         }
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Model.OpenFMFolder(GetSelectedFM());
+
+        private void OpenInDromEdMenuItem_Click(object sender, EventArgs e) => Model.OpenFMInDromEd(GetSelectedFM());
     }
 }
