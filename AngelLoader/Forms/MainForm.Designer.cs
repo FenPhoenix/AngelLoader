@@ -36,6 +36,8 @@
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InstallUninstallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OpenInDromedSep = new System.Windows.Forms.ToolStripSeparator();
+            this.OpenInDromEdMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.ScanFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConvertAudioRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -183,12 +185,14 @@
             this.AddTagFromListButton = new System.Windows.Forms.Button();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
             this.PatchTabPage = new System.Windows.Forms.TabPage();
-            this.PatchFMNotInstalledLabel = new System.Windows.Forms.Label();
+            this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
             this.PatchDMLPatchesLabel = new System.Windows.Forms.Label();
             this.PatchDMLsListBox = new System.Windows.Forms.ListBox();
             this.PatchRemoveDMLButton = new System.Windows.Forms.Button();
             this.PatchAddDMLButton = new System.Windows.Forms.Button();
+            this.PatchOpenFMFolderButton = new System.Windows.Forms.Button();
+            this.PatchFMNotInstalledLabel = new System.Windows.Forms.Label();
             this.ViewHTMLReadmeButton = new System.Windows.Forms.Button();
             this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
             this.ZoomInButton = new System.Windows.Forms.Button();
@@ -212,8 +216,6 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
-            this.PatchOpenFMFolderButton = new System.Windows.Forms.Button();
-            this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -244,12 +246,12 @@
             this.TagsTabPage.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.PatchTabPage.SuspendLayout();
+            this.PatchMainPanel.SuspendLayout();
             this.PatchDMLsPanel.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.PlayOriginalGameMenu.SuspendLayout();
             this.ImportFromMenu.SuspendLayout();
-            this.PatchMainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // FMRightClickMenu
@@ -257,6 +259,8 @@
             this.FMRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PlayFMMenuItem,
             this.InstallUninstallMenuItem,
+            this.OpenInDromedSep,
+            this.OpenInDromEdMenuItem,
             this.toolStripSeparator7,
             this.ScanFMMenuItem,
             this.ConvertAudioRCSubMenu,
@@ -266,32 +270,44 @@
             this.FMRightClickMenuSep2,
             this.WebSearchMenuItem});
             this.FMRightClickMenu.Name = "FMRightClickMenu";
-            this.FMRightClickMenu.Size = new System.Drawing.Size(150, 176);
+            this.FMRightClickMenu.Size = new System.Drawing.Size(183, 226);
             this.FMRightClickMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FMRightClickMenu_Opening);
             // 
             // PlayFMMenuItem
             // 
             this.PlayFMMenuItem.Name = "PlayFMMenuItem";
-            this.PlayFMMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.PlayFMMenuItem.Size = new System.Drawing.Size(182, 22);
             this.PlayFMMenuItem.Text = "Play FM";
             this.PlayFMMenuItem.Click += new System.EventHandler(this.PlayFMMenuItem_Click);
             // 
             // InstallUninstallMenuItem
             // 
             this.InstallUninstallMenuItem.Name = "InstallUninstallMenuItem";
-            this.InstallUninstallMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.InstallUninstallMenuItem.Size = new System.Drawing.Size(182, 22);
             this.InstallUninstallMenuItem.Text = "Install FM";
             this.InstallUninstallMenuItem.Click += new System.EventHandler(this.InstallUninstallMenuItem_Click);
+            // 
+            // OpenInDromedSep
+            // 
+            this.OpenInDromedSep.Name = "OpenInDromedSep";
+            this.OpenInDromedSep.Size = new System.Drawing.Size(179, 6);
+            // 
+            // OpenInDromEdMenuItem
+            // 
+            this.OpenInDromEdMenuItem.Name = "OpenInDromEdMenuItem";
+            this.OpenInDromEdMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.OpenInDromEdMenuItem.Text = "Open FM in DromEd";
+            this.OpenInDromEdMenuItem.Click += new System.EventHandler(this.OpenInDromEdMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(146, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(179, 6);
             // 
             // ScanFMMenuItem
             // 
             this.ScanFMMenuItem.Name = "ScanFMMenuItem";
-            this.ScanFMMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.ScanFMMenuItem.Size = new System.Drawing.Size(182, 22);
             this.ScanFMMenuItem.Text = "Scan FM";
             this.ScanFMMenuItem.Click += new System.EventHandler(this.ScanFMMenuItem_Click);
             // 
@@ -301,7 +317,7 @@
             this.ConvertWAVsTo16BitMenuItem,
             this.ConvertOGGsToWAVsToolStripMenuItem});
             this.ConvertAudioRCSubMenu.Name = "ConvertAudioRCSubMenu";
-            this.ConvertAudioRCSubMenu.Size = new System.Drawing.Size(149, 22);
+            this.ConvertAudioRCSubMenu.Size = new System.Drawing.Size(182, 22);
             this.ConvertAudioRCSubMenu.Text = "Convert audio";
             // 
             // ConvertWAVsTo16BitMenuItem
@@ -321,7 +337,7 @@
             // FMRightClickMenuSep1
             // 
             this.FMRightClickMenuSep1.Name = "FMRightClickMenuSep1";
-            this.FMRightClickMenuSep1.Size = new System.Drawing.Size(146, 6);
+            this.FMRightClickMenuSep1.Size = new System.Drawing.Size(179, 6);
             // 
             // RatingRCSubMenu
             // 
@@ -339,7 +355,7 @@
             this.RatingRCMenu9,
             this.RatingRCMenu10});
             this.RatingRCSubMenu.Name = "RatingRCSubMenu";
-            this.RatingRCSubMenu.Size = new System.Drawing.Size(149, 22);
+            this.RatingRCSubMenu.Size = new System.Drawing.Size(182, 22);
             this.RatingRCSubMenu.Text = "Rating";
             // 
             // RatingRCMenuUnrated
@@ -430,7 +446,7 @@
             // 
             this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
             this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
-            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(149, 22);
+            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(182, 22);
             this.FinishedOnRCSubMenu.Text = "Finished on";
             // 
             // FinishedOnMenu
@@ -493,12 +509,12 @@
             // FMRightClickMenuSep2
             // 
             this.FMRightClickMenuSep2.Name = "FMRightClickMenuSep2";
-            this.FMRightClickMenuSep2.Size = new System.Drawing.Size(146, 6);
+            this.FMRightClickMenuSep2.Size = new System.Drawing.Size(179, 6);
             // 
             // WebSearchMenuItem
             // 
             this.WebSearchMenuItem.Name = "WebSearchMenuItem";
-            this.WebSearchMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.WebSearchMenuItem.Size = new System.Drawing.Size(182, 22);
             this.WebSearchMenuItem.Text = "Web search";
             this.WebSearchMenuItem.Click += new System.EventHandler(this.WebSearchMenuItem_Click);
             // 
@@ -756,7 +772,7 @@
             // 
             // RefreshClearToolStripCustom
             // 
-            this.RefreshClearToolStripCustom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.RefreshClearToolStripCustom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RefreshClearToolStripCustom.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshClearToolStripCustom.CanOverflow = false;
@@ -863,8 +879,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -1025,7 +1041,7 @@
             // 
             // FiltersFlowLayoutPanel
             // 
-            this.FiltersFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FiltersFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FiltersFlowLayoutPanel.AutoScroll = true;
             this.FiltersFlowLayoutPanel.Controls.Add(this.FilterGamesLeftSepToolStripCustom);
@@ -1068,7 +1084,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -1194,7 +1210,7 @@
             // 
             // FilterIconButtonsToolStripCustom
             // 
-            this.FilterIconButtonsToolStripCustom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStripCustom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStripCustom.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStripCustom.CanOverflow = false;
@@ -1430,8 +1446,8 @@
             // 
             // TopRightTabControl
             // 
-            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
@@ -1700,7 +1716,7 @@
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
@@ -1809,7 +1825,7 @@
             // 
             // EditFMDisabledModsTextBox
             // 
-            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
@@ -1829,7 +1845,7 @@
             // 
             // EditFMAuthorTextBox
             // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
@@ -1868,8 +1884,8 @@
             // 
             // CommentTextBox
             // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
             this.CommentTextBox.Multiline = true;
@@ -1908,7 +1924,7 @@
             // 
             // AddTagTextBox
             // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
@@ -1961,8 +1977,8 @@
             // 
             // TagsTreeView
             // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
             this.TagsTreeView.Name = "TagsTreeView";
@@ -1981,15 +1997,16 @@
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
             // 
-            // PatchFMNotInstalledLabel
+            // PatchMainPanel
             // 
-            this.PatchFMNotInstalledLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.PatchFMNotInstalledLabel.AutoSize = true;
-            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(0, 264);
-            this.PatchFMNotInstalledLabel.Name = "PatchFMNotInstalledLabel";
-            this.PatchFMNotInstalledLabel.Size = new System.Drawing.Size(232, 13);
-            this.PatchFMNotInstalledLabel.TabIndex = 4;
-            this.PatchFMNotInstalledLabel.Text = "FM must be installed in order to use this section.";
+            this.PatchMainPanel.AutoSize = true;
+            this.PatchMainPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PatchMainPanel.Controls.Add(this.PatchDMLsPanel);
+            this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
+            this.PatchMainPanel.Location = new System.Drawing.Point(0, 0);
+            this.PatchMainPanel.Name = "PatchMainPanel";
+            this.PatchMainPanel.Size = new System.Drawing.Size(175, 154);
+            this.PatchMainPanel.TabIndex = 6;
             // 
             // PatchDMLsPanel
             // 
@@ -2042,6 +2059,27 @@
             this.PatchAddDMLButton.TabIndex = 1;
             this.PatchAddDMLButton.UseVisualStyleBackColor = true;
             this.PatchAddDMLButton.Click += new System.EventHandler(this.PatchAddDMLButton_Click);
+            // 
+            // PatchOpenFMFolderButton
+            // 
+            this.PatchOpenFMFolderButton.AutoSize = true;
+            this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 128);
+            this.PatchOpenFMFolderButton.Name = "PatchOpenFMFolderButton";
+            this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
+            this.PatchOpenFMFolderButton.TabIndex = 5;
+            this.PatchOpenFMFolderButton.Text = "Open FM folder";
+            this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
+            this.PatchOpenFMFolderButton.Click += new System.EventHandler(this.PatchOpenFMFolderButton_Click);
+            // 
+            // PatchFMNotInstalledLabel
+            // 
+            this.PatchFMNotInstalledLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.PatchFMNotInstalledLabel.AutoSize = true;
+            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(0, 264);
+            this.PatchFMNotInstalledLabel.Name = "PatchFMNotInstalledLabel";
+            this.PatchFMNotInstalledLabel.Size = new System.Drawing.Size(232, 13);
+            this.PatchFMNotInstalledLabel.TabIndex = 4;
+            this.PatchFMNotInstalledLabel.Text = "FM must be installed in order to use this section.";
             // 
             // ViewHTMLReadmeButton
             // 
@@ -2183,8 +2221,8 @@
             // 
             // ReadmeRichTextBox
             // 
-            this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeRichTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeRichTextBox.Location = new System.Drawing.Point(0, 0);
@@ -2278,28 +2316,6 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
-            // PatchOpenFMFolderButton
-            // 
-            this.PatchOpenFMFolderButton.AutoSize = true;
-            this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 128);
-            this.PatchOpenFMFolderButton.Name = "PatchOpenFMFolderButton";
-            this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
-            this.PatchOpenFMFolderButton.TabIndex = 5;
-            this.PatchOpenFMFolderButton.Text = "Open FM folder";
-            this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
-            this.PatchOpenFMFolderButton.Click += new System.EventHandler(this.PatchOpenFMFolderButton_Click);
-            // 
-            // PatchMainPanel
-            // 
-            this.PatchMainPanel.AutoSize = true;
-            this.PatchMainPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.PatchMainPanel.Controls.Add(this.PatchDMLsPanel);
-            this.PatchMainPanel.Controls.Add(this.PatchOpenFMFolderButton);
-            this.PatchMainPanel.Location = new System.Drawing.Point(0, 0);
-            this.PatchMainPanel.Name = "PatchMainPanel";
-            this.PatchMainPanel.Size = new System.Drawing.Size(175, 154);
-            this.PatchMainPanel.TabIndex = 6;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2367,6 +2383,8 @@
             this.flowLayoutPanel1.PerformLayout();
             this.PatchTabPage.ResumeLayout(false);
             this.PatchTabPage.PerformLayout();
+            this.PatchMainPanel.ResumeLayout(false);
+            this.PatchMainPanel.PerformLayout();
             this.PatchDMLsPanel.ResumeLayout(false);
             this.PatchDMLsPanel.PerformLayout();
             this.ChooseReadmePanel.ResumeLayout(false);
@@ -2374,8 +2392,6 @@
             this.flowLayoutPanel2.PerformLayout();
             this.PlayOriginalGameMenu.ResumeLayout(false);
             this.ImportFromMenu.ResumeLayout(false);
-            this.PatchMainPanel.ResumeLayout(false);
-            this.PatchMainPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2563,6 +2579,8 @@
         private System.Windows.Forms.Label PatchFMNotInstalledLabel;
         private System.Windows.Forms.Panel PatchMainPanel;
         private System.Windows.Forms.Button PatchOpenFMFolderButton;
+        private System.Windows.Forms.ToolStripSeparator OpenInDromedSep;
+        private System.Windows.Forms.ToolStripMenuItem OpenInDromEdMenuItem;
     }
 }
 

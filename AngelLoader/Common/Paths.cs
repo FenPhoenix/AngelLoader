@@ -67,6 +67,8 @@ namespace AngelLoader.Common
 
         internal static readonly string FMSelInf = "fmsel.inf";
 
+        internal static readonly string DromEdExe = "DromEd.exe";
+
         internal static readonly string DarkLoaderSaveBakDir = "DarkLoader";
 
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");

@@ -105,6 +105,7 @@ namespace AngelLoader
             {
                 var gamePath = Path.GetDirectoryName(Config.T1Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
+                Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
                 if (error == Error.CamModIniNotFound) return false;
                 Config.T1FMInstallPath = gameFMsPath;
             }
@@ -112,6 +113,7 @@ namespace AngelLoader
             {
                 var gamePath = Path.GetDirectoryName(Config.T2Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
+                Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
                 if (error == Error.CamModIniNotFound) return false;
                 Config.T2FMInstallPath = gameFMsPath;
             }
@@ -196,6 +198,16 @@ namespace AngelLoader
             }
 
             return fmInstPathFound ? (true, !ignoreSavesKey, fmInstPath) : (false, false, null);
+        }
+
+        internal string GetDromEdExe(Game game)
+        {
+            var gameExe = GetGameExeFromGameType(game);
+            if (gameExe.IsEmpty()) return "";
+
+            var gamePath = Path.GetDirectoryName(gameExe);
+            var dromEdExe = Path.Combine(gamePath, Paths.DromEdExe);
+            return !gamePath.IsEmpty() && File.Exists(dromEdExe) ? dromEdExe : "";
         }
 
         internal string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
@@ -1742,6 +1754,63 @@ namespace AngelLoader
             {
                 proc.StartInfo.FileName = gameExe;
                 proc.StartInfo.Arguments = "-fm";
+                proc.StartInfo.WorkingDirectory = gamePath;
+                proc.Start();
+            }
+
+            // Don't clear the temp folder here, because the stub program will need to read from it. It will
+            // delete the temp file itself after it's done with it.
+
+            return true;
+        }
+
+        internal bool OpenFMInDromEd(FanMission fm)
+        {
+            if (!GameIsDark(fm)) return false;
+
+            if (fm.Game == null)
+            {
+                View.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
+                return false;
+            }
+
+            var gameExe = GetGameExeFromGameType((Game)fm.Game);
+            if (gameExe.IsEmpty())
+            {
+                return false;
+            }
+
+            #region Exe: Fail if blank or not found
+
+            var dromedExe = GetDromEdExe((Game)fm.Game);
+            if (dromedExe.IsEmpty())
+            {
+                View.ShowAlert(LText.AlertMessages.DromEd_ExecutableNotFound, LText.AlertMessages.Alert);
+                return false;
+            }
+
+            #endregion
+
+            var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
+            if (!success)
+            {
+                // log it here
+            }
+
+            var gamePath = Path.GetDirectoryName(gameExe);
+            if (gamePath.IsEmpty()) return false;
+
+            Paths.PrepareTempPath(Paths.StubCommTemp);
+            using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))
+            {
+                sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+                sw.WriteLine("DisabledMods=");
+            }
+
+            using (var proc = new Process())
+            {
+                proc.StartInfo.FileName = dromedExe;
+                //proc.StartInfo.Arguments = "-fm";
                 proc.StartInfo.WorkingDirectory = gamePath;
                 proc.Start();
             }

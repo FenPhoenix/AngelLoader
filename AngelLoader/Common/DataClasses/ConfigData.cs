@@ -20,6 +20,10 @@ namespace AngelLoader.Common.DataClasses
         internal string T1FMInstallPath = null;
         internal string T2FMInstallPath = null;
         internal string T3FMInstallPath = null;
+        internal bool T1DromEdDetected;
+        internal bool T2DromEdDetected;
+        //internal string T1DromEdExe = null;
+        //internal string T2DromEdExe = null;
 
         internal bool T3UseCentralSaves = false;
 
