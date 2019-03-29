@@ -526,19 +526,53 @@ namespace AngelLoader
             for (var i = 0; i < FMDataIniList.Count; i++)
             {
                 var item = FMDataIniList[i];
+
+                #region Checks
+
+                // Attempt to avoid re-searching lists
+                bool? notInT1Dirs = null;
+                bool? notInT2Dirs = null;
+                bool? notInT3Dirs = null;
+
+                bool NotInT1Dirs()
+                {
+                    if (notInT1Dirs == null) notInT1Dirs = !t1InstalledFMDirs.ContainsI(item.InstalledDir);
+                    return (bool)notInT1Dirs;
+                }
+                bool NotInT2Dirs()
+                {
+                    if (notInT2Dirs == null) notInT2Dirs = !t2InstalledFMDirs.ContainsI(item.InstalledDir);
+                    return (bool)notInT2Dirs;
+                }
+                bool NotInT3Dirs()
+                {
+                    if (notInT3Dirs == null) notInT3Dirs = !t3InstalledFMDirs.ContainsI(item.InstalledDir);
+                    return (bool)notInT3Dirs;
+                }
+
+                if (item.Installed &&
+                    ((item.Game == Game.Thief1 && NotInT1Dirs()) ||
+                     (item.Game == Game.Thief2 && NotInT2Dirs()) ||
+                     (item.Game == Game.Thief3 && NotInT3Dirs())))
+                {
+                    item.Installed = false;
+                }
+
+                // NOTE: Old data
                 // FMDataIniList: Thief1(personal)+Thief2(personal)+All(1098 set)
                 // Archive dirs: Thief1(personal)+Thief2(personal)
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
                 // Good enough?
                 if (!fmArchives.ContainsI(item.Archive) &&
                     (!item.Installed ||
-                     // This is new and hasn't been timed, but whatever
-                     (item.Game == Game.Thief1 && !t1InstalledFMDirs.ContainsI(item.InstalledDir)) ||
-                     (item.Game == Game.Thief2 && !t2InstalledFMDirs.ContainsI(item.InstalledDir)) ||
-                     (item.Game == Game.Thief3 && !t3InstalledFMDirs.ContainsI(item.InstalledDir))))
+                     (item.Game == Game.Thief1 && NotInT1Dirs()) ||
+                     (item.Game == Game.Thief2 && NotInT2Dirs()) ||
+                     (item.Game == Game.Thief3 && NotInT3Dirs())))
                 {
                     continue;
                 }
+
+                #endregion
 
                 // Perf so we don't have to iterate the list again later
                 var (isNull, isSupported) = GameIsKnownAndSupportedReportIfNull(item);
