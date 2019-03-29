@@ -576,8 +576,14 @@ namespace AngelLoader
 
                 // Perf so we don't have to iterate the list again later
                 var (isNull, isSupported) = GameIsKnownAndSupportedReportIfNull(item);
-                if (isNull) ViewListGamesNull.Add(i);
-                if (isSupported && GetFMInstallsBasePath(item).IsEmpty()) continue;
+                if (isNull)
+                {
+                    ViewListGamesNull.Add(i);
+                }
+                else if (isSupported && GetFMInstallsBasePath(item).IsEmpty())
+                {
+                    continue;
+                }
 
                 FMsViewList.Add(item);
 
