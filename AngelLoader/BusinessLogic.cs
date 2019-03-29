@@ -312,8 +312,7 @@ namespace AngelLoader
 
                 if (Directory.Exists(instPath))
                 {
-                    foreach (var d in Directory.EnumerateDirectories(instPath, "*",
-                        SearchOption.TopDirectoryOnly))
+                    foreach (var d in Directory.GetDirectories(instPath, "*", SearchOption.TopDirectoryOnly))
                     {
                         var dirName = d.GetTopmostDirName();
                         if (!dirName.EqualsI(".fmsel.cache")) instFMDirs.Add(dirName);
@@ -327,7 +326,7 @@ namespace AngelLoader
 
             foreach (var path in GetFMArchivePaths())
             {
-                var files = Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly);
+                var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
                 foreach (var f in files)
                 {
                     if (!fmArchives.ContainsI(f.GetFileNameFast()) &&
@@ -563,11 +562,11 @@ namespace AngelLoader
                 // Archive dirs: Thief1(personal)+Thief2(personal)
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
                 // Good enough?
-                if (!fmArchives.ContainsI(item.Archive) &&
-                    (!item.Installed ||
+                if ((!item.Installed ||
                      (item.Game == Game.Thief1 && NotInT1Dirs()) ||
                      (item.Game == Game.Thief2 && NotInT2Dirs()) ||
-                     (item.Game == Game.Thief3 && NotInT3Dirs())))
+                     (item.Game == Game.Thief3 && NotInT3Dirs())) &&
+                    !fmArchives.ContainsI(item.Archive))
                 {
                     continue;
                 }
