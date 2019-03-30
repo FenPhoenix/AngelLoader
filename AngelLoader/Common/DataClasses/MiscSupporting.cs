@@ -80,20 +80,22 @@ namespace AngelLoader.Common.DataClasses
 
     internal sealed class TopRightTabOrder
     {
+        private const int MaxIndex = 4;
+
         private int _statsTabPosition = 0;
-        internal int StatsTabPosition { get => _statsTabPosition; set => _statsTabPosition = value.Clamp(0, 4); }
+        internal int StatsTabPosition { get => _statsTabPosition; set => _statsTabPosition = value.Clamp(0, MaxIndex); }
 
         private int _editFMTabPosition = 1;
-        internal int EditFMTabPosition { get => _editFMTabPosition; set => _editFMTabPosition = value.Clamp(0, 4); }
+        internal int EditFMTabPosition { get => _editFMTabPosition; set => _editFMTabPosition = value.Clamp(0, MaxIndex); }
 
         private int _commentTabPosition = 2;
-        internal int CommentTabPosition { get => _commentTabPosition; set => _commentTabPosition = value.Clamp(0, 4); }
+        internal int CommentTabPosition { get => _commentTabPosition; set => _commentTabPosition = value.Clamp(0, MaxIndex); }
 
         private int _tagsTabPosition = 3;
-        internal int TagsTabPosition { get => _tagsTabPosition; set => _tagsTabPosition = value.Clamp(0, 4); }
+        internal int TagsTabPosition { get => _tagsTabPosition; set => _tagsTabPosition = value.Clamp(0, MaxIndex); }
 
         private int _patchTabPosition = 4;
-        internal int PatchTabPosition { get => _patchTabPosition; set => _patchTabPosition = value.Clamp(0, 4); }
+        internal int PatchTabPosition { get => _patchTabPosition; set => _patchTabPosition = value.Clamp(0, MaxIndex); }
     }
 
     internal sealed class Filter
