@@ -1562,6 +1562,20 @@ namespace AngelLoader
             return true;
         }
 
+        private static bool CopyStubToDir(string path)
+        {
+            try
+            {
+                File.Copy(Path.Combine(Paths.Startup, Paths.StubFileName), Path.Combine(path, Paths.StubFileName),
+                    overwrite: true);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         private static bool SetDarkFMSelectorToAngelLoader(Game game)
         {
             const string fmSelectorKey = "fm_selector";
@@ -1582,6 +1596,8 @@ namespace AngelLoader
             {
                 return false;
             }
+
+            CopyStubToDir(gamePath);
 
             List<string> lines;
             try
@@ -1654,6 +1670,13 @@ namespace AngelLoader
             bool existingKeyOverwritten = false;
             int insertLineIndex = -1;
 
+            var ini = Paths.GetSneakyOptionsIni();
+            if (ini.IsEmpty())
+            {
+                // log it but continue
+                return false;
+            }
+
             var lines = File.ReadAllLines(Paths.GetSneakyOptionsIni(), Encoding.Default).ToList();
             for (var i = 0; i < lines.Count; i++)
             {
@@ -1722,6 +1745,12 @@ namespace AngelLoader
 
             #endregion
 
+            var gamePath = Path.GetDirectoryName(gameExe);
+            if (gamePath.IsEmpty())
+            {
+                return false;
+            }
+
             if (GameIsDark(fm))
             {
                 var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
@@ -1732,16 +1761,13 @@ namespace AngelLoader
             }
             else if (fm.Game == Game.Thief3)
             {
+                CopyStubToDir(gamePath);
                 var success = SetT3FMSelectorToAngelLoader();
                 if (!success)
                 {
                     // log it here
                 }
             }
-
-            // We will have verified this on startup and on settings close, and it won't change anywhere else.
-            // Also, we know gameExe exists, so we also know its directory is valid.
-            var gamePath = Path.GetDirectoryName(gameExe);
 
             Paths.PrepareTempPath(Paths.StubCommTemp);
             using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))

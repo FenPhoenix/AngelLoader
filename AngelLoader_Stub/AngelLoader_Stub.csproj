@@ -87,9 +87,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\Thief2-ND-TP-AngelLoader-Test\" /y
-xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\Thief2-ND-TP-AngelLoader-Test-All-1098\" /y
-xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\ThiefG-ND-1.26-AngelLoader-Test\" /y</PostBuildEvent>
+    <PostBuildEvent>rem xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\Thief2-ND-TP-AngelLoader-Test\" /y
+rem xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\Thief2-ND-TP-AngelLoader-Test-All-1098\" /y
+rem xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\ThiefG-ND-1.26-AngelLoader-Test\" /y
+
+xcopy "$(TargetDir)AngelLoader_Stub.dll" "$(SolutionDir)AngelLoader\$(OutDir)" /y</PostBuildEvent>
   </PropertyGroup>
   <ImportGroup Label=".NET DllExport">
     <Import Project="$(SolutionDir)packages\DllExport.1.6.2\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.6.2\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
