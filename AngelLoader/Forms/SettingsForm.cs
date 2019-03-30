@@ -277,8 +277,6 @@ namespace AngelLoader.Forms
             if (suspendResume) this.SuspendDrawing();
             try
             {
-                Text = LText.SettingsWindow.TitleText;
-
                 OKButton.SetTextAutoSize(LText.Global.OK, ((Size)OKButton.Tag).Width);
                 Cancel_Button.SetTextAutoSize(LText.Global.Cancel, ((Size)Cancel_Button.Tag).Width);
 
