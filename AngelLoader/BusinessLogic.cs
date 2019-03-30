@@ -19,7 +19,6 @@ using AngelLoader.Forms;
 using AngelLoader.Importing;
 using FMScanner;
 using log4net;
-using log4net.Repository.Hierarchy;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
