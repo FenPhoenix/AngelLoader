@@ -76,11 +76,15 @@ namespace AngelLoader.Importing
                             foreach (var f in Directory.EnumerateFiles(archiveDir, "*",
                                 SearchOption.AllDirectories))
                             {
-                                var fn = Path.GetFileNameWithoutExtension(f);
-                                if (fn.ToInstalledFMDirNameNDL().EqualsI(instName))
+                                if (!f.ContainsI(Path.DirectorySeparatorChar + ".fix" +
+                                                 Path.DirectorySeparatorChar))
                                 {
-                                    fm.Archive = Path.GetFileName(f);
-                                    break;
+                                    var fn = Path.GetFileNameWithoutExtension(f);
+                                    if (fn.ToInstalledFMDirNameNDL().EqualsI(instName))
+                                    {
+                                        fm.Archive = Path.GetFileName(f);
+                                        break;
+                                    }
                                 }
                             }
                         }

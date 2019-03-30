@@ -32,7 +32,10 @@ namespace AngelLoader.Common.Utility
                 paths.Add(path);
                 if (Config.FMArchivePathsIncludeSubfolders)
                 {
-                    paths.AddRange(Directory.GetDirectories(path, "*", SearchOption.AllDirectories));
+                    foreach (var dir in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
+                    {
+                        if (!dir.GetDirNameFast().EqualsI(".fix")) paths.Add(dir);
+                    }
                 }
             }
 
