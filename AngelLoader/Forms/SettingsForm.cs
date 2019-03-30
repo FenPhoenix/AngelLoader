@@ -384,17 +384,20 @@ namespace AngelLoader.Forms
 
             if (DialogResult != DialogResult.OK)
             {
-                try
+                if (!Startup)
                 {
-                    if (!LanguageComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
+                    try
                     {
-                        Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
-                        if (!Startup) OwnerForm.SetUITextToLocalized();
+                        if (!LanguageComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
+                        {
+                            Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
+                            if (!Startup) OwnerForm.SetUITextToLocalized();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    // log it
+                    catch (Exception ex)
+                    {
+                        // log it
+                    }
                 }
                 return;
             }
