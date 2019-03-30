@@ -56,6 +56,10 @@ namespace AngelLoader.Forms
 
             if (startup)
             {
+                // NOTE: Make sure MainToolTip doesn't have anything set on any controls that are in a tab page
+                // that has been removed, or it won't show for other completely unrelated controls that are in
+                // the visible tab page (?!)
+
                 Text = LText.SettingsWindow.StartupTitleText;
                 // _Load is too late for some of this stuff, so might as well put everything here
                 StartPosition = FormStartPosition.CenterScreen;
