@@ -1579,7 +1579,7 @@ namespace AngelLoader
                     overwrite: true);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -1686,7 +1686,16 @@ namespace AngelLoader
                 return false;
             }
 
-            var lines = File.ReadAllLines(Paths.GetSneakyOptionsIni(), Encoding.Default).ToList();
+            List<string> lines;
+            try
+            {
+                lines = File.ReadAllLines(ini, Encoding.Default).ToList();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
             for (var i = 0; i < lines.Count; i++)
             {
                 if (!lines[i].Trim().EqualsI("[Loader]")) continue;
@@ -1715,7 +1724,14 @@ namespace AngelLoader
                 lines.Insert(insertLineIndex, externSelectorKey + Paths.StubFileName);
             }
 
-            File.WriteAllLines(Paths.GetSneakyOptionsIni(), lines, Encoding.Default);
+            try
+            {
+                File.WriteAllLines(ini, lines, Encoding.Default);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
 
             return true;
         }

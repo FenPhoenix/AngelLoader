@@ -46,11 +46,11 @@ namespace AngelLoader.Common
                     ? null
                     : Path.Combine(regKey.ToString(), "Options", "SneakyOptions.ini");
             }
-            catch (SecurityException e)
+            catch (SecurityException ex)
             {
                 // log it here
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
                 // log it here
             }
