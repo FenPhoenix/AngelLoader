@@ -141,65 +141,6 @@ namespace AngelLoader
             return true;
         }
 
-        internal (bool Success, bool UseCentralSaves, string Path)
-        GetInstFMsPathFromT3()
-        {
-            var soIni = Paths.GetSneakyOptionsIni();
-
-            if (!File.Exists(soIni)) return (false, false, null);
-
-            bool ignoreSavesKeyFound = false;
-            bool ignoreSavesKey = true;
-
-            bool fmInstPathFound = false;
-            string fmInstPath = "";
-
-            var lines = File.ReadAllLines(soIni);
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var lineT = lines[i].Trim();
-                if (lineT.EqualsI("[Loader]"))
-                {
-                    /*
-                     Conforms to the way Sneaky Upgrade reads it:
-                     - Whitespace allowed on both sides of section headers (but not within brackets)
-                     - Section headers and keys are case-insensitive
-                     - Key-value separator is '='
-                     - Whitespace allowed on left side of key (but not right side before '=')
-                     - Case-insensitive "true" is true, anything else is false
-                     - If duplicate keys exist, the earliest one is used
-                    */
-                    while (i < lines.Length - 1)
-                    {
-                        var lt = lines[i + 1].Trim();
-                        if (!ignoreSavesKeyFound &&
-                            !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSavesKey="))
-                        {
-                            ignoreSavesKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
-                            ignoreSavesKeyFound = true;
-                        }
-                        else if (!fmInstPathFound &&
-                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("InstallPath="))
-                        {
-                            fmInstPath = lt.Substring(lt.IndexOf('=') + 1).Trim();
-                            fmInstPathFound = true;
-                        }
-                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
-                        {
-                            break;
-                        }
-
-                        if (ignoreSavesKeyFound && fmInstPathFound) break;
-
-                        i++;
-                    }
-                    break;
-                }
-            }
-
-            return fmInstPathFound ? (true, !ignoreSavesKey, fmInstPath) : (false, false, null);
-        }
-
         internal string GetDromEdExe(Game game)
         {
             var gameExe = GetGameExeFromGameType(game);
@@ -213,6 +154,8 @@ namespace AngelLoader
         internal string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
         {
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
+
+            CopyStubToDir(gamePath);
 
             if (!File.Exists(camModIni))
             {
@@ -269,6 +212,72 @@ namespace AngelLoader
 
             error = Error.None;
             return Directory.Exists(path) ? path : Path.Combine(gamePath, "FMs");
+        }
+
+        internal (bool Success, bool UseCentralSaves, string Path)
+        GetInstFMsPathFromT3()
+        {
+            var gameExe = GetGameExeFromGameType(Game.Thief3);
+            if (!gameExe.IsEmpty())
+            {
+                var gamePath = Path.GetDirectoryName(gameExe);
+                if (!gamePath.IsEmpty()) CopyStubToDir(gamePath);
+            }
+
+            var soIni = Paths.GetSneakyOptionsIni();
+
+            if (!File.Exists(soIni)) return (false, false, null);
+
+            bool ignoreSavesKeyFound = false;
+            bool ignoreSavesKey = true;
+
+            bool fmInstPathFound = false;
+            string fmInstPath = "";
+
+            var lines = File.ReadAllLines(soIni);
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var lineT = lines[i].Trim();
+                if (lineT.EqualsI("[Loader]"))
+                {
+                    /*
+                     Conforms to the way Sneaky Upgrade reads it:
+                     - Whitespace allowed on both sides of section headers (but not within brackets)
+                     - Section headers and keys are case-insensitive
+                     - Key-value separator is '='
+                     - Whitespace allowed on left side of key (but not right side before '=')
+                     - Case-insensitive "true" is true, anything else is false
+                     - If duplicate keys exist, the earliest one is used
+                    */
+                    while (i < lines.Length - 1)
+                    {
+                        var lt = lines[i + 1].Trim();
+                        if (!ignoreSavesKeyFound &&
+                            !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSavesKey="))
+                        {
+                            ignoreSavesKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
+                            ignoreSavesKeyFound = true;
+                        }
+                        else if (!fmInstPathFound &&
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("InstallPath="))
+                        {
+                            fmInstPath = lt.Substring(lt.IndexOf('=') + 1).Trim();
+                            fmInstPathFound = true;
+                        }
+                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+
+                        if (ignoreSavesKeyFound && fmInstPathFound) break;
+
+                        i++;
+                    }
+                    break;
+                }
+            }
+
+            return fmInstPathFound ? (true, !ignoreSavesKey, fmInstPath) : (false, false, null);
         }
 
         internal void FindFMs(bool startup = false)
