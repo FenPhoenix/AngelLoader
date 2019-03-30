@@ -293,6 +293,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string StartupTitleText = "AngelLoader Initial Setup";
             [FenGenBlankLine]
             internal static string Paths_TabText = "Paths";
+            internal static string InitialSettings_TabText = "Initial Settings";
             [FenGenBlankLine]
             internal static string Paths_PathsToGameExes = "Paths to game executables";
             internal static string Paths_Thief1 = "Thief 1:";

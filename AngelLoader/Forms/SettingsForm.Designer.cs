@@ -33,6 +33,8 @@
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief1ExePathBrowseButton = new System.Windows.Forms.Button();
             this.PathsToGameExesGroupBox = new System.Windows.Forms.GroupBox();
+            this.T3NeedsSULabel = new System.Windows.Forms.Label();
+            this.T1T2NeedNewDarkLabel = new System.Windows.Forms.Label();
             this.Thief3ExePathLabel = new System.Windows.Forms.Label();
             this.Thief2ExePathLabel = new System.Windows.Forms.Label();
             this.Thief3ExePathBrowseButton = new System.Windows.Forms.Button();
@@ -98,8 +100,6 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.T1T2NeedNewDarkLabel = new System.Windows.Forms.Label();
-            this.T3NeedsSULabel = new System.Windows.Forms.Label();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -170,6 +170,24 @@
             this.PathsToGameExesGroupBox.TabIndex = 0;
             this.PathsToGameExesGroupBox.TabStop = false;
             this.PathsToGameExesGroupBox.Text = "Paths to game executables";
+            // 
+            // T3NeedsSULabel
+            // 
+            this.T3NeedsSULabel.Location = new System.Drawing.Point(16, 176);
+            this.T3NeedsSULabel.Name = "T3NeedsSULabel";
+            this.T3NeedsSULabel.Size = new System.Drawing.Size(400, 32);
+            this.T3NeedsSULabel.TabIndex = 6;
+            this.T3NeedsSULabel.Text = "* Thief 3 requires the Sneaky Upgrade.";
+            this.T3NeedsSULabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // T1T2NeedNewDarkLabel
+            // 
+            this.T1T2NeedNewDarkLabel.Location = new System.Drawing.Point(16, 144);
+            this.T1T2NeedNewDarkLabel.Name = "T1T2NeedNewDarkLabel";
+            this.T1T2NeedNewDarkLabel.Size = new System.Drawing.Size(400, 32);
+            this.T1T2NeedNewDarkLabel.TabIndex = 6;
+            this.T1T2NeedNewDarkLabel.Text = "* Thief 1 and Thief 2 require NewDark.";
+            this.T1T2NeedNewDarkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Thief3ExePathLabel
             // 
@@ -739,7 +757,6 @@
             this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
             this.WebSearchUrlResetButton.Size = new System.Drawing.Size(20, 20);
             this.WebSearchUrlResetButton.TabIndex = 1;
-            this.MainToolTip.SetToolTip(this.WebSearchUrlResetButton, "Reset to default");
             this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
             this.WebSearchUrlResetButton.Click += new System.EventHandler(this.WebSearchURLResetButton_Click);
             // 
@@ -860,24 +877,6 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
-            // 
-            // T1T2NeedNewDarkLabel
-            // 
-            this.T1T2NeedNewDarkLabel.Location = new System.Drawing.Point(16, 144);
-            this.T1T2NeedNewDarkLabel.Name = "T1T2NeedNewDarkLabel";
-            this.T1T2NeedNewDarkLabel.Size = new System.Drawing.Size(400, 32);
-            this.T1T2NeedNewDarkLabel.TabIndex = 6;
-            this.T1T2NeedNewDarkLabel.Text = "* Thief 1 and Thief 2 require NewDark.";
-            this.T1T2NeedNewDarkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // T3NeedsSULabel
-            // 
-            this.T3NeedsSULabel.Location = new System.Drawing.Point(16, 176);
-            this.T3NeedsSULabel.Name = "T3NeedsSULabel";
-            this.T3NeedsSULabel.Size = new System.Drawing.Size(400, 32);
-            this.T3NeedsSULabel.TabIndex = 6;
-            this.T3NeedsSULabel.Text = "* Thief 3 requires the Sneaky Upgrade.";
-            this.T3NeedsSULabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SettingsForm
             // 

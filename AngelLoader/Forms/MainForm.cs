@@ -1908,7 +1908,7 @@ namespace AngelLoader.Forms
                     Config.RatingUseStars != sf.OutConfig.RatingUseStars);
 
                 bool languageChanged =
-                    !startup && (!Config.Language.EqualsI(sf.OutConfig.Language));
+                    !startup && !Config.Language.EqualsI(sf.OutConfig.Language);
 
                 #endregion
 
@@ -1961,7 +1961,11 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                if (startup) return true;
+                if (startup)
+                {
+                    Config.Language = sf.OutConfig.Language;
+                    return true;
+                }
 
                 // From this point on, we're not in startup mode.
 

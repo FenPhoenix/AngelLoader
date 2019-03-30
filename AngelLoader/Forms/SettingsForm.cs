@@ -16,6 +16,8 @@ namespace AngelLoader.Forms
     {
         private readonly ILocalizable OwnerForm;
 
+        private readonly bool Startup;
+
         private readonly ConfigData InConfig;
         internal readonly ConfigData OutConfig = new ConfigData();
 
@@ -39,6 +41,8 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
+            Startup = startup;
+
             OwnerForm = ownerForm;
 
             GameExePathTextBoxes = new[]
@@ -58,6 +62,12 @@ namespace AngelLoader.Forms
                 ShowInTaskbar = true;
                 MainTabControl.TabPages.Remove(FMDisplayTabPage);
                 MainTabControl.TabPages.Remove(OtherTabPage);
+                PathsTabPage.Controls.Add(LanguageGroupBox);
+                LanguageGroupBox.BringToFront();
+                var lx = FMArchivePathsGroupBox.Left;
+                var ly = FMArchivePathsGroupBox.Top + FMArchivePathsGroupBox.Height + 8;
+                LanguageGroupBox.Location = new Point(lx, ly);
+                LanguageGroupBox.Width = FMArchivePathsGroupBox.Width;
             }
             else
             {
@@ -270,7 +280,7 @@ namespace AngelLoader.Forms
 
                 #region Paths tab
 
-                PathsTabPage.Text = LText.SettingsWindow.Paths_TabText;
+                PathsTabPage.Text = Startup ? LText.SettingsWindow.InitialSettings_TabText : LText.SettingsWindow.Paths_TabText;
 
                 PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
                 Thief1ExePathLabel.Text = LText.SettingsWindow.Paths_Thief1;
@@ -375,7 +385,7 @@ namespace AngelLoader.Forms
                     if (!LanguageComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
                     {
                         Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
-                        OwnerForm.SetUITextToLocalized();
+                        if (!Startup) OwnerForm.SetUITextToLocalized();
                     }
                 }
                 catch (Exception ex)
@@ -822,7 +832,7 @@ namespace AngelLoader.Forms
             var s = LanguageComboBox;
             Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
             SetUITextToLocalized();
-            OwnerForm.SetUITextToLocalized();
+            if (!Startup) OwnerForm.SetUITextToLocalized();
         }
     }
 }

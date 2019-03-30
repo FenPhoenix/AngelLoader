@@ -83,23 +83,6 @@ namespace AngelLoader
                 openSettings = true;
             }
 
-            if (openSettings)
-            {
-                if (await View.OpenSettings(startup: true))
-                {
-                    var checkPaths = CheckPaths();
-
-                    Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
-
-                    WriteConfigIni(Config, Paths.ConfigIni);
-                }
-                else
-                {
-                    // Since nothing of consequence has yet happened, it's okay to do the brutal quit
-                    Environment.Exit(0);
-                }
-            }
-
             // Have to read langs here because which language to use will be stored in the config file.
             // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
             // name in its own language
@@ -122,6 +105,23 @@ namespace AngelLoader
                     }
                 }
                 ReadLanguageName(f);
+            }
+
+            if (openSettings)
+            {
+                if (await View.OpenSettings(startup: true))
+                {
+                    var checkPaths = CheckPaths();
+
+                    Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
+
+                    WriteConfigIni(Config, Paths.ConfigIni);
+                }
+                else
+                {
+                    // Since nothing of consequence has yet happened, it's okay to do the brutal quit
+                    Environment.Exit(0);
+                }
             }
         }
 

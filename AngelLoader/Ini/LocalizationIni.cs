@@ -916,6 +916,10 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Paths_TabText = lt.Substring(14);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("InitialSettings_TabText="))
+                        {
+                            LText.SettingsWindow.InitialSettings_TabText = lt.Substring(24);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Paths_PathsToGameExes="))
                         {
                             LText.SettingsWindow.Paths_PathsToGameExes = lt.Substring(22);
