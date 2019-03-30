@@ -366,6 +366,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)AngelLoader.exe" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)*.dll" "C:\AngelLoader\" /y
+xcopy "$(TargetDir)log4net.config" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)x86\7z.dll" "C:\AngelLoader\" /y
 xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
 
