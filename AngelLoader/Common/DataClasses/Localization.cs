@@ -298,6 +298,10 @@ namespace AngelLoader.Common.DataClasses
             internal static string Paths_Thief1 = "Thief 1:";
             internal static string Paths_Thief2 = "Thief 2:";
             internal static string Paths_Thief3 = "Thief 3:";
+
+            internal static string Paths_Thief1AndThief2RequireNewDark = "* Thief 1 and Thief 2 require NewDark.";
+
+            internal static string Paths_Thief3RequiresSneakyUpgrade = "* Thief 3 requires the Sneaky Upgrade 1.1.9.1 or above.";
             internal static string Paths_Other = "Other";
             internal static string Paths_BackupPath = "FM backup path:";
             internal static string Paths_FMArchivePaths = "FM archive paths";

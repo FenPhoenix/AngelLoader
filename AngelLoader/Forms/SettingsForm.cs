@@ -298,6 +298,9 @@ namespace AngelLoader.Forms
                     button.SetTextAutoSize(textBox, LText.Global.BrowseEllipses);
                 }
 
+                T1T2NeedNewDarkLabel.Text = LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark;
+                T3NeedsSULabel.Text = LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade;
+
                 FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;
                 IncludeSubfoldersCheckBox.Text = LText.SettingsWindow.Paths_IncludeSubfolders;
                 MainToolTip.SetToolTip(AddFMArchivePathButton, LText.SettingsWindow.Paths_AddArchivePathToolTip);

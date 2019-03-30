@@ -89,6 +89,7 @@
             this.WebSearchUrlTextBox = new System.Windows.Forms.TextBox();
             this.WebSearchUrlLabel = new System.Windows.Forms.Label();
             this.BackupSavesGroupBox = new System.Windows.Forms.GroupBox();
+            this.BackupAlwaysAskCheckBox = new System.Windows.Forms.CheckBox();
             this.BackupAllChangedDataRadioButton = new System.Windows.Forms.RadioButton();
             this.BackupSavesAndScreensOnlyRadioButton = new System.Windows.Forms.RadioButton();
             this.FMFileConversionGroupBox = new System.Windows.Forms.GroupBox();
@@ -97,7 +98,8 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.BackupAlwaysAskCheckBox = new System.Windows.Forms.CheckBox();
+            this.T1T2NeedNewDarkLabel = new System.Windows.Forms.Label();
+            this.T3NeedsSULabel = new System.Windows.Forms.Label();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -151,6 +153,8 @@
             // 
             // PathsToGameExesGroupBox
             // 
+            this.PathsToGameExesGroupBox.Controls.Add(this.T3NeedsSULabel);
+            this.PathsToGameExesGroupBox.Controls.Add(this.T1T2NeedNewDarkLabel);
             this.PathsToGameExesGroupBox.Controls.Add(this.Thief3ExePathLabel);
             this.PathsToGameExesGroupBox.Controls.Add(this.Thief2ExePathLabel);
             this.PathsToGameExesGroupBox.Controls.Add(this.Thief1ExePathLabel);
@@ -162,7 +166,7 @@
             this.PathsToGameExesGroupBox.Controls.Add(this.Thief1ExePathTextBox);
             this.PathsToGameExesGroupBox.Location = new System.Drawing.Point(8, 8);
             this.PathsToGameExesGroupBox.Name = "PathsToGameExesGroupBox";
-            this.PathsToGameExesGroupBox.Size = new System.Drawing.Size(424, 152);
+            this.PathsToGameExesGroupBox.Size = new System.Drawing.Size(424, 216);
             this.PathsToGameExesGroupBox.TabIndex = 0;
             this.PathsToGameExesGroupBox.TabStop = false;
             this.PathsToGameExesGroupBox.Text = "Paths to game executables";
@@ -345,7 +349,7 @@
             this.OtherGroupBox.Controls.Add(this.BackupPathLabel);
             this.OtherGroupBox.Controls.Add(this.BackupPathBrowseButton);
             this.OtherGroupBox.Controls.Add(this.BackupPathTextBox);
-            this.OtherGroupBox.Location = new System.Drawing.Point(8, 168);
+            this.OtherGroupBox.Location = new System.Drawing.Point(8, 232);
             this.OtherGroupBox.Name = "OtherGroupBox";
             this.OtherGroupBox.Size = new System.Drawing.Size(424, 72);
             this.OtherGroupBox.TabIndex = 1;
@@ -776,6 +780,18 @@
             this.BackupSavesGroupBox.TabStop = false;
             this.BackupSavesGroupBox.Text = "Back up data when uninstalling";
             // 
+            // BackupAlwaysAskCheckBox
+            // 
+            this.BackupAlwaysAskCheckBox.AutoSize = true;
+            this.BackupAlwaysAskCheckBox.Checked = true;
+            this.BackupAlwaysAskCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(16, 74);
+            this.BackupAlwaysAskCheckBox.Name = "BackupAlwaysAskCheckBox";
+            this.BackupAlwaysAskCheckBox.Size = new System.Drawing.Size(79, 17);
+            this.BackupAlwaysAskCheckBox.TabIndex = 2;
+            this.BackupAlwaysAskCheckBox.Text = "Always ask";
+            this.BackupAlwaysAskCheckBox.UseVisualStyleBackColor = true;
+            // 
             // BackupAllChangedDataRadioButton
             // 
             this.BackupAllChangedDataRadioButton.AutoSize = true;
@@ -845,17 +861,23 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
             // 
-            // BackupAlwaysAskCheckBox
+            // T1T2NeedNewDarkLabel
             // 
-            this.BackupAlwaysAskCheckBox.AutoSize = true;
-            this.BackupAlwaysAskCheckBox.Checked = true;
-            this.BackupAlwaysAskCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(16, 74);
-            this.BackupAlwaysAskCheckBox.Name = "BackupAlwaysAskCheckBox";
-            this.BackupAlwaysAskCheckBox.Size = new System.Drawing.Size(79, 17);
-            this.BackupAlwaysAskCheckBox.TabIndex = 2;
-            this.BackupAlwaysAskCheckBox.Text = "Always ask";
-            this.BackupAlwaysAskCheckBox.UseVisualStyleBackColor = true;
+            this.T1T2NeedNewDarkLabel.Location = new System.Drawing.Point(16, 144);
+            this.T1T2NeedNewDarkLabel.Name = "T1T2NeedNewDarkLabel";
+            this.T1T2NeedNewDarkLabel.Size = new System.Drawing.Size(400, 32);
+            this.T1T2NeedNewDarkLabel.TabIndex = 6;
+            this.T1T2NeedNewDarkLabel.Text = "* Thief 1 and Thief 2 require NewDark.";
+            this.T1T2NeedNewDarkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // T3NeedsSULabel
+            // 
+            this.T3NeedsSULabel.Location = new System.Drawing.Point(16, 176);
+            this.T3NeedsSULabel.Name = "T3NeedsSULabel";
+            this.T3NeedsSULabel.Size = new System.Drawing.Size(400, 32);
+            this.T3NeedsSULabel.TabIndex = 6;
+            this.T3NeedsSULabel.Text = "* Thief 3 requires the Sneaky Upgrade.";
+            this.T3NeedsSULabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SettingsForm
             // 
@@ -983,5 +1005,7 @@
         private CustomControls.ComboBoxCustom LanguageComboBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.CheckBox BackupAlwaysAskCheckBox;
+        private System.Windows.Forms.Label T3NeedsSULabel;
+        private System.Windows.Forms.Label T1T2NeedNewDarkLabel;
     }
 }

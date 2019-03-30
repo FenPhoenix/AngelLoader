@@ -932,6 +932,14 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Paths_Thief3 = lt.Substring(13);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Paths_Thief1AndThief2RequireNewDark="))
+                        {
+                            LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark = lt.Substring(36);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Paths_Thief3RequiresSneakyUpgrade="))
+                        {
+                            LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade = lt.Substring(34);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Paths_Other="))
                         {
                             LText.SettingsWindow.Paths_Other = lt.Substring(12);
