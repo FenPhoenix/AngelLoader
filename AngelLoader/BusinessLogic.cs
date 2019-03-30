@@ -69,7 +69,7 @@ namespace AngelLoader
                 {
                     ReadConfigIni(Paths.ConfigIni, Config);
                     var checkPaths = CheckPaths();
-                    openSettings = checkPaths == Error.NoGamesSpecified || checkPaths == Error.BackupPathNotSpecified;
+                    openSettings = checkPaths == Error.BackupPathNotSpecified;
                 }
                 catch (Exception ex)
                 {
@@ -634,10 +634,6 @@ namespace AngelLoader
                 if (isNull)
                 {
                     ViewListGamesNull.Add(i);
-                }
-                else if (isSupported && GetFMInstallsBasePath(item).IsEmpty())
-                {
-                    continue;
                 }
 
                 FMsViewList.Add(item);
