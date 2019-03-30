@@ -2,12 +2,15 @@
 using System.IO;
 using System.Security;
 using AngelLoader.Common.Utility;
+using log4net;
 using Microsoft.Win32;
 
 namespace AngelLoader.Common
 {
     internal static class Paths
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 #if Release_Testing
         internal static readonly string Startup = @"C:\AngelLoader";
 #elif Release
@@ -48,10 +51,12 @@ namespace AngelLoader.Common
             }
             catch (SecurityException ex)
             {
+                Log.Warn("The user does not have the permissions required to read from the registry key.", ex);
                 // log it here
             }
             catch (IOException ex)
             {
+                Log.Warn("The RegistryKey that contains the specified value has been marked for deletion.", ex);
                 // log it here
             }
 

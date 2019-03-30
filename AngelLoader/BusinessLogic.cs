@@ -40,7 +40,6 @@ namespace AngelLoader
         private CancellationTokenSource ExtractCts;
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly bool LogEnabled = Log.IsDebugEnabled;
 
         internal BusinessLogic(MainForm view, ProgressPanel progressBox)
         {
@@ -69,7 +68,8 @@ namespace AngelLoader
                 try
                 {
                     ReadConfigIni(Paths.ConfigIni, Config);
-                    openSettings = !CheckPaths();
+                    var checkPaths = CheckPaths();
+                    openSettings = checkPaths == Error.NoGamesSpecified || checkPaths == Error.BackupPathNotSpecified;
                 }
                 catch (Exception ex)
                 {
@@ -89,7 +89,7 @@ namespace AngelLoader
                 {
                     var checkPaths = CheckPaths();
 
-                    Debug.Assert(checkPaths, "checkPaths == true");
+                    Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
 
                     WriteConfigIni(Config, Paths.ConfigIni);
                 }
@@ -125,7 +125,7 @@ namespace AngelLoader
             }
         }
 
-        private bool CheckPaths()
+        private Error CheckPaths()
         {
             var t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
             var t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
@@ -136,7 +136,7 @@ namespace AngelLoader
                 var gamePath = Path.GetDirectoryName(Config.T1Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
                 Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
-                if (error == Error.CamModIniNotFound) return false;
+                if (error == Error.CamModIniNotFound) return Error.T1CamModIniNotFound;
                 Config.T1FMInstallPath = gameFMsPath;
             }
             if (t2Exists)
@@ -144,7 +144,7 @@ namespace AngelLoader
                 var gamePath = Path.GetDirectoryName(Config.T2Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
                 Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
-                if (error == Error.CamModIniNotFound) return false;
+                if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
                 Config.T2FMInstallPath = gameFMsPath;
             }
             if (t3Exists)
@@ -155,20 +155,20 @@ namespace AngelLoader
                 // FM path is not specified, that the registry key doesn't exist, that the folder it points to
                 // doesn't exist... maybe some of that could be handled elsewhere, nearer to the time of install
                 // (saves folder not found could happen when you go to back up the saves)
-                var (success, useCentralSaves, path) = GetInstFMsPathFromT3();
-                if (!success) return false;
+                var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
+                if (error != Error.None) return error;
                 Config.T3FMInstallPath = path;
                 Config.T3UseCentralSaves = useCentralSaves;
             }
 
-            if (!t1Exists && !t2Exists && !t3Exists) return false;
+            if (!t1Exists && !t2Exists && !t3Exists) return Error.NoGamesSpecified;
 
             if (!Directory.Exists(Config.FMsBackupPath))
             {
-                return false;
+                return Error.BackupPathNotSpecified;
             }
 
-            return true;
+            return Error.None;
         }
 
         internal string GetDromEdExe(Game game)
@@ -177,6 +177,8 @@ namespace AngelLoader
             if (gameExe.IsEmpty()) return "";
 
             var gamePath = Path.GetDirectoryName(gameExe);
+            if (gamePath.IsEmpty()) return "";
+
             var dromEdExe = Path.Combine(gamePath, Paths.DromEdExe);
             return !gamePath.IsEmpty() && File.Exists(dromEdExe) ? dromEdExe : "";
         }
@@ -244,7 +246,7 @@ namespace AngelLoader
             return Directory.Exists(path) ? path : Path.Combine(gamePath, "FMs");
         }
 
-        internal (bool Success, bool UseCentralSaves, string Path)
+        internal (Error Error, bool UseCentralSaves, string Path)
         GetInstFMsPathFromT3()
         {
             var gameExe = GetGameExeFromGameType(Game.Thief3);
@@ -255,8 +257,9 @@ namespace AngelLoader
             }
 
             var soIni = Paths.GetSneakyOptionsIni();
+            if (soIni.IsEmpty()) return (Error.SneakyOptionsNoRegKey, false, null);
 
-            if (!File.Exists(soIni)) return (false, false, null);
+            if (!File.Exists(soIni)) return (Error.SneakyOptionsNotFound, false, null);
 
             bool ignoreSavesKeyFound = false;
             bool ignoreSavesKey = true;
@@ -307,7 +310,9 @@ namespace AngelLoader
                 }
             }
 
-            return fmInstPathFound ? (true, !ignoreSavesKey, fmInstPath) : (false, false, null);
+            return fmInstPathFound
+                ? (Error.None, !ignoreSavesKey, fmInstPath)
+                : (Error.T3FMInstPathNotFound, false, null);
         }
 
         internal void FindFMs(bool startup = false)

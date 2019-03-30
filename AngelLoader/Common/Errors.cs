@@ -3,7 +3,14 @@
     internal enum Error
     {
         None,
-        CamModIniNotFound
+        NoGamesSpecified,
+        BackupPathNotSpecified,
+        CamModIniNotFound,
+        T1CamModIniNotFound,
+        T2CamModIniNotFound,
+        SneakyOptionsNoRegKey,
+        SneakyOptionsNotFound,
+        T3FMInstPathNotFound
     }
 
     internal enum ImportError

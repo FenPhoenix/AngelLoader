@@ -1940,8 +1940,8 @@ namespace AngelLoader.Forms
 
                 if (!Config.T3Exe.IsWhiteSpace())
                 {
-                    var (success, useCentralSaves, t3FMInstPath) = Model.GetInstFMsPathFromT3();
-                    if (success)
+                    var (error, useCentralSaves, t3FMInstPath) = Model.GetInstFMsPathFromT3();
+                    if (error == Error.None)
                     {
                         Config.T3FMInstallPath = t3FMInstPath;
                         Config.T3UseCentralSaves = useCentralSaves;
