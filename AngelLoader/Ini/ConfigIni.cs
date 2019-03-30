@@ -689,8 +689,11 @@ namespace AngelLoader.Ini
                 return ret;
             }
 
-            using (var sw = new StreamWriter(fileName, false, Encoding.UTF8))
+            StreamWriter sw = null;
+            try
             {
+                sw = new StreamWriter(fileName, false, Encoding.UTF8);
+
                 #region Settings window
 
                 sw.WriteLine(nameof(config.SettingsTab) + "=" + config.SettingsTab);
@@ -854,6 +857,14 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(CultureInfo.InvariantCulture));
 
                 #endregion
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("There was an error while writing to " + Paths.ConfigIni + ".", ex);
+            }
+            finally
+            {
+                sw?.Dispose();
             }
         }
     }

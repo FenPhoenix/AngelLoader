@@ -18,6 +18,8 @@ using AngelLoader.CustomControls;
 using AngelLoader.Forms;
 using AngelLoader.Importing;
 using FMScanner;
+using log4net;
+using log4net.Repository.Hierarchy;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
@@ -38,6 +40,9 @@ namespace AngelLoader
         private CancellationTokenSource ScanCts;
         private CancellationTokenSource ExtractCts;
 
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly bool LogEnabled = Log.IsDebugEnabled;
+
         internal BusinessLogic(MainForm view, ProgressPanel progressBox)
         {
             View = view;
@@ -46,14 +51,33 @@ namespace AngelLoader
 
         internal async Task Init()
         {
-            Directory.CreateDirectory(Paths.Data);
-            Directory.CreateDirectory(Paths.Languages);
+            try
+            {
+                Directory.CreateDirectory(Paths.Data);
+                Directory.CreateDirectory(Paths.Languages);
+            }
+            catch (Exception ex)
+            {
+                const string message = "Failed to create required application directories on startup.";
+                Log.Fatal(message + "\r\nException:\r\n", ex);
+                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+            }
 
             bool openSettings;
             if (File.Exists(Paths.ConfigIni))
             {
-                ReadConfigIni(Paths.ConfigIni, Config);
-                openSettings = !CheckPaths();
+                try
+                {
+                    ReadConfigIni(Paths.ConfigIni, Config);
+                    openSettings = !CheckPaths();
+                }
+                catch (Exception ex)
+                {
+                    var message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                    Log.Warn(message, ex);
+                    openSettings = true;
+                }
             }
             else
             {
@@ -88,8 +112,15 @@ namespace AngelLoader
                 var fn = f.GetFileNameFast().RemoveExtension();
                 if (!selFound && fn.EqualsI(Config.Language))
                 {
-                    ReadLocalizationIni(f);
-                    selFound = true;
+                    try
+                    {
+                        ReadLocalizationIni(f);
+                        selFound = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn("There was an error while reading " + f + ".", ex);
+                    }
                 }
                 ReadLanguageName(f);
             }
@@ -1581,6 +1612,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                Log.Warn("There was an error while copying " + Paths.StubFileName + " to " + path, ex);
                 return false;
             }
         }

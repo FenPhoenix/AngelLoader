@@ -5,12 +5,15 @@ using System.Reflection;
 using System.Text;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using log4net;
 using static AngelLoader.Common.Common;
 
 namespace AngelLoader.Ini
 {
     internal static partial class Ini
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         internal static bool StartsWithFast_NoNullChecks(this string str, string value)
         {
             if (str.Length < value.Length) return false;
@@ -46,8 +49,11 @@ namespace AngelLoader.Ini
         // file is re-generated. I could make it so it doesn't get removed, but meh.
         internal static void ReadLanguageName(string file)
         {
-            using (var sr = new StreamReader(file, Encoding.UTF8))
+            StreamReader sr = null;
+            try
             {
+                sr = new StreamReader(file, Encoding.UTF8);
+
                 bool inMeta = false;
                 string line;
                 while ((line = sr.ReadLine()) != null)
@@ -57,7 +63,7 @@ namespace AngelLoader.Ini
                     {
                         var key = file.GetFileNameFast().RemoveExtension();
                         var value = line.TrimStart().Substring(nameof(LText.Meta.LanguageName).Length + 1);
-                        Config.LanguageNames.Add(key, value);
+                        Config.LanguageNames[key] = value;
                         return;
                     }
                     else if (lineT == "[" + nameof(LText.Meta) + "]")
@@ -69,6 +75,14 @@ namespace AngelLoader.Ini
                         inMeta = false;
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("There was an error while reading " + file + ".", ex);
+            }
+            finally
+            {
+                sr?.Dispose();
             }
         }
 
