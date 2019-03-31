@@ -96,6 +96,8 @@ namespace AngelLoader.Common.DataClasses
             internal static string Patch_RemoveDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to remove patch.";
             internal static string Patch_RemoveDML_UnableToRemove = "Unable to remove patch from fan mission folder.";
             internal static string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
+            [FenGenBlankLine]
+            internal static string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
         }
 
         internal static class Difficulties

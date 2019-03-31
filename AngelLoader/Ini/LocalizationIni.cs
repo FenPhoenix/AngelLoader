@@ -248,6 +248,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Patch_FMFolderNotFound = lt.Substring(23);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Misc_SneakyOptionsIniNotFound="))
+                        {
+                            LText.AlertMessages.Misc_SneakyOptionsIniNotFound = lt.Substring(30);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;

@@ -149,12 +149,6 @@ namespace AngelLoader
             }
             if (t3Exists)
             {
-                // TODO: Thief 3 error info return
-                // Thief 3 is going to have to return more error info than normal, because the error could be that
-                // Sneaky Upgrade is not installed, that its SneakyOptions file doesn't exist, that the installed
-                // FM path is not specified, that the registry key doesn't exist, that the folder it points to
-                // doesn't exist... maybe some of that could be handled elsewhere, nearer to the time of install
-                // (saves folder not found could happen when you go to back up the saves)
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
                 if (error != Error.None) return error;
                 Config.T3FMInstallPath = path;
@@ -257,9 +251,18 @@ namespace AngelLoader
             }
 
             var soIni = Paths.GetSneakyOptionsIni();
-            if (soIni.IsEmpty()) return (Error.SneakyOptionsNoRegKey, false, null);
+            var errorMessage = LText.AlertMessages.Misc_SneakyOptionsIniNotFound;
+            if (soIni.IsEmpty())
+            {
+                MessageBox.Show(errorMessage, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return (Error.SneakyOptionsNoRegKey, false, null);
+            }
 
-            if (!File.Exists(soIni)) return (Error.SneakyOptionsNotFound, false, null);
+            if (!File.Exists(soIni))
+            {
+                MessageBox.Show(errorMessage, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return (Error.SneakyOptionsNotFound, false, null);
+            }
 
             bool ignoreSavesKeyFound = false;
             bool ignoreSavesKey = true;
