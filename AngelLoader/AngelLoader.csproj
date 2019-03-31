@@ -99,7 +99,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Beta|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Release_Beta\</OutputPath>
-    <DefineConstants>TRACE;Release</DefineConstants>
+    <DefineConstants>TRACE;Release, ReleaseBeta</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Public|AnyCPU'">
+    <OutputPath>bin\Release_Public\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Public|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Release_Public\</OutputPath>
+    <DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -420,6 +442,12 @@ xcopy "$(ProjectDir)English.ini" "%25destDir%25Data\Languages\" /y</PostBuildEve
     <PreBuildEvent>rem Autogenerate code
 "$(SolutionDir)\FenGen\FenGen.exe" -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
 "$(SolutionDir)\FenGen\FenGen.exe" -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
+
+if $(ConfigurationName) == Release_Beta (
+"$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"
+) else if $(ConfigurationName) == Release_Public (
+"$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "public"
+)
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
   </PropertyGroup>

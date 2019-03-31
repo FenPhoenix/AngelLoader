@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -221,6 +223,13 @@ namespace AngelLoader.Forms
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
         internal async Task Init()
         {
+            var ver = typeof(MainForm).Assembly.GetName().Version;
+            Text = @"AngelLoader " + ver.Major + @"." + ver.Minor + @"." + ver.Build;
+
+#if ReleaseBeta
+            base.Text += " " + Application.ProductVersion;
+#endif
+
 #if Release && !Release_Testing
             DebugLabel.Hide();
             DebugLabel2.Hide();
