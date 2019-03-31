@@ -45,19 +45,28 @@ namespace AngelLoader.Common
                 var regKey = Registry.GetValue(
                     @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows", "SaveGamePath", -1);
 
-                return regKey is int regKeyDefault && regKeyDefault == -1
-                    ? null
-                    : Path.Combine(regKey.ToString(), "Options", "SneakyOptions.ini");
+                if (regKey is int regKeyDefault && regKeyDefault == -1)
+                {
+                    Log.Warn("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
+                    return null;
+                }
+                else
+                {
+                    var soIni = Path.Combine(regKey.ToString(), "Options", "SneakyOptions.ini");
+                    if (!File.Exists(soIni))
+                    {
+                        Log.Warn("Found the registry key but couldn't find SneakyOptions.ini");
+                    }
+                    return soIni;
+                }
             }
             catch (SecurityException ex)
             {
                 Log.Warn("The user does not have the permissions required to read from the registry key.", ex);
-                // log it here
             }
             catch (IOException ex)
             {
                 Log.Warn("The RegistryKey that contains the specified value has been marked for deletion.", ex);
-                // log it here
             }
 
             return null;

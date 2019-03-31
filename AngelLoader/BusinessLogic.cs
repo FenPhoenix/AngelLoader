@@ -1714,7 +1714,7 @@ namespace AngelLoader
             var ini = Paths.GetSneakyOptionsIni();
             if (ini.IsEmpty())
             {
-                // log it but continue
+                Log.Warn("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found");
                 return false;
             }
 
@@ -1725,6 +1725,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                Log.Warn("Problem reading SneakyOptions.ini", ex);
                 return false;
             }
 
@@ -1762,6 +1763,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                Log.Warn("Problem writing SneakyOptions.ini", ex);
                 return false;
             }
 
