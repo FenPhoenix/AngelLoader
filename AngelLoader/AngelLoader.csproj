@@ -316,9 +316,12 @@
     <Content Include="Resources\FinishedOn\Finished_Unknown.png" />
     <Content Include="Resources\Fullscreen.png" />
     <Content Include="Resources\GreenCheckCircle.png" />
+    <Content Include="Resources\Import_24.png" />
+    <Content Include="Resources\Install_24.png" />
     <Content Include="Resources\Layout.png" />
     <Content Include="Resources\Minus.png" />
     <Content Include="Resources\PlayArrow_24.png" />
+    <Content Include="Resources\Play_original_24.png" />
     <Content Include="Resources\RatingExample_FMSel_Number.png" />
     <Content Include="Resources\RatingExample_FMSel_Stars.png" />
     <Content Include="Resources\RatingExample_NDL.png" />
@@ -327,6 +330,7 @@
     <Content Include="Resources\Remove.png" />
     <Content Include="Resources\Scan_14.png" />
     <Content Include="Resources\Scan_24.png" />
+    <Content Include="Resources\Settings_24.png" />
     <Content Include="Resources\StarRating\Stars0.png" />
     <Content Include="Resources\StarRating\Stars0_5.png" />
     <Content Include="Resources\StarRating\Stars1.png" />

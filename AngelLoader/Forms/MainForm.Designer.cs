@@ -557,7 +557,7 @@
             this.ScanAllFMsButton.AutoSize = true;
             this.ScanAllFMsButton.Image = global::AngelLoader.Properties.Resources.Scan;
             this.ScanAllFMsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ScanAllFMsButton.Location = new System.Drawing.Point(341, 3);
+            this.ScanAllFMsButton.Location = new System.Drawing.Point(365, 3);
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
             this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ScanAllFMsButton.Size = new System.Drawing.Size(123, 36);
@@ -589,32 +589,38 @@
             this.BottomRightButtonsFlowLayoutPanel.Controls.Add(this.SettingsButton);
             this.BottomRightButtonsFlowLayoutPanel.Controls.Add(this.ImportButton);
             this.BottomRightButtonsFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomRightButtonsFlowLayoutPanel.Location = new System.Drawing.Point(1467, 0);
+            this.BottomRightButtonsFlowLayoutPanel.Location = new System.Drawing.Point(1443, 0);
             this.BottomRightButtonsFlowLayoutPanel.Name = "BottomRightButtonsFlowLayoutPanel";
-            this.BottomRightButtonsFlowLayoutPanel.Size = new System.Drawing.Size(202, 42);
+            this.BottomRightButtonsFlowLayoutPanel.Size = new System.Drawing.Size(226, 42);
             this.BottomRightButtonsFlowLayoutPanel.TabIndex = 37;
             // 
             // SettingsButton
             // 
             this.SettingsButton.AutoSize = true;
-            this.SettingsButton.Location = new System.Drawing.Point(111, 3);
+            this.SettingsButton.Image = global::AngelLoader.Properties.Resources.Settings_24;
+            this.SettingsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.SettingsButton.Location = new System.Drawing.Point(123, 3);
             this.SettingsButton.Name = "SettingsButton";
             this.SettingsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.SettingsButton.Size = new System.Drawing.Size(88, 36);
+            this.SettingsButton.Size = new System.Drawing.Size(100, 36);
             this.SettingsButton.TabIndex = 31;
             this.SettingsButton.Text = "Settings...";
+            this.SettingsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.SettingsButton.UseVisualStyleBackColor = true;
             this.SettingsButton.Click += new System.EventHandler(this.SettingsButton_Click);
             // 
             // ImportButton
             // 
             this.ImportButton.AutoSize = true;
+            this.ImportButton.Image = global::AngelLoader.Properties.Resources.Import_24;
+            this.ImportButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ImportButton.Location = new System.Drawing.Point(3, 3);
             this.ImportButton.Name = "ImportButton";
             this.ImportButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.ImportButton.Size = new System.Drawing.Size(102, 36);
+            this.ImportButton.Size = new System.Drawing.Size(114, 36);
             this.ImportButton.TabIndex = 35;
             this.ImportButton.Text = "Import from...";
+            this.ImportButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.ImportButton.UseVisualStyleBackColor = true;
             this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
             // 
@@ -631,7 +637,7 @@
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.BottomLeftButtonsFlowLayoutPanel.Name = "BottomLeftButtonsFlowLayoutPanel";
-            this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(592, 42);
+            this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(616, 42);
             this.BottomLeftButtonsFlowLayoutPanel.TabIndex = 36;
             // 
             // PlayFMButton
@@ -652,24 +658,30 @@
             // InstallUninstallFMButton
             // 
             this.InstallUninstallFMButton.AutoSize = true;
+            this.InstallUninstallFMButton.Image = global::AngelLoader.Properties.Resources.Install_24;
+            this.InstallUninstallFMButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.InstallUninstallFMButton.Location = new System.Drawing.Point(100, 3);
             this.InstallUninstallFMButton.Name = "InstallUninstallFMButton";
             this.InstallUninstallFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.InstallUninstallFMButton.Size = new System.Drawing.Size(86, 36);
+            this.InstallUninstallFMButton.Size = new System.Drawing.Size(98, 36);
             this.InstallUninstallFMButton.TabIndex = 2;
             this.InstallUninstallFMButton.Text = "Install FM";
+            this.InstallUninstallFMButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
             this.InstallUninstallFMButton.Click += new System.EventHandler(this.InstallUninstallFMButton_Click);
             // 
             // PlayOriginalGameButton
             // 
             this.PlayOriginalGameButton.AutoSize = true;
-            this.PlayOriginalGameButton.Location = new System.Drawing.Point(192, 3);
+            this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_original_24;
+            this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.PlayOriginalGameButton.Location = new System.Drawing.Point(204, 3);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.PlayOriginalGameButton.Size = new System.Drawing.Size(135, 36);
+            this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
             this.PlayOriginalGameButton.TabIndex = 31;
             this.PlayOriginalGameButton.Text = "Play original game...";
+            this.PlayOriginalGameButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
             this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
             // 
@@ -679,7 +691,7 @@
             this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BottomAreaSep1});
-            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(330, 0);
+            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
             this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
             this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
             this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
@@ -698,7 +710,7 @@
             this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BottomAreaSep2});
-            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(467, 0);
+            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
             this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
             this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
             this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
@@ -717,7 +729,7 @@
             this.WebSearchButton.AutoSize = true;
             this.WebSearchButton.Image = global::AngelLoader.Properties.Resources.WebSearch_24;
             this.WebSearchButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.WebSearchButton.Location = new System.Drawing.Point(478, 3);
+            this.WebSearchButton.Location = new System.Drawing.Point(502, 3);
             this.WebSearchButton.Name = "WebSearchButton";
             this.WebSearchButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.WebSearchButton.Size = new System.Drawing.Size(111, 36);
