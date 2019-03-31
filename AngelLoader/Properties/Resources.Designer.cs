@@ -383,6 +383,16 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap PlayArrow_24 {
+            get {
+                object obj = ResourceManager.GetObject("PlayArrow_24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap QuestionMarkCircleRed {
             get {
                 object obj = ResourceManager.GetObject("QuestionMarkCircleRed", resourceCulture);
@@ -636,6 +646,26 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap Thief3_21 {
             get {
                 object obj = ResourceManager.GetObject("Thief3_21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap WebSearch_24 {
+            get {
+                object obj = ResourceManager.GetObject("WebSearch_24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap WebSearch_32 {
+            get {
+                object obj = ResourceManager.GetObject("WebSearch_32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

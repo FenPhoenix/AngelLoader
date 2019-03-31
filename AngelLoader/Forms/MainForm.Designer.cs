@@ -80,10 +80,10 @@
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
             this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
             this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.DebugLabel = new System.Windows.Forms.Label();
             this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
             this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.WebSearchButton = new System.Windows.Forms.Button();
+            this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
@@ -226,6 +226,7 @@
             this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
             this.BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
             this.BottomAreaToolStripCustom.SuspendLayout();
+            this.BottomAreaToolStripCustom2.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
@@ -257,7 +258,6 @@
             this.flowLayoutPanel2.SuspendLayout();
             this.PlayOriginalGameMenu.SuspendLayout();
             this.ImportFromMenu.SuspendLayout();
-            this.BottomAreaToolStripCustom2.SuspendLayout();
             this.SuspendLayout();
             // 
             // FMRightClickMenu
@@ -555,12 +555,15 @@
             // ScanAllFMsButton
             // 
             this.ScanAllFMsButton.AutoSize = true;
-            this.ScanAllFMsButton.Location = new System.Drawing.Point(329, 3);
+            this.ScanAllFMsButton.Image = global::AngelLoader.Properties.Resources.Scan;
+            this.ScanAllFMsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ScanAllFMsButton.Location = new System.Drawing.Point(341, 3);
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
             this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.ScanAllFMsButton.Size = new System.Drawing.Size(111, 36);
+            this.ScanAllFMsButton.Size = new System.Drawing.Size(123, 36);
             this.ScanAllFMsButton.TabIndex = 1;
             this.ScanAllFMsButton.Text = "Scan all FMs...";
+            this.ScanAllFMsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.ScanAllFMsButton.UseVisualStyleBackColor = true;
             this.ScanAllFMsButton.Click += new System.EventHandler(this.ScanAllFMsButton_Click);
             // 
@@ -628,25 +631,28 @@
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.BottomLeftButtonsFlowLayoutPanel.Name = "BottomLeftButtonsFlowLayoutPanel";
-            this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(556, 42);
+            this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(592, 42);
             this.BottomLeftButtonsFlowLayoutPanel.TabIndex = 36;
             // 
             // PlayFMButton
             // 
             this.PlayFMButton.AutoSize = true;
+            this.PlayFMButton.Image = global::AngelLoader.Properties.Resources.PlayArrow_24;
+            this.PlayFMButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.PlayFMButton.Location = new System.Drawing.Point(3, 3);
             this.PlayFMButton.Name = "PlayFMButton";
             this.PlayFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.PlayFMButton.Size = new System.Drawing.Size(79, 36);
+            this.PlayFMButton.Size = new System.Drawing.Size(91, 36);
             this.PlayFMButton.TabIndex = 2;
             this.PlayFMButton.Text = "Play FM";
+            this.PlayFMButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.PlayFMButton.UseVisualStyleBackColor = true;
             this.PlayFMButton.Click += new System.EventHandler(this.PlayFMButton_Click);
             // 
             // InstallUninstallFMButton
             // 
             this.InstallUninstallFMButton.AutoSize = true;
-            this.InstallUninstallFMButton.Location = new System.Drawing.Point(88, 3);
+            this.InstallUninstallFMButton.Location = new System.Drawing.Point(100, 3);
             this.InstallUninstallFMButton.Name = "InstallUninstallFMButton";
             this.InstallUninstallFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.InstallUninstallFMButton.Size = new System.Drawing.Size(86, 36);
@@ -658,7 +664,7 @@
             // PlayOriginalGameButton
             // 
             this.PlayOriginalGameButton.AutoSize = true;
-            this.PlayOriginalGameButton.Location = new System.Drawing.Point(180, 3);
+            this.PlayOriginalGameButton.Location = new System.Drawing.Point(192, 3);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(135, 36);
@@ -673,7 +679,7 @@
             this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BottomAreaSep1});
-            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(318, 0);
+            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(330, 0);
             this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
             this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
             this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
@@ -686,6 +692,41 @@
             this.BottomAreaSep1.Name = "BottomAreaSep1";
             this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
             // 
+            // BottomAreaToolStripCustom2
+            // 
+            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomAreaSep2});
+            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(467, 0);
+            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
+            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
+            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
+            this.BottomAreaToolStripCustom2.TabIndex = 35;
+            // 
+            // BottomAreaSep2
+            // 
+            this.BottomAreaSep2.AutoSize = false;
+            this.BottomAreaSep2.Name = "BottomAreaSep2";
+            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
+            // 
+            // WebSearchButton
+            // 
+            this.WebSearchButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.WebSearchButton.AutoSize = true;
+            this.WebSearchButton.Image = global::AngelLoader.Properties.Resources.WebSearch_24;
+            this.WebSearchButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.WebSearchButton.Location = new System.Drawing.Point(478, 3);
+            this.WebSearchButton.Name = "WebSearchButton";
+            this.WebSearchButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.WebSearchButton.Size = new System.Drawing.Size(111, 36);
+            this.WebSearchButton.TabIndex = 34;
+            this.WebSearchButton.Text = "Web search";
+            this.WebSearchButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.WebSearchButton.UseVisualStyleBackColor = true;
+            this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
+            // 
             // DebugLabel
             // 
             this.DebugLabel.AutoSize = true;
@@ -694,19 +735,6 @@
             this.DebugLabel.Size = new System.Drawing.Size(71, 13);
             this.DebugLabel.TabIndex = 29;
             this.DebugLabel.Text = "[DebugLabel]";
-            // 
-            // WebSearchButton
-            // 
-            this.WebSearchButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.WebSearchButton.AutoSize = true;
-            this.WebSearchButton.Location = new System.Drawing.Point(446, 3);
-            this.WebSearchButton.Name = "WebSearchButton";
-            this.WebSearchButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.WebSearchButton.Size = new System.Drawing.Size(99, 36);
-            this.WebSearchButton.TabIndex = 34;
-            this.WebSearchButton.Text = "Web search";
-            this.WebSearchButton.UseVisualStyleBackColor = true;
-            this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
             // 
             // DebugLabel2
             // 
@@ -2346,25 +2374,6 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
-            // BottomAreaToolStripCustom2
-            // 
-            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep2});
-            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(548, 0);
-            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
-            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom2.TabIndex = 35;
-            // 
-            // BottomAreaSep2
-            // 
-            this.BottomAreaSep2.AutoSize = false;
-            this.BottomAreaSep2.Name = "BottomAreaSep2";
-            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2394,6 +2403,8 @@
             this.BottomLeftButtonsFlowLayoutPanel.PerformLayout();
             this.BottomAreaToolStripCustom.ResumeLayout(false);
             this.BottomAreaToolStripCustom.PerformLayout();
+            this.BottomAreaToolStripCustom2.ResumeLayout(false);
+            this.BottomAreaToolStripCustom2.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
@@ -2443,8 +2454,6 @@
             this.flowLayoutPanel2.PerformLayout();
             this.PlayOriginalGameMenu.ResumeLayout(false);
             this.ImportFromMenu.ResumeLayout(false);
-            this.BottomAreaToolStripCustom2.ResumeLayout(false);
-            this.BottomAreaToolStripCustom2.PerformLayout();
             this.ResumeLayout(false);
 
         }
