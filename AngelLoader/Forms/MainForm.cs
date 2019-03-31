@@ -380,15 +380,8 @@ namespace AngelLoader.Forms
             // This must certainly need to come after Show() as well, right?!
             if (Model.ViewListGamesNull.Count > 0)
             {
-                try
-                {
-                    // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-                    await Model.ScanNewFMsForGameType();
-                }
-                catch (Exception ex)
-                {
-                    // log it
-                }
+                // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
+                await Model.ScanNewFMsForGameType();
                 Model.ViewListGamesNull.Clear();
             }
 
@@ -3571,35 +3564,7 @@ namespace AngelLoader.Forms
 
         private void WebSearchButton_Click(object sender, EventArgs e) => SearchWeb();
 
-        private void SearchWeb()
-        {
-            var fm = GetSelectedFM();
-
-            var url = Config.WebSearchUrl;
-            var index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
-            var finalUrl = Uri.EscapeUriString(index == -1
-                ? url
-                : url.Substring(0, index) + fm.Title + url.Substring(index + "$TITLE$".Length));
-
-            if (!Uri.IsWellFormedUriString(finalUrl, UriKind.Absolute))
-            {
-                MessageBox.Show(LText.AlertMessages.WebSearchURLIsInvalid, LText.AlertMessages.Alert);
-                return;
-            }
-
-            try
-            {
-                Process.Start(finalUrl);
-            }
-            catch (FileNotFoundException ex)
-            {
-                MessageBox.Show(LText.AlertMessages.WebSearchURLIsInvalid, LText.AlertMessages.Alert);
-            }
-            catch (Win32Exception ex)
-            {
-                // log it
-            }
-        }
+        private void SearchWeb() => Model.OpenWebSearchUrl(GetSelectedFM());
 
         private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
 
@@ -3830,28 +3795,7 @@ namespace AngelLoader.Forms
 
         private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SetFilter();
 
-        private void ViewHTMLReadmeButton_Click(object sender, EventArgs e)
-        {
-            string path;
-            try
-            {
-                (path, _) = Model.GetReadmeFileAndType(GetSelectedFM());
-            }
-            catch (Exception ex)
-            {
-                // log it
-                return;
-            }
-
-            if (File.Exists(path))
-            {
-                Process.Start(path);
-            }
-            else
-            {
-                // log it
-            }
-        }
+        private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Model.ViewHTMLReadme(GetSelectedFM());
 
         private void ImportButton_Click(object sender, EventArgs e)
         {
@@ -3880,11 +3824,7 @@ namespace AngelLoader.Forms
             }
 
             bool success = await Model.ImportFromDarkLoader(iniFile, importFMData, importSaves);
-            if (!success)
-            {
-                // log it
-                return;
-            }
+            if (!success) return;
 
             SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
             await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
@@ -3922,11 +3862,7 @@ namespace AngelLoader.Forms
                 bool success = await (importType == ImportType.FMSel
                     ? Model.ImportFromFMSel(file)
                     : Model.ImportFromNDL(file));
-                if (!success)
-                {
-                    // log it
-                    return;
-                }
+                if (!success) return;
             }
 
             SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);

@@ -150,7 +150,7 @@ namespace AngelLoader.Ini
                         }
                         else if (lt.StartsWithFast_NoNullChecks("WebSearchURLIsInvalid="))
                         {
-                            LText.AlertMessages.WebSearchURLIsInvalid = lt.Substring(22);
+                            LText.AlertMessages.WebSearchURL_IsInvalid = lt.Substring(22);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Install_UnknownGameType="))
                         {

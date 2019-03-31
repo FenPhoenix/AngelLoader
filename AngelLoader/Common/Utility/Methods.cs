@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using AngelLoader.Common.DataClasses;
+using log4net;
 using SevenZip;
 using static AngelLoader.Common.Common;
 
@@ -9,6 +10,8 @@ namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         internal static string GetFMInstallsBasePath(FanMission fm)
         {
             var thisFMInstallsBasePath =
@@ -58,7 +61,14 @@ namespace AngelLoader.Common.Utility
         internal static void UnSetReadOnly(string fileOnDiskFullPath)
         {
             // FileAttributes.Normal: prevents files from being readonly
-            var fi = new FileInfo(fileOnDiskFullPath) { Attributes = FileAttributes.Normal };
+            try
+            {
+                var fi = new FileInfo(fileOnDiskFullPath) { Attributes = FileAttributes.Normal };
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Unable to set file attributes for " + fileOnDiskFullPath, ex);
+            }
         }
 
         internal static void SetFileAttributesFromSevenZipEntry(ArchiveFileInfo archiveFileInfo, string fileOnDiskFullPath)
@@ -78,7 +88,7 @@ namespace AngelLoader.Common.Utility
             }
             catch (Exception ex)
             {
-                // log it
+                Log.Warn("Unable to set file attributes for " + fileOnDiskFullPath, ex);
             }
         }
 

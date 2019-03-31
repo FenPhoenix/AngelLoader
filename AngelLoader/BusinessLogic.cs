@@ -954,23 +954,16 @@ namespace AngelLoader
             }
             if (fmsToScan.Count > 0)
             {
-                var scanOptions = new ScanOptions
-                {
-                    ScanTitle = false,
-                    ScanCampaignMissionNames = false,
-                    ScanAuthor = false,
-                    ScanVersion = false,
-                    ScanLanguages = false,
-                    ScanGameType = true,
-                    ScanNewDarkRequired = false,
-                    ScanNewDarkMinimumVersion = false,
-                    ScanCustomResources = false,
-                    ScanSize = false,
-                    ScanReleaseDate = false,
-                    ScanTags = false
-                };
+                var scanOptions = ScanOptions.FalseDefault(scanGameType: true);
 
-                await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+                try
+                {
+                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception in ScanFMs", ex);
+                }
             }
         }
 
@@ -985,7 +978,7 @@ namespace AngelLoader
                 var (error, fmsToScan) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList);
                 if (error != ImportError.None)
                 {
-                    // log it
+                    Log.Warn("Import.Error: " + error);
 
                     if (error == ImportError.NoArchiveDirsFound)
                     {
@@ -998,6 +991,11 @@ namespace AngelLoader
 
                 await ScanAndFind(fmsToScan,
                     ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception in DarkLoader import", ex);
+                return false;
             }
             finally
             {
@@ -1015,12 +1013,17 @@ namespace AngelLoader
                 var (error, fmsToScan) = await ImportNDL.Import(iniFile, FMDataIniList);
                 if (error != ImportError.None)
                 {
-                    // log it
+                    Log.Warn("Import error: " + error);
                     return false;
                 }
 
                 await ScanAndFind(fmsToScan,
                     ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception in NewDarkLoader import", ex);
+                return false;
             }
             finally
             {
@@ -1038,12 +1041,17 @@ namespace AngelLoader
                 var (error, fmsToScan) = await ImportFMSel.Import(iniFile, FMDataIniList);
                 if (error != ImportError.None)
                 {
-                    // log it
+                    Log.Warn("Import error: " + error);
                     return false;
                 }
 
                 await ScanAndFind(fmsToScan,
                     ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true));
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception in FMSel import", ex);
+                return false;
             }
             finally
             {
@@ -1220,10 +1228,11 @@ namespace AngelLoader
                     {
                         extractor.ExtractArchive(fmInstalledPath);
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         // Throws a weird exception even if everything's fine
                         // log it anyway
+                        Log.Warn("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
                     }
                 }
             });
@@ -1818,7 +1827,8 @@ namespace AngelLoader
                 var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
                 if (!success)
                 {
-                    // log it here
+                    Log.Warn("Unable to set us as the selector for " + fm.Game + " (" +
+                             nameof(SetDarkFMSelectorToAngelLoader) + " returned false)");
                 }
             }
             else if (fm.Game == Game.Thief3)
@@ -1827,7 +1837,8 @@ namespace AngelLoader
                 var success = SetT3FMSelectorToAngelLoader();
                 if (!success)
                 {
-                    // log it here
+                    Log.Warn("Unable to set us as the selector for Thief: Deadly Shadows (" +
+                             nameof(SetT3FMSelectorToAngelLoader) + " returned false)");
                 }
             }
 
@@ -1888,7 +1899,8 @@ namespace AngelLoader
             var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
             if (!success)
             {
-                // log it here
+                Log.Warn("Unable to set us as the selector for " + fm.Game + " (" +
+                         nameof(SetDarkFMSelectorToAngelLoader) + " returned false)");
             }
 
             var gamePath = Path.GetDirectoryName(gameExe);
@@ -1925,7 +1937,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                // log it
+                Log.Warn("Unable to add .dml to installed folder " + fm.InstalledDir, ex);
                 View.ShowAlert(LText.AlertMessages.Patch_AddDML_UnableToAdd, LText.AlertMessages.Alert);
                 return false;
             }
@@ -1948,7 +1960,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                // log it
+                Log.Warn("Unable to remove .dml from installed folder " + fm.InstalledDir, ex);
                 View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_UnableToRemove, LText.AlertMessages.Alert);
                 return false;
             }
@@ -2024,13 +2036,15 @@ namespace AngelLoader
             {
                 if (instBasePath.IsWhiteSpace())
                 {
-                    // log it
-                    throw new ArgumentNullException(nameof(instBasePath), "FM installs base path is empty");
+                    var ex = new ArgumentException(@"FM installs base path is empty", nameof(instBasePath));
+                    Log.Warn(ex.Message, ex);
+                    throw ex;
                 }
                 else if (!Directory.Exists(instBasePath))
                 {
-                    // log it
-                    throw new ArgumentNullException(nameof(instBasePath), "FM installs base path doesn't exist");
+                    var ex = new DirectoryNotFoundException("FM installs base path doesn't exist");
+                    Log.Warn(ex.Message, ex);
+                    throw ex;
                 }
             }
 
@@ -2075,6 +2089,61 @@ namespace AngelLoader
             }
 
             Process.Start(fmDir);
+        }
+
+        internal void OpenWebSearchUrl(FanMission fm)
+        {
+            var url = Config.WebSearchUrl;
+            if (url.Length > 32766 || url.IsWhiteSpace()) return;
+
+            var index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
+
+            var finalUrl = Uri.EscapeUriString(index == -1
+                ? url
+                : url.Substring(0, index) + fm.Title + url.Substring(index + "$TITLE$".Length));
+
+            if (!Uri.IsWellFormedUriString(finalUrl, UriKind.Absolute))
+            {
+                MessageBox.Show(LText.AlertMessages.WebSearchURL_IsInvalid, LText.AlertMessages.Alert);
+                return;
+            }
+
+            try
+            {
+                Process.Start(finalUrl);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Log.Warn("\"The PATH environment variable has a string containing quotes.\" (that's what MS docs says?!)", ex);
+            }
+            catch (Win32Exception ex)
+            {
+                Log.Warn("Problem opening web search URL", ex);
+                View.ShowAlert(LText.AlertMessages.WebSearchURL_ProblemOpening, LText.AlertMessages.Alert);
+            }
+        }
+
+        internal void ViewHTMLReadme(FanMission fm)
+        {
+            string path;
+            try
+            {
+                (path, _) = GetReadmeFileAndType(fm);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception in " + nameof(GetReadmeFileAndType), ex);
+                return;
+            }
+
+            if (File.Exists(path))
+            {
+                Process.Start(path);
+            }
+            else
+            {
+                Log.Warn("File not found: " + path);
+            }
         }
 
         internal void UpdateConfig(

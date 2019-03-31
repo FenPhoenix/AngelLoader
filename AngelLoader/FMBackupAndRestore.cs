@@ -9,6 +9,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
+using log4net;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
@@ -35,6 +36,8 @@ namespace AngelLoader
 
     internal static class FMBackupAndRestore
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private const string T3SavesDir = "SaveGames";
         private const string DarkSavesDir = "saves";
         private const string ScreensDir = "screenshots";
@@ -54,7 +57,7 @@ namespace AngelLoader
 
             if (!GameIsKnownAndSupported(fm))
             {
-                // log it
+                Log.Warn("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")");
                 return;
             }
 
@@ -147,7 +150,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    // log it
+                    Log.Warn("Exception in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
                 }
             });
         }
@@ -211,7 +214,7 @@ namespace AngelLoader
                             }
                             catch (Exception ex)
                             {
-                                // log it
+                                Log.Warn("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
                             }
                         }
                     }
@@ -270,7 +273,7 @@ namespace AngelLoader
                             }
                             catch (Exception ex)
                             {
-                                // log it
+                                Log.Warn("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
                             }
                         }
                     }

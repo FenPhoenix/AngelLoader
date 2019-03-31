@@ -65,7 +65,8 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string AppClosing_OperationInProgress = "An operation is in progress. Please cancel or wait for it to finish.";
             [FenGenBlankLine]
-            internal static string WebSearchURLIsInvalid = "The specified site to search is not a valid URL.";
+            internal static string WebSearchURL_IsInvalid = "The specified site to search is not a valid URL.";
+            internal static string WebSearchURL_ProblemOpening = "There was a problem opening the specified web search URL.";
             [FenGenBlankLine]
             internal static string Install_UnknownGameType = "This FM's game type is unknown, so it can't be installed.";
             internal static string Install_UnsupportedGameType = "This FM's game type is unsupported, so it can't be installed.";
