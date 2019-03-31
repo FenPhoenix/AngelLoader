@@ -36,7 +36,7 @@ namespace AngelLoader
 
     internal static class FMBackupAndRestore
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(typeof(FMBackupAndRestore));
 
         private const string T3SavesDir = "SaveGames";
         private const string DarkSavesDir = "saves";

@@ -9,7 +9,7 @@ namespace AngelLoader.Common
 {
     internal static class Paths
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Paths));
 
 #if Release_Testing
         internal static readonly string Startup = @"C:\AngelLoader";

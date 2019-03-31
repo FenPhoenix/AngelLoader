@@ -39,7 +39,7 @@ namespace AngelLoader
         private CancellationTokenSource ScanCts;
         private CancellationTokenSource ExtractCts;
 
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(typeof(BusinessLogic));
 
         internal BusinessLogic(MainForm view, ProgressPanel progressBox)
         {
@@ -1231,7 +1231,6 @@ namespace AngelLoader
                     catch (Exception ex)
                     {
                         // Throws a weird exception even if everything's fine
-                        // log it anyway
                         Log.Warn("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
                     }
                 }

@@ -10,7 +10,7 @@ namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Methods));
 
         internal static string GetFMInstallsBasePath(FanMission fm)
         {

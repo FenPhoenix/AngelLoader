@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -9,11 +10,14 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI.Dialogs;
+using log4net;
 
 namespace AngelLoader.Forms
 {
     internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(SettingsForm));
+
         private readonly ILocalizable OwnerForm;
 
         private readonly bool Startup;
@@ -389,12 +393,21 @@ namespace AngelLoader.Forms
                         if (!LanguageComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
                         {
                             Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
-                            if (!Startup) OwnerForm.SetUITextToLocalized();
                         }
                     }
                     catch (Exception ex)
                     {
-                        // log it
+                        Log.Warn("Exception in language reading", ex);
+                        return;
+                    }
+
+                    try
+                    {
+                        OwnerForm.SetUITextToLocalized();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
                     }
                 }
                 return;
@@ -835,9 +848,27 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             var s = LanguageComboBox;
-            Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
-            SetUITextToLocalized();
-            if (!Startup) OwnerForm.SetUITextToLocalized();
+            try
+            {
+                Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception in language reading", ex);
+                return;
+            }
+
+            if (!Startup)
+            {
+                try
+                {
+                    OwnerForm.SetUITextToLocalized();
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
+                }
+            }
         }
     }
 }

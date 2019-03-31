@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using log4net;
 
 namespace AngelLoader.Importing
 {
     internal static class ImportDarkLoader
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ImportDarkLoader));
+
         private static readonly string[] NonFMHeaders =
         {
             "[options]",
@@ -125,9 +128,9 @@ namespace AngelLoader.Importing
                                         }
                                     }
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
-                                    // log it here
+                                    Log.Warn("Exception in DarkLoader archive dir file enumeration", ex);
                                 }
                             }
 

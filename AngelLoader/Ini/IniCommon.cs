@@ -12,7 +12,7 @@ namespace AngelLoader.Ini
 {
     internal static partial class Ini
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Ini));
 
         internal static bool StartsWithFast_NoNullChecks(this string str, string value)
         {

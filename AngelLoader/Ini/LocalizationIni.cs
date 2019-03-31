@@ -148,9 +148,13 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.AppClosing_OperationInProgress = lt.Substring(31);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("WebSearchURLIsInvalid="))
+                        else if (lt.StartsWithFast_NoNullChecks("WebSearchURL_IsInvalid="))
                         {
-                            LText.AlertMessages.WebSearchURL_IsInvalid = lt.Substring(22);
+                            LText.AlertMessages.WebSearchURL_IsInvalid = lt.Substring(23);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("WebSearchURL_ProblemOpening="))
+                        {
+                            LText.AlertMessages.WebSearchURL_ProblemOpening = lt.Substring(28);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Install_UnknownGameType="))
                         {
