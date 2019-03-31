@@ -1033,9 +1033,8 @@ namespace AngelLoader.Forms
 
         #region FMsDGV-related
 
-        // TODO: Run perf testing when every FM has a bunch of tags
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
-        //       majority have no tags, so test again when all of them do.
+        //       the majority had no tags for this test.
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
@@ -1168,8 +1167,8 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmGame = FMsList[s.FilterShownIndexList[i]].Game;
-                    if (fmGame != Game.Unsupported && (fmGame == null || !s.Filter.Games.Contains((Game)fmGame)))
+                    var fm = FMsList[s.FilterShownIndexList[i]];
+                    if (GameIsKnownAndSupported(fm) && !s.Filter.Games.Contains((Game)fm.Game))
                     {
                         s.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2461,7 +2460,7 @@ namespace AngelLoader.Forms
         {
             var fm = GetSelectedFM();
 
-            if (GameIsKnownAndSupported(fm) && !fm.MarkedScanned)
+            if (fm.Game == null || (GameIsKnownAndSupported(fm) && !fm.MarkedScanned))
             {
                 using (new DisableKeyPresses(this))
                 {
@@ -2510,7 +2509,7 @@ namespace AngelLoader.Forms
             PlayFMMenuItem.Enabled = installable;
             PlayFMButton.Enabled = installable;
 
-            ScanFMMenuItem.Enabled = installable;
+            ScanFMMenuItem.Enabled = true;
 
             WebSearchButton.Enabled = true;
 

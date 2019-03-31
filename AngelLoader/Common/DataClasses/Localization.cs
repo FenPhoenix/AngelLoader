@@ -9,10 +9,8 @@ namespace AngelLoader.Common.DataClasses
 
     // TODO: Missing localized bits:
     // -Remove tag / remove all tags MessageBoxes (make less annoying)
-    // -Import forms
     // -Hitches with localizability:
-    //  -Tags filter form buttons are squished between ListBoxes and can't really change width
-    //  -Date and rating forms are not set up for easy resizability of controls either
+    //  -Date and rating forms are not set up for easy resizability of controls
 
     [FenGenLocalizationClass]
     internal static class LText

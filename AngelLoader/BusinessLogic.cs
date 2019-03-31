@@ -30,6 +30,8 @@ namespace AngelLoader
 {
     internal sealed class BusinessLogic
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(BusinessLogic));
+
         private readonly MainForm View;
         private readonly ProgressPanel ProgressBox;
 
@@ -38,8 +40,6 @@ namespace AngelLoader
 
         private CancellationTokenSource ScanCts;
         private CancellationTokenSource ExtractCts;
-
-        private static readonly ILog Log = LogManager.GetLogger(typeof(BusinessLogic));
 
         internal BusinessLogic(MainForm view, ProgressPanel progressBox)
         {
@@ -515,14 +515,8 @@ namespace AngelLoader
 
                 if (!fm.InstalledDir.IsEmpty() && fm.Archive.IsEmpty())
                 {
-                    // TODO: Here's where I want to add something for installed FMs without fmsel.inf
                     var archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives);
-                    if (archiveName.IsEmpty())
-                    {
-                        //FMDataIniList.RemoveAt(i);
-                        //i--;
-                        continue;
-                    }
+                    if (archiveName.IsEmpty()) continue;
 
                     // Exponential (slow) stuff, but we only do it once to correct the list and then never again
                     var existingFM = FMDataIniList.FirstOrDefault(x => x.Archive.EqualsI(archiveName));
@@ -791,8 +785,10 @@ namespace AngelLoader
                         else if (GameIsKnownAndSupported(fm))
                         {
                             var fmInstalledPath = GetFMInstallsBasePath(fm);
-
-                            fms.Add(Path.Combine(fmInstalledPath, fm.InstalledDir));
+                            if (!fmInstalledPath.IsEmpty())
+                            {
+                                fms.Add(Path.Combine(fmInstalledPath, fm.InstalledDir));
+                            }
                         }
                         else
                         {
@@ -945,8 +941,6 @@ namespace AngelLoader
 
         internal async Task ScanNewFMsForGameType()
         {
-            // TODO: This can be canceled, so make sure the world won't explode if the user cancels
-            // and leaves some FMs in an un-game-type-scanned state.
             var fmsToScan = new List<FanMission>();
             foreach (var fm in FMsViewList)
             {
@@ -1065,7 +1059,6 @@ namespace AngelLoader
         {
             if (fms.Count == 0) return;
 
-            // TODO: This can be canceled, so make sure the world won't explode if the user cancels
             await ScanFMs(fms, scanOptions, overwriteUnscannedFields, markAsScanned: true);
             FindFMs();
         }
@@ -1994,7 +1987,8 @@ namespace AngelLoader
 
         #region Cacheable FM data
 
-        // TODO: Handle if there do exist files, but not all of them from the zip are there
+        // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
+        // a button, so don't worry about it
         internal async Task<CacheData> GetCacheableData(FanMission fm)
         {
             if (fm.Game == Game.Unsupported)
