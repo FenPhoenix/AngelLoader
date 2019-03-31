@@ -270,7 +270,7 @@
             this.FMRightClickMenuSep2,
             this.WebSearchMenuItem});
             this.FMRightClickMenu.Name = "FMRightClickMenu";
-            this.FMRightClickMenu.Size = new System.Drawing.Size(183, 226);
+            this.FMRightClickMenu.Size = new System.Drawing.Size(183, 204);
             this.FMRightClickMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FMRightClickMenu_Opening);
             // 
             // PlayFMMenuItem
@@ -1727,7 +1727,7 @@
             // EditFMFinishedOnButton
             // 
             this.EditFMFinishedOnButton.AutoSize = true;
-            this.EditFMFinishedOnButton.Location = new System.Drawing.Point(247, 144);
+            this.EditFMFinishedOnButton.Location = new System.Drawing.Point(184, 144);
             this.EditFMFinishedOnButton.Name = "EditFMFinishedOnButton";
             this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.EditFMFinishedOnButton.Size = new System.Drawing.Size(138, 23);
@@ -1753,7 +1753,7 @@
             "8",
             "9",
             "10"});
-            this.EditFMRatingComboBox.Location = new System.Drawing.Point(248, 104);
+            this.EditFMRatingComboBox.Location = new System.Drawing.Point(185, 104);
             this.EditFMRatingComboBox.Name = "EditFMRatingComboBox";
             this.EditFMRatingComboBox.Size = new System.Drawing.Size(136, 21);
             this.EditFMRatingComboBox.TabIndex = 7;
@@ -1762,7 +1762,7 @@
             // EditFMRatingLabel
             // 
             this.EditFMRatingLabel.AutoSize = true;
-            this.EditFMRatingLabel.Location = new System.Drawing.Point(248, 87);
+            this.EditFMRatingLabel.Location = new System.Drawing.Point(185, 87);
             this.EditFMRatingLabel.Name = "EditFMRatingLabel";
             this.EditFMRatingLabel.Size = new System.Drawing.Size(41, 13);
             this.EditFMRatingLabel.TabIndex = 6;
