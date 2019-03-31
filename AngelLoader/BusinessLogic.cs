@@ -1883,23 +1883,14 @@ namespace AngelLoader
             var gamePath = Path.GetDirectoryName(gameExe);
             if (gamePath.IsEmpty()) return false;
 
-            Paths.PrepareTempPath(Paths.StubCommTemp);
-            using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))
-            {
-                sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                sw.WriteLine("DisabledMods=");
-            }
-
+            // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
             using (var proc = new Process())
             {
                 proc.StartInfo.FileName = dromedExe;
-                //proc.StartInfo.Arguments = "-fm";
+                proc.StartInfo.Arguments = "-fm=" + fm.InstalledDir;
                 proc.StartInfo.WorkingDirectory = gamePath;
                 proc.Start();
             }
-
-            // Don't clear the temp folder here, because the stub program will need to read from it. It will
-            // delete the temp file itself after it's done with it.
 
             return true;
         }
