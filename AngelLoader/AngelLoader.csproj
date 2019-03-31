@@ -86,6 +86,28 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Beta|AnyCPU'">
+    <OutputPath>bin\Release_Beta\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Beta|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Release_Beta\</OutputPath>
+    <DefineConstants>TRACE;Release</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FFmpeg.NET, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\xFFmpeg.NET.3.1.0\lib\netstandard2.0\FFmpeg.NET.dll</HintPath>
@@ -369,23 +391,30 @@
       <Name>FMScanner</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)AngelLoader.exe" "C:\AngelLoader\" /y
-xcopy "$(TargetDir)*.dll" "C:\AngelLoader\" /y
-xcopy "$(TargetDir)log4net.config" "C:\AngelLoader\" /y
-xcopy "$(TargetDir)x86\7z.dll" "C:\AngelLoader\" /y
+    <PostBuildEvent>if $(ConfigurationName) == Release_Beta (
+set destDir="C:\AngelLoader_Beta_Package\"
+) else (
+set destDir="C:\AngelLoader\"
+)
+
+xcopy "$(TargetDir)AngelLoader.exe" %25destDir%25 /y
+xcopy "$(TargetDir)*.dll" %25destDir%25 /y
+xcopy "$(TargetDir)log4net.config" %25destDir%25 /y
+xcopy "$(TargetDir)x86\7z.dll" %25destDir%25 /y
 xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
 
-xcopy "$(TargetDir)ffmpeg.exe" "C:\AngelLoader\" /y
-xcopy "$(TargetDir)ffprobe.exe" "C:\AngelLoader\" /y
-xcopy "$(TargetDir)ffmpeg.txt" "C:\AngelLoader\" /y
+xcopy "$(TargetDir)ffmpeg.exe" %25destDir%25 /y
+xcopy "$(TargetDir)ffprobe.exe" %25destDir%25 /y
+xcopy "$(TargetDir)ffmpeg.txt" %25destDir%25 /y
 
-xcopy "$(TargetDir)ffmpeg" "C:\AngelLoader\ffmpeg\" /y /i
+xcopy "$(TargetDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
 
-xcopy "$(ProjectDir)English.ini" "C:\AngelLoader\Data\Languages\" /y
-
-rem ---</PostBuildEvent>
+xcopy "$(ProjectDir)English.ini" "%25destDir%25Data\Languages\" /y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>rem Autogenerate code

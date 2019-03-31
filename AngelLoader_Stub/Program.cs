@@ -181,28 +181,35 @@ namespace AngelLoader_Stub
             if (File.Exists(ArgsFilePath))
             {
                 var cmdFileData = new ArgsFileData();
-                ReadArgsFile(ArgsFilePath, cmdFileData);
-                File.Delete(ArgsFilePath);
-
-                #region Check for errors
-
-                var errors = new List<StubResponseError>();
-                if (cmdFileData.SelectedFMName.Length > 30)
+                try
                 {
-                    errors.Add(StubResponseError.NameTooLong);
-                }
-                if (cmdFileData.DisabledMods.Length > data.nMaxModExcludeLen)
-                {
-                    errors.Add(StubResponseError.ModExcludeTooLong);
-                }
+                    ReadArgsFile(ArgsFilePath, cmdFileData);
+                    File.Delete(ArgsFilePath);
 
-                if (errors.Count > 0)
-                {
-                    WriteResponseErrorFile(ResponseFilePath, errors);
-                    return (int)eFMSelReturn.kSelFMRet_ExitGame;
-                }
+                    #region Check for errors
 
-                #endregion
+                    var errors = new List<StubResponseError>();
+                    if (cmdFileData.SelectedFMName.Length > 30)
+                    {
+                        errors.Add(StubResponseError.NameTooLong);
+                    }
+                    if (cmdFileData.DisabledMods.Length > data.nMaxModExcludeLen)
+                    {
+                        errors.Add(StubResponseError.ModExcludeTooLong);
+                    }
+
+                    if (errors.Count > 0)
+                    {
+                        WriteResponseErrorFile(ResponseFilePath, errors);
+                        return (int)eFMSelReturn.kSelFMRet_ExitGame;
+                    }
+
+                    #endregion
+                }
+                catch (Exception ex)
+                {
+                    return (int)eFMSelReturn.kSelFMRet_Cancel;
+                }
 
                 fmInstalledFolderName = cmdFileData.SelectedFMName;
                 disabledMods = cmdFileData.DisabledMods;
