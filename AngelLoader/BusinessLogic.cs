@@ -1826,17 +1826,23 @@ namespace AngelLoader
                 }
             }
 
-            Paths.PrepareTempPath(Paths.StubCommTemp);
-            using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))
+            // Only use the stub if we need to pass something we can't pass on the command line
+            var args = "-fm=" + fm.InstalledDir;
+            if (!fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
             {
-                sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                args = "-fm";
+                Paths.PrepareTempPath(Paths.StubCommTemp);
+                using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))
+                {
+                    sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+                    sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                }
             }
 
             using (var proc = new Process())
             {
                 proc.StartInfo.FileName = gameExe;
-                proc.StartInfo.Arguments = "-fm";
+                proc.StartInfo.Arguments = args;
                 proc.StartInfo.WorkingDirectory = gamePath;
                 proc.Start();
             }
