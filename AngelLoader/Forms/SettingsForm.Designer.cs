@@ -718,7 +718,7 @@
             // LanguageGroupBox
             // 
             this.LanguageGroupBox.Controls.Add(this.LanguageComboBox);
-            this.LanguageGroupBox.Location = new System.Drawing.Point(8, 240);
+            this.LanguageGroupBox.Location = new System.Drawing.Point(8, 210);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
             this.LanguageGroupBox.Size = new System.Drawing.Size(424, 60);
             this.LanguageGroupBox.TabIndex = 2;
@@ -812,22 +812,22 @@
             // BackupAllChangedDataRadioButton
             // 
             this.BackupAllChangedDataRadioButton.AutoSize = true;
+            this.BackupAllChangedDataRadioButton.Checked = true;
             this.BackupAllChangedDataRadioButton.Location = new System.Drawing.Point(16, 48);
             this.BackupAllChangedDataRadioButton.Name = "BackupAllChangedDataRadioButton";
             this.BackupAllChangedDataRadioButton.Size = new System.Drawing.Size(102, 17);
             this.BackupAllChangedDataRadioButton.TabIndex = 1;
+            this.BackupAllChangedDataRadioButton.TabStop = true;
             this.BackupAllChangedDataRadioButton.Text = "All changed files";
             this.BackupAllChangedDataRadioButton.UseVisualStyleBackColor = true;
             // 
             // BackupSavesAndScreensOnlyRadioButton
             // 
             this.BackupSavesAndScreensOnlyRadioButton.AutoSize = true;
-            this.BackupSavesAndScreensOnlyRadioButton.Checked = true;
             this.BackupSavesAndScreensOnlyRadioButton.Location = new System.Drawing.Point(16, 24);
             this.BackupSavesAndScreensOnlyRadioButton.Name = "BackupSavesAndScreensOnlyRadioButton";
             this.BackupSavesAndScreensOnlyRadioButton.Size = new System.Drawing.Size(158, 17);
             this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 0;
-            this.BackupSavesAndScreensOnlyRadioButton.TabStop = true;
             this.BackupSavesAndScreensOnlyRadioButton.Text = "Saves and screenshots only";
             this.BackupSavesAndScreensOnlyRadioButton.UseVisualStyleBackColor = true;
             // 

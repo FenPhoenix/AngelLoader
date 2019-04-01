@@ -635,7 +635,7 @@
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.ScanAllFMsButton);
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.BottomAreaToolStripCustom2);
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.WebSearchButton);
-            this.BottomLeftButtonsFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.BottomLeftButtonsFlowLayoutPanel.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFlowLayoutPanel.Name = "BottomLeftButtonsFlowLayoutPanel";
             this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(616, 42);
             this.BottomLeftButtonsFlowLayoutPanel.TabIndex = 36;
