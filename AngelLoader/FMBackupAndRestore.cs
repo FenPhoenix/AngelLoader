@@ -207,7 +207,8 @@ namespace AngelLoader
                             try
                             {
                                 var fi = new FileInfo(fileInInstalledDir);
-                                if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime())
+                                if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime() ||
+                                    fi.Length != entry.Length)
                                 {
                                     changedList.Add(entry.FullName);
                                 }
@@ -266,7 +267,8 @@ namespace AngelLoader
                             try
                             {
                                 var fi = new FileInfo(fileInInstalledDir);
-                                if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime())
+                                if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime() ||
+                                    (ulong)fi.Length != entry.Size)
                                 {
                                     changedList.Add(efn);
                                 }
