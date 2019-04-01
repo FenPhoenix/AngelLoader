@@ -8,7 +8,6 @@ namespace AngelLoader.Common.DataClasses
     // can be added to the list.
 
     // TODO: Missing localized bits:
-    // -Remove tag / remove all tags MessageBoxes (make less annoying)
     // -Hitches with localizability:
     //  -Date and rating forms are not set up for easy resizability of controls
 
