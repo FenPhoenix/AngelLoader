@@ -79,10 +79,12 @@ namespace AngelLoader.Common.DataClasses
             internal static string Uninstall_UninstallNotCompleted = "The uninstall could not be completed. The FM will be marked as uninstalled but its folder may be in an unknown state.";
             internal static string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
             internal static string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
+            internal static string Uninstall_FailedFullyOrPartially = "Uninstall failed fully or partially.";
             [FenGenBlankLine]
             internal static string FileConversion_GameIsRunning = "Game is running; unable to convert files. Please exit the game and then try again.";
             [FenGenBlankLine]
             internal static string Play_ExecutableNotFound = "Executable file not specified or not found. Unable to play.";
+            internal static string Play_GamePathNotFound = "Game path not found. Unable to play.";
             internal static string Play_ExecutableNotFoundFM = "Executable file not specified or not found. Unable to play FM.";
             internal static string Play_GameIsRunning = "Game is already running. Exit it first!";
             internal static string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
@@ -97,6 +99,10 @@ namespace AngelLoader.Common.DataClasses
             internal static string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
             [FenGenBlankLine]
             internal static string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
+            internal static string Misc_FMMarkedInstalledButNotInstalled = "This FM is marked as installed, but its folder cannot be found. Mark it as uninstalled?";
+            [FenGenBlankLine]
+            internal static string Extract_ZipExtractFailedFullyOrPartially ="Zip extract failed fully or partially.";
+            internal static string Extract_SevenZipExtractFailedFullyOrPartially ="7-zip extract failed fully or partially.";
         }
 
         internal static class Difficulties
@@ -228,6 +234,9 @@ namespace AngelLoader.Common.DataClasses
             internal static string AddTag = "Add tag";
             internal static string AddFromList = "Add from list...";
             internal static string RemoveTag = "Remove tag";
+            [FenGenBlankLine]
+            internal static string AskRemoveCategory = "Remove category?";
+            internal static string AskRemoveTag = "Remove tag?";
         }
 
         internal static class PatchTab

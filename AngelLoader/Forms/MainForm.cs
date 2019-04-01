@@ -1050,9 +1050,6 @@ namespace AngelLoader.Forms
         {
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
 
-            var t = new Stopwatch();
-            t.Start();
-
             var s = FMsDGV;
 
             #region Set filters that are stored in control state
@@ -1423,9 +1420,6 @@ namespace AngelLoader.Forms
             #endregion
 
             s.Filtered = true;
-
-            t.Stop();
-            Trace.WriteLine("SetFilter() (filter work only):\r\n" + t.Elapsed);
 
             // If the actual selected FM hasn't changed, don't reload its readme. While this can't eliminate the
             // lag when a filter selection first lands on a heavy readme, it at least prevents said readme from
@@ -3058,9 +3052,10 @@ namespace AngelLoader.Forms
             // Parent node (category)
             if (s.SelectedNode.Parent == null)
             {
-                // TODO: Make this less annoying (unlocalized for now so it stands out)
+                // TODO: These messageboxes are annoying, but they prevent accidental deletion.
+                // Figure out something better.
                 var result =
-                    MessageBox.Show("Remove category?", "Tags", MessageBoxButtons.YesNo);
+                    MessageBox.Show(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, MessageBoxButtons.YesNo);
                 if (result == DialogResult.No) return;
 
                 var cat = fm.Tags.FirstOrDefault(x => x.Category == s.SelectedNode.Text);
@@ -3081,9 +3076,8 @@ namespace AngelLoader.Forms
             // Child node (tag)
             else
             {
-                // TODO: See above
                 var result =
-                    MessageBox.Show("Remove tag?", "Tags", MessageBoxButtons.YesNo);
+                    MessageBox.Show(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, MessageBoxButtons.YesNo);
                 if (result == DialogResult.No) return;
 
                 var cat = fm.Tags.FirstOrDefault(x => x.Category == s.SelectedNode.Parent.Text);

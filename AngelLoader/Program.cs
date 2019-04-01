@@ -19,8 +19,6 @@ namespace AngelLoader
             var mutex = new Mutex(true, "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader", out bool result);
             if (!result) return;
 
-            log4net.GlobalContext.Properties["LogFileName"] = Path.Combine(Paths.Startup, "AngelLoader_log.txt");
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security;
 using AngelLoader.Common.Utility;
@@ -122,21 +123,28 @@ namespace AngelLoader.Common
 
             #endregion
 
-            if (Directory.Exists(path))
+            try
             {
-                foreach (var f in Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly))
+                if (Directory.Exists(path))
                 {
-                    File.Delete(f);
-                }
+                    foreach (var f in Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly))
+                    {
+                        File.Delete(f);
+                    }
 
-                foreach (var d in Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly))
+                    foreach (var d in Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly))
+                    {
+                        Directory.Delete(d, recursive: true);
+                    }
+                }
+                else
                 {
-                    Directory.Delete(d, recursive: true);
+                    Directory.CreateDirectory(path);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Directory.CreateDirectory(path);
+                Log.Warn("Exception clearing temp path " + path, ex);
             }
         }
 

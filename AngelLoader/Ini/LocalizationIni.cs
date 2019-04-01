@@ -204,6 +204,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Uninstall_BackupAllData = lt.Substring(24);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_FailedFullyOrPartially="))
+                        {
+                            LText.AlertMessages.Uninstall_FailedFullyOrPartially = lt.Substring(33);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("FileConversion_GameIsRunning="))
                         {
                             LText.AlertMessages.FileConversion_GameIsRunning = lt.Substring(29);
@@ -211,6 +215,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Play_ExecutableNotFound="))
                         {
                             LText.AlertMessages.Play_ExecutableNotFound = lt.Substring(24);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Play_GamePathNotFound="))
+                        {
+                            LText.AlertMessages.Play_GamePathNotFound = lt.Substring(22);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Play_ExecutableNotFoundFM="))
                         {
@@ -255,6 +263,18 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Misc_SneakyOptionsIniNotFound="))
                         {
                             LText.AlertMessages.Misc_SneakyOptionsIniNotFound = lt.Substring(30);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Misc_FMMarkedInstalledButNotInstalled="))
+                        {
+                            LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled = lt.Substring(38);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Extract_ZipExtractFailedFullyOrPartially="))
+                        {
+                            LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially = lt.Substring(41);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Extract_SevenZipExtractFailedFullyOrPartially="))
+                        {
+                            LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially = lt.Substring(46);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
@@ -691,6 +711,14 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("RemoveTag="))
                         {
                             LText.TagsTab.RemoveTag = lt.Substring(10);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("AskRemoveCategory="))
+                        {
+                            LText.TagsTab.AskRemoveCategory = lt.Substring(18);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("AskRemoveTag="))
+                        {
+                            LText.TagsTab.AskRemoveTag = lt.Substring(13);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

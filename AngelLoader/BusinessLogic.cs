@@ -320,22 +320,17 @@ namespace AngelLoader
 
         internal void FindFMs(bool startup = false)
         {
-            var t = new Stopwatch();
-
-            void timeCheck(string task)
-            {
-                t.Stop();
-                Trace.WriteLine("Finished " + task + " in:\r\n" + t.Elapsed);
-                t.Restart();
-            }
-
-            var overallTimer = new Stopwatch();
-            overallTimer.Start();
-
             if (!startup)
             {
                 // Make sure we don't lose anything when we re-find!
-                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+                try
+                {
+                    WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception writing FM data ini", ex);
+                }
             }
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
@@ -345,17 +340,18 @@ namespace AngelLoader
             FMDataIniList.Clear();
             FMsViewList.Clear();
 
-            t.Start();
-
             var fmDataIniExists = File.Exists(Paths.FMDataIni);
-
-            timeCheck("File.Exists(Paths.FMDataIniPath);");
 
             if (fmDataIniExists)
             {
-                ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
-
-                timeCheck("FMDataIniList = ReadFmDataIni(Paths.FMDataIniPath);");
+                try
+                {
+                    ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception reading FM data ini", ex);
+                }
             }
 
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
@@ -371,37 +367,44 @@ namespace AngelLoader
 
                 if (Directory.Exists(instPath))
                 {
-                    foreach (var d in Directory.GetDirectories(instPath, "*", SearchOption.TopDirectoryOnly))
+                    try
                     {
-                        var dirName = d.GetTopmostDirName();
-                        if (!dirName.EqualsI(".fmsel.cache")) instFMDirs.Add(dirName);
+                        foreach (var d in Directory.GetDirectories(instPath, "*", SearchOption.TopDirectoryOnly))
+                        {
+                            var dirName = d.GetTopmostDirName();
+                            if (!dirName.EqualsI(".fmsel.cache")) instFMDirs.Add(dirName);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn("Exception getting directories in " + instPath, ex);
                     }
                 }
             }
-
-            timeCheck("EnumerateDirectories(Config.Thief*FMInstalledPath)");
 
             var fmArchives = new List<string>();
 
             foreach (var path in GetFMArchivePaths())
             {
-                var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
-                foreach (var f in files)
+                try
                 {
-                    if (!fmArchives.ContainsI(f.GetFileNameFast()) &&
-                        (f.ExtEqualsI(".zip") || f.ExtEqualsI(".7z")) && !f.ContainsI(Paths.FMSelBak))
+                    var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
+                    foreach (var f in files)
                     {
-                        fmArchives.Add(f.GetFileNameFast());
+                        if (!fmArchives.ContainsI(f.GetFileNameFast()) &&
+                            (f.ExtEqualsI(".zip") || f.ExtEqualsI(".7z")) && !f.ContainsI(Paths.FMSelBak))
+                        {
+                            fmArchives.Add(f.GetFileNameFast());
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception getting files in " + path, ex);
                 }
             }
 
-            timeCheck("EnumerateFiles(all FM archive dirs)");
-
             #region PERF WORK
-
-            var perfWholeTimer = new Stopwatch();
-            perfWholeTimer.Start();
 
             // Convert the archive and folder names to FM objects so as to allow them to be Union'd
             var fmaList = new List<FanMission>();
@@ -496,15 +499,9 @@ namespace AngelLoader
                 for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
             }
 
-            var guT = new Stopwatch();
-            guT.Start();
-
             if (t1List.Count > 0) GameUnion(t1List);
             if (t2List.Count > 0) GameUnion(t2List);
             if (t3List.Count > 0) GameUnion(t3List);
-
-            guT.Stop();
-            Trace.WriteLine("GameUnion timer: " + guT.Elapsed);
 
             #endregion
 
@@ -566,11 +563,6 @@ namespace AngelLoader
                 }
             }
 
-            timeCheck("sort fmArchives and sort FMDataIniList");
-
-            perfWholeTimer.Stop();
-            Trace.WriteLine("Merging of lists took: " + perfWholeTimer.Elapsed);
-
             #endregion
 
             ViewListGamesNull.Clear();
@@ -627,11 +619,7 @@ namespace AngelLoader
                 #endregion
 
                 // Perf so we don't have to iterate the list again later
-                var (isNull, isSupported) = GameIsKnownAndSupportedReportIfNull(item);
-                if (isNull)
-                {
-                    ViewListGamesNull.Add(i);
-                }
+                if (item.Game == null) ViewListGamesNull.Add(i);
 
                 FMsViewList.Add(item);
 
@@ -643,12 +631,6 @@ namespace AngelLoader
                 item.CommentSingleLine = item.Comment.FromEscapes().ToSingleLineComment(100);
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
             }
-
-            timeCheck("Fill FMsList");
-
-            overallTimer.Stop();
-
-            Trace.WriteLine("FindFMs() took: " + overallTimer.Elapsed);
 
             // Link the lists back up because they get broken in here
             View.LinkViewList();
@@ -696,11 +678,17 @@ namespace AngelLoader
 
                 if (!createFmselInf) return tryArchive;
 
-                File.Delete(fmselInf);
-                using (var sw = new StreamWriter(fmselInf, append: false))
+                try
                 {
-                    sw.WriteLine("Name=" + fm.InstalledDir);
-                    sw.WriteLine("Archive=" + tryArchive);
+                    using (var sw = new StreamWriter(fmselInf, append: false))
+                    {
+                        sw.WriteLine("Name=" + fm.InstalledDir);
+                        sw.WriteLine("Archive=" + tryArchive);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception in creating or overwriting" + fmselInf, ex);
                 }
 
                 return tryArchive;
@@ -708,7 +696,16 @@ namespace AngelLoader
 
             if (!File.Exists(fmselInf)) return FixUp(true);
 
-            var lines = File.ReadAllLines(fmselInf);
+            string[] lines;
+            try
+            {
+                lines = File.ReadAllLines(fmselInf);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception reading " + fmselInf, ex);
+                return null;
+            }
 
             if (lines.Length < 2 || !lines[0].StartsWithI("Name=") || !lines[1].StartsWithI("Archive="))
             {
@@ -1136,7 +1133,17 @@ namespace AngelLoader
             if (canceled)
             {
                 ProgressBox.SetCancelingFMInstall();
-                await Task.Run(() => Directory.Delete(fmInstalledPath, recursive: true));
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        Directory.Delete(fmInstalledPath, recursive: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn("Unable to delete FM installed directory " + fmInstalledPath, ex);
+                    }
+                });
                 ProgressBox.Hide();
                 return false;
             }
@@ -1145,10 +1152,17 @@ namespace AngelLoader
 
             WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
 
-            using (var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false))
+            try
             {
-                await sw.WriteLineAsync("Name=" + fm.InstalledDir);
-                await sw.WriteLineAsync("Archive=" + fm.Archive);
+                using (var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false))
+                {
+                    await sw.WriteLineAsync("Name=" + fm.InstalledDir);
+                    await sw.WriteLineAsync("Archive=" + fm.Archive);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
             }
 
             var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm));
@@ -1181,98 +1195,121 @@ namespace AngelLoader
             return true;
         }
 
-        private async Task<bool> InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
-        {
-            bool canceled = false;
-
-            await Task.Run(() =>
-            {
-                Directory.CreateDirectory(fmInstalledPath);
-
-                using (var extractor = new SevenZipExtractor(fmArchivePath))
-                {
-                    extractor.Extracting += (sender, e) =>
-                    {
-                        if (!canceled && ExtractCts.Token.IsCancellationRequested)
-                        {
-                            canceled = true;
-                        }
-                        if (canceled)
-                        {
-                            ProgressBox.BeginInvoke(new Action(ProgressBox.SetCancelingFMInstall));
-                            return;
-                        }
-                        ProgressBox.BeginInvoke(new Action(() => ProgressBox.ReportFMExtractProgress(e.PercentDone)));
-                    };
-
-                    extractor.FileExtractionFinished += (sender, e) =>
-                    {
-                        SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
-
-                        if (ExtractCts.Token.IsCancellationRequested)
-                        {
-                            ProgressBox.BeginInvoke(new Action(ProgressBox.SetCancelingFMInstall));
-                            canceled = true;
-                            e.Cancel = true;
-                        }
-                    };
-
-                    try
-                    {
-                        extractor.ExtractArchive(fmInstalledPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Throws a weird exception even if everything's fine
-                        Log.Warn("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
-                    }
-                }
-            });
-
-            return !canceled;
-        }
-
         private async Task<bool> InstallFMZip(string fmArchivePath, string fmInstalledPath)
         {
             bool canceled = false;
 
             await Task.Run(() =>
             {
-                Directory.CreateDirectory(fmInstalledPath);
-
-                var fs0 = new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read);
-                using (var archive = new ZipArchive(fs0, ZipArchiveMode.Read, leaveOpen: false))
+                try
                 {
-                    int filesCount = archive.Entries.Count;
-                    for (var i = 0; i < filesCount; i++)
+                    Directory.CreateDirectory(fmInstalledPath);
+
+                    var fs = new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read);
+                    using (var archive = new ZipArchive(fs, ZipArchiveMode.Read, leaveOpen: false))
                     {
-                        var entry = archive.Entries[i];
-
-                        var fileName = entry.FullName.Replace('/', '\\');
-
-                        if (fileName[fileName.Length - 1] == '\\') continue;
-
-                        if (fileName.Contains('\\'))
+                        int filesCount = archive.Entries.Count;
+                        for (var i = 0; i < filesCount; i++)
                         {
-                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                fileName.Substring(0, fileName.LastIndexOf('\\'))));
-                        }
+                            var entry = archive.Entries[i];
 
-                        var extractedName = Path.Combine(fmInstalledPath, fileName);
-                        entry.ExtractToFile(extractedName, overwrite: true);
+                            var fileName = entry.FullName.Replace('/', '\\');
 
-                        UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
+                            if (fileName[fileName.Length - 1] == '\\') continue;
 
-                        int percent = (100 * (i + 1)) / filesCount;
+                            if (fileName.Contains('\\'))
+                            {
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                    fileName.Substring(0, fileName.LastIndexOf('\\'))));
+                            }
 
-                        View.BeginInvoke(new Action(() => ProgressBox.ReportFMExtractProgress(percent)));
+                            var extractedName = Path.Combine(fmInstalledPath, fileName);
+                            entry.ExtractToFile(extractedName, overwrite: true);
 
-                        if (ExtractCts.Token.IsCancellationRequested)
-                        {
-                            canceled = true;
-                            return;
+                            UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
+
+                            int percent = (100 * (i + 1)) / filesCount;
+
+                            View.BeginInvoke(new Action(() => ProgressBox.ReportFMExtractProgress(percent)));
+
+                            if (ExtractCts.Token.IsCancellationRequested)
+                            {
+                                canceled = true;
+                                return;
+                            }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+                    View.BeginInvoke(new Action(() =>
+                        View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                            LText.AlertMessages.Alert)));
+                }
+            });
+
+            return !canceled;
+        }
+
+        private async Task<bool> InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
+        {
+            bool canceled = false;
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    Directory.CreateDirectory(fmInstalledPath);
+
+                    using (var extractor = new SevenZipExtractor(fmArchivePath))
+                    {
+                        extractor.Extracting += (sender, e) =>
+                        {
+                            if (!canceled && ExtractCts.Token.IsCancellationRequested)
+                            {
+                                canceled = true;
+                            }
+                            if (canceled)
+                            {
+                                ProgressBox.BeginInvoke(new Action(ProgressBox.SetCancelingFMInstall));
+                                return;
+                            }
+                            ProgressBox.BeginInvoke(new Action(() =>
+                                ProgressBox.ReportFMExtractProgress(e.PercentDone)));
+                        };
+
+                        extractor.FileExtractionFinished += (sender, e) =>
+                        {
+                            SetFileAttributesFromSevenZipEntry(e.FileInfo,
+                                Path.Combine(fmInstalledPath, e.FileInfo.FileName));
+
+                            if (ExtractCts.Token.IsCancellationRequested)
+                            {
+                                ProgressBox.BeginInvoke(new Action(ProgressBox.SetCancelingFMInstall));
+                                canceled = true;
+                                e.Cancel = true;
+                            }
+                        };
+
+                        try
+                        {
+                            extractor.ExtractArchive(fmInstalledPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Throws a weird exception even if everything's fine
+                            Log.Warn("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)",
+                                ex);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
+                    View.BeginInvoke(new Action(() =>
+                        View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                            LText.AlertMessages.Alert)));
                 }
             });
 
@@ -1381,6 +1418,13 @@ namespace AngelLoader
                 WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
                 await View.RefreshSelectedFM(refreshReadme: false);
             }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
+                View.BeginInvoke(new Action(() =>
+                    View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially,
+                        LText.AlertMessages.Alert)));
+            }
             finally
             {
                 ProgressBox.Hide();
@@ -1452,11 +1496,13 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                // TODO: This should probably be an option
-                View.ShowAlert("This FM is marked as installed, but its folder cannot be found. " +
-                               "It will now be marked as uninstalled.", LText.AlertMessages.Alert);
-                fm.Installed = false;
-                await View.RefreshSelectedFM(refreshReadme: false);
+                var yes = View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
+                    LText.AlertMessages.Alert);
+                if (yes)
+                {
+                    fm.Installed = false;
+                    await View.RefreshSelectedFM(refreshReadme: false);
+                }
                 return;
             }
 
@@ -1493,11 +1539,13 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                // TODO: This should probably be an option
-                View.ShowAlert("This FM is marked as installed, but its folder cannot be found. " +
-                               "It will now be marked as uninstalled.", LText.AlertMessages.Alert);
-                fm.Installed = false;
-                await View.RefreshSelectedFM(refreshReadme: false);
+                var yes = View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
+                    LText.AlertMessages.Alert);
+                if (yes)
+                {
+                    fm.Installed = false;
+                    await View.RefreshSelectedFM(refreshReadme: false);
+                }
                 return;
             }
 
@@ -1589,18 +1637,29 @@ namespace AngelLoader
 
             #endregion
 
-            // We will have verified this on startup and on settings close, and it won't change anywhere else.
-            // Also, we know gameExe exists, so we also know its directory is valid.
             var gamePath = Path.GetDirectoryName(gameExe);
+            if (gamePath.IsEmpty())
+            {
+                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
+                    LText.AlertMessages.Alert);
+                return false;
+            }
 
             // When the stub finds nothing in the stub comm folder, it will just start the game with no FM
             Paths.PrepareTempPath(Paths.StubCommTemp);
 
-            using (var proc = new Process())
+            try
             {
-                proc.StartInfo.FileName = gameExe;
-                proc.StartInfo.WorkingDirectory = gamePath;
-                proc.Start();
+                using (var proc = new Process())
+                {
+                    proc.StartInfo.FileName = gameExe;
+                    proc.StartInfo.WorkingDirectory = gamePath;
+                    proc.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception starting " + gameExe, ex);
             }
 
             return true;
@@ -1627,18 +1686,21 @@ namespace AngelLoader
             var gameExe = GetGameExeFromGameType(game);
             if (gameExe.IsEmpty())
             {
+                Log.Warn("gameExe is empty for " + game);
                 return false;
             }
 
             var gamePath = Path.GetDirectoryName(gameExe);
             if (gamePath.IsEmpty())
             {
+                Log.Warn("gamePath is empty for " + game);
                 return false;
             }
 
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
             if (!File.Exists(camModIni))
             {
+                Log.Warn("cam_mod.ini not found for " + gameExe);
                 return false;
             }
 
@@ -1651,6 +1713,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                Log.Warn("Exception reading cam_mod.ini for " + gameExe, ex);
                 return false;
             }
 
@@ -1700,6 +1763,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                Log.Warn("Exception writing cam_mod.ini for " + gameExe, ex);
                 return false;
             }
 
@@ -1840,10 +1904,18 @@ namespace AngelLoader
             {
                 args = "-fm";
                 Paths.PrepareTempPath(Paths.StubCommTemp);
-                using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))
+
+                try
                 {
-                    sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                    sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                    using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))
+                    {
+                        sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+                        sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception writing stub file " + Paths.StubFileName, ex);
                 }
             }
 
@@ -1852,7 +1924,14 @@ namespace AngelLoader
                 proc.StartInfo.FileName = gameExe;
                 proc.StartInfo.Arguments = args;
                 proc.StartInfo.WorkingDirectory = gamePath;
-                proc.Start();
+                try
+                {
+                    proc.Start();
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception starting game " + gameExe, ex);
+                }
             }
 
             // Don't clear the temp folder here, because the stub program will need to read from it. It will
@@ -1874,6 +1953,7 @@ namespace AngelLoader
             var gameExe = GetGameExeFromGameType((Game)fm.Game);
             if (gameExe.IsEmpty())
             {
+                Log.Warn("gameExe is empty for " + fm.Game);
                 return false;
             }
 
@@ -1904,7 +1984,15 @@ namespace AngelLoader
                 proc.StartInfo.FileName = dromedExe;
                 proc.StartInfo.Arguments = "-fm=" + fm.InstalledDir;
                 proc.StartInfo.WorkingDirectory = gamePath;
-                proc.Start();
+
+                try
+                {
+                    proc.Start();
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception starting " + dromedExe, ex);
+                }
             }
 
             return true;
@@ -1975,6 +2063,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                Log.Warn("Exception getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
                 return (false, new string[] { });
             }
         }
@@ -1998,14 +2087,25 @@ namespace AngelLoader
                     var fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
                     if (!fmCachePath.TrimEnd('\\').EqualsI(Paths.FMsCache.TrimEnd('\\')) && Directory.Exists(fmCachePath))
                     {
-                        foreach (var f in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.TopDirectoryOnly))
+                        try
                         {
-                            File.Delete(f);
-                        }
+                            foreach (var f in Directory.EnumerateFiles(fmCachePath, "*",
+                                SearchOption.TopDirectoryOnly))
+                            {
+                                File.Delete(f);
+                            }
 
-                        foreach (var d in Directory.EnumerateDirectories(fmCachePath, "*", SearchOption.TopDirectoryOnly))
+                            foreach (var d in Directory.EnumerateDirectories(fmCachePath, "*",
+                                SearchOption.TopDirectoryOnly))
+                            {
+                                Directory.Delete(d, recursive: true);
+                            }
+                        }
+                        catch (Exception ex)
                         {
-                            Directory.Delete(d, recursive: true);
+                            Log.Warn(
+                                "Exception enumerating files or directories in cache for " + fm.Archive + " / " +
+                                fm.InstalledDir, ex);
                         }
                     }
                 }
@@ -2081,7 +2181,14 @@ namespace AngelLoader
                 return;
             }
 
-            Process.Start(fmDir);
+            try
+            {
+                Process.Start(fmDir);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception trying to open FM folder " + fmDir, ex);
+            }
         }
 
         internal void OpenWebSearchUrl(FanMission fm)
@@ -2131,7 +2238,14 @@ namespace AngelLoader
 
             if (File.Exists(path))
             {
-                Process.Start(path);
+                try
+                {
+                    Process.Start(path);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Exception opening HTML readme " + path, ex);
+                }
             }
             else
             {
@@ -2192,13 +2306,37 @@ namespace AngelLoader
             Config.ReadmeZoomFactor = readmeZoomFactor;
         }
 
-        internal void WriteFullFMDataIni() => WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+        internal void WriteFullFMDataIni()
+        {
+            try
+            {
+                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception writing FM data ini", ex);
+            }
+        }
 
         internal void Shutdown()
         {
-            WriteConfigIni(Config, Paths.ConfigIni);
+            try
+            {
+                WriteConfigIni(Config, Paths.ConfigIni);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception writing config ini", ex);
+            }
 
-            WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+            try
+            {
+                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Exception writing FM data ini", ex);
+            }
 
             Application.Exit();
         }
