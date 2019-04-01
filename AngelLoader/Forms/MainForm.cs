@@ -1666,7 +1666,7 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered)
             {
                 // SetFilter() calls a refresh on its own
-                await SetFilter();
+                await SetFilter(forceRefreshReadme: true);
             }
             else
             {
@@ -2223,9 +2223,9 @@ namespace AngelLoader.Forms
             {
                 var ascending = reverse ? SortOrder.Descending : SortOrder.Ascending;
 
-                FMsList = sortDirection == ascending
-                    ? FMsList.OrderBy(x => x.Title, new FMTitleComparer(articles)).ToList()
-                    : FMsList.OrderByDescending(x => x.Title, new FMTitleComparer(articles)).ToList();
+                Model.FMsViewList = sortDirection == ascending
+                    ? Model.FMsViewList.OrderBy(x => x.Title, new FMTitleComparer(articles)).ToList()
+                    : Model.FMsViewList.OrderByDescending(x => x.Title, new FMTitleComparer(articles)).ToList();
             }
 
             // For any column which could have empty entries, sort by title first in order to maintain a
@@ -2235,17 +2235,17 @@ namespace AngelLoader.Forms
             {
                 case Column.Game:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.Game).ToList()
-                        : FMsList.OrderByDescending(x => x.Game).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.Game).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.Game).ToList();
                     break;
 
                 case Column.Installed:
                     SortByTitle();
                     // Reverse this because "Installed" should go on top and blanks should go on bottom
-                    FMsList = sortDirection == SortOrder.Descending
-                        ? FMsList.OrderBy(x => x.Installed).ToList()
-                        : FMsList.OrderByDescending(x => x.Installed).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Descending
+                        ? Model.FMsViewList.OrderBy(x => x.Installed).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.Installed).ToList();
                     break;
 
                 case Column.Title:
@@ -2253,68 +2253,79 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Archive:
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.Archive).ToList()
-                        : FMsList.OrderByDescending(x => x.Archive).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.Archive).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.Archive).ToList();
                     break;
 
                 case Column.Author:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.Author).ToList()
-                        : FMsList.OrderByDescending(x => x.Author).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.Author).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.Author).ToList();
                     break;
 
                 case Column.Size:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.SizeBytes).ToList()
-                        : FMsList.OrderByDescending(x => x.SizeBytes).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.SizeBytes).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.SizeBytes).ToList();
                     break;
 
                 case Column.Rating:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.Rating).ToList()
-                        : FMsList.OrderByDescending(x => x.Rating).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.Rating).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.Rating).ToList();
                     break;
 
                 case Column.Finished:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.FinishedOn).ToList()
-                        : FMsList.OrderByDescending(x => x.FinishedOn).ToList();
+                    // FinishedOnUnknown is a separate value, so...
+                    if (sortDirection == SortOrder.Ascending)
+                    {
+                        Model.FMsViewList = Model.FMsViewList.OrderBy(x => x.FinishedOn).ToList();
+                        Model.FMsViewList = Model.FMsViewList.OrderBy(x => x.FinishedOnUnknown).ToList();
+                    }
+                    else
+                    {
+                        Model.FMsViewList = Model.FMsViewList.OrderByDescending(x => x.FinishedOn).ToList();
+                        Model.FMsViewList = Model.FMsViewList.OrderByDescending(x => x.FinishedOnUnknown).ToList();
+                    }
                     break;
 
                 case Column.ReleaseDate:
                     SortByTitle();
 
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
-                        : FMsList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
                     break;
 
                 case Column.LastPlayed:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.LastPlayed?.Date ?? x.LastPlayed).ToList()
-                        : FMsList.OrderByDescending(x => x.LastPlayed?.Date ?? x.LastPlayed).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.LastPlayed?.Date ?? x.LastPlayed).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.LastPlayed?.Date ?? x.LastPlayed).ToList();
                     break;
 
                 case Column.DisabledMods:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.DisabledMods).ToList()
-                        : FMsList.OrderByDescending(x => x.DisabledMods).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.DisabledMods).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.DisabledMods).ToList();
                     break;
 
                 case Column.Comment:
                     SortByTitle();
-                    FMsList = sortDirection == SortOrder.Ascending
-                        ? FMsList.OrderBy(x => x.CommentSingleLine).ToList()
-                        : FMsList.OrderByDescending(x => x.CommentSingleLine).ToList();
+                    Model.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Model.FMsViewList.OrderBy(x => x.CommentSingleLine).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.CommentSingleLine).ToList();
                     break;
             }
+
+            // Reference break city up in here, so connect them back up
+            FMsList = Model.FMsViewList;
 
             foreach (DataGridViewColumn x in FMsDGV.Columns)
             {
