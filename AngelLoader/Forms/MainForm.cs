@@ -2476,7 +2476,8 @@ namespace AngelLoader.Forms
             {
                 using (new DisableKeyPresses(this))
                 {
-                    await ScanSelectedFM(GetDefaultScanOptions());
+                    // If successful, this method will be called again, so exit to avoid running it twice
+                    if (await ScanSelectedFM(GetDefaultScanOptions())) return;
                 }
             }
 
@@ -3905,11 +3906,12 @@ namespace AngelLoader.Forms
             await ScanSelectedFM(ScanOptions.FalseDefault(scanCustomResources: true));
         }
 
-        private async Task ScanSelectedFM(ScanOptions scanOptions)
+        private async Task<bool> ScanSelectedFM(ScanOptions scanOptions)
         {
             bool success = await Model.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false,
                 markAsScanned: true);
             if (success) await RefreshSelectedFM(refreshReadme: true);
+            return success;
         }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
