@@ -1,20 +1,32 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Forms;
+using log4net;
 
 namespace AngelLoader
 {
     internal class Program
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         private static void Main()
         {
+            AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
+            {
+                if (e.Exception.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
+                {
+                    Log.Error("Exception thrown", e.Exception);
+                }
+            };
+
             // Make this a single-instance application
             var mutex = new Mutex(true, "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader", out bool result);
             if (!result) return;
