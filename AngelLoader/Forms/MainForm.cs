@@ -702,6 +702,9 @@ namespace AngelLoader.Forms
                 InstallUninstallFMButton.Text = sayInstall
                     ? LText.MainButtons.InstallFM
                     : LText.MainButtons.UninstallFM;
+                InstallUninstallFMButton.Image = sayInstall
+                    ? Resources.Install_24
+                    : Resources.Uninstall_24;
 
                 InstallUninstallFMButton.ResumeDrawing();
 
@@ -2369,6 +2372,7 @@ namespace AngelLoader.Forms
             InstallUninstallMenuItem.Enabled = false;
             // Special-cased; don't autosize this one
             InstallUninstallFMButton.Text = LText.MainButtons.InstallFM;
+            InstallUninstallFMButton.Image = Resources.Install_24;
             InstallUninstallFMButton.Enabled = false;
             PlayFMMenuItem.Enabled = false;
             PlayFMButton.Enabled = false;
@@ -2506,6 +2510,9 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton.Text = fm.Installed
                 ? LText.MainButtons.UninstallFM
                 : LText.MainButtons.InstallFM;
+            InstallUninstallFMButton.Image = fm.Installed
+                ? Resources.Uninstall_24
+                : Resources.Install_24;
 
             PlayFMMenuItem.Enabled = installable;
             PlayFMButton.Enabled = installable;
