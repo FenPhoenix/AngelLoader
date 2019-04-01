@@ -5,6 +5,7 @@
 *.exe
 ffmpeg/**
 FenGen/**
+BinReleaseOnly/**
 
 # User-specific files
 *.suo
