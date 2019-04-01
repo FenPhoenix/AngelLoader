@@ -851,23 +851,22 @@ namespace AngelLoader.Forms
             try
             {
                 Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
+                SetUITextToLocalized();
+                if (!Startup)
+                {
+                    try
+                    {
+                        OwnerForm.SetUITextToLocalized();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Log.Warn("Exception in language reading", ex);
-                return;
-            }
-
-            if (!Startup)
-            {
-                try
-                {
-                    OwnerForm.SetUITextToLocalized();
-                }
-                catch (Exception ex)
-                {
-                    Log.Warn("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
-                }
             }
         }
     }
