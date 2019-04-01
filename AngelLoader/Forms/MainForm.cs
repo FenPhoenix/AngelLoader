@@ -2493,8 +2493,8 @@ namespace AngelLoader.Forms
                 ? LText.FMsList.FMMenu_UninstallFM
                 : LText.FMsList.FMMenu_InstallFM;
 
-            if ((fm.Game == Game.Thief1 && fm.Installed && Config.T1DromEdDetected) ||
-                (fm.Game == Game.Thief2 && fm.Installed && Config.T2DromEdDetected))
+            if ((fm.Game == Game.Thief1 && Config.T1DromEdDetected) ||
+                (fm.Game == Game.Thief2 && Config.T2DromEdDetected))
             {
                 OpenInDromedSep.Visible = true;
                 OpenInDromEdMenuItem.Visible = true;
@@ -3980,6 +3980,13 @@ namespace AngelLoader.Forms
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Model.OpenFMFolder(GetSelectedFM());
 
-        private void OpenInDromEdMenuItem_Click(object sender, EventArgs e) => Model.OpenFMInDromEd(GetSelectedFM());
+        private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
+        {
+            var fm = GetSelectedFM();
+
+            if (!fm.Installed && !await Model.InstallFM(fm)) return;
+
+            Model.OpenFMInDromEd(fm);
+        }
     }
 }
