@@ -382,8 +382,27 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            Show();
+            // Set here so as to avoid the changes being visible
+            SetWindowStateAndSize();
 
+            // These depend on window size
+            // TODO: Make these be saved and loaded as percentages!
+            MainSplitContainer.SetSplitterDistance(Config.MainHorizontalSplitterDistance, refresh: false);
+            TopSplitContainer.SetSplitterDistance(Config.TopVerticalSplitterDistance, refresh: false);
+
+            // Set these here because they depend on the splitter positions
+            SetUITextToLocalized(suspendResume: false);
+            ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
+
+            Show();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+        }
+
+        private async void MainForm_Shown(object sender, EventArgs e)
+        {
             // This must certainly need to come after Show() as well, right?!
             if (Model.ViewListGamesNull.Count > 0)
             {
@@ -398,28 +417,16 @@ namespace AngelLoader.Forms
             await SetFilter(suppressSuspendResume: true);
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            // This needs to be set here and nowhere else. Before _Load and it doesn't take; after _Load and the
-            // changing will be visible.
-            SetWindowStateAndSize();
-
-            // These also need to be set here for similar reasons.
-            MainSplitContainer.SetSplitterDistance(Config.MainHorizontalSplitterDistance, refresh: false);
-            TopSplitContainer.SetSplitterDistance(Config.TopVerticalSplitterDistance, refresh: false);
-
-            // Set these here because they depend on the splitter positions
-            SetUITextToLocalized(suspendResume: false);
-            ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
-        }
-
         private void SetWindowStateAndSize()
         {
             // TODO: Save and restore the position, and robustly handle the window being offscreen, too large etc.
-            WindowState = Config.MainWindowState;
-            NominalWindowState = Config.MainWindowState;
 
+            // Size MUST come first, otherwise it doesn't take (and then you have to put it in _Load, where it
+            // can potentially be seen being changed)
             Size = Config.MainWindowSize;
+            WindowState = Config.MainWindowState;
+
+            NominalWindowState = Config.MainWindowState;
             NominalWindowSize = Config.MainWindowSize;
         }
 
