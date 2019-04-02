@@ -1,7 +1,7 @@
 <h1 align="center">
 AngelLoader
 </h1>
-<p align="center"><img src="http://fenphoenix.com/github/AngelLoader/MainWindow-600_2019-03-25.png" /></p>
+<p align="center"><img src="http://fenphoenix.com/github/AngelLoader/MainWindow-600_2019-04-02.png" /></p>
 
 **NOTE:** This is currently in pre-release state, and anything about it is subject to change before version 1.0. If you compile and use this, be aware of that.
 
