@@ -47,7 +47,7 @@ namespace AngelLoader.Ini
 
         // This kinda belongs in LanguageIni.cs, but it's separated to prevent it from being removed when that
         // file is re-generated. I could make it so it doesn't get removed, but meh.
-        internal static void ReadLanguageName(string file)
+        internal static void ReadTranslatedLanguageName(string file)
         {
             StreamReader sr = null;
             try
@@ -59,10 +59,10 @@ namespace AngelLoader.Ini
                 while ((line = sr.ReadLine()) != null)
                 {
                     var lineT = line.Trim();
-                    if (inMeta && lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.LanguageName) + "="))
+                    if (inMeta && lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.TranslatedLanguageName) + "="))
                     {
                         var key = file.GetFileNameFast().RemoveExtension();
-                        var value = line.TrimStart().Substring(nameof(LText.Meta.LanguageName).Length + 1);
+                        var value = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
                         Config.LanguageNames[key] = value;
                         return;
                     }

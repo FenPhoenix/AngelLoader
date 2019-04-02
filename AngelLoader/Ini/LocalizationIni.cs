@@ -20,9 +20,9 @@ namespace AngelLoader.Ini
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("LanguageName="))
+                        if (lt.StartsWithFast_NoNullChecks("TranslatedLanguageName="))
                         {
-                            LText.Meta.LanguageName = lt.Substring(13);
+                            LText.Meta.TranslatedLanguageName = lt.Substring(23);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

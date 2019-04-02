@@ -104,7 +104,7 @@ namespace AngelLoader
                         Log.Warn("There was an error while reading " + f + ".", ex);
                     }
                 }
-                ReadLanguageName(f);
+                ReadTranslatedLanguageName(f);
             }
 
             if (openSettings)

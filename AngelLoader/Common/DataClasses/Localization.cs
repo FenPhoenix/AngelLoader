@@ -23,7 +23,7 @@ namespace AngelLoader.Common.DataClasses
         internal static class Meta
         {
             [FenGenComment("This should be the name of this file's language in this file's language.\r\nExample: English should be English, French should be Français, etc.")]
-            internal static string LanguageName = "English";
+            internal static string TranslatedLanguageName = "English";
         }
 
         internal static class Global
