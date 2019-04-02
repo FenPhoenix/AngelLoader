@@ -332,7 +332,8 @@ Here you can apply patches and customizations to an FM.
 Some older fan missions don't quite work as they should when played with NewDark. In many cases, patches are available to fix them. If you have any .dml patch files, you can add or remove them from the FM's installed folder here. If you've enabled the <a href="#settings_backup">"All changed files" backup setting</a>, then these fixes will be backed up and restored the next you install the FM.
 
 <h4>Open FM folder</h4>
-If you want to manually modify the FM's installed folder, you can open it here.
+If you want to manually modify the FM's installed folder, you can open it here.<br>
+<a style="color:red;"><b>NOTE!</b></a> FM folders contain a special file, <code>fmsel.inf</code>, which must <a style="color:red;"><b>not</b></a> be deleted. This file contains metadata and is, due to its nature, not included in differential backups. While AngelLoader will sometimes be able to regenerate it or work without it, deleting it is asking for trouble. Don't do it.
 
 <hr>
 
