@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterRatingForm));
             this.FromLabel = new System.Windows.Forms.Label();
             this.ToLabel = new System.Windows.Forms.Label();
             this.FromComboBox = new System.Windows.Forms.ComboBox();
@@ -44,7 +43,7 @@
             this.FromLabel.Location = new System.Drawing.Point(8, 8);
             this.FromLabel.Name = "FromLabel";
             this.FromLabel.Size = new System.Drawing.Size(33, 13);
-            this.FromLabel.TabIndex = 0;
+            this.FromLabel.TabIndex = 1;
             this.FromLabel.Text = "From:";
             // 
             // ToLabel
@@ -53,7 +52,7 @@
             this.ToLabel.Location = new System.Drawing.Point(8, 48);
             this.ToLabel.Name = "ToLabel";
             this.ToLabel.Size = new System.Drawing.Size(23, 13);
-            this.ToLabel.TabIndex = 2;
+            this.ToLabel.TabIndex = 3;
             this.ToLabel.Text = "To:";
             // 
             // FromComboBox
@@ -63,7 +62,7 @@
             this.FromComboBox.Location = new System.Drawing.Point(8, 24);
             this.FromComboBox.Name = "FromComboBox";
             this.FromComboBox.Size = new System.Drawing.Size(152, 21);
-            this.FromComboBox.TabIndex = 1;
+            this.FromComboBox.TabIndex = 2;
             this.FromComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBoxes_SelectedIndexChanged);
             // 
             // ToComboBox
@@ -73,7 +72,7 @@
             this.ToComboBox.Location = new System.Drawing.Point(8, 64);
             this.ToComboBox.Name = "ToComboBox";
             this.ToComboBox.Size = new System.Drawing.Size(152, 21);
-            this.ToComboBox.TabIndex = 3;
+            this.ToComboBox.TabIndex = 4;
             this.ToComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBoxes_SelectedIndexChanged);
             // 
             // OKButton
@@ -83,7 +82,7 @@
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 5;
+            this.OKButton.TabIndex = 6;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -95,7 +94,7 @@
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
-            this.Cancel_Button.TabIndex = 6;
+            this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
@@ -105,7 +104,7 @@
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(154, 22);
-            this.ResetButton.TabIndex = 4;
+            this.ResetButton.TabIndex = 5;
             this.ResetButton.Text = "Reset";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);

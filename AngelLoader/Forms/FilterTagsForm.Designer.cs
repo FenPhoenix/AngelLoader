@@ -77,7 +77,7 @@
             this.AndTreeView.Location = new System.Drawing.Point(344, 24);
             this.AndTreeView.Name = "AndTreeView";
             this.AndTreeView.Size = new System.Drawing.Size(224, 632);
-            this.AndTreeView.TabIndex = 0;
+            this.AndTreeView.TabIndex = 3;
             // 
             // OrTreeView
             // 
@@ -86,7 +86,7 @@
             this.OrTreeView.Location = new System.Drawing.Point(576, 24);
             this.OrTreeView.Name = "OrTreeView";
             this.OrTreeView.Size = new System.Drawing.Size(224, 632);
-            this.OrTreeView.TabIndex = 0;
+            this.OrTreeView.TabIndex = 4;
             // 
             // NotTreeView
             // 
@@ -95,7 +95,7 @@
             this.NotTreeView.Location = new System.Drawing.Point(808, 24);
             this.NotTreeView.Name = "NotTreeView";
             this.NotTreeView.Size = new System.Drawing.Size(224, 632);
-            this.NotTreeView.TabIndex = 0;
+            this.NotTreeView.TabIndex = 5;
             // 
             // AndButton
             // 
@@ -105,7 +105,7 @@
             this.AndButton.Location = new System.Drawing.Point(16, 0);
             this.AndButton.Name = "AndButton";
             this.AndButton.Size = new System.Drawing.Size(80, 23);
-            this.AndButton.TabIndex = 1;
+            this.AndButton.TabIndex = 0;
             this.AndButton.Text = "All";
             this.AndButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -135,7 +135,7 @@
             this.NotButton.Location = new System.Drawing.Point(16, 46);
             this.NotButton.Name = "NotButton";
             this.NotButton.Size = new System.Drawing.Size(80, 23);
-            this.NotButton.TabIndex = 1;
+            this.NotButton.TabIndex = 2;
             this.NotButton.Text = "Exclude";
             this.NotButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -148,7 +148,7 @@
             this.IncludeAllLabel.Location = new System.Drawing.Point(0, 8);
             this.IncludeAllLabel.Name = "IncludeAllLabel";
             this.IncludeAllLabel.Size = new System.Drawing.Size(59, 13);
-            this.IncludeAllLabel.TabIndex = 2;
+            this.IncludeAllLabel.TabIndex = 0;
             this.IncludeAllLabel.Text = "Include All:";
             // 
             // IncludeAnyLabel
@@ -157,7 +157,7 @@
             this.IncludeAnyLabel.Location = new System.Drawing.Point(232, 8);
             this.IncludeAnyLabel.Name = "IncludeAnyLabel";
             this.IncludeAnyLabel.Size = new System.Drawing.Size(66, 13);
-            this.IncludeAnyLabel.TabIndex = 2;
+            this.IncludeAnyLabel.TabIndex = 3;
             this.IncludeAnyLabel.Text = "Include Any:";
             // 
             // ExcludeLabel
@@ -166,7 +166,7 @@
             this.ExcludeLabel.Location = new System.Drawing.Point(464, 8);
             this.ExcludeLabel.Name = "ExcludeLabel";
             this.ExcludeLabel.Size = new System.Drawing.Size(48, 13);
-            this.ExcludeLabel.TabIndex = 2;
+            this.ExcludeLabel.TabIndex = 6;
             this.ExcludeLabel.Text = "Exclude:";
             // 
             // FilterLabelsPanel
@@ -183,7 +183,7 @@
             this.FilterLabelsPanel.Location = new System.Drawing.Point(344, 0);
             this.FilterLabelsPanel.Name = "FilterLabelsPanel";
             this.FilterLabelsPanel.Size = new System.Drawing.Size(688, 24);
-            this.FilterLabelsPanel.TabIndex = 4;
+            this.FilterLabelsPanel.TabIndex = 2;
             // 
             // RemoveAllNotButton
             // 
@@ -192,7 +192,7 @@
             this.RemoveAllNotButton.Location = new System.Drawing.Point(666, 0);
             this.RemoveAllNotButton.Name = "RemoveAllNotButton";
             this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveAllNotButton.TabIndex = 6;
+            this.RemoveAllNotButton.TabIndex = 8;
             this.RemoveAllNotButton.UseVisualStyleBackColor = true;
             this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
@@ -203,7 +203,7 @@
             this.RemoveAllOrButton.Location = new System.Drawing.Point(434, 0);
             this.RemoveAllOrButton.Name = "RemoveAllOrButton";
             this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveAllOrButton.TabIndex = 6;
+            this.RemoveAllOrButton.TabIndex = 5;
             this.RemoveAllOrButton.UseVisualStyleBackColor = true;
             this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
@@ -214,7 +214,7 @@
             this.RemoveAllAndButton.Location = new System.Drawing.Point(202, 0);
             this.RemoveAllAndButton.Name = "RemoveAllAndButton";
             this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveAllAndButton.TabIndex = 6;
+            this.RemoveAllAndButton.TabIndex = 2;
             this.RemoveAllAndButton.UseVisualStyleBackColor = true;
             this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
             // 
@@ -225,7 +225,7 @@
             this.RemoveSelectedNotButton.Location = new System.Drawing.Point(643, 0);
             this.RemoveSelectedNotButton.Name = "RemoveSelectedNotButton";
             this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveSelectedNotButton.TabIndex = 6;
+            this.RemoveSelectedNotButton.TabIndex = 7;
             this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
@@ -236,7 +236,7 @@
             this.RemoveSelectedOrButton.Location = new System.Drawing.Point(411, 0);
             this.RemoveSelectedOrButton.Name = "RemoveSelectedOrButton";
             this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveSelectedOrButton.TabIndex = 6;
+            this.RemoveSelectedOrButton.TabIndex = 4;
             this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
@@ -247,7 +247,7 @@
             this.RemoveSelectedAndButton.Location = new System.Drawing.Point(179, 0);
             this.RemoveSelectedAndButton.Name = "RemoveSelectedAndButton";
             this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveSelectedAndButton.TabIndex = 6;
+            this.RemoveSelectedAndButton.TabIndex = 1;
             this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
             // 
@@ -260,7 +260,7 @@
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 5;
+            this.OKButton.TabIndex = 2;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
@@ -273,7 +273,7 @@
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
-            this.Cancel_Button.TabIndex = 5;
+            this.Cancel_Button.TabIndex = 3;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
@@ -284,7 +284,7 @@
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(75, 23);
-            this.ResetButton.TabIndex = 6;
+            this.ResetButton.TabIndex = 0;
             this.ResetButton.Text = "Reset";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
@@ -300,7 +300,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 660);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(1040, 32);
-            this.flowLayoutPanel1.TabIndex = 7;
+            this.flowLayoutPanel1.TabIndex = 6;
             // 
             // toolStripCustom1
             // 
@@ -330,7 +330,7 @@
             this.MoveButtonsPanel.Location = new System.Drawing.Point(232, 104);
             this.MoveButtonsPanel.Name = "MoveButtonsPanel";
             this.MoveButtonsPanel.Size = new System.Drawing.Size(112, 552);
-            this.MoveButtonsPanel.TabIndex = 8;
+            this.MoveButtonsPanel.TabIndex = 1;
             // 
             // FilterTagsForm
             // 

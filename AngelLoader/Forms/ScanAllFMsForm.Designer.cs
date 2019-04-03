@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScanAllFMsForm));
             this.TitleCheckBox = new System.Windows.Forms.CheckBox();
             this.AuthorCheckBox = new System.Windows.Forms.CheckBox();
             this.GameCheckBox = new System.Windows.Forms.CheckBox();
@@ -55,7 +54,7 @@
             this.TitleCheckBox.Location = new System.Drawing.Point(16, 40);
             this.TitleCheckBox.Name = "TitleCheckBox";
             this.TitleCheckBox.Size = new System.Drawing.Size(46, 17);
-            this.TitleCheckBox.TabIndex = 0;
+            this.TitleCheckBox.TabIndex = 2;
             this.TitleCheckBox.Text = "Title";
             this.TitleCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -67,7 +66,7 @@
             this.AuthorCheckBox.Location = new System.Drawing.Point(16, 56);
             this.AuthorCheckBox.Name = "AuthorCheckBox";
             this.AuthorCheckBox.Size = new System.Drawing.Size(57, 17);
-            this.AuthorCheckBox.TabIndex = 0;
+            this.AuthorCheckBox.TabIndex = 3;
             this.AuthorCheckBox.Text = "Author";
             this.AuthorCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -79,7 +78,7 @@
             this.GameCheckBox.Location = new System.Drawing.Point(16, 72);
             this.GameCheckBox.Name = "GameCheckBox";
             this.GameCheckBox.Size = new System.Drawing.Size(54, 17);
-            this.GameCheckBox.TabIndex = 0;
+            this.GameCheckBox.TabIndex = 4;
             this.GameCheckBox.Text = "Game";
             this.GameCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -91,7 +90,7 @@
             this.CustomResourcesCheckBox.Location = new System.Drawing.Point(16, 88);
             this.CustomResourcesCheckBox.Name = "CustomResourcesCheckBox";
             this.CustomResourcesCheckBox.Size = new System.Drawing.Size(110, 17);
-            this.CustomResourcesCheckBox.TabIndex = 0;
+            this.CustomResourcesCheckBox.TabIndex = 5;
             this.CustomResourcesCheckBox.Text = "Custom resources";
             this.CustomResourcesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -103,7 +102,7 @@
             this.SizeCheckBox.Location = new System.Drawing.Point(16, 104);
             this.SizeCheckBox.Name = "SizeCheckBox";
             this.SizeCheckBox.Size = new System.Drawing.Size(46, 17);
-            this.SizeCheckBox.TabIndex = 0;
+            this.SizeCheckBox.TabIndex = 6;
             this.SizeCheckBox.Text = "Size";
             this.SizeCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -115,7 +114,7 @@
             this.ReleaseDateCheckBox.Location = new System.Drawing.Point(16, 120);
             this.ReleaseDateCheckBox.Name = "ReleaseDateCheckBox";
             this.ReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
-            this.ReleaseDateCheckBox.TabIndex = 0;
+            this.ReleaseDateCheckBox.TabIndex = 7;
             this.ReleaseDateCheckBox.Text = "Release date";
             this.ReleaseDateCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -127,7 +126,7 @@
             this.TagsCheckBox.Location = new System.Drawing.Point(16, 136);
             this.TagsCheckBox.Name = "TagsCheckBox";
             this.TagsCheckBox.Size = new System.Drawing.Size(50, 17);
-            this.TagsCheckBox.TabIndex = 0;
+            this.TagsCheckBox.TabIndex = 8;
             this.TagsCheckBox.Text = "Tags";
             this.TagsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -139,7 +138,7 @@
             this.SelectAllButton.Name = "SelectAllButton";
             this.SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SelectAllButton.Size = new System.Drawing.Size(75, 23);
-            this.SelectAllButton.TabIndex = 1;
+            this.SelectAllButton.TabIndex = 0;
             this.SelectAllButton.Text = "Select all";
             this.SelectAllButton.UseVisualStyleBackColor = true;
             this.SelectAllButton.Click += new System.EventHandler(this.SelectAllButton_Click);
@@ -176,7 +175,7 @@
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
-            this.Cancel_Button.TabIndex = 1;
+            this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
@@ -186,7 +185,7 @@
             this.ScanAllFMsForLabel.Location = new System.Drawing.Point(16, 16);
             this.ScanAllFMsForLabel.Name = "ScanAllFMsForLabel";
             this.ScanAllFMsForLabel.Size = new System.Drawing.Size(86, 13);
-            this.ScanAllFMsForLabel.TabIndex = 2;
+            this.ScanAllFMsForLabel.TabIndex = 1;
             this.ScanAllFMsForLabel.Text = "Scan all FMs for:";
             // 
             // flowLayoutPanel1
@@ -197,7 +196,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 184);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(416, 30);
-            this.flowLayoutPanel1.TabIndex = 3;
+            this.flowLayoutPanel1.TabIndex = 0;
             // 
             // flowLayoutPanel2
             // 
@@ -206,7 +205,7 @@
             this.flowLayoutPanel2.Location = new System.Drawing.Point(15, 152);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(401, 28);
-            this.flowLayoutPanel2.TabIndex = 4;
+            this.flowLayoutPanel2.TabIndex = 9;
             // 
             // ScanAllFMsForm
             // 

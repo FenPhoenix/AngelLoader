@@ -136,7 +136,7 @@
             this.Thief1ExePathTextBox.Location = new System.Drawing.Point(16, 40);
             this.Thief1ExePathTextBox.Name = "Thief1ExePathTextBox";
             this.Thief1ExePathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.Thief1ExePathTextBox.TabIndex = 0;
+            this.Thief1ExePathTextBox.TabIndex = 1;
             this.Thief1ExePathTextBox.Leave += new System.EventHandler(this.GameExePathTextBoxes_Leave);
             // 
             // Thief1ExePathBrowseButton
@@ -146,7 +146,7 @@
             this.Thief1ExePathBrowseButton.Name = "Thief1ExePathBrowseButton";
             this.Thief1ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.Thief1ExePathBrowseButton.TabIndex = 1;
+            this.Thief1ExePathBrowseButton.TabIndex = 2;
             this.Thief1ExePathBrowseButton.Text = "Browse...";
             this.Thief1ExePathBrowseButton.UseVisualStyleBackColor = true;
             this.Thief1ExePathBrowseButton.Click += new System.EventHandler(this.GameExePathBrowseButtons_Click);
@@ -176,7 +176,7 @@
             this.T3NeedsSULabel.Location = new System.Drawing.Point(16, 176);
             this.T3NeedsSULabel.Name = "T3NeedsSULabel";
             this.T3NeedsSULabel.Size = new System.Drawing.Size(400, 32);
-            this.T3NeedsSULabel.TabIndex = 6;
+            this.T3NeedsSULabel.TabIndex = 2;
             this.T3NeedsSULabel.Text = "* Thief 3 requires the Sneaky Upgrade.";
             this.T3NeedsSULabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -185,7 +185,7 @@
             this.T1T2NeedNewDarkLabel.Location = new System.Drawing.Point(16, 144);
             this.T1T2NeedNewDarkLabel.Name = "T1T2NeedNewDarkLabel";
             this.T1T2NeedNewDarkLabel.Size = new System.Drawing.Size(400, 32);
-            this.T1T2NeedNewDarkLabel.TabIndex = 6;
+            this.T1T2NeedNewDarkLabel.TabIndex = 1;
             this.T1T2NeedNewDarkLabel.Text = "* Thief 1 and Thief 2 require NewDark.";
             this.T1T2NeedNewDarkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -195,7 +195,7 @@
             this.Thief3ExePathLabel.Location = new System.Drawing.Point(16, 104);
             this.Thief3ExePathLabel.Name = "Thief3ExePathLabel";
             this.Thief3ExePathLabel.Size = new System.Drawing.Size(43, 13);
-            this.Thief3ExePathLabel.TabIndex = 0;
+            this.Thief3ExePathLabel.TabIndex = 8;
             this.Thief3ExePathLabel.Text = "Thief 3:";
             // 
             // Thief2ExePathLabel
@@ -204,7 +204,7 @@
             this.Thief2ExePathLabel.Location = new System.Drawing.Point(16, 64);
             this.Thief2ExePathLabel.Name = "Thief2ExePathLabel";
             this.Thief2ExePathLabel.Size = new System.Drawing.Size(43, 13);
-            this.Thief2ExePathLabel.TabIndex = 0;
+            this.Thief2ExePathLabel.TabIndex = 4;
             this.Thief2ExePathLabel.Text = "Thief 2:";
             // 
             // Thief3ExePathBrowseButton
@@ -214,7 +214,7 @@
             this.Thief3ExePathBrowseButton.Name = "Thief3ExePathBrowseButton";
             this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.Thief3ExePathBrowseButton.TabIndex = 5;
+            this.Thief3ExePathBrowseButton.TabIndex = 6;
             this.Thief3ExePathBrowseButton.Text = "Browse...";
             this.Thief3ExePathBrowseButton.UseVisualStyleBackColor = true;
             this.Thief3ExePathBrowseButton.Click += new System.EventHandler(this.GameExePathBrowseButtons_Click);
@@ -226,7 +226,7 @@
             this.Thief2ExePathBrowseButton.Name = "Thief2ExePathBrowseButton";
             this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.Thief2ExePathBrowseButton.TabIndex = 3;
+            this.Thief2ExePathBrowseButton.TabIndex = 4;
             this.Thief2ExePathBrowseButton.Text = "Browse...";
             this.Thief2ExePathBrowseButton.UseVisualStyleBackColor = true;
             this.Thief2ExePathBrowseButton.Click += new System.EventHandler(this.GameExePathBrowseButtons_Click);
@@ -236,7 +236,7 @@
             this.Thief3ExePathTextBox.Location = new System.Drawing.Point(16, 120);
             this.Thief3ExePathTextBox.Name = "Thief3ExePathTextBox";
             this.Thief3ExePathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.Thief3ExePathTextBox.TabIndex = 4;
+            this.Thief3ExePathTextBox.TabIndex = 5;
             this.Thief3ExePathTextBox.Leave += new System.EventHandler(this.GameExePathTextBoxes_Leave);
             // 
             // Thief2ExePathTextBox
@@ -244,7 +244,7 @@
             this.Thief2ExePathTextBox.Location = new System.Drawing.Point(16, 80);
             this.Thief2ExePathTextBox.Name = "Thief2ExePathTextBox";
             this.Thief2ExePathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.Thief2ExePathTextBox.TabIndex = 2;
+            this.Thief2ExePathTextBox.TabIndex = 3;
             this.Thief2ExePathTextBox.Leave += new System.EventHandler(this.GameExePathTextBoxes_Leave);
             // 
             // FMArchivePathsListBox
@@ -339,7 +339,7 @@
             this.BackupPathLabel.Location = new System.Drawing.Point(16, 24);
             this.BackupPathLabel.Name = "BackupPathLabel";
             this.BackupPathLabel.Size = new System.Drawing.Size(88, 13);
-            this.BackupPathLabel.TabIndex = 7;
+            this.BackupPathLabel.TabIndex = 0;
             this.BackupPathLabel.Text = "FM backup path:";
             // 
             // BackupPathTextBox
@@ -347,7 +347,7 @@
             this.BackupPathTextBox.Location = new System.Drawing.Point(16, 40);
             this.BackupPathTextBox.Name = "BackupPathTextBox";
             this.BackupPathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.BackupPathTextBox.TabIndex = 0;
+            this.BackupPathTextBox.TabIndex = 1;
             this.BackupPathTextBox.Leave += new System.EventHandler(this.BackupPathTextBox_Leave);
             // 
             // BackupPathBrowseButton
@@ -357,7 +357,7 @@
             this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
             this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.BackupPathBrowseButton.TabIndex = 1;
+            this.BackupPathBrowseButton.TabIndex = 2;
             this.BackupPathBrowseButton.Text = "Browse...";
             this.BackupPathBrowseButton.UseVisualStyleBackColor = true;
             this.BackupPathBrowseButton.Click += new System.EventHandler(this.BackupPathBrowseButton_Click);
@@ -386,7 +386,7 @@
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
             this.MainTabControl.Size = new System.Drawing.Size(882, 371);
-            this.MainTabControl.TabIndex = 2;
+            this.MainTabControl.TabIndex = 0;
             // 
             // PathsTabPage
             // 
@@ -410,7 +410,7 @@
             this.ErrorLabel.Location = new System.Drawing.Point(24, 320);
             this.ErrorLabel.Name = "ErrorLabel";
             this.ErrorLabel.Size = new System.Drawing.Size(61, 13);
-            this.ErrorLabel.TabIndex = 11;
+            this.ErrorLabel.TabIndex = 3;
             this.ErrorLabel.Text = "[ErrorLabel]";
             this.ErrorLabel.Visible = false;
             // 
@@ -505,7 +505,7 @@
             this.PreviewDatePanel.Location = new System.Drawing.Point(224, 16);
             this.PreviewDatePanel.Name = "PreviewDatePanel";
             this.PreviewDatePanel.Size = new System.Drawing.Size(248, 16);
-            this.PreviewDatePanel.TabIndex = 20;
+            this.PreviewDatePanel.TabIndex = 3;
             // 
             // PreviewDateLabel
             // 
@@ -756,7 +756,7 @@
             this.WebSearchUrlResetButton.Location = new System.Drawing.Point(386, 48);
             this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
             this.WebSearchUrlResetButton.Size = new System.Drawing.Size(20, 20);
-            this.WebSearchUrlResetButton.TabIndex = 1;
+            this.WebSearchUrlResetButton.TabIndex = 2;
             this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
             this.WebSearchUrlResetButton.Click += new System.EventHandler(this.WebSearchURLResetButton_Click);
             // 
@@ -774,7 +774,7 @@
             this.WebSearchUrlTextBox.Location = new System.Drawing.Point(16, 48);
             this.WebSearchUrlTextBox.Name = "WebSearchUrlTextBox";
             this.WebSearchUrlTextBox.Size = new System.Drawing.Size(368, 20);
-            this.WebSearchUrlTextBox.TabIndex = 0;
+            this.WebSearchUrlTextBox.TabIndex = 1;
             // 
             // WebSearchUrlLabel
             // 

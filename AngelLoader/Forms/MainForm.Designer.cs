@@ -537,7 +537,7 @@
             this.Test2Button.Location = new System.Drawing.Point(1264, 21);
             this.Test2Button.Name = "Test2Button";
             this.Test2Button.Size = new System.Drawing.Size(75, 22);
-            this.Test2Button.TabIndex = 30;
+            this.Test2Button.TabIndex = 999;
             this.Test2Button.Text = "Test2";
             this.Test2Button.UseVisualStyleBackColor = true;
             this.Test2Button.Click += new System.EventHandler(this.Test2Button_Click);
@@ -547,7 +547,7 @@
             this.TestButton.Location = new System.Drawing.Point(1264, 0);
             this.TestButton.Name = "TestButton";
             this.TestButton.Size = new System.Drawing.Size(75, 22);
-            this.TestButton.TabIndex = 1;
+            this.TestButton.TabIndex = 999;
             this.TestButton.Text = "Test";
             this.TestButton.UseVisualStyleBackColor = true;
             this.TestButton.Click += new System.EventHandler(this.TestButton_Click);
@@ -561,7 +561,7 @@
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
             this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ScanAllFMsButton.Size = new System.Drawing.Size(123, 36);
-            this.ScanAllFMsButton.TabIndex = 1;
+            this.ScanAllFMsButton.TabIndex = 59;
             this.ScanAllFMsButton.Text = "Scan all FMs...";
             this.ScanAllFMsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.ScanAllFMsButton.UseVisualStyleBackColor = true;
@@ -603,7 +603,7 @@
             this.SettingsButton.Name = "SettingsButton";
             this.SettingsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SettingsButton.Size = new System.Drawing.Size(100, 36);
-            this.SettingsButton.TabIndex = 31;
+            this.SettingsButton.TabIndex = 62;
             this.SettingsButton.Text = "Settings...";
             this.SettingsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.SettingsButton.UseVisualStyleBackColor = true;
@@ -618,7 +618,7 @@
             this.ImportButton.Name = "ImportButton";
             this.ImportButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ImportButton.Size = new System.Drawing.Size(114, 36);
-            this.ImportButton.TabIndex = 35;
+            this.ImportButton.TabIndex = 61;
             this.ImportButton.Text = "Import from...";
             this.ImportButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.ImportButton.UseVisualStyleBackColor = true;
@@ -649,7 +649,7 @@
             this.PlayFMButton.Name = "PlayFMButton";
             this.PlayFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.PlayFMButton.Size = new System.Drawing.Size(91, 36);
-            this.PlayFMButton.TabIndex = 2;
+            this.PlayFMButton.TabIndex = 56;
             this.PlayFMButton.Text = "Play FM";
             this.PlayFMButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.PlayFMButton.UseVisualStyleBackColor = true;
@@ -664,7 +664,7 @@
             this.InstallUninstallFMButton.Name = "InstallUninstallFMButton";
             this.InstallUninstallFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.InstallUninstallFMButton.Size = new System.Drawing.Size(98, 36);
-            this.InstallUninstallFMButton.TabIndex = 2;
+            this.InstallUninstallFMButton.TabIndex = 57;
             this.InstallUninstallFMButton.Text = "Install FM";
             this.InstallUninstallFMButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
@@ -679,7 +679,7 @@
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
-            this.PlayOriginalGameButton.TabIndex = 31;
+            this.PlayOriginalGameButton.TabIndex = 58;
             this.PlayOriginalGameButton.Text = "Play original game...";
             this.PlayOriginalGameButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
@@ -733,7 +733,7 @@
             this.WebSearchButton.Name = "WebSearchButton";
             this.WebSearchButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.WebSearchButton.Size = new System.Drawing.Size(111, 36);
-            this.WebSearchButton.TabIndex = 34;
+            this.WebSearchButton.TabIndex = 60;
             this.WebSearchButton.Text = "Web search";
             this.WebSearchButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.WebSearchButton.UseVisualStyleBackColor = true;
@@ -859,7 +859,7 @@
             this.RefreshClearToolStripCustom.Name = "RefreshClearToolStripCustom";
             this.RefreshClearToolStripCustom.PaddingDrawNudge = 0;
             this.RefreshClearToolStripCustom.Size = new System.Drawing.Size(60, 26);
-            this.RefreshClearToolStripCustom.TabIndex = 46;
+            this.RefreshClearToolStripCustom.TabIndex = 12;
             // 
             // RefreshFiltersButton
             // 
@@ -904,7 +904,7 @@
             this.ResetLayoutButton.Location = new System.Drawing.Point(1090, 2);
             this.ResetLayoutButton.Name = "ResetLayoutButton";
             this.ResetLayoutButton.Size = new System.Drawing.Size(21, 21);
-            this.ResetLayoutButton.TabIndex = 35;
+            this.ResetLayoutButton.TabIndex = 13;
             this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
             this.ResetLayoutButton.UseVisualStyleBackColor = true;
             this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
@@ -917,7 +917,7 @@
             this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
             this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
             this.FilterBarScrollRightButton.Size = new System.Drawing.Size(14, 24);
-            this.FilterBarScrollRightButton.TabIndex = 40;
+            this.FilterBarScrollRightButton.TabIndex = 10;
             this.FilterBarScrollRightButton.UseVisualStyleBackColor = true;
             this.FilterBarScrollRightButton.Visible = false;
             this.FilterBarScrollRightButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
@@ -934,7 +934,7 @@
             this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
             this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
             this.FilterBarScrollLeftButton.Size = new System.Drawing.Size(14, 24);
-            this.FilterBarScrollLeftButton.TabIndex = 40;
+            this.FilterBarScrollLeftButton.TabIndex = 2;
             this.FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
             this.FilterBarScrollLeftButton.Visible = false;
             this.FilterBarScrollLeftButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
@@ -1126,7 +1126,7 @@
             this.FiltersFlowLayoutPanel.Location = new System.Drawing.Point(144, 0);
             this.FiltersFlowLayoutPanel.Name = "FiltersFlowLayoutPanel";
             this.FiltersFlowLayoutPanel.Size = new System.Drawing.Size(872, 100);
-            this.FiltersFlowLayoutPanel.TabIndex = 0;
+            this.FiltersFlowLayoutPanel.TabIndex = 11;
             this.FiltersFlowLayoutPanel.WrapContents = false;
             this.FiltersFlowLayoutPanel.Scroll += new System.Windows.Forms.ScrollEventHandler(this.FiltersFlowLayoutPanel_Scroll);
             this.FiltersFlowLayoutPanel.SizeChanged += new System.EventHandler(this.FiltersFlowLayoutPanel_SizeChanged);
@@ -1142,7 +1142,7 @@
             this.FilterGamesLeftSepToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
             this.FilterGamesLeftSepToolStripCustom.PaddingDrawNudge = 1;
             this.FilterGamesLeftSepToolStripCustom.Size = new System.Drawing.Size(6, 26);
-            this.FilterGamesLeftSepToolStripCustom.TabIndex = 40;
+            this.FilterGamesLeftSepToolStripCustom.TabIndex = 2;
             this.FilterGamesLeftSepToolStripCustom.Text = "toolStripCustom2";
             // 
             // FilterGamesLeftSep
@@ -1172,7 +1172,7 @@
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
             this.FilterGameButtonsToolStrip.PaddingDrawNudge = 0;
             this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(85, 26);
-            this.FilterGameButtonsToolStrip.TabIndex = 33;
+            this.FilterGameButtonsToolStrip.TabIndex = 3;
             // 
             // FilterByThief1Button
             // 
@@ -1228,7 +1228,7 @@
             this.FilterTitleLabel.Margin = new System.Windows.Forms.Padding(0, 6, 0, 0);
             this.FilterTitleLabel.Name = "FilterTitleLabel";
             this.FilterTitleLabel.Size = new System.Drawing.Size(30, 13);
-            this.FilterTitleLabel.TabIndex = 32;
+            this.FilterTitleLabel.TabIndex = 5;
             this.FilterTitleLabel.Text = "Title:";
             // 
             // FilterTitleTextBox
@@ -1236,7 +1236,7 @@
             this.FilterTitleTextBox.Location = new System.Drawing.Point(124, 3);
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
-            this.FilterTitleTextBox.TabIndex = 31;
+            this.FilterTitleTextBox.TabIndex = 6;
             this.FilterTitleTextBox.TextChanged += new System.EventHandler(this.FilterTextBoxes_TextChanged);
             // 
             // TitleAuthorSep
@@ -1267,7 +1267,7 @@
             this.FilterAuthorLabel.Margin = new System.Windows.Forms.Padding(3, 6, 0, 0);
             this.FilterAuthorLabel.Name = "FilterAuthorLabel";
             this.FilterAuthorLabel.Size = new System.Drawing.Size(41, 13);
-            this.FilterAuthorLabel.TabIndex = 37;
+            this.FilterAuthorLabel.TabIndex = 7;
             this.FilterAuthorLabel.Text = "Author:";
             // 
             // FilterAuthorTextBox
@@ -1275,7 +1275,7 @@
             this.FilterAuthorTextBox.Location = new System.Drawing.Point(324, 3);
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
-            this.FilterAuthorTextBox.TabIndex = 36;
+            this.FilterAuthorTextBox.TabIndex = 8;
             this.FilterAuthorTextBox.TextChanged += new System.EventHandler(this.FilterTextBoxes_TextChanged);
             // 
             // FilterIconButtonsToolStripCustom
@@ -1309,7 +1309,7 @@
             this.FilterIconButtonsToolStripCustom.Name = "FilterIconButtonsToolStripCustom";
             this.FilterIconButtonsToolStripCustom.PaddingDrawNudge = 0;
             this.FilterIconButtonsToolStripCustom.Size = new System.Drawing.Size(272, 26);
-            this.FilterIconButtonsToolStripCustom.TabIndex = 43;
+            this.FilterIconButtonsToolStripCustom.TabIndex = 3;
             // 
             // toolStripSeparator5
             // 
@@ -1462,7 +1462,7 @@
             this.FilterShowJunkCheckBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.FilterShowJunkCheckBox.Name = "FilterShowJunkCheckBox";
             this.FilterShowJunkCheckBox.Size = new System.Drawing.Size(76, 17);
-            this.FilterShowJunkCheckBox.TabIndex = 41;
+            this.FilterShowJunkCheckBox.TabIndex = 9;
             this.FilterShowJunkCheckBox.Text = "Show junk";
             this.FilterShowJunkCheckBox.UseVisualStyleBackColor = true;
             this.FilterShowJunkCheckBox.CheckedChanged += new System.EventHandler(this.FilterShowJunkCheckBox_CheckedChanged);
@@ -1477,7 +1477,7 @@
             this.GamesTabControl.Name = "GamesTabControl";
             this.GamesTabControl.SelectedIndex = 0;
             this.GamesTabControl.Size = new System.Drawing.Size(1103, 24);
-            this.GamesTabControl.TabIndex = 34;
+            this.GamesTabControl.TabIndex = 1;
             this.GamesTabControl.SelectedIndexChanged += new System.EventHandler(this.GamesTabControl_SelectedIndexChanged);
             this.GamesTabControl.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.GamesTabControl_Deselecting);
             // 
@@ -1528,7 +1528,7 @@
             this.TopRightTabControl.Name = "TopRightTabControl";
             this.TopRightTabControl.SelectedIndex = 0;
             this.TopRightTabControl.Size = new System.Drawing.Size(553, 310);
-            this.TopRightTabControl.TabIndex = 34;
+            this.TopRightTabControl.TabIndex = 14;
             // 
             // StatisticsTabPage
             // 
@@ -1551,7 +1551,7 @@
             this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 200);
             this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
             this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(154, 23);
-            this.StatsScanCustomResourcesButton.TabIndex = 33;
+            this.StatsScanCustomResourcesButton.TabIndex = 12;
             this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
             this.StatsScanCustomResourcesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
@@ -1574,7 +1574,7 @@
             this.StatsCheckBoxesPanel.Location = new System.Drawing.Point(8, 32);
             this.StatsCheckBoxesPanel.Name = "StatsCheckBoxesPanel";
             this.StatsCheckBoxesPanel.Size = new System.Drawing.Size(74, 164);
-            this.StatsCheckBoxesPanel.TabIndex = 32;
+            this.StatsCheckBoxesPanel.TabIndex = 1;
             this.StatsCheckBoxesPanel.Visible = false;
             // 
             // CR_MapCheckBox
@@ -1584,7 +1584,7 @@
             this.CR_MapCheckBox.Location = new System.Drawing.Point(0, 0);
             this.CR_MapCheckBox.Name = "CR_MapCheckBox";
             this.CR_MapCheckBox.Size = new System.Drawing.Size(47, 17);
-            this.CR_MapCheckBox.TabIndex = 30;
+            this.CR_MapCheckBox.TabIndex = 2;
             this.CR_MapCheckBox.Text = "Map";
             this.CR_MapCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1595,7 +1595,7 @@
             this.CR_MoviesCheckBox.Location = new System.Drawing.Point(0, 64);
             this.CR_MoviesCheckBox.Name = "CR_MoviesCheckBox";
             this.CR_MoviesCheckBox.Size = new System.Drawing.Size(60, 17);
-            this.CR_MoviesCheckBox.TabIndex = 30;
+            this.CR_MoviesCheckBox.TabIndex = 6;
             this.CR_MoviesCheckBox.Text = "Movies";
             this.CR_MoviesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1606,7 +1606,7 @@
             this.CR_MotionsCheckBox.Location = new System.Drawing.Point(0, 112);
             this.CR_MotionsCheckBox.Name = "CR_MotionsCheckBox";
             this.CR_MotionsCheckBox.Size = new System.Drawing.Size(63, 17);
-            this.CR_MotionsCheckBox.TabIndex = 30;
+            this.CR_MotionsCheckBox.TabIndex = 9;
             this.CR_MotionsCheckBox.Text = "Motions";
             this.CR_MotionsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1617,7 +1617,7 @@
             this.CR_SoundsCheckBox.Location = new System.Drawing.Point(0, 48);
             this.CR_SoundsCheckBox.Name = "CR_SoundsCheckBox";
             this.CR_SoundsCheckBox.Size = new System.Drawing.Size(62, 17);
-            this.CR_SoundsCheckBox.TabIndex = 30;
+            this.CR_SoundsCheckBox.TabIndex = 5;
             this.CR_SoundsCheckBox.Text = "Sounds";
             this.CR_SoundsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1628,7 +1628,7 @@
             this.CR_CreaturesCheckBox.Location = new System.Drawing.Point(0, 96);
             this.CR_CreaturesCheckBox.Name = "CR_CreaturesCheckBox";
             this.CR_CreaturesCheckBox.Size = new System.Drawing.Size(71, 17);
-            this.CR_CreaturesCheckBox.TabIndex = 30;
+            this.CR_CreaturesCheckBox.TabIndex = 8;
             this.CR_CreaturesCheckBox.Text = "Creatures";
             this.CR_CreaturesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1639,7 +1639,7 @@
             this.CR_TexturesCheckBox.Location = new System.Drawing.Point(0, 32);
             this.CR_TexturesCheckBox.Name = "CR_TexturesCheckBox";
             this.CR_TexturesCheckBox.Size = new System.Drawing.Size(67, 17);
-            this.CR_TexturesCheckBox.TabIndex = 30;
+            this.CR_TexturesCheckBox.TabIndex = 4;
             this.CR_TexturesCheckBox.Text = "Textures";
             this.CR_TexturesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1650,7 +1650,7 @@
             this.CR_AutomapCheckBox.Location = new System.Drawing.Point(0, 16);
             this.CR_AutomapCheckBox.Name = "CR_AutomapCheckBox";
             this.CR_AutomapCheckBox.Size = new System.Drawing.Size(68, 17);
-            this.CR_AutomapCheckBox.TabIndex = 30;
+            this.CR_AutomapCheckBox.TabIndex = 3;
             this.CR_AutomapCheckBox.Text = "Automap";
             this.CR_AutomapCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1661,7 +1661,7 @@
             this.CR_ScriptsCheckBox.Location = new System.Drawing.Point(0, 128);
             this.CR_ScriptsCheckBox.Name = "CR_ScriptsCheckBox";
             this.CR_ScriptsCheckBox.Size = new System.Drawing.Size(58, 17);
-            this.CR_ScriptsCheckBox.TabIndex = 30;
+            this.CR_ScriptsCheckBox.TabIndex = 10;
             this.CR_ScriptsCheckBox.Text = "Scripts";
             this.CR_ScriptsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1672,7 +1672,7 @@
             this.CR_SubtitlesCheckBox.Location = new System.Drawing.Point(0, 144);
             this.CR_SubtitlesCheckBox.Name = "CR_SubtitlesCheckBox";
             this.CR_SubtitlesCheckBox.Size = new System.Drawing.Size(66, 17);
-            this.CR_SubtitlesCheckBox.TabIndex = 30;
+            this.CR_SubtitlesCheckBox.TabIndex = 11;
             this.CR_SubtitlesCheckBox.Text = "Subtitles";
             this.CR_SubtitlesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1683,7 +1683,7 @@
             this.CR_ObjectsCheckBox.Location = new System.Drawing.Point(0, 80);
             this.CR_ObjectsCheckBox.Name = "CR_ObjectsCheckBox";
             this.CR_ObjectsCheckBox.Size = new System.Drawing.Size(62, 17);
-            this.CR_ObjectsCheckBox.TabIndex = 30;
+            this.CR_ObjectsCheckBox.TabIndex = 7;
             this.CR_ObjectsCheckBox.Text = "Objects";
             this.CR_ObjectsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1693,7 +1693,7 @@
             this.CustomResourcesLabel.Location = new System.Drawing.Point(4, 10);
             this.CustomResourcesLabel.Name = "CustomResourcesLabel";
             this.CustomResourcesLabel.Size = new System.Drawing.Size(156, 13);
-            this.CustomResourcesLabel.TabIndex = 31;
+            this.CustomResourcesLabel.TabIndex = 0;
             this.CustomResourcesLabel.Text = "Custom resources not scanned.";
             // 
             // EditFMTabPage
@@ -1733,7 +1733,7 @@
             this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 248);
             this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
             this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(128, 23);
-            this.EditFMScanForReadmesButton.TabIndex = 13;
+            this.EditFMScanForReadmesButton.TabIndex = 31;
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
             this.EditFMScanForReadmesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
@@ -1746,7 +1746,7 @@
             this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
             this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanReleaseDateButton.TabIndex = 12;
+            this.EditFMScanReleaseDateButton.TabIndex = 22;
             this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.EditFMScanReleaseDateButton_Click);
             // 
@@ -1758,7 +1758,7 @@
             this.EditFMScanAuthorButton.Location = new System.Drawing.Point(512, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanAuthorButton.TabIndex = 12;
+            this.EditFMScanAuthorButton.TabIndex = 19;
             this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             this.EditFMScanAuthorButton.Click += new System.EventHandler(this.EditFMScanAuthorButton_Click);
             // 
@@ -1770,7 +1770,7 @@
             this.EditFMScanTitleButton.Location = new System.Drawing.Point(512, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
-            this.EditFMScanTitleButton.TabIndex = 12;
+            this.EditFMScanTitleButton.TabIndex = 16;
             this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
             this.EditFMScanTitleButton.Click += new System.EventHandler(this.EditFMScanTitleButton_Click);
             // 
@@ -1780,7 +1780,7 @@
             this.EditFMAltTitlesDropDownButton.Location = new System.Drawing.Point(496, 23);
             this.EditFMAltTitlesDropDownButton.Name = "EditFMAltTitlesDropDownButton";
             this.EditFMAltTitlesDropDownButton.Size = new System.Drawing.Size(17, 22);
-            this.EditFMAltTitlesDropDownButton.TabIndex = 11;
+            this.EditFMAltTitlesDropDownButton.TabIndex = 15;
             this.EditFMAltTitlesDropDownButton.UseVisualStyleBackColor = true;
             this.EditFMAltTitlesDropDownButton.Click += new System.EventHandler(this.EditFMAltTitlesDropDownButton_Click);
             // 
@@ -1791,7 +1791,7 @@
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
             this.EditFMTitleTextBox.Size = new System.Drawing.Size(488, 20);
-            this.EditFMTitleTextBox.TabIndex = 10;
+            this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             // 
             // EditFMFinishedOnButton
@@ -1801,7 +1801,7 @@
             this.EditFMFinishedOnButton.Name = "EditFMFinishedOnButton";
             this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.EditFMFinishedOnButton.Size = new System.Drawing.Size(138, 23);
-            this.EditFMFinishedOnButton.TabIndex = 9;
+            this.EditFMFinishedOnButton.TabIndex = 27;
             this.EditFMFinishedOnButton.Text = "Finished on...";
             this.EditFMFinishedOnButton.UseVisualStyleBackColor = true;
             this.EditFMFinishedOnButton.Click += new System.EventHandler(this.EditFMFinishedOnButton_Click);
@@ -1826,7 +1826,7 @@
             this.EditFMRatingComboBox.Location = new System.Drawing.Point(185, 104);
             this.EditFMRatingComboBox.Name = "EditFMRatingComboBox";
             this.EditFMRatingComboBox.Size = new System.Drawing.Size(136, 21);
-            this.EditFMRatingComboBox.TabIndex = 7;
+            this.EditFMRatingComboBox.TabIndex = 26;
             this.EditFMRatingComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMRatingComboBox_SelectedIndexChanged);
             // 
             // EditFMRatingLabel
@@ -1835,7 +1835,7 @@
             this.EditFMRatingLabel.Location = new System.Drawing.Point(185, 87);
             this.EditFMRatingLabel.Name = "EditFMRatingLabel";
             this.EditFMRatingLabel.Size = new System.Drawing.Size(41, 13);
-            this.EditFMRatingLabel.TabIndex = 6;
+            this.EditFMRatingLabel.TabIndex = 25;
             this.EditFMRatingLabel.Text = "Rating:";
             // 
             // EditFMLastPlayedDateTimePicker
@@ -1844,7 +1844,7 @@
             this.EditFMLastPlayedDateTimePicker.Location = new System.Drawing.Point(8, 148);
             this.EditFMLastPlayedDateTimePicker.Name = "EditFMLastPlayedDateTimePicker";
             this.EditFMLastPlayedDateTimePicker.Size = new System.Drawing.Size(128, 20);
-            this.EditFMLastPlayedDateTimePicker.TabIndex = 2;
+            this.EditFMLastPlayedDateTimePicker.TabIndex = 24;
             this.EditFMLastPlayedDateTimePicker.Visible = false;
             this.EditFMLastPlayedDateTimePicker.ValueChanged += new System.EventHandler(this.EditFMLastPlayedDateTimePicker_ValueChanged);
             // 
@@ -1854,7 +1854,7 @@
             this.EditFMReleaseDateDateTimePicker.Location = new System.Drawing.Point(8, 106);
             this.EditFMReleaseDateDateTimePicker.Name = "EditFMReleaseDateDateTimePicker";
             this.EditFMReleaseDateDateTimePicker.Size = new System.Drawing.Size(128, 20);
-            this.EditFMReleaseDateDateTimePicker.TabIndex = 2;
+            this.EditFMReleaseDateDateTimePicker.TabIndex = 21;
             this.EditFMReleaseDateDateTimePicker.Visible = false;
             this.EditFMReleaseDateDateTimePicker.ValueChanged += new System.EventHandler(this.EditFMReleaseDateDateTimePicker_ValueChanged);
             // 
@@ -1865,7 +1865,7 @@
             this.EditFMLastPlayedCheckBox.Location = new System.Drawing.Point(8, 130);
             this.EditFMLastPlayedCheckBox.Name = "EditFMLastPlayedCheckBox";
             this.EditFMLastPlayedCheckBox.Size = new System.Drawing.Size(83, 17);
-            this.EditFMLastPlayedCheckBox.TabIndex = 5;
+            this.EditFMLastPlayedCheckBox.TabIndex = 23;
             this.EditFMLastPlayedCheckBox.Text = "Last played:";
             this.EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
             this.EditFMLastPlayedCheckBox.CheckedChanged += new System.EventHandler(this.EditFMLastPlayedCheckBox_CheckedChanged);
@@ -1877,7 +1877,7 @@
             this.EditFMReleaseDateCheckBox.Location = new System.Drawing.Point(8, 88);
             this.EditFMReleaseDateCheckBox.Name = "EditFMReleaseDateCheckBox";
             this.EditFMReleaseDateCheckBox.Size = new System.Drawing.Size(92, 17);
-            this.EditFMReleaseDateCheckBox.TabIndex = 5;
+            this.EditFMReleaseDateCheckBox.TabIndex = 20;
             this.EditFMReleaseDateCheckBox.Text = "Release date:";
             this.EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
             this.EditFMReleaseDateCheckBox.CheckedChanged += new System.EventHandler(this.EditFMReleaseDateCheckBox_CheckedChanged);
@@ -1888,7 +1888,7 @@
             this.EditFMDisableAllModsCheckBox.Location = new System.Drawing.Point(8, 216);
             this.EditFMDisableAllModsCheckBox.Name = "EditFMDisableAllModsCheckBox";
             this.EditFMDisableAllModsCheckBox.Size = new System.Drawing.Size(102, 17);
-            this.EditFMDisableAllModsCheckBox.TabIndex = 3;
+            this.EditFMDisableAllModsCheckBox.TabIndex = 30;
             this.EditFMDisableAllModsCheckBox.Text = "Disable all mods";
             this.EditFMDisableAllModsCheckBox.UseVisualStyleBackColor = true;
             this.EditFMDisableAllModsCheckBox.CheckedChanged += new System.EventHandler(this.EditFMDisableAllModsCheckBox_CheckedChanged);
@@ -1900,7 +1900,7 @@
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
             this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(521, 20);
-            this.EditFMDisabledModsTextBox.TabIndex = 1;
+            this.EditFMDisabledModsTextBox.TabIndex = 29;
             this.EditFMDisabledModsTextBox.TextChanged += new System.EventHandler(this.EditFMDisabledModsTextBox_TextChanged);
             this.EditFMDisabledModsTextBox.Leave += new System.EventHandler(this.EditFMDisabledModsTextBox_Leave);
             // 
@@ -1910,7 +1910,7 @@
             this.EditFMDisabledModsLabel.Location = new System.Drawing.Point(8, 176);
             this.EditFMDisabledModsLabel.Name = "EditFMDisabledModsLabel";
             this.EditFMDisabledModsLabel.Size = new System.Drawing.Size(79, 13);
-            this.EditFMDisabledModsLabel.TabIndex = 0;
+            this.EditFMDisabledModsLabel.TabIndex = 28;
             this.EditFMDisabledModsLabel.Text = "Disabled mods:";
             // 
             // EditFMAuthorTextBox
@@ -1920,7 +1920,7 @@
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
             this.EditFMAuthorTextBox.Size = new System.Drawing.Size(504, 20);
-            this.EditFMAuthorTextBox.TabIndex = 1;
+            this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
             // 
@@ -1930,7 +1930,7 @@
             this.EditFMAuthorLabel.Location = new System.Drawing.Point(8, 48);
             this.EditFMAuthorLabel.Name = "EditFMAuthorLabel";
             this.EditFMAuthorLabel.Size = new System.Drawing.Size(41, 13);
-            this.EditFMAuthorLabel.TabIndex = 0;
+            this.EditFMAuthorLabel.TabIndex = 17;
             this.EditFMAuthorLabel.Text = "Author:";
             // 
             // EditFMTitleLabel
@@ -1939,7 +1939,7 @@
             this.EditFMTitleLabel.Location = new System.Drawing.Point(8, 8);
             this.EditFMTitleLabel.Name = "EditFMTitleLabel";
             this.EditFMTitleLabel.Size = new System.Drawing.Size(30, 13);
-            this.EditFMTitleLabel.TabIndex = 0;
+            this.EditFMTitleLabel.TabIndex = 13;
             this.EditFMTitleLabel.Text = "Title:";
             // 
             // CommentTabPage
@@ -1962,7 +1962,7 @@
             this.CommentTextBox.Name = "CommentTextBox";
             this.CommentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.CommentTextBox.Size = new System.Drawing.Size(529, 266);
-            this.CommentTextBox.TabIndex = 0;
+            this.CommentTextBox.TabIndex = 32;
             this.CommentTextBox.TextChanged += new System.EventHandler(this.CommentTextBox_TextChanged);
             this.CommentTextBox.Leave += new System.EventHandler(this.CommentTextBox_Leave);
             // 
@@ -1987,7 +1987,7 @@
             this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(72, 23);
-            this.AddTagButton.TabIndex = 2;
+            this.AddTagButton.TabIndex = 1;
             this.AddTagButton.Text = "Add tag";
             this.AddTagButton.UseVisualStyleBackColor = true;
             this.AddTagButton.Click += new System.EventHandler(this.AddTagButton_Click);
@@ -2000,7 +2000,7 @@
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
             this.AddTagTextBox.Name = "AddTagTextBox";
             this.AddTagTextBox.Size = new System.Drawing.Size(464, 20);
-            this.AddTagTextBox.TabIndex = 1;
+            this.AddTagTextBox.TabIndex = 0;
             this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
             this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
             this.AddTagTextBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
@@ -2026,7 +2026,7 @@
             this.RemoveTagButton.Name = "RemoveTagButton";
             this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.RemoveTagButton.Size = new System.Drawing.Size(144, 23);
-            this.RemoveTagButton.TabIndex = 2;
+            this.RemoveTagButton.TabIndex = 1;
             this.RemoveTagButton.Text = "Remove tag";
             this.RemoveTagButton.UseVisualStyleBackColor = true;
             this.RemoveTagButton.Click += new System.EventHandler(this.RemoveTagButton_Click);
@@ -2040,7 +2040,7 @@
             this.AddTagFromListButton.Name = "AddTagFromListButton";
             this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagFromListButton.Size = new System.Drawing.Size(144, 23);
-            this.AddTagFromListButton.TabIndex = 2;
+            this.AddTagFromListButton.TabIndex = 0;
             this.AddTagFromListButton.Text = "Add from list...";
             this.AddTagFromListButton.UseVisualStyleBackColor = true;
             this.AddTagFromListButton.Click += new System.EventHandler(this.TagPresetsButton_Click);
@@ -2053,7 +2053,7 @@
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
             this.TagsTreeView.Name = "TagsTreeView";
             this.TagsTreeView.Size = new System.Drawing.Size(536, 216);
-            this.TagsTreeView.TabIndex = 0;
+            this.TagsTreeView.TabIndex = 2;
             // 
             // PatchTabPage
             // 
@@ -2076,7 +2076,7 @@
             this.PatchMainPanel.Location = new System.Drawing.Point(0, 0);
             this.PatchMainPanel.Name = "PatchMainPanel";
             this.PatchMainPanel.Size = new System.Drawing.Size(175, 154);
-            this.PatchMainPanel.TabIndex = 6;
+            this.PatchMainPanel.TabIndex = 38;
             // 
             // PatchDMLsPanel
             // 
@@ -2089,7 +2089,7 @@
             this.PatchDMLsPanel.Location = new System.Drawing.Point(0, 0);
             this.PatchDMLsPanel.Name = "PatchDMLsPanel";
             this.PatchDMLsPanel.Size = new System.Drawing.Size(172, 120);
-            this.PatchDMLsPanel.TabIndex = 3;
+            this.PatchDMLsPanel.TabIndex = 39;
             // 
             // PatchDMLPatchesLabel
             // 
@@ -2097,7 +2097,7 @@
             this.PatchDMLPatchesLabel.Location = new System.Drawing.Point(8, 8);
             this.PatchDMLPatchesLabel.Name = "PatchDMLPatchesLabel";
             this.PatchDMLPatchesLabel.Size = new System.Drawing.Size(156, 13);
-            this.PatchDMLPatchesLabel.TabIndex = 2;
+            this.PatchDMLPatchesLabel.TabIndex = 40;
             this.PatchDMLPatchesLabel.Text = ".dml patches applied to this FM:";
             // 
             // PatchDMLsListBox
@@ -2106,7 +2106,7 @@
             this.PatchDMLsListBox.Location = new System.Drawing.Point(8, 24);
             this.PatchDMLsListBox.Name = "PatchDMLsListBox";
             this.PatchDMLsListBox.Size = new System.Drawing.Size(160, 69);
-            this.PatchDMLsListBox.TabIndex = 0;
+            this.PatchDMLsListBox.TabIndex = 41;
             // 
             // PatchRemoveDMLButton
             // 
@@ -2115,7 +2115,7 @@
             this.PatchRemoveDMLButton.Location = new System.Drawing.Point(122, 94);
             this.PatchRemoveDMLButton.Name = "PatchRemoveDMLButton";
             this.PatchRemoveDMLButton.Size = new System.Drawing.Size(23, 23);
-            this.PatchRemoveDMLButton.TabIndex = 1;
+            this.PatchRemoveDMLButton.TabIndex = 42;
             this.PatchRemoveDMLButton.UseVisualStyleBackColor = true;
             this.PatchRemoveDMLButton.Click += new System.EventHandler(this.PatchRemoveDMLButton_Click);
             // 
@@ -2126,7 +2126,7 @@
             this.PatchAddDMLButton.Location = new System.Drawing.Point(146, 94);
             this.PatchAddDMLButton.Name = "PatchAddDMLButton";
             this.PatchAddDMLButton.Size = new System.Drawing.Size(23, 23);
-            this.PatchAddDMLButton.TabIndex = 1;
+            this.PatchAddDMLButton.TabIndex = 43;
             this.PatchAddDMLButton.UseVisualStyleBackColor = true;
             this.PatchAddDMLButton.Click += new System.EventHandler(this.PatchAddDMLButton_Click);
             // 
@@ -2136,7 +2136,7 @@
             this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 128);
             this.PatchOpenFMFolderButton.Name = "PatchOpenFMFolderButton";
             this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
-            this.PatchOpenFMFolderButton.TabIndex = 5;
+            this.PatchOpenFMFolderButton.TabIndex = 44;
             this.PatchOpenFMFolderButton.Text = "Open FM folder";
             this.PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
             this.PatchOpenFMFolderButton.Click += new System.EventHandler(this.PatchOpenFMFolderButton_Click);
@@ -2148,7 +2148,7 @@
             this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(0, 264);
             this.PatchFMNotInstalledLabel.Name = "PatchFMNotInstalledLabel";
             this.PatchFMNotInstalledLabel.Size = new System.Drawing.Size(232, 13);
-            this.PatchFMNotInstalledLabel.TabIndex = 4;
+            this.PatchFMNotInstalledLabel.TabIndex = 45;
             this.PatchFMNotInstalledLabel.Text = "FM must be installed in order to use this section.";
             // 
             // ViewHTMLReadmeButton
@@ -2159,7 +2159,7 @@
             this.ViewHTMLReadmeButton.Name = "ViewHTMLReadmeButton";
             this.ViewHTMLReadmeButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ViewHTMLReadmeButton.Size = new System.Drawing.Size(144, 23);
-            this.ViewHTMLReadmeButton.TabIndex = 38;
+            this.ViewHTMLReadmeButton.TabIndex = 49;
             this.ViewHTMLReadmeButton.Text = "View HTML Readme";
             this.ViewHTMLReadmeButton.UseVisualStyleBackColor = true;
             this.ViewHTMLReadmeButton.Visible = false;
@@ -2176,7 +2176,7 @@
             this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1616, 8);
             this.ReadmeFullScreenButton.Name = "ReadmeFullScreenButton";
             this.ReadmeFullScreenButton.Size = new System.Drawing.Size(20, 20);
-            this.ReadmeFullScreenButton.TabIndex = 33;
+            this.ReadmeFullScreenButton.TabIndex = 55;
             this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
             this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             this.ReadmeFullScreenButton.Visible = false;
@@ -2193,7 +2193,7 @@
             this.ZoomInButton.Location = new System.Drawing.Point(1534, 8);
             this.ZoomInButton.Name = "ZoomInButton";
             this.ZoomInButton.Size = new System.Drawing.Size(20, 20);
-            this.ZoomInButton.TabIndex = 4;
+            this.ZoomInButton.TabIndex = 52;
             this.MainToolTip.SetToolTip(this.ZoomInButton, "Zoom in");
             this.ZoomInButton.UseVisualStyleBackColor = false;
             this.ZoomInButton.Visible = false;
@@ -2210,7 +2210,7 @@
             this.ZoomOutButton.Location = new System.Drawing.Point(1558, 8);
             this.ZoomOutButton.Name = "ZoomOutButton";
             this.ZoomOutButton.Size = new System.Drawing.Size(20, 20);
-            this.ZoomOutButton.TabIndex = 4;
+            this.ZoomOutButton.TabIndex = 53;
             this.MainToolTip.SetToolTip(this.ZoomOutButton, "Zoom out");
             this.ZoomOutButton.UseVisualStyleBackColor = false;
             this.ZoomOutButton.Visible = false;
@@ -2227,7 +2227,7 @@
             this.ResetZoomButton.Location = new System.Drawing.Point(1582, 8);
             this.ResetZoomButton.Name = "ResetZoomButton";
             this.ResetZoomButton.Size = new System.Drawing.Size(20, 20);
-            this.ResetZoomButton.TabIndex = 4;
+            this.ResetZoomButton.TabIndex = 54;
             this.MainToolTip.SetToolTip(this.ResetZoomButton, "Reset zoom");
             this.ResetZoomButton.UseVisualStyleBackColor = false;
             this.ResetZoomButton.Visible = false;
@@ -2241,7 +2241,7 @@
             this.ChooseReadmeComboBox.Location = new System.Drawing.Point(1350, 8);
             this.ChooseReadmeComboBox.Name = "ChooseReadmeComboBox";
             this.ChooseReadmeComboBox.Size = new System.Drawing.Size(170, 21);
-            this.ChooseReadmeComboBox.TabIndex = 3;
+            this.ChooseReadmeComboBox.TabIndex = 51;
             this.ChooseReadmeComboBox.Visible = false;
             this.ChooseReadmeComboBox.SelectedIndexChanged += new System.EventHandler(this.ChooseReadmeComboBox_SelectedIndexChanged);
             this.ChooseReadmeComboBox.DropDownClosed += new System.EventHandler(this.ChooseReadmeComboBox_DropDownClosed);
@@ -2256,7 +2256,7 @@
             this.ChooseReadmePanel.Location = new System.Drawing.Point(2, 2);
             this.ChooseReadmePanel.Name = "ChooseReadmePanel";
             this.ChooseReadmePanel.Size = new System.Drawing.Size(324, 161);
-            this.ChooseReadmePanel.TabIndex = 2;
+            this.ChooseReadmePanel.TabIndex = 46;
             // 
             // flowLayoutPanel2
             // 
@@ -2276,7 +2276,7 @@
             this.ChooseReadmeButton.Name = "ChooseReadmeButton";
             this.ChooseReadmeButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ChooseReadmeButton.Size = new System.Drawing.Size(75, 23);
-            this.ChooseReadmeButton.TabIndex = 2;
+            this.ChooseReadmeButton.TabIndex = 48;
             this.ChooseReadmeButton.Text = "OK";
             this.ChooseReadmeButton.UseVisualStyleBackColor = true;
             this.ChooseReadmeButton.Click += new System.EventHandler(this.ChooseReadmeButton_Click);
@@ -2287,7 +2287,7 @@
             this.ChooseReadmeListBox.Location = new System.Drawing.Point(0, 0);
             this.ChooseReadmeListBox.Name = "ChooseReadmeListBox";
             this.ChooseReadmeListBox.Size = new System.Drawing.Size(320, 134);
-            this.ChooseReadmeListBox.TabIndex = 1;
+            this.ChooseReadmeListBox.TabIndex = 47;
             // 
             // ReadmeRichTextBox
             // 

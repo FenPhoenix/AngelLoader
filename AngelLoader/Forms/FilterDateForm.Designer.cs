@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterDateForm));
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
@@ -49,7 +48,7 @@
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
-            this.Cancel_Button.TabIndex = 8;
+            this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
@@ -60,7 +59,7 @@
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 7;
+            this.OKButton.TabIndex = 11;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
@@ -71,7 +70,7 @@
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(154, 22);
-            this.ResetButton.TabIndex = 11;
+            this.ResetButton.TabIndex = 10;
             this.ResetButton.Text = "Reset";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
@@ -82,7 +81,7 @@
             this.ToLabel.Location = new System.Drawing.Point(8, 48);
             this.ToLabel.Name = "ToLabel";
             this.ToLabel.Size = new System.Drawing.Size(23, 13);
-            this.ToLabel.TabIndex = 10;
+            this.ToLabel.TabIndex = 6;
             this.ToLabel.Text = "To:";
             // 
             // FromLabel
@@ -91,7 +90,7 @@
             this.FromLabel.Location = new System.Drawing.Point(8, 8);
             this.FromLabel.Name = "FromLabel";
             this.FromLabel.Size = new System.Drawing.Size(33, 13);
-            this.FromLabel.TabIndex = 9;
+            this.FromLabel.TabIndex = 1;
             this.FromLabel.Text = "From:";
             // 
             // FromDateTimePicker
@@ -100,7 +99,7 @@
             this.FromDateTimePicker.Location = new System.Drawing.Point(28, 24);
             this.FromDateTimePicker.Name = "FromDateTimePicker";
             this.FromDateTimePicker.Size = new System.Drawing.Size(132, 20);
-            this.FromDateTimePicker.TabIndex = 12;
+            this.FromDateTimePicker.TabIndex = 4;
             this.FromDateTimePicker.Visible = false;
             // 
             // ToDateTimePicker
@@ -109,7 +108,7 @@
             this.ToDateTimePicker.Location = new System.Drawing.Point(28, 64);
             this.ToDateTimePicker.Name = "ToDateTimePicker";
             this.ToDateTimePicker.Size = new System.Drawing.Size(132, 20);
-            this.ToDateTimePicker.TabIndex = 12;
+            this.ToDateTimePicker.TabIndex = 8;
             this.ToDateTimePicker.Visible = false;
             // 
             // FromCheckBox
@@ -118,7 +117,7 @@
             this.FromCheckBox.Location = new System.Drawing.Point(12, 27);
             this.FromCheckBox.Name = "FromCheckBox";
             this.FromCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.FromCheckBox.TabIndex = 13;
+            this.FromCheckBox.TabIndex = 3;
             this.FromCheckBox.UseVisualStyleBackColor = true;
             this.FromCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
             // 
@@ -128,7 +127,7 @@
             this.ToCheckBox.Location = new System.Drawing.Point(12, 67);
             this.ToCheckBox.Name = "ToCheckBox";
             this.ToCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.ToCheckBox.TabIndex = 13;
+            this.ToCheckBox.TabIndex = 7;
             this.ToCheckBox.UseVisualStyleBackColor = true;
             this.ToCheckBox.CheckedChanged += new System.EventHandler(this.CheckBoxes_CheckedChanged);
             // 
@@ -138,7 +137,7 @@
             this.NoMinLabel.Location = new System.Drawing.Point(56, 0);
             this.NoMinLabel.Name = "NoMinLabel";
             this.NoMinLabel.Size = new System.Drawing.Size(40, 20);
-            this.NoMinLabel.TabIndex = 15;
+            this.NoMinLabel.TabIndex = 2;
             this.NoMinLabel.Text = "(no minimum)";
             // 
             // NoMaxLabel
@@ -147,7 +146,7 @@
             this.NoMaxLabel.Location = new System.Drawing.Point(104, 0);
             this.NoMaxLabel.Name = "NoMaxLabel";
             this.NoMaxLabel.Size = new System.Drawing.Size(40, 20);
-            this.NoMaxLabel.TabIndex = 15;
+            this.NoMaxLabel.TabIndex = 5;
             this.NoMaxLabel.Text = "(no maximum)";
             // 
             // FilterDateForm

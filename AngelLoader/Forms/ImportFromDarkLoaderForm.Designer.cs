@@ -69,7 +69,7 @@
             this.ChooseDarkLoaderIniLabel.Location = new System.Drawing.Point(16, 16);
             this.ChooseDarkLoaderIniLabel.Name = "ChooseDarkLoaderIniLabel";
             this.ChooseDarkLoaderIniLabel.Size = new System.Drawing.Size(118, 13);
-            this.ChooseDarkLoaderIniLabel.TabIndex = 8;
+            this.ChooseDarkLoaderIniLabel.TabIndex = 0;
             this.ChooseDarkLoaderIniLabel.Text = "Choose DarkLoader.ini:";
             // 
             // DarkLoaderIniTextBox
@@ -81,6 +81,7 @@
             // 
             // DarkLoaderIniBrowseButton
             // 
+            this.DarkLoaderIniBrowseButton.AutoSize = true;
             this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(456, 31);
             this.DarkLoaderIniBrowseButton.Name = "DarkLoaderIniBrowseButton";
             this.DarkLoaderIniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -98,7 +99,7 @@
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 5;
+            this.OKButton.TabIndex = 1;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
