@@ -1576,7 +1576,7 @@ namespace AngelLoader
                 try
                 {
                     var fn = proc.MainModule.FileName;
-                    Log.Info(fn);
+                    Log.Info("Process filename: " + fn);
                     if (fn.ToBackSlashes().EqualsI(gameExe.ToBackSlashes()))
                     {
                         Log.Info("Found " + gameExe + " running: " + fn +
