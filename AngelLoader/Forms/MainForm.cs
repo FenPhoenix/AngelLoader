@@ -4049,6 +4049,8 @@ namespace AngelLoader.Forms
 
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0) return;
+
             if (FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(GetSelectedFM())) return;
             await CallInstallOrPlay(Config.ConfirmPlayOnDCOrEnter);
         }
