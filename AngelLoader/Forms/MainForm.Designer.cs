@@ -144,6 +144,7 @@
             this.Thief1TabPage = new System.Windows.Forms.TabPage();
             this.Thief2TabPage = new System.Windows.Forms.TabPage();
             this.Thief3TabPage = new System.Windows.Forms.TabPage();
+            this.TopRightCollapseButton = new System.Windows.Forms.Button();
             this.TopRightTabControl = new AngelLoader.CustomControls.TabControlCustom();
             this.StatisticsTabPage = new System.Windows.Forms.TabPage();
             this.StatsScanCustomResourcesButton = new System.Windows.Forms.Button();
@@ -220,7 +221,6 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
-            this.TopRightCollapseButton = new System.Windows.Forms.Button();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -1003,6 +1003,7 @@
             this.FMsDGV.StandardTab = true;
             this.FMsDGV.TabIndex = 0;
             this.FMsDGV.VirtualMode = true;
+            this.FMsDGV.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.FMsDGV_CellDoubleClick);
             this.FMsDGV.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.FMsDGV_CellValueNeeded_Initial);
             this.FMsDGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.FMsDGV_ColumnHeaderMouseClick);
             this.FMsDGV.SelectionChanged += new System.EventHandler(this.FMsDGV_SelectionChanged);
@@ -1516,6 +1517,21 @@
             this.Thief3TabPage.Text = "Thief 3";
             this.Thief3TabPage.UseVisualStyleBackColor = true;
             // 
+            // TopRightCollapseButton
+            // 
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
+            this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.TopRightCollapseButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.TopRightCollapseButton.Location = new System.Drawing.Point(0, 0);
+            this.TopRightCollapseButton.Name = "TopRightCollapseButton";
+            this.TopRightCollapseButton.Size = new System.Drawing.Size(16, 309);
+            this.TopRightCollapseButton.TabIndex = 15;
+            this.TopRightCollapseButton.UseVisualStyleBackColor = true;
+            this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
+            // 
             // TopRightTabControl
             // 
             this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1723,7 +1739,7 @@
             this.EditFMTabPage.Controls.Add(this.EditFMTitleLabel);
             this.EditFMTabPage.Location = new System.Drawing.Point(4, 22);
             this.EditFMTabPage.Name = "EditFMTabPage";
-            this.EditFMTabPage.Size = new System.Drawing.Size(545, 284);
+            this.EditFMTabPage.Size = new System.Drawing.Size(529, 284);
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
@@ -1757,7 +1773,7 @@
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMScanAuthorButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
             this.EditFMScanAuthorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(512, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(496, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
@@ -1769,7 +1785,7 @@
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMScanTitleButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
             this.EditFMScanTitleButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(512, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(496, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
@@ -1779,7 +1795,7 @@
             // EditFMAltTitlesDropDownButton
             // 
             this.EditFMAltTitlesDropDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMAltTitlesDropDownButton.Location = new System.Drawing.Point(496, 23);
+            this.EditFMAltTitlesDropDownButton.Location = new System.Drawing.Point(480, 23);
             this.EditFMAltTitlesDropDownButton.Name = "EditFMAltTitlesDropDownButton";
             this.EditFMAltTitlesDropDownButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesDropDownButton.TabIndex = 15;
@@ -1792,7 +1808,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(488, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(472, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             // 
@@ -1901,7 +1917,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
-            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(521, 20);
+            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(505, 20);
             this.EditFMDisabledModsTextBox.TabIndex = 29;
             this.EditFMDisabledModsTextBox.TextChanged += new System.EventHandler(this.EditFMDisabledModsTextBox_TextChanged);
             this.EditFMDisabledModsTextBox.Leave += new System.EventHandler(this.EditFMDisabledModsTextBox_Leave);
@@ -1921,7 +1937,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(504, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(488, 20);
             this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
@@ -1950,7 +1966,7 @@
             this.CommentTabPage.Controls.Add(this.CommentTextBox);
             this.CommentTabPage.Location = new System.Drawing.Point(4, 22);
             this.CommentTabPage.Name = "CommentTabPage";
-            this.CommentTabPage.Size = new System.Drawing.Size(545, 284);
+            this.CommentTabPage.Size = new System.Drawing.Size(529, 284);
             this.CommentTabPage.TabIndex = 0;
             this.CommentTabPage.Text = "Comment";
             // 
@@ -1963,7 +1979,7 @@
             this.CommentTextBox.Multiline = true;
             this.CommentTextBox.Name = "CommentTextBox";
             this.CommentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.CommentTextBox.Size = new System.Drawing.Size(529, 266);
+            this.CommentTextBox.Size = new System.Drawing.Size(513, 266);
             this.CommentTextBox.TabIndex = 32;
             this.CommentTextBox.TextChanged += new System.EventHandler(this.CommentTextBox_TextChanged);
             this.CommentTextBox.Leave += new System.EventHandler(this.CommentTextBox_Leave);
@@ -1977,7 +1993,7 @@
             this.TagsTabPage.Controls.Add(this.TagsTreeView);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
-            this.TagsTabPage.Size = new System.Drawing.Size(545, 284);
+            this.TagsTabPage.Size = new System.Drawing.Size(529, 284);
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
             // 
@@ -1985,7 +2001,7 @@
             // 
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
-            this.AddTagButton.Location = new System.Drawing.Point(472, 7);
+            this.AddTagButton.Location = new System.Drawing.Point(456, 7);
             this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(72, 23);
@@ -2001,7 +2017,7 @@
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
             this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(464, 20);
+            this.AddTagTextBox.Size = new System.Drawing.Size(448, 20);
             this.AddTagTextBox.TabIndex = 0;
             this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
             this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
@@ -2014,7 +2030,7 @@
             this.flowLayoutPanel1.Controls.Add(this.RemoveTagButton);
             this.flowLayoutPanel1.Controls.Add(this.AddTagFromListButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 248);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(-8, 248);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(536, 24);
             this.flowLayoutPanel1.TabIndex = 3;
@@ -2054,7 +2070,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
             this.TagsTreeView.Name = "TagsTreeView";
-            this.TagsTreeView.Size = new System.Drawing.Size(536, 216);
+            this.TagsTreeView.Size = new System.Drawing.Size(520, 216);
             this.TagsTreeView.TabIndex = 2;
             // 
             // PatchTabPage
@@ -2065,7 +2081,7 @@
             this.PatchTabPage.Controls.Add(this.PatchFMNotInstalledLabel);
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
             this.PatchTabPage.Name = "PatchTabPage";
-            this.PatchTabPage.Size = new System.Drawing.Size(545, 284);
+            this.PatchTabPage.Size = new System.Drawing.Size(529, 284);
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
             // 
@@ -2147,7 +2163,7 @@
             // 
             this.PatchFMNotInstalledLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.PatchFMNotInstalledLabel.AutoSize = true;
-            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(0, 264);
+            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(-8, 264);
             this.PatchFMNotInstalledLabel.Name = "PatchFMNotInstalledLabel";
             this.PatchFMNotInstalledLabel.Size = new System.Drawing.Size(232, 13);
             this.PatchFMNotInstalledLabel.TabIndex = 45;
@@ -2387,21 +2403,6 @@
             this.ProgressBox.Size = new System.Drawing.Size(424, 128);
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
-            // 
-            // TopRightCollapseButton
-            // 
-            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
-            this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.TopRightCollapseButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
-            this.TopRightCollapseButton.Location = new System.Drawing.Point(0, 0);
-            this.TopRightCollapseButton.Name = "TopRightCollapseButton";
-            this.TopRightCollapseButton.Size = new System.Drawing.Size(16, 309);
-            this.TopRightCollapseButton.TabIndex = 15;
-            this.TopRightCollapseButton.UseVisualStyleBackColor = true;
-            this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
             // 
             // MainForm
             // 

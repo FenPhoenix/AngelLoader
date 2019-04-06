@@ -144,6 +144,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Error = lt.Substring(6);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Confirm="))
+                        {
+                            LText.AlertMessages.Confirm = lt.Substring(8);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("AppClosing_OperationInProgress="))
                         {
                             LText.AlertMessages.AppClosing_OperationInProgress = lt.Substring(31);
@@ -231,6 +235,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Play_UnknownGameType="))
                         {
                             LText.AlertMessages.Play_UnknownGameType = lt.Substring(21);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Play_ConfirmMessage="))
+                        {
+                            LText.AlertMessages.Play_ConfirmMessage = lt.Substring(20);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("DromEd_ExecutableNotFound="))
                         {
@@ -1127,6 +1135,14 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Other_WebSearchResetToolTip="))
                         {
                             LText.SettingsWindow.Other_WebSearchResetToolTip = lt.Substring(28);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_ConfirmPlayOnDCOrEnter="))
+                        {
+                            LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter = lt.Substring(29);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_ConfirmPlayOnDCOrEnter_Ask="))
+                        {
+                            LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask = lt.Substring(33);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

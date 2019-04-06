@@ -59,6 +59,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Alert = "Alert";
             internal static string Warning = "Warning";
             internal static string Error = "Error";
+            internal static string Confirm = "Confirm";
             [FenGenBlankLine]
             internal static string AppClosing_OperationInProgress = "An operation is in progress. Please cancel or wait for it to finish.";
             [FenGenBlankLine]
@@ -87,6 +88,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Play_ExecutableNotFoundFM = "Executable file not specified or not found. Unable to play FM.";
             internal static string Play_GameIsRunning = "Game is already running. Exit it first!";
             internal static string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
+            internal static string Play_ConfirmMessage = "Play FM?";
             [FenGenBlankLine]
             internal static string DromEd_ExecutableNotFound = "DromEd.exe was not found in the game directory. Unable to open FM.";
             internal static string DromEd_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to open FM.";
@@ -100,8 +102,8 @@ namespace AngelLoader.Common.DataClasses
             internal static string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
             internal static string Misc_FMMarkedInstalledButNotInstalled = "This FM is marked as installed, but its folder cannot be found. Mark it as uninstalled?";
             [FenGenBlankLine]
-            internal static string Extract_ZipExtractFailedFullyOrPartially ="Zip extract failed fully or partially.";
-            internal static string Extract_SevenZipExtractFailedFullyOrPartially ="7-zip extract failed fully or partially.";
+            internal static string Extract_ZipExtractFailedFullyOrPartially = "Zip extract failed fully or partially.";
+            internal static string Extract_SevenZipExtractFailedFullyOrPartially = "7-zip extract failed fully or partially.";
         }
 
         internal static class Difficulties
@@ -364,6 +366,9 @@ namespace AngelLoader.Common.DataClasses
             internal static string Other_WebSearchURL = "Full URL to use when searching for an FM title:";
             internal static string Other_WebSearchTitleVar = "$TITLE$ : the title of the FM";
             internal static string Other_WebSearchResetToolTip = "Reset to default";
+            [FenGenBlankLine]
+            internal static string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
+            internal static string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
         }
 
         internal static class DateFilterBox

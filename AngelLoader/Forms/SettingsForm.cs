@@ -273,6 +273,8 @@ namespace AngelLoader.Forms
 
             WebSearchUrlTextBox.Text = InConfig.WebSearchUrl;
 
+            ConfirmPlayOnDCOrEnterCheckBox.Checked = InConfig.ConfirmPlayOnDCOrEnter;
+
             SetUITextToLocalized();
         }
 
@@ -367,6 +369,9 @@ namespace AngelLoader.Forms
                 WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
                 WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
                 MainToolTip.SetToolTip(WebSearchUrlResetButton, LText.SettingsWindow.Other_WebSearchResetToolTip);
+
+                PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
+                ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
 
                 #endregion
             }
@@ -584,6 +589,8 @@ namespace AngelLoader.Forms
             OutConfig.Language = LanguageComboBox.SelectedBackingItem();
 
             OutConfig.WebSearchUrl = WebSearchUrlTextBox.Text;
+
+            OutConfig.ConfirmPlayOnDCOrEnter = ConfirmPlayOnDCOrEnterCheckBox.Checked;
         }
 
         #endregion

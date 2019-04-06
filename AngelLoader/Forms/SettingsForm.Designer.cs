@@ -83,8 +83,9 @@
             this.OrganizeGamesByTabRadioButton = new System.Windows.Forms.RadioButton();
             this.SortGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.OtherTabPage = new System.Windows.Forms.TabPage();
+            this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
+            this.ConfirmPlayOnDCOrEnterCheckBox = new System.Windows.Forms.CheckBox();
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
-            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
             this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.WebSearchTitleExplanationLabel = new System.Windows.Forms.Label();
@@ -100,6 +101,7 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -114,6 +116,7 @@
             this.SortingGroupBox.SuspendLayout();
             this.GameOrganizationGroupBox.SuspendLayout();
             this.OtherTabPage.SuspendLayout();
+            this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.LanguageGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
             this.BackupSavesGroupBox.SuspendLayout();
@@ -705,6 +708,7 @@
             // OtherTabPage
             // 
             this.OtherTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.OtherTabPage.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.OtherTabPage.Controls.Add(this.LanguageGroupBox);
             this.OtherTabPage.Controls.Add(this.WebSearchGroupBox);
             this.OtherTabPage.Controls.Add(this.BackupSavesGroupBox);
@@ -715,6 +719,28 @@
             this.OtherTabPage.TabIndex = 2;
             this.OtherTabPage.Text = "Other";
             // 
+            // PlayFMOnDCOrEnterGroupBox
+            // 
+            this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
+            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(440, 112);
+            this.PlayFMOnDCOrEnterGroupBox.Name = "PlayFMOnDCOrEnterGroupBox";
+            this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
+            this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
+            this.PlayFMOnDCOrEnterGroupBox.TabStop = false;
+            this.PlayFMOnDCOrEnterGroupBox.Text = "Play FM on double-click / Enter";
+            // 
+            // ConfirmPlayOnDCOrEnterCheckBox
+            // 
+            this.ConfirmPlayOnDCOrEnterCheckBox.AutoSize = true;
+            this.ConfirmPlayOnDCOrEnterCheckBox.Checked = true;
+            this.ConfirmPlayOnDCOrEnterCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ConfirmPlayOnDCOrEnterCheckBox.Location = new System.Drawing.Point(16, 24);
+            this.ConfirmPlayOnDCOrEnterCheckBox.Name = "ConfirmPlayOnDCOrEnterCheckBox";
+            this.ConfirmPlayOnDCOrEnterCheckBox.Size = new System.Drawing.Size(119, 17);
+            this.ConfirmPlayOnDCOrEnterCheckBox.TabIndex = 0;
+            this.ConfirmPlayOnDCOrEnterCheckBox.Text = "Ask for confirmation";
+            this.ConfirmPlayOnDCOrEnterCheckBox.UseVisualStyleBackColor = true;
+            // 
             // LanguageGroupBox
             // 
             this.LanguageGroupBox.Controls.Add(this.LanguageComboBox);
@@ -724,16 +750,6 @@
             this.LanguageGroupBox.TabIndex = 2;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
-            // 
-            // LanguageComboBox
-            // 
-            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.LanguageComboBox.FormattingEnabled = true;
-            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
-            this.LanguageComboBox.Name = "LanguageComboBox";
-            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
-            this.LanguageComboBox.TabIndex = 0;
-            this.LanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBox_SelectedIndexChanged);
             // 
             // WebSearchGroupBox
             // 
@@ -878,6 +894,16 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
             // 
+            // LanguageComboBox
+            // 
+            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.LanguageComboBox.FormattingEnabled = true;
+            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
+            this.LanguageComboBox.Name = "LanguageComboBox";
+            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
+            this.LanguageComboBox.TabIndex = 0;
+            this.LanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBox_SelectedIndexChanged);
+            // 
             // SettingsForm
             // 
             this.AcceptButton = this.OKButton;
@@ -920,6 +946,8 @@
             this.SortingGroupBox.PerformLayout();
             this.GameOrganizationGroupBox.ResumeLayout(false);
             this.OtherTabPage.ResumeLayout(false);
+            this.PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
+            this.PlayFMOnDCOrEnterGroupBox.PerformLayout();
             this.LanguageGroupBox.ResumeLayout(false);
             this.WebSearchGroupBox.ResumeLayout(false);
             this.WebSearchGroupBox.PerformLayout();
@@ -1006,5 +1034,7 @@
         private System.Windows.Forms.CheckBox BackupAlwaysAskCheckBox;
         private System.Windows.Forms.Label T3NeedsSULabel;
         private System.Windows.Forms.Label T1T2NeedNewDarkLabel;
+        private System.Windows.Forms.GroupBox PlayFMOnDCOrEnterGroupBox;
+        private System.Windows.Forms.CheckBox ConfirmPlayOnDCOrEnterCheckBox;
     }
 }

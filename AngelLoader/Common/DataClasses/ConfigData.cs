@@ -110,6 +110,8 @@ namespace AngelLoader.Common.DataClasses
 
         internal string WebSearchUrl = Defaults.WebSearchUrl;
 
+        internal bool ConfirmPlayOnDCOrEnter = true;
+
         internal float ReadmeZoomFactor = 1;
     }
 }

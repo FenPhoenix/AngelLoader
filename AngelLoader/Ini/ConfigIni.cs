@@ -624,6 +624,10 @@ namespace AngelLoader.Ini
                 {
                     config.WebSearchUrl = val;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ConfirmPlayOnDCOrEnter) + "="))
+                {
+                    config.ConfirmPlayOnDCOrEnter = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.StatsTabPosition) + "="))
                 {
                     int.TryParse(val, out int result);
@@ -737,6 +741,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.BackupAlwaysAsk) + "=" + config.BackupAlwaysAsk);
                 sw.WriteLine(nameof(config.Language) + "=" + config.Language);
                 sw.WriteLine(nameof(config.WebSearchUrl) + "=" + config.WebSearchUrl);
+                sw.WriteLine(nameof(config.ConfirmPlayOnDCOrEnter) + "=" + config.ConfirmPlayOnDCOrEnter);
 
                 #endregion
 

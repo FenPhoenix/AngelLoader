@@ -790,7 +790,7 @@ namespace AngelLoader.Forms
             if (AddTagListBox.Visible) HideAddTagDropDown();
         }
 
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        private async void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (KeyPressesDisabled)
             {
@@ -798,7 +798,15 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            if (e.KeyCode == Keys.Escape)
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(GetSelectedFM()))
+                {
+                    e.SuppressKeyPress = true;
+                    await CallInstallOrPlay(Config.ConfirmPlayOnDCOrEnter);
+                }
+            }
+            else if (e.KeyCode == Keys.Escape)
             {
                 FMsDGV.CancelColumnResize();
                 MainSplitContainer.CancelResize();
@@ -1783,9 +1791,17 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private async Task CallInstallOrPlay()
+        private async Task CallInstallOrPlay(bool askConfirmation = false)
         {
             var fm = GetSelectedFM();
+
+            if (askConfirmation)
+            {
+                var result = MessageBox.Show(LText.AlertMessages.Play_ConfirmMessage,
+                    LText.AlertMessages.Confirm,
+                    MessageBoxButtons.YesNo);
+                if (result != DialogResult.Yes) return;
+            }
 
             if (!fm.Installed && !await Model.InstallFM(fm)) return;
 
@@ -2017,6 +2033,8 @@ namespace AngelLoader.Forms
                 Config.Language = sf.OutConfig.Language;
 
                 Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
+
+                Config.ConfirmPlayOnDCOrEnter = sf.OutConfig.ConfirmPlayOnDCOrEnter;
 
                 #endregion
 
@@ -4027,6 +4045,12 @@ namespace AngelLoader.Forms
             var collapsed = TopSplitContainer.FullScreen;
             TopRightTabControl.Enabled = !collapsed;
             TopRightCollapseButton.Image = collapsed ? Resources.ArrowLeftSmall : Resources.ArrowRightSmall;
+        }
+
+        private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(GetSelectedFM())) return;
+            await CallInstallOrPlay(Config.ConfirmPlayOnDCOrEnter);
         }
     }
 }
