@@ -1567,22 +1567,33 @@ namespace AngelLoader
 
         private static bool GameIsRunning(string gameExe)
         {
+            Log.Info("Checking if " + gameExe + " is running. Listing 32-bit processes...");
+
             // We're doing this whole rigamarole because the game might have been started by someone other than
             // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
             foreach (var proc in Process.GetProcesses())
             {
                 try
                 {
-                    if (proc.MainModule.FileName.EqualsI(gameExe)) return true;
+                    var fn = proc.MainModule.FileName;
+                    Log.Info(fn);
+                    if (fn.ToBackSlashes().EqualsI(gameExe.ToBackSlashes()))
+                    {
+                        Log.Info("Found " + gameExe + " running: " + fn +
+                                 "\r\nReturning true, game should be blocked from starting");
+                        return true;
+                    }
                 }
                 catch (Win32Exception)
                 {
+                    Log.Info("Unable to read module info of 64-bit process; skipping...");
                     // The process is 64-bit, which means not only is it definitely not one of our games, but we
                     // can't even access its module info anyway. There's a way to check if a process is 64-bit in
                     // advance, but it's fiddly. Easier just to swallow the exception and move on.
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Log.Info("Exception other than 64-bit-process caught in GameIsRunning", ex);
                     // Even if this were to be one of our games, if .NET won't let us find out then all we can do
                     // is shrug and move on.
                 }

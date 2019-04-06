@@ -466,6 +466,10 @@ namespace AngelLoader.Common.Utility
             return ret;
         }
 
+        internal static string ToForwardSlashes(this string value) => value?.Replace('\\', '/');
+
+        internal static string ToBackSlashes(this string value) => value?.Replace('/', '\\');
+
         internal static void SortCat(this List<CatAndTags> list)
         {
             list.Sort(new CategoryComparer());
