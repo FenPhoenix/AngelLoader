@@ -61,6 +61,8 @@ namespace AngelLoader.Common.DataClasses
             internal static string Error = "Error";
             internal static string Confirm = "Confirm";
             [FenGenBlankLine]
+            internal static string DontAskAgain = "Don't ask again";
+            [FenGenBlankLine]
             internal static string AppClosing_OperationInProgress = "An operation is in progress. Please cancel or wait for it to finish.";
             [FenGenBlankLine]
             internal static string WebSearchURL_IsInvalid = "The specified site to search is not a valid URL.";

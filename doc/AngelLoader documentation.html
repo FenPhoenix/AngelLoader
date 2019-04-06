@@ -183,9 +183,11 @@ Brings up the <a href="#settings_window"Settings window</a>.
 
 This is the main area where fan missions are displayed, sorted, and filtered. You can change the columns' size, <a href="#column_header_context_menu">visibility</a>, and order.
 Drag a column left or right to change its order. Clicking on a column header will sort by that column. Click once to sort by ascending, and click again to sort by descending.
-Double-click the size grip to the right of a column to auto-size that column to fit its content.<br>
-Right-click on any column header or any blank space in the list to bring up the <a href="#column_context_menu"column header context menu</a>.<br>
-Right-click on an FM to bring up the <a href="#fm_context_menu">FM context menu</a>.
+Double-click the size grip to the right of a column to auto-size that column to fit its content.
+<p>Right-click on any column header or any blank space in the list to bring up the <a href="#column_header_context_menu">column header context menu</a>.</p>
+<p>Right-click on an FM to bring up the <a href="#fm_context_menu">FM context menu</a>.</p>
+<p>Double-click on a mission or press Enter when a mission is selected to play that mission. By default you will be asked for confirmation in this case; see <a href="#settings_play_on_dc_or_enter_ask">Play FM on double-click / Enter</a>.</p>
+
 
 <h4>Columns</h4>
 
@@ -392,6 +394,11 @@ Here you can edit the URL that will be used when searching for FMs on the web. T
 
 <p><code>https://www.google.com/search?q="Broken Triad" site:ttlg.com</code></p>
 
+<a name="settings_play_on_dc_or_enter_ask" /><h4>Play on double-click / Enter</h4>
+When you double-click on an FM in the list or press Enter when the list is focused,
+the selected FM will be played. Check this box to enable asking for confirmation in that case,
+to prevent accidental playing from a stray click or key press.
+
 <hr>
 
 <a name="appendix" /><h2>Appendix</h2>
@@ -447,6 +454,7 @@ I'd like to thank the following people, in no particular order:
 <a href="https://logging.apache.org/log4net/">log4net</a> (for error logging)<br>
 <a href="https://github.com/khalidsalomao/SimpleHelpers.Net/">SimpleHelpers.Net</a><br>
 <a href="https://github.com/errepi/ude">UDE</a><br>
+<a href="https://github.com/caioproiete/ookii-dialogs-winforms">Ookii Dialogs</a>
 <a href="https://github.com/dotnet/corefx">Modified portions of .NET Core's System.IO.Compression code</a> (tuned for scanning performance)<br>
 
 <hr>

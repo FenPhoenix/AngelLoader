@@ -17,6 +17,7 @@ using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using FMScanner;
 using Gma.System.MouseKeyHook;
+using Ookii.Dialogs.WinForms;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
 
@@ -1797,10 +1798,21 @@ namespace AngelLoader.Forms
 
             if (askConfirmation)
             {
-                var result = MessageBox.Show(LText.AlertMessages.Play_ConfirmMessage,
-                    LText.AlertMessages.Confirm,
-                    MessageBoxButtons.YesNo);
-                if (result != DialogResult.Yes) return;
+                using (var d = new TaskDialog())
+                using (var yesButton = new TaskDialogButton(ButtonType.Yes))
+                using (var noButton = new TaskDialogButton(ButtonType.No))
+                {
+                    d.AllowDialogCancellation = true;
+                    d.ButtonStyle = TaskDialogButtonStyle.Standard;
+                    d.WindowTitle = LText.AlertMessages.Confirm;
+                    d.Content = LText.AlertMessages.Play_ConfirmMessage;
+                    d.VerificationText = LText.AlertMessages.DontAskAgain;
+                    d.Buttons.Add(yesButton);
+                    d.Buttons.Add(noButton);
+                    var buttonClicked = d.ShowDialog();
+                    Config.ConfirmPlayOnDCOrEnter = !d.IsVerificationChecked;
+                    if (buttonClicked != yesButton) return;
+                }
             }
 
             if (!fm.Installed && !await Model.InstallFM(fm)) return;
@@ -2822,6 +2834,30 @@ namespace AngelLoader.Forms
             var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (result == DialogResult.Cancel) return (true, false);
             return (false, result == DialogResult.Yes);
+        }
+
+        public (bool Cancel, bool Continue, bool dontAskAgain)
+        AskToContinueWithCancel_TD(string message, string title)
+        {
+            using (var d = new TaskDialog())
+            using (var yesButton = new TaskDialogButton(ButtonType.Yes))
+            using (var noButton = new TaskDialogButton(ButtonType.No))
+            using (var cancelButton = new TaskDialogButton(ButtonType.Cancel))
+            {
+                d.AllowDialogCancellation = true;
+                d.ButtonStyle = TaskDialogButtonStyle.Standard;
+                d.WindowTitle = title;
+                d.Content = message;
+                d.VerificationText = LText.AlertMessages.DontAskAgain;
+                d.Buttons.Add(yesButton);
+                d.Buttons.Add(noButton);
+                d.Buttons.Add(cancelButton);
+                var buttonClicked = d.ShowDialog();
+                var cancel = buttonClicked == null || buttonClicked == cancelButton;
+                var cont = buttonClicked == yesButton;
+                var dontAskAgain = d.IsVerificationChecked;
+                return (cancel, cont, dontAskAgain);
+            }
         }
 
         public void ShowAlert(string message, string title)

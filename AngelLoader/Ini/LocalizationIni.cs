@@ -148,6 +148,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Confirm = lt.Substring(8);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("DontAskAgain="))
+                        {
+                            LText.AlertMessages.DontAskAgain = lt.Substring(13);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("AppClosing_OperationInProgress="))
                         {
                             LText.AlertMessages.AppClosing_OperationInProgress = lt.Substring(31);

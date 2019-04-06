@@ -1383,7 +1383,9 @@ namespace AngelLoader
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
                     // TODO: Make this dialog have a "don't ask again" option
-                    var (cancel, cont) = View.AskToContinueWithCancel(message, "AngelLoader");
+                    var (cancel, cont, dontAskAgain) =
+                        View.AskToContinueWithCancel_TD(message, LText.AlertMessages.Confirm);
+                    Config.BackupAlwaysAsk = !dontAskAgain;
                     if (cancel) return;
                     if (cont) await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }
@@ -1584,9 +1586,9 @@ namespace AngelLoader
                         return true;
                     }
                 }
-                catch (Win32Exception)
+                catch (Win32Exception ex)
                 {
-                    Log.Info("Unable to read module info of 64-bit process; skipping...");
+                    Log.Info("Unable to read module info of 64-bit process; skipping...", ex);
                     // The process is 64-bit, which means not only is it definitely not one of our games, but we
                     // can't even access its module info anyway. There's a way to check if a process is 64-bit in
                     // advance, but it's fiddly. Easier just to swallow the exception and move on.

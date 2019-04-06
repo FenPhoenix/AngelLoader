@@ -144,6 +144,9 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Ookii.Dialogs.WinForms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ookii.Dialogs.WinForms.1.0.0\lib\net45\Ookii.Dialogs.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="SevenZipSharp, Version=1.1.136.0, Culture=neutral, PublicKeyToken=c8ff6ba0184838bb, processorArchitecture=MSIL">
       <HintPath>..\packages\Squid-Box.SevenZipSharp.1.1.136\lib\net45\SevenZipSharp.dll</HintPath>
     </Reference>
@@ -152,6 +155,7 @@
     <Reference Include="System.Design" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -440,7 +444,7 @@ xcopy "$(TargetDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
 
 xcopy "$(ProjectDir)English.ini" "%25destDir%25Data\Languages\" /y
 
-xcopy "$(SolutionDir)BinReleaseOnly\*.*" "%25destDir%25Licenses" /y /i
+xcopy "$(SolutionDir)BinReleaseOnly" "%25destDir%25" /y /i /e
 
 xcopy "$(SolutionDir)doc" "%25destDir%25doc" /y /i /e</PostBuildEvent>
   </PropertyGroup>
