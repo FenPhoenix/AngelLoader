@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace AngelLoader.WinAPI
 {
@@ -71,5 +72,32 @@ namespace AngelLoader.WinAPI
 
         [DllImport("kernel32")]
         internal static extern uint GetCurrentThreadId();
+
+        [Flags]
+        internal enum ProcessAccessFlags : uint
+        {
+            All = 0x001F0FFF,
+            Terminate = 0x00000001,
+            CreateThread = 0x00000002,
+            VirtualMemoryOperation = 0x00000008,
+            VirtualMemoryRead = 0x00000010,
+            VirtualMemoryWrite = 0x00000020,
+            DuplicateHandle = 0x00000040,
+            CreateProcess = 0x000000080,
+            SetQuota = 0x00000100,
+            SetInformation = 0x00000200,
+            QueryInformation = 0x00000400,
+            QueryLimitedInformation = 0x00001000,
+            Synchronize = 0x00100000
+        }
+
+        [DllImport("kernel32.dll")]
+        internal static extern bool QueryFullProcessImageName(IntPtr hprocess, int dwFlags, StringBuilder lpExeName, out int size);
+
+        [DllImport("kernel32.dll")]
+        internal static extern IntPtr OpenProcess(ProcessAccessFlags dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern bool CloseHandle(IntPtr hHandle);
     }
 }

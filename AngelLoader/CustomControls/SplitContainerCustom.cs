@@ -143,7 +143,10 @@ namespace AngelLoader.CustomControls
 
         public void CancelResize()
         {
-            if (!IsSplitterFixed) return;
+            if (!IsSplitterFixed || (Orientation == Orientation.Vertical && FullScreen))
+            {
+                return;
+            }
 
             IsSplitterFixed = false;
             SplitterDistance = OriginalDistance;

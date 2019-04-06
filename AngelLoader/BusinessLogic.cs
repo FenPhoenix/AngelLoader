@@ -19,6 +19,8 @@ using AngelLoader.Forms;
 using AngelLoader.Importing;
 using FMScanner;
 using log4net;
+using log4net.Appender;
+using log4net.Layout;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Utility.Methods;
@@ -1567,37 +1569,66 @@ namespace AngelLoader
             }
         }
 
-        private static bool GameIsRunning(string gameExe)
+        private static bool GameIsRunning(string gameExe, bool checkAllGames = false)
         {
             Log.Info("Checking if " + gameExe + " is running. Listing 32-bit processes...");
 
-            // We're doing this whole rigamarole because the game might have been started by someone other than
-            // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
-            foreach (var proc in Process.GetProcesses())
+            var appenders = LogManager.GetRepository().GetAppenders();
+            ILayout oldLayout = new PatternLayout();
+            try
             {
-                try
+                foreach (var appender in appenders.OfType<FileAppender>())
                 {
-                    var fn = proc.MainModule.FileName;
-                    Log.Info("Process filename: " + fn);
-                    if (fn.ToBackSlashes().EqualsI(gameExe.ToBackSlashes()))
+                    oldLayout = appender.Layout;
+                    appender.Layout = new PatternLayout("%date [%thread] %level %logger %method %newline %message%newline");
+                    break;
+                }
+
+                // We're doing this whole rigamarole because the game might have been started by someone other than
+                // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
+                foreach (var proc in Process.GetProcesses())
+                {
+                    try
                     {
-                        Log.Info("Found " + gameExe + " running: " + fn +
-                                 "\r\nReturning true, game should be blocked from starting");
-                        return true;
+                        var fn = GetProcessPath(proc.Id);
+                        Log.Info("Process filename: " + fn);
+                        if (!fn.IsEmpty())
+                        {
+                            var fnb = fn.ToBackSlashes();
+                            if ((checkAllGames &&
+                                 ((!Config.T1Exe.IsEmpty() && fnb.EqualsI(Config.T1Exe.ToBackSlashes())) ||
+                                 (!Config.T2Exe.IsEmpty() && fnb.EqualsI(Config.T2Exe.ToBackSlashes())) ||
+                                 (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())))) ||
+                                (!checkAllGames &&
+                                (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
+                            {
+                                Log.Info("Found " + gameExe + " running: " + fn +
+                                         "\r\nReturning true, game should be blocked from starting");
+                                return true;
+                            }
+                        }
+                    }
+                    catch (Win32Exception ex)
+                    {
+                        Log.Info("Unable to read module info of 64-bit process; skipping...", ex);
+                        // The process is 64-bit, which means not only is it definitely not one of our games, but we
+                        // can't even access its module info anyway. There's a way to check if a process is 64-bit in
+                        // advance, but it's fiddly. Easier just to swallow the exception and move on.
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Info("Exception other than 64-bit-process caught in GameIsRunning", ex);
+                        // Even if this were to be one of our games, if .NET won't let us find out then all we can do
+                        // is shrug and move on.
                     }
                 }
-                catch (Win32Exception ex)
+            }
+            finally
+            {
+                foreach (var appender in appenders.OfType<FileAppender>())
                 {
-                    Log.Info("Unable to read module info of 64-bit process; skipping...", ex);
-                    // The process is 64-bit, which means not only is it definitely not one of our games, but we
-                    // can't even access its module info anyway. There's a way to check if a process is 64-bit in
-                    // advance, but it's fiddly. Easier just to swallow the exception and move on.
-                }
-                catch (Exception ex)
-                {
-                    Log.Info("Exception other than 64-bit-process caught in GameIsRunning", ex);
-                    // Even if this were to be one of our games, if .NET won't let us find out then all we can do
-                    // is shrug and move on.
+                    appender.Layout = oldLayout;
+                    break;
                 }
             }
 
@@ -1641,10 +1672,9 @@ namespace AngelLoader
 
             #region Exe: Fail if already running
 
-            if (GameIsRunning(gameExe))
+            if (GameIsRunning(gameExe, checkAllGames: true))
             {
-                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GameIsRunning,
-                    LText.AlertMessages.Alert);
+                View.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -1876,10 +1906,9 @@ namespace AngelLoader
 
             #region Exe: Fail if already running
 
-            if (GameIsRunning(gameExe))
+            if (GameIsRunning(gameExe, checkAllGames: true))
             {
-                View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GameIsRunning,
-                    LText.AlertMessages.Alert);
+                View.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
 

@@ -89,6 +89,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Play_GamePathNotFound = "Game path not found. Unable to play.";
             internal static string Play_ExecutableNotFoundFM = "Executable file not specified or not found. Unable to play FM.";
             internal static string Play_GameIsRunning = "Game is already running. Exit it first!";
+            internal static string Play_AnyGameIsRunning = "One or more Thief games are already running. Please exit them first.";
             internal static string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
             internal static string Play_ConfirmMessage = "Play FM?";
             [FenGenBlankLine]

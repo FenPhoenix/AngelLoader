@@ -236,6 +236,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Play_GameIsRunning = lt.Substring(19);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Play_AnyGameIsRunning="))
+                        {
+                            LText.AlertMessages.Play_AnyGameIsRunning = lt.Substring(22);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Play_UnknownGameType="))
                         {
                             LText.AlertMessages.Play_UnknownGameType = lt.Substring(21);

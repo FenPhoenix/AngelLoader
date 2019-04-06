@@ -1,16 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using AngelLoader.Common.DataClasses;
 using log4net;
 using SevenZip;
 using static AngelLoader.Common.Common;
+using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Methods));
+
+        internal static string GetProcessPath(int procId)
+        {
+            var buffer = new StringBuilder(1024);
+            IntPtr hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId);
+            if (hProc != IntPtr.Zero)
+            {
+                try
+                {
+                    int size = buffer.Capacity;
+                    if (QueryFullProcessImageName(hProc, 0, buffer, out size)) return buffer.ToString();
+                }
+                finally
+                {
+                    CloseHandle(hProc);
+                }
+            }
+            return "";
+        }
 
         internal static string GetFMInstallsBasePath(FanMission fm)
         {

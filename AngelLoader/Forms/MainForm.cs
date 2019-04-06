@@ -2070,7 +2070,9 @@ namespace AngelLoader.Forms
                     Config.GameTab = Game.Thief1;
                     await ClearAllUIAndInternalFilters();
                     if (Config.GameOrganization == GameOrganization.ByTab)
+                    {
                         Config.Filter.Games.Add(Game.Thief1);
+                    }
                     ChangeGameOrganization();
                 }
                 if (ratingDisplayStyleChanged)
