@@ -199,7 +199,9 @@ namespace AngelLoader.CustomControls
                     ? Sibling.Panel1.Width
                     : Sibling.Panel1.Height;
 
-                if (sibCursorPos >= sibSplitterPos - 7 &&
+                // Don't do the both-directional-drag if the top-right panel is collapsed
+                if (!Sibling.FullScreen &&
+                    sibCursorPos >= sibSplitterPos - 7 &&
                     sibCursorPos <= sibSplitterPos + Sibling.SplitterWidth + 6)
                 {
                     Cursor.Current = Cursors.SizeAll;
