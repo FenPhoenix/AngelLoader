@@ -592,6 +592,10 @@ namespace AngelLoader.Ini
                         config.TopVerticalSplitterDistance = result;
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightPanelCollapsed) + "="))
+                {
+                    config.TopRightPanelCollapsed = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ConvertWAVsTo16BitOnInstall) + "="))
                 {
                     config.ConvertWAVsTo16BitOnInstall = val.EqualsTrue();
@@ -844,6 +848,7 @@ namespace AngelLoader.Ini
 
                 sw.WriteLine(nameof(config.MainHorizontalSplitterDistance) + "=" + config.MainHorizontalSplitterDistance);
                 sw.WriteLine(nameof(config.TopVerticalSplitterDistance) + "=" + config.TopVerticalSplitterDistance);
+                sw.WriteLine(nameof(config.TopRightPanelCollapsed) + "=" + config.TopRightPanelCollapsed);
 
                 sw.WriteLine(nameof(config.GameTab) + "=" + config.GameTab);
                 sw.WriteLine(nameof(config.TopRightTab) + "=" + config.TopRightTab);

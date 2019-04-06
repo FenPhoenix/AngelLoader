@@ -2276,6 +2276,7 @@ namespace AngelLoader
             Game gameTab,
             TopRightTab topRightTab,
             TopRightTabOrder topRightTabOrder,
+            bool topRightPanelCollapsed,
             float readmeZoomFactor)
         {
             Config.MainWindowState = mainWindowState;
@@ -2298,6 +2299,8 @@ namespace AngelLoader
             Config.TopRightTabOrder.CommentTabPosition = topRightTabOrder.CommentTabPosition;
             Config.TopRightTabOrder.TagsTabPosition = topRightTabOrder.TagsTabPosition;
             Config.TopRightTabOrder.PatchTabPosition = topRightTabOrder.PatchTabPosition;
+
+            Config.TopRightPanelCollapsed = topRightPanelCollapsed;
 
             switch (Config.GameOrganization)
             {

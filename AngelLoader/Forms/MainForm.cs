@@ -389,6 +389,12 @@ namespace AngelLoader.Forms
             // TODO: Make these be saved and loaded as percentages!
             MainSplitContainer.SetSplitterDistance(Config.MainHorizontalSplitterDistance, refresh: false);
             TopSplitContainer.SetSplitterDistance(Config.TopVerticalSplitterDistance, refresh: false);
+            TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
+            if (Config.TopRightPanelCollapsed)
+            {
+                TopSplitContainer.SetFullScreen(true, suspendResume: false);
+                SetTopRightCollapsedState();
+            }
 
             // Set these here because they depend on the splitter positions
             SetUITextToLocalized(suspendResume: false);
@@ -947,7 +953,7 @@ namespace AngelLoader.Forms
                 NominalWindowState,
                 NominalWindowSize,
                 MainSplitContainer.SplitterDistanceReal,
-                TopSplitContainer.SplitterDistance,
+                TopSplitContainer.SplitterDistanceReal,
                 FMsDGV.ColumnsToColumnData(), FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection,
                 FMsDGV.Filter,
                 selectedFM,
@@ -955,6 +961,7 @@ namespace AngelLoader.Forms
                 gameTab,
                 topRightTab,
                 topRightTabOrder,
+                TopSplitContainer.FullScreen,
                 ReadmeRichTextBox.ZoomFactor);
         }
 
@@ -4007,6 +4014,19 @@ namespace AngelLoader.Forms
             if (!fm.Installed && !await Model.InstallFM(fm)) return;
 
             Model.OpenFMInDromEd(fm);
+        }
+
+        private void TopRightCollapseButton_Click(object sender, EventArgs e)
+        {
+            TopSplitContainer.ToggleFullScreen();
+            SetTopRightCollapsedState();
+        }
+
+        private void SetTopRightCollapsedState()
+        {
+            var collapsed = TopSplitContainer.FullScreen;
+            TopRightTabControl.Enabled = !collapsed;
+            TopRightCollapseButton.Image = collapsed ? Resources.ArrowLeftSmall : Resources.ArrowRightSmall;
         }
     }
 }

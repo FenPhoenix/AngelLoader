@@ -96,6 +96,7 @@ namespace AngelLoader.Common.DataClasses
         internal Size MainWindowSize = new Size(1280, 720);
         internal int MainHorizontalSplitterDistance = -1;
         internal int TopVerticalSplitterDistance = -1;
+        internal bool TopRightPanelCollapsed = false;
 
         internal RatingDisplayStyle RatingDisplayStyle = RatingDisplayStyle.FMSel;
         // Only relevant if we're using FMSel-style rating display

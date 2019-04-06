@@ -14,39 +14,64 @@ namespace AngelLoader.CustomControls
         // itself is horizontal, but that's not exactly a compelling argument for calling it "horizontal".
         // Oh well.
 
-        private int _storedPanel1MinSize;
+        private int _storedCollapsiblePanelMinSize;
         private int _storedSplitterDistance;
-        private bool _fullScreen;
+        internal bool FullScreen { get; private set; }
+        internal int CollapsedSize = 0;
 
-        internal int SplitterDistanceReal => _fullScreen ? _storedSplitterDistance : SplitterDistance;
+        internal int SplitterDistanceReal => FullScreen ? _storedSplitterDistance : SplitterDistance;
 
-        internal void ToggleFullScreen() => SetFullScreen(!_fullScreen);
+        internal void ToggleFullScreen() => SetFullScreen(!FullScreen);
 
-        private void SetFullScreen(bool enabled)
+        internal void SetFullScreen(bool enabled, bool suspendResume = true)
         {
-            if (Orientation == Orientation.Vertical) return;
-
-            if (enabled)
+            if (Orientation == Orientation.Vertical)
             {
-                this.SuspendDrawing();
-                IsSplitterFixed = true;
-                _storedPanel1MinSize = Panel1MinSize;
-                _storedSplitterDistance = SplitterDistance;
-                Panel1MinSize = 0;
-                Sibling.Hide();
-                SplitterDistance = 0;
-                _fullScreen = true;
-                this.ResumeDrawing();
+                if (enabled)
+                {
+                    if (suspendResume) this.SuspendDrawing();
+                    IsSplitterFixed = true;
+                    _storedCollapsiblePanelMinSize = Panel2MinSize;
+                    _storedSplitterDistance = SplitterDistance;
+                    Panel2MinSize = CollapsedSize;
+                    SplitterDistance = Width - CollapsedSize;
+                    FullScreen = true;
+                    if (suspendResume) this.ResumeDrawing();
+                }
+                else
+                {
+                    if (suspendResume) this.SuspendDrawing();
+                    SplitterDistance = _storedSplitterDistance;
+                    Panel2MinSize = _storedCollapsiblePanelMinSize;
+                    FullScreen = false;
+                    IsSplitterFixed = false;
+                    if (suspendResume) this.ResumeDrawing();
+                }
             }
             else
             {
-                this.SuspendDrawing();
-                SplitterDistance = _storedSplitterDistance;
-                Panel1MinSize = _storedPanel1MinSize;
-                Sibling.Show();
-                _fullScreen = false;
-                IsSplitterFixed = false;
-                this.ResumeDrawing();
+                if (enabled)
+                {
+                    if (suspendResume) this.SuspendDrawing();
+                    IsSplitterFixed = true;
+                    _storedCollapsiblePanelMinSize = Panel1MinSize;
+                    _storedSplitterDistance = SplitterDistance;
+                    Panel1MinSize = CollapsedSize;
+                    Sibling.Hide();
+                    SplitterDistance = CollapsedSize;
+                    FullScreen = true;
+                    if (suspendResume) this.ResumeDrawing();
+                }
+                else
+                {
+                    if (suspendResume) this.SuspendDrawing();
+                    SplitterDistance = _storedSplitterDistance;
+                    Panel1MinSize = _storedCollapsiblePanelMinSize;
+                    Sibling.Show();
+                    FullScreen = false;
+                    IsSplitterFixed = false;
+                    if (suspendResume) this.ResumeDrawing();
+                }
             }
         }
 
@@ -66,7 +91,7 @@ namespace AngelLoader.CustomControls
         {
             AutoScaleMode = AutoScaleMode.Dpi;
             DoubleBuffered = true;
-            _storedPanel1MinSize = Panel1MinSize;
+            _storedCollapsiblePanelMinSize = Panel1MinSize;
         }
 
         // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
@@ -81,6 +106,13 @@ namespace AngelLoader.CustomControls
         /// <param name="refresh"></param>
         public void SetSplitterDistance(int distance, bool refresh = true)
         {
+            if (FullScreen && Orientation == Orientation.Vertical)
+            {
+                // Don't un-collapse top-right panel
+                _storedSplitterDistance = distance;
+                return;
+            }
+
             try
             {
                 if (refresh) this.SuspendDrawing();
@@ -121,7 +153,7 @@ namespace AngelLoader.CustomControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (_fullScreen) return;
+            if (FullScreen) return;
 
             if (e.Button == MouseButtons.Left &&
                 (Cursor.Current == Cursors.SizeAll ||
@@ -142,7 +174,7 @@ namespace AngelLoader.CustomControls
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
-            if (_fullScreen) return;
+            if (FullScreen) return;
 
             _mouseOverCrossSection = false;
             IsSplitterFixed = false;
@@ -152,7 +184,7 @@ namespace AngelLoader.CustomControls
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (_fullScreen) return;
+            if (FullScreen) return;
 
             if (!IsSplitterFixed && Sibling != null)
             {

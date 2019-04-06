@@ -220,6 +220,7 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
+            this.TopRightCollapseButton = new System.Windows.Forms.Button();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -834,6 +835,7 @@
             // TopSplitContainer.Panel2
             // 
             this.TopSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.TopSplitContainer.Panel2.Controls.Add(this.TopRightCollapseButton);
             this.TopSplitContainer.Panel2.Controls.Add(this.TopRightTabControl);
             this.TopSplitContainer.Panel2.SizeChanged += new System.EventHandler(this.TopSplitContainer_Panel2_SizeChanged);
             this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
@@ -1524,10 +1526,10 @@
             this.TopRightTabControl.Controls.Add(this.CommentTabPage);
             this.TopRightTabControl.Controls.Add(this.TagsTabPage);
             this.TopRightTabControl.Controls.Add(this.PatchTabPage);
-            this.TopRightTabControl.Location = new System.Drawing.Point(0, 0);
+            this.TopRightTabControl.Location = new System.Drawing.Point(16, 0);
             this.TopRightTabControl.Name = "TopRightTabControl";
             this.TopRightTabControl.SelectedIndex = 0;
-            this.TopRightTabControl.Size = new System.Drawing.Size(553, 310);
+            this.TopRightTabControl.Size = new System.Drawing.Size(537, 310);
             this.TopRightTabControl.TabIndex = 14;
             // 
             // StatisticsTabPage
@@ -1539,7 +1541,7 @@
             this.StatisticsTabPage.Controls.Add(this.CustomResourcesLabel);
             this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
             this.StatisticsTabPage.Name = "StatisticsTabPage";
-            this.StatisticsTabPage.Size = new System.Drawing.Size(545, 284);
+            this.StatisticsTabPage.Size = new System.Drawing.Size(529, 284);
             this.StatisticsTabPage.TabIndex = 0;
             this.StatisticsTabPage.Text = "Statistics";
             // 
@@ -2386,6 +2388,21 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
+            // TopRightCollapseButton
+            // 
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
+            this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.TopRightCollapseButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.TopRightCollapseButton.Location = new System.Drawing.Point(0, 0);
+            this.TopRightCollapseButton.Name = "TopRightCollapseButton";
+            this.TopRightCollapseButton.Size = new System.Drawing.Size(16, 309);
+            this.TopRightCollapseButton.TabIndex = 15;
+            this.TopRightCollapseButton.UseVisualStyleBackColor = true;
+            this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2660,6 +2677,7 @@
         private CustomControls.ToolStripSeparatorCustom BottomAreaSep1;
         private CustomControls.ToolStripCustom BottomAreaToolStripCustom2;
         private CustomControls.ToolStripSeparatorCustom BottomAreaSep2;
+        private System.Windows.Forms.Button TopRightCollapseButton;
     }
 }
 
