@@ -1528,7 +1528,7 @@
             this.TopRightCollapseButton.Location = new System.Drawing.Point(0, 0);
             this.TopRightCollapseButton.Name = "TopRightCollapseButton";
             this.TopRightCollapseButton.Size = new System.Drawing.Size(16, 309);
-            this.TopRightCollapseButton.TabIndex = 15;
+            this.TopRightCollapseButton.TabIndex = 14;
             this.TopRightCollapseButton.UseVisualStyleBackColor = true;
             this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
             // 
@@ -1546,7 +1546,7 @@
             this.TopRightTabControl.Name = "TopRightTabControl";
             this.TopRightTabControl.SelectedIndex = 0;
             this.TopRightTabControl.Size = new System.Drawing.Size(537, 310);
-            this.TopRightTabControl.TabIndex = 14;
+            this.TopRightTabControl.TabIndex = 15;
             // 
             // StatisticsTabPage
             // 
