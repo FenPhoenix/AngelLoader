@@ -2302,8 +2302,8 @@ namespace AngelLoader
         internal void UpdateConfig(
             FormWindowState mainWindowState,
             Size mainWindowSize,
-            int mainHorizontalSplitterDistance,
-            int topVerticalSplitterDistance,
+            float mainSplitterPercent,
+            float topSplitterPercent,
             List<ColumnData> columns, int sortedColumn, SortOrder sortDirection,
             Filter filter,
             SelectedFM selectedFM,
@@ -2316,8 +2316,8 @@ namespace AngelLoader
         {
             Config.MainWindowState = mainWindowState;
             Config.MainWindowSize = new Size { Width = mainWindowSize.Width, Height = mainWindowSize.Height };
-            Config.MainHorizontalSplitterDistance = mainHorizontalSplitterDistance;
-            Config.TopVerticalSplitterDistance = topVerticalSplitterDistance;
+            Config.MainSplitterPercent = mainSplitterPercent;
+            Config.TopSplitterPercent = topSplitterPercent;
 
             Config.Columns.Clear();
             Config.Columns.AddRange(columns);

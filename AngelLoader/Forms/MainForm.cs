@@ -273,18 +273,8 @@ namespace AngelLoader.Forms
 
             #region SplitContainers
 
-            // Fine-tuning defaults without having to mess with the UI, because with all the anchoring, changing
-            // the position of anything will mess it all up.
-            TopSplitContainer.SplitterDistance = (int)(ClientSize.Width * 0.741);
-            MainSplitContainer.SplitterDistance = (int)(ClientSize.Height * 0.4325);
-
-            float mainPercent = (float)(MainSplitContainer.SplitterDistance * 100) /
-                                MainSplitContainer.Height;
-            float topPercent = (float)(TopSplitContainer.SplitterDistance * 100) /
-                               TopSplitContainer.Width;
-
-            MainSplitContainer.SplitterDistancePercent = mainPercent;
-            TopSplitContainer.SplitterDistancePercent = topPercent;
+            MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, suspendResume: false);
+            TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, suspendResume: false);
 
             MainSplitContainer.InjectSibling(TopSplitContainer);
             TopSplitContainer.InjectSibling(MainSplitContainer);
@@ -386,10 +376,6 @@ namespace AngelLoader.Forms
             // Set here so as to avoid the changes being visible
             SetWindowStateAndSize();
 
-            // These depend on window size
-            // TODO: Make these be saved and loaded as percentages!
-            MainSplitContainer.SetSplitterDistance(Config.MainHorizontalSplitterDistance, refresh: false);
-            TopSplitContainer.SetSplitterDistance(Config.TopVerticalSplitterDistance, refresh: false);
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
             {
@@ -784,7 +770,10 @@ namespace AngelLoader.Forms
             if (WindowState != FormWindowState.Minimized)
             {
                 NominalWindowState = WindowState;
-                NominalWindowSize = Size;
+                if (WindowState != FormWindowState.Maximized)
+                {
+                    NominalWindowSize = Size;
+                }
             }
 
             if (ProgressBox.Visible) ProgressBox.Center();
@@ -961,8 +950,8 @@ namespace AngelLoader.Forms
             Model.UpdateConfig(
                 NominalWindowState,
                 NominalWindowSize,
-                MainSplitContainer.SplitterDistanceReal,
-                TopSplitContainer.SplitterDistanceReal,
+                MainSplitContainer.SplitterPercentReal,
+                TopSplitContainer.SplitterPercentReal,
                 FMsDGV.ColumnsToColumnData(), FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection,
                 FMsDGV.Filter,
                 selectedFM,
@@ -2972,8 +2961,8 @@ namespace AngelLoader.Forms
 
         private void ResetLayoutButton_Click(object sender, EventArgs e)
         {
-            MainSplitContainer.ResetSplitterDistance();
-            TopSplitContainer.ResetSplitterDistance();
+            MainSplitContainer.ResetSplitterPercent();
+            TopSplitContainer.ResetSplitterPercent();
             if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
         }
 

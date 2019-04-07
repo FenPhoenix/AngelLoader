@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Common.DataClasses
 {
@@ -94,8 +95,21 @@ namespace AngelLoader.Common.DataClasses
 
         internal FormWindowState MainWindowState = FormWindowState.Maximized;
         internal Size MainWindowSize = new Size(1280, 720);
-        internal int MainHorizontalSplitterDistance = -1;
-        internal int TopVerticalSplitterDistance = -1;
+
+        private float _mainSplitterPercent = Defaults.MainSplitterPercent;
+        internal float MainSplitterPercent
+        {
+            get => _mainSplitterPercent;
+            set => _mainSplitterPercent = value.Clamp(0, 1.0f);
+        }
+
+        private float _topSplitterPercent = Defaults.TopSplitterPercent;
+        internal float TopSplitterPercent
+        {
+            get => _topSplitterPercent;
+            set => _topSplitterPercent = value.Clamp(0, 1.0f);
+        }
+
         internal bool TopRightPanelCollapsed = false;
 
         internal RatingDisplayStyle RatingDisplayStyle = RatingDisplayStyle.FMSel;

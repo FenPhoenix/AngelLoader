@@ -16,6 +16,9 @@ namespace AngelLoader.Common
         internal static int ColumnWidth = 100;
         internal static int MinColumnWidth = 25;
 
+        internal static float TopSplitterPercent = 0.741f;
+        internal static float MainSplitterPercent = 0.4325f;
+
         internal static string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
     }
 

@@ -578,18 +578,18 @@ namespace AngelLoader.Ini
                         config.MainWindowSize = new Size(width, height);
                     }
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainHorizontalSplitterDistance) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainSplitterPercent) + "="))
                 {
-                    if (int.TryParse(val, out int result))
+                    if (float.TryParse(val, out float result))
                     {
-                        config.MainHorizontalSplitterDistance = result;
+                        config.MainSplitterPercent = result;
                     }
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopVerticalSplitterDistance) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopSplitterPercent) + "="))
                 {
-                    if (int.TryParse(val, out int result))
+                    if (float.TryParse(val, out float result))
                     {
-                        config.TopVerticalSplitterDistance = result;
+                        config.TopSplitterPercent = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightPanelCollapsed) + "="))
@@ -851,8 +851,8 @@ namespace AngelLoader.Ini
 
                 sw.WriteLine(nameof(config.MainWindowSize) + "=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
 
-                sw.WriteLine(nameof(config.MainHorizontalSplitterDistance) + "=" + config.MainHorizontalSplitterDistance);
-                sw.WriteLine(nameof(config.TopVerticalSplitterDistance) + "=" + config.TopVerticalSplitterDistance);
+                sw.WriteLine(nameof(config.MainSplitterPercent) + "=" + config.MainSplitterPercent);
+                sw.WriteLine(nameof(config.TopSplitterPercent) + "=" + config.TopSplitterPercent);
                 sw.WriteLine(nameof(config.TopRightPanelCollapsed) + "=" + config.TopRightPanelCollapsed);
 
                 sw.WriteLine(nameof(config.GameTab) + "=" + config.GameTab);
