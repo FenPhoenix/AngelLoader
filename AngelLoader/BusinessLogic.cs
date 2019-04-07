@@ -183,8 +183,6 @@ namespace AngelLoader
         {
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
 
-            CopyStubToDir(gamePath);
-
             if (!File.Exists(camModIni))
             {
                 //error = Error.CamModIniNotFound;
@@ -245,13 +243,6 @@ namespace AngelLoader
         internal (Error Error, bool UseCentralSaves, string Path)
         GetInstFMsPathFromT3()
         {
-            var gameExe = GetGameExeFromGameType(Game.Thief3);
-            if (!gameExe.IsEmpty())
-            {
-                var gamePath = Path.GetDirectoryName(gameExe);
-                if (!gamePath.IsEmpty()) CopyStubToDir(gamePath);
-            }
-
             var soIni = Paths.GetSneakyOptionsIni();
             var errorMessage = LText.AlertMessages.Misc_SneakyOptionsIniNotFound;
             if (soIni.IsEmpty())
@@ -1708,21 +1699,6 @@ namespace AngelLoader
             return true;
         }
 
-        private static bool CopyStubToDir(string path)
-        {
-            try
-            {
-                File.Copy(Path.Combine(Paths.Startup, Paths.StubFileName), Path.Combine(path, Paths.StubFileName),
-                    overwrite: true);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Log.Warn("There was an error while copying " + Paths.StubFileName + " to " + path, ex);
-                return false;
-            }
-        }
-
         private static bool SetDarkFMSelectorToAngelLoader(Game game)
         {
             const string fmSelectorKey = "fm_selector";
@@ -1747,8 +1723,6 @@ namespace AngelLoader
                 return false;
             }
 
-            CopyStubToDir(gamePath);
-
             List<string> lines;
             try
             {
@@ -1760,6 +1734,9 @@ namespace AngelLoader
                 return false;
             }
 
+            // Confirmed ND T1/T2 can read this with both forward and backward slashes
+            var stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
+
             /*
              Conforms to the way NewDark reads it:
              - Zero or more whitespace characters allowed at the start of the line (before the key)
@@ -1770,17 +1747,35 @@ namespace AngelLoader
              - No section headers
             */
             int lastSelKeyIndex = -1;
+            bool matchedLineIsCommented = false;
+            bool loaderIsAlreadyUs = false;
             for (int i = 0; i < lines.Count; i++)
             {
                 var lt = lines[i].TrimStart();
 
-                if (Regex.Match(lt, @"^\s*" + fmSelectorKey + @"\s+" + Paths.StubFileName).Success)
-                {
-                    // We're already set as the loader, so don't do anything
-                    return true;
-                }
+                if (lt.Length > 0 && lt[0] == ';') matchedLineIsCommented = true;
 
-                while (lt.Length > 0 && lt[0] == ';') lt = lt.TrimStart(';').Trim();
+                do
+                {
+                    lt = lt.TrimStart(';').Trim();
+                } while (lt.Length > 0 && lt[0] == ';');
+
+                if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length && lt
+                        .Substring(fmSelectorKey.Length + 1).TrimStart().ToBackSlashes()
+                        .EqualsI(stubPath.ToBackSlashes()))
+                {
+                    if (loaderIsAlreadyUs)
+                    {
+                        lines.RemoveAt(i);
+                        i--;
+                    }
+                    else
+                    {
+                        lines[i] = fmSelectorKey + " " + stubPath;
+                        loaderIsAlreadyUs = true;
+                    }
+                    continue;
+                }
 
                 if (lt.EqualsI(fmSelectorKey) ||
                     (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
@@ -1791,13 +1786,20 @@ namespace AngelLoader
                 }
             }
 
-            if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
+            if (!loaderIsAlreadyUs)
             {
-                lines.Add(fmSelectorKey + " " + Paths.StubFileName);
-            }
-            else
-            {
-                lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + Paths.StubFileName);
+                if (lastSelKeyIndex > -1 && matchedLineIsCommented)
+                {
+                    lines[lastSelKeyIndex] = fmSelectorKey + " " + stubPath;
+                }
+                else if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
+                {
+                    lines.Add(fmSelectorKey + " " + stubPath);
+                }
+                else
+                {
+                    lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + stubPath);
+                }
             }
 
             try
@@ -1840,6 +1842,9 @@ namespace AngelLoader
                 return false;
             }
 
+            // Confirmed SU can read this with both forward and backward slashes
+            var stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
+
             for (var i = 0; i < lines.Count; i++)
             {
                 if (!lines[i].Trim().EqualsI("[Loader]")) continue;
@@ -1850,7 +1855,7 @@ namespace AngelLoader
                     var lt = lines[i + 1].Trim();
                     if (lt.StartsWithI(externSelectorKey))
                     {
-                        lines[i + 1] = externSelectorKey + Paths.StubFileName;
+                        lines[i + 1] = externSelectorKey + stubPath;
                         existingKeyOverwritten = true;
                         break;
                     }
@@ -1865,7 +1870,7 @@ namespace AngelLoader
             if (!existingKeyOverwritten)
             {
                 if (insertLineIndex < 0) return false;
-                lines.Insert(insertLineIndex, externSelectorKey + Paths.StubFileName);
+                lines.Insert(insertLineIndex, externSelectorKey + stubPath);
             }
 
             try
@@ -1931,7 +1936,6 @@ namespace AngelLoader
             }
             else if (fm.Game == Game.Thief3)
             {
-                CopyStubToDir(gamePath);
                 var success = SetT3FMSelectorToAngelLoader();
                 if (!success)
                 {
