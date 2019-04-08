@@ -224,7 +224,8 @@ namespace AngelLoader.Forms
         internal async Task Init()
         {
             var ver = typeof(MainForm).Assembly.GetName().Version;
-            Text = @"AngelLoader " + ver.Major + @"." + ver.Minor + @"." + ver.Build;
+            var verThird = ver.Build > 0 ? @"." + ver.Build : "";
+            Text = @"AngelLoader " + ver.Major + @"." + ver.Minor + verThird;
 
 #if ReleaseBeta
             base.Text += " " + Application.ProductVersion;
