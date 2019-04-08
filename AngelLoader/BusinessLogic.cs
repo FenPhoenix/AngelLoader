@@ -1375,7 +1375,6 @@ namespace AngelLoader
                     var message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
-                    // TODO: Make this dialog have a "don't ask again" option
                     var (cancel, cont, dontAskAgain) =
                         View.AskToContinueWithCancel_TD(message, LText.AlertMessages.Confirm);
                     Config.BackupAlwaysAsk = !dontAskAgain;

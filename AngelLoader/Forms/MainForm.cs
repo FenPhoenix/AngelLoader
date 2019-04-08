@@ -414,8 +414,6 @@ namespace AngelLoader.Forms
 
         private void SetWindowStateAndSize()
         {
-            // TODO: Save and restore the position, and robustly handle the window being offscreen, too large etc.
-
             // Size MUST come first, otherwise it doesn't take (and then you have to put it in _Load, where it
             // can potentially be seen being changed)
             Size = Config.MainWindowSize;
