@@ -110,6 +110,15 @@ namespace AngelLoader
                 var (changedList, addedList, fullList) =
                     GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fmIsT3);
 
+                // If >90% of files are different, re-run and use only size difference
+                // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
+                // timestamps, when it puts the right ones at all
+                if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
+                {
+                    (changedList, addedList, fullList) =
+                        GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fmIsT3, useOnlySize: true);
+                }
+
                 try
                 {
                     using (var archive =
@@ -175,7 +184,7 @@ namespace AngelLoader
         }
 
         private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
-        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, bool fmIsT3)
+        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, bool fmIsT3, bool useOnlySize = false)
         {
             var changedList = new List<string>();
             var addedList = new List<string>();
@@ -207,11 +216,27 @@ namespace AngelLoader
                             try
                             {
                                 var fi = new FileInfo(fileInInstalledDir);
-                                if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime() ||
-                                    fi.Length != entry.Length)
+
+                                if (useOnlySize)
                                 {
-                                    changedList.Add(entry.FullName);
+                                    if (fi.Length != entry.Length)
+                                    {
+                                        changedList.Add(entry.FullName);
+                                    }
+                                    continue;
                                 }
+
+                                var fiDT = fi.LastWriteTime.ToUniversalTime();
+                                var eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
+                                if ((fiDT == eDT ||
+                                     (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
+                                     (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
+                                    fi.Length == entry.Length)
+                                {
+                                    continue;
+                                }
+
+                                changedList.Add(entry.FullName);
                             }
                             catch (Exception ex)
                             {
@@ -250,8 +275,7 @@ namespace AngelLoader
                         var entry = archive.ArchiveFileData[i];
                         var efn = entry.FileName.ToForwardSlashed();
 
-                        if (
-                            efn.EqualsI(Paths.FMSelInf) ||
+                        if (efn.EqualsI(Paths.FMSelInf) ||
                             // IsDirectory has been unreliable in the past, so check manually here too
                             entry.IsDirectory || efn.Length > 0 && efn[efn.Length - 1] == '/' ||
                             IsSaveOrScreenshot(efn, fmIsT3))
@@ -267,6 +291,16 @@ namespace AngelLoader
                             try
                             {
                                 var fi = new FileInfo(fileInInstalledDir);
+
+                                if (useOnlySize)
+                                {
+                                    if ((ulong)fi.Length != entry.Size)
+                                    {
+                                        changedList.Add(efn);
+                                    }
+                                    continue;
+                                }
+
                                 if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime() ||
                                     (ulong)fi.Length != entry.Size)
                                 {
