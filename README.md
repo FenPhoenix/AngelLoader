@@ -1,9 +1,7 @@
 <h1 align="center">
 AngelLoader
 </h1>
-<p align="center"><img src="http://fenphoenix.com/github/AngelLoader/MainWindow-600_2019-04-02.png" /></p>
-
-**NOTE:** This is currently in pre-release state, and anything about it is subject to change before version 1.0. If you compile and use this, be aware of that.
+<p align="center"><img src="http://fenphoenix.com/github/AngelLoader/main_window_thread_1.0_600.png" /></p>
 
 ## Description
 AngelLoader is a new fan mission loader for Thief 1, Thief 2, and Thief 3. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a standalone one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
@@ -15,8 +13,6 @@ The interface is inspired by DarkLoader (by Björn Henke and Tom N. Harris) and 
 FM loaders have traditionally had FM scanning functionality, and AngelLoader's scanner is second to none, detecting titles and authors from the trickiest of fan missions with a speed and accuracy rate not seen from any loader before. It also detects NewDark game types accurately, in contrast to DarkLoader which requires manual editing of its .ini file in order for NewDark Thief 1 missions to work.
 
 In short, AngelLoader aims to be a complete successor to DarkLoader, being an all-in-one loader and manager with an intuitive interface, high performance, and many features both classic and modern.
-
-**TODO:** Write up instructions for getting it set up and compiling
 
 ## Building
 - Download [FMScanner](https://github.com/FenPhoenix/FMScanner)
