@@ -2302,6 +2302,7 @@ namespace AngelLoader
         internal void UpdateConfig(
             FormWindowState mainWindowState,
             Size mainWindowSize,
+            Point mainWindowLocation,
             float mainSplitterPercent,
             float topSplitterPercent,
             List<ColumnData> columns, int sortedColumn, SortOrder sortDirection,
@@ -2316,6 +2317,7 @@ namespace AngelLoader
         {
             Config.MainWindowState = mainWindowState;
             Config.MainWindowSize = new Size { Width = mainWindowSize.Width, Height = mainWindowSize.Height };
+            Config.MainWindowLocation = new Point(mainWindowLocation.X, mainWindowLocation.Y);
             Config.MainSplitterPercent = mainSplitterPercent;
             Config.TopSplitterPercent = topSplitterPercent;
 

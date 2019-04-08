@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace AngelLoader.Common
 {
@@ -13,13 +12,16 @@ namespace AngelLoader.Common
 
     internal static class Defaults
     {
-        internal static int ColumnWidth = 100;
-        internal static int MinColumnWidth = 25;
+        internal const int MainWindowX = 50;
+        internal const int MainWindowY = 50;
 
-        internal static float TopSplitterPercent = 0.741f;
-        internal static float MainSplitterPercent = 0.4325f;
+        internal const int ColumnWidth = 100;
+        internal const int MinColumnWidth = 25;
 
-        internal static string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
+        internal const float TopSplitterPercent = 0.741f;
+        internal const float MainSplitterPercent = 0.4325f;
+
+        internal const string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
     }
 
     internal class CacheData

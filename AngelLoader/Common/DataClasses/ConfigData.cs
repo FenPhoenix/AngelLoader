@@ -95,6 +95,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal FormWindowState MainWindowState = FormWindowState.Maximized;
         internal Size MainWindowSize = new Size(1280, 720);
+        internal Point MainWindowLocation = new Point(100, 100);
 
         private float _mainSplitterPercent = Defaults.MainSplitterPercent;
         internal float MainSplitterPercent

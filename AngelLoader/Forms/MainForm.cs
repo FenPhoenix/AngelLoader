@@ -31,6 +31,7 @@ namespace AngelLoader.Forms
 
         private FormWindowState NominalWindowState;
         private Size NominalWindowSize;
+        private Point NominalWindowLocation;
 
         private List<FanMission> FMsList;
 
@@ -419,8 +420,25 @@ namespace AngelLoader.Forms
             Size = Config.MainWindowSize;
             WindowState = Config.MainWindowState;
 
+            const int minVisible = 200;
+
+            var loc = new Point(Config.MainWindowLocation.X, Config.MainWindowLocation.Y);
+            var bounds = Screen.FromControl(this).Bounds;
+
+            if (loc.X < bounds.Left - (Width - minVisible) || loc.X > bounds.Right - minVisible)
+            {
+                loc.X = Defaults.MainWindowX;
+            }
+            if (loc.Y < bounds.Top - (Height - minVisible) || loc.Y > bounds.Bottom - minVisible)
+            {
+                loc.Y = Defaults.MainWindowY;
+            }
+
+            Location = new Point(loc.X, loc.Y);
+
             NominalWindowState = Config.MainWindowState;
             NominalWindowSize = Config.MainWindowSize;
+            NominalWindowLocation = new Point(loc.X, loc.Y);
         }
 
         private void SetUIFilterValues(Filter filter)
@@ -773,11 +791,20 @@ namespace AngelLoader.Forms
                 if (WindowState != FormWindowState.Maximized)
                 {
                     NominalWindowSize = Size;
+                    NominalWindowLocation = new Point(Location.X, Location.Y);
                 }
             }
 
             if (ProgressBox.Visible) ProgressBox.Center();
             if (AddTagListBox.Visible) HideAddTagDropDown();
+        }
+
+        private void MainForm_LocationChanged(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Normal)
+            {
+                NominalWindowLocation = new Point(Location.X, Location.Y);
+            }
         }
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -947,11 +974,30 @@ namespace AngelLoader.Forms
                 PatchTabPosition = TopRightTabControl.TabPages.IndexOf(PatchTabPage),
             };
 
+            #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
+
+            var nominalState = NominalWindowState;
+
+            var minimized = false;
+            if (WindowState == FormWindowState.Minimized)
+            {
+                minimized = true;
+                WindowState = FormWindowState.Maximized;
+            }
+
+            float mainSplitterPercent = MainSplitContainer.SplitterPercentReal;
+            float topSplitterPercent = TopSplitContainer.SplitterPercentReal;
+
+            if (minimized) WindowState = nominalState;
+
+            #endregion
+
             Model.UpdateConfig(
                 NominalWindowState,
                 NominalWindowSize,
-                MainSplitContainer.SplitterPercentReal,
-                TopSplitContainer.SplitterPercentReal,
+                NominalWindowLocation,
+                mainSplitterPercent,
+                topSplitterPercent,
                 FMsDGV.ColumnsToColumnData(), FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection,
                 FMsDGV.Filter,
                 selectedFM,

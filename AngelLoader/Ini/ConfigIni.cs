@@ -578,6 +578,19 @@ namespace AngelLoader.Ini
                         config.MainWindowSize = new Size(width, height);
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainWindowLocation) + "="))
+                {
+                    if (!val.Contains(',')) continue;
+
+                    var values = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var xExists = int.TryParse(values[0].Trim(), out var x);
+                    var yExists = int.TryParse(values[1].Trim(), out var y);
+
+                    if (xExists && yExists)
+                    {
+                        config.MainWindowLocation = new Point(x, y);
+                    }
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainSplitterPercent) + "="))
                 {
                     if (float.TryParse(val, out float result))
@@ -850,6 +863,7 @@ namespace AngelLoader.Ini
                                  : config.MainWindowState));
 
                 sw.WriteLine(nameof(config.MainWindowSize) + "=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
+                sw.WriteLine(nameof(config.MainWindowLocation) + "=" + config.MainWindowLocation.X + "," + config.MainWindowLocation.Y);
 
                 sw.WriteLine(nameof(config.MainSplitterPercent) + "=" + config.MainSplitterPercent);
                 sw.WriteLine(nameof(config.TopSplitterPercent) + "=" + config.TopSplitterPercent);
