@@ -426,6 +426,8 @@
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release_Beta (
 set destDir="C:\AngelLoader_Beta_Package\"
+) else if $(ConfigurationName) == Release_Public (
+set destDir="C:\AngelLoader_Public_Package\"
 ) else (
 set destDir="C:\AngelLoader\"
 )
@@ -456,7 +458,7 @@ xcopy "$(SolutionDir)doc" "%25destDir%25doc" /y /i /e</PostBuildEvent>
 if $(ConfigurationName) == Release_Beta (
 "$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"
 ) else if $(ConfigurationName) == Release_Public (
-"$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "public"
+rem "$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "public"
 )
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
