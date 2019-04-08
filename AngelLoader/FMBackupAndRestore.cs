@@ -52,8 +52,9 @@ namespace AngelLoader
 
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
-            bool backupSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
-                                         (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
+            bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
+                                             (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
+                                              (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
 
             if (!GameIsKnownAndSupported(fm))
             {
