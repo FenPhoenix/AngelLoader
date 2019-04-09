@@ -9,9 +9,9 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
-using log4net;
 using SevenZip;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
@@ -36,8 +36,6 @@ namespace AngelLoader
 
     internal static class FMBackupAndRestore
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(FMBackupAndRestore));
-
         private const string T3SavesDir = "SaveGames";
         private const string DarkSavesDir = "saves";
         private const string ScreensDir = "screenshots";
@@ -58,7 +56,7 @@ namespace AngelLoader
 
             if (!GameIsKnownAndSupported(fm))
             {
-                Log.Warn("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")");
+                Log("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", stackTrace: true);
                 return;
             }
 
@@ -160,7 +158,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
+                    Log("Exception in zip archive create and/or write (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", ex);
                 }
             });
         }
@@ -241,7 +239,7 @@ namespace AngelLoader
                             }
                             catch (Exception ex)
                             {
-                                Log.Warn("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
+                                Log("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
                             }
                         }
                     }
@@ -310,7 +308,7 @@ namespace AngelLoader
                             }
                             catch (Exception ex)
                             {
-                                Log.Warn("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
+                                Log("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
                             }
                         }
                     }

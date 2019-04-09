@@ -5,15 +5,13 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using log4net;
+using static AngelLoader.Common.Logger;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader.Importing
 {
     internal static class ImportNDL
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(ImportNDL));
-
         internal static async Task<(ImportError Error, List<FanMission> FMs)>
         Import(string iniFile, List<FanMission> mainList)
         {
@@ -93,7 +91,7 @@ namespace AngelLoader.Importing
                         }
                         catch (Exception ex)
                         {
-                            Log.Warn("Exception in NewDarkLoader archive dir file enumeration", ex);
+                            Log("Exception in NewDarkLoader archive dir file enumeration", ex);
                         }
 
                         while (i < lines.Length - 1)

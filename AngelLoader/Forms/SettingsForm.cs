@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,14 +9,12 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI.Dialogs;
-using log4net;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Forms
 {
     internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(SettingsForm));
-
         private readonly ILocalizable OwnerForm;
 
         private readonly bool Startup;
@@ -402,7 +399,7 @@ namespace AngelLoader.Forms
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("Exception in language reading", ex);
+                        Log("Exception in language reading", ex);
                         return;
                     }
 
@@ -412,7 +409,7 @@ namespace AngelLoader.Forms
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
+                        Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
                     }
                 }
                 return;
@@ -867,13 +864,13 @@ namespace AngelLoader.Forms
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
+                        Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception in language reading", ex);
+                Log("Exception in language reading", ex);
             }
         }
     }

@@ -3,15 +3,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Security;
 using AngelLoader.Common.Utility;
-using log4net;
 using Microsoft.Win32;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Common
 {
     internal static class Paths
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Paths));
-
 #if Release_Testing
         internal static readonly string Startup = @"C:\AngelLoader";
 #elif Release
@@ -19,7 +17,7 @@ namespace AngelLoader.Common
 #else
         internal static readonly string Startup = @"C:\AngelLoader";
 #endif
-        
+
         internal static readonly string LogFile = Path.Combine(Startup, "AngelLoader_log.txt");
 
         #region Temp
@@ -50,7 +48,7 @@ namespace AngelLoader.Common
 
                 if (regKey is int regKeyDefault && regKeyDefault == -1)
                 {
-                    Log.Warn("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
+                    Log("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
                     return null;
                 }
                 else
@@ -58,18 +56,21 @@ namespace AngelLoader.Common
                     var soIni = Path.Combine(regKey.ToString(), "Options", "SneakyOptions.ini");
                     if (!File.Exists(soIni))
                     {
-                        Log.Warn("Found the registry key but couldn't find SneakyOptions.ini");
+                        Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
+                            "Registry key path was: " + regKey.ToString() + "\r\n" +
+                            "Full path was: " + soIni);
+                        return null;
                     }
                     return soIni;
                 }
             }
             catch (SecurityException ex)
             {
-                Log.Warn("The user does not have the permissions required to read from the registry key.", ex);
+                Log("The user does not have the permissions required to read from the registry key.", ex);
             }
             catch (IOException ex)
             {
-                Log.Warn("The RegistryKey that contains the specified value has been marked for deletion.", ex);
+                Log("The RegistryKey that contains the specified value has been marked for deletion.", ex);
             }
 
             return null;
@@ -146,7 +147,7 @@ namespace AngelLoader.Common
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception clearing temp path " + path, ex);
+                Log("Exception clearing temp path " + path, ex);
             }
         }
 

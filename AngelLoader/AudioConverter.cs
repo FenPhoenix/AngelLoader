@@ -8,15 +8,13 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
 using FFmpeg.NET;
-using log4net;
+using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader
 {
     internal class AudioConverter
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(AudioConverter));
-
         private readonly FanMission FM;
         private readonly string InstalledFMsBasePath;
 
@@ -66,7 +64,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Unable to set directory attributes on " + fmSndPath, ex);
+                    Log("Unable to set directory attributes on " + fmSndPath, ex);
                 }
 
                 string[] files;
@@ -76,7 +74,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception during file enumeration of " + fmSndPath, ex);
+                    Log("Exception during file enumeration of " + fmSndPath, ex);
                     return;
                 }
 
@@ -88,7 +86,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("Unable to set file attributes on " + f, ex);
+                        Log("Unable to set file attributes on " + f, ex);
                     }
 
                     try
@@ -98,7 +96,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("Exception in FFmpeg convert", ex);
+                        Log("Exception in FFmpeg convert", ex);
                     }
 
                     try
@@ -107,7 +105,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("Exception in deleting file " + f, ex);
+                        Log("Exception in deleting file " + f, ex);
                     }
                 }
             });
@@ -121,7 +119,7 @@ namespace AngelLoader
 
             if (!File.Exists(Paths.FFprobeExe) || !File.Exists(Paths.FFmpegExe))
             {
-                Log.Warn("FFmpeg.exe or FFProbe.exe don't exist");
+                Log("FFmpeg.exe or FFProbe.exe don't exist", stackTrace: true);
                 return;
             }
 
@@ -229,7 +227,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception in file conversion", ex);
+                    Log("Exception in file conversion", ex);
                 }
             });
         }

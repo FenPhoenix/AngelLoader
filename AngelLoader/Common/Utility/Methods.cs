@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using AngelLoader.Common.DataClasses;
-using log4net;
 using SevenZip;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Logger;
 using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Methods));
-
         internal static string GetProcessPath(int procId)
         {
             var buffer = new StringBuilder(1024);
@@ -87,7 +85,7 @@ namespace AngelLoader.Common.Utility
             }
             catch (Exception ex)
             {
-                Log.Warn("Unable to set file attributes for " + fileOnDiskFullPath, ex);
+                Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
             }
         }
 
@@ -107,7 +105,7 @@ namespace AngelLoader.Common.Utility
             }
             catch (Exception ex)
             {
-                Log.Warn("Unable to set file attributes for " + fileOnDiskFullPath, ex);
+                Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
             }
         }
 

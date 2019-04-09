@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Ini
 {
@@ -884,7 +885,7 @@ namespace AngelLoader.Ini
             }
             catch (Exception ex)
             {
-                Log.Warn("There was an error while writing to " + Paths.ConfigIni + ".", ex);
+                Log("There was an error while writing to " + Paths.ConfigIni + ".", ex);
             }
             finally
             {

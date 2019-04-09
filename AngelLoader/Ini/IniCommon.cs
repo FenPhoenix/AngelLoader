@@ -5,15 +5,13 @@ using System.Reflection;
 using System.Text;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using log4net;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Ini
 {
     internal static partial class Ini
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(Ini));
-
         internal static bool StartsWithFast_NoNullChecks(this string str, string value)
         {
             if (str.Length < value.Length) return false;
@@ -78,7 +76,7 @@ namespace AngelLoader.Ini
             }
             catch (Exception ex)
             {
-                Log.Warn("There was an error while reading " + file + ".", ex);
+                Log("There was an error while reading " + file + ".", ex);
             }
             finally
             {

@@ -7,7 +7,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,11 +17,9 @@ using AngelLoader.CustomControls;
 using AngelLoader.Forms;
 using AngelLoader.Importing;
 using FMScanner;
-using log4net;
-using log4net.Appender;
-using log4net.Layout;
 using SevenZip;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.Ini.Ini;
@@ -32,8 +29,6 @@ namespace AngelLoader
 {
     internal sealed class BusinessLogic
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(BusinessLogic));
-
         private readonly MainForm View;
         private readonly ProgressPanel ProgressBox;
 
@@ -59,7 +54,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 const string message = "Failed to create required application directories on startup.";
-                Log.Fatal(message + "\r\nException:\r\n", ex);
+                Log(message, ex);
                 MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
             }
@@ -76,7 +71,7 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     var message = Paths.ConfigIni + " exists but there was an error while reading it.";
-                    Log.Warn(message, ex);
+                    Log(message, ex);
                     openSettings = true;
                 }
             }
@@ -103,7 +98,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("There was an error while reading " + f + ".", ex);
+                        Log("There was an error while reading " + f + ".", ex);
                     }
                 }
                 ReadTranslatedLanguageName(f);
@@ -322,7 +317,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception writing FM data ini", ex);
+                    Log("Exception writing FM data ini", ex);
                 }
             }
 
@@ -343,7 +338,10 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception reading FM data ini", ex);
+                    Log("Exception reading FM data ini", ex);
+                    MessageBox.Show("Exception reading FM data ini. Exiting. Please check " + Paths.LogFile,
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(1);
                 }
             }
 
@@ -370,7 +368,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("Exception getting directories in " + instPath, ex);
+                        Log("Exception getting directories in " + instPath, ex);
                     }
                 }
             }
@@ -393,7 +391,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception getting files in " + path, ex);
+                    Log("Exception getting files in " + path, ex);
                 }
             }
 
@@ -681,7 +679,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception in creating or overwriting" + fmselInf, ex);
+                    Log("Exception in creating or overwriting" + fmselInf, ex);
                 }
 
                 return tryArchive;
@@ -696,7 +694,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception reading " + fmselInf, ex);
+                Log("Exception reading " + fmselInf, ex);
                 return null;
             }
 
@@ -946,7 +944,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception in ScanFMs", ex);
+                    Log("Exception in ScanFMs", ex);
                 }
             }
         }
@@ -962,7 +960,7 @@ namespace AngelLoader
                 var (error, fmsToScan) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList);
                 if (error != ImportError.None)
                 {
-                    Log.Warn("Import.Error: " + error);
+                    Log("Import.Error: " + error, stackTrace: true);
 
                     if (error == ImportError.NoArchiveDirsFound)
                     {
@@ -978,7 +976,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception in DarkLoader import", ex);
+                Log("Exception in DarkLoader import", ex);
                 return false;
             }
             finally
@@ -997,7 +995,7 @@ namespace AngelLoader
                 var (error, fmsToScan) = await ImportNDL.Import(iniFile, FMDataIniList);
                 if (error != ImportError.None)
                 {
-                    Log.Warn("Import error: " + error);
+                    Log("Import error: " + error, stackTrace: true);
                     return false;
                 }
 
@@ -1006,7 +1004,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception in NewDarkLoader import", ex);
+                Log("Exception in NewDarkLoader import", ex);
                 return false;
             }
             finally
@@ -1025,7 +1023,7 @@ namespace AngelLoader
                 var (error, fmsToScan) = await ImportFMSel.Import(iniFile, FMDataIniList);
                 if (error != ImportError.None)
                 {
-                    Log.Warn("Import error: " + error);
+                    Log("Import error: " + error, stackTrace: true);
                     return false;
                 }
 
@@ -1034,7 +1032,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception in FMSel import", ex);
+                Log("Exception in FMSel import", ex);
                 return false;
             }
             finally
@@ -1134,7 +1132,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        Log.Warn("Unable to delete FM installed directory " + fmInstalledPath, ex);
+                        Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
                     }
                 });
                 ProgressBox.Hide();
@@ -1155,7 +1153,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
+                Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
             }
 
             var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm));
@@ -1235,7 +1233,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+                    Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
                     View.BeginInvoke(new Action(() =>
                         View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
@@ -1292,14 +1290,14 @@ namespace AngelLoader
                         catch (Exception ex)
                         {
                             // Throws a weird exception even if everything's fine
-                            Log.Warn("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)",
+                            Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)",
                                 ex);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
+                    Log("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
                     View.BeginInvoke(new Action(() =>
                         View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
@@ -1313,7 +1311,7 @@ namespace AngelLoader
 
         internal async Task UninstallFM(FanMission fm)
         {
-            if (!fm.Installed) return;
+            if (!fm.Installed || !GameIsKnownAndSupported(fm)) return;
 
             Debug.Assert(fm.Game != null, "fm.Game != null");
 
@@ -1414,7 +1412,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
+                Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
                 View.BeginInvoke(new Action(() =>
                     View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
@@ -1561,57 +1559,39 @@ namespace AngelLoader
 
         private static bool GameIsRunning(string gameExe, bool checkAllGames = false)
         {
-            Log.Info("Checking if " + gameExe + " is running. Listing 32-bit processes...");
+            Log("Checking if " + gameExe + " is running. Listing 32-bit processes...");
 
-            var appenders = LogManager.GetRepository().GetAppenders();
-            ILayout oldLayout = new PatternLayout();
-            try
+            // We're doing this whole rigamarole because the game might have been started by someone other than
+            // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
+            foreach (var proc in Process.GetProcesses())
             {
-                foreach (var appender in appenders.OfType<FileAppender>())
+                try
                 {
-                    oldLayout = appender.Layout;
-                    appender.Layout = new PatternLayout("%date [%thread] %level %logger %method %newline %message%newline");
-                    break;
-                }
-
-                // We're doing this whole rigamarole because the game might have been started by someone other than
-                // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
-                foreach (var proc in Process.GetProcesses())
-                {
-                    try
+                    var fn = GetProcessPath(proc.Id);
+                    //Log.Info("Process filename: " + fn);
+                    if (!fn.IsEmpty())
                     {
-                        var fn = GetProcessPath(proc.Id);
-                        //Log.Info("Process filename: " + fn);
-                        if (!fn.IsEmpty())
+                        var fnb = fn.ToBackSlashes();
+                        if ((checkAllGames &&
+                             ((!Config.T1Exe.IsEmpty() && fnb.EqualsI(Config.T1Exe.ToBackSlashes())) ||
+                              (!Config.T2Exe.IsEmpty() && fnb.EqualsI(Config.T2Exe.ToBackSlashes())) ||
+                              (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())))) ||
+                            (!checkAllGames &&
+                             (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
                         {
-                            var fnb = fn.ToBackSlashes();
-                            if ((checkAllGames &&
-                                 ((!Config.T1Exe.IsEmpty() && fnb.EqualsI(Config.T1Exe.ToBackSlashes())) ||
-                                 (!Config.T2Exe.IsEmpty() && fnb.EqualsI(Config.T2Exe.ToBackSlashes())) ||
-                                 (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())))) ||
-                                (!checkAllGames &&
-                                (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
-                            {
-                                Log.Info("Found " + gameExe + " running: " + fn +
-                                         "\r\nReturning true, game should be blocked from starting");
-                                return true;
-                            }
+                            var logExe = checkAllGames ? "a game exe" : gameExe;
+
+                            Log("Found " + logExe + " running: " + fn +
+                                "\r\nReturning true, game should be blocked from starting");
+                            return true;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Log.Info("Exception other than 64-bit-process caught in GameIsRunning", ex);
-                        // Even if this were to be one of our games, if .NET won't let us find out then all we can do
-                        // is shrug and move on.
-                    }
                 }
-            }
-            finally
-            {
-                foreach (var appender in appenders.OfType<FileAppender>())
+                catch (Exception ex)
                 {
-                    appender.Layout = oldLayout;
-                    break;
+                    // Even if this were to be one of our games, if .NET won't let us find out then all we can do
+                    // is shrug and move on.
+                    Log("Exception caught in GameIsRunning", ex);
                 }
             }
 
@@ -1685,7 +1665,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception starting " + gameExe, ex);
+                Log("Exception starting " + gameExe, ex);
             }
 
             return true;
@@ -1697,21 +1677,21 @@ namespace AngelLoader
             var gameExe = GetGameExeFromGameType(game);
             if (gameExe.IsEmpty())
             {
-                Log.Warn("gameExe is empty for " + game);
+                Log("gameExe is empty for " + game, stackTrace: true);
                 return false;
             }
 
             var gamePath = Path.GetDirectoryName(gameExe);
             if (gamePath.IsEmpty())
             {
-                Log.Warn("gamePath is empty for " + game);
+                Log("gamePath is empty for " + game, stackTrace: true);
                 return false;
             }
 
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
             if (!File.Exists(camModIni))
             {
-                Log.Warn("cam_mod.ini not found for " + gameExe);
+                Log("cam_mod.ini not found for " + gameExe, stackTrace: true);
                 return false;
             }
 
@@ -1722,7 +1702,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception reading cam_mod.ini for " + gameExe, ex);
+                Log("Exception reading cam_mod.ini for " + gameExe, ex);
                 return false;
             }
 
@@ -1800,7 +1780,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception writing cam_mod.ini for " + gameExe, ex);
+                Log("Exception writing cam_mod.ini for " + gameExe, ex);
                 return false;
             }
 
@@ -1819,7 +1799,7 @@ namespace AngelLoader
             var ini = Paths.GetSneakyOptionsIni();
             if (ini.IsEmpty())
             {
-                Log.Warn("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found");
+                Log("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found", stackTrace: true);
                 return false;
             }
 
@@ -1830,7 +1810,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Problem reading SneakyOptions.ini", ex);
+                Log("Problem reading SneakyOptions.ini", ex);
                 return false;
             }
 
@@ -1871,7 +1851,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Problem writing SneakyOptions.ini", ex);
+                Log("Problem writing SneakyOptions.ini", ex);
                 return false;
             }
 
@@ -1922,8 +1902,8 @@ namespace AngelLoader
                 var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
                 if (!success)
                 {
-                    Log.Warn("Unable to set us as the selector for " + fm.Game + " (" +
-                             nameof(SetDarkFMSelectorToAngelLoader) + " returned false)");
+                    Log("Unable to set us as the selector for " + fm.Game + " (" +
+                             nameof(SetDarkFMSelectorToAngelLoader) + " returned false)", stackTrace: true);
                 }
             }
             else if (fm.Game == Game.Thief3)
@@ -1931,8 +1911,8 @@ namespace AngelLoader
                 var success = SetT3FMSelectorToAngelLoader();
                 if (!success)
                 {
-                    Log.Warn("Unable to set us as the selector for Thief: Deadly Shadows (" +
-                             nameof(SetT3FMSelectorToAngelLoader) + " returned false)");
+                    Log("Unable to set us as the selector for Thief: Deadly Shadows (" +
+                             nameof(SetT3FMSelectorToAngelLoader) + " returned false)", stackTrace: true);
                 }
             }
 
@@ -1953,7 +1933,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception writing stub file " + Paths.StubFileName, ex);
+                    Log("Exception writing stub file " + Paths.StubFileName, ex);
                 }
             }
 
@@ -1968,7 +1948,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception starting game " + gameExe, ex);
+                    Log("Exception starting game " + gameExe, ex);
                 }
             }
 
@@ -1991,7 +1971,7 @@ namespace AngelLoader
             var gameExe = GetGameExeFromGameType((Game)fm.Game);
             if (gameExe.IsEmpty())
             {
-                Log.Warn("gameExe is empty for " + fm.Game);
+                Log("gameExe is empty for " + fm.Game, stackTrace: true);
                 return false;
             }
 
@@ -2009,8 +1989,8 @@ namespace AngelLoader
             var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
             if (!success)
             {
-                Log.Warn("Unable to set us as the selector for " + fm.Game + " (" +
-                         nameof(SetDarkFMSelectorToAngelLoader) + " returned false)");
+                Log("Unable to set us as the selector for " + fm.Game + " (" +
+                         nameof(SetDarkFMSelectorToAngelLoader) + " returned false)", stackTrace: true);
             }
 
             var gamePath = Path.GetDirectoryName(gameExe);
@@ -2029,7 +2009,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception starting " + dromedExe, ex);
+                    Log("Exception starting " + dromedExe, ex);
                 }
             }
 
@@ -2055,7 +2035,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Unable to add .dml to installed folder " + fm.InstalledDir, ex);
+                Log("Unable to add .dml to installed folder " + fm.InstalledDir, ex);
                 View.ShowAlert(LText.AlertMessages.Patch_AddDML_UnableToAdd, LText.AlertMessages.Alert);
                 return false;
             }
@@ -2078,7 +2058,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Unable to remove .dml from installed folder " + fm.InstalledDir, ex);
+                Log("Unable to remove .dml from installed folder " + fm.InstalledDir, ex);
                 View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_UnableToRemove, LText.AlertMessages.Alert);
                 return false;
             }
@@ -2101,7 +2081,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
+                Log("Exception getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
                 return (false, new string[] { });
             }
         }
@@ -2141,7 +2121,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log.Warn(
+                            Log(
                                 "Exception enumerating files or directories in cache for " + fm.Archive + " / " +
                                 fm.InstalledDir, ex);
                         }
@@ -2168,13 +2148,13 @@ namespace AngelLoader
                 if (instBasePath.IsWhiteSpace())
                 {
                     var ex = new ArgumentException(@"FM installs base path is empty", nameof(instBasePath));
-                    Log.Warn(ex.Message, ex);
+                    Log(ex.Message, ex);
                     throw ex;
                 }
                 else if (!Directory.Exists(instBasePath))
                 {
                     var ex = new DirectoryNotFoundException("FM installs base path doesn't exist");
-                    Log.Warn(ex.Message, ex);
+                    Log(ex.Message, ex);
                     throw ex;
                 }
             }
@@ -2225,7 +2205,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception trying to open FM folder " + fmDir, ex);
+                Log("Exception trying to open FM folder " + fmDir, ex);
             }
         }
 
@@ -2252,11 +2232,11 @@ namespace AngelLoader
             }
             catch (FileNotFoundException ex)
             {
-                Log.Warn("\"The PATH environment variable has a string containing quotes.\" (that's what MS docs says?!)", ex);
+                Log("\"The PATH environment variable has a string containing quotes.\" (that's what MS docs says?!)", ex);
             }
             catch (Win32Exception ex)
             {
-                Log.Warn("Problem opening web search URL", ex);
+                Log("Problem opening web search URL", ex);
                 View.ShowAlert(LText.AlertMessages.WebSearchURL_ProblemOpening, LText.AlertMessages.Alert);
             }
         }
@@ -2270,7 +2250,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception in " + nameof(GetReadmeFileAndType), ex);
+                Log("Exception in " + nameof(GetReadmeFileAndType), ex);
                 return;
             }
 
@@ -2282,12 +2262,12 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log.Warn("Exception opening HTML readme " + path, ex);
+                    Log("Exception opening HTML readme " + path, ex);
                 }
             }
             else
             {
-                Log.Warn("File not found: " + path);
+                Log("File not found: " + path, stackTrace: true);
             }
         }
 
@@ -2357,7 +2337,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception writing FM data ini", ex);
+                Log("Exception writing FM data ini", ex);
             }
         }
 
@@ -2369,7 +2349,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception writing config ini", ex);
+                Log("Exception writing config ini", ex);
             }
 
             try
@@ -2378,7 +2358,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log.Warn("Exception writing FM data ini", ex);
+                Log("Exception writing FM data ini", ex);
             }
 
             Application.Exit();
