@@ -19,6 +19,8 @@ namespace AngelLoader.Common
 #else
         internal static readonly string Startup = @"C:\AngelLoader";
 #endif
+        
+        internal static readonly string LogFile = Path.Combine(Startup, "AngelLoader_log.txt");
 
         #region Temp
 
