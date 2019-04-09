@@ -1559,7 +1559,7 @@ namespace AngelLoader
 
         private static bool GameIsRunning(string gameExe, bool checkAllGames = false)
         {
-            Log("Checking if " + gameExe + " is running. Listing 32-bit processes...");
+            Log("Checking if " + gameExe + " is running. Listing processes...");
 
             // We're doing this whole rigamarole because the game might have been started by someone other than
             // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
