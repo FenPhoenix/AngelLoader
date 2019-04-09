@@ -2212,19 +2212,13 @@ namespace AngelLoader
         internal void OpenWebSearchUrl(FanMission fm)
         {
             var url = Config.WebSearchUrl;
-            if (url.Length > 32766 || url.IsWhiteSpace()) return;
+            if (url.IsWhiteSpace() || url.Length > 32766) return;
 
             var index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
 
             var finalUrl = Uri.EscapeUriString(index == -1
                 ? url
                 : url.Substring(0, index) + fm.Title + url.Substring(index + "$TITLE$".Length));
-
-            if (!Uri.IsWellFormedUriString(finalUrl, UriKind.Absolute))
-            {
-                MessageBox.Show(LText.AlertMessages.WebSearchURL_IsInvalid, LText.AlertMessages.Alert);
-                return;
-            }
 
             try
             {
