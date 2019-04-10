@@ -768,6 +768,10 @@ namespace AngelLoader.Ini
                         {
                             LText.PatchTab.FMNotInstalled = lt.Substring(15);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("NotSupportedForThief3="))
+                        {
+                            LText.PatchTab.NotSupportedForThief3 = lt.Substring(22);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("OpenFMFolder="))
                         {
                             LText.PatchTab.OpenFMFolder = lt.Substring(13);
