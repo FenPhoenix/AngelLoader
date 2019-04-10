@@ -19,7 +19,7 @@ namespace AngelLoader.Common
         internal const int MinColumnWidth = 25;
 
         internal const float TopSplitterPercent = 0.741f;
-        internal const float MainSplitterPercent = 0.485f;
+        internal const float MainSplitterPercent = 0.4425f;
 
         internal const string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
     }
