@@ -429,6 +429,7 @@ set destDir="C:\AngelLoader\"
 )
 
 xcopy "$(TargetDir)AngelLoader.exe" %25destDir%25 /y
+xcopy "$(TargetDir)AngelLoader.exe.config" %25destDir%25 /y
 xcopy "$(TargetDir)*.dll" %25destDir%25 /y
 xcopy "$(TargetDir)log4net.config" %25destDir%25 /y
 xcopy "$(TargetDir)x86\7z.dll" %25destDir%25 /y
