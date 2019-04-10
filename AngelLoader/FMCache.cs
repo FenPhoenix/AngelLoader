@@ -11,6 +11,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using SevenZip;
 using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader
 {
@@ -130,7 +131,14 @@ namespace AngelLoader
             // TODO: Support .7z here too
             if (fmArchivePath.ExtEqualsI(".zip") && Directory.Exists(fmCachePath))
             {
-                ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
+                try
+                {
+                    ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in " + nameof(ExtractHTMLRefFiles), ex);
+                }
             }
 
             fm.NoReadmes = readmes.Count == 0;
@@ -231,46 +239,53 @@ namespace AngelLoader
         // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
         private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
-            using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                ZipArchiveMode.Read, leaveOpen: false))
+            try
             {
-                for (var i = 0; i < archive.Entries.Count; i++)
+                using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                    ZipArchiveMode.Read, leaveOpen: false))
                 {
-                    var entry = archive.Entries[i];
-                    var fn = entry.FullName;
-                    if (!fn.IsValidReadme() || entry.Length == 0) continue;
-
-                    string t3ReadmeDir = null;
-                    if (fn.CountChars('/') + fn.CountChars('\\') == 1)
+                    for (var i = 0; i < archive.Entries.Count; i++)
                     {
-                        if (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
-                            fn.StartsWithI(Paths.T3ReadmeDir1 + '\\'))
+                        var entry = archive.Entries[i];
+                        var fn = entry.FullName;
+                        if (!fn.IsValidReadme() || entry.Length == 0) continue;
+
+                        string t3ReadmeDir = null;
+                        if (fn.CountChars('/') + fn.CountChars('\\') == 1)
                         {
-                            t3ReadmeDir = Paths.T3ReadmeDir1;
+                            if (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
+                                fn.StartsWithI(Paths.T3ReadmeDir1 + '\\'))
+                            {
+                                t3ReadmeDir = Paths.T3ReadmeDir1;
+                            }
+                            else if (fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
+                                     fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))
+                            {
+                                t3ReadmeDir = Paths.T3ReadmeDir2;
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
-                        else if (fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
-                                 fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))
-                        {
-                            t3ReadmeDir = Paths.T3ReadmeDir2;
-                        }
-                        else
+                        else if (fn.Contains('/') || fn.Contains('\\'))
                         {
                             continue;
                         }
-                    }
-                    else if (fn.Contains('/') || fn.Contains('\\'))
-                    {
-                        continue;
-                    }
 
-                    Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
-                        ? Path.Combine(fmCachePath, t3ReadmeDir)
-                        : fmCachePath);
+                        Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
+                            ? Path.Combine(fmCachePath, t3ReadmeDir)
+                            : fmCachePath);
 
-                    var fileNameFull = Path.Combine(fmCachePath, fn);
-                    entry.ExtractToFile(fileNameFull, overwrite: true);
-                    readmes.Add(fn);
+                        var fileNameFull = Path.Combine(fmCachePath, fn);
+                        entry.ExtractToFile(fileNameFull, overwrite: true);
+                        readmes.Add(fn);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in zip extract to cache", ex);
             }
         }
 
@@ -321,15 +336,15 @@ namespace AngelLoader
                         {
                             extractor.ExtractFiles(fmCachePath, indexesList.ToArray());
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            // log it
+                            Log("Exception in 7z ExtractFiles() call", ex);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // log it (them?!)
+                    Log("Exception in 7z extract to cache", ex);
                 }
                 finally
                 {
