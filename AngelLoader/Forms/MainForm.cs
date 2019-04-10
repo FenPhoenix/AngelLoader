@@ -830,10 +830,25 @@ namespace AngelLoader.Forms
 
                 HideAddTagDropDown();
             }
-            else if (e.Control && e.KeyCode == Keys.F)
+            else if (e.Control)
             {
-                FilterTitleTextBox.Focus();
-                FilterTitleTextBox.SelectAll();
+                if (e.KeyCode == Keys.F)
+                {
+                    FilterTitleTextBox.Focus();
+                    FilterTitleTextBox.SelectAll();
+                }
+                else if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
+                {
+                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ZoomIn();
+                }
+                else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
+                {
+                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ZoomOut();
+                }
+                else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
+                {
+                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ResetZoomFactor();
+                }
             }
         }
 
@@ -1094,7 +1109,12 @@ namespace AngelLoader.Forms
         {
         }
 
-        internal void SetDebugMessageText(string text) => DebugLabel.Text = text;
+        internal void SetDebugMessageText(string text)
+        {
+#if !ReleasePublic
+            DebugLabel.Text = text;
+#endif
+        }
 
         #endregion
 
@@ -1108,7 +1128,9 @@ namespace AngelLoader.Forms
         private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
+#if !ReleasePublic
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
+#endif
 
             var s = FMsDGV;
 
@@ -3399,25 +3421,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void ReadmeRichTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Control)
-            {
-                if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
-                {
-                    ReadmeRichTextBox.ZoomIn();
-                }
-                else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
-                {
-                    ReadmeRichTextBox.ZoomOut();
-                }
-                else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
-                {
-                    ReadmeRichTextBox.ResetZoomFactor();
-                }
-            }
-        }
-
         private void ZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
         private void ZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();
@@ -3432,7 +3435,9 @@ namespace AngelLoader.Forms
 
             // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
             // due to performance concerns.
+#if !ReleasePublic
             DebugLabel.Text = int.TryParse(DebugLabel.Text, out var result) ? (result + 1).ToString() : "1";
+#endif
 
             #endregion
 

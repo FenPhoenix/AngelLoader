@@ -2319,7 +2319,6 @@
             this.ReadmeRichTextBox.Size = new System.Drawing.Size(1669, 361);
             this.ReadmeRichTextBox.TabIndex = 0;
             this.ReadmeRichTextBox.Text = "";
-            this.ReadmeRichTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ReadmeRichTextBox_KeyDown);
             // 
             // PlayOriginalGameMenu
             // 
