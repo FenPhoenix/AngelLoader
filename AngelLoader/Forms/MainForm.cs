@@ -678,7 +678,7 @@ namespace AngelLoader.Forms
                 PatchDMLPatchesLabel.Text = LText.PatchTab.DMLPatchesApplied;
                 MainToolTip.SetToolTip(PatchAddDMLButton, LText.PatchTab.AddDMLPatchToolTip);
                 MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
-                PatchFMNotInstalledLabel.Text = selFM == null || GameIsDark(selFM) ? LText.PatchTab.FMNotInstalled : LText.PatchTab.NotSupportedForThief3;
+                PatchFMNotInstalledLabel.Text = LText.PatchTab.FMNotInstalled;
                 PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
                 PatchOpenFMFolderButton.SetTextAutoSize(LText.PatchTab.OpenFMFolder, PatchOpenFMFolderButton.Width);
 
@@ -2541,7 +2541,11 @@ namespace AngelLoader.Forms
 
                 foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
 
-                HidePatchSectionWithMessage(LText.PatchTab.FMNotInstalled);
+                PatchDMLsListBox.Items.Clear();
+                PatchMainPanel.Show();
+                PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
+                PatchFMNotInstalledLabel.Hide();
+                PatchMainPanel.Enabled = false;
             }
         }
 
@@ -2642,14 +2646,14 @@ namespace AngelLoader.Forms
             CommentTextBox.Enabled = true;
             foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
 
-            if (fm.Game == Game.Thief3)
-            {
-                HidePatchSectionWithMessage(LText.PatchTab.NotSupportedForThief3);
-            }
-            else if (!fm.Installed)
+            PatchMainPanel.Enabled = true;
+
+            if (!fm.Installed)
             {
                 HidePatchSectionWithMessage(LText.PatchTab.FMNotInstalled);
             }
+
+            PatchDMLsPanel.Enabled = fm.Game != Game.Thief3;
 
             #endregion
 
@@ -2751,7 +2755,7 @@ namespace AngelLoader.Forms
 
                 AddTagTextBox.Text = "";
 
-                if (fm.Installed && GameIsDark(fm))
+                if (fm.Installed)
                 {
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();

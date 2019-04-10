@@ -250,7 +250,6 @@ namespace AngelLoader.Common.DataClasses
             internal static string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
             internal static string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";
             internal static string FMNotInstalled = "FM must be installed in order to use this section.";
-            internal static string NotSupportedForThief3 = "This section is not supported for Thief: Deadly Shadows.";
             internal static string OpenFMFolder = "Open FM folder";
         }
 
