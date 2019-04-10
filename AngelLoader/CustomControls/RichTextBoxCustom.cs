@@ -118,6 +118,7 @@ namespace AngelLoader.CustomControls
             try
             {
                 this.SuspendDrawing();
+                ReadOnly = false;
 
                 // Blank the text to reset the scroll position to the top
                 Clear();
@@ -134,6 +135,7 @@ namespace AngelLoader.CustomControls
             }
             finally
             {
+                ReadOnly = true;
                 RestoreZoom();
                 this.ResumeDrawing();
             }

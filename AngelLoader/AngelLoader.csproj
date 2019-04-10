@@ -407,10 +407,6 @@
     <Content Include="Resources\ZoomIn_24.png" />
     <Content Include="Resources\ZoomOut_24.png" />
     <Content Include="Resources\ZoomReset_24.png" />
-    <None Include="log4net.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Resources\Blank.png" />
   </ItemGroup>
   <ItemGroup>
