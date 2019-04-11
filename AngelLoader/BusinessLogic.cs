@@ -2265,6 +2265,18 @@ namespace AngelLoader
             }
         }
 
+        internal void OpenLink(string link)
+        {
+            try
+            {
+                Process.Start(link);
+            }
+            catch (Exception ex)
+            {
+                Log("Problem opening clickable link from rtfbox", ex);
+            }
+        }
+
         internal void UpdateConfig(
             FormWindowState mainWindowState,
             Size mainWindowSize,

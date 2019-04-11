@@ -3436,6 +3436,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Model.OpenLink(e.LinkText);
+
         private void ZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
         private void ZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();

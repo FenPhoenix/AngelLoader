@@ -2319,6 +2319,7 @@
             this.ReadmeRichTextBox.Size = new System.Drawing.Size(1669, 361);
             this.ReadmeRichTextBox.TabIndex = 0;
             this.ReadmeRichTextBox.Text = "";
+            this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             // 
             // PlayOriginalGameMenu
             // 
