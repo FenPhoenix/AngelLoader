@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
+using AngelLoader.Forms;
 using static AngelLoader.Common.HTMLNamedEscapes;
 
 namespace AngelLoader.CustomControls
@@ -13,13 +14,17 @@ namespace AngelLoader.CustomControls
         private bool initialReadmeZoomSet = true;
         internal float StoredZoomFactor = 1.0f;
 
+        // Just so it can determine which monitor the majority of the main window is on, for horizontal line crap
+        private Control MainForm;
+        internal void InjectParent(Control mainForm) => MainForm = mainForm;
+
         #region Zoom stuff
 
         internal void ZoomIn()
         {
             try
             {
-                ZoomFactor += 0.1f;
+                ZoomFactor = (ZoomFactor + 0.1f).Clamp(0.1f, 5.0f);
             }
             catch (ArgumentException)
             {
@@ -31,7 +36,7 @@ namespace AngelLoader.CustomControls
         {
             try
             {
-                ZoomFactor -= 0.1f;
+                ZoomFactor = (ZoomFactor - 0.1f).Clamp(0.1f, 5.0f);
             }
             catch (ArgumentException)
             {
@@ -76,7 +81,7 @@ namespace AngelLoader.CustomControls
 
             try
             {
-                ZoomFactor = StoredZoomFactor;
+                ZoomFactor = StoredZoomFactor.Clamp(0.1f, 5.0f);
             }
             catch (ArgumentException)
             {
@@ -118,6 +123,9 @@ namespace AngelLoader.CustomControls
             try
             {
                 this.SuspendDrawing();
+                // On Windows 10 at least, images don't display if we're ReadOnly. Why not. We need to be ReadOnly
+                // though - it doesn't make sense to let the user edit a readme - so un-set us just long enough
+                // to load in the content correctly, then set us back again.
                 ReadOnly = false;
 
                 // Blank the text to reset the scroll position to the top
@@ -143,22 +151,6 @@ namespace AngelLoader.CustomControls
 
         #region GLML to RTF
 
-        // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
-        // and scale the width out to a gazillion
-        private const string HorizontalLine =
-            // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc.
-            // picscalex is in percent
-            // max value for anything is 32767
-            @"{\pict\wmetafile8\picw30\pich285\picwgoal15000\pichgoal285\picscalex500 " +
-            @"0100090000039000000000006700000000000400000003010800050000000b0200000000050000" +
-            @"000c0213000200030000001e000400000007010400040000000701040067000000410b2000cc00" +
-            @"130002000000000013000200000000002800000002000000130000000100040000000000000000" +
-            @"000000000000000000000000000000000000000000ffffff006666660000000000000000000000" +
-            @"000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-            @"0000001101d503110100001101d503110100001101bafd11010000110100001101000011010000" +
-            @"2202000011010000110100001101000011010000110100001101803f1101803f1101803f1101c0" +
-            @"42040000002701ffff030000000000}\line ";
-
         private const string RtfHeader =
             // RTF identifier
             @"{\rtf1" +
@@ -174,6 +166,18 @@ namespace AngelLoader.CustomControls
         private const string AlphaCaps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private const string AlphaLower = "abcdefghijklmnopqrstuvwxyz";
 
+        // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
+        // and scale the width out to twice the screen width (see below)
+        private const string HorizontalLineImagePart =
+            @"0100090000039000000000006700000000000400000003010800050000000b0200000000050000" +
+            @"000c0213000200030000001e000400000007010400040000000701040067000000410b2000cc00" +
+            @"130002000000000013000200000000002800000002000000130000000100040000000000000000" +
+            @"000000000000000000000000000000000000000000ffffff006666660000000000000000000000" +
+            @"000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+            @"0000001101d503110100001101d503110100001101bafd11010000110100001101000011010000" +
+            @"2202000011010000110100001101000011010000110100001101803f1101803f1101803f1101c0" +
+            @"42040000002701ffff030000000000}\line ";
+
         private static bool IsAlphaCaps(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -183,8 +187,22 @@ namespace AngelLoader.CustomControls
             return true;
         }
 
-        private static string GLMLToRTF(string text)
+        private string GLMLToRTF(string text)
         {
+            ulong screenWidthTwips = (ulong)Screen.GetBounds(MainForm).Width * 15;
+            string wgoal = ((ulong)(screenWidthTwips / 8)).Clamp(30ul, 32767ul).ToString();
+
+            // There can be problems with the right edges of lines being garbled (on Windows 10 at least, anyway)
+            // if we just scale them out indiscriminately, so scale them only to twice screen width. That means
+            // they'll show their finiteness if you zoom really far out, but meh. Unreadable text is your bigger
+            // problem in that case.
+            string HorizontalLine =
+                // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc.
+                // picscalex is in percent
+                // max value for anything is 32767
+                @"{\pict\wmetafile8\picw30\pich285\picwgoal" + wgoal + @"\pichgoal285\picscalex1600 " +
+                HorizontalLineImagePart;
+
             var sb = new StringBuilder();
 
             sb.Append(RtfHeader);
@@ -198,6 +216,7 @@ namespace AngelLoader.CustomControls
             // after it or it will retroactively apply itself to the line. Because obviously you can't just have
             // a simple pair of tags that just do what they're told.
             bool alignLeftOnNextLine = false;
+            bool lastTagWasLineBreak = false;
             for (int i = 0; i < text.Length; i++)
             {
                 var c = text[i];
@@ -238,6 +257,7 @@ namespace AngelLoader.CustomControls
                                 }
                                 else if (tag == "NL")
                                 {
+                                    lastTagWasLineBreak = true;
                                     sb.Append(@"\line ");
                                     if (alignLeftOnNextLine)
                                     {
@@ -247,6 +267,7 @@ namespace AngelLoader.CustomControls
                                 }
                                 else if (tag == "LINE")
                                 {
+                                    if (!lastTagWasLineBreak) sb.Append(@"\line ");
                                     sb.Append(HorizontalLine);
                                 }
                                 else if (!IsAlphaCaps(tag))
@@ -255,6 +276,9 @@ namespace AngelLoader.CustomControls
                                     sb.Append(subSB);
                                     sb.Append(']');
                                 }
+
+                                if (tag != "NL") lastTagWasLineBreak = false;
+
                                 i = j;
                                 break;
                             }

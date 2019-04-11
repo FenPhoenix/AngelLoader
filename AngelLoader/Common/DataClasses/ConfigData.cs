@@ -127,6 +127,11 @@ namespace AngelLoader.Common.DataClasses
 
         internal bool ConfirmPlayOnDCOrEnter = true;
 
-        internal float ReadmeZoomFactor = 1;
+        internal float _readmeZoomFactor = 1;
+        internal float ReadmeZoomFactor
+        {
+            get => _readmeZoomFactor;
+            set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f);
+        }
     }
 }
