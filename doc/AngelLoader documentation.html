@@ -146,7 +146,10 @@ Resets the main window to its default proportions.
 You can drag these horizontally or vertically to resize the sections of the window. If you drag at the corner between the two splitters, you can resize all three main sections at once.
 
 <h4>Readme area</h4>
-Here is where the selected FM's readme is displayed. If there are multiple readmes, you will be given a choice of which one to view. The first time you view an FM with multiple readmes, this list will be the only thing displayed in the readme section. This is to prevent a possible spoiler file from being displayed automatically (lootlist, walkthrough, etc). Once you've selected a readme, you will thereafter have the option to select another from a drop-down list that appears in the upper-right corner (see <a href="#readme_controls">Readme controls</a>).
+Here is where the selected FM's readme is displayed. If there are multiple readmes, AngelLoader will attempt to detect one that doesn't contain spoilers (lootlists, walkthroughs, etc.).
+If it finds one, it will choose that readme automatically. If a non-spoiler readme is unable to be detected with certainty, you will be given a choice of which readme to view.
+In this case, this list of readmes will be the only thing displayed in the readme section. Once you've selected a readme, you will thereafter
+have the option to select another from a drop-down list that appears in the upper-right corner (see <a href="#readme_controls">Readme controls</a>).
 
 <h4><a name="readme_controls" />Readme controls</h4>
 In the upper-right corner of the readme area, there is a set of controls for choosing a readme; zooming in, zooming out, and resetting zoom; and toggling fullscreen. When you click the fullscreen button, the readme area enlarges to take up the entire window. Click the button again to restore it to normal size. These controls appear when the mouse cursor is over the readme area, and disappear when it moves away.
