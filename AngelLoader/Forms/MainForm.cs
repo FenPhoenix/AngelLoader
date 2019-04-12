@@ -2790,19 +2790,20 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
 
+            void FillAndSelectReadmeFromMulti(string readme)
+            {
+                ChooseReadmeComboBox.AddRangeFull(readmeFiles);
+
+                using (new DisableEvents(this)) ChooseReadmeComboBox.SelectBackingIndexOf(readme);
+            }
+
             if (!fm.SelectedReadme.IsEmpty())
             {
                 ShowReadme(true);
 
                 if (readmeFiles.Count > 1)
                 {
-                    ChooseReadmeComboBox.AddRangeFull(readmeFiles);
-
-                    using (new DisableEvents(this)) ChooseReadmeComboBox.SelectBackingIndexOf(fm.SelectedReadme);
-
-                    // In case the cursor is already over the readme when we do this
-                    // (cause it won't show automatically if it is)
-                    if (CursorOverReadmeArea()) ShowReadmeControls();
+                    FillAndSelectReadmeFromMulti(fm.SelectedReadme);
                 }
                 else
                 {
@@ -2824,17 +2825,28 @@ namespace AngelLoader.Forms
                 }
                 else if (readmeFiles.Count > 1)
                 {
-                    ShowReadme(false);
-                    ViewHTMLReadmeButton.Hide();
+                    var safeReadme = Model.DetectSafeReadme(readmeFiles, fm.Title);
 
-                    ChooseReadmeListBox.ClearFullItems();
-                    ChooseReadmeListBox.AddRangeFull(readmeFiles);
+                    if (!safeReadme.IsEmpty())
+                    {
+                        fm.SelectedReadme = safeReadme;
+                        ShowReadme(true);
+                        FillAndSelectReadmeFromMulti(safeReadme);
+                    }
+                    else
+                    {
+                        ShowReadme(false);
+                        ViewHTMLReadmeButton.Hide();
 
-                    HideReadmeControls();
+                        ChooseReadmeListBox.ClearFullItems();
+                        ChooseReadmeListBox.AddRangeFull(readmeFiles);
 
-                    ChooseReadmePanel.Show();
+                        HideReadmeControls();
 
-                    return;
+                        ChooseReadmePanel.Show();
+
+                        return;
+                    }
                 }
                 else if (readmeFiles.Count == 1)
                 {
@@ -3484,6 +3496,10 @@ namespace AngelLoader.Forms
             ZoomOutButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
             ResetZoomButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
             ReadmeFullScreenButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
+
+            // In case the cursor is already over the readme when we do this
+            // (cause it won't show automatically if it is)
+            if (enabled && CursorOverReadmeArea()) ShowReadmeControls();
         }
 
         private void ShowReadmeControls()

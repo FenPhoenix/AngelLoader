@@ -2184,6 +2184,157 @@ namespace AngelLoader
             return (readmeOnDisk, rType);
         }
 
+        // Autodetect safe (non-spoiler) readme
+        internal string DetectSafeReadme(List<string> readmeFiles, string fmTitle)
+        {
+            // Since an FM's readmes are very few in number, we can afford to be all kinds of lazy and slow here
+
+            string StripPunctuation(string str)
+            {
+                return str.Replace(" ", "").Replace("-", "").Replace("_", "").Replace(".", "")
+                    .Replace(",", "").Replace(";", "").Replace("'", "");
+            }
+
+            bool allEqual = true;
+            for (var i = 0; i < readmeFiles.Count; i++)
+            {
+                var rf = readmeFiles[i];
+                if (rf == null) continue;
+
+                if (i > 0 && !StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i]))
+                        .EqualsI(StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i - 1]))))
+                {
+                    allEqual = false;
+                    break;
+                }
+            }
+
+            string FirstByPreferredFormat(List<string> files)
+            {
+                // Don't use IsValidReadme(), because we want a specific search order
+                return
+                    files.FirstOrDefault(x => x.ExtEqualsI(".glml")) ??
+                    files.FirstOrDefault(x => x.ExtEqualsI(".rtf")) ??
+                    files.FirstOrDefault(x => x.ExtEqualsI(".txt")) ??
+                    files.FirstOrDefault(x => x.ExtEqualsI(".wri")) ??
+                    files.FirstOrDefault(x => x.ExtEqualsI(".html")) ??
+                    files.FirstOrDefault(x => x.ExtEqualsI(".htm"));
+            }
+
+            bool ContainsUnsafePhrase(string str)
+            {
+                return str.ContainsI("loot") ||
+                       str.ContainsI("walkthrough") ||
+                       str.ContainsI("walkthru") ||
+                       str.ContainsI("secret") ||
+                       str.ContainsI("spoiler") ||
+                       str.ContainsI("tips") ||
+                       str.ContainsI("convo") ||
+                       str.ContainsI("conversation") ||
+                       str.ContainsI("cheat") ||
+                       str.ContainsI("notes");
+            }
+
+            bool ContainsUnsafeOrJunkPhrase(string str)
+            {
+                return ContainsUnsafePhrase(str) ||
+                       str.EqualsI("scripts") ||
+                       str.ContainsI("copyright") ||
+                       str.ContainsI("install") ||
+                       str.ContainsI("update") ||
+                       str.ContainsI("patch") ||
+                       str.ContainsI("nvscript") ||
+                       str.ContainsI("tnhscript") ||
+                       str.ContainsI("GayleSaver") ||
+                       str.ContainsI("changelog") ||
+                       str.ContainsI("changes") ||
+                       str.ContainsI("credits") ||
+                       str.ContainsI("objectives") ||
+                       str.ContainsI("hint");
+            }
+
+            var safeReadme = "";
+            if (allEqual)
+            {
+                safeReadme = FirstByPreferredFormat(readmeFiles);
+            }
+            else
+            {
+
+                var safeReadmes = new List<string>();
+                foreach (var rf in readmeFiles)
+                {
+                    if (rf == null) continue;
+
+                    var fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
+
+                    if (fn.EqualsI("Readme") || fn.EqualsI("ReadmeEn") || fn.EqualsI("ReadmeEng") ||
+                        fn.EqualsI("FMInfo") || fn.EqualsI("FMInfoEn") || fn.EqualsI("FMInfoEng") ||
+                        fn.EqualsI("fm") || fn.EqualsI("fmEn") || fn.EqualsI("fmEng") ||
+                        fn.EqualsI("GameInfo") || fn.EqualsI("GameInfoEn") || fn.EqualsI("GameInfoEng") ||
+                        fn.EqualsI("Mission") || fn.EqualsI("MissionEn") || fn.EqualsI("MissionEng") ||
+                        fn.EqualsI("MissionInfo") || fn.EqualsI("MissionInfoEn") || fn.EqualsI("MissionInfoEng") ||
+                        fn.EqualsI("Info") || fn.EqualsI("InfoEn") || fn.EqualsI("InfoEng") ||
+                        fn.EqualsI("Entry") || fn.EqualsI("EntryEn") || fn.EqualsI("EntryEng") ||
+                        fn.EqualsI("English") ||
+                        (fn.StartsWithI(StripPunctuation(fmTitle)) && !ContainsUnsafeOrJunkPhrase(fn)) ||
+                        (fn.EndsWithI("Readme") && !ContainsUnsafePhrase(fn)))
+                    {
+                        safeReadmes.Add(rf);
+                    }
+                }
+
+                if (safeReadmes.Count > 0)
+                {
+                    safeReadmes.Sort(new SafeReadmeComparer());
+
+                    var eng = safeReadmes.FirstOrDefault(
+                        x => Path.GetFileNameWithoutExtension(x).EndsWithI("en") ||
+                             Path.GetFileNameWithoutExtension(x).EndsWithI("eng"));
+                    foreach (var item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
+                    {
+                        var str = safeReadmes.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).EqualsI(item));
+                        if (str != null)
+                        {
+                            safeReadmes.Remove(str);
+                            safeReadmes.Insert(0, str);
+                        }
+                    }
+                    if (eng != null)
+                    {
+                        safeReadmes.Remove(eng);
+                        safeReadmes.Insert(0, eng);
+                    }
+                    safeReadme = FirstByPreferredFormat(safeReadmes);
+                }
+            }
+
+            if (safeReadme.IsEmpty())
+            {
+                int numSafe = 0;
+                int safeIndex = -1;
+                for (var i = 0; i < readmeFiles.Count; i++)
+                {
+                    var rf = readmeFiles[i];
+                    if (rf == null) continue;
+
+                    var fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
+                    if (!ContainsUnsafeOrJunkPhrase(fn))
+                    {
+                        numSafe++;
+                        safeIndex = i;
+                    }
+                }
+
+                if (numSafe == 1 && safeIndex > -1)
+                {
+                    safeReadme = readmeFiles[safeIndex];
+                }
+            }
+
+            return safeReadme;
+        }
+
         internal void OpenFMFolder(FanMission fm)
         {
             var installsBasePath = GetFMInstallsBasePath(fm);

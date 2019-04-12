@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 
@@ -74,6 +75,19 @@ namespace AngelLoader.Common
             }
 
             return string.Compare(x, y, StringComparison.InvariantCultureIgnoreCase);
+        }
+    }
+
+    internal sealed class SafeReadmeComparer : IComparer<string>
+    {
+        public int Compare(string x, string y)
+        {
+            if (x == y) return 0;
+            if (x.IsEmpty()) return -1;
+            if (y.IsEmpty()) return 1;
+
+            return string.Compare(Path.GetFileNameWithoutExtension(x), Path.GetFileNameWithoutExtension(y),
+                StringComparison.OrdinalIgnoreCase);
         }
     }
 
