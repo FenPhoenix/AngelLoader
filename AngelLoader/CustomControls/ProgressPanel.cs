@@ -5,6 +5,7 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI.Taskbar;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.CustomControls
 {
@@ -43,48 +44,56 @@ namespace AngelLoader.CustomControls
 
         internal void ShowImportDarkLoader()
         {
+            Log("ProgressBox: " + nameof(ShowImportDarkLoader), methodName: false);
             ProgressTask = ProgressTasks.ImportFromDarkLoader;
             ShowProgressWindow(ProgressTask);
         }
 
         internal void ShowImportNDL()
         {
+            Log("ProgressBox: " + nameof(ShowImportNDL), methodName: false);
             ProgressTask = ProgressTasks.ImportFromNDL;
             ShowProgressWindow(ProgressTask);
         }
 
         internal void ShowImportFMSel()
         {
+            Log("ProgressBox: " + nameof(ShowImportFMSel), methodName: false);
             ProgressTask = ProgressTasks.ImportFromFMSel;
             ShowProgressWindow(ProgressTask);
         }
 
         internal void ShowScanningAllFMs()
         {
+            Log("ProgressBox: " + nameof(ShowScanningAllFMs), methodName: false);
             ProgressTask = ProgressTasks.ScanAllFMs;
             ShowProgressWindow(ProgressTask);
         }
 
         internal void ShowInstallingFM()
         {
+            Log("ProgressBox: " + nameof(ShowInstallingFM), methodName: false);
             ProgressTask = ProgressTasks.InstallFM;
             ShowProgressWindow(ProgressTask);
         }
 
         internal void ShowUninstallingFM()
         {
+            Log("ProgressBox: " + nameof(ShowUninstallingFM), methodName: false);
             ProgressTask = ProgressTasks.UninstallFM;
             ShowProgressWindow(ProgressTask);
         }
 
         internal void ShowConvertingFiles()
         {
+            Log("ProgressBox: " + nameof(ShowConvertingFiles), methodName: false);
             ProgressTask = ProgressTasks.ConvertFiles;
             ShowProgressWindow(ProgressTask);
         }
 
         internal void ShowCachingFM()
         {
+            Log("ProgressBox: " + nameof(ShowCachingFM), methodName: false);
             ProgressTask = ProgressTasks.CacheFM;
             ShowProgressWindow(ProgressTask);
         }
@@ -119,7 +128,7 @@ namespace AngelLoader.CustomControls
                 progressTask == ProgressTasks.ImportFromFMSel)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
-                TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);
+                if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);
                 ProgressCancelButton.Hide();
             }
             else
@@ -138,6 +147,7 @@ namespace AngelLoader.CustomControls
 
         internal void ShowThis()
         {
+            Log(nameof(ShowThis) + " called", methodName: false);
             Owner.EnableEverything(false);
             Enabled = true;
 
@@ -145,11 +155,11 @@ namespace AngelLoader.CustomControls
             Show();
         }
 
-        internal new void Hide()
+        internal void HideThis()
         {
-            TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
+            if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
 
-            ((Control)this).Hide();
+            Hide();
 
             ProgressMessageLabel.Text = "";
             CurrentThingLabel.Text = "";
@@ -177,7 +187,7 @@ namespace AngelLoader.CustomControls
             CurrentThingLabel.Text = fmName;
             ProgressPercentLabel.Text = percent + "%";
 
-            TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
         }
 
         internal void ReportFMExtractProgress(int percent)
@@ -186,7 +196,7 @@ namespace AngelLoader.CustomControls
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + "%";
 
-            TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
         }
 
         internal void ReportCachingProgress(int percent)
@@ -196,11 +206,11 @@ namespace AngelLoader.CustomControls
 
             if (Visible)
             {
-                TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+                if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
             }
             else
             {
-                TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
+                if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
             }
         }
 

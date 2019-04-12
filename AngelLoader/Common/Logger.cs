@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Common
 {
@@ -11,12 +12,14 @@ namespace AngelLoader.Common
     {
         private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
 
-        internal static void ClearLogFile()
+        internal static void ClearLogFile(string logFile = "")
         {
+            if (logFile.IsEmpty()) logFile = Paths.LogFile;
+
             Lock.EnterWriteLock();
             try
             {
-                File.Delete(Paths.LogFile);
+                File.Delete(logFile);
             }
             catch (Exception ex)
             {
@@ -29,7 +32,7 @@ namespace AngelLoader.Common
         }
 
         internal static void Log(string message, Exception ex = null, bool stackTrace = false, bool methodName = true,
-            [CallerMemberName] string callerMemberName= "")
+            [CallerMemberName] string callerMemberName = "")
         {
             Lock.EnterWriteLock();
             try

@@ -28,13 +28,13 @@ namespace AngelLoader.WinAPI.Taskbar
 
         internal static void SetState(IntPtr windowHandle, TaskbarStates taskbarState)
         {
-            if (!TaskbarSupported) return;
+            if (!TaskbarSupported || windowHandle == IntPtr.Zero) return;
             Instance.SetProgressState(windowHandle, taskbarState);
         }
 
         internal static void SetValue(IntPtr windowHandle, int progressValue, int progressMax)
         {
-            if (!TaskbarSupported) return;
+            if (!TaskbarSupported || windowHandle == IntPtr.Zero) return;
             Instance.SetProgressValue(windowHandle, (ulong)progressValue, (ulong)progressMax);
         }
     }

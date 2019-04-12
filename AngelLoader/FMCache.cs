@@ -320,6 +320,8 @@ namespace AngelLoader
 
                         if (indexesList.Count == 0) return;
 
+                        Log(nameof(SevenZipExtract) + ": about to show progress box and extract", methodName: false);
+
                         progressBox.BeginInvoke(new Action(progressBox.ShowCachingFM));
 
                         extractor.Extracting += (sender, e) =>
@@ -348,7 +350,7 @@ namespace AngelLoader
                 }
                 finally
                 {
-                    progressBox.BeginInvoke(new Action(progressBox.Hide));
+                    progressBox.BeginInvoke(new Action(progressBox.HideThis));
                 }
             });
         }

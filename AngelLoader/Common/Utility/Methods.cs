@@ -54,9 +54,16 @@ namespace AngelLoader.Common.Utility
                 paths.Add(path);
                 if (Config.FMArchivePathsIncludeSubfolders)
                 {
-                    foreach (var dir in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
+                    try
                     {
-                        if (!dir.GetDirNameFast().EqualsI(".fix")) paths.Add(dir);
+                        foreach (var dir in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
+                        {
+                            if (!dir.GetDirNameFast().EqualsI(".fix")) paths.Add(dir);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(nameof(GetFMArchivePaths) + " : subfolders=true, Exception in GetDirectories", ex);
                     }
                 }
             }
@@ -64,11 +71,11 @@ namespace AngelLoader.Common.Utility
             return paths;
         }
 
-        internal static string FindFMArchive(FanMission fm)
+        internal static string FindFMArchive(FanMission fm, List<string> archivePaths = null)
         {
             if (fm.Archive.IsEmpty()) return null;
 
-            foreach (var path in GetFMArchivePaths())
+            foreach (var path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
             {
                 var f = Path.Combine(path, fm.Archive);
                 if (File.Exists(f)) return f;

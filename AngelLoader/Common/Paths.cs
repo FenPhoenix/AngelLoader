@@ -19,6 +19,7 @@ namespace AngelLoader.Common
 #endif
 
         internal static readonly string LogFile = Path.Combine(Startup, "AngelLoader_log.txt");
+        internal static readonly string ScannerLogFile = Path.Combine(Startup, "FMScanner_log.txt");
 
         #region Temp
 

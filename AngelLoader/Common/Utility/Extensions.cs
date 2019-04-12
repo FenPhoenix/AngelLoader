@@ -539,8 +539,8 @@ namespace AngelLoader.Common.Utility
             }
             else
             {
-                pb.Value = value + 1;
-                pb.Value = value;
+                pb.Value = (value + 1).Clamp(pb.Minimum, pb.Maximum);
+                pb.Value = value.Clamp(pb.Minimum, pb.Maximum);
             }
         }
 

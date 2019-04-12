@@ -223,12 +223,14 @@ namespace AngelLoader.Forms
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
         internal async Task Init()
         {
+
+#if ReleaseBeta
             var ver = typeof(MainForm).Assembly.GetName().Version;
             var verThird = ver.Build > 0 ? @"." + ver.Build : "";
             Text = @"AngelLoader " + ver.Major + @"." + ver.Minor + verThird;
-
-#if ReleaseBeta
             base.Text += " " + Application.ProductVersion;
+#else
+            Text = "AngelLoader " + Application.ProductVersion;
 #endif
 
 #if Release && !Release_Testing

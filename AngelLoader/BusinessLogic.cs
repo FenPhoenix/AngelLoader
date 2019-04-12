@@ -734,6 +734,7 @@ namespace AngelLoader
 
             if (scanningOne)
             {
+                Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
                 View.Block();
                 ProgressBox.ProgressTask = ProgressPanel.ProgressTasks.ScanAllFMs;
                 ProgressBox.ShowProgressWindow(ProgressBox.ProgressTask, suppressShow: true);
@@ -752,6 +753,7 @@ namespace AngelLoader
                 {
                     if (scanningOne)
                     {
+                        Log(nameof(ScanFMs) + ": timeOut.Elapsed: showing ProgressBox");
                         ProgressBox.BeginInvoke(new Action(ProgressBox.ShowThis));
                         View.BeginInvoke(new Action(View.Unblock));
                     }
@@ -763,9 +765,14 @@ namespace AngelLoader
                 try
                 {
                     var fms = new List<string>();
+                    // Get archive paths list only once and cache it - in case of "include subfolders" being true,
+                    // cause then it will hit the actual disk rather than just going through a list of paths in
+                    // memory
+                    Log(nameof(ScanFMs) + ": about to call " + nameof(GetFMArchivePaths) + " with subfolders=" + Config.FMArchivePathsIncludeSubfolders);
+                    var archivePaths = await Task.Run(GetFMArchivePaths);
                     foreach (var fm in fmsToScan)
                     {
-                        var fmArchivePath = await Task.Run(() => FindFMArchive(fm));
+                        var fmArchivePath = await Task.Run(() => FindFMArchive(fm, archivePaths));
                         if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                         {
                             fms.Add(fmArchivePath);
@@ -786,7 +793,7 @@ namespace AngelLoader
                         if (ScanCts.IsCancellationRequested)
                         {
                             ScanCts?.Dispose();
-                            ProgressBox.Hide();
+                            ProgressBox.HideThis();
                             return false;
                         }
                     }
@@ -798,6 +805,7 @@ namespace AngelLoader
 
                         using (var scanner = new Scanner())
                         {
+                            scanner.LogFile = Paths.ScannerLogFile;
                             scanner.ZipEntryNameEncoding = Encoding.UTF8;
                             Paths.PrepareTempPath(Paths.FMScannerTemp);
                             fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress,
@@ -811,7 +819,7 @@ namespace AngelLoader
                     finally
                     {
                         ScanCts?.Dispose();
-                        ProgressBox.Hide();
+                        ProgressBox.HideThis();
                     }
 
                     foreach (var fm in fmDataList)
@@ -888,7 +896,9 @@ namespace AngelLoader
                         if (overwriteUnscannedFields || scanOptions.ScanLanguages)
                         {
                             sel.Languages = gameSup ? fm.Languages : new string[0];
-                            sel.LanguagesString = gameSup ? fm.Languages != null ? string.Join(", ", fm.Languages) : "" : "";
+                            sel.LanguagesString = gameSup
+                                ? fm.Languages != null ? string.Join(", ", fm.Languages) : ""
+                                : "";
                         }
 
                         if (overwriteUnscannedFields || scanOptions.ScanTags)
@@ -903,12 +913,17 @@ namespace AngelLoader
                         sel.MarkedScanned = markAsScanned;
                     }
 
-                    ProgressBox.Hide();
+                    ProgressBox.HideThis();
 
                     WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
                 }
+                catch (Exception ex)
+                {
+                    Log("Exception in ScanFMs", ex);
+                }
                 finally
                 {
+                    ProgressBox.HideThis();
                     View.Unblock();
                 }
             }
@@ -981,7 +996,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
             }
 
             return true;
@@ -1009,7 +1024,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
             }
 
             return true;
@@ -1037,7 +1052,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
             }
 
             return true;
@@ -1135,7 +1150,7 @@ namespace AngelLoader
                         Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
                     }
                 });
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
                 return false;
             }
 
@@ -1173,7 +1188,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
             }
 
             await RestoreSavesAndScreenshots(fm);
@@ -1181,7 +1196,7 @@ namespace AngelLoader
             // Not doing RefreshSelectedFMRowOnly() because that wouldn't update the install/uninstall buttons
             await View.RefreshSelectedFM(refreshReadme: false);
 
-            ProgressBox.Hide();
+            ProgressBox.HideThis();
 
             return true;
         }
@@ -1419,7 +1434,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
             }
         }
 
@@ -1510,7 +1525,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
             }
         }
 
@@ -1553,7 +1568,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.Hide();
+                ProgressBox.HideThis();
             }
         }
 
