@@ -1191,12 +1191,21 @@ namespace AngelLoader
                 ProgressBox.HideThis();
             }
 
-            await RestoreSavesAndScreenshots(fm);
+            try
+            {
+                await RestoreSavesAndScreenshots(fm);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in " + nameof(RestoreSavesAndScreenshots), ex);
+            }
+            finally
+            {
+                ProgressBox.HideThis();
+            }
 
             // Not doing RefreshSelectedFMRowOnly() because that wouldn't update the install/uninstall buttons
             await View.RefreshSelectedFM(refreshReadme: false);
-
-            ProgressBox.HideThis();
 
             return true;
         }
@@ -1252,6 +1261,10 @@ namespace AngelLoader
                     View.BeginInvoke(new Action(() =>
                         View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
+                }
+                finally
+                {
+                    View.BeginInvoke(new Action(() => ProgressBox.HideThis()));
                 }
             });
 
@@ -1316,6 +1329,10 @@ namespace AngelLoader
                     View.BeginInvoke(new Action(() =>
                         View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
+                }
+                finally
+                {
+                    View.BeginInvoke(new Action(() => ProgressBox.HideThis()));
                 }
             });
 
