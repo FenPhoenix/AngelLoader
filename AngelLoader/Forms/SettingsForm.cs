@@ -629,9 +629,11 @@ namespace AngelLoader.Forms
         {
             using (var d = new AutoFolderBrowserDialog())
             {
-                d.InitialDirectory = FMArchivePathsListBox.SelectedIndex > -1
-                    ? Path.GetDirectoryName(FMArchivePathsListBox.SelectedItem.ToString())
-                    : "";
+                var lb = FMArchivePathsListBox;
+                d.InitialDirectory =
+                    lb.SelectedIndex > -1 ? Path.GetDirectoryName(lb.SelectedItem.ToString()) :
+                    lb.Items.Count > 0 ? Path.GetDirectoryName(lb.Items[lb.Items.Count - 1].ToString()) :
+                    "";
                 d.MultiSelect = true;
                 if (d.ShowDialog() == DialogResult.OK)
                 {
