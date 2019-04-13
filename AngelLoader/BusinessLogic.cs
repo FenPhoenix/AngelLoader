@@ -176,6 +176,20 @@ namespace AngelLoader
 
         internal string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
         {
+            string CreateAndReturn(string fmsPath)
+            {
+                try
+                {
+                    Directory.CreateDirectory(fmsPath);
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception creating FM installed base dir", ex);
+                }
+
+                return fmsPath;
+            }
+
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
 
             if (!File.Exists(camModIni))
@@ -183,7 +197,7 @@ namespace AngelLoader
                 //error = Error.CamModIniNotFound;
                 //return null;
                 error = Error.None;
-                return Path.Combine(gamePath, "FMs");
+                return CreateAndReturn(Path.Combine(gamePath, "FMs"));
             }
 
             string path = null;
@@ -227,12 +241,12 @@ namespace AngelLoader
                 catch (Exception)
                 {
                     error = Error.None;
-                    return Path.Combine(gamePath, "FMs");
+                    return CreateAndReturn(Path.Combine(gamePath, "FMs"));
                 }
             }
 
             error = Error.None;
-            return Directory.Exists(path) ? path : Path.Combine(gamePath, "FMs");
+            return Directory.Exists(path) ? path : CreateAndReturn(Path.Combine(gamePath, "FMs"));
         }
 
         internal (Error Error, bool UseCentralSaves, string Path)
@@ -1757,8 +1771,6 @@ namespace AngelLoader
             {
                 var lt = lines[i].TrimStart();
 
-                if (lt.Length > 0 && lt[0] == ';') matchedLineIsCommented = true;
-
                 do
                 {
                     lt = lt.TrimStart(';').Trim();
@@ -1772,6 +1784,7 @@ namespace AngelLoader
                     {
                         lines.RemoveAt(i);
                         i--;
+                        lastSelKeyIndex = (lastSelKeyIndex - 1).Clamp(-1, int.MaxValue);
                     }
                     else
                     {
@@ -1792,11 +1805,7 @@ namespace AngelLoader
 
             if (!loaderIsAlreadyUs)
             {
-                if (lastSelKeyIndex > -1 && matchedLineIsCommented)
-                {
-                    lines[lastSelKeyIndex] = fmSelectorKey + " " + stubPath;
-                }
-                else if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
+                if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
                 {
                     lines.Add(fmSelectorKey + " " + stubPath);
                 }

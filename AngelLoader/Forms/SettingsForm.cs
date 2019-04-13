@@ -599,7 +599,17 @@ namespace AngelLoader.Forms
                 sender == Thief2ExePathBrowseButton ? Thief2ExePathTextBox :
                 Thief3ExePathTextBox;
 
-            var (result, fileName) = BrowseForExeFile();
+            string initialPath = "";
+            try
+            {
+                initialPath = Path.GetDirectoryName(tb.Text);
+            }
+            catch
+            {
+                // ignore
+            }
+
+            var (result, fileName) = BrowseForExeFile(initialPath);
             if (result == DialogResult.OK) tb.Text = fileName ?? "";
         }
 
@@ -630,10 +640,21 @@ namespace AngelLoader.Forms
             using (var d = new AutoFolderBrowserDialog())
             {
                 var lb = FMArchivePathsListBox;
-                d.InitialDirectory =
-                    lb.SelectedIndex > -1 ? Path.GetDirectoryName(lb.SelectedItem.ToString()) :
-                    lb.Items.Count > 0 ? Path.GetDirectoryName(lb.Items[lb.Items.Count - 1].ToString()) :
+                var initDir =
+                    lb.SelectedIndex > -1 ? lb.SelectedItem.ToString() :
+                    lb.Items.Count > 0 ? lb.Items[lb.Items.Count - 1].ToString() :
                     "";
+                if (!initDir.IsWhiteSpace())
+                {
+                    try
+                    {
+                        d.InitialDirectory = Path.GetDirectoryName(initDir);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
                 d.MultiSelect = true;
                 if (d.ShowDialog() == DialogResult.OK)
                 {
@@ -654,10 +675,12 @@ namespace AngelLoader.Forms
 
         #region Methods
 
-        private static (DialogResult Result, string FileName) BrowseForExeFile()
+        private static (DialogResult Result, string FileName)
+        BrowseForExeFile(string initialPath)
         {
             using (var dialog = new OpenFileDialog())
             {
+                dialog.InitialDirectory = initialPath;
                 dialog.Filter = LText.BrowseDialogs.ExeFiles + @"|*.exe";
                 return (dialog.ShowDialog(), dialog.FileName);
             }
