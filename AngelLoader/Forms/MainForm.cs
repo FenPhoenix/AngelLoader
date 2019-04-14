@@ -4018,6 +4018,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
+            int successCount = 0;
             foreach (var file in iniFiles)
             {
                 if (file.IsWhiteSpace()) continue;
@@ -4025,8 +4026,10 @@ namespace AngelLoader.Forms
                 bool success = await (importType == ImportType.FMSel
                     ? Model.ImportFromFMSel(file)
                     : Model.ImportFromNDL(file));
-                if (!success) return;
+                if (success) successCount++;
             }
+
+            if (successCount == 0) return;
 
             SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
             await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);

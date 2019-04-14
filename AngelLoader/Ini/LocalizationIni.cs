@@ -68,6 +68,10 @@ namespace AngelLoader.Ini
                         {
                             LText.Global.Reset = lt.Substring(6);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Autodetect="))
+                        {
+                            LText.Global.Autodetect = lt.Substring(11);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Unrated="))
                         {
                             LText.Global.Unrated = lt.Substring(8);

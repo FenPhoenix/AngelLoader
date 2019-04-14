@@ -31,12 +31,12 @@ namespace AngelLoader.Common.Utility
             return "";
         }
 
-        internal static string GetFMInstallsBasePath(FanMission fm)
+        internal static string GetFMInstallsBasePath(Game? game)
         {
             var thisFMInstallsBasePath =
-                fm.Game == Game.Thief1 ? Config.T1FMInstallPath :
-                fm.Game == Game.Thief2 ? Config.T2FMInstallPath :
-                fm.Game == Game.Thief3 ? Config.T3FMInstallPath :
+                game == Game.Thief1 ? Config.T1FMInstallPath :
+                game == Game.Thief2 ? Config.T2FMInstallPath :
+                game == Game.Thief3 ? Config.T3FMInstallPath :
                 null;
 
             return thisFMInstallsBasePath ?? "";

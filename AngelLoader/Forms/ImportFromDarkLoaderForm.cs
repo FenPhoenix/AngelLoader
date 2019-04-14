@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Forms
 {
     public partial class ImportFromDarkLoaderForm : Form, ILocalizable
     {
+        private const string DarkLoaderIni = "DarkLoader.ini";
         internal string DarkLoaderIniFile = "";
         internal bool ImportFMData;
         internal bool ImportSaves;
@@ -18,12 +21,14 @@ namespace AngelLoader.Forms
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e)
         {
             SetUITextToLocalized();
+            AutodetectDarkLoaderIni();
         }
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {
             Text = LText.Importing.ImportFromDarkLoader_TitleText;
             ChooseDarkLoaderIniLabel.Text = LText.Importing.DarkLoader_ChooseIni;
+            AutodetectCheckBox.Text = LText.Global.Autodetect;
             DarkLoaderIniBrowseButton.SetTextAutoSize(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
             ImportFMDataCheckBox.Text = LText.Importing.DarkLoader_ImportFMData;
             ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
@@ -40,7 +45,7 @@ namespace AngelLoader.Forms
             bool fileNameIsDLIni;
             try
             {
-                fileNameIsDLIni = Path.GetFileName(file).EqualsI("DarkLoader.ini");
+                fileNameIsDLIni = Path.GetFileName(file).EqualsI(DarkLoaderIni);
             }
             catch (ArgumentException)
             {
@@ -78,6 +83,59 @@ namespace AngelLoader.Forms
                 if (d.ShowDialog() != DialogResult.OK) return;
 
                 DarkLoaderIniTextBox.Text = d.FileName;
+            }
+        }
+
+        private void AutodetectCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = AutodetectCheckBox;
+            DarkLoaderIniTextBox.ReadOnly = s.Checked;
+            DarkLoaderIniBrowseButton.Enabled = !s.Checked;
+
+            if (s.Checked) AutodetectDarkLoaderIni();
+        }
+
+        private void AutodetectDarkLoaderIni()
+        {
+            // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
+            var dlLocations = new[]
+            {
+                @"DarkLoader",
+                @"Games\DarkLoader"
+            };
+
+            DriveInfo[] drives;
+            try
+            {
+                drives = DriveInfo.GetDrives();
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in GetDrives()", ex);
+                DarkLoaderIniTextBox.Text = "";
+                return;
+            }
+
+            foreach (var drive in drives)
+            {
+                if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
+
+                try
+                {
+                    foreach (var loc in dlLocations)
+                    {
+                        var dlIni = Path.Combine(drive.Name, loc, DarkLoaderIni);
+                        if (File.Exists(dlIni))
+                        {
+                            DarkLoaderIniTextBox.Text = dlIni;
+                            return;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in DarkLoader multi-drive search", ex);
+                }
             }
         }
 

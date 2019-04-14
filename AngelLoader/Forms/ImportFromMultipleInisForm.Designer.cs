@@ -41,6 +41,9 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.Thief1AutodetectCheckBox = new System.Windows.Forms.CheckBox();
+            this.Thief2AutodetectCheckBox = new System.Windows.Forms.CheckBox();
+            this.Thief3AutodetectCheckBox = new System.Windows.Forms.CheckBox();
             this.Thief1GroupBox.SuspendLayout();
             this.Thief2GroupBox.SuspendLayout();
             this.Thief3GroupBox.SuspendLayout();
@@ -58,11 +61,12 @@
             // 
             // Thief1GroupBox
             // 
+            this.Thief1GroupBox.Controls.Add(this.Thief1AutodetectCheckBox);
             this.Thief1GroupBox.Controls.Add(this.Thief1IniBrowseButton);
             this.Thief1GroupBox.Controls.Add(this.Thief1IniTextBox);
             this.Thief1GroupBox.Location = new System.Drawing.Point(8, 32);
             this.Thief1GroupBox.Name = "Thief1GroupBox";
-            this.Thief1GroupBox.Size = new System.Drawing.Size(536, 64);
+            this.Thief1GroupBox.Size = new System.Drawing.Size(536, 80);
             this.Thief1GroupBox.TabIndex = 2;
             this.Thief1GroupBox.TabStop = false;
             this.Thief1GroupBox.Text = "Thief 1";
@@ -70,7 +74,8 @@
             // Thief1IniBrowseButton
             // 
             this.Thief1IniBrowseButton.AutoSize = true;
-            this.Thief1IniBrowseButton.Location = new System.Drawing.Point(448, 23);
+            this.Thief1IniBrowseButton.Enabled = false;
+            this.Thief1IniBrowseButton.Location = new System.Drawing.Point(448, 47);
             this.Thief1IniBrowseButton.Name = "Thief1IniBrowseButton";
             this.Thief1IniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief1IniBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -81,18 +86,20 @@
             // 
             // Thief1IniTextBox
             // 
-            this.Thief1IniTextBox.Location = new System.Drawing.Point(16, 24);
+            this.Thief1IniTextBox.Location = new System.Drawing.Point(16, 48);
             this.Thief1IniTextBox.Name = "Thief1IniTextBox";
+            this.Thief1IniTextBox.ReadOnly = true;
             this.Thief1IniTextBox.Size = new System.Drawing.Size(432, 20);
             this.Thief1IniTextBox.TabIndex = 0;
             // 
             // Thief2GroupBox
             // 
+            this.Thief2GroupBox.Controls.Add(this.Thief2AutodetectCheckBox);
             this.Thief2GroupBox.Controls.Add(this.Thief2IniBrowseButton);
             this.Thief2GroupBox.Controls.Add(this.Thief2IniTextBox);
-            this.Thief2GroupBox.Location = new System.Drawing.Point(8, 104);
+            this.Thief2GroupBox.Location = new System.Drawing.Point(8, 120);
             this.Thief2GroupBox.Name = "Thief2GroupBox";
-            this.Thief2GroupBox.Size = new System.Drawing.Size(536, 72);
+            this.Thief2GroupBox.Size = new System.Drawing.Size(536, 88);
             this.Thief2GroupBox.TabIndex = 3;
             this.Thief2GroupBox.TabStop = false;
             this.Thief2GroupBox.Text = "Thief 2";
@@ -100,7 +107,8 @@
             // Thief2IniBrowseButton
             // 
             this.Thief2IniBrowseButton.AutoSize = true;
-            this.Thief2IniBrowseButton.Location = new System.Drawing.Point(447, 33);
+            this.Thief2IniBrowseButton.Enabled = false;
+            this.Thief2IniBrowseButton.Location = new System.Drawing.Point(447, 47);
             this.Thief2IniBrowseButton.Name = "Thief2IniBrowseButton";
             this.Thief2IniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief2IniBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -111,18 +119,20 @@
             // 
             // Thief2IniTextBox
             // 
-            this.Thief2IniTextBox.Location = new System.Drawing.Point(15, 34);
+            this.Thief2IniTextBox.Location = new System.Drawing.Point(15, 48);
             this.Thief2IniTextBox.Name = "Thief2IniTextBox";
+            this.Thief2IniTextBox.ReadOnly = true;
             this.Thief2IniTextBox.Size = new System.Drawing.Size(432, 20);
             this.Thief2IniTextBox.TabIndex = 0;
             // 
             // Thief3GroupBox
             // 
+            this.Thief3GroupBox.Controls.Add(this.Thief3AutodetectCheckBox);
             this.Thief3GroupBox.Controls.Add(this.Thief3IniBrowseButton);
             this.Thief3GroupBox.Controls.Add(this.Thief3IniTextBox);
-            this.Thief3GroupBox.Location = new System.Drawing.Point(8, 184);
+            this.Thief3GroupBox.Location = new System.Drawing.Point(8, 216);
             this.Thief3GroupBox.Name = "Thief3GroupBox";
-            this.Thief3GroupBox.Size = new System.Drawing.Size(536, 72);
+            this.Thief3GroupBox.Size = new System.Drawing.Size(536, 88);
             this.Thief3GroupBox.TabIndex = 4;
             this.Thief3GroupBox.TabStop = false;
             this.Thief3GroupBox.Text = "Thief 3";
@@ -130,7 +140,8 @@
             // Thief3IniBrowseButton
             // 
             this.Thief3IniBrowseButton.AutoSize = true;
-            this.Thief3IniBrowseButton.Location = new System.Drawing.Point(447, 33);
+            this.Thief3IniBrowseButton.Enabled = false;
+            this.Thief3IniBrowseButton.Location = new System.Drawing.Point(447, 48);
             this.Thief3IniBrowseButton.Name = "Thief3IniBrowseButton";
             this.Thief3IniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief3IniBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -141,8 +152,9 @@
             // 
             // Thief3IniTextBox
             // 
-            this.Thief3IniTextBox.Location = new System.Drawing.Point(15, 34);
+            this.Thief3IniTextBox.Location = new System.Drawing.Point(15, 49);
             this.Thief3IniTextBox.Name = "Thief3IniTextBox";
+            this.Thief3IniTextBox.ReadOnly = true;
             this.Thief3IniTextBox.Size = new System.Drawing.Size(432, 20);
             this.Thief3IniTextBox.TabIndex = 0;
             // 
@@ -177,10 +189,49 @@
             this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(384, 264);
+            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(384, 312);
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
             this.OKCancelFlowLayoutPanel.TabIndex = 0;
+            // 
+            // Thief1AutodetectCheckBox
+            // 
+            this.Thief1AutodetectCheckBox.AutoSize = true;
+            this.Thief1AutodetectCheckBox.Checked = true;
+            this.Thief1AutodetectCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Thief1AutodetectCheckBox.Location = new System.Drawing.Point(16, 24);
+            this.Thief1AutodetectCheckBox.Name = "Thief1AutodetectCheckBox";
+            this.Thief1AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
+            this.Thief1AutodetectCheckBox.TabIndex = 2;
+            this.Thief1AutodetectCheckBox.Text = "Autodetect";
+            this.Thief1AutodetectCheckBox.UseVisualStyleBackColor = true;
+            this.Thief1AutodetectCheckBox.CheckedChanged += new System.EventHandler(this.AutodetectCheckBoxes_CheckedChanged);
+            // 
+            // Thief2AutodetectCheckBox
+            // 
+            this.Thief2AutodetectCheckBox.AutoSize = true;
+            this.Thief2AutodetectCheckBox.Checked = true;
+            this.Thief2AutodetectCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Thief2AutodetectCheckBox.Location = new System.Drawing.Point(16, 24);
+            this.Thief2AutodetectCheckBox.Name = "Thief2AutodetectCheckBox";
+            this.Thief2AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
+            this.Thief2AutodetectCheckBox.TabIndex = 3;
+            this.Thief2AutodetectCheckBox.Text = "Autodetect";
+            this.Thief2AutodetectCheckBox.UseVisualStyleBackColor = true;
+            this.Thief2AutodetectCheckBox.CheckedChanged += new System.EventHandler(this.AutodetectCheckBoxes_CheckedChanged);
+            // 
+            // Thief3AutodetectCheckBox
+            // 
+            this.Thief3AutodetectCheckBox.AutoSize = true;
+            this.Thief3AutodetectCheckBox.Checked = true;
+            this.Thief3AutodetectCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Thief3AutodetectCheckBox.Location = new System.Drawing.Point(16, 24);
+            this.Thief3AutodetectCheckBox.Name = "Thief3AutodetectCheckBox";
+            this.Thief3AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
+            this.Thief3AutodetectCheckBox.TabIndex = 4;
+            this.Thief3AutodetectCheckBox.Text = "Autodetect";
+            this.Thief3AutodetectCheckBox.UseVisualStyleBackColor = true;
+            this.Thief3AutodetectCheckBox.CheckedChanged += new System.EventHandler(this.AutodetectCheckBoxes_CheckedChanged);
             // 
             // ImportFromMultipleInisForm
             // 
@@ -188,7 +239,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(550, 298);
+            this.ClientSize = new System.Drawing.Size(550, 346);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
             this.Controls.Add(this.Thief3GroupBox);
             this.Controls.Add(this.Thief2GroupBox);
@@ -231,5 +282,8 @@
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Button Cancel_Button;
         private System.Windows.Forms.FlowLayoutPanel OKCancelFlowLayoutPanel;
+        private System.Windows.Forms.CheckBox Thief1AutodetectCheckBox;
+        private System.Windows.Forms.CheckBox Thief2AutodetectCheckBox;
+        private System.Windows.Forms.CheckBox Thief3AutodetectCheckBox;
     }
 }

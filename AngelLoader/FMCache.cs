@@ -54,7 +54,7 @@ namespace AngelLoader
 
             var readmes = new List<string>();
 
-            var thisFMInstallsBasePath = GetFMInstallsBasePath(fm);
+            var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
 
             var path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
             var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).ToList();

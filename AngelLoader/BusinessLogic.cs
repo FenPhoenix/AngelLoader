@@ -793,7 +793,7 @@ namespace AngelLoader
                         }
                         else if (GameIsKnownAndSupported(fm))
                         {
-                            var fmInstalledPath = GetFMInstallsBasePath(fm);
+                            var fmInstalledPath = GetFMInstallsBasePath(fm.Game);
                             if (!fmInstalledPath.IsEmpty())
                             {
                                 fms.Add(Path.Combine(fmInstalledPath, fm.InstalledDir));
@@ -1124,7 +1124,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var instBasePath = GetFMInstallsBasePath(fm);
+            var instBasePath = GetFMInstallsBasePath(fm.Game);
 
             if (!Directory.Exists(instBasePath))
             {
@@ -1185,7 +1185,7 @@ namespace AngelLoader
                 Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
             }
 
-            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm));
+            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
                 ProgressBox.ShowConvertingFiles();
@@ -1374,7 +1374,7 @@ namespace AngelLoader
 
             try
             {
-                var fmInstalledPath = Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir);
+                var fmInstalledPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
 
                 var fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
@@ -1548,7 +1548,7 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm));
+            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
                 ProgressBox.ShowConvertingFiles();
@@ -1591,7 +1591,7 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm));
+            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
                 ProgressBox.ShowConvertingFiles();
@@ -2066,7 +2066,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir);
+            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
             try
             {
                 var dmlFile = Path.GetFileName(sourceDMLPath);
@@ -2091,7 +2091,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir);
+            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
             try
             {
                 File.Delete(Path.Combine(installedFMPath, dmlFile));
@@ -2111,7 +2111,7 @@ namespace AngelLoader
         {
             try
             {
-                var dmlFiles = Directory.GetFiles(Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir),
+                var dmlFiles = Directory.GetFiles(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir),
                     "*.dml", SearchOption.TopDirectoryOnly);
                 for (int i = 0; i < dmlFiles.Length; i++)
                 {
@@ -2129,7 +2129,7 @@ namespace AngelLoader
         private static bool FMIsReallyInstalled(FanMission fm)
         {
             return fm.Installed &&
-                   Directory.Exists(Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir));
+                   Directory.Exists(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir));
         }
 
         #region Cacheable FM data
@@ -2182,7 +2182,7 @@ namespace AngelLoader
         {
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var instBasePath = GetFMInstallsBasePath(fm);
+            var instBasePath = GetFMInstallsBasePath(fm.Game);
             if (fm.Installed)
             {
                 if (instBasePath.IsWhiteSpace())
@@ -2200,7 +2200,7 @@ namespace AngelLoader
             }
 
             var readmeOnDisk = FMIsReallyInstalled(fm)
-                ? Path.Combine(GetFMInstallsBasePath(fm), fm.InstalledDir, fm.SelectedReadme)
+                ? Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
             if (fm.SelectedReadme.ExtIsHtml()) return (readmeOnDisk, ReadmeType.HTML);
@@ -2377,7 +2377,7 @@ namespace AngelLoader
 
         internal void OpenFMFolder(FanMission fm)
         {
-            var installsBasePath = GetFMInstallsBasePath(fm);
+            var installsBasePath = GetFMInstallsBasePath(fm.Game);
             if (installsBasePath.IsEmpty())
             {
                 View.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);

@@ -36,6 +36,7 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.AutodetectCheckBox = new System.Windows.Forms.CheckBox();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,7 +45,7 @@
             this.ImportFMDataCheckBox.AutoSize = true;
             this.ImportFMDataCheckBox.Checked = true;
             this.ImportFMDataCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportFMDataCheckBox.Location = new System.Drawing.Point(16, 56);
+            this.ImportFMDataCheckBox.Location = new System.Drawing.Point(16, 88);
             this.ImportFMDataCheckBox.Name = "ImportFMDataCheckBox";
             this.ImportFMDataCheckBox.Size = new System.Drawing.Size(97, 17);
             this.ImportFMDataCheckBox.TabIndex = 3;
@@ -56,7 +57,7 @@
             this.ImportSavesCheckBox.AutoSize = true;
             this.ImportSavesCheckBox.Checked = true;
             this.ImportSavesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportSavesCheckBox.Location = new System.Drawing.Point(16, 72);
+            this.ImportSavesCheckBox.Location = new System.Drawing.Point(16, 104);
             this.ImportSavesCheckBox.Name = "ImportSavesCheckBox";
             this.ImportSavesCheckBox.Size = new System.Drawing.Size(86, 17);
             this.ImportSavesCheckBox.TabIndex = 4;
@@ -74,15 +75,17 @@
             // 
             // DarkLoaderIniTextBox
             // 
-            this.DarkLoaderIniTextBox.Location = new System.Drawing.Point(16, 32);
+            this.DarkLoaderIniTextBox.Location = new System.Drawing.Point(16, 64);
             this.DarkLoaderIniTextBox.Name = "DarkLoaderIniTextBox";
+            this.DarkLoaderIniTextBox.ReadOnly = true;
             this.DarkLoaderIniTextBox.Size = new System.Drawing.Size(440, 20);
             this.DarkLoaderIniTextBox.TabIndex = 1;
             // 
             // DarkLoaderIniBrowseButton
             // 
             this.DarkLoaderIniBrowseButton.AutoSize = true;
-            this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(456, 31);
+            this.DarkLoaderIniBrowseButton.Enabled = false;
+            this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(456, 63);
             this.DarkLoaderIniBrowseButton.Name = "DarkLoaderIniBrowseButton";
             this.DarkLoaderIniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.DarkLoaderIniBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -128,6 +131,19 @@
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
             this.OKCancelFlowLayoutPanel.TabIndex = 9;
             // 
+            // AutodetectCheckBox
+            // 
+            this.AutodetectCheckBox.AutoSize = true;
+            this.AutodetectCheckBox.Checked = true;
+            this.AutodetectCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.AutodetectCheckBox.Location = new System.Drawing.Point(16, 40);
+            this.AutodetectCheckBox.Name = "AutodetectCheckBox";
+            this.AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
+            this.AutodetectCheckBox.TabIndex = 10;
+            this.AutodetectCheckBox.Text = "Autodetect";
+            this.AutodetectCheckBox.UseVisualStyleBackColor = true;
+            this.AutodetectCheckBox.CheckedChanged += new System.EventHandler(this.AutodetectCheckBox_CheckedChanged);
+            // 
             // ImportFromDarkLoaderForm
             // 
             this.AcceptButton = this.OKButton;
@@ -135,6 +151,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(547, 175);
+            this.Controls.Add(this.AutodetectCheckBox);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
             this.Controls.Add(this.ImportFMDataCheckBox);
             this.Controls.Add(this.ImportSavesCheckBox);
@@ -167,5 +184,6 @@
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Button Cancel_Button;
         private System.Windows.Forms.FlowLayoutPanel OKCancelFlowLayoutPanel;
+        private System.Windows.Forms.CheckBox AutodetectCheckBox;
     }
 }

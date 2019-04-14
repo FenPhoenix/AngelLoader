@@ -64,7 +64,7 @@ namespace AngelLoader
             {
                 if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
-                var thisFMInstallsBasePath = GetFMInstallsBasePath(fm);
+                var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
                 var savesDir = fm.Game == Game.Thief3 ? T3SavesDir : DarkSavesDir;
                 var savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
                 // Screenshots directory name is the same for T1/T2/T3
@@ -418,7 +418,7 @@ namespace AngelLoader
 
                 var excludes = new List<string>();
 
-                var thisFMInstallsBasePath = GetFMInstallsBasePath(fm);
+                var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
                 var fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
                 using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),

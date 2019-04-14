@@ -36,6 +36,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Remove = "Remove";
             internal static string RemoveEllipses = "Remove...";
             internal static string Reset = "Reset";
+            internal static string Autodetect = "Autodetect";
             [FenGenBlankLine]
             internal static string Unrated = "Unrated";
             internal static string None = "None";
