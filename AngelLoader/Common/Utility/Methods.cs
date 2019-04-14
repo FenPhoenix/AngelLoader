@@ -58,7 +58,11 @@ namespace AngelLoader.Common.Utility
                     {
                         foreach (var dir in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
                         {
-                            if (!dir.GetDirNameFast().EqualsI(".fix")) paths.Add(dir);
+                            if (!dir.GetDirNameFast().EqualsI(".fix") &&
+                                !dir.ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
+                            {
+                                paths.Add(dir);
+                            }
                         }
                     }
                     catch (Exception ex)
