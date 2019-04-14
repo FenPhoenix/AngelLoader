@@ -193,6 +193,16 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap FindNewFMs_21 {
+            get {
+                object obj = ResourceManager.GetObject("FindNewFMs_21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Finished_Expert {
             get {
                 object obj = ResourceManager.GetObject("Finished_Expert", resourceCulture);

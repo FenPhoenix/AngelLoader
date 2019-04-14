@@ -544,6 +544,7 @@ namespace AngelLoader.Forms
 
                 #region Clear/refresh/reset area
 
+                RefreshFromDiskButton.ToolTipText = LText.FilterBar.RefreshFromDiskButtonToolTip;
                 RefreshFiltersButton.ToolTipText = LText.FilterBar.RefreshFilteredListButtonToolTip;
                 ClearFiltersButton.ToolTipText = LText.FilterBar.ClearFiltersButtonToolTip;
                 MainToolTip.SetToolTip(ResetLayoutButton, LText.FilterBar.ResetLayoutButtonToolTip);
@@ -800,6 +801,8 @@ namespace AngelLoader.Forms
 
             if (ProgressBox.Visible) ProgressBox.Center();
             if (AddTagListBox.Visible) HideAddTagDropDown();
+
+            SetFilterBarScrollButtons();
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
@@ -1123,6 +1126,13 @@ namespace AngelLoader.Forms
         #endregion
 
         #region FMsDGV-related
+
+        private async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
+        {
+            SortByCurrentColumn();
+            await SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
+        }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
         //       the majority had no tags for this test.
@@ -1956,7 +1966,7 @@ namespace AngelLoader.Forms
 
             var success =
                 await Model.ScanFMs(FMsList, scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
-            if (success) await SetFilter(forceRefreshReadme: true);
+            if (success) await SortAndSetFilter(forceRefreshReadme: true);
         }
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await OpenSettings();
@@ -2227,7 +2237,7 @@ namespace AngelLoader.Forms
                 FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.Empty();
             }
 
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
         #region Refresh FMs list
@@ -2310,6 +2320,8 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        private void SortByCurrentColumn() => SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
         internal void SortFMTable(Column column, SortOrder sortDirection)
         {
@@ -2957,13 +2969,13 @@ namespace AngelLoader.Forms
         private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
         private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
         private void SaveCurrentTabSelectedFM(TabPage tabPage)
@@ -3026,7 +3038,7 @@ namespace AngelLoader.Forms
             SetUIFilterValues(gameFilter);
 
             InitialSelectedFMHasBeenSet = false;
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
         private async void CommentTextBox_TextChanged(object sender, EventArgs e)
@@ -3780,14 +3792,14 @@ namespace AngelLoader.Forms
         private async void FilterShowJunkCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
-        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SetFilter();
+        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SetFilter();
+        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenFilterRating();
+        private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenRatingFilter();
 
         private async void FilterByTagsButton_Click(object sender, EventArgs e) => await OpenFilterTags();
 
@@ -3823,7 +3835,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateDateLabel(lastPlayed);
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
@@ -3856,7 +3868,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async Task OpenFilterRating()
+        private async Task OpenRatingFilter()
         {
             var outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
             using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
@@ -3876,7 +3888,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateRatingLabel();
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
         private void UpdateRatingLabel(bool suspendResume = true)
@@ -3953,10 +3965,10 @@ namespace AngelLoader.Forms
                 }
             }
 
-            await SetFilter();
+            await SortAndSetFilter();
         }
 
-        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SetFilter();
+        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
         private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Model.ViewHTMLReadme(GetSelectedFM());
 
@@ -3989,8 +4001,7 @@ namespace AngelLoader.Forms
             bool success = await Model.ImportFromDarkLoader(iniFile, importFMData, importSaves);
             if (!success) return;
 
-            SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
-            await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e)
@@ -4031,8 +4042,7 @@ namespace AngelLoader.Forms
 
             if (successCount == 0) return;
 
-            SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
-            await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => SearchWeb();
@@ -4168,6 +4178,12 @@ namespace AngelLoader.Forms
 
             if (FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(GetSelectedFM())) return;
             await CallInstallOrPlay(Config.ConfirmPlayOnDCOrEnter);
+        }
+
+        private async void RefreshFromDiskButton_Click(object sender, EventArgs e)
+        {
+            Model.FindFMs();
+            await SortAndSetFilter();
         }
     }
 }

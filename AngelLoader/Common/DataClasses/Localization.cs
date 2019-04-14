@@ -145,6 +145,7 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string ShowJunk = "Show junk";
             [FenGenBlankLine]
+            internal static string RefreshFromDiskButtonToolTip = "Refresh from disk";
             internal static string RefreshFilteredListButtonToolTip = "Refresh filtered list";
             internal static string ClearFiltersButtonToolTip = "Clear filters";
             internal static string ResetLayoutButtonToolTip = "Reset layout";

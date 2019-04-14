@@ -346,6 +346,7 @@
     <Content Include="Resources\FilterIcons\FilterByRating.png" />
     <Content Include="Resources\FilterIcons\FilterByTags.png" />
     <Content Include="Resources\FilterIcons\FinishedFilterIcon.png" />
+    <Content Include="Resources\FindNewFMs_21.png" />
     <Content Include="Resources\FinishedOn\Finished_Expert.png" />
     <Content Include="Resources\FinishedOn\Finished_Expert_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Extreme.png" />

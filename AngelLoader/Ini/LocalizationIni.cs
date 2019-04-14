@@ -416,6 +416,10 @@ namespace AngelLoader.Ini
                         {
                             LText.FilterBar.ShowJunk = lt.Substring(9);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("RefreshFromDiskButtonToolTip="))
+                        {
+                            LText.FilterBar.RefreshFromDiskButtonToolTip = lt.Substring(29);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("RefreshFilteredListButtonToolTip="))
                         {
                             LText.FilterBar.RefreshFilteredListButtonToolTip = lt.Substring(33);
