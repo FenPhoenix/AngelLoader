@@ -1765,7 +1765,6 @@ namespace AngelLoader
              - No section headers
             */
             int lastSelKeyIndex = -1;
-            bool matchedLineIsCommented = false;
             bool loaderIsAlreadyUs = false;
             for (int i = 0; i < lines.Count; i++)
             {
