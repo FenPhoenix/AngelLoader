@@ -549,7 +549,7 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ReadmeZoomFactor) + "="))
                 {
-                    if (float.TryParse(val, out float result))
+                    if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
                     {
                         config.ReadmeZoomFactor = result;
                     }
@@ -594,14 +594,14 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainSplitterPercent) + "="))
                 {
-                    if (float.TryParse(val, out float result))
+                    if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
                     {
                         config.MainSplitterPercent = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopSplitterPercent) + "="))
                 {
-                    if (float.TryParse(val, out float result))
+                    if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
                     {
                         config.TopSplitterPercent = result;
                     }
@@ -866,8 +866,8 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.MainWindowSize) + "=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
                 sw.WriteLine(nameof(config.MainWindowLocation) + "=" + config.MainWindowLocation.X + "," + config.MainWindowLocation.Y);
 
-                sw.WriteLine(nameof(config.MainSplitterPercent) + "=" + config.MainSplitterPercent);
-                sw.WriteLine(nameof(config.TopSplitterPercent) + "=" + config.TopSplitterPercent);
+                sw.WriteLine(nameof(config.MainSplitterPercent) + "=" + config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+                sw.WriteLine(nameof(config.TopSplitterPercent) + "=" + config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
                 sw.WriteLine(nameof(config.TopRightPanelCollapsed) + "=" + config.TopRightPanelCollapsed);
 
                 sw.WriteLine(nameof(config.GameTab) + "=" + config.GameTab);
@@ -879,7 +879,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.TopRightTabOrder.TagsTabPosition) + "=" + config.TopRightTabOrder.TagsTabPosition);
                 sw.WriteLine(nameof(config.TopRightTabOrder.PatchTabPosition) + "=" + config.TopRightTabOrder.PatchTabPosition);
 
-                sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(CultureInfo.InvariantCulture));
+                sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
 
                 #endregion
             }

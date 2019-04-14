@@ -4,15 +4,31 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
-using AngelLoader.Forms;
 using static AngelLoader.Common.HTMLNamedEscapes;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.CustomControls
 {
     internal sealed class RichTextBoxCustom : RichTextBox
     {
         private bool initialReadmeZoomSet = true;
-        internal float StoredZoomFactor = 1.0f;
+
+        private float _storedZoomFactor = 1.0f;
+        internal float StoredZoomFactor
+        {
+            get
+            {
+                Log("StoredZoomFactor.get: " + _storedZoomFactor, methodName: false);
+                return _storedZoomFactor;
+            }
+            set
+            {
+                Log("StoredZoomFactor.set in: " + value);
+                _storedZoomFactor = value.Clamp(0.1f, 5.0f);
+                Log("StoredZoomFactor.set final: " + _storedZoomFactor, methodName: false);
+            }
+
+        }
 
         // Just so it can determine which monitor the majority of the main window is on, for horizontal line crap
         private Control MainForm;
@@ -66,7 +82,7 @@ namespace AngelLoader.CustomControls
             else
             {
                 // Don't do this if we're just starting up, because then it will throw away our saved value
-                StoredZoomFactor = ZoomFactor;
+                StoredZoomFactor = ZoomFactor.Clamp(0.1f, 5.0f);
             }
         }
 
