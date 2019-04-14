@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Common.DataClasses
 {
@@ -131,17 +130,8 @@ namespace AngelLoader.Common.DataClasses
         internal float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor
         {
-            get
-            {
-                Log("Config.ReadmeZoomFactor.get: " + _readmeZoomFactor, methodName: false);
-                return _readmeZoomFactor;
-            }
-            set
-            {
-                Log("Config.ReadmeZoomFactor.set in: " + value, methodName: false);
-                _readmeZoomFactor = value.Clamp(0.1f, 5.0f);
-                Log("Config.ReadmeZoomFactor.set final: " + _readmeZoomFactor, methodName: false);
-            }
+            get => _readmeZoomFactor;
+            set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f);
         }
     }
 }

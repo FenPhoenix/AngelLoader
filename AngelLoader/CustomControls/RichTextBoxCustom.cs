@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.HTMLNamedEscapes;
-using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.CustomControls
 {
@@ -16,18 +15,8 @@ namespace AngelLoader.CustomControls
         private float _storedZoomFactor = 1.0f;
         internal float StoredZoomFactor
         {
-            get
-            {
-                Log("StoredZoomFactor.get: " + _storedZoomFactor, methodName: false);
-                return _storedZoomFactor;
-            }
-            set
-            {
-                Log("StoredZoomFactor.set in: " + value);
-                _storedZoomFactor = value.Clamp(0.1f, 5.0f);
-                Log("StoredZoomFactor.set final: " + _storedZoomFactor, methodName: false);
-            }
-
+            get => _storedZoomFactor;
+            set => _storedZoomFactor = value.Clamp(0.1f, 5.0f);
         }
 
         // Just so it can determine which monitor the majority of the main window is on, for horizontal line crap

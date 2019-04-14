@@ -34,6 +34,17 @@ namespace AngelLoader.Common
         internal static void Log(string message, Exception ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
+            Lock.EnterReadLock();
+            try
+            {
+                if (new FileInfo(Paths.LogFile).Length > ByteSize.MB * 50) ClearLogFile();
+            }
+            catch (Exception ex1)
+            {
+                Trace.WriteLine(ex1);
+            }
+            Lock.ExitReadLock();
+
             Lock.EnterWriteLock();
             try
             {
