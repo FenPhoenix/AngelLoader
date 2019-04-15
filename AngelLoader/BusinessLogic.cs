@@ -749,7 +749,7 @@ namespace AngelLoader
             if (scanningOne)
             {
                 Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
-                View.Block();
+                View.BeginInvoke(new Action(() => View.Block()));
                 ProgressBox.ProgressTask = ProgressPanel.ProgressTasks.ScanAllFMs;
                 ProgressBox.ShowProgressWindow(ProgressBox.ProgressTask, suppressShow: true);
             }
@@ -761,23 +761,23 @@ namespace AngelLoader
             // Block user input to the form initially to mimic the UI thread being blocked, but then if the scan
             // is taking more than 500ms then unblock input and throw up the progress box
             // TODO: This is pretty hairy, try and organize this better
-            using (var timeOut = new Timer(500) { AutoReset = false })
+            try
             {
-                timeOut.Elapsed += (sender, e) =>
+                using (var timeOut = new Timer(500) { AutoReset = false })
                 {
-                    if (scanningOne)
+                    timeOut.Elapsed += (sender, e) =>
                     {
-                        Log(nameof(ScanFMs) + ": timeOut.Elapsed: showing ProgressBox");
-                        ProgressBox.BeginInvoke(new Action(ProgressBox.ShowThis));
-                        View.BeginInvoke(new Action(View.Unblock));
-                    }
-                };
-                timeOut.Start();
+                        if (scanningOne)
+                        {
+                            Log(nameof(ScanFMs) + ": timeOut.Elapsed: showing ProgressBox");
+                            View.BeginInvoke(new Action(ProgressBox.ShowThis));
+                            View.BeginInvoke(new Action(View.Unblock));
+                        }
+                    };
+                    timeOut.Start();
 
-                ScanCts = new CancellationTokenSource();
+                    ScanCts = new CancellationTokenSource();
 
-                try
-                {
                     var fms = new List<string>();
                     // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                     // cause then it will hit the actual disk rather than just going through a list of paths in
@@ -807,7 +807,6 @@ namespace AngelLoader
                         if (ScanCts.IsCancellationRequested)
                         {
                             ScanCts?.Dispose();
-                            ProgressBox.HideThis();
                             return false;
                         }
                     }
@@ -833,7 +832,6 @@ namespace AngelLoader
                     finally
                     {
                         ScanCts?.Dispose();
-                        ProgressBox.HideThis();
                     }
 
                     foreach (var fm in fmDataList)
@@ -927,19 +925,18 @@ namespace AngelLoader
                         sel.MarkedScanned = markAsScanned;
                     }
 
-                    ProgressBox.HideThis();
-
                     WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
                 }
-                catch (Exception ex)
-                {
-                    Log("Exception in ScanFMs", ex);
-                }
-                finally
-                {
-                    ProgressBox.HideThis();
-                    View.Unblock();
-                }
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in ScanFMs", ex);
+            }
+            finally
+            {
+                // Always, always, always run this! Try block must enclose everything or we can get a race condition
+                View.BeginInvoke(new Action(() => ProgressBox.HideThis()));
+                View.BeginInvoke(new Action(() => View.Unblock()));
             }
 
             return true;
