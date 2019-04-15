@@ -16,9 +16,9 @@ namespace AngelLoader.Common
         {
             if (logFile.IsEmpty()) logFile = Paths.LogFile;
 
-            Lock.EnterWriteLock();
             try
             {
+                Lock.EnterWriteLock();
                 File.Delete(logFile);
             }
             catch (Exception ex)
@@ -27,27 +27,44 @@ namespace AngelLoader.Common
             }
             finally
             {
-                Lock.ExitWriteLock();
+                try
+                {
+                    Lock.ExitWriteLock();
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                }
             }
         }
 
         internal static void Log(string message, Exception ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
-            Lock.EnterReadLock();
             try
             {
+                Lock.EnterReadLock();
                 if (new FileInfo(Paths.LogFile).Length > ByteSize.MB * 50) ClearLogFile();
             }
             catch (Exception ex1)
             {
                 Trace.WriteLine(ex1);
             }
-            Lock.ExitReadLock();
+            finally
+            {
+                try
+                {
+                    Lock.ExitReadLock();
+                }
+                catch (Exception logEx)
+                {
+                    Trace.WriteLine(logEx);
+                }
+            }
 
-            Lock.EnterWriteLock();
             try
             {
+                Lock.EnterWriteLock();
                 using (var sw = new StreamWriter(Paths.LogFile, append: true))
                 {
                     var st = new StackTrace(1);
@@ -66,7 +83,14 @@ namespace AngelLoader.Common
             }
             finally
             {
-                Lock.ExitWriteLock();
+                try
+                {
+                    Lock.ExitWriteLock();
+                }
+                catch (Exception logEx)
+                {
+                    Trace.WriteLine(logEx);
+                }
             }
         }
     }
