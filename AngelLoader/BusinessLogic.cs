@@ -864,9 +864,12 @@ namespace AngelLoader
                     }
                     else
                     {
+                        // TODO: This is pretty jank, try and do this by tracking indices or something
                         sel = fmsToScan.FirstOrDefault(x =>
                             x.Archive.RemoveExtension().EqualsI(fm.ArchiveName.RemoveExtension()) ||
-                            x.InstalledDir.EqualsI(fm.ArchiveName.RemoveExtension()));
+                            x.InstalledDir.EqualsI(fm.ArchiveName.RemoveExtension()) ||
+                            // In case of folder scan
+                            x.InstalledDir.EqualsI(fm.ArchiveName));
                     }
 
                     if (sel == null)
