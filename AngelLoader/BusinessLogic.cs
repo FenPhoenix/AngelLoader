@@ -738,7 +738,10 @@ namespace AngelLoader
         internal async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions,
             bool overwriteUnscannedFields = true, bool markAsScanned = false)
         {
-            if (fmsToScan.Count == 0) return false;
+            if (fmsToScan == null || fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
+            {
+                return false;
+            }
 
             void ReportProgress(ProgressReport pr)
             {
@@ -843,17 +846,32 @@ namespace AngelLoader
                         {
                             // We need to return fail for scanning one, else we get into an infinite loop because
                             // of a refresh that gets called in that case
-                            if (scanningOne) return false;
+                            if (scanningOne)
+                            {
+                                Log(nameof(ScanFMs) + " (one) scanned FM was null. FM was:\r\n" +
+                                    "Archive: " + fmsToScan[0].Archive + "\r\n" +
+                                    "InstalledDir: " + fmsToScan[0].InstalledDir,
+                                    methodName: false);
+                                return false;
+                            }
                             continue;
                         }
 
-                        var sel = fmsToScan.FirstOrDefault(x =>
-                            x.Archive.RemoveExtension().EqualsI(fm.ArchiveName.RemoveExtension()) ||
-                            x.InstalledDir.EqualsI(fm.ArchiveName.RemoveExtension()));
+                        FanMission sel;
+                        if (scanningOne)
+                        {
+                            sel = fmsToScan[0];
+                        }
+                        else
+                        {
+                            sel = fmsToScan.FirstOrDefault(x =>
+                                x.Archive.RemoveExtension().EqualsI(fm.ArchiveName.RemoveExtension()) ||
+                                x.InstalledDir.EqualsI(fm.ArchiveName.RemoveExtension()));
+                        }
 
                         if (sel == null)
                         {
-                            // Same as above
+                            // Same as above (this should never happen now, but hey)
                             if (scanningOne) return false;
                             continue;
                         }
@@ -1967,7 +1985,9 @@ namespace AngelLoader
             }
 
             // Only use the stub if we need to pass something we can't pass on the command line
-            var args = "-fm=" + fm.InstalledDir;
+            // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
+            // dir in there manually. Which if you do, you're on your own mate.
+            var args = "-fm=\"" + fm.InstalledDir + "\"";
             if (!fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
             {
                 args = "-fm";
@@ -2050,7 +2070,7 @@ namespace AngelLoader
             using (var proc = new Process())
             {
                 proc.StartInfo.FileName = dromedExe;
-                proc.StartInfo.Arguments = "-fm=" + fm.InstalledDir;
+                proc.StartInfo.Arguments = "-fm=\"" + fm.InstalledDir + "\"";
                 proc.StartInfo.WorkingDirectory = gamePath;
 
                 try
