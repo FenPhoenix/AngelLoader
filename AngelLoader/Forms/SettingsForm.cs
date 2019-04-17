@@ -223,6 +223,7 @@ namespace AngelLoader.Forms
             #region Uninstalling FMs
 
             ConfirmUninstallCheckBox.Checked = InConfig.ConfirmUninstall;
+            HideUninstallButtonCheckBox.Checked = InConfig.HideUninstallButton;
 
             switch (InConfig.BackupFMData)
             {
@@ -359,6 +360,7 @@ namespace AngelLoader.Forms
 
                 UninstallingFMsGroupBox.Text = LText.SettingsWindow.Other_UninstallingFMs;
                 ConfirmUninstallCheckBox.Text = LText.SettingsWindow.Other_ConfirmBeforeUninstalling;
+                HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Other_HideUninstallButton;
                 WhatToBackUpLabel.Text = LText.SettingsWindow.Other_WhenUninstallingBackUp;
                 BackupSavesAndScreensOnlyRadioButton.Text = LText.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly;
                 BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
@@ -579,6 +581,7 @@ namespace AngelLoader.Forms
             #region Uninstalling FMs
 
             OutConfig.ConfirmUninstall = ConfirmUninstallCheckBox.Checked;
+            OutConfig.HideUninstallButton = HideUninstallButtonCheckBox.Checked;
 
             OutConfig.BackupFMData = BackupSavesAndScreensOnlyRadioButton.Checked
                 ? BackupFMData.SavesAndScreensOnly

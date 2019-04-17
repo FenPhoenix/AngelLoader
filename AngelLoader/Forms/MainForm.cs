@@ -230,7 +230,7 @@ namespace AngelLoader.Forms
             Text = @"AngelLoader " + ver.Major + @"." + ver.Minor + verThird;
             base.Text += " " + Application.ProductVersion;
 #else
-            Text = "AngelLoader " + Application.ProductVersion;
+            Text = @"AngelLoader " + Application.ProductVersion;
 #endif
 
 #if Release && !Release_Testing
@@ -370,6 +370,8 @@ namespace AngelLoader.Forms
                 Config.TopRightTab == TopRightTab.Tags ? TagsTabPage :
                 Config.TopRightTab == TopRightTab.Patch ? PatchTabPage :
                 StatisticsTabPage;
+
+            InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
 
             ChangeGameOrganization();
 
@@ -2110,6 +2112,7 @@ namespace AngelLoader.Forms
                 Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
 
                 Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
+                Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
 
                 Config.BackupFMData = sf.OutConfig.BackupFMData;
                 Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
@@ -2129,6 +2132,8 @@ namespace AngelLoader.Forms
                 #endregion
 
                 #region Change-specific actions (pre-refresh)
+
+                InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
 
                 if (archivePathsChanged || gamePathsChanged)
                 {

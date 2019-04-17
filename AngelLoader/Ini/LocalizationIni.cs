@@ -1156,6 +1156,10 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Other_ConfirmBeforeUninstalling = lt.Substring(32);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_HideUninstallButton="))
+                        {
+                            LText.SettingsWindow.Other_HideUninstallButton = lt.Substring(26);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Other_WhenUninstallingBackUp="))
                         {
                             LText.SettingsWindow.Other_WhenUninstallingBackUp = lt.Substring(29);

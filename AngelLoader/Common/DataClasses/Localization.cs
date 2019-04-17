@@ -372,6 +372,7 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Other_UninstallingFMs = "Uninstalling FMs";
             internal static string Other_ConfirmBeforeUninstalling = "Confirm before uninstalling";
+            internal static string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
             internal static string Other_WhenUninstallingBackUp = "When uninstalling, back up:";
             internal static string Other_BackUpSavesAndScreenshotsOnly = "Saves and screenshots only";
             internal static string Other_BackUpAllChangedFiles = "All changed files";

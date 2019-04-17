@@ -104,6 +104,7 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.HideUninstallButtonCheckBox = new System.Windows.Forms.CheckBox();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -727,7 +728,7 @@
             this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(440, 112);
             this.PlayFMOnDCOrEnterGroupBox.Name = "PlayFMOnDCOrEnterGroupBox";
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
-            this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
+            this.PlayFMOnDCOrEnterGroupBox.TabIndex = 3;
             this.PlayFMOnDCOrEnterGroupBox.TabStop = false;
             this.PlayFMOnDCOrEnterGroupBox.Text = "Play FM on double-click / Enter";
             // 
@@ -749,7 +750,7 @@
             this.LanguageGroupBox.Location = new System.Drawing.Point(440, 176);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
             this.LanguageGroupBox.Size = new System.Drawing.Size(424, 60);
-            this.LanguageGroupBox.TabIndex = 2;
+            this.LanguageGroupBox.TabIndex = 4;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
             // 
@@ -772,7 +773,7 @@
             this.WebSearchGroupBox.Location = new System.Drawing.Point(440, 8);
             this.WebSearchGroupBox.Name = "WebSearchGroupBox";
             this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 96);
-            this.WebSearchGroupBox.TabIndex = 3;
+            this.WebSearchGroupBox.TabIndex = 2;
             this.WebSearchGroupBox.TabStop = false;
             this.WebSearchGroupBox.Text = "Web search";
             // 
@@ -815,6 +816,7 @@
             // 
             // UninstallingFMsGroupBox
             // 
+            this.UninstallingFMsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
             this.UninstallingFMsGroupBox.Controls.Add(this.ConfirmUninstallCheckBox);
             this.UninstallingFMsGroupBox.Controls.Add(this.WhatToBackUpLabel);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
@@ -822,7 +824,7 @@
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
             this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 100);
             this.UninstallingFMsGroupBox.Name = "UninstallingFMsGroupBox";
-            this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 172);
+            this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 188);
             this.UninstallingFMsGroupBox.TabIndex = 1;
             this.UninstallingFMsGroupBox.TabStop = false;
             this.UninstallingFMsGroupBox.Text = "Uninstalling FMs";
@@ -835,17 +837,17 @@
             this.ConfirmUninstallCheckBox.Location = new System.Drawing.Point(16, 32);
             this.ConfirmUninstallCheckBox.Name = "ConfirmUninstallCheckBox";
             this.ConfirmUninstallCheckBox.Size = new System.Drawing.Size(149, 17);
-            this.ConfirmUninstallCheckBox.TabIndex = 4;
+            this.ConfirmUninstallCheckBox.TabIndex = 0;
             this.ConfirmUninstallCheckBox.Text = "Confirm before uninstalling";
             this.ConfirmUninstallCheckBox.UseVisualStyleBackColor = true;
             // 
             // WhatToBackUpLabel
             // 
             this.WhatToBackUpLabel.AutoSize = true;
-            this.WhatToBackUpLabel.Location = new System.Drawing.Point(16, 64);
+            this.WhatToBackUpLabel.Location = new System.Drawing.Point(16, 88);
             this.WhatToBackUpLabel.Name = "WhatToBackUpLabel";
             this.WhatToBackUpLabel.Size = new System.Drawing.Size(139, 13);
-            this.WhatToBackUpLabel.TabIndex = 3;
+            this.WhatToBackUpLabel.TabIndex = 2;
             this.WhatToBackUpLabel.Text = "When uninstalling, back up:";
             // 
             // BackupAlwaysAskCheckBox
@@ -853,10 +855,10 @@
             this.BackupAlwaysAskCheckBox.AutoSize = true;
             this.BackupAlwaysAskCheckBox.Checked = true;
             this.BackupAlwaysAskCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(24, 136);
+            this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(24, 160);
             this.BackupAlwaysAskCheckBox.Name = "BackupAlwaysAskCheckBox";
             this.BackupAlwaysAskCheckBox.Size = new System.Drawing.Size(79, 17);
-            this.BackupAlwaysAskCheckBox.TabIndex = 2;
+            this.BackupAlwaysAskCheckBox.TabIndex = 5;
             this.BackupAlwaysAskCheckBox.Text = "Always ask";
             this.BackupAlwaysAskCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -864,10 +866,10 @@
             // 
             this.BackupAllChangedDataRadioButton.AutoSize = true;
             this.BackupAllChangedDataRadioButton.Checked = true;
-            this.BackupAllChangedDataRadioButton.Location = new System.Drawing.Point(24, 110);
+            this.BackupAllChangedDataRadioButton.Location = new System.Drawing.Point(24, 134);
             this.BackupAllChangedDataRadioButton.Name = "BackupAllChangedDataRadioButton";
             this.BackupAllChangedDataRadioButton.Size = new System.Drawing.Size(102, 17);
-            this.BackupAllChangedDataRadioButton.TabIndex = 1;
+            this.BackupAllChangedDataRadioButton.TabIndex = 4;
             this.BackupAllChangedDataRadioButton.TabStop = true;
             this.BackupAllChangedDataRadioButton.Text = "All changed files";
             this.BackupAllChangedDataRadioButton.UseVisualStyleBackColor = true;
@@ -875,10 +877,10 @@
             // BackupSavesAndScreensOnlyRadioButton
             // 
             this.BackupSavesAndScreensOnlyRadioButton.AutoSize = true;
-            this.BackupSavesAndScreensOnlyRadioButton.Location = new System.Drawing.Point(24, 86);
+            this.BackupSavesAndScreensOnlyRadioButton.Location = new System.Drawing.Point(24, 110);
             this.BackupSavesAndScreensOnlyRadioButton.Name = "BackupSavesAndScreensOnlyRadioButton";
             this.BackupSavesAndScreensOnlyRadioButton.Size = new System.Drawing.Size(158, 17);
-            this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 0;
+            this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 3;
             this.BackupSavesAndScreensOnlyRadioButton.Text = "Saves and screenshots only";
             this.BackupSavesAndScreensOnlyRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -928,6 +930,15 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
+            // 
+            // HideUninstallButtonCheckBox
+            // 
+            this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 48);
+            this.HideUninstallButtonCheckBox.Name = "HideUninstallButtonCheckBox";
+            this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.HideUninstallButtonCheckBox.TabIndex = 1;
+            this.HideUninstallButtonCheckBox.Text = "Hide \"Install / Uninstall FM\" button (like FMSel)";
+            this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 
@@ -1063,5 +1074,6 @@
         private System.Windows.Forms.CheckBox ConfirmPlayOnDCOrEnterCheckBox;
         private System.Windows.Forms.CheckBox ConfirmUninstallCheckBox;
         private System.Windows.Forms.Label WhatToBackUpLabel;
+        private System.Windows.Forms.CheckBox HideUninstallButtonCheckBox;
     }
 }

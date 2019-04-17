@@ -121,6 +121,7 @@ namespace AngelLoader.Common.DataClasses
         internal bool ConvertOGGsToWAVsOnInstall = false;
 
         internal bool ConfirmUninstall = true;
+        internal bool HideUninstallButton = false;
 
         internal BackupFMData BackupFMData = BackupFMData.AllChangedFiles;
         internal bool BackupAlwaysAsk = true;
