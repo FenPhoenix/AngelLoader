@@ -930,7 +930,9 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
+                View.ShowAlert("There was a problem scanning the FM or FMs. See " + Paths.LogFile + ".", LText.AlertMessages.Error);
                 Log("Exception in ScanFMs", ex);
+                return false;
             }
             finally
             {
