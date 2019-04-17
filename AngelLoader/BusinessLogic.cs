@@ -766,6 +766,7 @@ namespace AngelLoader
                 }
                 else
                 {
+                    View.BeginInvoke(new Action(View.Block));
                     ProgressBox.ProgressTask = ProgressPanel.ProgressTasks.ScanAllFMs;
                     ProgressBox.ShowProgressWindow(ProgressBox.ProgressTask, suppressShow: true);
                 }
@@ -963,6 +964,7 @@ namespace AngelLoader
             }
             finally
             {
+                View.BeginInvoke(new Action(View.Unblock));
                 View.BeginInvoke(new Action(() => ProgressBox.HideThis()));
             }
 
