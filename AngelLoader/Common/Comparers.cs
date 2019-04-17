@@ -7,17 +7,30 @@ using AngelLoader.Common.Utility;
 
 namespace AngelLoader.Common
 {
-    internal sealed class FMArchiveNameComparer : IEqualityComparer<FanMission>
+    internal sealed class FMComparer : IEqualityComparer<FanMission>
     {
+        private readonly bool CompareInstalledDirs;
+
+        internal FMComparer(bool compareInstalledDirs) => CompareInstalledDirs = compareInstalledDirs;
+
         public bool Equals(FanMission x, FanMission y)
         {
             Trace.Assert(x != null && y != null, "x != null && y != null");
+
+            // Prevent blank archive FMs from being removed
+            if (CompareInstalledDirs && x.Archive.IsEmpty() && y.Archive.IsEmpty())
+            {
+                return x.InstalledDir.EqualsI(y.InstalledDir);
+            }
 
             return x.Archive.EqualsI(y.Archive);
         }
 
         public int GetHashCode(FanMission obj)
         {
+            // TODO: This the bane of my existence. WHAT DOES IT USE THIS FOR.
+            // It seems to work fine using this even when we're comparing InstalledDir, so that's even weirder.
+            // It better keep working then.
             return obj.Archive.GetHashCode();
         }
     }

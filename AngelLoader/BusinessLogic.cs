@@ -340,6 +340,13 @@ namespace AngelLoader
             DeepCopyGlobalTags(PresetTags, GlobalTags);
 
             // This will also clear the Checked status of all FMs. Crucial if we're running this again.
+
+            var backupList = new List<FanMission>();
+            foreach (var fm in FMDataIniList) backupList.Add(fm);
+
+            var viewBackupList = new List<FanMission>();
+            foreach (var fm in FMsViewList) viewBackupList.Add(fm);
+
             FMDataIniList.Clear();
             FMsViewList.Clear();
 
@@ -359,6 +366,14 @@ namespace AngelLoader
                         MessageBox.Show("Exception reading FM data ini. Exiting. Please check " + Paths.LogFile,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Environment.Exit(1);
+                    }
+                    else
+                    {
+                        FMDataIniList.Clear();
+                        foreach (var fm in backupList) FMDataIniList.Add(fm);
+                        FMsViewList.Clear();
+                        foreach (var fm in viewBackupList) FMsViewList.Add(fm);
+                        return;
                     }
                 }
             }
@@ -446,13 +461,11 @@ namespace AngelLoader
             if (FMDataIniList.Count > 0)
             {
                 // Push back existing entries to the new list so none will be removed when they get combined
-                fmaList = FMDataIniList.Union(fmaList, new FMArchiveNameComparer()).ToList();
+                fmaList = FMDataIniList.Union(fmaList, new FMComparer(false)).ToList();
             }
 
-            // TODO: If an FM already in the list doesn't have an archive name, it could be deleted from the list here.
-            // Won't happen unless the user actually went in and deleted the archive name themselves.
-            // Won't fix? Fix if I ever clean this up and make the Unions manual?
-            FMDataIniList = FMDataIniList.Union(fmaList, new FMArchiveNameComparer()).ToList();
+            // 2019-04-17 Fixed: FMs would sometimes be removed from the list if their archive was blank
+            FMDataIniList = FMDataIniList.Union(fmaList, new FMComparer(true)).ToList();
 
             #region Game union
 
