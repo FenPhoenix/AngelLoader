@@ -296,6 +296,14 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially = lt.Substring(46);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Scan_ExceptionInScanOne="))
+                        {
+                            LText.AlertMessages.Scan_ExceptionInScanOne = lt.Substring(24);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Scan_ExceptionInScanMultiple="))
+                        {
+                            LText.AlertMessages.Scan_ExceptionInScanMultiple = lt.Substring(29);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
