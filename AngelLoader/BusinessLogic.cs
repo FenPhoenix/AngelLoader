@@ -465,6 +465,8 @@ namespace AngelLoader
             }
 
             // 2019-04-17 Fixed: FMs would sometimes be removed from the list if their archive was blank
+            // NOTE: Looks like if an archive EXISTS, but there's no archive specified, it will still be removed
+            // TODO: Replace this garbage with manual version so I can control the damn thing
             FMDataIniList = FMDataIniList.Union(fmaList, new FMComparer(true)).ToList();
 
             #region Game union
