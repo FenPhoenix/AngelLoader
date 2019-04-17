@@ -353,9 +353,12 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception reading FM data ini", ex);
-                    MessageBox.Show("Exception reading FM data ini. Exiting. Please check " + Paths.LogFile,
-                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Environment.Exit(1);
+                    if (startup)
+                    {
+                        MessageBox.Show("Exception reading FM data ini. Exiting. Please check " + Paths.LogFile,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Environment.Exit(1);
+                    }
                 }
             }
 

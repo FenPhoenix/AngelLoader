@@ -111,6 +111,8 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Scan_ExceptionInScanOne = "There was a problem scanning the FM. See the log file for error details.";
             internal static string Scan_ExceptionInScanMultiple = "There was a problem scanning the FMs. See the log file for error details.";
+            [FenGenBlankLine]
+            internal static string FindFMs_ExceptionReadingFMDataIni = "There was a problem reading the FM data ini file. See the log file for error details.";
         }
 
         internal static class Difficulties

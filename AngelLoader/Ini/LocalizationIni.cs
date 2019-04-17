@@ -304,6 +304,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Scan_ExceptionInScanMultiple = lt.Substring(29);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("FindFMs_ExceptionReadingFMDataIni="))
+                        {
+                            LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni = lt.Substring(34);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
