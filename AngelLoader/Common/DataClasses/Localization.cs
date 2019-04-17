@@ -108,6 +108,9 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Extract_ZipExtractFailedFullyOrPartially = "Zip extract failed fully or partially.";
             internal static string Extract_SevenZipExtractFailedFullyOrPartially = "7-zip extract failed fully or partially.";
+            [FenGenBlankLine]
+            internal static string Scan_ExceptionInScanOne = "There was a problem scanning the FM. See the log file for error details.";
+            internal static string Scan_ExceptionInScanMultiple = "There was a problem scanning the FMs. See the log file for error details.";
         }
 
         internal static class Difficulties
