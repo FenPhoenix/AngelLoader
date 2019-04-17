@@ -86,12 +86,15 @@
             this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new System.Windows.Forms.CheckBox();
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
+            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
             this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.WebSearchTitleExplanationLabel = new System.Windows.Forms.Label();
             this.WebSearchUrlTextBox = new System.Windows.Forms.TextBox();
             this.WebSearchUrlLabel = new System.Windows.Forms.Label();
-            this.BackupSavesGroupBox = new System.Windows.Forms.GroupBox();
+            this.UninstallingFMsGroupBox = new System.Windows.Forms.GroupBox();
+            this.ConfirmUninstallCheckBox = new System.Windows.Forms.CheckBox();
+            this.WhatToBackUpLabel = new System.Windows.Forms.Label();
             this.BackupAlwaysAskCheckBox = new System.Windows.Forms.CheckBox();
             this.BackupAllChangedDataRadioButton = new System.Windows.Forms.RadioButton();
             this.BackupSavesAndScreensOnlyRadioButton = new System.Windows.Forms.RadioButton();
@@ -101,7 +104,6 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -119,7 +121,7 @@
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.LanguageGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
-            this.BackupSavesGroupBox.SuspendLayout();
+            this.UninstallingFMsGroupBox.SuspendLayout();
             this.FMFileConversionGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
@@ -711,7 +713,7 @@
             this.OtherTabPage.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.OtherTabPage.Controls.Add(this.LanguageGroupBox);
             this.OtherTabPage.Controls.Add(this.WebSearchGroupBox);
-            this.OtherTabPage.Controls.Add(this.BackupSavesGroupBox);
+            this.OtherTabPage.Controls.Add(this.UninstallingFMsGroupBox);
             this.OtherTabPage.Controls.Add(this.FMFileConversionGroupBox);
             this.OtherTabPage.Location = new System.Drawing.Point(4, 22);
             this.OtherTabPage.Name = "OtherTabPage";
@@ -744,12 +746,22 @@
             // LanguageGroupBox
             // 
             this.LanguageGroupBox.Controls.Add(this.LanguageComboBox);
-            this.LanguageGroupBox.Location = new System.Drawing.Point(8, 210);
+            this.LanguageGroupBox.Location = new System.Drawing.Point(440, 176);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
             this.LanguageGroupBox.Size = new System.Drawing.Size(424, 60);
             this.LanguageGroupBox.TabIndex = 2;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
+            // 
+            // LanguageComboBox
+            // 
+            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.LanguageComboBox.FormattingEnabled = true;
+            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
+            this.LanguageComboBox.Name = "LanguageComboBox";
+            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
+            this.LanguageComboBox.TabIndex = 0;
+            this.LanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBox_SelectedIndexChanged);
             // 
             // WebSearchGroupBox
             // 
@@ -801,24 +813,47 @@
             this.WebSearchUrlLabel.Text = "Full URL to use when searching for an FM title:";
             this.WebSearchUrlLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // BackupSavesGroupBox
+            // UninstallingFMsGroupBox
             // 
-            this.BackupSavesGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
-            this.BackupSavesGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
-            this.BackupSavesGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
-            this.BackupSavesGroupBox.Location = new System.Drawing.Point(8, 100);
-            this.BackupSavesGroupBox.Name = "BackupSavesGroupBox";
-            this.BackupSavesGroupBox.Size = new System.Drawing.Size(424, 102);
-            this.BackupSavesGroupBox.TabIndex = 1;
-            this.BackupSavesGroupBox.TabStop = false;
-            this.BackupSavesGroupBox.Text = "Back up data when uninstalling";
+            this.UninstallingFMsGroupBox.Controls.Add(this.ConfirmUninstallCheckBox);
+            this.UninstallingFMsGroupBox.Controls.Add(this.WhatToBackUpLabel);
+            this.UninstallingFMsGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
+            this.UninstallingFMsGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
+            this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
+            this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 100);
+            this.UninstallingFMsGroupBox.Name = "UninstallingFMsGroupBox";
+            this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 172);
+            this.UninstallingFMsGroupBox.TabIndex = 1;
+            this.UninstallingFMsGroupBox.TabStop = false;
+            this.UninstallingFMsGroupBox.Text = "Uninstalling FMs";
+            // 
+            // ConfirmUninstallCheckBox
+            // 
+            this.ConfirmUninstallCheckBox.AutoSize = true;
+            this.ConfirmUninstallCheckBox.Checked = true;
+            this.ConfirmUninstallCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ConfirmUninstallCheckBox.Location = new System.Drawing.Point(16, 32);
+            this.ConfirmUninstallCheckBox.Name = "ConfirmUninstallCheckBox";
+            this.ConfirmUninstallCheckBox.Size = new System.Drawing.Size(149, 17);
+            this.ConfirmUninstallCheckBox.TabIndex = 4;
+            this.ConfirmUninstallCheckBox.Text = "Confirm before uninstalling";
+            this.ConfirmUninstallCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // WhatToBackUpLabel
+            // 
+            this.WhatToBackUpLabel.AutoSize = true;
+            this.WhatToBackUpLabel.Location = new System.Drawing.Point(16, 64);
+            this.WhatToBackUpLabel.Name = "WhatToBackUpLabel";
+            this.WhatToBackUpLabel.Size = new System.Drawing.Size(139, 13);
+            this.WhatToBackUpLabel.TabIndex = 3;
+            this.WhatToBackUpLabel.Text = "When uninstalling, back up:";
             // 
             // BackupAlwaysAskCheckBox
             // 
             this.BackupAlwaysAskCheckBox.AutoSize = true;
             this.BackupAlwaysAskCheckBox.Checked = true;
             this.BackupAlwaysAskCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(16, 74);
+            this.BackupAlwaysAskCheckBox.Location = new System.Drawing.Point(24, 136);
             this.BackupAlwaysAskCheckBox.Name = "BackupAlwaysAskCheckBox";
             this.BackupAlwaysAskCheckBox.Size = new System.Drawing.Size(79, 17);
             this.BackupAlwaysAskCheckBox.TabIndex = 2;
@@ -829,7 +864,7 @@
             // 
             this.BackupAllChangedDataRadioButton.AutoSize = true;
             this.BackupAllChangedDataRadioButton.Checked = true;
-            this.BackupAllChangedDataRadioButton.Location = new System.Drawing.Point(16, 48);
+            this.BackupAllChangedDataRadioButton.Location = new System.Drawing.Point(24, 110);
             this.BackupAllChangedDataRadioButton.Name = "BackupAllChangedDataRadioButton";
             this.BackupAllChangedDataRadioButton.Size = new System.Drawing.Size(102, 17);
             this.BackupAllChangedDataRadioButton.TabIndex = 1;
@@ -840,7 +875,7 @@
             // BackupSavesAndScreensOnlyRadioButton
             // 
             this.BackupSavesAndScreensOnlyRadioButton.AutoSize = true;
-            this.BackupSavesAndScreensOnlyRadioButton.Location = new System.Drawing.Point(16, 24);
+            this.BackupSavesAndScreensOnlyRadioButton.Location = new System.Drawing.Point(24, 86);
             this.BackupSavesAndScreensOnlyRadioButton.Name = "BackupSavesAndScreensOnlyRadioButton";
             this.BackupSavesAndScreensOnlyRadioButton.Size = new System.Drawing.Size(158, 17);
             this.BackupSavesAndScreensOnlyRadioButton.TabIndex = 0;
@@ -894,16 +929,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
             // 
-            // LanguageComboBox
-            // 
-            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.LanguageComboBox.FormattingEnabled = true;
-            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
-            this.LanguageComboBox.Name = "LanguageComboBox";
-            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
-            this.LanguageComboBox.TabIndex = 0;
-            this.LanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.LanguageComboBox_SelectedIndexChanged);
-            // 
             // SettingsForm
             // 
             this.AcceptButton = this.OKButton;
@@ -951,8 +976,8 @@
             this.LanguageGroupBox.ResumeLayout(false);
             this.WebSearchGroupBox.ResumeLayout(false);
             this.WebSearchGroupBox.PerformLayout();
-            this.BackupSavesGroupBox.ResumeLayout(false);
-            this.BackupSavesGroupBox.PerformLayout();
+            this.UninstallingFMsGroupBox.ResumeLayout(false);
+            this.UninstallingFMsGroupBox.PerformLayout();
             this.FMFileConversionGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
@@ -1018,7 +1043,7 @@
         private System.Windows.Forms.CheckBox ConvertWAVsTo16BitOnInstallCheckBox;
         private System.Windows.Forms.RadioButton BackupAllChangedDataRadioButton;
         private System.Windows.Forms.RadioButton BackupSavesAndScreensOnlyRadioButton;
-        private System.Windows.Forms.GroupBox BackupSavesGroupBox;
+        private System.Windows.Forms.GroupBox UninstallingFMsGroupBox;
         private System.Windows.Forms.GroupBox WebSearchGroupBox;
         private System.Windows.Forms.TextBox WebSearchUrlTextBox;
         private System.Windows.Forms.Label WebSearchUrlLabel;
@@ -1036,5 +1061,7 @@
         private System.Windows.Forms.Label T1T2NeedNewDarkLabel;
         private System.Windows.Forms.GroupBox PlayFMOnDCOrEnterGroupBox;
         private System.Windows.Forms.CheckBox ConfirmPlayOnDCOrEnterCheckBox;
+        private System.Windows.Forms.CheckBox ConfirmUninstallCheckBox;
+        private System.Windows.Forms.Label WhatToBackUpLabel;
     }
 }

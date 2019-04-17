@@ -632,8 +632,8 @@
             this.BottomLeftButtonsFlowLayoutPanel.AutoSize = true;
             this.BottomLeftButtonsFlowLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.PlayFMButton);
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.InstallUninstallFMButton);
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.PlayOriginalGameButton);
+            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.InstallUninstallFMButton);
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.BottomAreaToolStripCustom);
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.ScanAllFMsButton);
             this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.BottomAreaToolStripCustom2);
@@ -663,7 +663,7 @@
             this.InstallUninstallFMButton.AutoSize = true;
             this.InstallUninstallFMButton.Image = global::AngelLoader.Properties.Resources.Install_24;
             this.InstallUninstallFMButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.InstallUninstallFMButton.Location = new System.Drawing.Point(100, 3);
+            this.InstallUninstallFMButton.Location = new System.Drawing.Point(253, 3);
             this.InstallUninstallFMButton.Name = "InstallUninstallFMButton";
             this.InstallUninstallFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.InstallUninstallFMButton.Size = new System.Drawing.Size(98, 36);
@@ -678,7 +678,7 @@
             this.PlayOriginalGameButton.AutoSize = true;
             this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_original_24;
             this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.PlayOriginalGameButton.Location = new System.Drawing.Point(204, 3);
+            this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);

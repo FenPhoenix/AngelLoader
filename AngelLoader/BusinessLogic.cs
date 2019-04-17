@@ -17,6 +17,7 @@ using AngelLoader.CustomControls;
 using AngelLoader.Forms;
 using AngelLoader.Importing;
 using FMScanner;
+using Ookii.Dialogs.WinForms;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
@@ -1389,6 +1390,16 @@ namespace AngelLoader
 
             Debug.Assert(fm.Game != null, "fm.Game != null");
 
+            if (Config.ConfirmUninstall)
+            {
+                var (cancel, dontAskAgain) =
+                    View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Uninstall_Confirm,
+                        LText.AlertMessages.Confirm, TaskDialogIcon.Warning, showDontAskAgain: true,
+                        LText.AlertMessages.Uninstall, LText.Global.Cancel);
+                Config.ConfirmUninstall = !dontAskAgain;
+                if (cancel) return;
+            }
+
             var gameExe = GetGameExeFromGameType((Game)fm.Game);
             var gameName = GetGameNameFromGameType((Game)fm.Game);
             if (GameIsRunning(gameExe))
@@ -1421,10 +1432,12 @@ namespace AngelLoader
 
                 if (fmArchivePath.IsEmpty())
                 {
-                    var cont = View.AskToContinue(LText.AlertMessages.Uninstall_ArchiveNotFound,
-                        LText.AlertMessages.Warning);
+                    var (cancel, _) = View.AskToContinueYesNoCustomStrings(
+                        LText.AlertMessages.Uninstall_ArchiveNotFound, LText.AlertMessages.Warning,
+                        TaskDialogIcon.Warning, showDontAskAgain: false, LText.AlertMessages.Uninstall,
+                        LText.Global.Cancel);
 
-                    if (!cont) return;
+                    if (cancel) return;
                 }
 
                 // If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
@@ -1448,7 +1461,10 @@ namespace AngelLoader
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
                     var (cancel, cont, dontAskAgain) =
-                        View.AskToContinueWithCancel_TD(message, LText.AlertMessages.Confirm);
+                        View.AskToContinueWithCancelCustomStrings(
+                            message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
+                            LText.AlertMessages.Confirm, null, showDontAskAgain: true,
+                            LText.AlertMessages.BackUp, LText.AlertMessages.DontBackUp, LText.Global.Cancel);
                     Config.BackupAlwaysAsk = !dontAskAgain;
                     if (cancel) return;
                     if (cont) await BackupFM(fm, fmInstalledPath, fmArchivePath);

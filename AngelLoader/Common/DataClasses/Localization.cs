@@ -61,6 +61,9 @@ namespace AngelLoader.Common.DataClasses
             internal static string Warning = "Warning";
             internal static string Error = "Error";
             internal static string Confirm = "Confirm";
+            internal static string Uninstall = "Uninstall";
+            internal static string BackUp = "Back up";
+            internal static string DontBackUp = "Don't back up";
             [FenGenBlankLine]
             internal static string DontAskAgain = "Don't ask again";
             [FenGenBlankLine]
@@ -76,12 +79,14 @@ namespace AngelLoader.Common.DataClasses
             internal static string Install_FMInstallPathNotFound = "FM install path not specified or not found. Unable to install.";
             internal static string Install_GameIsRunning = "Game is running; unable to install. Please exit the game and then try again.";
             [FenGenBlankLine]
+            internal static string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
             internal static string Uninstall_GameIsRunning = "Game is running; unable to uninstall. Please exit the game and then try again.";
             internal static string Uninstall_FMAlreadyUninstalled = "This FM has already been uninstalled or its folder cannot be found. Mark it as uninstalled?";
-            internal static string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Click Yes if this is okay, or No to cancel the uninstall.";
+            internal static string Uninstall_ArchiveNotFound = "This FM's archive file was not found! If you continue with uninstalling this FM, you won't be able to re-install it. Saves and screenshots will be backed up, but any other data will not. Are you sure you want to uninstall this FM?";
             internal static string Uninstall_UninstallNotCompleted = "The uninstall could not be completed. The FM will be marked as uninstalled but its folder may be in an unknown state.";
             internal static string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
             internal static string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
+            internal static string Uninstall_BackupChooseNoNote = "If you choose \"Don't back up\", then existing backups will remain, but they will not be updated.";
             internal static string Uninstall_FailedFullyOrPartially = "Uninstall failed fully or partially.";
             [FenGenBlankLine]
             internal static string FileConversion_GameIsRunning = "Game is running; unable to convert files. Please exit the game and then try again.";
@@ -365,7 +370,9 @@ namespace AngelLoader.Common.DataClasses
             internal static string Other_ConvertWAVsTo16BitOnInstall = "Convert .wavs to 16 bit on install";
             internal static string Other_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
             [FenGenBlankLine]
-            internal static string Other_BackUpSaves = "Back up data when uninstalling";
+            internal static string Other_UninstallingFMs = "Uninstalling FMs";
+            internal static string Other_ConfirmBeforeUninstalling = "Confirm before uninstalling";
+            internal static string Other_WhenUninstallingBackUp = "When uninstalling, back up:";
             internal static string Other_BackUpSavesAndScreenshotsOnly = "Saves and screenshots only";
             internal static string Other_BackUpAllChangedFiles = "All changed files";
             internal static string Other_BackUpAlwaysAsk = "Always ask";

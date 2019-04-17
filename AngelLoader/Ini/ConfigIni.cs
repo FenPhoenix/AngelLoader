@@ -618,6 +618,10 @@ namespace AngelLoader.Ini
                 {
                     config.ConvertOGGsToWAVsOnInstall = val.EqualsTrue();
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ConfirmUninstall) + "="))
+                {
+                    config.ConfirmUninstall = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.BackupFMData) + "="))
                 {
                     var field = typeof(BackupFMData).GetField(val, BFlagsEnum);
@@ -751,6 +755,7 @@ namespace AngelLoader.Ini
 
                 sw.WriteLine(nameof(config.ConvertWAVsTo16BitOnInstall) + "=" + config.ConvertWAVsTo16BitOnInstall);
                 sw.WriteLine(nameof(config.ConvertOGGsToWAVsOnInstall) + "=" + config.ConvertOGGsToWAVsOnInstall);
+                sw.WriteLine(nameof(config.ConfirmUninstall) + "=" + config.ConfirmUninstall);
                 sw.WriteLine(nameof(config.BackupFMData) + "=" + config.BackupFMData);
                 sw.WriteLine(nameof(config.BackupAlwaysAsk) + "=" + config.BackupAlwaysAsk);
                 sw.WriteLine(nameof(config.Language) + "=" + config.Language);

@@ -120,6 +120,8 @@ namespace AngelLoader.Common.DataClasses
         internal bool ConvertWAVsTo16BitOnInstall = true;
         internal bool ConvertOGGsToWAVsOnInstall = false;
 
+        internal bool ConfirmUninstall = true;
+
         internal BackupFMData BackupFMData = BackupFMData.AllChangedFiles;
         internal bool BackupAlwaysAsk = true;
 

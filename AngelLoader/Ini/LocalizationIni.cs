@@ -152,6 +152,18 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Confirm = lt.Substring(8);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Uninstall="))
+                        {
+                            LText.AlertMessages.Uninstall = lt.Substring(10);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("BackUp="))
+                        {
+                            LText.AlertMessages.BackUp = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DontBackUp="))
+                        {
+                            LText.AlertMessages.DontBackUp = lt.Substring(11);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("DontAskAgain="))
                         {
                             LText.AlertMessages.DontAskAgain = lt.Substring(13);
@@ -192,6 +204,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.Install_GameIsRunning = lt.Substring(22);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_Confirm="))
+                        {
+                            LText.AlertMessages.Uninstall_Confirm = lt.Substring(18);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Uninstall_GameIsRunning="))
                         {
                             LText.AlertMessages.Uninstall_GameIsRunning = lt.Substring(24);
@@ -215,6 +231,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Uninstall_BackupAllData="))
                         {
                             LText.AlertMessages.Uninstall_BackupAllData = lt.Substring(24);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_BackupChooseNoNote="))
+                        {
+                            LText.AlertMessages.Uninstall_BackupChooseNoNote = lt.Substring(29);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Uninstall_FailedFullyOrPartially="))
                         {
@@ -1128,9 +1148,17 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall = lt.Substring(33);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_BackUpSaves="))
+                        else if (lt.StartsWithFast_NoNullChecks("Other_UninstallingFMs="))
                         {
-                            LText.SettingsWindow.Other_BackUpSaves = lt.Substring(18);
+                            LText.SettingsWindow.Other_UninstallingFMs = lt.Substring(22);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_ConfirmBeforeUninstalling="))
+                        {
+                            LText.SettingsWindow.Other_ConfirmBeforeUninstalling = lt.Substring(32);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_WhenUninstallingBackUp="))
+                        {
+                            LText.SettingsWindow.Other_WhenUninstallingBackUp = lt.Substring(29);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Other_BackUpSavesAndScreenshotsOnly="))
                         {

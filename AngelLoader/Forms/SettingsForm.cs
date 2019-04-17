@@ -220,7 +220,9 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region Backup FM
+            #region Uninstalling FMs
+
+            ConfirmUninstallCheckBox.Checked = InConfig.ConfirmUninstall;
 
             switch (InConfig.BackupFMData)
             {
@@ -355,7 +357,9 @@ namespace AngelLoader.Forms
                 ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
                 ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
 
-                BackupSavesGroupBox.Text = LText.SettingsWindow.Other_BackUpSaves;
+                UninstallingFMsGroupBox.Text = LText.SettingsWindow.Other_UninstallingFMs;
+                ConfirmUninstallCheckBox.Text = LText.SettingsWindow.Other_ConfirmBeforeUninstalling;
+                WhatToBackUpLabel.Text = LText.SettingsWindow.Other_WhenUninstallingBackUp;
                 BackupSavesAndScreensOnlyRadioButton.Text = LText.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly;
                 BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
                 BackupAlwaysAskCheckBox.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
@@ -533,7 +537,6 @@ namespace AngelLoader.Forms
             OutConfig.DateCustomSeparator3 = DateSeparator3TextBox.Text;
             OutConfig.DateCustomFormat4 = Date4ComboBox.SelectedItem.ToString();
 
-
             var formatString = Date1ComboBox.SelectedItem +
                                DateSeparator1TextBox.Text.EscapeAllChars() +
                                Date2ComboBox.SelectedItem +
@@ -573,7 +576,9 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region Backup saves
+            #region Uninstalling FMs
+
+            OutConfig.ConfirmUninstall = ConfirmUninstallCheckBox.Checked;
 
             OutConfig.BackupFMData = BackupSavesAndScreensOnlyRadioButton.Checked
                 ? BackupFMData.SavesAndScreensOnly

@@ -2109,6 +2109,8 @@ namespace AngelLoader.Forms
                 Config.ConvertWAVsTo16BitOnInstall = sf.OutConfig.ConvertWAVsTo16BitOnInstall;
                 Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
 
+                Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
+
                 Config.BackupFMData = sf.OutConfig.BackupFMData;
                 Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
 
@@ -2923,13 +2925,13 @@ namespace AngelLoader.Forms
 
         #region Messageboxes
 
-        public bool AskToContinue(string message, string title)
+        internal bool AskToContinue(string message, string title)
         {
             var result = MessageBox.Show(message, title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             return result == DialogResult.Yes;
         }
 
-        public (bool Cancel, bool Continue)
+        internal (bool Cancel, bool Continue)
         AskToContinueWithCancel(string message, string title)
         {
             var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
@@ -2937,7 +2939,7 @@ namespace AngelLoader.Forms
             return (false, result == DialogResult.Yes);
         }
 
-        public (bool Cancel, bool Continue, bool dontAskAgain)
+        internal (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancel_TD(string message, string title)
         {
             using (var d = new TaskDialog())
@@ -2961,7 +2963,56 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void ShowAlert(string message, string title)
+        internal (bool Cancel, bool Continue, bool DontAskAgain)
+        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
+            bool showDontAskAgain, string yes, string no, string cancel)
+        {
+            using (var d = new TaskDialog())
+            using (var yesButton = new TaskDialogButton(yes))
+            using (var noButton = new TaskDialogButton(no))
+            using (var cancelButton = new TaskDialogButton(cancel))
+            {
+                d.AllowDialogCancellation = true;
+                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
+                d.ButtonStyle = TaskDialogButtonStyle.Standard;
+                d.WindowTitle = title;
+                d.Content = message;
+                d.VerificationText = LText.AlertMessages.DontAskAgain;
+                d.Buttons.Add(yesButton);
+                d.Buttons.Add(noButton);
+                d.Buttons.Add(cancelButton);
+                var buttonClicked = d.ShowDialog();
+                var canceled = buttonClicked == null || buttonClicked == cancelButton;
+                var cont = buttonClicked == yesButton;
+                var dontAskAgain = d.IsVerificationChecked;
+                return (canceled, cont, dontAskAgain);
+            }
+        }
+
+        internal (bool Cancel, bool DontAskAgain)
+        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon icon, bool showDontAskAgain,
+            string yes, string no)
+        {
+            using (var d = new TaskDialog())
+            using (var yesButton = new TaskDialogButton(yes))
+            using (var noButton = new TaskDialogButton(no))
+            {
+                d.AllowDialogCancellation = true;
+                d.MainIcon = icon;
+                d.ButtonStyle = TaskDialogButtonStyle.Standard;
+                d.WindowTitle = title;
+                d.Content = message;
+                d.VerificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
+                d.Buttons.Add(yesButton);
+                d.Buttons.Add(noButton);
+                var buttonClicked = d.ShowDialog();
+                var cancel = buttonClicked == null || buttonClicked == noButton;
+                var dontAskAgain = d.IsVerificationChecked;
+                return (cancel, dontAskAgain);
+            }
+        }
+
+        internal void ShowAlert(string message, string title)
         {
             MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
