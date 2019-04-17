@@ -2806,9 +2806,11 @@ namespace AngelLoader.Forms
 
             void FillAndSelectReadmeFromMulti(string readme)
             {
-                ChooseReadmeComboBox.AddRangeFull(readmeFiles);
-
-                using (new DisableEvents(this)) ChooseReadmeComboBox.SelectBackingIndexOf(readme);
+                using (new DisableEvents(this))
+                {
+                    ChooseReadmeComboBox.AddRangeFull(readmeFiles);
+                    ChooseReadmeComboBox.SelectBackingIndexOf(readme);
+                }
             }
 
             if (!fm.SelectedReadme.IsEmpty())
