@@ -851,7 +851,12 @@ namespace AngelLoader
                             x.Archive.RemoveExtension().EqualsI(fm.ArchiveName.RemoveExtension()) ||
                             x.InstalledDir.EqualsI(fm.ArchiveName.RemoveExtension()));
 
-                        if (sel == null) continue;
+                        if (sel == null)
+                        {
+                            // Same as above
+                            if (scanningOne) return false;
+                            continue;
+                        }
 
                         var gameSup = fm.Game != Games.Unsupported;
 
