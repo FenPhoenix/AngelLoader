@@ -161,11 +161,11 @@ In addition to clicking the zoom buttons, the readme can also be zoomed by press
 <h4>Play FM button</h4>
 Click this button to play the currently selected FM. If the FM is not installed, it will be installed automatically first.
 
-<h4>Install / Uninstall FM button</h4>
-If the currently selected FM is not installed, this button will install it; otherwise, it will uninstall it.
-
 <h4>Play original game button</h4>
 Click this button to bring up a list of supported games. Only games that you've <a href="#paths_to_game_exes">provided a path to</a> will be enabled; others will be grayed out. Clicking on one of these games will let you play it without loading an FM.
+
+<h4>Install / Uninstall FM button</h4>
+If the currently selected FM is not installed, this button will install it; otherwise, it will uninstall it.
 
 <h4><a name="scan_all_fms_button" />Scan all FMs button</h4>
 This allows you to scan all the FMs in the list. Clicking it will bring up a window where you can choose what to scan for.
@@ -387,6 +387,9 @@ Depending on your setup, .wav files that are higher than 16 bit may cause audio 
 Quoted from the FMSel manual:<br>
 <i>The game </i>can<i> play OGG files but it can under some circumstance cause short hiccups, on less powerful computers, performance heavy missions or with large OGG files. In such cases it might help to convert them to WAV files during installation</i>.<br>
 <b>This option has no effect for Thief: Deadly Shadows.</b>
+
+<h4>Confirm before uninstalling</h4>
+If this is enabled, you will be prompted for confirmation when uninstalling an FM.
 
 <h4><a name="settings_backup" />Back up data when uninstalling</h4>
 When an FM is uninstalled, you will normally want to back up its saves and screenshots so they can be restored if you install it again. You can also choose to back up all changed files, in which case the backup will also include all files in the installed folder that have been added, removed, or modified as compared to the files in the archive. This is useful if you have added <a href="#dml_patches">.dml patches</a> to the FM, or made other modifications such as creating or modifying an fm.cfg file, fixing readables, etc. Because AngelLoader aims to be patch-friendly, this option is the default. You can also choose to always be asked if you want to back up data when uninstalling an FM.
