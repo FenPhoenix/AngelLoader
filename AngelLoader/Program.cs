@@ -31,7 +31,7 @@ namespace AngelLoader
 
             ClearLogFile();
             ClearLogFile(Paths.ScannerLogFile);
-            Log("Started session", stackTrace: false, methodName: false);
+            Log(Application.ProductVersion + " Started session", stackTrace: false, methodName: false);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
