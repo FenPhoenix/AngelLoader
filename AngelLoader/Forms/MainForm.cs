@@ -19,6 +19,7 @@ using FMScanner;
 using Gma.System.MouseKeyHook;
 using Ookii.Dialogs.WinForms;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Forms
@@ -2039,12 +2040,12 @@ namespace AngelLoader.Forms
                 // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
                 //       being thrown here.
                 Config.T1FMInstallPath = !Config.T1Exe.IsWhiteSpace()
-                    ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error error1)
+                    ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
                     : "";
                 Config.T1DromEdDetected = !Model.GetDromEdExe(Game.Thief1).IsEmpty();
 
                 Config.T2FMInstallPath = !Config.T2Exe.IsWhiteSpace()
-                    ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error error2)
+                    ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
                     : "";
                 Config.T2DromEdDetected = !Model.GetDromEdExe(Game.Thief2).IsEmpty();
 
@@ -2888,15 +2889,17 @@ namespace AngelLoader.Forms
                 var (path, type) = Model.GetReadmeFileAndType(fm);
                 ReadmeLoad(path, type);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 ViewHTMLReadmeButton.Hide();
                 ShowReadme(true);
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
 
+                Log(nameof(DisplaySelectedFM) + ": " + nameof(ReadmeLoad) + " failed.", ex);
+
                 Debug.WriteLine("--------" + fm.Archive);
                 Debug.WriteLine("ReadmeRichTextBox.Load() failure:");
-                Debug.WriteLine(e);
+                Debug.WriteLine(ex);
             }
 
             #endregion
