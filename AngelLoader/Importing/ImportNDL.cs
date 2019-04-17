@@ -81,7 +81,7 @@ namespace AngelLoader.Importing
                                                  Path.DirectorySeparatorChar))
                                 {
                                     var fn = Path.GetFileNameWithoutExtension(f);
-                                    if (fn.ToInstalledFMDirNameNDL().EqualsI(instName))
+                                    if (fn.ToInstalledFMDirNameNDL().EqualsI(instName) || fn.EqualsI(instName))
                                     {
                                         fm.Archive = Path.GetFileName(f);
                                         break;

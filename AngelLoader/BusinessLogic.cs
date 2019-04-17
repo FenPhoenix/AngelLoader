@@ -678,8 +678,10 @@ namespace AngelLoader
                 var tryArchive =
                     archives.FirstOrDefault(x => x.ToInstalledFMDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
                     archives.FirstOrDefault(x => x.ToInstalledFMDirNameNDL().EqualsI(fm.InstalledDir)) ??
+                    archives.FirstOrDefault(x => x.EqualsI(fm.InstalledDir)) ??
                     FMDataIniList.FirstOrDefault(x => x.Archive.ToInstalledFMDirNameFMSel(truncate).EqualsI(fm.InstalledDir))?.Archive ??
-                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstalledFMDirNameNDL().EqualsI(fm.InstalledDir))?.Archive;
+                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstalledFMDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
+                    FMDataIniList.FirstOrDefault(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
 
                 // TODO: Look in FMSel/NDL ini files here too?
 
