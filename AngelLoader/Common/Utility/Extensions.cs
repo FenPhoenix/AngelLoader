@@ -361,7 +361,7 @@ namespace AngelLoader.Common.Utility
         {
             if (path == null) return null;
             int i;
-            return (i = path.LastIndexOf('\\')) == -1 ? path : path.Substring(i + 1);
+            return (i = path.LastIndexOf(Path.DirectorySeparatorChar)) == -1 ? path : path.Substring(i + 1);
         }
 
         internal static string GetFileNameFastZip(this string path)
