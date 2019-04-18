@@ -2431,7 +2431,9 @@ namespace AngelLoader.Forms
 
                 case Column.ReleaseDate:
                     SortByTitle();
-
+                    // Sort this one down to the day only, because the exact time may very well not be known and
+                    // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
+                    // sorted out of name order because of an invisible time difference
                     Model.FMsViewList = sortDirection == SortOrder.Ascending
                         ? Model.FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
                         : Model.FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
@@ -2439,9 +2441,11 @@ namespace AngelLoader.Forms
 
                 case Column.LastPlayed:
                     SortByTitle();
+                    // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
+                    // second (you change it by playing it), and the user will expect precise sorting.
                     Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.LastPlayed?.Date ?? x.LastPlayed).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.LastPlayed?.Date ?? x.LastPlayed).ToList();
+                        ? Model.FMsViewList.OrderBy(x => x.LastPlayed).ToList()
+                        : Model.FMsViewList.OrderByDescending(x => x.LastPlayed).ToList();
                     break;
 
                 case Column.DisabledMods:
