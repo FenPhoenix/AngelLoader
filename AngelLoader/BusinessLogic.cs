@@ -323,24 +323,14 @@ namespace AngelLoader
 
         internal void FindFMs(bool startup = false)
         {
-            if (!startup)
-            {
-                // Make sure we don't lose anything when we re-find!
-                try
-                {
-                    WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception writing FM data ini", ex);
-                }
-            }
+            // Make sure we don't lose anything when we re-find!
+            if (!startup) WriteFullFMDataIni();
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
             DeepCopyGlobalTags(PresetTags, GlobalTags);
 
-            // This will also clear the Checked status of all FMs. Crucial if we're running this again.
-
+            // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
+            // up with a blank or incomplete list and then glibly save it out later.
             var backupList = new List<FanMission>();
             foreach (var fm in FMDataIniList) backupList.Add(fm);
 
@@ -430,13 +420,6 @@ namespace AngelLoader
 
             #region PERF WORK
 
-            // Convert the archive and folder names to FM objects so as to allow them to be Union'd
-            var fmaList = new List<FanMission>();
-            foreach (var item in fmArchives)
-            {
-                fmaList.Add(new FanMission { Archive = item });
-            }
-
             var t1List = new List<FanMission>();
             var t2List = new List<FanMission>();
             var t3List = new List<FanMission>();
@@ -453,21 +436,65 @@ namespace AngelLoader
                 }
             }
 
-            // NOTE: The order of lists in the Union methods matters - a.Union(b) is different from b.Union(a).
-            // Don't change them.
+            #region Archive union
 
-            // NOTE: Pretty sure I used Union because it's supposed to be faster than a nested loop?
-
-            if (FMDataIniList.Count > 0)
+            var initCountA = FMDataIniList.Count;
+            // For some reason if this ISN'T a method, it screws all up and doesn't increment i(?!). Meh!
+            void ArchiveUnion()
             {
-                // Push back existing entries to the new list so none will be removed when they get combined
-                fmaList = FMDataIniList.Union(fmaList, new FMComparer(false)).ToList();
+                var checkedList = new List<FanMission>();
+
+                for (int ai = 0; ai < fmArchives.Count; ai++)
+                {
+                    var archive = fmArchives[ai];
+
+                    // perf perf blah
+                    string aRemoveExt = null;
+                    string aFMSel = null;
+                    string aFMSelTrunc = null;
+                    string aNDL = null;
+
+                    bool existingFound = false;
+                    for (int i = 0; i < initCountA; i++)
+                    {
+                        var fm = FMDataIniList[i];
+
+                        if (!fm.Checked &&
+                            fm.Archive.IsEmpty() &&
+                            (fm.InstalledDir.EqualsI(aRemoveExt ?? (aRemoveExt = archive.RemoveExtension())) ||
+                             fm.InstalledDir.EqualsI(aFMSel ?? (aFMSel = archive.ToInstalledFMDirNameFMSel(false))) ||
+                             fm.InstalledDir.EqualsI(aFMSelTrunc ?? (aFMSelTrunc = archive.ToInstalledFMDirNameFMSel(true))) ||
+                             fm.InstalledDir.EqualsI(aNDL ?? (aNDL = archive.ToInstalledFMDirNameNDL()))))
+                        {
+                            fm.Archive = archive;
+
+                            fm.Checked = true;
+                            checkedList.Add(fm);
+                            existingFound = true;
+                            break;
+                        }
+                        else if (!fm.Checked &&
+                                 !fm.Archive.IsEmpty() && fm.Archive.EqualsI(archive))
+                        {
+                            fm.Checked = true;
+                            checkedList.Add(fm);
+                            existingFound = true;
+                            break;
+                        }
+                    }
+                    if (!existingFound)
+                    {
+                        FMDataIniList.Add(new FanMission { Archive = archive });
+                    }
+                }
+
+                // Reset temp bool
+                for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
             }
 
-            // 2019-04-17 Fixed: FMs would sometimes be removed from the list if their archive was blank
-            // NOTE: Looks like if an archive EXISTS, but there's no archive specified, it will still be removed
-            // TODO: Replace this garbage with manual version so I can control the damn thing
-            FMDataIniList = FMDataIniList.Union(fmaList, new FMComparer(true)).ToList();
+            ArchiveUnion();
+
+            #endregion
 
             #region Game union
 
@@ -529,17 +556,25 @@ namespace AngelLoader
 
             #endregion
 
-            // Set archive installed folder names right off the bat and store them permanently
+            // Attempt to fill in empty archive names, and I guess set installed dirs sometimes?!
             for (var i = 0; i < FMDataIniList.Count; i++)
             {
                 var fm = FMDataIniList[i];
 
-                if (!fm.InstalledDir.IsEmpty() && fm.Archive.IsEmpty())
+                if (fm.Archive.IsEmpty())
                 {
+                    if (fm.InstalledDir.IsEmpty())
+                    {
+                        FMDataIniList.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+
                     var archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives);
                     if (archiveName.IsEmpty()) continue;
 
                     // Exponential (slow) stuff, but we only do it once to correct the list and then never again
+                    // NOTE: I guess this removes duplicates, which is why it has to do the search?
                     var existingFM = FMDataIniList.FirstOrDefault(x => x.Archive.EqualsI(archiveName));
                     if (existingFM != null)
                     {
@@ -556,7 +591,7 @@ namespace AngelLoader
                 }
             }
 
-            // Handle installed folder name collisions
+            // Set installed dir names, handling collisions
             foreach (var fm in FMDataIniList)
             {
                 if (fm.InstalledDir.IsEmpty())
@@ -689,6 +724,7 @@ namespace AngelLoader
             string FixUp(bool createFmselInf)
             {
                 // Make a best-effort attempt to find what this FM's archive name should be
+                // TODO: This is really slow. 8ms to run it once (~1500 set) with no hits.
                 bool truncate = fm.Game != Game.Thief3;
                 var tryArchive =
                     archives.FirstOrDefault(x => x.ToInstalledFMDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
@@ -969,7 +1005,7 @@ namespace AngelLoader
                     sel.MarkedScanned = markAsScanned;
                 }
 
-                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+                WriteFullFMDataIni();
             }
             catch (Exception ex)
             {
@@ -1214,7 +1250,7 @@ namespace AngelLoader
 
             fm.Installed = true;
 
-            WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+            WriteFullFMDataIni();
 
             try
             {
@@ -1512,7 +1548,7 @@ namespace AngelLoader
                     fm.InstalledDir = fm.Archive.ToInstalledFMDirNameFMSel(truncate: false);
                 }
 
-                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+                WriteFullFMDataIni();
                 await View.RefreshSelectedFM(refreshReadme: false);
             }
             catch (Exception ex)
@@ -2587,11 +2623,15 @@ namespace AngelLoader
             Config.ReadmeZoomFactor = readmeZoomFactor;
         }
 
+        private static readonly ReaderWriterLockSlim ReadWriteLock = new ReaderWriterLockSlim();
+
         internal void WriteFullFMDataIni()
         {
             try
             {
+                ReadWriteLock.EnterWriteLock();
                 WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+                ReadWriteLock.ExitWriteLock();
             }
             catch (Exception ex)
             {
@@ -2610,14 +2650,7 @@ namespace AngelLoader
                 Log("Exception writing config ini", ex);
             }
 
-            try
-            {
-                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
-            }
-            catch (Exception ex)
-            {
-                Log("Exception writing FM data ini", ex);
-            }
+            WriteFullFMDataIni();
 
             Application.Exit();
         }
