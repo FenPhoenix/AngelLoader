@@ -669,6 +669,7 @@ namespace AngelLoader
                      (item.Game == Game.Thief1 && NotInT1Dirs()) ||
                      (item.Game == Game.Thief2 && NotInT2Dirs()) ||
                      (item.Game == Game.Thief3 && NotInT3Dirs())) &&
+                    // TODO: Shortcut this one with a checked bool and whatnot as well
                     !fmArchives.ContainsI(item.Archive))
                 {
                     continue;

@@ -23,7 +23,7 @@ namespace AngelLoader.Common
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex);
+                Debug.WriteLine(ex);
             }
             finally
             {
@@ -33,7 +33,7 @@ namespace AngelLoader.Common
                 }
                 catch (Exception ex)
                 {
-                    Trace.WriteLine(ex);
+                    Debug.WriteLine(ex);
                 }
             }
         }
@@ -44,11 +44,11 @@ namespace AngelLoader.Common
             try
             {
                 Lock.EnterReadLock();
-                if (new FileInfo(Paths.LogFile).Length > ByteSize.MB * 50) ClearLogFile();
+                if (File.Exists(Paths.LogFile) && new FileInfo(Paths.LogFile).Length > ByteSize.MB * 50) ClearLogFile();
             }
             catch (Exception ex1)
             {
-                Trace.WriteLine(ex1);
+                Debug.WriteLine(ex1);
             }
             finally
             {
@@ -58,7 +58,7 @@ namespace AngelLoader.Common
                 }
                 catch (Exception logEx)
                 {
-                    Trace.WriteLine(logEx);
+                    Debug.WriteLine(logEx);
                 }
             }
 
@@ -79,7 +79,7 @@ namespace AngelLoader.Common
             }
             catch (Exception logEx)
             {
-                Trace.WriteLine(logEx);
+                Debug.WriteLine(logEx);
             }
             finally
             {
@@ -89,7 +89,7 @@ namespace AngelLoader.Common
                 }
                 catch (Exception logEx)
                 {
-                    Trace.WriteLine(logEx);
+                    Debug.WriteLine(logEx);
                 }
             }
         }
