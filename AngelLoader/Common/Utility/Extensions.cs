@@ -335,9 +335,9 @@ namespace AngelLoader.Common.Utility
         /// </summary>
         /// <param name="archiveName">Filename without path or extension.</param>
         /// <returns></returns>
-        internal static string ToInstalledFMDirNameNDL(this string archiveName)
+        internal static string ToInstDirNameNDL(this string archiveName)
         {
-            return ToInstalledFMDirName(archiveName, "+.~ ", truncate: true);
+            return ToInstDirName(archiveName, "+.~ ", truncate: true);
         }
 
         /// <summary>
@@ -346,12 +346,12 @@ namespace AngelLoader.Common.Utility
         /// <param name="archiveName">Filename without path or extension.</param>
         /// <param name="truncate">Whether to truncate the name to 30 characters or less.</param>
         /// <returns></returns>
-        internal static string ToInstalledFMDirNameFMSel(this string archiveName, bool truncate = true)
+        internal static string ToInstDirNameFMSel(this string archiveName, bool truncate = true)
         {
-            return ToInstalledFMDirName(archiveName, "+;:.,<>?*~| ", truncate);
+            return ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
         }
 
-        private static string ToInstalledFMDirName(string archiveName, string illegalChars, bool truncate)
+        private static string ToInstDirName(string archiveName, string illegalChars, bool truncate)
         {
             archiveName = archiveName.RemoveExtension();
 

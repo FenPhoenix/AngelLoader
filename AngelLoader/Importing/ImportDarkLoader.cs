@@ -143,7 +143,7 @@ namespace AngelLoader.Importing
                             var fm = new FanMission
                             {
                                 Archive = archive,
-                                InstalledDir = archive.ToInstalledFMDirNameFMSel(),
+                                InstalledDir = archive.ToInstDirNameFMSel(),
                                 SizeBytes = sizeBytes
                             };
 

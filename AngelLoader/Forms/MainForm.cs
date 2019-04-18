@@ -2431,9 +2431,9 @@ namespace AngelLoader.Forms
 
                 case Column.ReleaseDate:
                     SortByTitle();
-                    // Sort this one down to the day only, because the exact time may very well not be known and
+                    // Sort this one down to the day only, because the exact time may very well not be known, and
                     // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
-                    // sorted out of name order because of an invisible time difference
+                    // sorted out of name order because of an invisible time difference.
                     Model.FMsViewList = sortDirection == SortOrder.Ascending
                         ? Model.FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
                         : Model.FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();

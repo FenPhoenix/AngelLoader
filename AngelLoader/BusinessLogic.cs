@@ -461,9 +461,9 @@ namespace AngelLoader
                         if (!fm.Checked &&
                             fm.Archive.IsEmpty() &&
                             (fm.InstalledDir.EqualsI(aRemoveExt ?? (aRemoveExt = archive.RemoveExtension())) ||
-                             fm.InstalledDir.EqualsI(aFMSel ?? (aFMSel = archive.ToInstalledFMDirNameFMSel(false))) ||
-                             fm.InstalledDir.EqualsI(aFMSelTrunc ?? (aFMSelTrunc = archive.ToInstalledFMDirNameFMSel(true))) ||
-                             fm.InstalledDir.EqualsI(aNDL ?? (aNDL = archive.ToInstalledFMDirNameNDL()))))
+                             fm.InstalledDir.EqualsI(aFMSel ?? (aFMSel = archive.ToInstDirNameFMSel(false))) ||
+                             fm.InstalledDir.EqualsI(aFMSelTrunc ?? (aFMSelTrunc = archive.ToInstDirNameFMSel(true))) ||
+                             fm.InstalledDir.EqualsI(aNDL ?? (aNDL = archive.ToInstDirNameNDL()))))
                         {
                             fm.Archive = archive;
 
@@ -596,7 +596,7 @@ namespace AngelLoader
                 if (fm.InstalledDir.IsEmpty())
                 {
                     var truncate = fm.Game != Game.Thief3;
-                    var instDir = fm.Archive.ToInstalledFMDirNameFMSel(truncate);
+                    var instDir = fm.Archive.ToInstDirNameFMSel(truncate);
                     int i = 0;
 
                     // Again, an exponential search, but again, we only do it once to correct the list and then
@@ -727,11 +727,11 @@ namespace AngelLoader
                 // TODO: This is really slow. 8ms to run it once (~1500 set) with no hits.
                 bool truncate = fm.Game != Game.Thief3;
                 var tryArchive =
-                    archives.FirstOrDefault(x => x.ToInstalledFMDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
-                    archives.FirstOrDefault(x => x.ToInstalledFMDirNameNDL().EqualsI(fm.InstalledDir)) ??
+                    archives.FirstOrDefault(x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
+                    archives.FirstOrDefault(x => x.ToInstDirNameNDL().EqualsI(fm.InstalledDir)) ??
                     archives.FirstOrDefault(x => x.EqualsI(fm.InstalledDir)) ??
-                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstalledFMDirNameFMSel(truncate).EqualsI(fm.InstalledDir))?.Archive ??
-                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstalledFMDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
+                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir))?.Archive ??
+                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
                     FMDataIniList.FirstOrDefault(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
 
                 // TODO: Look in FMSel/NDL ini files here too?
@@ -817,6 +817,7 @@ namespace AngelLoader
                 }
                 else
                 {
+                    // Block user input to the form to mimic the UI thread being blocked, because we're async here
                     View.BeginInvoke(new Action(View.Block));
                     ProgressBox.ProgressTask = ProgressPanel.ProgressTasks.ScanAllFMs;
                     ProgressBox.ShowProgressWindow(ProgressBox.ProgressTask, suppressShow: true);
@@ -827,8 +828,6 @@ namespace AngelLoader
                 ProgressBox.ShowScanningAllFMs();
             }
 
-            // Block user input to the form initially to mimic the UI thread being blocked, but then if the scan
-            // is taking more than 500ms then unblock input and throw up the progress box
             // TODO: This is pretty hairy, try and organize this better
             try
             {
@@ -1545,7 +1544,7 @@ namespace AngelLoader
                 // un-truncated form for future use.
                 if (fm.Game == Game.Thief3 && !fm.Archive.IsEmpty())
                 {
-                    fm.InstalledDir = fm.Archive.ToInstalledFMDirNameFMSel(truncate: false);
+                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
                 }
 
                 WriteFullFMDataIni();
