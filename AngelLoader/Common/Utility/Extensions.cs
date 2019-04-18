@@ -60,6 +60,11 @@ namespace AngelLoader.Common.Utility
             return list.Contains(str, StringComparison.OrdinalIgnoreCase);
         }
 
+        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str)
+        {
+            return list.ContainsRemoveFirstHit(str, StringComparison.OrdinalIgnoreCase);
+        }
+
         /// <summary>
         /// Case-insensitive Contains for string[]. Avoiding IEnumerable like the plague for speed.
         /// </summary>
@@ -71,7 +76,23 @@ namespace AngelLoader.Common.Utility
             return array.Contains(str, StringComparison.OrdinalIgnoreCase);
         }
 
-        internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
+        internal static bool ContainsRemoveFirstHit(this List<string> value, string substring,
+            StringComparison stringComparison = StringComparison.Ordinal)
+        {
+            // Dead simple, dead fast
+            for (int i = 0; i < value.Count; i++)
+            {
+                if (value[i].Equals(substring, stringComparison))
+                {
+                    value.RemoveAt(i);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        internal static bool Contains(this List<string> value, string substring,
+            StringComparison stringComparison = StringComparison.Ordinal)
         {
             // Dead simple, dead fast
             for (int i = 0; i < value.Count; i++)

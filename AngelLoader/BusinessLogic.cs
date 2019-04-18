@@ -669,8 +669,8 @@ namespace AngelLoader
                      (item.Game == Game.Thief1 && NotInT1Dirs()) ||
                      (item.Game == Game.Thief2 && NotInT2Dirs()) ||
                      (item.Game == Game.Thief3 && NotInT3Dirs())) &&
-                    // TODO: Shortcut this one with a checked bool and whatnot as well
-                    !fmArchives.ContainsI(item.Archive))
+                    // Shrink the list as we get matches so we can reduce our search time as we go
+                    !fmArchives.ContainsIRemoveFirstHit(item.Archive))
                 {
                     continue;
                 }
@@ -691,7 +691,7 @@ namespace AngelLoader
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
             }
 
-            // Link the lists back up because they get broken in here
+            // Link the lists back up because they may get broken in here
             View.LinkViewList();
         }
 
