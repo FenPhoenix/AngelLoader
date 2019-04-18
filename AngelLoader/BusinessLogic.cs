@@ -33,7 +33,7 @@ namespace AngelLoader
         private readonly ProgressPanel ProgressBox;
 
         internal List<FanMission> FMsViewList = new List<FanMission>();
-        private List<FanMission> FMDataIniList = new List<FanMission>();
+        private readonly List<FanMission> FMDataIniList = new List<FanMission>();
 
         private CancellationTokenSource ScanCts;
         private CancellationTokenSource ExtractCts;
