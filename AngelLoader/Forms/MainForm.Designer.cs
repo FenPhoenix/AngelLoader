@@ -57,6 +57,13 @@
             this.RatingRCMenu8 = new System.Windows.Forms.ToolStripMenuItem();
             this.RatingRCMenu9 = new System.Windows.Forms.ToolStripMenuItem();
             this.RatingRCMenu10 = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
+            this.FinishedOnNormalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenuSep2 = new System.Windows.Forms.ToolStripSeparator();
             this.WebSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
@@ -69,25 +76,17 @@
             this.ImportButton = new System.Windows.Forms.Button();
             this.BottomLeftButtonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new System.Windows.Forms.Button();
-            this.InstallUninstallFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
+            this.InstallUninstallFMButton = new System.Windows.Forms.Button();
+            this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.WebSearchButton = new System.Windows.Forms.Button();
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
-            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.RefreshClearToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
@@ -212,24 +211,26 @@
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.FinishedOnRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
-            this.FinishedOnNormalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.FMRightClickMenu.SuspendLayout();
+            this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
             this.BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
+            this.BottomAreaToolStripCustom.SuspendLayout();
+            this.BottomAreaToolStripCustom2.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
-            this.PlayOriginalGameMenu.SuspendLayout();
-            this.ImportFromMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
@@ -258,9 +259,8 @@
             this.PatchDMLsPanel.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
-            this.BottomAreaToolStripCustom.SuspendLayout();
-            this.BottomAreaToolStripCustom2.SuspendLayout();
-            this.FinishedOnMenu.SuspendLayout();
+            this.PlayOriginalGameMenu.SuspendLayout();
+            this.ImportFromMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // FMRightClickMenu
@@ -451,6 +451,70 @@
             this.RatingRCMenu10.Text = "10";
             this.RatingRCMenu10.Click += new System.EventHandler(this.RatingRCMenuItems_Click);
             // 
+            // FinishedOnRCSubMenu
+            // 
+            this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
+            this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
+            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(182, 22);
+            this.FinishedOnRCSubMenu.Text = "Finished on";
+            // 
+            // FinishedOnMenu
+            // 
+            this.FinishedOnMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FinishedOnNormalMenuItem,
+            this.FinishedOnHardMenuItem,
+            this.FinishedOnExpertMenuItem,
+            this.FinishedOnExtremeMenuItem,
+            this.FinishedOnUnknownMenuItem});
+            this.FinishedOnMenu.Name = "FinishedOnMenu";
+            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
+            this.FinishedOnMenu.Size = new System.Drawing.Size(126, 114);
+            // 
+            // FinishedOnNormalMenuItem
+            // 
+            this.FinishedOnNormalMenuItem.CheckOnClick = true;
+            this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
+            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnNormalMenuItem.Tag = "";
+            this.FinishedOnNormalMenuItem.Text = "Normal";
+            this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            // 
+            // FinishedOnHardMenuItem
+            // 
+            this.FinishedOnHardMenuItem.CheckOnClick = true;
+            this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
+            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnHardMenuItem.Tag = "";
+            this.FinishedOnHardMenuItem.Text = "Hard";
+            this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            // 
+            // FinishedOnExpertMenuItem
+            // 
+            this.FinishedOnExpertMenuItem.CheckOnClick = true;
+            this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
+            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnExpertMenuItem.Tag = "";
+            this.FinishedOnExpertMenuItem.Text = "Expert";
+            this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            // 
+            // FinishedOnExtremeMenuItem
+            // 
+            this.FinishedOnExtremeMenuItem.CheckOnClick = true;
+            this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
+            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnExtremeMenuItem.Tag = "";
+            this.FinishedOnExtremeMenuItem.Text = "Extreme";
+            this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            // 
+            // FinishedOnUnknownMenuItem
+            // 
+            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
+            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
+            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnUnknownMenuItem.Text = "Unknown";
+            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
+            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            // 
             // FMRightClickMenuSep2
             // 
             this.FMRightClickMenuSep2.Name = "FMRightClickMenuSep2";
@@ -594,6 +658,21 @@
             this.PlayFMButton.UseVisualStyleBackColor = true;
             this.PlayFMButton.Click += new System.EventHandler(this.PlayFMButton_Click);
             // 
+            // PlayOriginalGameButton
+            // 
+            this.PlayOriginalGameButton.AutoSize = true;
+            this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_original_24;
+            this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
+            this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
+            this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
+            this.PlayOriginalGameButton.TabIndex = 57;
+            this.PlayOriginalGameButton.Text = "Play original game...";
+            this.PlayOriginalGameButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
+            this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
+            // 
             // InstallUninstallFMButton
             // 
             this.InstallUninstallFMButton.AutoSize = true;
@@ -609,20 +688,43 @@
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
             this.InstallUninstallFMButton.Click += new System.EventHandler(this.InstallUninstallFMButton_Click);
             // 
-            // PlayOriginalGameButton
+            // BottomAreaToolStripCustom
             // 
-            this.PlayOriginalGameButton.AutoSize = true;
-            this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_original_24;
-            this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
-            this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
-            this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
-            this.PlayOriginalGameButton.TabIndex = 57;
-            this.PlayOriginalGameButton.Text = "Play original game...";
-            this.PlayOriginalGameButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
-            this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
+            this.BottomAreaToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomAreaSep1});
+            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
+            this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
+            this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
+            this.BottomAreaToolStripCustom.Size = new System.Drawing.Size(8, 42);
+            this.BottomAreaToolStripCustom.TabIndex = 32;
+            // 
+            // BottomAreaSep1
+            // 
+            this.BottomAreaSep1.AutoSize = false;
+            this.BottomAreaSep1.Name = "BottomAreaSep1";
+            this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
+            // 
+            // BottomAreaToolStripCustom2
+            // 
+            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomAreaSep2});
+            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
+            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
+            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
+            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
+            this.BottomAreaToolStripCustom2.TabIndex = 35;
+            // 
+            // BottomAreaSep2
+            // 
+            this.BottomAreaSep2.AutoSize = false;
+            this.BottomAreaSep2.Name = "BottomAreaSep2";
+            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
             // 
             // WebSearchButton
             // 
@@ -681,89 +783,6 @@
             this.AddTagListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
             this.AddTagListBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
             this.AddTagListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AddTagListBox_MouseUp);
-            // 
-            // PlayOriginalGameMenu
-            // 
-            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayOriginalThief1MenuItem,
-            this.PlayOriginalThief2MenuItem,
-            this.PlayOriginalThief3MenuItem});
-            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
-            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
-            // 
-            // PlayOriginalThief1MenuItem
-            // 
-            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
-            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
-            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief2MenuItem
-            // 
-            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
-            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
-            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief3MenuItem
-            // 
-            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
-            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
-            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // AddTagMenu
-            // 
-            this.AddTagMenu.Name = "AddTagMenu";
-            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
-            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
-            // 
-            // AltTitlesMenu
-            // 
-            this.AltTitlesMenu.Name = "AltTitlesMenu";
-            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
-            // 
-            // ImportFromMenu
-            // 
-            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ImportFromDarkLoaderMenuItem,
-            this.ImportFromFMSelMenuItem,
-            this.ImportFromNewDarkLoaderMenuItem});
-            this.ImportFromMenu.Name = "ImportFromMenu";
-            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
-            // 
-            // ImportFromDarkLoaderMenuItem
-            // 
-            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
-            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
-            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
-            // 
-            // ImportFromFMSelMenuItem
-            // 
-            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
-            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromFMSelMenuItem.Text = "FMSel";
-            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
-            // 
-            // ImportFromNewDarkLoaderMenuItem
-            // 
-            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
-            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
-            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
-            // 
-            // ProgressBox
-            // 
-            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
-            this.ProgressBox.Name = "ProgressBox";
-            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
-            this.ProgressBox.TabIndex = 39;
-            this.ProgressBox.Visible = false;
             // 
             // MainSplitContainer
             // 
@@ -1012,6 +1031,7 @@
             this.FMsDGV.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.FMsDGV_CellValueNeeded_Initial);
             this.FMsDGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.FMsDGV_ColumnHeaderMouseClick);
             this.FMsDGV.SelectionChanged += new System.EventHandler(this.FMsDGV_SelectionChanged);
+            this.FMsDGV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FMsDGV_KeyDown);
             this.FMsDGV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FMsDGV_KeyPress);
             this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
             // 
@@ -2327,107 +2347,88 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             // 
-            // BottomAreaToolStripCustom
+            // PlayOriginalGameMenu
             // 
-            this.BottomAreaToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep1});
-            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
-            this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
-            this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom.TabIndex = 32;
+            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayOriginalThief1MenuItem,
+            this.PlayOriginalThief2MenuItem,
+            this.PlayOriginalThief3MenuItem});
+            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
+            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
             // 
-            // BottomAreaSep1
+            // PlayOriginalThief1MenuItem
             // 
-            this.BottomAreaSep1.AutoSize = false;
-            this.BottomAreaSep1.Name = "BottomAreaSep1";
-            this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
+            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
+            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
+            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
+            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
-            // BottomAreaToolStripCustom2
+            // PlayOriginalThief2MenuItem
             // 
-            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep2});
-            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
-            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
-            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom2.TabIndex = 35;
+            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
+            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
+            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
+            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
-            // BottomAreaSep2
+            // PlayOriginalThief3MenuItem
             // 
-            this.BottomAreaSep2.AutoSize = false;
-            this.BottomAreaSep2.Name = "BottomAreaSep2";
-            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
+            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
+            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
+            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
+            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
-            // FinishedOnRCSubMenu
+            // AddTagMenu
             // 
-            this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
-            this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
-            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(182, 22);
-            this.FinishedOnRCSubMenu.Text = "Finished on";
+            this.AddTagMenu.Name = "AddTagMenu";
+            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
+            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
             // 
-            // FinishedOnMenu
+            // AltTitlesMenu
             // 
-            this.FinishedOnMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FinishedOnNormalMenuItem,
-            this.FinishedOnHardMenuItem,
-            this.FinishedOnExpertMenuItem,
-            this.FinishedOnExtremeMenuItem,
-            this.FinishedOnUnknownMenuItem});
-            this.FinishedOnMenu.Name = "FinishedOnMenu";
-            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
-            this.FinishedOnMenu.Size = new System.Drawing.Size(126, 114);
+            this.AltTitlesMenu.Name = "AltTitlesMenu";
+            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
             // 
-            // FinishedOnNormalMenuItem
+            // ImportFromMenu
             // 
-            this.FinishedOnNormalMenuItem.CheckOnClick = true;
-            this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
-            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnNormalMenuItem.Tag = "";
-            this.FinishedOnNormalMenuItem.Text = "Normal";
-            this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ImportFromDarkLoaderMenuItem,
+            this.ImportFromFMSelMenuItem,
+            this.ImportFromNewDarkLoaderMenuItem});
+            this.ImportFromMenu.Name = "ImportFromMenu";
+            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
             // 
-            // FinishedOnHardMenuItem
+            // ImportFromDarkLoaderMenuItem
             // 
-            this.FinishedOnHardMenuItem.CheckOnClick = true;
-            this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
-            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnHardMenuItem.Tag = "";
-            this.FinishedOnHardMenuItem.Text = "Hard";
-            this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
+            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
+            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
             // 
-            // FinishedOnExpertMenuItem
+            // ImportFromFMSelMenuItem
             // 
-            this.FinishedOnExpertMenuItem.CheckOnClick = true;
-            this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
-            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnExpertMenuItem.Tag = "";
-            this.FinishedOnExpertMenuItem.Text = "Expert";
-            this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
+            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromFMSelMenuItem.Text = "FMSel";
+            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
             // 
-            // FinishedOnExtremeMenuItem
+            // ImportFromNewDarkLoaderMenuItem
             // 
-            this.FinishedOnExtremeMenuItem.CheckOnClick = true;
-            this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
-            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnExtremeMenuItem.Tag = "";
-            this.FinishedOnExtremeMenuItem.Text = "Extreme";
-            this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
+            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
+            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
             // 
-            // FinishedOnUnknownMenuItem
+            // ProgressBox
             // 
-            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
-            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
-            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnUnknownMenuItem.Text = "Unknown";
-            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
-            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
+            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
+            this.ProgressBox.Name = "ProgressBox";
+            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
+            this.ProgressBox.TabIndex = 39;
+            this.ProgressBox.Visible = false;
             // 
             // MainForm
             // 
@@ -2451,15 +2452,18 @@
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.FMRightClickMenu.ResumeLayout(false);
+            this.FinishedOnMenu.ResumeLayout(false);
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();
             this.BottomRightButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomRightButtonsFlowLayoutPanel.PerformLayout();
             this.BottomLeftButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomLeftButtonsFlowLayoutPanel.PerformLayout();
+            this.BottomAreaToolStripCustom.ResumeLayout(false);
+            this.BottomAreaToolStripCustom.PerformLayout();
+            this.BottomAreaToolStripCustom2.ResumeLayout(false);
+            this.BottomAreaToolStripCustom2.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
-            this.PlayOriginalGameMenu.ResumeLayout(false);
-            this.ImportFromMenu.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             this.MainSplitContainer.Panel2.PerformLayout();
@@ -2506,11 +2510,8 @@
             this.ChooseReadmePanel.ResumeLayout(false);
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
-            this.BottomAreaToolStripCustom.ResumeLayout(false);
-            this.BottomAreaToolStripCustom.PerformLayout();
-            this.BottomAreaToolStripCustom2.ResumeLayout(false);
-            this.BottomAreaToolStripCustom2.PerformLayout();
-            this.FinishedOnMenu.ResumeLayout(false);
+            this.PlayOriginalGameMenu.ResumeLayout(false);
+            this.ImportFromMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -840,6 +840,7 @@ namespace AngelLoader.Forms
 
                 HideAddTagDropDown();
             }
+
             else if (e.Control)
             {
                 if (e.KeyCode == Keys.F)
@@ -1821,6 +1822,21 @@ namespace AngelLoader.Forms
                 {
                     s.Rows[rowIndex].Selected = true;
                     s.FirstDisplayedScrollingRowIndex = s.SelectedRows[0].Index;
+                }
+            }
+        }
+
+        private async void FMsDGV_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                if (e.Shift && !e.Control && !e.Alt)
+                {
+                    await RefreshFromDisk();
+                }
+                else if (!e.Shift)
+                {
+                    await SortAndSetFilter();
                 }
             }
         }
@@ -4241,7 +4257,9 @@ namespace AngelLoader.Forms
             await CallInstallOrPlay(Config.ConfirmPlayOnDCOrEnter);
         }
 
-        private async void RefreshFromDiskButton_Click(object sender, EventArgs e)
+        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await RefreshFromDisk();
+
+        private async Task RefreshFromDisk()
         {
             Model.FindFMs();
             await SortAndSetFilter();
