@@ -24,7 +24,6 @@ using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.Ini.Ini;
-using Timer = System.Timers.Timer;
 
 namespace AngelLoader
 {
