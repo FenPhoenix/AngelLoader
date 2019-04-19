@@ -927,7 +927,11 @@ namespace AngelLoader
 
                     if (overwriteUnscannedFields || scanOptions.ScanTitle)
                     {
-                        sel.Title = !scannedFM.Title.IsEmpty() ? scannedFM.Title : scannedFM.ArchiveName.RemoveExtension();
+                        sel.Title =
+                            !scannedFM.Title.IsEmpty() ? scannedFM.Title
+                            : scannedFM.ArchiveName.ExtEqualsI(".zip") ||
+                              scannedFM.ArchiveName.ExtEqualsI(".7z") ? scannedFM.ArchiveName.RemoveExtension()
+                            : scannedFM.ArchiveName;
 
                         if (gameSup)
                         {
