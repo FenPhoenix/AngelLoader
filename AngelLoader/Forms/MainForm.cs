@@ -1112,8 +1112,32 @@ namespace AngelLoader.Forms
 
         #region Test / debug
 
-        private void TestButton_Click(object sender, EventArgs e)
+        private async void TestButton_Click(object sender, EventArgs e)
         {
+            var f = FMsDGV.DefaultCellStyle.Font;
+            var newF = new Font(f.FontFamily, f.SizeInPoints + 1.0f, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+            FMsDGV.DefaultCellStyle.Font = newF;
+            //FMsDGV.Rows[0].Height = 50;
+            var h = newF.Height;
+            FMsDGV.RowTemplate.Height = h + 9;
+
+
+            InitialSelectedFMHasBeenSet = false;
+            FMsDGV.RowCount = 0;
+            await RefreshFMsList(refreshReadme: false, suppressSelectionChangedEvent: true);
+            //await SetFilter();
+
+            //FMsDGV.SuspendDrawing();
+
+            //for (var i = 0; i < FMsDGV.Rows.Count; i++)
+            //{
+            //    var r = FMsDGV.Rows[i];
+            //    //r.Height = 50;
+            //}
+            //FMsDGV.ResumeDrawing();
+
+            //RefreshFMsListKeepSelection();
+            //FMsDGV.Refresh();
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
