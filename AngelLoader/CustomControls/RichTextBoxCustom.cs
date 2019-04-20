@@ -136,7 +136,7 @@ namespace AngelLoader.CustomControls
                 // Blank the text to reset the scroll position to the top
                 Clear();
 
-                if (path.ExtEqualsI(".glml"))
+                if (path.ExtIsGlml())
                 {
                     var text = File.ReadAllText(path);
                     Rtf = GLMLToRTF(text);

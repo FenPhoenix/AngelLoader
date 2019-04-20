@@ -119,7 +119,7 @@ namespace AngelLoader
             // In weird situations this could be true, so just say none and at least don't crash
             if (fmArchivePath.IsEmpty()) return new CacheData();
 
-            if (fm.Archive.ExtEqualsI(".zip"))
+            if (fm.Archive.ExtIsZip())
             {
                 ZipExtract(fmArchivePath, fmCachePath, readmes);
             }
@@ -129,7 +129,7 @@ namespace AngelLoader
             }
 
             // TODO: Support .7z here too
-            if (fmArchivePath.ExtEqualsI(".zip") && Directory.Exists(fmCachePath))
+            if (fmArchivePath.ExtIsZip() && Directory.Exists(fmCachePath))
             {
                 try
                 {
