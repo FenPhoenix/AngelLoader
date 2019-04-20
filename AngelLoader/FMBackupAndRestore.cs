@@ -189,7 +189,7 @@ namespace AngelLoader
             var addedList = new List<string>();
             var fullList = new List<string>();
 
-            bool fmIsZip = fmArchivePath.ExtEqualsI(".zip");
+            bool fmIsZip = fmArchivePath.ExtIsZip();
             if (fmIsZip)
             {
                 using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),

@@ -405,7 +405,7 @@ namespace AngelLoader
                     foreach (var f in files)
                     {
                         if (!fmArchives.ContainsI(f.GetFileNameFast()) &&
-                            (f.ExtEqualsI(".zip") || f.ExtEqualsI(".7z")) && !f.ContainsI(Paths.FMSelBak))
+                            f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
                         {
                             fmArchives.Add(f.GetFileNameFast());
                         }
@@ -799,7 +799,7 @@ namespace AngelLoader
 
             void ReportProgress(ProgressReport pr)
             {
-                var fmIsZip = pr.FMName.ExtEqualsI(".zip") || pr.FMName.ExtEqualsI(".7z");
+                var fmIsZip = pr.FMName.ExtIsArchive();
                 var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
                 ProgressBox.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
             }
@@ -811,7 +811,7 @@ namespace AngelLoader
                 Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
                 // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as nice
                 // as the timer method, but that can cause race conditions I don't know how to fix, so whatever.
-                if (fmsToScan[0].Archive.ExtEqualsI(".7z"))
+                if (fmsToScan[0].Archive.ExtIs7z())
                 {
                     ProgressBox.ShowScanningAllFMs();
                 }
@@ -929,8 +929,7 @@ namespace AngelLoader
                     {
                         sel.Title =
                             !scannedFM.Title.IsEmpty() ? scannedFM.Title
-                            : scannedFM.ArchiveName.ExtEqualsI(".zip") ||
-                              scannedFM.ArchiveName.ExtEqualsI(".7z") ? scannedFM.ArchiveName.RemoveExtension()
+                            : scannedFM.ArchiveName.ExtIsArchive() ? scannedFM.ArchiveName.RemoveExtension()
                             : scannedFM.ArchiveName;
 
                         if (gameSup)
@@ -1223,7 +1222,7 @@ namespace AngelLoader
             ProgressBox.ShowInstallingFM();
 
             // Framework zip extracting is much faster, so use it if possible
-            bool canceled = fmArchivePath.ExtEqualsI(".zip")
+            bool canceled = fmArchivePath.ExtIsZip()
                 ? !await InstallFMZip(fmArchivePath, fmInstalledPath)
                 : !await InstallFMSevenZip(fmArchivePath, fmInstalledPath);
 
@@ -2347,12 +2346,11 @@ namespace AngelLoader
             {
                 // Don't use IsValidReadme(), because we want a specific search order
                 return
-                    files.FirstOrDefault(x => x.ExtEqualsI(".glml")) ??
-                    files.FirstOrDefault(x => x.ExtEqualsI(".rtf")) ??
-                    files.FirstOrDefault(x => x.ExtEqualsI(".txt")) ??
-                    files.FirstOrDefault(x => x.ExtEqualsI(".wri")) ??
-                    files.FirstOrDefault(x => x.ExtEqualsI(".html")) ??
-                    files.FirstOrDefault(x => x.ExtEqualsI(".htm"));
+                    files.FirstOrDefault(x => x.ExtIsGlml()) ??
+                    files.FirstOrDefault(x => x.ExtIsRtf()) ??
+                    files.FirstOrDefault(x => x.ExtIsTxt()) ??
+                    files.FirstOrDefault(x => x.ExtIsWri()) ??
+                    files.FirstOrDefault(x => x.ExtIsHtml());
             }
 
             bool ContainsUnsafePhrase(string str)
