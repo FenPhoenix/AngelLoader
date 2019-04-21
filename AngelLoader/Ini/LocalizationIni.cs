@@ -1212,6 +1212,10 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask = lt.Substring(33);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_ShowOrHideInterfaceElements="))
+                        {
+                            LText.SettingsWindow.Other_ShowOrHideInterfaceElements = lt.Substring(34);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Other_HideUninstallButton="))
                         {
                             LText.SettingsWindow.Other_HideUninstallButton = lt.Substring(26);

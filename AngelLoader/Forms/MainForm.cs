@@ -340,7 +340,6 @@ namespace AngelLoader.Forms
 
             FMsDGV.FillColumns(Config.Columns);
 
-
             #endregion
 
             #region Readme
@@ -2441,7 +2440,12 @@ namespace AngelLoader.Forms
             if (!startup)
             {
                 var oldRatingColumn = FMsDGV.Columns[(int)Column.Rating];
-                newRatingColumn.Width = newRatingColumn == RatingTextColumn ? oldRatingColumn.Width : RatingImageColumnWidth;
+                newRatingColumn.Width = newRatingColumn == RatingTextColumn
+                    ? oldRatingColumn.Width
+                    // To set the ratio back to exact on zoom reset
+                    : FMsDGV.RowTemplate.Height == 22
+                        ? RatingImageColumnWidth
+                        : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (RatingImageColumnWidth / 22);
                 newRatingColumn.Visible = oldRatingColumn.Visible;
                 newRatingColumn.DisplayIndex = oldRatingColumn.DisplayIndex;
             }

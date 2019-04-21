@@ -83,6 +83,9 @@
             this.OrganizeGamesByTabRadioButton = new System.Windows.Forms.RadioButton();
             this.SortGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.OtherTabPage = new System.Windows.Forms.TabPage();
+            this.ShowOrHideUIElementsGroupBox = new System.Windows.Forms.GroupBox();
+            this.HideFMListZoomButtonsCheckBox = new System.Windows.Forms.CheckBox();
+            this.HideUninstallButtonCheckBox = new System.Windows.Forms.CheckBox();
             this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new System.Windows.Forms.CheckBox();
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
@@ -93,7 +96,6 @@
             this.WebSearchUrlTextBox = new System.Windows.Forms.TextBox();
             this.WebSearchUrlLabel = new System.Windows.Forms.Label();
             this.UninstallingFMsGroupBox = new System.Windows.Forms.GroupBox();
-            this.HideUninstallButtonCheckBox = new System.Windows.Forms.CheckBox();
             this.ConfirmUninstallCheckBox = new System.Windows.Forms.CheckBox();
             this.WhatToBackUpLabel = new System.Windows.Forms.Label();
             this.BackupAlwaysAskCheckBox = new System.Windows.Forms.CheckBox();
@@ -105,8 +107,6 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.HideFMListZoomButtonsCheckBox = new System.Windows.Forms.CheckBox();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
@@ -121,6 +121,7 @@
             this.SortingGroupBox.SuspendLayout();
             this.GameOrganizationGroupBox.SuspendLayout();
             this.OtherTabPage.SuspendLayout();
+            this.ShowOrHideUIElementsGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
             this.LanguageGroupBox.SuspendLayout();
             this.WebSearchGroupBox.SuspendLayout();
@@ -128,7 +129,6 @@
             this.FMFileConversionGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // Thief1ExePathLabel
@@ -714,7 +714,7 @@
             // OtherTabPage
             // 
             this.OtherTabPage.BackColor = System.Drawing.SystemColors.Control;
-            this.OtherTabPage.Controls.Add(this.groupBox1);
+            this.OtherTabPage.Controls.Add(this.ShowOrHideUIElementsGroupBox);
             this.OtherTabPage.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.OtherTabPage.Controls.Add(this.LanguageGroupBox);
             this.OtherTabPage.Controls.Add(this.WebSearchGroupBox);
@@ -725,6 +725,35 @@
             this.OtherTabPage.Size = new System.Drawing.Size(874, 345);
             this.OtherTabPage.TabIndex = 2;
             this.OtherTabPage.Text = "Other";
+            // 
+            // ShowOrHideUIElementsGroupBox
+            // 
+            this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
+            this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
+            this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(440, 176);
+            this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
+            this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(424, 80);
+            this.ShowOrHideUIElementsGroupBox.TabIndex = 5;
+            this.ShowOrHideUIElementsGroupBox.TabStop = false;
+            this.ShowOrHideUIElementsGroupBox.Text = "Show or hide interface elements";
+            // 
+            // HideFMListZoomButtonsCheckBox
+            // 
+            this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
+            this.HideFMListZoomButtonsCheckBox.Name = "HideFMListZoomButtonsCheckBox";
+            this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(392, 32);
+            this.HideFMListZoomButtonsCheckBox.TabIndex = 2;
+            this.HideFMListZoomButtonsCheckBox.Text = "Hide FM list zoom buttons";
+            this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // HideUninstallButtonCheckBox
+            // 
+            this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
+            this.HideUninstallButtonCheckBox.Name = "HideUninstallButtonCheckBox";
+            this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(392, 32);
+            this.HideUninstallButtonCheckBox.TabIndex = 1;
+            this.HideUninstallButtonCheckBox.Text = "Hide \"Install / Uninstall FM\" button (like FMSel)";
+            this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
             // 
             // PlayFMOnDCOrEnterGroupBox
             // 
@@ -832,15 +861,6 @@
             this.UninstallingFMsGroupBox.TabStop = false;
             this.UninstallingFMsGroupBox.Text = "Uninstalling FMs";
             // 
-            // HideUninstallButtonCheckBox
-            // 
-            this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
-            this.HideUninstallButtonCheckBox.Name = "HideUninstallButtonCheckBox";
-            this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(392, 32);
-            this.HideUninstallButtonCheckBox.TabIndex = 1;
-            this.HideUninstallButtonCheckBox.Text = "Hide \"Install / Uninstall FM\" button (like FMSel)";
-            this.HideUninstallButtonCheckBox.UseVisualStyleBackColor = true;
-            // 
             // ConfirmUninstallCheckBox
             // 
             this.ConfirmUninstallCheckBox.AutoSize = true;
@@ -943,26 +963,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(880, 40);
             this.flowLayoutPanel1.TabIndex = 3;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.HideFMListZoomButtonsCheckBox);
-            this.groupBox1.Controls.Add(this.HideUninstallButtonCheckBox);
-            this.groupBox1.Location = new System.Drawing.Point(440, 176);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(424, 80);
-            this.groupBox1.TabIndex = 5;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Show or hide interface elements";
-            // 
-            // HideFMListZoomButtonsCheckBox
-            // 
-            this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
-            this.HideFMListZoomButtonsCheckBox.Name = "HideFMListZoomButtonsCheckBox";
-            this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(392, 32);
-            this.HideFMListZoomButtonsCheckBox.TabIndex = 2;
-            this.HideFMListZoomButtonsCheckBox.Text = "Hide FM list zoom buttons";
-            this.HideFMListZoomButtonsCheckBox.UseVisualStyleBackColor = true;
-            // 
             // SettingsForm
             // 
             this.AcceptButton = this.OKButton;
@@ -1005,6 +1005,7 @@
             this.SortingGroupBox.PerformLayout();
             this.GameOrganizationGroupBox.ResumeLayout(false);
             this.OtherTabPage.ResumeLayout(false);
+            this.ShowOrHideUIElementsGroupBox.ResumeLayout(false);
             this.PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
             this.PlayFMOnDCOrEnterGroupBox.PerformLayout();
             this.LanguageGroupBox.ResumeLayout(false);
@@ -1016,7 +1017,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1099,7 +1099,7 @@
         private System.Windows.Forms.CheckBox ConfirmUninstallCheckBox;
         private System.Windows.Forms.Label WhatToBackUpLabel;
         private System.Windows.Forms.CheckBox HideUninstallButtonCheckBox;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox ShowOrHideUIElementsGroupBox;
         private System.Windows.Forms.CheckBox HideFMListZoomButtonsCheckBox;
     }
 }

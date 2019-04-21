@@ -390,7 +390,9 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
             internal static string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
+
             [FenGenBlankLine]
+            internal static string Other_ShowOrHideInterfaceElements = "Show or hide interface elements";
             internal static string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
             internal static string Other_HideFMListZoomButtons = "Hide FM list zoom buttons";
         }

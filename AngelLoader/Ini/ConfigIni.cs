@@ -407,7 +407,7 @@ namespace AngelLoader.Ini
                         config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null);
                     }
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.RatingDisplayStyle) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.RatingUseStars) + "="))
                 {
                     config.RatingUseStars = val.EqualsTrue();
                 }
