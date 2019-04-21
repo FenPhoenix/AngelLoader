@@ -524,7 +524,7 @@ namespace AngelLoader.CustomControls
 
                 col.DisplayIndex = colData.DisplayIndex;
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
-                col.Visible = colData.Visible;
+                MakeVisible(col, colData.Visible);
 
                 ColumnHeaderCheckBoxMenuItems[(int)colData.Id].Checked = colData.Visible;
             }
