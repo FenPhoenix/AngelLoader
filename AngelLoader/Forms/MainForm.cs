@@ -28,6 +28,10 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
+        System.Windows.Forms.DataGridViewCellStyle ColumnHeadersDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+        System.Windows.Forms.DataGridViewCellStyle DefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+        System.Windows.Forms.DataGridViewCellStyle RowHeadersDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+
         private BusinessLogic Model;
 
         private FormWindowState NominalWindowState;
@@ -251,6 +255,38 @@ namespace AngelLoader.Forms
             TestButton.Hide();
             Test2Button.Hide();
 #endif
+
+            ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+            ColumnHeadersDefaultCellStyle.BackColor = SystemColors.Control;
+            DefaultCellStyle.BackColor = SystemColors.Window;
+            RowHeadersDefaultCellStyle.BackColor = SystemColors.Control;
+
+            ColumnHeadersDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            DefaultCellStyle.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            RowHeadersDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+
+            ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.WindowText;
+            DefaultCellStyle.ForeColor = SystemColors.ControlText;
+            RowHeadersDefaultCellStyle.ForeColor = SystemColors.WindowText;
+
+            ColumnHeadersDefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+            DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+            RowHeadersDefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
+
+            ColumnHeadersDefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+            DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+            RowHeadersDefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
+
+            ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            RowHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+
+            FMsDGV.ColumnHeadersDefaultCellStyle = ColumnHeadersDefaultCellStyle;
+            FMsDGV.DefaultCellStyle = DefaultCellStyle;
+            FMsDGV.RowHeadersDefaultCellStyle = RowHeadersDefaultCellStyle;
 
             AppMouseHook = Hook.AppEvents();
             AppMouseHook.MouseDownExt += HookMouseDown;
@@ -1165,6 +1201,7 @@ namespace AngelLoader.Forms
             // TODO: Set all cell styles, including image columns (cause I think they're different)
             FMsDGV.DefaultCellStyle.Font = newF;
             FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
+            //FMsDGV.RowHeadersDefaultCellStyle.Font = newF;
             FMsDGV.RowTemplate.Height = rowHeight;
 
             List<double> widthMul = new List<double>();
