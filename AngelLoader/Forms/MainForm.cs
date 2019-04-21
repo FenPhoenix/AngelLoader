@@ -77,7 +77,10 @@ namespace AngelLoader.Forms
 
         public bool EventsDisabled { get; set; }
 
+        // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
+        // middle of the operation
         private bool CellValueNeededDisabled;
+        // Needed for zooming to prevent Config column widths from being set in the zoom methods
         private bool ColumnWidthSaveDisabled;
 
         public bool KeyPressesDisabled { get; set; }
