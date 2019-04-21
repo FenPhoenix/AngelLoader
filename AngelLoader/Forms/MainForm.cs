@@ -2283,7 +2283,8 @@ namespace AngelLoader.Forms
 
                 Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
 
-                Config.FMArchivePaths = sf.OutConfig.FMArchivePaths;
+                Config.FMArchivePaths.Clear();
+                foreach (var path in sf.OutConfig.FMArchivePaths) Config.FMArchivePaths.Add(path);
                 Config.FMArchivePathsIncludeSubfolders = sf.OutConfig.FMArchivePathsIncludeSubfolders;
 
                 #endregion

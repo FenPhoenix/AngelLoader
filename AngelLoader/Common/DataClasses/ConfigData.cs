@@ -10,7 +10,7 @@ namespace AngelLoader.Common.DataClasses
     {
         #region Paths
 
-        internal List<string> FMArchivePaths = new List<string>();
+        internal readonly List<string> FMArchivePaths = new List<string>();
         internal bool FMArchivePathsIncludeSubfolders = false;
         internal string FMsBackupPath = null;
 
@@ -62,7 +62,7 @@ namespace AngelLoader.Common.DataClasses
 
         #region Columns and sorting
 
-        internal List<ColumnData> Columns = new List<ColumnData>();
+        internal readonly List<ColumnData> Columns = new List<ColumnData>();
         internal Column SortedColumn = Column.Title;
         internal SortOrder SortDirection = SortOrder.Ascending;
 
@@ -89,7 +89,7 @@ namespace AngelLoader.Common.DataClasses
         internal string Language = "English";
 
         // Session-only; don't write out
-        internal Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
+        internal readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
 
         internal SettingsTab SettingsTab = SettingsTab.Paths;
 
