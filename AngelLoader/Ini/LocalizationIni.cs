@@ -476,7 +476,19 @@ namespace AngelLoader.Ini
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("GameColumn="))
+                        if (lt.StartsWithFast_NoNullChecks("ZoomInToolTip="))
+                        {
+                            LText.FMsList.ZoomInToolTip = lt.Substring(14);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ZoomOutToolTip="))
+                        {
+                            LText.FMsList.ZoomOutToolTip = lt.Substring(15);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ResetZoomToolTip="))
+                        {
+                            LText.FMsList.ResetZoomToolTip = lt.Substring(17);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("GameColumn="))
                         {
                             LText.FMsList.GameColumn = lt.Substring(11);
                         }
@@ -1156,10 +1168,6 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Other_ConfirmBeforeUninstalling = lt.Substring(32);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_HideUninstallButton="))
-                        {
-                            LText.SettingsWindow.Other_HideUninstallButton = lt.Substring(26);
-                        }
                         else if (lt.StartsWithFast_NoNullChecks("Other_WhenUninstallingBackUp="))
                         {
                             LText.SettingsWindow.Other_WhenUninstallingBackUp = lt.Substring(29);
@@ -1203,6 +1211,14 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Other_ConfirmPlayOnDCOrEnter_Ask="))
                         {
                             LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask = lt.Substring(33);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_HideUninstallButton="))
+                        {
+                            LText.SettingsWindow.Other_HideUninstallButton = lt.Substring(26);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_HideFMListZoomButtons="))
+                        {
+                            LText.SettingsWindow.Other_HideFMListZoomButtons = lt.Substring(28);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {

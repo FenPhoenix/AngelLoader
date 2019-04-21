@@ -10,6 +10,8 @@ namespace AngelLoader.WinAPI
         internal const int WH_MOUSE = 7;
         internal const int WH_MOUSE_LL = 14;
 
+        internal const int MK_CONTROL = 8;
+
         #region Scrollbar
 
         internal const int WM_SCROLL = 276;

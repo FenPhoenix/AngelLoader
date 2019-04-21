@@ -163,6 +163,10 @@ namespace AngelLoader.Common.DataClasses
 
         internal static class FMsList
         {
+            internal static string ZoomInToolTip = "Zoom in (Ctrl++)";
+            internal static string ZoomOutToolTip = "Zoom out (Ctrl+-)";
+            internal static string ResetZoomToolTip = "Reset zoom (Ctrl-0)";
+            [FenGenBlankLine]
             internal static string GameColumn = "Game";
             internal static string InstalledColumn = "Installed";
             internal static string TitleColumn = "Title";
@@ -268,9 +272,9 @@ namespace AngelLoader.Common.DataClasses
         internal static class ReadmeArea
         {
             internal static string ViewHTMLReadme = "View HTML Readme";
-            internal static string ZoomInToolTip = "Zoom in";
-            internal static string ZoomOutToolTip = "Zoom out";
-            internal static string ResetZoomToolTip = "Reset zoom";
+            internal static string ZoomInToolTip = "Zoom in (Ctrl++)";
+            internal static string ZoomOutToolTip = "Zoom out (Ctrl+-)";
+            internal static string ResetZoomToolTip = "Reset zoom (Ctrl+0)";
             internal static string FullScreenToolTip = "Fullscreen";
             [FenGenBlankLine]
             internal static string NoReadmeFound = "No readme found.";
@@ -372,7 +376,6 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Other_UninstallingFMs = "Uninstalling FMs";
             internal static string Other_ConfirmBeforeUninstalling = "Confirm before uninstalling";
-            internal static string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
             internal static string Other_WhenUninstallingBackUp = "When uninstalling, back up:";
             internal static string Other_BackUpSavesAndScreenshotsOnly = "Saves and screenshots only";
             internal static string Other_BackUpAllChangedFiles = "All changed files";
@@ -387,6 +390,9 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
             internal static string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
+            [FenGenBlankLine]
+            internal static string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
+            internal static string Other_HideFMListZoomButtons = "Hide FM list zoom buttons";
         }
 
         internal static class DateFilterBox

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
@@ -64,6 +65,21 @@ namespace AngelLoader.Common.DataClasses
         internal List<ColumnData> Columns = new List<ColumnData>();
         internal Column SortedColumn = Column.Title;
         internal SortOrder SortDirection = SortOrder.Ascending;
+
+        private float _fMsListFontSizeInPoints = 8.25f;
+        internal float FMsListFontSizeInPoints
+        {
+            get => _fMsListFontSizeInPoints;
+            set
+            {
+                var val = value;
+                if (val < Math.Round(1.00f, 2)) val = 1.00f;
+                if (val > Math.Round(41.25f, 2)) val = 41.25f;
+                val = (float)Math.Round(val, 2);
+                _fMsListFontSizeInPoints = val;
+            }
+        }
+
         internal bool EnableArticles = true;
         internal readonly List<string> Articles = new List<string> { "a", "an", "the" };
         internal bool MoveArticlesToEnd = true;
@@ -121,7 +137,6 @@ namespace AngelLoader.Common.DataClasses
         internal bool ConvertOGGsToWAVsOnInstall = false;
 
         internal bool ConfirmUninstall = true;
-        internal bool HideUninstallButton = false;
 
         internal BackupFMData BackupFMData = BackupFMData.AllChangedFiles;
         internal bool BackupAlwaysAsk = true;
@@ -129,6 +144,14 @@ namespace AngelLoader.Common.DataClasses
         internal string WebSearchUrl = Defaults.WebSearchUrl;
 
         internal bool ConfirmPlayOnDCOrEnter = true;
+
+        #region Show/hide UI elements
+
+        internal bool HideUninstallButton = false;
+        internal bool HideFMListZoomButtons = false;
+
+        #endregion
+
 
         internal float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor

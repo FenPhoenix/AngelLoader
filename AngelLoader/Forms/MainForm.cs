@@ -34,6 +34,18 @@ namespace AngelLoader.Forms
         private Size NominalWindowSize;
         private Point NominalWindowLocation;
 
+        private float FMsListDefaultFontSizeInPoints;
+        private int FMsListDefaultRowHeight;
+
+        private enum ZoomFMsDGVType
+        {
+            ZoomIn,
+            ZoomOut,
+            ResetZoom,
+            ZoomTo,
+            ZoomToHeightOnly
+        }
+
         private List<FanMission> FMsList;
 
         // Set these beforehand and don't set autosize on any column! Or else it explodes everything because
@@ -68,6 +80,8 @@ namespace AngelLoader.Forms
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
         private bool CellValueNeededDisabled;
+        // Needed for zooming to prevent Config column widths from being set in the zoom methods
+        private bool ColumnWidthSaveDisabled;
 
         public bool KeyPressesDisabled { get; set; }
 
@@ -141,13 +155,13 @@ namespace AngelLoader.Forms
                 // needing to actually be focused. Vital for a good user experience.
                 var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
                 var hWnd = InteropMisc.WindowFromPoint(pos);
+                int wParam = (int)m.WParam;
                 if (hWnd != IntPtr.Zero && Control.FromHandle(hWnd) != null)
                 {
                     if (CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
                     {
                         // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
                         // and disappearing as appropriate
-                        int wParam = (int)m.WParam;
                         if (wParam != 0)
                         {
                             int direction = wParam > 0 ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
@@ -158,6 +172,18 @@ namespace AngelLoader.Forms
                             InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
 
                             FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = origSmallChange;
+                        }
+                    }
+                    else if (CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
+                    {
+                        var delta = wParam >> 16;
+                        if (delta > 0)
+                        {
+                            ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+                        }
+                        else if (delta < 0)
+                        {
+                            ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
                         }
                     }
                     else
@@ -228,7 +254,6 @@ namespace AngelLoader.Forms
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
         internal async Task Init()
         {
-
 #if ReleaseBeta
             var ver = typeof(MainForm).Assembly.GetName().Version;
             var verThird = ver.Build > 0 ? @"." + ver.Build : "";
@@ -264,6 +289,9 @@ namespace AngelLoader.Forms
             Model.FindFMs(startup: true);
 
             #region Set up form and control state
+
+            FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
+            FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
@@ -311,6 +339,7 @@ namespace AngelLoader.Forms
             UpdateRatingColumn(startup: true);
 
             FMsDGV.FillColumns(Config.Columns);
+
 
             #endregion
 
@@ -377,6 +406,7 @@ namespace AngelLoader.Forms
                 StatisticsTabPage;
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
+            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
             ChangeGameOrganization();
 
@@ -405,6 +435,7 @@ namespace AngelLoader.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, zoomFontSize: Config.FMsListFontSizeInPoints);
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
@@ -558,6 +589,14 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region FMs list
+
+                FMsDGV.SetUITextToLocalized();
+
+                FMsListZoomInButton.ToolTipText = LText.FMsList.ZoomInToolTip;
+                FMsListZoomOutButton.ToolTipText = LText.FMsList.ZoomOutToolTip;
+                FMsListResetZoomButton.ToolTipText = LText.FMsList.ResetZoomToolTip;
+
                 #region Columns
 
                 GameTypeColumn.HeaderText = LText.FMsList.GameColumn;
@@ -577,6 +616,7 @@ namespace AngelLoader.Forms
                 #endregion
 
                 #region FM context menu
+
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
 
                 InstallUninstallMenuItem.Text = sayInstall
@@ -609,6 +649,8 @@ namespace AngelLoader.Forms
                 FinishedOnExpertMenuItem.Text = fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert;
                 FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
                 FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown;
+
+                #endregion
 
                 #endregion
 
@@ -747,7 +789,6 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                FMsDGV.SetUITextToLocalized();
                 ProgressBox.SetUITextToLocalized();
 
                 SetFMSizesToLocalized();
@@ -854,15 +895,36 @@ namespace AngelLoader.Forms
                 }
                 else if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
                 {
-                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ZoomIn();
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ZoomIn();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+                    }
                 }
                 else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
                 {
-                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ZoomOut();
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ZoomOut();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+                    }
                 }
                 else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
                 {
-                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ResetZoomFactor();
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ResetZoomFactor();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+                    }
                 }
             }
         }
@@ -1027,7 +1089,10 @@ namespace AngelLoader.Forms
                 NominalWindowLocation,
                 mainSplitterPercent,
                 topSplitterPercent,
-                FMsDGV.ColumnsToColumnData(), FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection,
+                FMsDGV.ColumnsToColumnData(),
+                FMsDGV.CurrentSortedColumn,
+                FMsDGV.CurrentSortDirection,
+                FMsDGV.DefaultCellStyle.Font.SizeInPoints,
                 FMsDGV.Filter,
                 selectedFM,
                 FMsDGV.GameTabsState,
@@ -1116,12 +1181,15 @@ namespace AngelLoader.Forms
 
         #region Test / debug
 
-        private void TestButton_Click(object sender, EventArgs e)
+        private async void TestButton_Click(object sender, EventArgs e)
         {
+            ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
+            //ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+            ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
         }
 
         internal void SetDebugMessageText(string text)
@@ -1134,6 +1202,110 @@ namespace AngelLoader.Forms
         #endregion
 
         #region FMsDGV-related
+
+        private void ZoomFMsDGV(ZoomFMsDGVType type, float? zoomFontSize = null)
+        {
+            ColumnWidthSaveDisabled = true;
+
+            try
+            {
+                SelectedFM selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFMPosInfo() : null;
+
+                var f = FMsDGV.DefaultCellStyle.Font;
+
+                var fontSize =
+                    type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
+                    type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
+                    type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
+                    type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
+                    FMsListDefaultFontSizeInPoints;
+
+                if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
+                if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
+                fontSize = (float)Math.Round(fontSize, 2);
+
+                var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+                var rowHeight = type == ZoomFMsDGVType.ResetZoom ? FMsListDefaultRowHeight : newF.Height + 9;
+
+                var heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
+
+                // Must be done first, else we get wrong values
+                List<double> widthMul = new List<double>();
+                foreach (DataGridViewColumn c in FMsDGV.Columns)
+                {
+                    var size = c.HeaderCell.Size;
+                    widthMul.Add((double)size.Width / size.Height);
+                }
+
+                FMsDGV.DefaultCellStyle.Font = newF;
+                FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
+                FMsDGV.RowTemplate.Height = rowHeight;
+
+                int selIndex = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.SelectedRows[0].Index : -1;
+                using (new DisableEvents(this))
+                {
+                    // Force a regeneration of rows
+                    int rowCount = FMsDGV.RowCount;
+                    FMsDGV.RowCount = 0;
+                    FMsDGV.RowCount = rowCount;
+
+                    if (selIndex > -1) FMsDGV.Rows[selIndex].Selected = true;
+
+                    for (var i = 0; i < FMsDGV.Columns.Count; i++)
+                    {
+                        DataGridViewColumn c = FMsDGV.Columns[i];
+
+                        var reset = type == ZoomFMsDGVType.ResetZoom;
+                        if (c != RatingImageColumn && c != FinishedColumn)
+                        {
+                            c.MinimumWidth = reset ? Defaults.MinColumnWidth : rowHeight + 3;
+                        }
+
+                        if (heightOnly)
+                        {
+                            if (c == RatingImageColumn || c == FinishedColumn)
+                            {
+                                c.Width = (int)Math.Round(c.HeaderCell.Size.Height * widthMul[i]);
+                            }
+                        }
+                        else
+                        {
+                            if (reset && c == RatingImageColumn)
+                            {
+                                c.Width = RatingImageColumnWidth;
+                            }
+                            else if (reset && c == FinishedColumn)
+                            {
+                                c.Width = FinishedColumnWidth;
+                            }
+                            else
+                            {
+                                c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - FMsListDefaultFontSizeInPoints) < 0.1
+                                    ? Config.Columns[i].Width
+                                    : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
+                            }
+                        }
+                    }
+                }
+                if (selIndex > -1 && selFM != null)
+                {
+                    try
+                    {
+                        FMsDGV.FirstDisplayedScrollingRowIndex =
+                            (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
+                            .Clamp(0, FMsDGV.RowCount - 1);
+                    }
+                    catch (Exception)
+                    {
+                        // no room is available to display rows
+                    }
+                }
+            }
+            finally
+            {
+                ColumnWidthSaveDisabled = false;
+            }
+        }
 
         private async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
@@ -1822,14 +1994,12 @@ namespace AngelLoader.Forms
         {
             if ((e.KeyChar >= 65 && e.KeyChar <= 90) || (e.KeyChar >= 97 && e.KeyChar <= 122))
             {
-                var s = FMsDGV;
-
                 var rowIndex = FindRowIndex(e.KeyChar);
 
                 if (rowIndex > -1)
                 {
-                    s.Rows[rowIndex].Selected = true;
-                    s.FirstDisplayedScrollingRowIndex = s.SelectedRows[0].Index;
+                    FMsDGV.Rows[rowIndex].Selected = true;
+                    FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.SelectedRows[0].Index;
                 }
             }
         }
@@ -2137,7 +2307,6 @@ namespace AngelLoader.Forms
                 Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
 
                 Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
-                Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
 
                 Config.BackupFMData = sf.OutConfig.BackupFMData;
                 Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
@@ -2147,6 +2316,9 @@ namespace AngelLoader.Forms
                 Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
 
                 Config.ConfirmPlayOnDCOrEnter = sf.OutConfig.ConfirmPlayOnDCOrEnter;
+
+                Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
+                Config.HideFMListZoomButtons = sf.OutConfig.HideFMListZoomButtons;
 
                 #endregion
 
@@ -2159,6 +2331,7 @@ namespace AngelLoader.Forms
                 #region Change-specific actions (pre-refresh)
 
                 InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
+                ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
                 if (archivePathsChanged || gamePathsChanged)
                 {
@@ -2211,6 +2384,14 @@ namespace AngelLoader.Forms
             }
 
             return true;
+        }
+
+        private void ShowFMsListZoomButtons(bool visible)
+        {
+            FMsListZoomInButton.Visible = visible;
+            FMsListZoomOutButton.Visible = visible;
+            FMsListResetZoomButton.Visible = visible;
+            FiltersFlowLayoutPanel.Width = (RefreshClearToolStripCustom.Location.X - 4) - FiltersFlowLayoutPanel.Location.X;
         }
 
         private void UpdateRatingLists(bool fmSelStyle)
@@ -2299,7 +2480,6 @@ namespace AngelLoader.Forms
         internal async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false)
         {
-
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
                 // A small but measurable perf increase from this. Also prevents flickering when switching game
@@ -3853,6 +4033,8 @@ namespace AngelLoader.Forms
 
         private void SetFilterBarScrollButtons()
         {
+            if (EventsDisabled) return;
+
             var flp = FiltersFlowLayoutPanel;
             void ShowLeft()
             {
@@ -3882,11 +4064,29 @@ namespace AngelLoader.Forms
             {
                 ShowRight();
                 FilterBarScrollLeftButton.Hide();
+                using (new DisableEvents(this))
+                {
+                    // Disgusting! But necessary to patch up heisenbuggy behavior with this crap. This is really
+                    // bad in general anyway, but how else am I supposed to have show-and-hide scroll buttons with
+                    // WinForms? Argh!
+                    for (int i = 0; i < 8; i++)
+                    {
+                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINELEFT, IntPtr.Zero);
+                    }
+                }
             }
             else if (hs.Value >= (hs.Maximum + 1) - hs.LargeChange)
             {
                 ShowLeft();
                 FilterBarScrollRightButton.Hide();
+                using (new DisableEvents(this))
+                {
+                    // Ditto the above
+                    for (int i = 0; i < 8; i++)
+                    {
+                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINERIGHT, IntPtr.Zero);
+                    }
+                }
             }
             else
             {
@@ -4293,5 +4493,20 @@ namespace AngelLoader.Forms
             Model.FindFMs();
             await SortAndSetFilter();
         }
+
+        private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (ColumnWidthSaveDisabled) return;
+
+            if (Config.Columns.Count == 0) return;
+            //Trace.WriteLine(e.Column.Index.ToString());
+            Config.Columns[e.Column.Index].Width = e.Column.Width;
+        }
+
+        private void FMsListZoomInButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+
+        private void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+
+        private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
     }
 }

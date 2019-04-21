@@ -223,7 +223,6 @@ namespace AngelLoader.Forms
             #region Uninstalling FMs
 
             ConfirmUninstallCheckBox.Checked = InConfig.ConfirmUninstall;
-            HideUninstallButtonCheckBox.Checked = InConfig.HideUninstallButton;
 
             switch (InConfig.BackupFMData)
             {
@@ -274,6 +273,13 @@ namespace AngelLoader.Forms
             WebSearchUrlTextBox.Text = InConfig.WebSearchUrl;
 
             ConfirmPlayOnDCOrEnterCheckBox.Checked = InConfig.ConfirmPlayOnDCOrEnter;
+
+            #region Show/hide UI elements
+
+            HideUninstallButtonCheckBox.Checked = InConfig.HideUninstallButton;
+            HideFMListZoomButtonsCheckBox.Checked = InConfig.HideFMListZoomButtons;
+
+            #endregion
 
             SetUITextToLocalized();
         }
@@ -360,7 +366,6 @@ namespace AngelLoader.Forms
 
                 UninstallingFMsGroupBox.Text = LText.SettingsWindow.Other_UninstallingFMs;
                 ConfirmUninstallCheckBox.Text = LText.SettingsWindow.Other_ConfirmBeforeUninstalling;
-                HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Other_HideUninstallButton;
                 WhatToBackUpLabel.Text = LText.SettingsWindow.Other_WhenUninstallingBackUp;
                 BackupSavesAndScreensOnlyRadioButton.Text = LText.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly;
                 BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
@@ -375,6 +380,9 @@ namespace AngelLoader.Forms
 
                 PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
                 ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
+
+                HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Other_HideUninstallButton;
+                HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Other_HideFMListZoomButtons;
 
                 #endregion
             }
@@ -581,7 +589,6 @@ namespace AngelLoader.Forms
             #region Uninstalling FMs
 
             OutConfig.ConfirmUninstall = ConfirmUninstallCheckBox.Checked;
-            OutConfig.HideUninstallButton = HideUninstallButtonCheckBox.Checked;
 
             OutConfig.BackupFMData = BackupSavesAndScreensOnlyRadioButton.Checked
                 ? BackupFMData.SavesAndScreensOnly
@@ -596,6 +603,13 @@ namespace AngelLoader.Forms
             OutConfig.WebSearchUrl = WebSearchUrlTextBox.Text;
 
             OutConfig.ConfirmPlayOnDCOrEnter = ConfirmPlayOnDCOrEnterCheckBox.Checked;
+
+            #region Show/hide UI elements
+
+            OutConfig.HideUninstallButton = HideUninstallButtonCheckBox.Checked;
+            OutConfig.HideFMListZoomButtons = HideFMListZoomButtonsCheckBox.Checked;
+
+            #endregion
         }
 
         #endregion

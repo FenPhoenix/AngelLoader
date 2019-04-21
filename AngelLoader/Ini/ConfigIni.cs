@@ -392,6 +392,13 @@ namespace AngelLoader.Ini
                         config.SortedColumn = (Column)field.GetValue(null);
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.FMsListFontSizeInPoints) + "="))
+                {
+                    if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
+                    {
+                        config.FMsListFontSizeInPoints = result;
+                    }
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.RatingDisplayStyle) + "="))
                 {
                     var field = typeof(RatingDisplayStyle).GetField(val, BFlagsEnum);
@@ -622,6 +629,10 @@ namespace AngelLoader.Ini
                 {
                     config.HideUninstallButton = val.EqualsTrue();
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.HideFMListZoomButtons) + "="))
+                {
+                    config.HideFMListZoomButtons = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ConfirmUninstall) + "="))
                 {
                     config.ConfirmUninstall = val.EqualsTrue();
@@ -760,6 +771,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.ConvertWAVsTo16BitOnInstall) + "=" + config.ConvertWAVsTo16BitOnInstall);
                 sw.WriteLine(nameof(config.ConvertOGGsToWAVsOnInstall) + "=" + config.ConvertOGGsToWAVsOnInstall);
                 sw.WriteLine(nameof(config.HideUninstallButton) + "=" + config.HideUninstallButton);
+                sw.WriteLine(nameof(config.HideFMListZoomButtons) + "=" + config.HideFMListZoomButtons);
                 sw.WriteLine(nameof(config.ConfirmUninstall) + "=" + config.ConfirmUninstall);
                 sw.WriteLine(nameof(config.BackupFMData) + "=" + config.BackupFMData);
                 sw.WriteLine(nameof(config.BackupAlwaysAsk) + "=" + config.BackupAlwaysAsk);
@@ -845,6 +857,7 @@ namespace AngelLoader.Ini
 
                 sw.WriteLine(nameof(config.SortedColumn) + "=" + config.SortedColumn);
                 sw.WriteLine(nameof(config.SortDirection) + "=" + config.SortDirection);
+                sw.WriteLine(nameof(config.FMsListFontSizeInPoints) + "=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
                 foreach (var col in config.Columns)
                 {

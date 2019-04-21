@@ -2566,7 +2566,10 @@ namespace AngelLoader
             Point mainWindowLocation,
             float mainSplitterPercent,
             float topSplitterPercent,
-            List<ColumnData> columns, int sortedColumn, SortOrder sortDirection,
+            List<ColumnData> columns,
+            int sortedColumn,
+            SortOrder sortDirection, 
+            float fmsListFontSizeInPoints,
             Filter filter,
             SelectedFM selectedFM,
             GameTabsState gameTabsState,
@@ -2587,6 +2590,8 @@ namespace AngelLoader
 
             Config.SortedColumn = (Column)sortedColumn;
             Config.SortDirection = sortDirection;
+
+            Config.FMsListFontSizeInPoints = fmsListFontSizeInPoints;
 
             filter.DeepCopyTo(Config.Filter);
 
