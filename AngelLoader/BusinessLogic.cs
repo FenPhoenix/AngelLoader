@@ -934,12 +934,13 @@ namespace AngelLoader
 
                         if (gameSup)
                         {
-                            sel.AltTitles = new List<string> { sel.Title };
+                            sel.AltTitles.Clear();
+                            sel.AltTitles.Add(sel.Title);
                             sel.AltTitles.AddRange(scannedFM.AlternateTitles);
                         }
                         else
                         {
-                            sel.AltTitles = new List<string>();
+                            sel.AltTitles.Clear();
                         }
                     }
 
@@ -2568,7 +2569,7 @@ namespace AngelLoader
             float topSplitterPercent,
             List<ColumnData> columns,
             int sortedColumn,
-            SortOrder sortDirection, 
+            SortOrder sortDirection,
             float fmsListFontSizeInPoints,
             Filter filter,
             SelectedFM selectedFM,

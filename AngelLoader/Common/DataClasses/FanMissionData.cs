@@ -31,7 +31,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal string Title = "";
         // [FenGen:ListType=MultipleLines]
-        internal List<string> AltTitles = new List<string>();
+        internal readonly List<string> AltTitles = new List<string>();
 
         internal string Author = "";
 

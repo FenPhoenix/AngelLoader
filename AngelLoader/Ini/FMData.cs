@@ -64,10 +64,6 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("AltTitles="))
                 {
                     var val = lineT.Substring(10);
-                    if (fm.AltTitles == null)
-                    {
-                        fm.AltTitles = new List<string>();
-                    }
                     if (!string.IsNullOrEmpty(val))
                     {
                         fm.AltTitles.Add(val);
