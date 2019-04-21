@@ -376,7 +376,6 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Other_UninstallingFMs = "Uninstalling FMs";
             internal static string Other_ConfirmBeforeUninstalling = "Confirm before uninstalling";
-            internal static string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
             internal static string Other_WhenUninstallingBackUp = "When uninstalling, back up:";
             internal static string Other_BackUpSavesAndScreenshotsOnly = "Saves and screenshots only";
             internal static string Other_BackUpAllChangedFiles = "All changed files";
@@ -391,6 +390,9 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string Other_ConfirmPlayOnDCOrEnter = "Play FM on double-click / Enter";
             internal static string Other_ConfirmPlayOnDCOrEnter_Ask = "Ask for confirmation";
+            [FenGenBlankLine]
+            internal static string Other_HideUninstallButton = "Hide \"Install / Uninstall FM\" button (like FMSel)";
+            internal static string Other_HideFMListZoomButtons = "Hide FM list zoom buttons";
         }
 
         internal static class DateFilterBox

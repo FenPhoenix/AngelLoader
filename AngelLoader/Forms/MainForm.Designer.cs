@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InstallUninstallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,8 +90,11 @@
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.RefreshClearToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
-            this.RefreshFromDiskButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FMsListZoomInButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FMsListZoomOutButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FMsListResetZoomButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparatorCustom4 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.RefreshFromDiskButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.ClearFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparatorCustom3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
@@ -223,9 +226,6 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
-            this.FMsListResetZoomButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FMsListZoomOutButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FMsListZoomInButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -873,6 +873,49 @@
             this.RefreshClearToolStripCustom.Size = new System.Drawing.Size(169, 26);
             this.RefreshClearToolStripCustom.TabIndex = 12;
             // 
+            // FMsListZoomInButton
+            // 
+            this.FMsListZoomInButton.AutoSize = false;
+            this.FMsListZoomInButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FMsListZoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FMsListZoomInButton.Image = global::AngelLoader.Properties.Resources.ZoomIn;
+            this.FMsListZoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FMsListZoomInButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FMsListZoomInButton.Name = "FMsListZoomInButton";
+            this.FMsListZoomInButton.Size = new System.Drawing.Size(25, 25);
+            this.FMsListZoomInButton.Click += new System.EventHandler(this.FMsListZoomInButton_Click);
+            // 
+            // FMsListZoomOutButton
+            // 
+            this.FMsListZoomOutButton.AutoSize = false;
+            this.FMsListZoomOutButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FMsListZoomOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FMsListZoomOutButton.Image = global::AngelLoader.Properties.Resources.ZoomOut;
+            this.FMsListZoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FMsListZoomOutButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FMsListZoomOutButton.Name = "FMsListZoomOutButton";
+            this.FMsListZoomOutButton.Size = new System.Drawing.Size(25, 25);
+            this.FMsListZoomOutButton.Click += new System.EventHandler(this.FMsListZoomOutButton_Click);
+            // 
+            // FMsListResetZoomButton
+            // 
+            this.FMsListResetZoomButton.AutoSize = false;
+            this.FMsListResetZoomButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FMsListResetZoomButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FMsListResetZoomButton.Image = global::AngelLoader.Properties.Resources.ZoomReset;
+            this.FMsListResetZoomButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FMsListResetZoomButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FMsListResetZoomButton.Name = "FMsListResetZoomButton";
+            this.FMsListResetZoomButton.Size = new System.Drawing.Size(25, 25);
+            this.FMsListResetZoomButton.Click += new System.EventHandler(this.FMsListResetZoomButton_Click);
+            // 
+            // toolStripSeparatorCustom4
+            // 
+            this.toolStripSeparatorCustom4.AutoSize = false;
+            this.toolStripSeparatorCustom4.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripSeparatorCustom4.Name = "toolStripSeparatorCustom4";
+            this.toolStripSeparatorCustom4.Size = new System.Drawing.Size(6, 26);
+            // 
             // RefreshFromDiskButton
             // 
             this.RefreshFromDiskButton.AutoSize = false;
@@ -885,13 +928,6 @@
             this.RefreshFromDiskButton.Size = new System.Drawing.Size(25, 25);
             this.RefreshFromDiskButton.ToolTipText = "Refresh from disk";
             this.RefreshFromDiskButton.Click += new System.EventHandler(this.RefreshFromDiskButton_Click);
-            // 
-            // toolStripSeparatorCustom4
-            // 
-            this.toolStripSeparatorCustom4.AutoSize = false;
-            this.toolStripSeparatorCustom4.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.toolStripSeparatorCustom4.Name = "toolStripSeparatorCustom4";
-            this.toolStripSeparatorCustom4.Size = new System.Drawing.Size(6, 26);
             // 
             // RefreshFiltersButton
             // 
@@ -984,14 +1020,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -1007,26 +1043,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -2435,42 +2471,6 @@
             this.ProgressBox.Size = new System.Drawing.Size(424, 128);
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
-            // 
-            // FMsListResetZoomButton
-            // 
-            this.FMsListResetZoomButton.AutoSize = false;
-            this.FMsListResetZoomButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FMsListResetZoomButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FMsListResetZoomButton.Image = global::AngelLoader.Properties.Resources.ZoomReset;
-            this.FMsListResetZoomButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FMsListResetZoomButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FMsListResetZoomButton.Name = "FMsListResetZoomButton";
-            this.FMsListResetZoomButton.Size = new System.Drawing.Size(25, 25);
-            this.FMsListResetZoomButton.Click += new System.EventHandler(this.FMsListResetZoomButton_Click);
-            // 
-            // FMsListZoomOutButton
-            // 
-            this.FMsListZoomOutButton.AutoSize = false;
-            this.FMsListZoomOutButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FMsListZoomOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FMsListZoomOutButton.Image = global::AngelLoader.Properties.Resources.ZoomOut;
-            this.FMsListZoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FMsListZoomOutButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FMsListZoomOutButton.Name = "FMsListZoomOutButton";
-            this.FMsListZoomOutButton.Size = new System.Drawing.Size(25, 25);
-            this.FMsListZoomOutButton.Click += new System.EventHandler(this.FMsListZoomOutButton_Click);
-            // 
-            // FMsListZoomInButton
-            // 
-            this.FMsListZoomInButton.AutoSize = false;
-            this.FMsListZoomInButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FMsListZoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FMsListZoomInButton.Image = global::AngelLoader.Properties.Resources.ZoomIn;
-            this.FMsListZoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FMsListZoomInButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FMsListZoomInButton.Name = "FMsListZoomInButton";
-            this.FMsListZoomInButton.Size = new System.Drawing.Size(25, 25);
-            this.FMsListZoomInButton.Click += new System.EventHandler(this.FMsListZoomInButton_Click);
             // 
             // MainForm
             // 

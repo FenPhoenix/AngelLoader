@@ -293,7 +293,6 @@ namespace AngelLoader.Forms
             FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
-
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
 
@@ -407,6 +406,7 @@ namespace AngelLoader.Forms
                 StatisticsTabPage;
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
+            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
             ChangeGameOrganization();
 
@@ -849,10 +849,6 @@ namespace AngelLoader.Forms
 
             if (ProgressBox.Visible) ProgressBox.Center();
             if (AddTagListBox.Visible) HideAddTagDropDown();
-
-            var hs = FiltersFlowLayoutPanel.HorizontalScroll;
-
-            DebugLabel2.Text = hs.Value.ToString();
 
             SetFilterBarScrollButtons();
         }
@@ -2311,7 +2307,6 @@ namespace AngelLoader.Forms
                 Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
 
                 Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
-                Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
 
                 Config.BackupFMData = sf.OutConfig.BackupFMData;
                 Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
@@ -2321,6 +2316,9 @@ namespace AngelLoader.Forms
                 Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
 
                 Config.ConfirmPlayOnDCOrEnter = sf.OutConfig.ConfirmPlayOnDCOrEnter;
+
+                Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
+                Config.HideFMListZoomButtons = sf.OutConfig.HideFMListZoomButtons;
 
                 #endregion
 
@@ -2333,6 +2331,7 @@ namespace AngelLoader.Forms
                 #region Change-specific actions (pre-refresh)
 
                 InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
+                ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
                 if (archivePathsChanged || gamePathsChanged)
                 {
@@ -2385,6 +2384,14 @@ namespace AngelLoader.Forms
             }
 
             return true;
+        }
+
+        private void ShowFMsListZoomButtons(bool visible)
+        {
+            FMsListZoomInButton.Visible = visible;
+            FMsListZoomOutButton.Visible = visible;
+            FMsListResetZoomButton.Visible = visible;
+            FiltersFlowLayoutPanel.Width = (RefreshClearToolStripCustom.Location.X - 4) - FiltersFlowLayoutPanel.Location.X;
         }
 
         private void UpdateRatingLists(bool fmSelStyle)
@@ -4026,6 +4033,8 @@ namespace AngelLoader.Forms
 
         private void SetFilterBarScrollButtons()
         {
+            if (EventsDisabled) return;
+
             var flp = FiltersFlowLayoutPanel;
             void ShowLeft()
             {
@@ -4044,7 +4053,6 @@ namespace AngelLoader.Forms
             }
 
             var hs = FiltersFlowLayoutPanel.HorizontalScroll;
-            //DebugLabel2.Text = hs.Value.ToString();
             if (!hs.Visible)
             {
                 FilterBarScrollLeftButton.Hide();
@@ -4056,11 +4064,29 @@ namespace AngelLoader.Forms
             {
                 ShowRight();
                 FilterBarScrollLeftButton.Hide();
+                using (new DisableEvents(this))
+                {
+                    // Disgusting! But necessary to patch up heisenbuggy behavior with this crap. This is really
+                    // bad in general anyway, but how else am I supposed to have show-and-hide scroll buttons with
+                    // WinForms? Argh!
+                    for (int i = 0; i < 8; i++)
+                    {
+                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINELEFT, IntPtr.Zero);
+                    }
+                }
             }
             else if (hs.Value >= (hs.Maximum + 1) - hs.LargeChange)
             {
                 ShowLeft();
                 FilterBarScrollRightButton.Hide();
+                using (new DisableEvents(this))
+                {
+                    // Ditto the above
+                    for (int i = 0; i < 8; i++)
+                    {
+                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINERIGHT, IntPtr.Zero);
+                    }
+                }
             }
             else
             {

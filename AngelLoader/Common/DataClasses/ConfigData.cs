@@ -137,7 +137,6 @@ namespace AngelLoader.Common.DataClasses
         internal bool ConvertOGGsToWAVsOnInstall = false;
 
         internal bool ConfirmUninstall = true;
-        internal bool HideUninstallButton = false;
 
         internal BackupFMData BackupFMData = BackupFMData.AllChangedFiles;
         internal bool BackupAlwaysAsk = true;
@@ -145,6 +144,14 @@ namespace AngelLoader.Common.DataClasses
         internal string WebSearchUrl = Defaults.WebSearchUrl;
 
         internal bool ConfirmPlayOnDCOrEnter = true;
+
+        #region Show/hide UI elements
+
+        internal bool HideUninstallButton = false;
+        internal bool HideFMListZoomButtons = false;
+
+        #endregion
+
 
         internal float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor
