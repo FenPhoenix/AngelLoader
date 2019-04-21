@@ -419,6 +419,14 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
+        private static void MakeVisible(DataGridViewColumn column, bool visible)
+        {
+            column.Visible = visible;
+            // Fix for zero-height glitch when Rating column gets swapped out when all columns are hidden
+            column.Width = column.Width + 1;
+            column.Width = column.Width - 1;
+        }
+
         #region Column header context menu
 
         private void ResetPropertyOnAllColumns(ColumnProperties property)
@@ -429,7 +437,7 @@ namespace AngelLoader.CustomControls
                 switch (property)
                 {
                     case ColumnProperties.Visible:
-                        c.Visible = true;
+                        MakeVisible(c, true);
                         break;
                     case ColumnProperties.DisplayIndex:
                         c.DisplayIndex = c.Index;
@@ -462,7 +470,7 @@ namespace AngelLoader.CustomControls
         {
             var s = (ToolStripMenuItem)sender;
 
-            Columns[(int)s.Tag].Visible = s.Checked;
+            MakeVisible(Columns[(int)s.Tag], s.Checked);
         }
 
         #endregion
@@ -516,7 +524,7 @@ namespace AngelLoader.CustomControls
 
                 col.DisplayIndex = colData.DisplayIndex;
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
-                col.Visible = colData.Visible;
+                MakeVisible(col, colData.Visible);
 
                 ColumnHeaderCheckBoxMenuItems[(int)colData.Id].Checked = colData.Visible;
             }
