@@ -476,7 +476,19 @@ namespace AngelLoader.Ini
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("GameColumn="))
+                        if (lt.StartsWithFast_NoNullChecks("ZoomInToolTip="))
+                        {
+                            LText.FMsList.ZoomInToolTip = lt.Substring(14);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ZoomOutToolTip="))
+                        {
+                            LText.FMsList.ZoomOutToolTip = lt.Substring(15);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ResetZoomToolTip="))
+                        {
+                            LText.FMsList.ResetZoomToolTip = lt.Substring(17);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("GameColumn="))
                         {
                             LText.FMsList.GameColumn = lt.Substring(11);
                         }

@@ -155,13 +155,13 @@ namespace AngelLoader.Forms
                 // needing to actually be focused. Vital for a good user experience.
                 var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
                 var hWnd = InteropMisc.WindowFromPoint(pos);
+                int wParam = (int)m.WParam;
                 if (hWnd != IntPtr.Zero && Control.FromHandle(hWnd) != null)
                 {
                     if (CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
                     {
                         // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
                         // and disappearing as appropriate
-                        int wParam = (int)m.WParam;
                         if (wParam != 0)
                         {
                             int direction = wParam > 0 ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
@@ -172,6 +172,18 @@ namespace AngelLoader.Forms
                             InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
 
                             FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = origSmallChange;
+                        }
+                    }
+                    else if (CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
+                    {
+                        var delta = wParam >> 16;
+                        if (delta > 0)
+                        {
+                            ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+                        }
+                        else if (delta < 0)
+                        {
+                            ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
                         }
                     }
                     else
@@ -577,6 +589,14 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region FMs list
+
+                FMsDGV.SetUITextToLocalized();
+
+                FMsListZoomInButton.ToolTipText = LText.FMsList.ZoomInToolTip;
+                FMsListZoomOutButton.ToolTipText = LText.FMsList.ZoomOutToolTip;
+                FMsListResetZoomButton.ToolTipText = LText.FMsList.ResetZoomToolTip;
+
                 #region Columns
 
                 GameTypeColumn.HeaderText = LText.FMsList.GameColumn;
@@ -596,6 +616,7 @@ namespace AngelLoader.Forms
                 #endregion
 
                 #region FM context menu
+
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
 
                 InstallUninstallMenuItem.Text = sayInstall
@@ -628,6 +649,8 @@ namespace AngelLoader.Forms
                 FinishedOnExpertMenuItem.Text = fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert;
                 FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
                 FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown;
+
+                #endregion
 
                 #endregion
 
@@ -766,7 +789,6 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                FMsDGV.SetUITextToLocalized();
                 ProgressBox.SetUITextToLocalized();
 
                 SetFMSizesToLocalized();
@@ -873,15 +895,36 @@ namespace AngelLoader.Forms
                 }
                 else if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
                 {
-                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ZoomIn();
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ZoomIn();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+                    }
                 }
                 else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
                 {
-                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ZoomOut();
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ZoomOut();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+                    }
                 }
                 else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
                 {
-                    if (ReadmeRichTextBox.Focused || CursorOverReadmeArea()) ReadmeRichTextBox.ResetZoomFactor();
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ResetZoomFactor();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+                    }
                 }
             }
         }
@@ -4428,5 +4471,11 @@ namespace AngelLoader.Forms
             //Trace.WriteLine(e.Column.Index.ToString());
             Config.Columns[e.Column.Index].Width = e.Column.Width;
         }
+
+        private void FMsListZoomInButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+
+        private void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+
+        private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
     }
 }

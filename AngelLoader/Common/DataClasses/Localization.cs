@@ -163,6 +163,10 @@ namespace AngelLoader.Common.DataClasses
 
         internal static class FMsList
         {
+            internal static string ZoomInToolTip = "Zoom in (Ctrl++)";
+            internal static string ZoomOutToolTip = "Zoom out (Ctrl+-)";
+            internal static string ResetZoomToolTip = "Reset zoom (Ctrl-0)";
+            [FenGenBlankLine]
             internal static string GameColumn = "Game";
             internal static string InstalledColumn = "Installed";
             internal static string TitleColumn = "Title";
@@ -268,9 +272,9 @@ namespace AngelLoader.Common.DataClasses
         internal static class ReadmeArea
         {
             internal static string ViewHTMLReadme = "View HTML Readme";
-            internal static string ZoomInToolTip = "Zoom in";
-            internal static string ZoomOutToolTip = "Zoom out";
-            internal static string ResetZoomToolTip = "Reset zoom";
+            internal static string ZoomInToolTip = "Zoom in (Ctrl++)";
+            internal static string ZoomOutToolTip = "Zoom out (Ctrl+-)";
+            internal static string ResetZoomToolTip = "Reset zoom (Ctrl+0)";
             internal static string FullScreenToolTip = "Fullscreen";
             [FenGenBlankLine]
             internal static string NoReadmeFound = "No readme found.";
