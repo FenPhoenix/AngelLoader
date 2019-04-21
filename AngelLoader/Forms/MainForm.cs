@@ -34,6 +34,16 @@ namespace AngelLoader.Forms
         private Size NominalWindowSize;
         private Point NominalWindowLocation;
 
+        private float FMsListDefaultFontSizeInPoints;
+        private float FMsListDefaultRowHeight;
+
+        private enum ZoomFMsDGVType
+        {
+            ZoomIn,
+            ZoomOut,
+            ResetZoom
+        }
+
         private List<FanMission> FMsList;
 
         // Set these beforehand and don't set autosize on any column! Or else it explodes everything because
@@ -64,6 +74,8 @@ namespace AngelLoader.Forms
         private bool InitialSelectedFMHasBeenSet;
 
         public bool EventsDisabled { get; set; }
+
+        private bool CellValueNeededDisabled;
 
         public bool KeyPressesDisabled { get; set; }
 
@@ -224,7 +236,6 @@ namespace AngelLoader.Forms
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
         internal async Task Init()
         {
-
 #if ReleaseBeta
             var ver = typeof(MainForm).Assembly.GetName().Version;
             var verThird = ver.Build > 0 ? @"." + ver.Build : "";
@@ -261,6 +272,9 @@ namespace AngelLoader.Forms
 
             #region Set up form and control state
 
+            FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
+            FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
+
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
 
@@ -295,7 +309,7 @@ namespace AngelLoader.Forms
             {
                 HeaderText = LText.FMsList.RatingColumn,
                 ImageLayout = DataGridViewImageCellLayout.Zoom,
-                MinimumWidth = 25,
+                MinimumWidth = Defaults.MinColumnWidth,
                 Name = "RatingImageColumn",
                 ReadOnly = true,
                 Width = RatingImageColumnWidth,
@@ -1114,34 +1128,13 @@ namespace AngelLoader.Forms
 
         private async void TestButton_Click(object sender, EventArgs e)
         {
-            var f = FMsDGV.DefaultCellStyle.Font;
-            var newF = new Font(f.FontFamily, f.SizeInPoints + 1.0f, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
-            FMsDGV.DefaultCellStyle.Font = newF;
-            //FMsDGV.Rows[0].Height = 50;
-            var h = newF.Height;
-            FMsDGV.RowTemplate.Height = h + 9;
-
-
-            InitialSelectedFMHasBeenSet = false;
-            FMsDGV.RowCount = 0;
-            await RefreshFMsList(refreshReadme: false, suppressSelectionChangedEvent: true);
-            //await SetFilter();
-
-            //FMsDGV.SuspendDrawing();
-
-            //for (var i = 0; i < FMsDGV.Rows.Count; i++)
-            //{
-            //    var r = FMsDGV.Rows[i];
-            //    //r.Height = 50;
-            //}
-            //FMsDGV.ResumeDrawing();
-
-            //RefreshFMsListKeepSelection();
-            //FMsDGV.Refresh();
+            ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
+            ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+            //ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
         }
 
         internal void SetDebugMessageText(string text)
@@ -1154,6 +1147,65 @@ namespace AngelLoader.Forms
         #endregion
 
         #region FMsDGV-related
+
+        private void ZoomFMsDGV(ZoomFMsDGVType type)
+        {
+            SelectedFM selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFMPosInfo() : null;
+
+            var f = FMsDGV.DefaultCellStyle.Font;
+
+            var fontSize =
+                type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
+                type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
+                FMsListDefaultFontSizeInPoints;
+
+            var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+            var rowHeight = newF.Height + 9;
+
+            // TODO: Set all cell styles, including image columns (cause I think they're different)
+            FMsDGV.DefaultCellStyle.Font = newF;
+            FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
+            FMsDGV.RowTemplate.Height = rowHeight;
+
+            List<double> widthMul = new List<double>();
+
+            foreach (DataGridViewColumn c in FMsDGV.Columns)
+            {
+                var size = c.HeaderCell.Size;
+                widthMul.Add((double)size.Width / size.Height);
+            }
+
+            int selIndex = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.SelectedRows[0].Index : -1;
+            using (new DisableEvents(this))
+            {
+                // Force a regeneration of rows
+                int rowCount = FMsDGV.RowCount;
+                FMsDGV.RowCount = 0;
+                FMsDGV.RowCount = rowCount;
+
+                if (selIndex > -1) FMsDGV.Rows[selIndex].Selected = true;
+
+                for (var i = 0; i < FMsDGV.Columns.Count; i++)
+                {
+                    DataGridViewColumn c = FMsDGV.Columns[i];
+                    c.MinimumWidth = rowHeight + 3;
+                    c.Width = (int)(c.HeaderCell.Size.Height * widthMul[i]);
+                }
+            }
+            if (selIndex > -1 && selFM != null)
+            {
+                try
+                {
+                    FMsDGV.FirstDisplayedScrollingRowIndex =
+                        (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
+                        .Clamp(0, FMsDGV.RowCount - 1);
+                }
+                catch (Exception)
+                {
+                    // no room is available to display rows
+                }
+            }
+        }
 
         private async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
@@ -1562,6 +1614,8 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
         {
+            if (CellValueNeededDisabled) return;
+
             // Lazy-load these in an attempt to save some kind of startup time
             Thief1Icon = Resources.Thief1_21;
             Thief2Icon = Resources.Thief2_21;
@@ -1662,6 +1716,8 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
+            if (CellValueNeededDisabled) return;
+
             if (FMsDGV.Filtered && FMsDGV.FilterShownIndexList.Count == 0) return;
 
             var fm = GetFMFromIndex(e.RowIndex);
@@ -1838,14 +1894,12 @@ namespace AngelLoader.Forms
         {
             if ((e.KeyChar >= 65 && e.KeyChar <= 90) || (e.KeyChar >= 97 && e.KeyChar <= 122))
             {
-                var s = FMsDGV;
-
                 var rowIndex = FindRowIndex(e.KeyChar);
 
                 if (rowIndex > -1)
                 {
-                    s.Rows[rowIndex].Selected = true;
-                    s.FirstDisplayedScrollingRowIndex = s.SelectedRows[0].Index;
+                    FMsDGV.Rows[rowIndex].Selected = true;
+                    FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.SelectedRows[0].Index;
                 }
             }
         }
@@ -2260,8 +2314,19 @@ namespace AngelLoader.Forms
 
             if (!startup || newRatingColumn != RatingTextColumn)
             {
-                FMsDGV.Columns.RemoveAt((int)Column.Rating);
-                FMsDGV.Columns.Insert((int)Column.Rating, newRatingColumn);
+                using (new DisableEvents(this))
+                {
+                    CellValueNeededDisabled = true;
+                    try
+                    {
+                        FMsDGV.Columns.RemoveAt((int)Column.Rating);
+                        FMsDGV.Columns.Insert((int)Column.Rating, newRatingColumn);
+                    }
+                    finally
+                    {
+                        CellValueNeededDisabled = false;
+                    }
+                }
                 if (FMsDGV.CurrentSortedColumn == (int)Column.Rating)
                 {
                     FMsDGV.Columns[(int)Column.Rating].HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
@@ -2304,18 +2369,16 @@ namespace AngelLoader.Forms
         internal async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false)
         {
-            var s = FMsDGV;
-
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
                 // A small but measurable perf increase from this. Also prevents flickering when switching game
                 // tabs.
-                if (!suppressSuspendResume) s.SuspendDrawing();
-                s.RowCount = s.Filtered ? s.FilterShownIndexList.Count : FMsList.Count;
+                if (!suppressSuspendResume) FMsDGV.SuspendDrawing();
+                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : FMsList.Count;
 
-                if (s.RowCount == 0)
+                if (FMsDGV.RowCount == 0)
                 {
-                    if (!suppressSuspendResume) s.ResumeDrawing();
+                    if (!suppressSuspendResume) FMsDGV.ResumeDrawing();
                     ClearShownData();
                     InitialSelectedFMHasBeenSet = true;
                 }
@@ -2325,25 +2388,32 @@ namespace AngelLoader.Forms
                     if (InitialSelectedFMHasBeenSet)
                     {
                         row = 0;
-                        s.FirstDisplayedScrollingRowIndex = 0;
+                        FMsDGV.FirstDisplayedScrollingRowIndex = 0;
                     }
                     else
                     {
-                        row = GetIndexFromInstalledName(s.CurrentSelFM.InstalledName).ClampToZero();
-                        s.FirstDisplayedScrollingRowIndex = (row - s.CurrentSelFM.IndexFromTop).ClampToZero();
+                        row = GetIndexFromInstalledName(FMsDGV.CurrentSelFM.InstalledName).ClampToZero();
+                        try
+                        {
+                            FMsDGV.FirstDisplayedScrollingRowIndex = (row - FMsDGV.CurrentSelFM.IndexFromTop).ClampToZero();
+                        }
+                        catch (Exception)
+                        {
+                            // no room is available to display rows
+                        }
                         refreshReadme = true;
                     }
 
                     using (!InitialSelectedFMHasBeenSet ? new DisableEvents(this) : null)
                     {
-                        s.Rows[row].Selected = true;
+                        FMsDGV.Rows[row].Selected = true;
                     }
 
                     // Resume drawing before loading the readme; that way the list will update instantly even
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
                     // and understand why it takes a sec. Otherwise, it looks like merely changing tabs brings
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
-                    if (!suppressSuspendResume) s.ResumeDrawing();
+                    if (!suppressSuspendResume) FMsDGV.ResumeDrawing();
 
                     await DisplaySelectedFM(refreshReadme);
 

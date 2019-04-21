@@ -53,6 +53,12 @@ namespace AngelLoader.Ini
                     case 2:
                         ret.Visible = cProps[i].EqualsTrue();
                         break;
+                    case 3:
+                        if (float.TryParse(cProps[i], out float fs))
+                        {
+                            ret.FontSizeInPoints = fs;
+                        }
+                        break;
                 }
             }
 

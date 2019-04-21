@@ -11,6 +11,21 @@ namespace AngelLoader.Common.DataClasses
         internal int DisplayIndex = -1;
         internal int Width = 100;
         internal bool Visible = true;
+
+        private float _fontSizeInPoints = 8.25f;
+
+        internal float FontSizeInPoints
+        {
+            get => _fontSizeInPoints;
+            set
+            {
+                var val = value;
+                if (val < 1.0f) val = 1.0f;
+                if (val > 41.25f) val = 41.25f;
+                val = (float)Math.Round(val, 2);
+                _fontSizeInPoints = val;
+            }
+        }
     }
 
     internal enum Column
