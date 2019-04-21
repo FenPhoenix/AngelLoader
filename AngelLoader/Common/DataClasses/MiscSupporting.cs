@@ -20,8 +20,8 @@ namespace AngelLoader.Common.DataClasses
             set
             {
                 var val = value;
-                if (val < 1.0f) val = 1.0f;
-                if (val > 41.25f) val = 41.25f;
+                if (val < Math.Round(1.00f, 2)) val = 1.00f;
+                if (val > Math.Round(41.25f, 2)) val = 41.25f;
                 val = (float)Math.Round(val, 2);
                 _fontSizeInPoints = val;
             }

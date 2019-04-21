@@ -1195,22 +1195,24 @@ namespace AngelLoader.Forms
                 type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
                 FMsListDefaultFontSizeInPoints;
 
+            if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
+            if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
+            fontSize = (float)Math.Round(fontSize, 2);
+
             var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
             var rowHeight = newF.Height + 9;
 
-            // TODO: Set all cell styles, including image columns (cause I think they're different)
-            FMsDGV.DefaultCellStyle.Font = newF;
-            FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
-            //FMsDGV.RowHeadersDefaultCellStyle.Font = newF;
-            FMsDGV.RowTemplate.Height = rowHeight;
-
+            // Must be done first, else we get wrong values
             List<double> widthMul = new List<double>();
-
             foreach (DataGridViewColumn c in FMsDGV.Columns)
             {
                 var size = c.HeaderCell.Size;
                 widthMul.Add((double)size.Width / size.Height);
             }
+
+            FMsDGV.DefaultCellStyle.Font = newF;
+            FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
+            FMsDGV.RowTemplate.Height = rowHeight;
 
             int selIndex = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.SelectedRows[0].Index : -1;
             using (new DisableEvents(this))
