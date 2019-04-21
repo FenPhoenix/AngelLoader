@@ -53,12 +53,6 @@ namespace AngelLoader.Ini
                     case 2:
                         ret.Visible = cProps[i].EqualsTrue();
                         break;
-                    case 3:
-                        if (float.TryParse(cProps[i], out float fs))
-                        {
-                            ret.FontSizeInPoints = fs;
-                        }
-                        break;
                 }
             }
 
@@ -396,6 +390,13 @@ namespace AngelLoader.Ini
                     if (field != null)
                     {
                         config.SortedColumn = (Column)field.GetValue(null);
+                    }
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.FMsListFontSizeInPoints) + "="))
+                {
+                    if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
+                    {
+                        config.FMsListFontSizeInPoints = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.RatingDisplayStyle) + "="))
@@ -851,6 +852,7 @@ namespace AngelLoader.Ini
 
                 sw.WriteLine(nameof(config.SortedColumn) + "=" + config.SortedColumn);
                 sw.WriteLine(nameof(config.SortDirection) + "=" + config.SortDirection);
+                sw.WriteLine(nameof(config.FMsListFontSizeInPoints) + "=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
                 foreach (var col in config.Columns)
                 {

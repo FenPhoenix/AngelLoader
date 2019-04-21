@@ -28,10 +28,6 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
-        System.Windows.Forms.DataGridViewCellStyle ColumnHeadersDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
-        System.Windows.Forms.DataGridViewCellStyle DefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
-        System.Windows.Forms.DataGridViewCellStyle RowHeadersDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle();
-
         private BusinessLogic Model;
 
         private FormWindowState NominalWindowState;
@@ -39,13 +35,15 @@ namespace AngelLoader.Forms
         private Point NominalWindowLocation;
 
         private float FMsListDefaultFontSizeInPoints;
-        private float FMsListDefaultRowHeight;
+        private int FMsListDefaultRowHeight;
 
         private enum ZoomFMsDGVType
         {
             ZoomIn,
             ZoomOut,
-            ResetZoom
+            ResetZoom,
+            ZoomTo,
+            ZoomToHeightOnly
         }
 
         private List<FanMission> FMsList;
@@ -80,6 +78,7 @@ namespace AngelLoader.Forms
         public bool EventsDisabled { get; set; }
 
         private bool CellValueNeededDisabled;
+        private bool ColumnWidthSaveDisabled;
 
         public bool KeyPressesDisabled { get; set; }
 
@@ -256,38 +255,6 @@ namespace AngelLoader.Forms
             Test2Button.Hide();
 #endif
 
-            ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            RowHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-
-            ColumnHeadersDefaultCellStyle.BackColor = SystemColors.Control;
-            DefaultCellStyle.BackColor = SystemColors.Window;
-            RowHeadersDefaultCellStyle.BackColor = SystemColors.Control;
-
-            ColumnHeadersDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            DefaultCellStyle.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            RowHeadersDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-
-            ColumnHeadersDefaultCellStyle.ForeColor = SystemColors.WindowText;
-            DefaultCellStyle.ForeColor = SystemColors.ControlText;
-            RowHeadersDefaultCellStyle.ForeColor = SystemColors.WindowText;
-
-            ColumnHeadersDefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
-            DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
-            RowHeadersDefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
-
-            ColumnHeadersDefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
-            DefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
-            RowHeadersDefaultCellStyle.SelectionForeColor = SystemColors.HighlightText;
-
-            ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
-            DefaultCellStyle.WrapMode = DataGridViewTriState.False;
-            RowHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
-
-            FMsDGV.ColumnHeadersDefaultCellStyle = ColumnHeadersDefaultCellStyle;
-            FMsDGV.DefaultCellStyle = DefaultCellStyle;
-            FMsDGV.RowHeadersDefaultCellStyle = RowHeadersDefaultCellStyle;
-
             AppMouseHook = Hook.AppEvents();
             AppMouseHook.MouseDownExt += HookMouseDown;
             AppMouseHook.MouseUpExt += HookMouseUp;
@@ -310,6 +277,7 @@ namespace AngelLoader.Forms
 
             FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
+
 
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
@@ -357,6 +325,7 @@ namespace AngelLoader.Forms
             UpdateRatingColumn(startup: true);
 
             FMsDGV.FillColumns(Config.Columns);
+
 
             #endregion
 
@@ -451,6 +420,7 @@ namespace AngelLoader.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, zoomFontSize: Config.FMsListFontSizeInPoints);
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
@@ -1073,7 +1043,10 @@ namespace AngelLoader.Forms
                 NominalWindowLocation,
                 mainSplitterPercent,
                 topSplitterPercent,
-                FMsDGV.ColumnsToColumnData(), FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection,
+                FMsDGV.ColumnsToColumnData(),
+                FMsDGV.CurrentSortedColumn,
+                FMsDGV.CurrentSortDirection,
+                FMsDGV.DefaultCellStyle.Font.SizeInPoints,
                 FMsDGV.Filter,
                 selectedFM,
                 FMsDGV.GameTabsState,
@@ -1169,8 +1142,8 @@ namespace AngelLoader.Forms
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
-            ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
-            //ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+            //ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+            ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
         }
 
         internal void SetDebugMessageText(string text)
@@ -1184,65 +1157,107 @@ namespace AngelLoader.Forms
 
         #region FMsDGV-related
 
-        private void ZoomFMsDGV(ZoomFMsDGVType type)
+        private void ZoomFMsDGV(ZoomFMsDGVType type, float? zoomFontSize = null)
         {
-            SelectedFM selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFMPosInfo() : null;
+            ColumnWidthSaveDisabled = true;
 
-            var f = FMsDGV.DefaultCellStyle.Font;
-
-            var fontSize =
-                type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
-                type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
-                FMsListDefaultFontSizeInPoints;
-
-            if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
-            if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
-            fontSize = (float)Math.Round(fontSize, 2);
-
-            var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
-            var rowHeight = newF.Height + 9;
-
-            // Must be done first, else we get wrong values
-            List<double> widthMul = new List<double>();
-            foreach (DataGridViewColumn c in FMsDGV.Columns)
+            try
             {
-                var size = c.HeaderCell.Size;
-                widthMul.Add((double)size.Width / size.Height);
-            }
+                SelectedFM selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFMPosInfo() : null;
 
-            FMsDGV.DefaultCellStyle.Font = newF;
-            FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
-            FMsDGV.RowTemplate.Height = rowHeight;
+                var f = FMsDGV.DefaultCellStyle.Font;
 
-            int selIndex = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.SelectedRows[0].Index : -1;
-            using (new DisableEvents(this))
-            {
-                // Force a regeneration of rows
-                int rowCount = FMsDGV.RowCount;
-                FMsDGV.RowCount = 0;
-                FMsDGV.RowCount = rowCount;
+                var fontSize =
+                    type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
+                    type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
+                    type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
+                    type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
+                    FMsListDefaultFontSizeInPoints;
 
-                if (selIndex > -1) FMsDGV.Rows[selIndex].Selected = true;
+                if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
+                if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
+                fontSize = (float)Math.Round(fontSize, 2);
 
-                for (var i = 0; i < FMsDGV.Columns.Count; i++)
+                var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+                var rowHeight = type == ZoomFMsDGVType.ResetZoom ? FMsListDefaultRowHeight : newF.Height + 9;
+
+                var heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
+
+                // Must be done first, else we get wrong values
+                List<double> widthMul = new List<double>();
+                foreach (DataGridViewColumn c in FMsDGV.Columns)
                 {
-                    DataGridViewColumn c = FMsDGV.Columns[i];
-                    c.MinimumWidth = rowHeight + 3;
-                    c.Width = (int)(c.HeaderCell.Size.Height * widthMul[i]);
+                    var size = c.HeaderCell.Size;
+                    widthMul.Add((double)size.Width / size.Height);
+                }
+
+                FMsDGV.DefaultCellStyle.Font = newF;
+                FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
+                FMsDGV.RowTemplate.Height = rowHeight;
+
+                int selIndex = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.SelectedRows[0].Index : -1;
+                using (new DisableEvents(this))
+                {
+                    // Force a regeneration of rows
+                    int rowCount = FMsDGV.RowCount;
+                    FMsDGV.RowCount = 0;
+                    FMsDGV.RowCount = rowCount;
+
+                    if (selIndex > -1) FMsDGV.Rows[selIndex].Selected = true;
+
+                    for (var i = 0; i < FMsDGV.Columns.Count; i++)
+                    {
+                        DataGridViewColumn c = FMsDGV.Columns[i];
+
+                        var reset = type == ZoomFMsDGVType.ResetZoom;
+                        if (c != RatingImageColumn && c != FinishedColumn)
+                        {
+                            c.MinimumWidth = reset ? Defaults.MinColumnWidth : rowHeight + 3;
+                        }
+
+                        if (heightOnly)
+                        {
+                            if (c == RatingImageColumn || c == FinishedColumn)
+                            {
+                                c.Width = (int)Math.Round(c.HeaderCell.Size.Height * widthMul[i]);
+                            }
+                        }
+                        else
+                        {
+                            if (reset && c == RatingImageColumn)
+                            {
+                                c.Width = RatingImageColumnWidth;
+                            }
+                            else if (reset && c == FinishedColumn)
+                            {
+                                c.Width = FinishedColumnWidth;
+                            }
+                            else
+                            {
+                                c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - FMsListDefaultFontSizeInPoints) < 0.1
+                                    ? Config.Columns[i].Width
+                                    : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
+                            }
+                        }
+                    }
+                }
+                if (selIndex > -1 && selFM != null)
+                {
+                    try
+                    {
+                        FMsDGV.FirstDisplayedScrollingRowIndex =
+                            (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
+                            .Clamp(0, FMsDGV.RowCount - 1);
+                    }
+                    catch (Exception)
+                    {
+                        // no room is available to display rows
+                    }
                 }
             }
-            if (selIndex > -1 && selFM != null)
+            finally
             {
-                try
-                {
-                    FMsDGV.FirstDisplayedScrollingRowIndex =
-                        (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
-                        .Clamp(0, FMsDGV.RowCount - 1);
-                }
-                catch (Exception)
-                {
-                    // no room is available to display rows
-                }
+                ColumnWidthSaveDisabled = false;
             }
         }
 
@@ -4400,6 +4415,15 @@ namespace AngelLoader.Forms
         {
             Model.FindFMs();
             await SortAndSetFilter();
+        }
+
+        private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (ColumnWidthSaveDisabled) return;
+
+            if (Config.Columns.Count == 0) return;
+            //Trace.WriteLine(e.Column.Index.ToString());
+            Config.Columns[e.Column.Index].Width = e.Column.Width;
         }
     }
 }
