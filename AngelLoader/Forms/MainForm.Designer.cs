@@ -540,7 +540,7 @@
             // 
             // Test2Button
             // 
-            this.Test2Button.Location = new System.Drawing.Point(1264, 21);
+            this.Test2Button.Location = new System.Drawing.Point(624, 21);
             this.Test2Button.Name = "Test2Button";
             this.Test2Button.Size = new System.Drawing.Size(75, 22);
             this.Test2Button.TabIndex = 999;
@@ -550,7 +550,7 @@
             // 
             // TestButton
             // 
-            this.TestButton.Location = new System.Drawing.Point(1264, 0);
+            this.TestButton.Location = new System.Drawing.Point(624, 0);
             this.TestButton.Name = "TestButton";
             this.TestButton.Size = new System.Drawing.Size(75, 22);
             this.TestButton.TabIndex = 999;
@@ -748,7 +748,7 @@
             // DebugLabel
             // 
             this.DebugLabel.AutoSize = true;
-            this.DebugLabel.Location = new System.Drawing.Point(1176, 8);
+            this.DebugLabel.Location = new System.Drawing.Point(704, 8);
             this.DebugLabel.Name = "DebugLabel";
             this.DebugLabel.Size = new System.Drawing.Size(71, 13);
             this.DebugLabel.TabIndex = 29;
@@ -757,7 +757,7 @@
             // DebugLabel2
             // 
             this.DebugLabel2.AutoSize = true;
-            this.DebugLabel2.Location = new System.Drawing.Point(1176, 24);
+            this.DebugLabel2.Location = new System.Drawing.Point(704, 24);
             this.DebugLabel2.Name = "DebugLabel2";
             this.DebugLabel2.Size = new System.Drawing.Size(77, 13);
             this.DebugLabel2.TabIndex = 32;
@@ -867,10 +867,10 @@
             this.ClearFiltersButton,
             this.toolStripSeparatorCustom3});
             this.RefreshClearToolStripCustom.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.RefreshClearToolStripCustom.Location = new System.Drawing.Point(885, 0);
+            this.RefreshClearToolStripCustom.Location = new System.Drawing.Point(916, 0);
             this.RefreshClearToolStripCustom.Name = "RefreshClearToolStripCustom";
             this.RefreshClearToolStripCustom.PaddingDrawNudge = 0;
-            this.RefreshClearToolStripCustom.Size = new System.Drawing.Size(200, 26);
+            this.RefreshClearToolStripCustom.Size = new System.Drawing.Size(169, 26);
             this.RefreshClearToolStripCustom.TabIndex = 12;
             // 
             // RefreshFromDiskButton
@@ -1159,7 +1159,7 @@
             this.FiltersFlowLayoutPanel.Controls.Add(this.FilterShowJunkCheckBox);
             this.FiltersFlowLayoutPanel.Location = new System.Drawing.Point(144, 0);
             this.FiltersFlowLayoutPanel.Name = "FiltersFlowLayoutPanel";
-            this.FiltersFlowLayoutPanel.Size = new System.Drawing.Size(872, 100);
+            this.FiltersFlowLayoutPanel.Size = new System.Drawing.Size(768, 100);
             this.FiltersFlowLayoutPanel.TabIndex = 11;
             this.FiltersFlowLayoutPanel.WrapContents = false;
             this.FiltersFlowLayoutPanel.Scroll += new System.Windows.Forms.ScrollEventHandler(this.FiltersFlowLayoutPanel_Scroll);

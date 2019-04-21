@@ -850,6 +850,10 @@ namespace AngelLoader.Forms
             if (ProgressBox.Visible) ProgressBox.Center();
             if (AddTagListBox.Visible) HideAddTagDropDown();
 
+            var hs = FiltersFlowLayoutPanel.HorizontalScroll;
+
+            DebugLabel2.Text = hs.Value.ToString();
+
             SetFilterBarScrollButtons();
         }
 
@@ -4040,6 +4044,7 @@ namespace AngelLoader.Forms
             }
 
             var hs = FiltersFlowLayoutPanel.HorizontalScroll;
+            //DebugLabel2.Text = hs.Value.ToString();
             if (!hs.Visible)
             {
                 FilterBarScrollLeftButton.Hide();
