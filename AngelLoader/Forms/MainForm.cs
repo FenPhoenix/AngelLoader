@@ -1852,7 +1852,7 @@ namespace AngelLoader.Forms
                     throw new Exception("Config.DateFormat is not what it should be!");
             }
 
-            switch ((Column)FMsDGV.Columns[e.ColumnIndex].Index)
+            switch ((Column)e.ColumnIndex)
             {
                 case Column.Game:
                     e.Value =
