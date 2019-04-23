@@ -3178,7 +3178,7 @@ namespace AngelLoader.Forms
 
         internal void CancelScan() => Model.CancelScan();
 
-        internal void CancelInstallFM() => Model.CancelInstallFM(GetSelectedFM());
+        internal void CancelInstallFM() => Model.CancelInstallFM();
 
         #endregion
 
@@ -3238,7 +3238,7 @@ namespace AngelLoader.Forms
                 d.ButtonStyle = TaskDialogButtonStyle.Standard;
                 d.WindowTitle = title;
                 d.Content = message;
-                d.VerificationText = LText.AlertMessages.DontAskAgain;
+                if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
                 d.Buttons.Add(yesButton);
                 d.Buttons.Add(noButton);
                 d.Buttons.Add(cancelButton);

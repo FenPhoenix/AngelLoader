@@ -1430,7 +1430,16 @@ namespace AngelLoader
             return !canceled;
         }
 
-        internal void CancelInstallFM(FanMission fm) => ExtractCts.Cancel();
+        internal void CancelInstallFM()
+        {
+            try
+            {
+                ExtractCts?.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+        }
 
         internal async Task UninstallFM(FanMission fm)
         {
