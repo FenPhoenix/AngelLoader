@@ -409,11 +409,9 @@ namespace AngelLoader.Forms
 
             ChangeGameOrganization();
 
-            SortFMTable(Config.SortedColumn, Config.SortDirection);
-            // Even if the filter is empty, do this anyway to cause a refresh.
-            // It'll early-out on an empty filter anyway.
-
             #endregion
+
+            SortFMTable(Config.SortedColumn, Config.SortDirection);
 
             // Set here so as to avoid the changes being visible
             SetWindowStateAndSize();
