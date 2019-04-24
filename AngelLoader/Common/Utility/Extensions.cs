@@ -236,7 +236,7 @@ namespace AngelLoader.Common.Utility
                    (value[len - 2] == 'I' || value[len - 2] == 'i') &&
                    (value[len - 1] == 'P' || value[len - 1] == 'p');
         }
-        
+
         internal static bool ExtIs7z(this string value)
         {
             if (value == null) return false;
@@ -626,16 +626,10 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
-        internal static void Block(this Form form)
+        internal static void BlockWindow(this Form form, bool block)
         {
             if (!form.IsHandleCreated) return;
-            EnableWindow(form.Handle, false);
-        }
-
-        internal static void Unblock(this Form form)
-        {
-            if (!form.IsHandleCreated) return;
-            EnableWindow(form.Handle, true);
+            EnableWindow(form.Handle, bEnable: !block);
         }
 
         /// <summary>

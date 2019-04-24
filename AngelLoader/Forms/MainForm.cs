@@ -24,11 +24,14 @@ using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm : Form, IEventDisabler, IKeyPressDisabler, ILocalizable, IMessageFilter
+    public partial class MainForm : Form, IView, IEventDisabler, IKeyPressDisabler, ILocalizable, IMessageFilter
     {
-        #region Private fields
+        public object InvokeSync(Delegate method) => Invoke(method);
+        public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
+        public object InvokeAsync(Delegate method) => BeginInvoke(method);
+        public object InvokeAsync(Delegate method, params object[] args) => BeginInvoke(method, args);
 
-        private BusinessLogic Model;
+        #region Private fields
 
         private FormWindowState NominalWindowState;
         private Size NominalWindowSize;
@@ -45,8 +48,6 @@ namespace AngelLoader.Forms
             ZoomTo,
             ZoomToHeightOnly
         }
-
-        private List<FanMission> FMsList;
 
         // Set these beforehand and don't set autosize on any column! Or else it explodes everything because
         // FMsDGV tries to refresh when it shouldn't and all kinds of crap. Phew.
@@ -248,7 +249,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal void LinkViewList() => FMsList = Model.FMsViewList;
+        public void Block(bool block) => this.BlockWindow(block);
 
         // Put anything that does anything in here, not in the constructor. Otherwise it's a world of pain and
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
@@ -280,7 +281,7 @@ namespace AngelLoader.Forms
             // window (which doesn't show the view, so the startup process is still left intact), this code is
             // now a nice straight line with no back-and-forth spaghetti method calls.
 
-            Model = new BusinessLogic(this, ProgressBox);
+            Model.Inject(this, ProgressBox);
 
             await Model.Init();
 
@@ -822,7 +823,7 @@ namespace AngelLoader.Forms
         private void SetFMSizesToLocalized()
         {
             // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture
-            foreach (var fm in FMsList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
+            foreach (var fm in Model.FMsViewList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
         }
 
         private void MainForm_Deactivate(object sender, EventArgs e)
@@ -1127,7 +1128,7 @@ namespace AngelLoader.Forms
         /// <returns></returns>
         private FanMission GetFMFromIndex(int index)
         {
-            return FMsDGV.Filtered ? FMsList[FMsDGV.FilterShownIndexList[index]] : FMsList[index];
+            return FMsDGV.Filtered ? Model.FMsViewList[FMsDGV.FilterShownIndexList[index]] : Model.FMsViewList[index];
         }
 
         /// <summary>
@@ -1146,7 +1147,7 @@ namespace AngelLoader.Forms
             // Graceful default if a value is missing
             if (installedName.IsEmpty()) return 0;
 
-            for (int i = 0; i < (FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : FMsList.Count); i++)
+            for (int i = 0; i < (FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Model.FMsViewList.Count); i++)
             {
                 var fm = GetFMFromIndex(i);
                 if (fm.InstalledDir.EqualsI(installedName)) return i;
@@ -1411,9 +1412,9 @@ namespace AngelLoader.Forms
 
             #region Title / initial
 
-            for (int i = 0; i < FMsList.Count; i++)
+            for (int i = 0; i < Model.FMsViewList.Count; i++)
             {
-                var fm = FMsList[i];
+                var fm = Model.FMsViewList[i];
 
                 if (titleIsWhitespace ||
                     fm.Archive.ContainsI(s.Filter.Title) ||
@@ -1432,7 +1433,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmAuthor = FMsList[s.FilterShownIndexList[i]].Author;
+                    var fmAuthor = Model.FMsViewList[s.FilterShownIndexList[i]].Author;
 
                     if (!fmAuthor.ContainsI(s.Filter.Author))
                     {
@@ -1450,7 +1451,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fm = FMsList[s.FilterShownIndexList[i]];
+                    var fm = Model.FMsViewList[s.FilterShownIndexList[i]];
                     if (fm.Game == Game.Unsupported && !FilterShowJunkCheckBox.Checked)
                     {
                         s.FilterShownIndexList.RemoveAt(i);
@@ -1467,7 +1468,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fm = FMsList[s.FilterShownIndexList[i]];
+                    var fm = Model.FMsViewList[s.FilterShownIndexList[i]];
                     if (GameIsKnownAndSupported(fm) && !s.Filter.Games.Contains((Game)fm.Game))
                     {
                         s.FilterShownIndexList.RemoveAt(i);
@@ -1490,7 +1491,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmTags = FMsList[s.FilterShownIndexList[i]].Tags;
+                    var fmTags = Model.FMsViewList[s.FilterShownIndexList[i]].Tags;
                     if (fmTags.Count == 0 && notTags.Count == 0)
                     {
                         s.FilterShownIndexList.RemoveAt(i);
@@ -1632,7 +1633,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmRating = FMsList[s.FilterShownIndexList[i]].Rating;
+                    var fmRating = Model.FMsViewList[s.FilterShownIndexList[i]].Rating;
 
                     if (fmRating < rf || fmRating > rt)
                     {
@@ -1653,7 +1654,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmRelDate = FMsList[s.FilterShownIndexList[i]].ReleaseDate;
+                    var fmRelDate = Model.FMsViewList[s.FilterShownIndexList[i]].ReleaseDate;
 
                     if (fmRelDate == null ||
                         (rdf != null &&
@@ -1678,7 +1679,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmLastPlayed = FMsList[s.FilterShownIndexList[i]].LastPlayed;
+                    var fmLastPlayed = Model.FMsViewList[s.FilterShownIndexList[i]].LastPlayed;
 
                     if (fmLastPlayed == null ||
                         (lpdf != null &&
@@ -1700,7 +1701,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fm = FMsList[s.FilterShownIndexList[i]];
+                    var fm = Model.FMsViewList[s.FilterShownIndexList[i]];
                     var fmFinished = fm.FinishedOn;
                     var fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
@@ -2154,7 +2155,7 @@ namespace AngelLoader.Forms
 
         private async void ScanAllFMsButton_Click(object sender, EventArgs e)
         {
-            if (FMsList.Count == 0) return;
+            if (Model.FMsViewList.Count == 0) return;
 
             ScanOptions scanOptions = null;
             bool noneSelected;
@@ -2182,13 +2183,13 @@ namespace AngelLoader.Forms
             }
 
             var success =
-                await Model.ScanFMs(FMsList, scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
+                await Model.ScanFMs(Model.FMsViewList, scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
             if (success) await SortAndSetFilter(forceRefreshReadme: true);
         }
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await OpenSettings();
 
-        internal async Task<bool> OpenSettings(bool startup = false)
+        public async Task<bool> OpenSettings(bool startup = false)
         {
             using (var sf = new SettingsForm(this, Config, startup))
             {
@@ -2494,7 +2495,7 @@ namespace AngelLoader.Forms
 
         internal async Task RefreshSelectedFMRowOnly() => await RefreshSelectedFM(false, true);
 
-        internal async Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false)
+        public async Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false)
         {
             FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
@@ -2511,7 +2512,7 @@ namespace AngelLoader.Forms
                 // A small but measurable perf increase from this. Also prevents flickering when switching game
                 // tabs.
                 if (!suppressSuspendResume) FMsDGV.SuspendDrawing();
-                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : FMsList.Count;
+                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Model.FMsViewList.Count;
 
                 if (FMsDGV.RowCount == 0)
                 {
@@ -2694,9 +2695,6 @@ namespace AngelLoader.Forms
                     break;
             }
 
-            // Reference break city up in here, so connect them back up
-            FMsList = Model.FMsViewList;
-
             foreach (DataGridViewColumn x in FMsDGV.Columns)
             {
                 x.HeaderCell.SortGlyphDirection = SortOrder.None;
@@ -2754,7 +2752,7 @@ namespace AngelLoader.Forms
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
-            if (FMsList.Count == 0) ScanAllFMsButton.Enabled = false;
+            if (Model.FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
 
             InstallUninstallMenuItem.Text = LText.FMsList.FMMenu_InstallFM;
             InstallUninstallMenuItem.Enabled = false;
@@ -2873,7 +2871,7 @@ namespace AngelLoader.Forms
             #region Toggles
 
             // We should never get here when FMsList.Count == 0, but hey
-            if (FMsList.Count > 0) ScanAllFMsButton.Enabled = true;
+            if (Model.FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
 
             FinishedOnNormalMenuItem.Text = fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal;
             FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;
@@ -3184,13 +3182,13 @@ namespace AngelLoader.Forms
 
         #region Messageboxes
 
-        internal bool AskToContinue(string message, string title)
+        public bool AskToContinue(string message, string title)
         {
             var result = MessageBox.Show(message, title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             return result == DialogResult.Yes;
         }
 
-        internal (bool Cancel, bool Continue)
+        public (bool Cancel, bool Continue)
         AskToContinueWithCancel(string message, string title)
         {
             var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
@@ -3198,7 +3196,7 @@ namespace AngelLoader.Forms
             return (false, result == DialogResult.Yes);
         }
 
-        internal (bool Cancel, bool Continue, bool DontAskAgain)
+        public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancel_TD(string message, string title)
         {
             using (var d = new TaskDialog())
@@ -3222,7 +3220,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal (bool Cancel, bool Continue, bool DontAskAgain)
+        public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
             bool showDontAskAgain, string yes, string no, string cancel)
         {
@@ -3248,7 +3246,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal (bool Cancel, bool DontAskAgain)
+        public (bool Cancel, bool DontAskAgain)
         AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon icon, bool showDontAskAgain,
             string yes, string no)
         {
@@ -3271,7 +3269,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal void ShowAlert(string message, string title)
+        public void ShowAlert(string message, string title)
         {
             MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }

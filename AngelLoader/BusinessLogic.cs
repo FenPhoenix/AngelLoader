@@ -14,7 +14,6 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
-using AngelLoader.Forms;
 using AngelLoader.Importing;
 using FMScanner;
 using Ookii.Dialogs.WinForms;
@@ -27,24 +26,45 @@ using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader
 {
-    internal sealed class BusinessLogic
+    internal interface IView
     {
-        private readonly MainForm View;
-        private readonly ProgressPanel ProgressBox;
+        void ShowAlert(string message, string title);
+        Task<bool> OpenSettings(bool startup = false);
+        object InvokeSync(Delegate method);
+        object InvokeSync(Delegate method, params object[] args);
+        object InvokeAsync(Delegate method);
+        object InvokeAsync(Delegate method, params object[] args);
+        void Block(bool block);
+        Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false);
+        bool AskToContinue(string message, string title);
 
-        internal List<FanMission> FMsViewList = new List<FanMission>();
-        private readonly List<FanMission> FMDataIniList = new List<FanMission>();
+        (bool Cancel, bool DontAskAgain)
+        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon icon,
+            bool showDontAskAgain, string yes, string no);
+        
+        (bool Cancel, bool Continue, bool DontAskAgain)
+        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
+            bool showDontAskAgain, string yes, string no, string cancel);
+    }
 
-        private CancellationTokenSource ScanCts;
-        private CancellationTokenSource ExtractCts;
+    internal static class Model
+    {
+        private static IView View { get; set; }
+        private static ProgressPanel ProgressBox;
 
-        internal BusinessLogic(MainForm view, ProgressPanel progressBox)
+        internal static List<FanMission> FMsViewList = new List<FanMission>();
+        private static readonly List<FanMission> FMDataIniList = new List<FanMission>();
+
+        private static CancellationTokenSource ScanCts;
+        private static CancellationTokenSource ExtractCts;
+
+        internal static void Inject(IView view, ProgressPanel progressBox)
         {
             View = view;
             ProgressBox = progressBox;
         }
 
-        internal async Task Init()
+        internal static async Task Init()
         {
             try
             {
@@ -122,7 +142,7 @@ namespace AngelLoader
             }
         }
 
-        private Error CheckPaths()
+        private static Error CheckPaths()
         {
             var t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
             var t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
@@ -162,7 +182,7 @@ namespace AngelLoader
             return Error.None;
         }
 
-        internal string GetDromEdExe(Game game)
+        internal static string GetDromEdExe(Game game)
         {
             var gameExe = GetGameExeFromGameType(game);
             if (gameExe.IsEmpty()) return "";
@@ -174,7 +194,7 @@ namespace AngelLoader
             return !gamePath.IsEmpty() && File.Exists(dromEdExe) ? dromEdExe : "";
         }
 
-        internal string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
+        internal static string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
         {
             string CreateAndReturn(string fmsPath)
             {
@@ -249,7 +269,7 @@ namespace AngelLoader
             return Directory.Exists(path) ? path : CreateAndReturn(Path.Combine(gamePath, "FMs"));
         }
 
-        internal (Error Error, bool UseCentralSaves, string Path)
+        internal static (Error Error, bool UseCentralSaves, string Path)
         GetInstFMsPathFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();
@@ -320,7 +340,7 @@ namespace AngelLoader
                 : (Error.T3FMInstPathNotFound, false, null);
         }
 
-        internal void FindFMs(bool startup = false)
+        internal static void FindFMs(bool startup = false)
         {
             // Make sure we don't lose anything when we re-find!
             if (!startup) WriteFullFMDataIni();
@@ -690,21 +710,18 @@ namespace AngelLoader
                 item.CommentSingleLine = item.Comment.FromEscapes().ToSingleLineComment(100);
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
             }
-
-            // Link the lists back up because they may get broken in here
-            View.LinkViewList();
         }
 
         // Super quick-n-cheap hack for perf
-        internal List<int> ViewListGamesNull = new List<int>();
+        internal static List<int> ViewListGamesNull = new List<int>();
 
-        internal async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions,
+        internal static async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions,
             bool overwriteUnscannedFields = true, bool markAsScanned = false)
         {
             return await ScanFMs(new List<FanMission> { fm }, scanOptions, overwriteUnscannedFields, markAsScanned);
         }
 
-        private string GetArchiveNameFromInstalledDir(FanMission fm, List<string> archives)
+        private static string GetArchiveNameFromInstalledDir(FanMission fm, List<string> archives)
         {
             // The game type is supposed to be inferred from the installed location, so it should always be known
             Debug.Assert(fm.Game != null, "fm.Game == null: Game type is blank for an installed FM?!");
@@ -789,7 +806,7 @@ namespace AngelLoader
             return archiveName;
         }
 
-        internal async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions,
+        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions,
             bool overwriteUnscannedFields = true, bool markAsScanned = false)
         {
             if (fmsToScan == null || fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
@@ -818,7 +835,8 @@ namespace AngelLoader
                 else
                 {
                     // Block user input to the form to mimic the UI thread being blocked, because we're async here
-                    View.BeginInvoke(new Action(View.Block));
+                    //View.BeginInvoke(new Action(View.Block));
+                    View.Block(true);
                     ProgressBox.ProgressTask = ProgressPanel.ProgressTasks.ScanAllFMs;
                     ProgressBox.ShowProgressWindow(ProgressBox.ProgressTask, suppressShow: true);
                 }
@@ -1015,14 +1033,15 @@ namespace AngelLoader
             }
             finally
             {
-                View.BeginInvoke(new Action(View.Unblock));
-                View.BeginInvoke(new Action(() => ProgressBox.HideThis()));
+                //View.BeginInvoke(new Action(View.Unblock));
+                View.Block(false);
+                View.InvokeSync(new Action(() => ProgressBox.HideThis()));
             }
 
             return true;
         }
 
-        internal void CancelScan()
+        internal static void CancelScan()
         {
             try
             {
@@ -1033,7 +1052,7 @@ namespace AngelLoader
             }
         }
 
-        internal async Task ScanNewFMsForGameType()
+        internal static async Task ScanNewFMsForGameType()
         {
             var fmsToScan = new List<FanMission>();
             foreach (var fm in FMsViewList)
@@ -1057,7 +1076,7 @@ namespace AngelLoader
 
         #region Importing
 
-        internal async Task<bool>
+        internal static async Task<bool>
         ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves)
         {
             ProgressBox.ShowImportDarkLoader();
@@ -1093,7 +1112,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal async Task<bool> ImportFromNDL(string iniFile)
+        internal static async Task<bool> ImportFromNDL(string iniFile)
         {
             ProgressBox.ShowImportNDL();
             try
@@ -1121,7 +1140,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal async Task<bool> ImportFromFMSel(string iniFile)
+        internal static async Task<bool> ImportFromFMSel(string iniFile)
         {
             ProgressBox.ShowImportFMSel();
             try
@@ -1149,7 +1168,7 @@ namespace AngelLoader
             return true;
         }
 
-        private async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions, bool overwriteUnscannedFields = false)
+        private static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions, bool overwriteUnscannedFields = false)
         {
             if (fms.Count == 0) return;
 
@@ -1161,12 +1180,12 @@ namespace AngelLoader
 
         #region Install, Uninstall, Play
 
-        internal async Task InstallOrUninstall(FanMission fm)
+        internal static async Task InstallOrUninstall(FanMission fm)
         {
             await (fm.Installed ? UninstallFM(fm) : InstallFM(fm));
         }
 
-        internal async Task<bool> InstallFM(FanMission fm)
+        internal static async Task<bool> InstallFM(FanMission fm)
         {
             Debug.Assert(!fm.Installed, "!fm.Installed");
 
@@ -1301,7 +1320,7 @@ namespace AngelLoader
             return true;
         }
 
-        private async Task<bool> InstallFMZip(string fmArchivePath, string fmInstalledPath)
+        private static async Task<bool> InstallFMZip(string fmArchivePath, string fmInstalledPath)
         {
             bool canceled = false;
 
@@ -1336,7 +1355,7 @@ namespace AngelLoader
 
                             int percent = (100 * (i + 1)) / filesCount;
 
-                            View.BeginInvoke(new Action(() => ProgressBox.ReportFMExtractProgress(percent)));
+                            View.InvokeSync(new Action(() => ProgressBox.ReportFMExtractProgress(percent)));
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
@@ -1349,20 +1368,20 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-                    View.BeginInvoke(new Action(() =>
+                    View.InvokeSync(new Action(() =>
                         View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
                 }
                 finally
                 {
-                    View.BeginInvoke(new Action(() => ProgressBox.HideThis()));
+                    View.InvokeSync(new Action(() => ProgressBox.HideThis()));
                 }
             });
 
             return !canceled;
         }
 
-        private async Task<bool> InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
+        private static async Task<bool> InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
         {
             bool canceled = false;
 
@@ -1417,20 +1436,20 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
-                    View.BeginInvoke(new Action(() =>
+                    View.InvokeSync(new Action(() =>
                         View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
                 }
                 finally
                 {
-                    View.BeginInvoke(new Action(() => ProgressBox.HideThis()));
+                    View.InvokeSync(new Action(() => ProgressBox.HideThis()));
                 }
             });
 
             return !canceled;
         }
 
-        internal void CancelInstallFM()
+        internal static void CancelInstallFM()
         {
             try
             {
@@ -1441,7 +1460,7 @@ namespace AngelLoader
             }
         }
 
-        internal async Task UninstallFM(FanMission fm)
+        internal static async Task UninstallFM(FanMission fm)
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm)) return;
 
@@ -1560,7 +1579,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
-                View.BeginInvoke(new Action(() =>
+                View.InvokeSync(new Action(() =>
                     View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
             }
@@ -1617,7 +1636,7 @@ namespace AngelLoader
             return result;
         }
 
-        internal async Task ConvertOGGsToWAVs(FanMission fm)
+        internal static async Task ConvertOGGsToWAVs(FanMission fm)
         {
             if (!GameIsDark(fm)) return;
 
@@ -1661,7 +1680,7 @@ namespace AngelLoader
             }
         }
 
-        internal async Task ConvertWAVsTo16Bit(FanMission fm)
+        internal static async Task ConvertWAVsTo16Bit(FanMission fm)
         {
             if (!GameIsDark(fm)) return;
 
@@ -1763,7 +1782,7 @@ namespace AngelLoader
                 null;
         }
 
-        internal bool PlayOriginalGame(Game game)
+        internal static bool PlayOriginalGame(Game game)
         {
             var gameExe = GetGameExeFromGameType(game);
 
@@ -1999,7 +2018,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal bool PlayFM(FanMission fm)
+        internal static bool PlayFM(FanMission fm)
         {
             if (fm.Game == null)
             {
@@ -2101,7 +2120,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal bool OpenFMInDromEd(FanMission fm)
+        internal static bool OpenFMInDromEd(FanMission fm)
         {
             if (!GameIsDark(fm)) return false;
 
@@ -2161,7 +2180,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal bool AddDML(FanMission fm, string sourceDMLPath)
+        internal static bool AddDML(FanMission fm, string sourceDMLPath)
         {
             if (!FMIsReallyInstalled(fm))
             {
@@ -2186,7 +2205,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal bool RemoveDML(FanMission fm, string dmlFile)
+        internal static bool RemoveDML(FanMission fm, string dmlFile)
         {
             if (!FMIsReallyInstalled(fm))
             {
@@ -2209,7 +2228,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal (bool Success, string[] DMLFiles)
+        internal static (bool Success, string[] DMLFiles)
         GetDMLFiles(FanMission fm)
         {
             try
@@ -2239,7 +2258,7 @@ namespace AngelLoader
 
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
-        internal async Task<CacheData> GetCacheableData(FanMission fm)
+        internal static async Task<CacheData> GetCacheableData(FanMission fm)
         {
             if (fm.Game == Game.Unsupported)
             {
@@ -2280,7 +2299,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal (string ReadmePath, ReadmeType ReadmeType)
+        internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
@@ -2328,7 +2347,7 @@ namespace AngelLoader
         }
 
         // Autodetect safe (non-spoiler) readme
-        internal string DetectSafeReadme(List<string> readmeFiles, string fmTitle)
+        internal static string DetectSafeReadme(List<string> readmeFiles, string fmTitle)
         {
             // Since an FM's readmes are very few in number, we can afford to be all kinds of lazy and slow here
 
@@ -2477,7 +2496,7 @@ namespace AngelLoader
             return safeReadme;
         }
 
-        internal void OpenFMFolder(FanMission fm)
+        internal static void OpenFMFolder(FanMission fm)
         {
             var installsBasePath = GetFMInstallsBasePath(fm.Game);
             if (installsBasePath.IsEmpty())
@@ -2502,7 +2521,7 @@ namespace AngelLoader
             }
         }
 
-        internal void OpenWebSearchUrl(FanMission fm)
+        internal static void OpenWebSearchUrl(FanMission fm)
         {
             var url = Config.WebSearchUrl;
             if (url.IsWhiteSpace() || url.Length > 32766) return;
@@ -2528,7 +2547,7 @@ namespace AngelLoader
             }
         }
 
-        internal void ViewHTMLReadme(FanMission fm)
+        internal static void ViewHTMLReadme(FanMission fm)
         {
             string path;
             try
@@ -2558,7 +2577,7 @@ namespace AngelLoader
             }
         }
 
-        internal void OpenLink(string link)
+        internal static void OpenLink(string link)
         {
             try
             {
@@ -2570,7 +2589,7 @@ namespace AngelLoader
             }
         }
 
-        internal void UpdateConfig(
+        internal static void UpdateConfig(
             FormWindowState mainWindowState,
             Size mainWindowSize,
             Point mainWindowLocation,
@@ -2635,7 +2654,7 @@ namespace AngelLoader
 
         private static readonly ReaderWriterLockSlim ReadWriteLock = new ReaderWriterLockSlim();
 
-        internal void WriteFullFMDataIni()
+        internal static void WriteFullFMDataIni()
         {
             try
             {
@@ -2649,7 +2668,7 @@ namespace AngelLoader
             }
         }
 
-        internal void Shutdown()
+        internal static void Shutdown()
         {
             try
             {
