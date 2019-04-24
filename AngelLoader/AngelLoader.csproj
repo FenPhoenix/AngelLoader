@@ -205,6 +205,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FMCache.cs" />
+    <Compile Include="FMInstallAndPlay.cs" />
     <Compile Include="Forms\FilterRatingForm.cs">
       <SubType>Form</SubType>
     </Compile>
