@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using AngelLoader.Common.DataClasses;
@@ -12,6 +13,65 @@ namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
+        internal static bool GameIsRunning(string gameExe, bool checkAllGames = false)
+        {
+            Log("Checking if " + gameExe + " is running. Listing processes...");
+
+            // We're doing this whole rigamarole because the game might have been started by someone other than
+            // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
+            foreach (var proc in Process.GetProcesses())
+            {
+                try
+                {
+                    var fn = GetProcessPath(proc.Id);
+                    //Log.Info("Process filename: " + fn);
+                    if (!fn.IsEmpty())
+                    {
+                        var fnb = fn.ToBackSlashes();
+                        if ((checkAllGames &&
+                             ((!Config.T1Exe.IsEmpty() && fnb.EqualsI(Config.T1Exe.ToBackSlashes())) ||
+                              (!Config.T2Exe.IsEmpty() && fnb.EqualsI(Config.T2Exe.ToBackSlashes())) ||
+                              (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())))) ||
+                            (!checkAllGames &&
+                             (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
+                        {
+                            var logExe = checkAllGames ? "a game exe" : gameExe;
+
+                            Log("Found " + logExe + " running: " + fn +
+                                "\r\nReturning true, game should be blocked from starting");
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Even if this were to be one of our games, if .NET won't let us find out then all we can do
+                    // is shrug and move on.
+                    Log("Exception caught in GameIsRunning", ex);
+                }
+            }
+
+            return false;
+        }
+
+        internal static string GetGameNameFromGameType(Game gameType)
+        {
+            return
+                gameType == Game.Thief1 ? "Thief 1" :
+                gameType == Game.Thief2 ? "Thief 2" :
+                gameType == Game.Thief3 ? "Thief 3" :
+                "[UnknownGameType]";
+        }
+
+        internal static string GetGameExeFromGameType(Game gameType)
+        {
+            return
+                gameType == Game.Thief1 ? Config.T1Exe :
+                gameType == Game.Thief2 ? Config.T2Exe :
+                gameType == Game.Thief3 ? Config.T3Exe :
+                null;
+        }
+
         internal static string GetProcessPath(int procId)
         {
             var buffer = new StringBuilder(1024);

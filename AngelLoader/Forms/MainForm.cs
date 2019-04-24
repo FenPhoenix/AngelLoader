@@ -2103,7 +2103,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (!fm.Installed && !await Model.InstallFM(fm)) return;
+            if (!fm.Installed && !await FMInstallAndPlay.InstallFM(fm)) return;
 
             if (Model.PlayFM(fm))
             {
@@ -3174,7 +3174,7 @@ namespace AngelLoader.Forms
 
         internal void CancelScan() => Model.CancelScan();
 
-        internal void CancelInstallFM() => Model.CancelInstallFM();
+        internal void CancelInstallFM() => FMInstallAndPlay.CancelInstallFM();
 
         #endregion
 
@@ -4484,7 +4484,7 @@ namespace AngelLoader.Forms
         {
             var fm = GetSelectedFM();
 
-            if (!fm.Installed && !await Model.InstallFM(fm)) return;
+            if (!fm.Installed && !await FMInstallAndPlay.InstallFM(fm)) return;
 
             Model.OpenFMInDromEd(fm);
         }

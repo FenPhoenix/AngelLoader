@@ -1,28 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using AngelLoader.CustomControls;
-using AngelLoader.Importing;
-using FMScanner;
 using Ookii.Dialogs.WinForms;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.FMBackupAndRestore;
-using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader
 {
@@ -111,7 +101,7 @@ namespace AngelLoader
 
             fm.Installed = true;
 
-            WriteFullFMDataIni();
+            Model.WriteFullFMDataIni();
 
             try
             {
@@ -200,7 +190,7 @@ namespace AngelLoader
 
                             int percent = (100 * (i + 1)) / filesCount;
 
-                            Model.View.InvokeSync(new Action(() => Model.ProgressBox.ReportFMExtractProgress(percent)));
+                            Model.ProgressBox.BeginInvoke(new Action(() => Model.ProgressBox.ReportFMExtractProgress(percent)));
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
@@ -465,7 +455,7 @@ namespace AngelLoader
                     fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
                 }
 
-                WriteFullFMDataIni();
+                Model.WriteFullFMDataIni();
                 await Model.View.RefreshSelectedFM(refreshReadme: false);
             }
             catch (Exception ex)
