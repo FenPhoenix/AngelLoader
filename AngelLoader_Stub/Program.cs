@@ -34,6 +34,9 @@ using System.Text;
  mods etc.) so we have to have this.
  
  Or at least no other command-line options are listed anywhere that I can find.
+
+ UPDATE: As of 2019/3/31, we only use this stub if we actually need to pass mod excludes. Otherwise, we just call
+ the game and pass it the FM on the command line, as that's much cleaner.
 */
 namespace AngelLoader_Stub
 {
