@@ -26,13 +26,13 @@ namespace AngelLoader
 
             if (fm.Game == null)
             {
-                Model.View.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
+                Core.View.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (fm.Game == Game.Unsupported)
             {
-                Model.View.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
+                Core.View.ShowAlert(LText.AlertMessages.Install_UnsupportedGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -40,7 +40,7 @@ namespace AngelLoader
 
             if (fmArchivePath.IsEmpty())
             {
-                Model.View.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
+                Core.View.ShowAlert(LText.AlertMessages.Install_ArchiveNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -50,7 +50,7 @@ namespace AngelLoader
             var gameName = GetGameNameFromGameType((Game)fm.Game);
             if (!File.Exists(gameExe))
             {
-                Model.View.ShowAlert(gameName + ":\r\n" +
+                Core.View.ShowAlert(gameName + ":\r\n" +
                                LText.AlertMessages.Install_ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
             }
@@ -59,13 +59,13 @@ namespace AngelLoader
 
             if (!Directory.Exists(instBasePath))
             {
-                Model.View.ShowAlert(LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
+                Core.View.ShowAlert(LText.AlertMessages.Install_FMInstallPathNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
             if (GameIsRunning(gameExe))
             {
-                Model.View.ShowAlert(gameName + ":\r\n" +
+                Core.View.ShowAlert(gameName + ":\r\n" +
                                LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
@@ -74,7 +74,7 @@ namespace AngelLoader
 
             ExtractCts = new CancellationTokenSource();
 
-            Model.ProgressBox.ShowInstallingFM();
+            Core.ProgressBox.ShowInstallingFM();
 
             // Framework zip extracting is much faster, so use it if possible
             bool canceled = fmArchivePath.ExtIsZip()
@@ -83,7 +83,7 @@ namespace AngelLoader
 
             if (canceled)
             {
-                Model.ProgressBox.SetCancelingFMInstall();
+                Core.ProgressBox.SetCancelingFMInstall();
                 await Task.Run(() =>
                 {
                     try
@@ -95,13 +95,13 @@ namespace AngelLoader
                         Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
                     }
                 });
-                Model.ProgressBox.HideThis();
+                Core.ProgressBox.HideThis();
                 return false;
             }
 
             fm.Installed = true;
 
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
 
             try
             {
@@ -119,7 +119,7 @@ namespace AngelLoader
             var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
-                Model.ProgressBox.ShowConvertingFiles();
+                Core.ProgressBox.ShowConvertingFiles();
                 await ac.ConvertMP3sToWAVs();
 
                 if (Config.ConvertOGGsToWAVsOnInstall)
@@ -133,7 +133,7 @@ namespace AngelLoader
             }
             finally
             {
-                Model.ProgressBox.HideThis();
+                Core.ProgressBox.HideThis();
             }
 
             try
@@ -146,11 +146,11 @@ namespace AngelLoader
             }
             finally
             {
-                Model.ProgressBox.HideThis();
+                Core.ProgressBox.HideThis();
             }
 
             // Not doing RefreshSelectedFMRowOnly() because that wouldn't update the install/uninstall buttons
-            await Model.View.RefreshSelectedFM(refreshReadme: false);
+            await Core.View.RefreshSelectedFM(refreshReadme: false);
 
             return true;
         }
@@ -190,7 +190,7 @@ namespace AngelLoader
 
                             int percent = (100 * (i + 1)) / filesCount;
 
-                            Model.ProgressBox.BeginInvoke(new Action(() => Model.ProgressBox.ReportFMExtractProgress(percent)));
+                            Core.ProgressBox.BeginInvoke(new Action(() => Core.ProgressBox.ReportFMExtractProgress(percent)));
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
@@ -203,13 +203,13 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-                    Model.View.InvokeSync(new Action(() =>
-                        Model.View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                    Core.View.InvokeSync(new Action(() =>
+                        Core.View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
                 }
                 finally
                 {
-                    Model.View.InvokeSync(new Action(() => Model.ProgressBox.HideThis()));
+                    Core.View.InvokeSync(new Action(() => Core.ProgressBox.HideThis()));
                 }
             });
 
@@ -236,11 +236,11 @@ namespace AngelLoader
                             }
                             if (canceled)
                             {
-                                Model.ProgressBox.BeginInvoke(new Action(Model.ProgressBox.SetCancelingFMInstall));
+                                Core.ProgressBox.BeginInvoke(new Action(Core.ProgressBox.SetCancelingFMInstall));
                                 return;
                             }
-                            Model.ProgressBox.BeginInvoke(new Action(() =>
-                                Model.ProgressBox.ReportFMExtractProgress(e.PercentDone)));
+                            Core.ProgressBox.BeginInvoke(new Action(() =>
+                                Core.ProgressBox.ReportFMExtractProgress(e.PercentDone)));
                         };
 
                         extractor.FileExtractionFinished += (sender, e) =>
@@ -250,7 +250,7 @@ namespace AngelLoader
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
-                                Model.ProgressBox.BeginInvoke(new Action(Model.ProgressBox.SetCancelingFMInstall));
+                                Core.ProgressBox.BeginInvoke(new Action(Core.ProgressBox.SetCancelingFMInstall));
                                 canceled = true;
                                 e.Cancel = true;
                             }
@@ -271,13 +271,13 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
-                    Model.View.InvokeSync(new Action(() =>
-                       Model.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                    Core.View.InvokeSync(new Action(() =>
+                       Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                            LText.AlertMessages.Alert)));
                 }
                 finally
                 {
-                    Model.View.InvokeSync(new Action(() => Model.ProgressBox.HideThis()));
+                    Core.View.InvokeSync(new Action(() => Core.ProgressBox.HideThis()));
                 }
             });
 
@@ -351,7 +351,7 @@ namespace AngelLoader
             if (Config.ConfirmUninstall)
             {
                 var (cancel, dontAskAgain) =
-                    Model.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Uninstall_Confirm,
+                    Core.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Uninstall_Confirm,
                         LText.AlertMessages.Confirm, TaskDialogIcon.Warning, showDontAskAgain: true,
                         LText.AlertMessages.Uninstall, LText.Global.Cancel);
                 Config.ConfirmUninstall = !dontAskAgain;
@@ -362,12 +362,12 @@ namespace AngelLoader
             var gameName = GetGameNameFromGameType((Game)fm.Game);
             if (GameIsRunning(gameExe))
             {
-                Model.View.ShowAlert(
+                Core.View.ShowAlert(
                     gameName + ":\r\n" + LText.AlertMessages.Uninstall_GameIsRunning, LText.AlertMessages.Alert);
                 return;
             }
 
-            Model.ProgressBox.ShowUninstallingFM();
+            Core.ProgressBox.ShowUninstallingFM();
 
             try
             {
@@ -376,12 +376,12 @@ namespace AngelLoader
                 var fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
                 {
-                    var yes = Model.View.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
+                    var yes = Core.View.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
                         LText.AlertMessages.Alert);
                     if (yes)
                     {
                         fm.Installed = false;
-                        await Model.View.RefreshSelectedFM(refreshReadme: false);
+                        await Core.View.RefreshSelectedFM(refreshReadme: false);
                     }
                     return;
                 }
@@ -390,7 +390,7 @@ namespace AngelLoader
 
                 if (fmArchivePath.IsEmpty())
                 {
-                    var (cancel, _) = Model.View.AskToContinueYesNoCustomStrings(
+                    var (cancel, _) = Core.View.AskToContinueYesNoCustomStrings(
                         LText.AlertMessages.Uninstall_ArchiveNotFound, LText.AlertMessages.Warning,
                         TaskDialogIcon.Warning, showDontAskAgain: false, LText.AlertMessages.Uninstall,
                         LText.Global.Cancel);
@@ -419,7 +419,7 @@ namespace AngelLoader
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
                     var (cancel, cont, dontAskAgain) =
-                        Model.View.AskToContinueWithCancelCustomStrings(
+                        Core.View.AskToContinueWithCancelCustomStrings(
                             message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                             LText.AlertMessages.Confirm, null, showDontAskAgain: true,
                             LText.AlertMessages.BackUp, LText.AlertMessages.DontBackUp, LText.Global.Cancel);
@@ -439,7 +439,7 @@ namespace AngelLoader
                 if (!await DeleteFMInstalledDirectory(fmInstalledPath))
                 {
                     // TODO: Make option to open the folder in Explorer and delete it manually?
-                    Model.View.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted,
+                    Core.View.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted,
                         LText.AlertMessages.Alert);
                 }
 
@@ -455,19 +455,19 @@ namespace AngelLoader
                     fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
                 }
 
-                Model.WriteFullFMDataIni();
-                await Model.View.RefreshSelectedFM(refreshReadme: false);
+                Core.WriteFullFMDataIni();
+                await Core.View.RefreshSelectedFM(refreshReadme: false);
             }
             catch (Exception ex)
             {
                 Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
-                Model.View.InvokeSync(new Action(() =>
-                    Model.View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially,
+                Core.View.InvokeSync(new Action(() =>
+                    Core.View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially,
                         LText.AlertMessages.Alert)));
             }
             finally
             {
-                Model.ProgressBox.HideThis();
+                Core.ProgressBox.HideThis();
             }
         }
     }

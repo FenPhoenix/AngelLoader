@@ -281,13 +281,13 @@ namespace AngelLoader.Forms
             // window (which doesn't show the view, so the startup process is still left intact), this code is
             // now a nice straight line with no back-and-forth spaghetti method calls.
 
-            Model.Inject(this, ProgressBox);
+            Core.Inject(this, ProgressBox);
 
-            await Model.Init();
+            await Core.Init();
 
             // Model.Init() success means Config is now populated
 
-            Model.FindFMs(startup: true);
+            Core.FindFMs(startup: true);
 
             #region Set up form and control state
 
@@ -439,11 +439,11 @@ namespace AngelLoader.Forms
         private async void MainForm_Shown(object sender, EventArgs e)
         {
             // This must certainly need to come after Show() as well, right?!
-            if (Model.ViewListGamesNull.Count > 0)
+            if (Core.ViewListGamesNull.Count > 0)
             {
                 // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-                await Model.ScanNewFMsForGameType();
-                Model.ViewListGamesNull.Clear();
+                await Core.ScanNewFMsForGameType();
+                Core.ViewListGamesNull.Clear();
             }
 
             // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
@@ -823,7 +823,7 @@ namespace AngelLoader.Forms
         private void SetFMSizesToLocalized()
         {
             // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture
-            foreach (var fm in Model.FMsViewList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
+            foreach (var fm in Core.FMsViewList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
         }
 
         private void MainForm_Deactivate(object sender, EventArgs e)
@@ -947,7 +947,7 @@ namespace AngelLoader.Forms
             FormClosing -= MainForm_FormClosing;
 
             UpdateConfig();
-            Model.Shutdown();
+            Core.Shutdown();
         }
 
         #endregion
@@ -1081,7 +1081,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            Model.UpdateConfig(
+            Core.UpdateConfig(
                 NominalWindowState,
                 NominalWindowSize,
                 NominalWindowLocation,
@@ -1128,7 +1128,7 @@ namespace AngelLoader.Forms
         /// <returns></returns>
         private FanMission GetFMFromIndex(int index)
         {
-            return FMsDGV.Filtered ? Model.FMsViewList[FMsDGV.FilterShownIndexList[index]] : Model.FMsViewList[index];
+            return FMsDGV.Filtered ? Core.FMsViewList[FMsDGV.FilterShownIndexList[index]] : Core.FMsViewList[index];
         }
 
         /// <summary>
@@ -1147,7 +1147,7 @@ namespace AngelLoader.Forms
             // Graceful default if a value is missing
             if (installedName.IsEmpty()) return 0;
 
-            for (int i = 0; i < (FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Model.FMsViewList.Count); i++)
+            for (int i = 0; i < (FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Core.FMsViewList.Count); i++)
             {
                 var fm = GetFMFromIndex(i);
                 if (fm.InstalledDir.EqualsI(installedName)) return i;
@@ -1412,9 +1412,9 @@ namespace AngelLoader.Forms
 
             #region Title / initial
 
-            for (int i = 0; i < Model.FMsViewList.Count; i++)
+            for (int i = 0; i < Core.FMsViewList.Count; i++)
             {
-                var fm = Model.FMsViewList[i];
+                var fm = Core.FMsViewList[i];
 
                 if (titleIsWhitespace ||
                     fm.Archive.ContainsI(s.Filter.Title) ||
@@ -1433,7 +1433,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmAuthor = Model.FMsViewList[s.FilterShownIndexList[i]].Author;
+                    var fmAuthor = Core.FMsViewList[s.FilterShownIndexList[i]].Author;
 
                     if (!fmAuthor.ContainsI(s.Filter.Author))
                     {
@@ -1451,7 +1451,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Model.FMsViewList[s.FilterShownIndexList[i]];
+                    var fm = Core.FMsViewList[s.FilterShownIndexList[i]];
                     if (fm.Game == Game.Unsupported && !FilterShowJunkCheckBox.Checked)
                     {
                         s.FilterShownIndexList.RemoveAt(i);
@@ -1468,7 +1468,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Model.FMsViewList[s.FilterShownIndexList[i]];
+                    var fm = Core.FMsViewList[s.FilterShownIndexList[i]];
                     if (GameIsKnownAndSupported(fm) && !s.Filter.Games.Contains((Game)fm.Game))
                     {
                         s.FilterShownIndexList.RemoveAt(i);
@@ -1491,7 +1491,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmTags = Model.FMsViewList[s.FilterShownIndexList[i]].Tags;
+                    var fmTags = Core.FMsViewList[s.FilterShownIndexList[i]].Tags;
                     if (fmTags.Count == 0 && notTags.Count == 0)
                     {
                         s.FilterShownIndexList.RemoveAt(i);
@@ -1633,7 +1633,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmRating = Model.FMsViewList[s.FilterShownIndexList[i]].Rating;
+                    var fmRating = Core.FMsViewList[s.FilterShownIndexList[i]].Rating;
 
                     if (fmRating < rf || fmRating > rt)
                     {
@@ -1654,7 +1654,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmRelDate = Model.FMsViewList[s.FilterShownIndexList[i]].ReleaseDate;
+                    var fmRelDate = Core.FMsViewList[s.FilterShownIndexList[i]].ReleaseDate;
 
                     if (fmRelDate == null ||
                         (rdf != null &&
@@ -1679,7 +1679,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fmLastPlayed = Model.FMsViewList[s.FilterShownIndexList[i]].LastPlayed;
+                    var fmLastPlayed = Core.FMsViewList[s.FilterShownIndexList[i]].LastPlayed;
 
                     if (fmLastPlayed == null ||
                         (lpdf != null &&
@@ -1701,7 +1701,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < s.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Model.FMsViewList[s.FilterShownIndexList[i]];
+                    var fm = Core.FMsViewList[s.FilterShownIndexList[i]];
                     var fmFinished = fm.FinishedOn;
                     var fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
@@ -2057,7 +2057,7 @@ namespace AngelLoader.Forms
         {
             var fm = GetSelectedFM();
 
-            await Model.InstallOrUninstall(fm);
+            await Core.InstallOrUninstall(fm);
         }
 
         private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e)
@@ -2065,7 +2065,7 @@ namespace AngelLoader.Forms
             var fm = GetSelectedFM();
             if (!fm.Installed) return;
 
-            await Model.ConvertWAVsTo16Bit(fm);
+            await Core.ConvertWAVsTo16Bit(fm);
         }
 
         private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e)
@@ -2073,7 +2073,7 @@ namespace AngelLoader.Forms
             var fm = GetSelectedFM();
             if (!fm.Installed) return;
 
-            await Model.ConvertOGGsToWAVs(fm);
+            await Core.ConvertOGGsToWAVs(fm);
         }
 
         #endregion
@@ -2105,7 +2105,7 @@ namespace AngelLoader.Forms
 
             if (!fm.Installed && !await FMInstallAndPlay.InstallFM(fm)) return;
 
-            if (Model.PlayFM(fm))
+            if (Core.PlayFM(fm))
             {
                 fm.LastPlayed = DateTime.Now;
                 await RefreshSelectedFM(refreshReadme: false);
@@ -2118,7 +2118,7 @@ namespace AngelLoader.Forms
         {
             var fm = GetSelectedFM();
 
-            await Model.InstallOrUninstall(fm);
+            await Core.InstallOrUninstall(fm);
         }
 
         private async void PlayFMButton_Click(object sender, EventArgs e) => await CallInstallOrPlay();
@@ -2146,7 +2146,7 @@ namespace AngelLoader.Forms
                 s == PlayOriginalThief2MenuItem ? Game.Thief2 :
                 Game.Thief3;
 
-            Model.PlayOriginalGame(game);
+            Core.PlayOriginalGame(game);
         }
 
         #endregion
@@ -2155,7 +2155,7 @@ namespace AngelLoader.Forms
 
         private async void ScanAllFMsButton_Click(object sender, EventArgs e)
         {
-            if (Model.FMsViewList.Count == 0) return;
+            if (Core.FMsViewList.Count == 0) return;
 
             ScanOptions scanOptions = null;
             bool noneSelected;
@@ -2183,7 +2183,7 @@ namespace AngelLoader.Forms
             }
 
             var success =
-                await Model.ScanFMs(Model.FMsViewList, scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
+                await Core.ScanFMs(Core.FMsViewList, scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
             if (success) await SortAndSetFilter(forceRefreshReadme: true);
         }
 
@@ -2255,18 +2255,18 @@ namespace AngelLoader.Forms
                 // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
                 //       being thrown here.
                 Config.T1FMInstallPath = !Config.T1Exe.IsWhiteSpace()
-                    ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
+                    ? Core.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
                     : "";
-                Config.T1DromEdDetected = !Model.GetDromEdExe(Game.Thief1).IsEmpty();
+                Config.T1DromEdDetected = !Core.GetDromEdExe(Game.Thief1).IsEmpty();
 
                 Config.T2FMInstallPath = !Config.T2Exe.IsWhiteSpace()
-                    ? Model.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
+                    ? Core.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
                     : "";
-                Config.T2DromEdDetected = !Model.GetDromEdExe(Game.Thief2).IsEmpty();
+                Config.T2DromEdDetected = !Core.GetDromEdExe(Game.Thief2).IsEmpty();
 
                 if (!Config.T3Exe.IsWhiteSpace())
                 {
-                    var (error, useCentralSaves, t3FMInstPath) = Model.GetInstFMsPathFromT3();
+                    var (error, useCentralSaves, t3FMInstPath) = Core.GetInstFMsPathFromT3();
                     if (error == Error.None)
                     {
                         Config.T3FMInstallPath = t3FMInstPath;
@@ -2357,7 +2357,7 @@ namespace AngelLoader.Forms
 
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    Model.FindFMs();
+                    Core.FindFMs();
                 }
                 if (gameOrganizationChanged)
                 {
@@ -2392,7 +2392,7 @@ namespace AngelLoader.Forms
                 // here
                 if (gamePathsChanged || archivePathsChanged || gameOrganizationChanged || articlesChanged)
                 {
-                    if (gamePathsChanged || archivePathsChanged) await Model.ScanNewFMsForGameType();
+                    if (gamePathsChanged || archivePathsChanged) await Core.ScanNewFMsForGameType();
 
                     SortFMTable(Config.SortedColumn, Config.SortDirection);
                     await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
@@ -2512,7 +2512,7 @@ namespace AngelLoader.Forms
                 // A small but measurable perf increase from this. Also prevents flickering when switching game
                 // tabs.
                 if (!suppressSuspendResume) FMsDGV.SuspendDrawing();
-                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Model.FMsViewList.Count;
+                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Core.FMsViewList.Count;
 
                 if (FMsDGV.RowCount == 0)
                 {
@@ -2590,9 +2590,9 @@ namespace AngelLoader.Forms
             {
                 var ascending = reverse ? SortOrder.Descending : SortOrder.Ascending;
 
-                Model.FMsViewList = sortDirection == ascending
-                    ? Model.FMsViewList.OrderBy(x => x.Title, new FMTitleComparer(articles)).ToList()
-                    : Model.FMsViewList.OrderByDescending(x => x.Title, new FMTitleComparer(articles)).ToList();
+                Core.FMsViewList = sortDirection == ascending
+                    ? Core.FMsViewList.OrderBy(x => x.Title, new FMTitleComparer(articles)).ToList()
+                    : Core.FMsViewList.OrderByDescending(x => x.Title, new FMTitleComparer(articles)).ToList();
             }
 
             // For any column which could have empty entries, sort by title first in order to maintain a
@@ -2602,17 +2602,17 @@ namespace AngelLoader.Forms
             {
                 case Column.Game:
                     SortByTitle();
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.Game).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.Game).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.Game).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.Game).ToList();
                     break;
 
                 case Column.Installed:
                     SortByTitle();
                     // Reverse this because "Installed" should go on top and blanks should go on bottom
-                    Model.FMsViewList = sortDirection == SortOrder.Descending
-                        ? Model.FMsViewList.OrderBy(x => x.Installed).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.Installed).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Descending
+                        ? Core.FMsViewList.OrderBy(x => x.Installed).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.Installed).ToList();
                     break;
 
                 case Column.Title:
@@ -2620,30 +2620,30 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Archive:
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.Archive).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.Archive).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.Archive).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.Archive).ToList();
                     break;
 
                 case Column.Author:
                     SortByTitle();
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.Author).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.Author).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.Author).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.Author).ToList();
                     break;
 
                 case Column.Size:
                     SortByTitle();
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.SizeBytes).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.SizeBytes).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.SizeBytes).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.SizeBytes).ToList();
                     break;
 
                 case Column.Rating:
                     SortByTitle();
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.Rating).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.Rating).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.Rating).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.Rating).ToList();
                     break;
 
                 case Column.Finished:
@@ -2651,13 +2651,13 @@ namespace AngelLoader.Forms
                     // FinishedOnUnknown is a separate value, so...
                     if (sortDirection == SortOrder.Ascending)
                     {
-                        Model.FMsViewList = Model.FMsViewList.OrderBy(x => x.FinishedOn).ToList();
-                        Model.FMsViewList = Model.FMsViewList.OrderBy(x => x.FinishedOnUnknown).ToList();
+                        Core.FMsViewList = Core.FMsViewList.OrderBy(x => x.FinishedOn).ToList();
+                        Core.FMsViewList = Core.FMsViewList.OrderBy(x => x.FinishedOnUnknown).ToList();
                     }
                     else
                     {
-                        Model.FMsViewList = Model.FMsViewList.OrderByDescending(x => x.FinishedOn).ToList();
-                        Model.FMsViewList = Model.FMsViewList.OrderByDescending(x => x.FinishedOnUnknown).ToList();
+                        Core.FMsViewList = Core.FMsViewList.OrderByDescending(x => x.FinishedOn).ToList();
+                        Core.FMsViewList = Core.FMsViewList.OrderByDescending(x => x.FinishedOnUnknown).ToList();
                     }
                     break;
 
@@ -2666,32 +2666,32 @@ namespace AngelLoader.Forms
                     // Sort this one down to the day only, because the exact time may very well not be known, and
                     // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
                     // sorted out of name order because of an invisible time difference.
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
                     break;
 
                 case Column.LastPlayed:
                     SortByTitle();
                     // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
                     // second (you change it by playing it), and the user will expect precise sorting.
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.LastPlayed).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.LastPlayed).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.LastPlayed).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.LastPlayed).ToList();
                     break;
 
                 case Column.DisabledMods:
                     SortByTitle();
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.DisabledMods).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.DisabledMods).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.DisabledMods).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.DisabledMods).ToList();
                     break;
 
                 case Column.Comment:
                     SortByTitle();
-                    Model.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Model.FMsViewList.OrderBy(x => x.CommentSingleLine).ToList()
-                        : Model.FMsViewList.OrderByDescending(x => x.CommentSingleLine).ToList();
+                    Core.FMsViewList = sortDirection == SortOrder.Ascending
+                        ? Core.FMsViewList.OrderBy(x => x.CommentSingleLine).ToList()
+                        : Core.FMsViewList.OrderByDescending(x => x.CommentSingleLine).ToList();
                     break;
             }
 
@@ -2752,7 +2752,7 @@ namespace AngelLoader.Forms
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
-            if (Model.FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
+            if (Core.FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
 
             InstallUninstallMenuItem.Text = LText.FMsList.FMMenu_InstallFM;
             InstallUninstallMenuItem.Enabled = false;
@@ -2871,7 +2871,7 @@ namespace AngelLoader.Forms
             #region Toggles
 
             // We should never get here when FMsList.Count == 0, but hey
-            if (Model.FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
+            if (Core.FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
 
             FinishedOnNormalMenuItem.Text = fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal;
             FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;
@@ -3033,7 +3033,7 @@ namespace AngelLoader.Forms
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();
                     PatchDMLsListBox.Items.Clear();
-                    var (success, dmlFiles) = Model.GetDMLFiles(fm);
+                    var (success, dmlFiles) = Core.GetDMLFiles(fm);
                     if (success)
                     {
                         foreach (var f in dmlFiles)
@@ -3051,7 +3051,7 @@ namespace AngelLoader.Forms
 
             if (!refreshReadme) return;
 
-            var cacheData = await Model.GetCacheableData(fm);
+            var cacheData = await Core.GetCacheableData(fm);
 
             #region Readme
 
@@ -3098,7 +3098,7 @@ namespace AngelLoader.Forms
                 }
                 else if (readmeFiles.Count > 1)
                 {
-                    var safeReadme = Model.DetectSafeReadme(readmeFiles, fm.Title);
+                    var safeReadme = Core.DetectSafeReadme(readmeFiles, fm.Title);
 
                     if (!safeReadme.IsEmpty())
                     {
@@ -3135,7 +3135,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                var (path, type) = Model.GetReadmeFileAndType(fm);
+                var (path, type) = Core.GetReadmeFileAndType(fm);
                 ReadmeLoad(path, type);
             }
             catch (Exception ex)
@@ -3172,7 +3172,7 @@ namespace AngelLoader.Forms
 
         #region In
 
-        internal void CancelScan() => Model.CancelScan();
+        internal void CancelScan() => Core.CancelScan();
 
         internal void CancelInstallFM() => FMInstallAndPlay.CancelInstallFM();
 
@@ -3374,7 +3374,7 @@ namespace AngelLoader.Forms
         private void CommentTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private void ResetLayoutButton_Click(object sender, EventArgs e)
@@ -3595,7 +3595,7 @@ namespace AngelLoader.Forms
             }
 
             DisplayFMTags(fm);
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private void RemoveTagButton_Click(object sender, EventArgs e)
@@ -3620,7 +3620,7 @@ namespace AngelLoader.Forms
                 AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
                 UpdateFMTagsString(fm);
                 DisplayFMTags(fm);
-                Model.WriteFullFMDataIni();
+                Core.WriteFullFMDataIni();
             }
 
             AddTagTextBox.Clear();
@@ -3772,7 +3772,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Model.OpenLink(e.LinkText);
+        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
 
         private void ZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
@@ -3859,7 +3859,7 @@ namespace AngelLoader.Forms
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {
             EditFMTitleTextBox.Text = ((ToolStripMenuItem)sender).Text;
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
@@ -3881,7 +3881,7 @@ namespace AngelLoader.Forms
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3896,7 +3896,7 @@ namespace AngelLoader.Forms
                 : (DateTime?)null;
 
             await RefreshSelectedFMRowOnly();
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
@@ -3905,7 +3905,7 @@ namespace AngelLoader.Forms
             var fm = GetSelectedFM();
             fm.ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
             await RefreshSelectedFMRowOnly();
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3920,7 +3920,7 @@ namespace AngelLoader.Forms
                 : (DateTime?)null;
 
             await RefreshSelectedFMRowOnly();
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
@@ -3929,7 +3929,7 @@ namespace AngelLoader.Forms
             var fm = GetSelectedFM();
             fm.LastPlayed = EditFMLastPlayedDateTimePicker.Value;
             await RefreshSelectedFMRowOnly();
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
@@ -3943,7 +3943,7 @@ namespace AngelLoader.Forms
         private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3954,7 +3954,7 @@ namespace AngelLoader.Forms
             var fm = GetSelectedFM();
             fm.DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
             await RefreshSelectedFMRowOnly();
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private async void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -3963,7 +3963,7 @@ namespace AngelLoader.Forms
             var fm = GetSelectedFM();
             fm.Rating = EditFMRatingComboBox.SelectedIndex - 1;
             await RefreshSelectedFMRowOnly();
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         #endregion
@@ -3978,7 +3978,7 @@ namespace AngelLoader.Forms
 
                 fm.Rating = i - 1;
                 await RefreshSelectedFM(refreshReadme: false);
-                Model.WriteFullFMDataIni();
+                Core.WriteFullFMDataIni();
                 break;
             }
         }
@@ -4026,7 +4026,7 @@ namespace AngelLoader.Forms
             }
 
             await RefreshSelectedFMRowOnly();
-            Model.WriteFullFMDataIni();
+            Core.WriteFullFMDataIni();
         }
 
         private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -4049,7 +4049,7 @@ namespace AngelLoader.Forms
 
         private void WebSearchButton_Click(object sender, EventArgs e) => SearchWeb();
 
-        private void SearchWeb() => Model.OpenWebSearchUrl(GetSelectedFM());
+        private void SearchWeb() => Core.OpenWebSearchUrl(GetSelectedFM());
 
         private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
 
@@ -4300,7 +4300,7 @@ namespace AngelLoader.Forms
 
         private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Model.ViewHTMLReadme(GetSelectedFM());
+        private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(GetSelectedFM());
 
         private void ImportButton_Click(object sender, EventArgs e)
         {
@@ -4328,7 +4328,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            bool success = await Model.ImportFromDarkLoader(iniFile, importFMData, importSaves);
+            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
             if (!success) return;
 
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
@@ -4365,8 +4365,8 @@ namespace AngelLoader.Forms
                 if (file.IsWhiteSpace()) continue;
 
                 bool success = await (importType == ImportType.FMSel
-                    ? Model.ImportFromFMSel(file)
-                    : Model.ImportFromNDL(file));
+                    ? Core.ImportFromFMSel(file)
+                    : Core.ImportFromNDL(file));
                 if (success) successCount++;
             }
 
@@ -4399,7 +4399,7 @@ namespace AngelLoader.Forms
 
         private async Task<bool> ScanSelectedFM(ScanOptions scanOptions)
         {
-            bool success = await Model.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false,
+            bool success = await Core.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false,
                 markAsScanned: true);
             if (success) await RefreshSelectedFM(refreshReadme: true);
             return success;
@@ -4443,7 +4443,7 @@ namespace AngelLoader.Forms
             var s = PatchDMLsListBox;
             if (s.SelectedIndex == -1) return;
 
-            bool success = Model.RemoveDML(GetSelectedFM(), s.SelectedItem.ToString());
+            bool success = Core.RemoveDML(GetSelectedFM(), s.SelectedItem.ToString());
             if (!success) return;
 
             s.RemoveAndSelectNearest();
@@ -4467,7 +4467,7 @@ namespace AngelLoader.Forms
             {
                 if (f.IsEmpty()) continue;
 
-                bool success = Model.AddDML(GetSelectedFM(), f);
+                bool success = Core.AddDML(GetSelectedFM(), f);
                 if (!success) return;
 
                 var dml = Path.GetFileName(f);
@@ -4478,7 +4478,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Model.OpenFMFolder(GetSelectedFM());
+        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(GetSelectedFM());
 
         private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
         {
@@ -4486,7 +4486,7 @@ namespace AngelLoader.Forms
 
             if (!fm.Installed && !await FMInstallAndPlay.InstallFM(fm)) return;
 
-            Model.OpenFMInDromEd(fm);
+            Core.OpenFMInDromEd(fm);
         }
 
         private void TopRightCollapseButton_Click(object sender, EventArgs e)
@@ -4514,7 +4514,7 @@ namespace AngelLoader.Forms
 
         private async Task RefreshFromDisk()
         {
-            Model.FindFMs();
+            Core.FindFMs();
             await SortAndSetFilter();
         }
 

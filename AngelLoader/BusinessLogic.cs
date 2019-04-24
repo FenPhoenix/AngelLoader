@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,11 +16,9 @@ using AngelLoader.CustomControls;
 using AngelLoader.Importing;
 using FMScanner;
 using Ookii.Dialogs.WinForms;
-using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
-using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader
@@ -47,7 +44,7 @@ namespace AngelLoader
             bool showDontAskAgain, string yes, string no, string cancel);
     }
 
-    internal static class Model
+    internal static class Core
     {
         internal static IView View { get; set; }
         internal static ProgressPanel ProgressBox;
@@ -1750,12 +1747,6 @@ namespace AngelLoader
                 Log("Exception getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
                 return (false, new string[] { });
             }
-        }
-
-        private static bool FMIsReallyInstalled(FanMission fm)
-        {
-            return fm.Installed &&
-                   Directory.Exists(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir));
         }
 
         #region Cacheable FM data

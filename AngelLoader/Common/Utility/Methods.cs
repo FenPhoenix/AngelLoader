@@ -13,6 +13,12 @@ namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
+        internal static bool FMIsReallyInstalled(FanMission fm)
+        {
+            return fm.Installed &&
+                   Directory.Exists(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir));
+        }
+
         internal static bool GameIsRunning(string gameExe, bool checkAllGames = false)
         {
             Log("Checking if " + gameExe + " is running. Listing processes...");
