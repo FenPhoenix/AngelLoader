@@ -13,6 +13,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
+using AngelLoader.Forms;
 using AngelLoader.Importing;
 using FMScanner;
 using Ookii.Dialogs.WinForms;
@@ -25,6 +26,9 @@ namespace AngelLoader
 {
     internal interface IView
     {
+        void Init();
+        void SortFMTable(Column column, SortOrder sortDirection);
+        void Show();
         void ShowAlert(string message, string title);
         Task<bool> OpenSettings(bool startup = false);
         object InvokeSync(Delegate method);
@@ -54,14 +58,10 @@ namespace AngelLoader
 
         private static CancellationTokenSource ScanCts;
 
-        internal static void Inject(IView view, ProgressPanel progressBox)
-        {
-            View = view;
-            ProgressBox = progressBox;
-        }
-
         internal static async Task Init()
         {
+            View = new MainForm();
+
             try
             {
                 Directory.CreateDirectory(Paths.Data);
@@ -135,6 +135,124 @@ namespace AngelLoader
                     // Since nothing of consequence has yet happened, it's okay to do the brutal quit
                     Environment.Exit(0);
                 }
+            }
+
+            FindFMs(startup: true);
+            View.Init();
+            View.Show();
+        }
+
+        internal static void SortFMsViewList(Column column, SortOrder sortDirection)
+        {
+            var articles = Config.EnableArticles ? Config.Articles : new List<string>();
+
+            void SortByTitle(bool reverse = false)
+            {
+                var ascending = reverse ? SortOrder.Descending : SortOrder.Ascending;
+
+                FMsViewList = sortDirection == ascending
+                    ? FMsViewList.OrderBy(x => x.Title, new FMTitleComparer(articles)).ToList()
+                    : FMsViewList.OrderByDescending(x => x.Title, new FMTitleComparer(articles)).ToList();
+            }
+
+            // For any column which could have empty entries, sort by title first in order to maintain a
+            // consistent order
+
+            switch (column)
+            {
+                case Column.Game:
+                    SortByTitle();
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.Game).ToList()
+                        : FMsViewList.OrderByDescending(x => x.Game).ToList();
+                    break;
+
+                case Column.Installed:
+                    SortByTitle();
+                    // Reverse this because "Installed" should go on top and blanks should go on bottom
+                    FMsViewList = sortDirection == SortOrder.Descending
+                        ? FMsViewList.OrderBy(x => x.Installed).ToList()
+                        : FMsViewList.OrderByDescending(x => x.Installed).ToList();
+                    break;
+
+                case Column.Title:
+                    SortByTitle();
+                    break;
+
+                case Column.Archive:
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.Archive).ToList()
+                        : FMsViewList.OrderByDescending(x => x.Archive).ToList();
+                    break;
+
+                case Column.Author:
+                    SortByTitle();
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.Author).ToList()
+                        : FMsViewList.OrderByDescending(x => x.Author).ToList();
+                    break;
+
+                case Column.Size:
+                    SortByTitle();
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.SizeBytes).ToList()
+                        : FMsViewList.OrderByDescending(x => x.SizeBytes).ToList();
+                    break;
+
+                case Column.Rating:
+                    SortByTitle();
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.Rating).ToList()
+                        : FMsViewList.OrderByDescending(x => x.Rating).ToList();
+                    break;
+
+                case Column.Finished:
+                    SortByTitle();
+                    // FinishedOnUnknown is a separate value, so...
+                    if (sortDirection == SortOrder.Ascending)
+                    {
+                        FMsViewList = FMsViewList.OrderBy(x => x.FinishedOn).ToList();
+                        FMsViewList = FMsViewList.OrderBy(x => x.FinishedOnUnknown).ToList();
+                    }
+                    else
+                    {
+                        FMsViewList = FMsViewList.OrderByDescending(x => x.FinishedOn).ToList();
+                        FMsViewList = FMsViewList.OrderByDescending(x => x.FinishedOnUnknown).ToList();
+                    }
+                    break;
+
+                case Column.ReleaseDate:
+                    SortByTitle();
+                    // Sort this one down to the day only, because the exact time may very well not be known, and
+                    // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
+                    // sorted out of name order because of an invisible time difference.
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
+                        : FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
+                    break;
+
+                case Column.LastPlayed:
+                    SortByTitle();
+                    // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
+                    // second (you change it by playing it), and the user will expect precise sorting.
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.LastPlayed).ToList()
+                        : FMsViewList.OrderByDescending(x => x.LastPlayed).ToList();
+                    break;
+
+                case Column.DisabledMods:
+                    SortByTitle();
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.DisabledMods).ToList()
+                        : FMsViewList.OrderByDescending(x => x.DisabledMods).ToList();
+                    break;
+
+                case Column.Comment:
+                    SortByTitle();
+                    FMsViewList = sortDirection == SortOrder.Ascending
+                        ? FMsViewList.OrderBy(x => x.CommentSingleLine).ToList()
+                        : FMsViewList.OrderByDescending(x => x.CommentSingleLine).ToList();
+                    break;
             }
         }
 

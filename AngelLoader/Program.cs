@@ -68,6 +68,6 @@ namespace AngelLoader
     {
         internal AppContext() => Init();
 
-        private static async void Init() => await new MainForm().Init();
+        private static async void Init() => await Core.Init();
     }
 }

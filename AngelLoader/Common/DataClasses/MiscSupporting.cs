@@ -13,7 +13,8 @@ namespace AngelLoader.Common.DataClasses
         internal bool Visible = true;
     }
 
-    internal enum Column
+    // Public for interface use
+    public enum Column
     {
         Game,
         Installed,

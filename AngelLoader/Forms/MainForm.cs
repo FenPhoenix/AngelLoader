@@ -253,7 +253,7 @@ namespace AngelLoader.Forms
 
         // Put anything that does anything in here, not in the constructor. Otherwise it's a world of pain and
         // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
-        internal async Task Init()
+        public void Init()
         {
 #if ReleaseBeta
             var ver = typeof(MainForm).Assembly.GetName().Version;
@@ -281,13 +281,7 @@ namespace AngelLoader.Forms
             // window (which doesn't show the view, so the startup process is still left intact), this code is
             // now a nice straight line with no back-and-forth spaghetti method calls.
 
-            Core.Inject(this, ProgressBox);
-
-            await Core.Init();
-
-            // Model.Init() success means Config is now populated
-
-            Core.FindFMs(startup: true);
+            Core.ProgressBox = ProgressBox;
 
             #region Set up form and control state
 
@@ -412,8 +406,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            SortFMTable(Config.SortedColumn, Config.SortDirection);
-
             // Set here so as to avoid the changes being visible
             SetWindowStateAndSize();
 
@@ -428,12 +420,12 @@ namespace AngelLoader.Forms
             SetUITextToLocalized(suspendResume: false);
             ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
 
-            Show();
+            SortFMTable(Config.SortedColumn, Config.SortDirection);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, zoomFontSize: Config.FMsListFontSizeInPoints);
+            ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
@@ -2579,127 +2571,14 @@ namespace AngelLoader.Forms
 
         private void SortByCurrentColumn() => SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
-        internal void SortFMTable(Column column, SortOrder sortDirection)
+        public void SortFMTable(Column column, SortOrder sortDirection)
         {
             FMsDGV.CurrentSortedColumn = (int)column;
             FMsDGV.CurrentSortDirection = sortDirection;
 
-            var articles = Config.EnableArticles ? Config.Articles : new List<string>();
+            Core.SortFMsViewList(column, sortDirection);
 
-            void SortByTitle(bool reverse = false)
-            {
-                var ascending = reverse ? SortOrder.Descending : SortOrder.Ascending;
-
-                Core.FMsViewList = sortDirection == ascending
-                    ? Core.FMsViewList.OrderBy(x => x.Title, new FMTitleComparer(articles)).ToList()
-                    : Core.FMsViewList.OrderByDescending(x => x.Title, new FMTitleComparer(articles)).ToList();
-            }
-
-            // For any column which could have empty entries, sort by title first in order to maintain a
-            // consistent order
-
-            switch (column)
-            {
-                case Column.Game:
-                    SortByTitle();
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.Game).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.Game).ToList();
-                    break;
-
-                case Column.Installed:
-                    SortByTitle();
-                    // Reverse this because "Installed" should go on top and blanks should go on bottom
-                    Core.FMsViewList = sortDirection == SortOrder.Descending
-                        ? Core.FMsViewList.OrderBy(x => x.Installed).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.Installed).ToList();
-                    break;
-
-                case Column.Title:
-                    SortByTitle();
-                    break;
-
-                case Column.Archive:
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.Archive).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.Archive).ToList();
-                    break;
-
-                case Column.Author:
-                    SortByTitle();
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.Author).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.Author).ToList();
-                    break;
-
-                case Column.Size:
-                    SortByTitle();
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.SizeBytes).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.SizeBytes).ToList();
-                    break;
-
-                case Column.Rating:
-                    SortByTitle();
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.Rating).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.Rating).ToList();
-                    break;
-
-                case Column.Finished:
-                    SortByTitle();
-                    // FinishedOnUnknown is a separate value, so...
-                    if (sortDirection == SortOrder.Ascending)
-                    {
-                        Core.FMsViewList = Core.FMsViewList.OrderBy(x => x.FinishedOn).ToList();
-                        Core.FMsViewList = Core.FMsViewList.OrderBy(x => x.FinishedOnUnknown).ToList();
-                    }
-                    else
-                    {
-                        Core.FMsViewList = Core.FMsViewList.OrderByDescending(x => x.FinishedOn).ToList();
-                        Core.FMsViewList = Core.FMsViewList.OrderByDescending(x => x.FinishedOnUnknown).ToList();
-                    }
-                    break;
-
-                case Column.ReleaseDate:
-                    SortByTitle();
-                    // Sort this one down to the day only, because the exact time may very well not be known, and
-                    // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
-                    // sorted out of name order because of an invisible time difference.
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
-                    break;
-
-                case Column.LastPlayed:
-                    SortByTitle();
-                    // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
-                    // second (you change it by playing it), and the user will expect precise sorting.
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.LastPlayed).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.LastPlayed).ToList();
-                    break;
-
-                case Column.DisabledMods:
-                    SortByTitle();
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.DisabledMods).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.DisabledMods).ToList();
-                    break;
-
-                case Column.Comment:
-                    SortByTitle();
-                    Core.FMsViewList = sortDirection == SortOrder.Ascending
-                        ? Core.FMsViewList.OrderBy(x => x.CommentSingleLine).ToList()
-                        : Core.FMsViewList.OrderByDescending(x => x.CommentSingleLine).ToList();
-                    break;
-            }
-
-            foreach (DataGridViewColumn x in FMsDGV.Columns)
-            {
-                x.HeaderCell.SortGlyphDirection = SortOrder.None;
-            }
-
+            foreach (DataGridViewColumn c in FMsDGV.Columns) c.HeaderCell.SortGlyphDirection = SortOrder.None;
             FMsDGV.Columns[(int)column].HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
         }
 
