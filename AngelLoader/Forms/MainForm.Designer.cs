@@ -226,6 +226,7 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
+            this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -270,6 +271,7 @@
             // 
             this.FMRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PlayFMMenuItem,
+            this.PlayFMAdvancedMenuItem,
             this.InstallUninstallMenuItem,
             this.OpenInDromedSep,
             this.OpenInDromEdMenuItem,
@@ -282,44 +284,44 @@
             this.FMRightClickMenuSep2,
             this.WebSearchMenuItem});
             this.FMRightClickMenu.Name = "FMRightClickMenu";
-            this.FMRightClickMenu.Size = new System.Drawing.Size(183, 204);
+            this.FMRightClickMenu.Size = new System.Drawing.Size(188, 248);
             this.FMRightClickMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FMRightClickMenu_Opening);
             // 
             // PlayFMMenuItem
             // 
             this.PlayFMMenuItem.Name = "PlayFMMenuItem";
-            this.PlayFMMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.PlayFMMenuItem.Size = new System.Drawing.Size(187, 22);
             this.PlayFMMenuItem.Text = "Play FM";
             this.PlayFMMenuItem.Click += new System.EventHandler(this.PlayFMMenuItem_Click);
             // 
             // InstallUninstallMenuItem
             // 
             this.InstallUninstallMenuItem.Name = "InstallUninstallMenuItem";
-            this.InstallUninstallMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.InstallUninstallMenuItem.Size = new System.Drawing.Size(187, 22);
             this.InstallUninstallMenuItem.Text = "Install FM";
             this.InstallUninstallMenuItem.Click += new System.EventHandler(this.InstallUninstallMenuItem_Click);
             // 
             // OpenInDromedSep
             // 
             this.OpenInDromedSep.Name = "OpenInDromedSep";
-            this.OpenInDromedSep.Size = new System.Drawing.Size(179, 6);
+            this.OpenInDromedSep.Size = new System.Drawing.Size(184, 6);
             // 
             // OpenInDromEdMenuItem
             // 
             this.OpenInDromEdMenuItem.Name = "OpenInDromEdMenuItem";
-            this.OpenInDromEdMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.OpenInDromEdMenuItem.Size = new System.Drawing.Size(187, 22);
             this.OpenInDromEdMenuItem.Text = "Open FM in DromEd";
             this.OpenInDromEdMenuItem.Click += new System.EventHandler(this.OpenInDromEdMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(179, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(184, 6);
             // 
             // ScanFMMenuItem
             // 
             this.ScanFMMenuItem.Name = "ScanFMMenuItem";
-            this.ScanFMMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.ScanFMMenuItem.Size = new System.Drawing.Size(187, 22);
             this.ScanFMMenuItem.Text = "Scan FM";
             this.ScanFMMenuItem.Click += new System.EventHandler(this.ScanFMMenuItem_Click);
             // 
@@ -329,7 +331,7 @@
             this.ConvertWAVsTo16BitMenuItem,
             this.ConvertOGGsToWAVsToolStripMenuItem});
             this.ConvertAudioRCSubMenu.Name = "ConvertAudioRCSubMenu";
-            this.ConvertAudioRCSubMenu.Size = new System.Drawing.Size(182, 22);
+            this.ConvertAudioRCSubMenu.Size = new System.Drawing.Size(187, 22);
             this.ConvertAudioRCSubMenu.Text = "Convert audio";
             // 
             // ConvertWAVsTo16BitMenuItem
@@ -349,7 +351,7 @@
             // FMRightClickMenuSep1
             // 
             this.FMRightClickMenuSep1.Name = "FMRightClickMenuSep1";
-            this.FMRightClickMenuSep1.Size = new System.Drawing.Size(179, 6);
+            this.FMRightClickMenuSep1.Size = new System.Drawing.Size(184, 6);
             // 
             // RatingRCSubMenu
             // 
@@ -367,7 +369,7 @@
             this.RatingRCMenu9,
             this.RatingRCMenu10});
             this.RatingRCSubMenu.Name = "RatingRCSubMenu";
-            this.RatingRCSubMenu.Size = new System.Drawing.Size(182, 22);
+            this.RatingRCSubMenu.Size = new System.Drawing.Size(187, 22);
             this.RatingRCSubMenu.Text = "Rating";
             // 
             // RatingRCMenuUnrated
@@ -458,7 +460,7 @@
             // 
             this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
             this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
-            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(182, 22);
+            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(187, 22);
             this.FinishedOnRCSubMenu.Text = "Finished on";
             // 
             // FinishedOnMenu
@@ -521,12 +523,12 @@
             // FMRightClickMenuSep2
             // 
             this.FMRightClickMenuSep2.Name = "FMRightClickMenuSep2";
-            this.FMRightClickMenuSep2.Size = new System.Drawing.Size(179, 6);
+            this.FMRightClickMenuSep2.Size = new System.Drawing.Size(184, 6);
             // 
             // WebSearchMenuItem
             // 
             this.WebSearchMenuItem.Name = "WebSearchMenuItem";
-            this.WebSearchMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.WebSearchMenuItem.Size = new System.Drawing.Size(187, 22);
             this.WebSearchMenuItem.Text = "Web search";
             this.WebSearchMenuItem.Click += new System.EventHandler(this.WebSearchMenuItem_Click);
             // 
@@ -2472,6 +2474,13 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
+            // PlayFMAdvancedMenuItem
+            // 
+            this.PlayFMAdvancedMenuItem.Name = "PlayFMAdvancedMenuItem";
+            this.PlayFMAdvancedMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.PlayFMAdvancedMenuItem.Text = "Play FM (advanced)...";
+            this.PlayFMAdvancedMenuItem.Click += new System.EventHandler(this.PlayFMAdvancedMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2753,6 +2762,7 @@
         private CustomControls.ToolStripButtonCustom FMsListZoomInButton;
         private CustomControls.ToolStripButtonCustom FMsListZoomOutButton;
         private CustomControls.ToolStripButtonCustom FMsListResetZoomButton;
+        private System.Windows.Forms.ToolStripMenuItem PlayFMAdvancedMenuItem;
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Common
 {
@@ -22,6 +23,11 @@ namespace AngelLoader.Common
         internal const float MainSplitterPercent = 0.4425f;
 
         internal const string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
+
+        internal static ConfigVar CV_ForceFullScreen = new ConfigVar { Command = "-force_windowed" };
+        internal static ConfigVar CV_ForceWindowed = new ConfigVar { Command = "+force_windowed" };
+        internal static ConfigVar CV_ForceOldMantle = new ConfigVar { Command = "-new_mantle" };
+        internal static ConfigVar CV_ForceNewMantle = new ConfigVar { Command = "+new_mantle" };
     }
 
     internal class CacheData

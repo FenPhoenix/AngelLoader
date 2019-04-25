@@ -152,6 +152,7 @@ namespace AngelLoader.Common.DataClasses
 
         #endregion
 
+        internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
 
         internal float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor

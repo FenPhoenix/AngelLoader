@@ -187,6 +187,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string ColumnMenu_ResetAllColumnPositions = "Reset all column positions";
             [FenGenBlankLine]
             internal static string FMMenu_PlayFM = "Play FM";
+            internal static string FMMenu_PlayFMAdvanced = "Play FM (advanced)...";
             internal static string FMMenu_InstallFM = "Install FM";
             internal static string FMMenu_UninstallFM = "Uninstall FM";
             internal static string FMMenu_OpenInDromEd = "Open FM in DromEd";
@@ -198,6 +199,14 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
             internal static string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
+        }
+
+        internal static class ConfigVars
+        {
+            internal static string ForceFullScreen = "Force fullscreen";
+            internal static string ForceWindowed = "Force windowed";
+            internal static string ForceNewMantle = "Force new mantle";
+            internal static string ForceOldMantle = "Force old mantle";
         }
 
         internal static class StatisticsTab

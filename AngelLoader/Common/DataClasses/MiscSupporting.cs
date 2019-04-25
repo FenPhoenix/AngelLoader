@@ -5,6 +5,12 @@ using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Common.DataClasses
 {
+    internal sealed class ConfigVar
+    {
+        internal string Name = "";
+        internal string Command = "";
+    }
+
     internal sealed class ColumnData
     {
         internal Column Id;

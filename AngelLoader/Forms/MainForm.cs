@@ -609,6 +609,9 @@ namespace AngelLoader.Forms
 
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
 
+                PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced;
+                Core.SetDefaultConfigVarNamesToLocalized();
+
                 InstallUninstallMenuItem.Text = sayInstall
                     ? LText.FMsList.FMMenu_InstallFM
                     : LText.FMsList.FMMenu_UninstallFM;
@@ -4411,5 +4414,10 @@ namespace AngelLoader.Forms
         private void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
 
         private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+
+        private void PlayFMAdvancedMenuItem_Click(object sender, EventArgs e)
+        {
+            // Throw up dialog with config var options
+        }
     }
 }
