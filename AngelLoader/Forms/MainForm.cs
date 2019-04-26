@@ -612,7 +612,7 @@ namespace AngelLoader.Forms
 
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
 
-                PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced;
+                //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced;
                 Core.SetDefaultConfigVarNamesToLocalized();
 
                 InstallUninstallMenuItem.Text = sayInstall

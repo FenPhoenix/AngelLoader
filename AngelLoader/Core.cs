@@ -149,10 +149,10 @@ namespace AngelLoader
 
         internal static void SetDefaultConfigVarNamesToLocalized()
         {
-            Defaults.CV_ForceFullScreen.Name = LText.ConfigVars.ForceFullScreen;
-            Defaults.CV_ForceWindowed.Name = LText.ConfigVars.ForceWindowed;
-            Defaults.CV_ForceNewMantle.Name = LText.ConfigVars.ForceNewMantle;
-            Defaults.CV_ForceOldMantle.Name = LText.ConfigVars.ForceOldMantle;
+            //Defaults.CV_ForceFullScreen.Name = LText.ConfigVars.ForceFullScreen;
+            //Defaults.CV_ForceWindowed.Name = LText.ConfigVars.ForceWindowed;
+            //Defaults.CV_ForceNewMantle.Name = LText.ConfigVars.ForceNewMantle;
+            //Defaults.CV_ForceOldMantle.Name = LText.ConfigVars.ForceOldMantle;
         }
 
         internal static void SortFMsViewList(Column column, SortOrder sortDirection)

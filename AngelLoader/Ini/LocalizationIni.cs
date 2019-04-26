@@ -556,10 +556,6 @@ namespace AngelLoader.Ini
                         {
                             LText.FMsList.FMMenu_PlayFM = lt.Substring(14);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_PlayFMAdvanced="))
-                        {
-                            LText.FMsList.FMMenu_PlayFMAdvanced = lt.Substring(22);
-                        }
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_InstallFM="))
                         {
                             LText.FMsList.FMMenu_InstallFM = lt.Substring(17);
@@ -599,34 +595,6 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("ConvertAudioMenu_ConvertOGGsToWAVs="))
                         {
                             LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs = lt.Substring(35);
-                        }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
-                        {
-                            break;
-                        }
-                        i++;
-                    }
-                }
-                else if (lineT == "[ConfigVars]")
-                {
-                    while (i < lines.Length - 1)
-                    {
-                        var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("ForceFullScreen="))
-                        {
-                            LText.ConfigVars.ForceFullScreen = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ForceWindowed="))
-                        {
-                            LText.ConfigVars.ForceWindowed = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ForceNewMantle="))
-                        {
-                            LText.ConfigVars.ForceNewMantle = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ForceOldMantle="))
-                        {
-                            LText.ConfigVars.ForceOldMantle = lt.Substring(15);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
