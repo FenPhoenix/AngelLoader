@@ -443,11 +443,11 @@ xcopy "$(TargetDir)ffmpeg.txt" %25destDir%25 /y
 
 xcopy "$(TargetDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
 
-xcopy "$(ProjectDir)English.ini" "%25destDir%25Data\Languages\" /y
+xcopy "$(ProjectDir)Languages" "%25destDir%25Data\Languages\" /y /i /e
 
 xcopy "$(SolutionDir)BinReleaseOnly" "%25destDir%25" /y /i /e
 
-xcopy "$(SolutionDir)doc" "%25destDir%25doc" /y /i /e</PostBuildEvent>
+xcopy "$(SolutionDir)doc" "%25destDir%25doc\" /y /i /e</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>rem Autogenerate code
