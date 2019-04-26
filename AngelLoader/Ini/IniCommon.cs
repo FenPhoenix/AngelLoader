@@ -47,7 +47,6 @@ namespace AngelLoader.Ini
         // file is re-generated. I could make it so it doesn't get removed, but meh.
         internal static void ReadTranslatedLanguageName(string file)
         {
-            Config.LanguageNames.Clear();
             StreamReader sr = null;
             try
             {

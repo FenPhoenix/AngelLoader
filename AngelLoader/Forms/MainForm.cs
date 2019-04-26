@@ -285,6 +285,9 @@ namespace AngelLoader.Forms
 
             #region Set up form and control state
 
+            // TODO: Stop hiding this when we get the feature in fully; this is for release
+            PlayFMAdvancedMenuItem.Visible = false;
+
             FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
             FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 

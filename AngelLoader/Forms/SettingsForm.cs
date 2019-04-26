@@ -160,12 +160,6 @@ namespace AngelLoader.Forms
                     break;
             }
 
-            // Do it yourself...
-            var pdp = PreviewDatePanel;
-            var srb = DateCurrentCultureShortRadioButton;
-            pdp.Location = new Point(srb.Location.X + srb.Width, 16);
-            pdp.Width = DateFormatGroupBox.Width - pdp.Location.X - 8;
-
             object[] dateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
             Date1ComboBox.Items.AddRange(dateFormatList);
             Date2ComboBox.Items.AddRange(dateFormatList);
@@ -279,6 +273,17 @@ namespace AngelLoader.Forms
             #endregion
 
             SetUITextToLocalized();
+
+            // Must do this after we set localized text, otherwise it will use the previous size
+            AutosizePreviewDate();
+        }
+
+        private void AutosizePreviewDate()
+        {
+            var pdp = PreviewDatePanel;
+            var srb = DateCurrentCultureShortRadioButton;
+            pdp.Location = new Point(srb.Location.X + srb.Width, 16);
+            pdp.Width = DateFormatGroupBox.Width - pdp.Location.X - 8;
         }
 
         public void SetUITextToLocalized(bool suspendResume = true)
@@ -917,6 +922,8 @@ namespace AngelLoader.Forms
             {
                 Log("Exception in language reading", ex);
             }
+
+            AutosizePreviewDate();
         }
     }
 }
