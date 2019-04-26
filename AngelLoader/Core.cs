@@ -101,8 +101,10 @@ namespace AngelLoader
             // name in its own language
             var langFiles = Directory.GetFiles(Paths.Languages, "*.ini", SearchOption.TopDirectoryOnly);
             bool selFound = false;
+
             // Do it ONCE here, not every loop!
             Config.LanguageNames.Clear();
+
             for (int i = 0; i < langFiles.Length; i++)
             {
                 var f = langFiles[i];
