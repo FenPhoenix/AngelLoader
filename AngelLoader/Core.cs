@@ -503,10 +503,8 @@ namespace AngelLoader
                     }
                     else
                     {
-                        FMDataIniList.Clear();
-                        foreach (var fm in backupList) FMDataIniList.Add(fm);
-                        FMsViewList.Clear();
-                        foreach (var fm in viewBackupList) FMsViewList.Add(fm);
+                        FMDataIniList.ClearAndAdd(backupList);
+                        FMsViewList.ClearAndAdd(viewBackupList);
                         return;
                     }
                 }
@@ -1077,8 +1075,7 @@ namespace AngelLoader
 
                         if (gameSup)
                         {
-                            sel.AltTitles.Clear();
-                            sel.AltTitles.Add(sel.Title);
+                            sel.AltTitles.ClearAndAdd(sel.Title);
                             sel.AltTitles.AddRange(scannedFM.AlternateTitles);
                         }
                         else
@@ -2238,8 +2235,7 @@ namespace AngelLoader
             Config.MainSplitterPercent = mainSplitterPercent;
             Config.TopSplitterPercent = topSplitterPercent;
 
-            Config.Columns.Clear();
-            Config.Columns.AddRange(columns);
+            Config.Columns.ClearAndAdd(columns);
 
             Config.SortedColumn = (Column)sortedColumn;
             Config.SortDirection = sortDirection;

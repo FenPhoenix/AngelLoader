@@ -366,8 +366,7 @@ namespace AngelLoader.Ini
                 {
                     var articles = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                     for (var a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
-                    config.Articles.Clear();
-                    config.Articles.AddRange(articles.Distinct(StringComparer.OrdinalIgnoreCase));
+                    config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase));
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MoveArticlesToEnd) + "="))
                 {

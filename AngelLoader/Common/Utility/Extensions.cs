@@ -399,6 +399,18 @@ namespace AngelLoader.Common.Utility
 
         #region Modifications
 
+        internal static void ClearAndAdd<T>(this List<T> list, params T[] items)
+        {
+            list.Clear();
+            list.AddRange(items);
+        }
+
+        internal static void ClearAndAdd<T>(this List<T> list, IEnumerable<T> items)
+        {
+            list.Clear();
+            list.AddRange(items);
+        }
+
         /// <summary>
         /// Clamps a number to between min and max.
         /// </summary>
@@ -674,6 +686,8 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
+        #region Autosizing
+
         /// <summary>
         /// Sets a <see cref="Button"/>'s text, and autosizes it horizontally to accomodate it.
         /// </summary>
@@ -726,6 +740,8 @@ namespace AngelLoader.Common.Utility
 
             button.Anchor = oldAnchor;
         }
+
+        #endregion
 
         internal static void ShowIfHidden(this Control control)
         {

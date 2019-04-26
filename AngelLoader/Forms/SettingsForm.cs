@@ -99,10 +99,7 @@ namespace AngelLoader.Forms
             BackupPathTextBox.Text = InConfig.FMsBackupPath;
 
             FMArchivePathsListBox.Items.Clear();
-            foreach (var path in InConfig.FMArchivePaths)
-            {
-                FMArchivePathsListBox.Items.Add(path);
-            }
+            foreach (var path in InConfig.FMArchivePaths) FMArchivePathsListBox.Items.Add(path);
 
             IncludeSubfoldersCheckBox.Checked = InConfig.FMArchivePathsIncludeSubfolders;
 
@@ -484,6 +481,7 @@ namespace AngelLoader.Forms
 
             OutConfig.FMsBackupPath = BackupPathTextBox.Text.Trim();
 
+            // Manual so we can use Trim() on each
             OutConfig.FMArchivePaths.Clear();
             foreach (string path in FMArchivePathsListBox.Items) OutConfig.FMArchivePaths.Add(path.Trim());
 
@@ -526,8 +524,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            OutConfig.Articles.Clear();
-            OutConfig.Articles.AddRange(retArticles);
+            OutConfig.Articles.ClearAndAdd(retArticles);
 
             OutConfig.MoveArticlesToEnd = MoveArticlesToEndCheckBox.Checked;
 

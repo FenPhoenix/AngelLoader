@@ -980,8 +980,7 @@ namespace AngelLoader.Forms
             else // ByTab
             {
                 // In case they don't match
-                Config.Filter.Games.Clear();
-                Config.Filter.Games.Add(Config.GameTab);
+                Config.Filter.Games.ClearAndAdd(Config.GameTab);
 
                 PositionFilterBarAfterTabs();
 
@@ -2277,8 +2276,8 @@ namespace AngelLoader.Forms
 
                 Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
 
-                Config.FMArchivePaths.Clear();
-                foreach (var path in sf.OutConfig.FMArchivePaths) Config.FMArchivePaths.Add(path);
+                Config.FMArchivePaths.ClearAndAdd(sf.OutConfig.FMArchivePaths);
+
                 Config.FMArchivePathsIncludeSubfolders = sf.OutConfig.FMArchivePathsIncludeSubfolders;
 
                 #endregion
@@ -2299,8 +2298,8 @@ namespace AngelLoader.Forms
                 Config.GameOrganization = sf.OutConfig.GameOrganization;
 
                 Config.EnableArticles = sf.OutConfig.EnableArticles;
-                Config.Articles.Clear();
-                Config.Articles.AddRange(sf.OutConfig.Articles);
+                Config.Articles.ClearAndAdd(sf.OutConfig.Articles);
+
                 Config.MoveArticlesToEnd = sf.OutConfig.MoveArticlesToEnd;
 
                 Config.RatingDisplayStyle = sf.OutConfig.RatingDisplayStyle;
