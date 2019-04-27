@@ -3299,77 +3299,14 @@ namespace AngelLoader.Forms
         private void AddTagTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var s = (TextBox)sender;
 
-            // Smartasses who try to break it get nothing
-            if (s.Text.CountChars(':') > 1)
-            {
-                HideAddTagDropDown();
-                return;
-            }
-
-            (string First, string Second) text;
-
-            var index = s.Text.IndexOf(':');
-            if (index > -1)
-            {
-                text.First = s.Text.Substring(0, index).Trim();
-                text.Second = s.Text.Substring(index + 1).Trim();
-            }
-            else
-            {
-                text.First = s.Text.Trim();
-                text.Second = "";
-            }
-
-            // Shut up, it works
-            if (s.Text.IsWhiteSpace())
+            var list = Core.ListMatchingTags(AddTagTextBox.Text);
+            if (list == null)
             {
                 HideAddTagDropDown();
             }
             else
             {
-                var list = new List<string>();
-
-                foreach (var gCat in GlobalTags)
-                {
-                    if (gCat.Category.Name.ContainsI(text.First))
-                    {
-                        if (gCat.Tags.Count == 0)
-                        {
-                            if (gCat.Category.Name != "misc") list.Add(gCat.Category.Name + ":");
-                        }
-                        else
-                        {
-                            foreach (var gTag in gCat.Tags)
-                            {
-                                if (!text.Second.IsWhiteSpace() && !gTag.Name.ContainsI(text.Second)) continue;
-                                if (gCat.Category.Name == "misc")
-                                {
-                                    if (text.Second.IsWhiteSpace() && !gCat.Category.Name.ContainsI(text.First))
-                                    {
-                                        list.Add(gTag.Name);
-                                    }
-                                }
-                                else
-                                {
-                                    list.Add(gCat.Category.Name + ": " + gTag.Name);
-                                }
-                            }
-                        }
-                    }
-                    // if, not else if - we want to display found tags both categorized and uncategorized
-                    if (gCat.Category.Name == "misc")
-                    {
-                        foreach (var gTag in gCat.Tags)
-                        {
-                            if (gTag.Name.ContainsI(s.Text)) list.Add(gTag.Name);
-                        }
-                    }
-                }
-
-                list.Sort(StringComparer.OrdinalIgnoreCase);
-
                 AddTagListBox.Items.Clear();
                 foreach (var item in list) AddTagListBox.Items.Add(item);
 
@@ -3499,7 +3436,7 @@ namespace AngelLoader.Forms
         private void AddTagOperation(FanMission fm, string catAndTag)
         {
             // Cock-blocked here too
-            if (AddTagTextBox.Text.CountChars(':') <= 1)
+            if (AddTagTextBox.Text.CountChars(':') <= 1 && !AddTagTextBox.Text.IsWhiteSpace())
             {
                 AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
                 UpdateFMTagsString(fm);

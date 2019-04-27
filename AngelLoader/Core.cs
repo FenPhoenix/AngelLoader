@@ -2214,6 +2214,72 @@ namespace AngelLoader
             }
         }
 
+        internal static List<string> ListMatchingTags(string searchText)
+        {
+            // Smartasses who try to break it get nothing
+            if (searchText.CountChars(':') > 1 || searchText.IsWhiteSpace())
+            {
+                return null;
+            }
+
+            (string First, string Second) text;
+
+            var index = searchText.IndexOf(':');
+            if (index > -1)
+            {
+                text.First = searchText.Substring(0, index).Trim();
+                text.Second = searchText.Substring(index + 1).Trim();
+            }
+            else
+            {
+                text.First = searchText.Trim();
+                text.Second = "";
+            }
+
+            // Shut up, it works
+            var list = new List<string>();
+            foreach (var gCat in GlobalTags)
+            {
+                if (gCat.Category.Name.ContainsI(text.First))
+                {
+                    if (gCat.Tags.Count == 0)
+                    {
+                        if (gCat.Category.Name != "misc") list.Add(gCat.Category.Name + ":");
+                    }
+                    else
+                    {
+                        foreach (var gTag in gCat.Tags)
+                        {
+                            if (!text.Second.IsWhiteSpace() && !gTag.Name.ContainsI(text.Second)) continue;
+                            if (gCat.Category.Name == "misc")
+                            {
+                                if (text.Second.IsWhiteSpace() && !gCat.Category.Name.ContainsI(text.First))
+                                {
+                                    list.Add(gTag.Name);
+                                }
+                            }
+                            else
+                            {
+                                list.Add(gCat.Category.Name + ": " + gTag.Name);
+                            }
+                        }
+                    }
+                }
+                // if, not else if - we want to display found tags both categorized and uncategorized
+                if (gCat.Category.Name == "misc")
+                {
+                    foreach (var gTag in gCat.Tags)
+                    {
+                        if (gTag.Name.ContainsI(searchText)) list.Add(gTag.Name);
+                    }
+                }
+            }
+
+            list.Sort(StringComparer.OrdinalIgnoreCase);
+
+            return list;
+        }
+
         internal static void UpdateConfig(
             FormWindowState mainWindowState,
             Size mainWindowSize,
