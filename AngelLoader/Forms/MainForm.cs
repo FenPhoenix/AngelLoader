@@ -3318,8 +3318,6 @@ namespace AngelLoader.Forms
         {
             var box = AddTagListBox;
 
-            var fm = GetSelectedFM();
-
             switch (e.KeyCode)
             {
                 case Keys.Up when box.Items.Count > 0:
@@ -3338,7 +3336,7 @@ namespace AngelLoader.Forms
                     break;
                 case Keys.Enter:
                     var catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem.ToString();
-                    AddTagOperation(fm, catAndTag);
+                    AddTagOperation(GetSelectedFM(), catAndTag);
                     break;
                 default:
                     if (sender == AddTagListBox) AddTagTextBox.Focus();
@@ -3419,10 +3417,7 @@ namespace AngelLoader.Forms
             Core.WriteFullFMDataIni();
         }
 
-        private void RemoveTagButton_Click(object sender, EventArgs e)
-        {
-            RemoveTagFromFM();
-        }
+        private void RemoveTagButton_Click(object sender, EventArgs e) => RemoveTagFromFM();
 
         private void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
         {
@@ -3448,11 +3443,7 @@ namespace AngelLoader.Forms
             HideAddTagDropDown();
         }
 
-        private void AddTagButton_Click(object sender, EventArgs e)
-        {
-            var fm = GetSelectedFM();
-            AddTagOperation(fm, AddTagTextBox.Text);
-        }
+        private void AddTagButton_Click(object sender, EventArgs e) => AddTagOperation(GetSelectedFM(), AddTagTextBox.Text);
 
         private void TagPresetsButton_Click(object sender, EventArgs e)
         {
@@ -3518,10 +3509,7 @@ namespace AngelLoader.Forms
             var cat = s.OwnerItem;
             if (cat == null) return;
 
-            var catAndTag = cat.Text + @": " + s.Text;
-
-            var fm = GetSelectedFM();
-            AddTagOperation(fm, catAndTag);
+            AddTagOperation(GetSelectedFM(), cat.Text + @": " + s.Text);
         }
 
         private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
