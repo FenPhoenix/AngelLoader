@@ -69,7 +69,7 @@ namespace AngelLoader.Common.DataClasses
         OneList
     }
 
-    internal enum RatingDisplayStyle
+    public enum RatingDisplayStyle
     {
         NewDarkLoader,
         FMSel

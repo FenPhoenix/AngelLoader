@@ -88,6 +88,9 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        public int CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
+        public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
+
         #region Filter bar scroll RepeatButtons
 
         // TODO: Make this use a timer or something?
@@ -237,14 +240,7 @@ namespace AngelLoader.Forms
         {
             if (!CanFocus) return;
 
-            if (CursorOverReadmeArea())
-            {
-                ShowReadmeControls();
-            }
-            else
-            {
-                HideReadmeControls();
-            }
+            ShowReadmeControls(CursorOverReadmeArea());
         }
 
         #endregion
@@ -423,7 +419,7 @@ namespace AngelLoader.Forms
             SetUITextToLocalized(suspendResume: false);
             ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
 
-            SortFMTable(Config.SortedColumn, Config.SortDirection);
+            SortFMsDGV(Config.SortedColumn, Config.SortDirection);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -818,11 +814,7 @@ namespace AngelLoader.Forms
             if (suspendResume) RefreshFMsListKeepSelection();
         }
 
-        private void SetFMSizesToLocalized()
-        {
-            // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture
-            foreach (var fm in Core.FMsViewList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
-        }
+        public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMButton.Visible = enabled;
 
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
@@ -967,7 +959,7 @@ namespace AngelLoader.Forms
                 (RefreshClearToolStripCustom.Location.X - 4) - FiltersFlowLayoutPanel.Location.X;
         }
 
-        private void ChangeGameOrganization()
+        public void ChangeGameOrganization()
         {
             if (Config.GameOrganization == GameOrganization.OneList)
             {
@@ -1325,7 +1317,7 @@ namespace AngelLoader.Forms
             // And that's how you do it
         }
 
-        private async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+        public async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
             SortByCurrentColumn();
@@ -1950,7 +1942,7 @@ namespace AngelLoader.Forms
                     ? SortOrder.Descending
                     : SortOrder.Ascending;
 
-            SortFMTable((Column)e.ColumnIndex, newSortDirection);
+            SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
             if (FMsDGV.Filtered)
             {
                 // SetFilter() calls a refresh on its own
@@ -2184,233 +2176,21 @@ namespace AngelLoader.Forms
             if (success) await SortAndSetFilter(forceRefreshReadme: true);
         }
 
-        private async void SettingsButton_Click(object sender, EventArgs e) => await OpenSettings();
+        private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
-        public async Task<bool> OpenSettings(bool startup = false)
-        {
-            using (var sf = new SettingsForm(this, Config, startup))
-            {
-                // This needs to be separate so the below line can work
-                var result = sf.ShowDialog();
-
-                // Special case: this is meta, so it should always be set even if the user clicked Cancel
-                Config.SettingsTab = sf.OutConfig.SettingsTab;
-
-                if (result != DialogResult.OK) return false;
-
-                #region Set changed bools
-
-                bool archivePathsChanged =
-                    !startup &&
-                    (!Config.FMArchivePaths.SequenceEqual(sf.OutConfig.FMArchivePaths, StringComparer.OrdinalIgnoreCase) ||
-                    Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
-
-                bool gamePathsChanged =
-                    !startup &&
-                    (!Config.T1Exe.EqualsI(sf.OutConfig.T1Exe) ||
-                    !Config.T2Exe.EqualsI(sf.OutConfig.T2Exe) ||
-                    !Config.T3Exe.EqualsI(sf.OutConfig.T3Exe));
-
-                bool gameOrganizationChanged =
-                    !startup && (Config.GameOrganization != sf.OutConfig.GameOrganization);
-
-                bool articlesChanged =
-                    !startup &&
-                    (Config.EnableArticles != sf.OutConfig.EnableArticles ||
-                    !Config.Articles.SequenceEqual(sf.OutConfig.Articles, StringComparer.InvariantCultureIgnoreCase) ||
-                    Config.MoveArticlesToEnd != sf.OutConfig.MoveArticlesToEnd);
-
-                bool dateFormatChanged =
-                    !startup &&
-                    (Config.DateFormat != sf.OutConfig.DateFormat ||
-                    Config.DateCustomFormatString != sf.OutConfig.DateCustomFormatString);
-
-                bool ratingDisplayStyleChanged =
-                    !startup &&
-                    (Config.RatingDisplayStyle != sf.OutConfig.RatingDisplayStyle ||
-                    Config.RatingUseStars != sf.OutConfig.RatingUseStars);
-
-                bool languageChanged =
-                    !startup && !Config.Language.EqualsI(sf.OutConfig.Language);
-
-                #endregion
-
-                #region Set config data
-
-                // Set values individually (rather than deep-copying) so that non-Settings values don't get
-                // overwritten.
-
-                #region Paths tab
-
-                #region Game exes
-
-                Config.T1Exe = sf.OutConfig.T1Exe;
-                Config.T2Exe = sf.OutConfig.T2Exe;
-                Config.T3Exe = sf.OutConfig.T3Exe;
-
-                // TODO: These should probably go in the Settings form along with the cam_mod.ini check
-                // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
-                //       being thrown here.
-                Config.T1FMInstallPath = !Config.T1Exe.IsWhiteSpace()
-                    ? Core.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
-                    : "";
-                Config.T1DromEdDetected = !Core.GetDromEdExe(Game.Thief1).IsEmpty();
-
-                Config.T2FMInstallPath = !Config.T2Exe.IsWhiteSpace()
-                    ? Core.GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
-                    : "";
-                Config.T2DromEdDetected = !Core.GetDromEdExe(Game.Thief2).IsEmpty();
-
-                if (!Config.T3Exe.IsWhiteSpace())
-                {
-                    var (error, useCentralSaves, t3FMInstPath) = Core.GetInstFMsPathFromT3();
-                    if (error == Error.None)
-                    {
-                        Config.T3FMInstallPath = t3FMInstPath;
-                        Config.T3UseCentralSaves = useCentralSaves;
-                    }
-                }
-                else
-                {
-                    Config.T3FMInstallPath = "";
-                }
-
-                #endregion
-
-                Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
-
-                Config.FMArchivePaths.ClearAndAdd(sf.OutConfig.FMArchivePaths);
-
-                Config.FMArchivePathsIncludeSubfolders = sf.OutConfig.FMArchivePathsIncludeSubfolders;
-
-                #endregion
-
-                if (startup)
-                {
-                    Config.Language = sf.OutConfig.Language;
-                    return true;
-                }
-
-                // From this point on, we're not in startup mode.
-
-                // For clarity, don't copy the other tabs' data on startup, because their tabs won't be shown and
-                // so they won't have been changed
-
-                #region FM Display tab
-
-                Config.GameOrganization = sf.OutConfig.GameOrganization;
-
-                Config.EnableArticles = sf.OutConfig.EnableArticles;
-                Config.Articles.ClearAndAdd(sf.OutConfig.Articles);
-
-                Config.MoveArticlesToEnd = sf.OutConfig.MoveArticlesToEnd;
-
-                Config.RatingDisplayStyle = sf.OutConfig.RatingDisplayStyle;
-                Config.RatingUseStars = sf.OutConfig.RatingUseStars;
-
-                Config.DateFormat = sf.OutConfig.DateFormat;
-                Config.DateCustomFormat1 = sf.OutConfig.DateCustomFormat1;
-                Config.DateCustomSeparator1 = sf.OutConfig.DateCustomSeparator1;
-                Config.DateCustomFormat2 = sf.OutConfig.DateCustomFormat2;
-                Config.DateCustomSeparator2 = sf.OutConfig.DateCustomSeparator2;
-                Config.DateCustomFormat3 = sf.OutConfig.DateCustomFormat3;
-                Config.DateCustomSeparator3 = sf.OutConfig.DateCustomSeparator3;
-                Config.DateCustomFormat4 = sf.OutConfig.DateCustomFormat4;
-                Config.DateCustomFormatString = sf.OutConfig.DateCustomFormatString;
-
-                #endregion
-
-                #region Other tab
-
-                Config.ConvertWAVsTo16BitOnInstall = sf.OutConfig.ConvertWAVsTo16BitOnInstall;
-                Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
-
-                Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
-
-                Config.BackupFMData = sf.OutConfig.BackupFMData;
-                Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
-
-                Config.Language = sf.OutConfig.Language;
-
-                Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
-
-                Config.ConfirmPlayOnDCOrEnter = sf.OutConfig.ConfirmPlayOnDCOrEnter;
-
-                Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
-                Config.HideFMListZoomButtons = sf.OutConfig.HideFMListZoomButtons;
-
-                #endregion
-
-                // These ones MUST NOT be set on startup, because the source values won't be valid
-                Config.SortedColumn = (Column)FMsDGV.CurrentSortedColumn;
-                Config.SortDirection = FMsDGV.CurrentSortDirection;
-
-                #endregion
-
-                #region Change-specific actions (pre-refresh)
-
-                InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
-                ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
-
-                if (archivePathsChanged || gamePathsChanged)
-                {
-                    Core.FindFMs();
-                }
-                if (gameOrganizationChanged)
-                {
-                    // Clear everything to defaults so we don't have any leftover state screwing things all up
-                    Config.ClearAllSelectedFMs();
-                    Config.ClearAllFilters();
-                    Config.GameTab = Game.Thief1;
-                    await ClearAllUIAndInternalFilters();
-                    if (Config.GameOrganization == GameOrganization.ByTab)
-                    {
-                        Config.Filter.Games.Add(Game.Thief1);
-                    }
-                    ChangeGameOrganization();
-                }
-                if (ratingDisplayStyleChanged)
-                {
-                    UpdateRatingLists(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
-                    UpdateRatingColumn(startup: false);
-                    UpdateRatingLabel();
-                }
-                if ((archivePathsChanged || gamePathsChanged) && languageChanged)
-                {
-                    // Do this again if the FMs list might have changed
-                    SetFMSizesToLocalized();
-                }
-
-                #endregion
-
-                #region Call appropriate refresh method (if applicable)
-
-                // Game paths should have been checked and verified before OK was clicked, so assume they're good
-                // here
-                if (gamePathsChanged || archivePathsChanged || gameOrganizationChanged || articlesChanged)
-                {
-                    if (gamePathsChanged || archivePathsChanged) await Core.ScanNewFMsForGameType();
-
-                    SortFMTable(Config.SortedColumn, Config.SortDirection);
-                    await SetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
-                }
-                else if (dateFormatChanged || languageChanged)
-                {
-                    RefreshFMsListKeepSelection();
-                }
-
-                #endregion
-            }
-
-            return true;
-        }
-
-        private void ShowFMsListZoomButtons(bool visible)
+        public void ShowFMsListZoomButtons(bool visible)
         {
             FMsListZoomInButton.Visible = visible;
             FMsListZoomOutButton.Visible = visible;
             FMsListResetZoomButton.Visible = visible;
             FiltersFlowLayoutPanel.Width = (RefreshClearToolStripCustom.Location.X - 4) - FiltersFlowLayoutPanel.Location.X;
+        }
+
+        public void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup)
+        {
+            UpdateRatingLists(style == RatingDisplayStyle.FMSel);
+            UpdateRatingColumn(startup);
+            UpdateRatingLabel();
         }
 
         private void UpdateRatingLists(bool fmSelStyle)
@@ -2557,7 +2337,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void RefreshFMsListKeepSelection()
+        public void RefreshFMsListKeepSelection()
         {
             var s = FMsDGV;
 
@@ -2574,9 +2354,9 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void SortByCurrentColumn() => SortFMTable((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
+        private void SortByCurrentColumn() => SortFMsDGV((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
-        public void SortFMTable(Column column, SortOrder sortDirection)
+        public void SortFMsDGV(Column column, SortOrder sortDirection)
         {
             FMsDGV.CurrentSortedColumn = (int)column;
             FMsDGV.CurrentSortDirection = sortDirection;
@@ -2720,20 +2500,6 @@ namespace AngelLoader.Forms
             CustomResourcesLabel.Text = message;
             foreach (CheckBox cb in StatsCheckBoxesPanel.Controls) cb.Checked = false;
             StatsCheckBoxesPanel.Hide();
-        }
-
-        private static bool FMCustomResourcesScanned(FanMission fm)
-        {
-            return fm.HasMap != null &&
-                   fm.HasAutomap != null &&
-                   fm.HasScripts != null &&
-                   fm.HasTextures != null &&
-                   fm.HasSounds != null &&
-                   fm.HasObjects != null &&
-                   fm.HasCreatures != null &&
-                   fm.HasMotions != null &&
-                   fm.HasMovies != null &&
-                   fm.HasSubtitles != null;
         }
 
         // It's really hard to come up with a succinct name that makes it clear what this does and doesn't do
@@ -2956,8 +2722,6 @@ namespace AngelLoader.Forms
 
             if (!fm.SelectedReadme.IsEmpty())
             {
-                ShowReadme(true);
-
                 if (readmeFiles.Count > 1)
                 {
                     FillAndSelectReadmeFromMulti(fm.SelectedReadme);
@@ -2987,7 +2751,6 @@ namespace AngelLoader.Forms
                     if (!safeReadme.IsEmpty())
                     {
                         fm.SelectedReadme = safeReadme;
-                        ShowReadme(true);
                         FillAndSelectReadmeFromMulti(safeReadme);
                     }
                     else
@@ -2998,7 +2761,7 @@ namespace AngelLoader.Forms
                         ChooseReadmeListBox.ClearFullItems();
                         ChooseReadmeListBox.AddRangeFull(readmeFiles);
 
-                        HideReadmeControls();
+                        ShowReadmeControls(false);
 
                         ChooseReadmePanel.Show();
 
@@ -3010,12 +2773,10 @@ namespace AngelLoader.Forms
                     fm.SelectedReadme = readmeFiles[0];
 
                     ChooseReadmeComboBox.Hide();
-                    ShowReadme(true);
                 }
             }
 
             ChooseReadmePanel.Hide();
-            ViewHTMLReadmeButton.Hide();
 
             try
             {
@@ -3024,15 +2785,11 @@ namespace AngelLoader.Forms
             }
             catch (Exception ex)
             {
+                Log(nameof(DisplaySelectedFM) + ": " + nameof(ReadmeLoad) + " failed.", ex);
+
                 ViewHTMLReadmeButton.Hide();
                 ShowReadme(true);
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
-
-                Log(nameof(DisplaySelectedFM) + ": " + nameof(ReadmeLoad) + " failed.", ex);
-
-                Debug.WriteLine("--------" + fm.Archive);
-                Debug.WriteLine("ReadmeRichTextBox.Load() failure:");
-                Debug.WriteLine(ex);
             }
 
             #endregion
@@ -3066,7 +2823,7 @@ namespace AngelLoader.Forms
 
         #region Messageboxes
 
-        public bool AskToContinue(string message, string title)
+        public bool AskToContinue(string message, string title, bool noIcon = false)
         {
             var result = MessageBox.Show(message, title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             return result == DialogResult.Yes;
@@ -3356,68 +3113,17 @@ namespace AngelLoader.Forms
             if (tb.Text.Length > 0) tb.SelectionStart = tb.Text.Length;
         }
 
-        private void RemoveTagFromFM()
+        private void RemoveTagButton_Click(object sender, EventArgs e)
         {
             var s = TagsTreeView;
-
-            if (s.SelectedNode == null) return;
-
             var fm = GetSelectedFM();
 
-            // Parent node (category)
-            if (s.SelectedNode.Parent == null)
-            {
-                // TODO: These messageboxes are annoying, but they prevent accidental deletion.
-                // Figure out something better.
-                var result =
-                    MessageBox.Show(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, MessageBoxButtons.YesNo);
-                if (result == DialogResult.No) return;
-
-                var cat = fm.Tags.FirstOrDefault(x => x.Category == s.SelectedNode.Text);
-                if (cat != null)
-                {
-                    fm.Tags.Remove(cat);
-                    UpdateFMTagsString(fm);
-
-                    // TODO: Profile the FirstOrDefaults and see if I should make them for loops
-                    var globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
-                    if (globalCat != null && !globalCat.Category.IsPreset)
-                    {
-                        if (globalCat.Category.UsedCount > 0) globalCat.Category.UsedCount--;
-                        if (globalCat.Category.UsedCount == 0) GlobalTags.Remove(globalCat);
-                    }
-                }
-            }
-            // Child node (tag)
-            else
-            {
-                var result =
-                    MessageBox.Show(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, MessageBoxButtons.YesNo);
-                if (result == DialogResult.No) return;
-
-                var cat = fm.Tags.FirstOrDefault(x => x.Category == s.SelectedNode.Parent.Text);
-                var tag = cat?.Tags.FirstOrDefault(x => x == s.SelectedNode.Text);
-                if (tag != null)
-                {
-                    cat.Tags.Remove(tag);
-                    if (cat.Tags.Count == 0) fm.Tags.Remove(cat);
-                    UpdateFMTagsString(fm);
-
-                    var globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
-                    var globalTag = globalCat?.Tags.FirstOrDefault(x => x.Name == s.SelectedNode.Text);
-                    if (globalTag != null && !globalTag.IsPreset)
-                    {
-                        if (globalTag.UsedCount > 0) globalTag.UsedCount--;
-                        if (globalTag.UsedCount == 0) globalCat.Tags.Remove(globalTag);
-                    }
-                }
-            }
+            var success = Core.RemoveTagFromFM(fm, s.SelectedNode.Parent?.Text, s.SelectedNode?.Text);
+            if (!success) return;
 
             DisplayFMTags(fm);
             Core.WriteFullFMDataIni();
         }
-
-        private void RemoveTagButton_Click(object sender, EventArgs e) => RemoveTagFromFM();
 
         private void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
         {
@@ -3522,19 +3228,9 @@ namespace AngelLoader.Forms
             AddTagTextBox.SetTextAndMoveCursorToEnd(cat.Text + @": ");
         }
 
-        private void AddTagMenuMiscItem_Click(object sender, EventArgs e)
-        {
-            var s = (ToolStripMenuItem)sender;
+        private void AddTagMenuMiscItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItem)sender).Text);
 
-            AddTagTextBox.SetTextAndMoveCursorToEnd(s.Text);
-        }
-
-        private void AddTagMenuEmptyItem_Click(object sender, EventArgs e)
-        {
-            var s = (ToolStripMenuItem)sender;
-
-            AddTagTextBox.SetTextAndMoveCursorToEnd(s.Text + ' ');
-        }
+        private void AddTagMenuEmptyItem_Click(object sender, EventArgs e) => AddTagTextBox.SetTextAndMoveCursorToEnd(((ToolStripMenuItem)sender).Text + ' ');
 
         // Just to keep things in a known state (clearing items also removes their event hookups, which is
         // convenient)
@@ -3576,7 +3272,7 @@ namespace AngelLoader.Forms
 
         private void ChooseReadmeComboBox_DropDownClosed(object sender, EventArgs e)
         {
-            if (!CursorOverReadmeArea()) HideReadmeControls();
+            if (!CursorOverReadmeArea()) ShowReadmeControls(false);
         }
 
         #endregion
@@ -3608,7 +3304,7 @@ namespace AngelLoader.Forms
                 ViewHTMLReadmeButton.Show();
                 ShowReadme(false);
                 // In case the cursor is over the scroll bar area
-                if (CursorOverReadmeArea()) ShowReadmeControls();
+                if (CursorOverReadmeArea()) ShowReadmeControls(true);
             }
             else
             {
@@ -3632,25 +3328,16 @@ namespace AngelLoader.Forms
 
             // In case the cursor is already over the readme when we do this
             // (cause it won't show automatically if it is)
-            if (enabled && CursorOverReadmeArea()) ShowReadmeControls();
+            ShowReadmeControls(enabled && CursorOverReadmeArea());
         }
 
-        private void ShowReadmeControls()
+        private void ShowReadmeControls(bool enabled)
         {
-            ZoomInButton.ShowIfHidden();
-            ZoomOutButton.ShowIfHidden();
-            ResetZoomButton.ShowIfHidden();
-            ReadmeFullScreenButton.ShowIfHidden();
-            if (ChooseReadmeComboBox.Items.Count > 0) ChooseReadmeComboBox.ShowIfHidden();
-        }
-
-        private void HideReadmeControls()
-        {
-            ZoomInButton.Hide();
-            ZoomOutButton.Hide();
-            ResetZoomButton.Hide();
-            ReadmeFullScreenButton.Hide();
-            ChooseReadmeComboBox.Hide();
+            ZoomInButton.Visible = enabled;
+            ZoomOutButton.Visible = enabled;
+            ResetZoomButton.Visible = enabled;
+            ReadmeFullScreenButton.Visible = enabled;
+            ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
         }
 
         #endregion
@@ -3854,7 +3541,11 @@ namespace AngelLoader.Forms
             FinishedOnExtremeMenuItem.Checked = false;
         }
 
-        private void ReadmeFullScreenButton_Click(object sender, EventArgs e) => MainSplitContainer.ToggleFullScreen();
+        private void ReadmeFullScreenButton_Click(object sender, EventArgs e)
+        {
+            MainSplitContainer.ToggleFullScreen();
+            ShowReadmeControls(CursorOverReadmeArea());
+        }
 
         private void WebSearchButton_Click(object sender, EventArgs e) => SearchWeb();
 
@@ -4065,7 +3756,7 @@ namespace AngelLoader.Forms
 
         private async void ClearFiltersButton_Click(object sender, EventArgs e) => await ClearAllUIAndInternalFilters();
 
-        private async Task ClearAllUIAndInternalFilters()
+        public async Task ClearAllUIAndInternalFilters()
         {
             using (new DisableEvents(this))
             {
@@ -4143,15 +3834,9 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
-        private async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e)
-        {
-            await ImportFromNDLOrFMSel(ImportType.FMSel);
-        }
+        private async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
 
-        private async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e)
-        {
-            await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
-        }
+        private async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
         private async Task ImportFromNDLOrFMSel(ImportType importType)
         {
@@ -4186,38 +3871,24 @@ namespace AngelLoader.Forms
 
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => SearchWeb();
 
-        private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
-        {
-            await ScanSelectedFM(ScanOptions.FalseDefault(scanTitle: true));
-        }
+        private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanTitle: true));
 
-        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
-        {
-            await ScanSelectedFM(ScanOptions.FalseDefault(scanAuthor: true));
-        }
+        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanAuthor: true));
 
-        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
-        {
-            await ScanSelectedFM(ScanOptions.FalseDefault(scanReleaseDate: true));
-        }
+        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanReleaseDate: true));
 
-        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
-        {
-            await ScanSelectedFM(ScanOptions.FalseDefault(scanCustomResources: true));
-        }
+        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanCustomResources: true));
 
         private async Task<bool> ScanSelectedFM(ScanOptions scanOptions)
         {
-            bool success = await Core.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false,
-                markAsScanned: true);
+            bool success = await Core.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
             if (success) await RefreshSelectedFM(refreshReadme: true);
             return success;
         }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
-            var fm = GetSelectedFM();
-            fm.RefreshCache = true;
+            GetSelectedFM().RefreshCache = true;
             await DisplaySelectedFM(refreshReadme: true);
         }
 
@@ -4225,27 +3896,11 @@ namespace AngelLoader.Forms
         private void TopSplitContainer_Panel2_SizeChanged(object sender, EventArgs e)
         {
             AddTagTextBox.Width = AddTagButton.Left > AddTagTextBox.Left
-                ? ((AddTagButton.Left) - AddTagTextBox.Left) - 1
+                ? (AddTagButton.Left - AddTagTextBox.Left) - 1
                 : 0;
         }
 
-        // TODO: This kind of code doesn't really belong in a view, meh
-        private static ScanOptions GetDefaultScanOptions()
-        {
-            return ScanOptions.FalseDefault(
-                scanTitle: true,
-                scanAuthor: true,
-                scanGameType: true,
-                scanCustomResources: true,
-                scanSize: true,
-                scanReleaseDate: true,
-                scanTags: true);
-        }
-
-        private async void ScanFMMenuItem_Click(object sender, EventArgs e)
-        {
-            await ScanSelectedFM(GetDefaultScanOptions());
-        }
+        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await ScanSelectedFM(GetDefaultScanOptions());
 
         private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
         {
@@ -4327,6 +3982,7 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
+        // TODO: This isn't hooked up to anything, but things seem to work fine. Do I need this?!
         private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
         {
             if (ColumnWidthSaveDisabled) return;

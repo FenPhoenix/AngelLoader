@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using AngelLoader.Common.DataClasses;
+using FMScanner;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
@@ -13,6 +14,38 @@ namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
+        internal static void SetFMSizesToLocalized()
+        {
+            // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture
+            foreach (var fm in Core.FMsViewList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
+        }
+
+        internal static ScanOptions GetDefaultScanOptions()
+        {
+            return ScanOptions.FalseDefault(
+                scanTitle: true,
+                scanAuthor: true,
+                scanGameType: true,
+                scanCustomResources: true,
+                scanSize: true,
+                scanReleaseDate: true,
+                scanTags: true);
+        }
+
+        internal static bool FMCustomResourcesScanned(FanMission fm)
+        {
+            return fm.HasMap != null &&
+                   fm.HasAutomap != null &&
+                   fm.HasScripts != null &&
+                   fm.HasTextures != null &&
+                   fm.HasSounds != null &&
+                   fm.HasObjects != null &&
+                   fm.HasCreatures != null &&
+                   fm.HasMotions != null &&
+                   fm.HasMovies != null &&
+                   fm.HasSubtitles != null;
+        }
+
         internal static bool FMIsReallyInstalled(FanMission fm)
         {
             return fm.Installed &&
