@@ -49,7 +49,7 @@ namespace AngelLoader
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)
-        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon icon,
+        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon,
             bool showDontAskAgain, string yes, string no);
 
         (bool Cancel, bool Continue, bool DontAskAgain)
@@ -1531,6 +1531,25 @@ namespace AngelLoader
         internal static async Task InstallOrUninstall(FanMission fm)
         {
             await (fm.Installed ? FMInstallAndPlay.UninstallFM(fm) : FMInstallAndPlay.InstallFM(fm));
+        }
+
+        internal static async Task InstallOrPlay(FanMission fm, bool askConfIfRequired = false)
+        {
+            if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
+            {
+                var (cancel, dontAskAgain) = View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Play_ConfirmMessage,
+                    LText.AlertMessages.Confirm, icon: null, showDontAskAgain: true, yes: null, no: null);
+                Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
+                if (cancel) return;
+            }
+
+            if (!fm.Installed && !await FMInstallAndPlay.InstallFM(fm)) return;
+
+            if (PlayFM(fm))
+            {
+                fm.LastPlayed = DateTime.Now;
+                await View.RefreshSelectedFM(refreshReadme: false);
+            }
         }
 
         internal static async Task ConvertOGGsToWAVs(FanMission fm)

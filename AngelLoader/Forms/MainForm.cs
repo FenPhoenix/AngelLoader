@@ -490,12 +490,10 @@ namespace AngelLoader.Forms
                     FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
                     UpdateRatingLabel(suspendResume: false);
 
-                    FilterByReleaseDateButton.Checked =
-                        filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
+                    FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
                     UpdateDateLabel(lastPlayed: false, suspendResume: false);
 
-                    FilterByLastPlayedButton.Checked =
-                        filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
+                    FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
                     UpdateDateLabel(lastPlayed: true, suspendResume: false);
                 }
                 finally
@@ -862,7 +860,7 @@ namespace AngelLoader.Forms
                 if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(GetSelectedFM()))
                 {
                     e.SuppressKeyPress = true;
-                    await CallInstallOrPlay(Config.ConfirmPlayOnDCOrEnter);
+                    await Core.InstallOrPlay(GetSelectedFM(), askConfIfRequired: true);
                 }
             }
             else if (e.KeyCode == Keys.Escape)
@@ -2040,7 +2038,7 @@ namespace AngelLoader.Forms
             if (FMsDGV.RowCount == 0 || FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
         }
 
-        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await CallInstallOrPlay();
+        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await Core.InstallOrPlay(GetSelectedFM());
 
         private async void InstallUninstallMenuItem_Click(object sender, EventArgs e)
         {
@@ -2069,38 +2067,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private async Task CallInstallOrPlay(bool askConfirmation = false)
-        {
-            var fm = GetSelectedFM();
-
-            if (askConfirmation)
-            {
-                using (var d = new TaskDialog())
-                using (var yesButton = new TaskDialogButton(ButtonType.Yes))
-                using (var noButton = new TaskDialogButton(ButtonType.No))
-                {
-                    d.AllowDialogCancellation = true;
-                    d.ButtonStyle = TaskDialogButtonStyle.Standard;
-                    d.WindowTitle = LText.AlertMessages.Confirm;
-                    d.Content = LText.AlertMessages.Play_ConfirmMessage;
-                    d.VerificationText = LText.AlertMessages.DontAskAgain;
-                    d.Buttons.Add(yesButton);
-                    d.Buttons.Add(noButton);
-                    var buttonClicked = d.ShowDialog();
-                    Config.ConfirmPlayOnDCOrEnter = !d.IsVerificationChecked;
-                    if (buttonClicked != yesButton) return;
-                }
-            }
-
-            if (!fm.Installed && !await FMInstallAndPlay.InstallFM(fm)) return;
-
-            if (Core.PlayFM(fm))
-            {
-                fm.LastPlayed = DateTime.Now;
-                await RefreshSelectedFM(refreshReadme: false);
-            }
-        }
-
         #region Install/Play buttons
 
         private async void InstallUninstallFMButton_Click(object sender, EventArgs e)
@@ -2110,7 +2076,7 @@ namespace AngelLoader.Forms
             await Core.InstallOrUninstall(fm);
         }
 
-        private async void PlayFMButton_Click(object sender, EventArgs e) => await CallInstallOrPlay();
+        private async void PlayFMButton_Click(object sender, EventArgs e) => await Core.InstallOrPlay(GetSelectedFM());
 
         #region Play original game
 
@@ -2888,15 +2854,15 @@ namespace AngelLoader.Forms
         }
 
         public (bool Cancel, bool DontAskAgain)
-        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon icon, bool showDontAskAgain,
+        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
             string yes, string no)
         {
             using (var d = new TaskDialog())
-            using (var yesButton = new TaskDialogButton(yes))
-            using (var noButton = new TaskDialogButton(no))
+            using (var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes))
+            using (var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No))
             {
                 d.AllowDialogCancellation = true;
-                d.MainIcon = icon;
+                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
                 d.ButtonStyle = TaskDialogButtonStyle.Standard;
                 d.WindowTitle = title;
                 d.Content = message;
@@ -2904,7 +2870,7 @@ namespace AngelLoader.Forms
                 d.Buttons.Add(yesButton);
                 d.Buttons.Add(noButton);
                 var buttonClicked = d.ShowDialog();
-                var cancel = buttonClicked == null || buttonClicked == noButton;
+                var cancel = buttonClicked != yesButton;
                 var dontAskAgain = d.IsVerificationChecked;
                 return (cancel, dontAskAgain);
             }
@@ -3968,10 +3934,13 @@ namespace AngelLoader.Forms
 
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return;
+            FanMission fm;
+            if (e.RowIndex < 0 || FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(fm = GetSelectedFM()))
+            {
+                return;
+            }
 
-            if (FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(GetSelectedFM())) return;
-            await CallInstallOrPlay(Config.ConfirmPlayOnDCOrEnter);
+            await Core.InstallOrPlay(fm, askConfIfRequired: true);
         }
 
         private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await RefreshFromDisk();
