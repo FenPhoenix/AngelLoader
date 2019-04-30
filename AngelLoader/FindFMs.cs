@@ -21,139 +21,144 @@ namespace AngelLoader
             // Make sure we don't lose anything when we re-find!
             if (!startup) Core.WriteFullFMDataIni();
 
-            // Init or reinit - must be deep-copied or changes propagate back because reference types
-            DeepCopyGlobalTags(PresetTags, GlobalTags);
-
-            #region Back up lists and read FM data file
-
-            // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
-            // up with a blank or incomplete list and then glibly save it out later.
-            var backupList = new List<FanMission>();
-            foreach (var fm in fmDataIniList) backupList.Add(fm);
-
-            var viewBackupList = new List<FanMission>();
-            foreach (var fm in Core.FMsViewList) viewBackupList.Add(fm);
-
-            fmDataIniList.Clear();
-            Core.FMsViewList.Clear();
-
-            var fmDataIniExists = File.Exists(Paths.FMDataIni);
-
-            if (fmDataIniExists)
+            // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
+            // selection changed event from firing while we do it, as that could be really bad potentially.
+            using (new DisableEvents((IEventDisabler)Core.View))
             {
-                try
-                {
-                    ReadFMDataIni(Paths.FMDataIni, fmDataIniList);
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception reading FM data ini", ex);
-                    if (startup)
-                    {
-                        MessageBox.Show("Exception reading FM data ini. Exiting. Please check " + Paths.LogFile,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Environment.Exit(1);
-                    }
-                    else
-                    {
-                        fmDataIniList.ClearAndAdd(backupList);
-                        Core.FMsViewList.ClearAndAdd(viewBackupList);
-                        return;
-                    }
-                }
-            }
+                // Init or reinit - must be deep-copied or changes propagate back because reference types
+                DeepCopyGlobalTags(PresetTags, GlobalTags);
 
-            #endregion
+                #region Back up lists and read FM data file
 
-            #region Get installed dirs from disk
+                // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
+                // up with a blank or incomplete list and then glibly save it out later.
+                var backupList = new List<FanMission>();
+                foreach (var fm in fmDataIniList) backupList.Add(fm);
 
-            // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
-            // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
-            var t1InstalledFMDirs = new List<string>();
-            var t2InstalledFMDirs = new List<string>();
-            var t3InstalledFMDirs = new List<string>();
+                var viewBackupList = new List<FanMission>();
+                foreach (var fm in Core.FMsViewList) viewBackupList.Add(fm);
 
-            for (int i = 0; i < 3; i++)
-            {
-                var instFMDirs = i == 0 ? t1InstalledFMDirs : i == 1 ? t2InstalledFMDirs : t3InstalledFMDirs;
-                var instPath = i == 0 ? Config.T1FMInstallPath : i == 1 ? Config.T2FMInstallPath : Config.T3FMInstallPath;
+                fmDataIniList.Clear();
+                Core.FMsViewList.Clear();
 
-                if (Directory.Exists(instPath))
+                var fmDataIniExists = File.Exists(Paths.FMDataIni);
+
+                if (fmDataIniExists)
                 {
                     try
                     {
-                        foreach (var d in Directory.GetDirectories(instPath, "*", SearchOption.TopDirectoryOnly))
+                        ReadFMDataIni(Paths.FMDataIni, fmDataIniList);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Exception reading FM data ini", ex);
+                        if (startup)
                         {
-                            var dirName = d.GetTopmostDirName();
-                            if (!dirName.EqualsI(".fmsel.cache")) instFMDirs.Add(dirName);
+                            MessageBox.Show("Exception reading FM data ini. Exiting. Please check " + Paths.LogFile,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Environment.Exit(1);
+                        }
+                        else
+                        {
+                            fmDataIniList.ClearAndAdd(backupList);
+                            Core.FMsViewList.ClearAndAdd(viewBackupList);
+                            return;
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Get installed dirs from disk
+
+                // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
+                // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
+                var t1InstalledFMDirs = new List<string>();
+                var t2InstalledFMDirs = new List<string>();
+                var t3InstalledFMDirs = new List<string>();
+
+                for (int i = 0; i < 3; i++)
+                {
+                    var instFMDirs = i == 0 ? t1InstalledFMDirs : i == 1 ? t2InstalledFMDirs : t3InstalledFMDirs;
+                    var instPath = i == 0 ? Config.T1FMInstallPath : i == 1 ? Config.T2FMInstallPath : Config.T3FMInstallPath;
+
+                    if (Directory.Exists(instPath))
+                    {
+                        try
+                        {
+                            foreach (var d in Directory.GetDirectories(instPath, "*", SearchOption.TopDirectoryOnly))
+                            {
+                                var dirName = d.GetTopmostDirName();
+                                if (!dirName.EqualsI(".fmsel.cache")) instFMDirs.Add(dirName);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception getting directories in " + instPath, ex);
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Get archives from disk
+
+                var fmArchives = new List<string>();
+
+                foreach (var path in GetFMArchivePaths())
+                {
+                    try
+                    {
+                        var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
+                        foreach (var f in files)
+                        {
+                            if (!fmArchives.ContainsI(f.GetFileNameFast()) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
+                            {
+                                fmArchives.Add(f.GetFileNameFast());
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
-                        Log("Exception getting directories in " + instPath, ex);
+                        Log("Exception getting files in " + path, ex);
                     }
                 }
-            }
 
-            #endregion
+                #endregion
 
-            #region Get archives from disk
+                #region Build FanMission objects from installed dirs
 
-            var fmArchives = new List<string>();
+                var t1List = new List<FanMission>();
+                var t2List = new List<FanMission>();
+                var t3List = new List<FanMission>();
 
-            foreach (var path in GetFMArchivePaths())
-            {
-                try
+                for (int i = 0; i < 3; i++)
                 {
-                    var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
-                    foreach (var f in files)
+                    var instFMDirs = i == 0 ? t1InstalledFMDirs : i == 1 ? t2InstalledFMDirs : t3InstalledFMDirs;
+                    var list = i == 0 ? t1List : i == 1 ? t2List : t3List;
+                    var game = i == 0 ? Game.Thief1 : i == 1 ? Game.Thief2 : Game.Thief3;
+
+                    foreach (var item in instFMDirs)
                     {
-                        if (!fmArchives.ContainsI(f.GetFileNameFast()) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
-                        {
-                            fmArchives.Add(f.GetFileNameFast());
-                        }
+                        list.Add(new FanMission { InstalledDir = item, Game = game, Installed = true });
                     }
                 }
-                catch (Exception ex)
-                {
-                    Log("Exception getting files in " + path, ex);
-                }
+
+                #endregion
+
+                MergeNewArchiveFMs(fmArchives, fmDataIniList);
+
+                int instInitCount = fmDataIniList.Count;
+                if (t1List.Count > 0) MergeNewInstalledFMs(t1List, fmDataIniList, instInitCount);
+                if (t2List.Count > 0) MergeNewInstalledFMs(t2List, fmDataIniList, instInitCount);
+                if (t3List.Count > 0) MergeNewInstalledFMs(t3List, fmDataIniList, instInitCount);
+
+                SetArchiveNames(fmArchives, fmDataIniList);
+
+                SetInstalledNames(fmDataIniList);
+
+                BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs);
             }
-
-            #endregion
-
-            #region Build FanMission objects from installed dirs
-
-            var t1List = new List<FanMission>();
-            var t2List = new List<FanMission>();
-            var t3List = new List<FanMission>();
-
-            for (int i = 0; i < 3; i++)
-            {
-                var instFMDirs = i == 0 ? t1InstalledFMDirs : i == 1 ? t2InstalledFMDirs : t3InstalledFMDirs;
-                var list = i == 0 ? t1List : i == 1 ? t2List : t3List;
-                var game = i == 0 ? Game.Thief1 : i == 1 ? Game.Thief2 : Game.Thief3;
-
-                foreach (var item in instFMDirs)
-                {
-                    list.Add(new FanMission { InstalledDir = item, Game = game, Installed = true });
-                }
-            }
-
-            #endregion
-
-            MergeNewArchiveFMs(fmArchives, fmDataIniList);
-
-            int instInitCount = fmDataIniList.Count;
-            if (t1List.Count > 0) MergeNewInstalledFMs(t1List, fmDataIniList, instInitCount);
-            if (t2List.Count > 0) MergeNewInstalledFMs(t2List, fmDataIniList, instInitCount);
-            if (t3List.Count > 0) MergeNewInstalledFMs(t3List, fmDataIniList, instInitCount);
-
-            SetArchiveNames(fmArchives, fmDataIniList);
-
-            SetInstalledNames(fmDataIniList);
-
-            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs);
         }
 
         private static void SetArchiveNames(List<string> fmArchives, List<FanMission> fmDataIniList)

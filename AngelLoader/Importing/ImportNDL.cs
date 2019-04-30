@@ -57,7 +57,9 @@ namespace AngelLoader.Importing
 
                     #region Read FM entries
 
-                    if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
+                    // MUST CHECK archiveDirRead OR IT ADDS EVERY FM TWICE!
+                    if (archiveDirRead &&
+                        line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
                     {
                         // NOTE: There can be a problem like:
                         // installed name is CoolMission[1]

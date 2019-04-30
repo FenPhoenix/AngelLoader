@@ -1181,6 +1181,10 @@ namespace AngelLoader.Forms
 
         #region FMsDGV-related
 
+        public int GetRowCount() => FMsDGV.RowCount;
+
+        public void SetRowCount(int count) => FMsDGV.RowCount = count;
+
         private void ZoomFMsDGV(ZoomFMsDGVType type, float? zoomFontSize = null)
         {
             // We'll be changing widths all over the place here, so don't save them out while we do this
@@ -2238,7 +2242,7 @@ namespace AngelLoader.Forms
             await DisplaySelectedFM(refreshReadme);
         }
 
-        internal async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+        public async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
@@ -3772,9 +3776,16 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
-            if (!success) return;
+            // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
+            // selection changed event from firing while we do it, as that could be really bad potentially.
+            using (new DisableEvents(this))
+            {
+                bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
+                //if (!success) return;
+            }
 
+            // Always do this, because if our selection changed without an event, we may be displaying the wrong
+            // data
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
@@ -3797,19 +3808,26 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            int successCount = 0;
+            //int successCount = 0;
             foreach (var file in iniFiles)
             {
                 if (file.IsWhiteSpace()) continue;
 
-                bool success = await (importType == ImportType.FMSel
-                    ? Core.ImportFromFMSel(file)
-                    : Core.ImportFromNDL(file));
-                if (success) successCount++;
+                // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
+                // selection changed event from firing while we do it, as that could be really bad potentially.
+                using (new DisableEvents(this))
+                {
+                    bool success = await (importType == ImportType.FMSel
+                        ? Core.ImportFromFMSel(file)
+                        : Core.ImportFromNDL(file));
+                    //if (success) successCount++;
+                }
             }
 
-            if (successCount == 0) return;
+            //if (successCount == 0) return;
 
+            // Always do this, because if our selection changed without an event, we may be displaying the wrong
+            // data
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 

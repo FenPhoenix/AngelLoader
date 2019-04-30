@@ -16,7 +16,8 @@
     internal enum ImportError
     {
         None,
-        NoArchiveDirsFound
+        NoArchiveDirsFound,
+        Unknown
     }
 
     internal enum StubResponseError

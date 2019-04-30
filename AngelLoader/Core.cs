@@ -38,6 +38,8 @@ namespace AngelLoader
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false);
         void Init();
         void SortFMsDGV(Column column, SortOrder sortDirection);
+        int GetRowCount();
+        void SetRowCount(int count);
         void Show();
         void ShowAlert(string message, string title);
         object InvokeSync(Delegate method);
@@ -45,6 +47,8 @@ namespace AngelLoader
         object InvokeAsync(Delegate method);
         object InvokeAsync(Delegate method, params object[] args);
         void Block(bool block);
+        Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+            bool suppressSuspendResume = false);
         Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false);
         bool AskToContinue(string message, string title, bool noIcon = false);
 
