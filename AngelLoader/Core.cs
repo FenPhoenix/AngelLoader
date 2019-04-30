@@ -354,9 +354,12 @@ namespace AngelLoader
 
                 // Game paths should have been checked and verified before OK was clicked, so assume they're good
                 // here
-                if (gamePathsChanged || archivePathsChanged || gameOrganizationChanged || articlesChanged)
+                if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged)
                 {
-                    if (gamePathsChanged || archivePathsChanged) await ScanNewFMsForGameType();
+                    if (archivePathsChanged || gamePathsChanged)
+                    {
+                        if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
+                    }
 
                     await View.SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
                 }
@@ -935,13 +938,39 @@ namespace AngelLoader
             }
         }
 
-        internal static async Task ScanNewFMsForGameType()
+        internal static async Task ScanNewFMsForGameType(bool useViewListGamesNull = false)
         {
             var fmsToScan = new List<FanMission>();
-            foreach (var fm in FMsViewList)
+
+            restart:
+
+            if (useViewListGamesNull)
             {
-                if (fm.Game == null) fmsToScan.Add(fm);
+                try
+                {
+                    // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
+                    foreach (var index in ViewListGamesNull) fmsToScan.Add(FMDataIniList[index]);
+                }
+                catch
+                {
+                    // Cheap fallback in case something goes wrong, because what we're doing is a little iffy
+                    useViewListGamesNull = false;
+                    goto restart;
+                }
+                finally
+                {
+                    // Critical that this gets cleared immediately after use!
+                    ViewListGamesNull.Clear();
+                }
             }
+            else
+            {
+                foreach (var fm in FMsViewList)
+                {
+                    if (fm.Game == null) fmsToScan.Add(fm);
+                }
+            }
+
             if (fmsToScan.Count > 0)
             {
                 var scanOptions = ScanOptions.FalseDefault(scanGameType: true);
@@ -1066,6 +1095,8 @@ namespace AngelLoader
         internal static async Task RefreshFromDisk()
         {
             FindFMs.Find(FMDataIniList);
+            // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
+            if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
             await View.SortAndSetFilter();
         }
 

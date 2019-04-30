@@ -430,12 +430,8 @@ namespace AngelLoader.Forms
         private async void MainForm_Shown(object sender, EventArgs e)
         {
             // This must certainly need to come after Show() as well, right?!
-            if (Core.ViewListGamesNull.Count > 0)
-            {
-                // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-                await Core.ScanNewFMsForGameType();
-                Core.ViewListGamesNull.Clear();
-            }
+            // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
+            if (Core.ViewListGamesNull.Count > 0) await Core.ScanNewFMsForGameType(useViewListGamesNull: true);
 
             // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
             // Don't do Suspend/ResumeDrawing on startup because resume is slowish (having a refresh and all)
