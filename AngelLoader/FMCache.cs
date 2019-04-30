@@ -36,6 +36,46 @@ namespace AngelLoader
             internal int Index { get; set; } = -1;
         }
 
+        // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
+        // a button, so don't worry about it
+        internal static async Task<CacheData> GetCacheableData(FanMission fm, ProgressPanel ProgressBox)
+        {
+            if (fm.Game == Game.Unsupported)
+            {
+                if (!fm.InstalledDir.IsEmpty())
+                {
+                    var fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
+                    if (!fmCachePath.TrimEnd('\\').EqualsI(Paths.FMsCache.TrimEnd('\\')) && Directory.Exists(fmCachePath))
+                    {
+                        try
+                        {
+                            foreach (var f in Directory.EnumerateFiles(fmCachePath, "*",
+                                SearchOption.TopDirectoryOnly))
+                            {
+                                File.Delete(f);
+                            }
+
+                            foreach (var d in Directory.EnumerateDirectories(fmCachePath, "*",
+                                SearchOption.TopDirectoryOnly))
+                            {
+                                Directory.Delete(d, recursive: true);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception enumerating files or directories in cache for " + fm.Archive + " / " +
+                                fm.InstalledDir, ex);
+                        }
+                    }
+                }
+                return new CacheData();
+            }
+
+            return FMIsReallyInstalled(fm)
+                ? FMCache.GetCacheableDataInFMInstalledDir(fm)
+                : await FMCache.GetCacheableDataInFMCacheDir(fm, ProgressBox);
+        }
+
         private static void RemoveEmptyFiles(List<string> files)
         {
             for (int i = 0; i < files.Count; i++)

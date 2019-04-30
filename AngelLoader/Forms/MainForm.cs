@@ -2667,7 +2667,7 @@ namespace AngelLoader.Forms
 
             if (!refreshReadme) return;
 
-            var cacheData = await Core.GetCacheableData(fm);
+            var cacheData = await FMCache.GetCacheableData(fm, ProgressBox);
 
             #region Readme
 

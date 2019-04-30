@@ -679,6 +679,8 @@ namespace AngelLoader
                 : (Error.T3FMInstPathNotFound, false, null);
         }
 
+        #region Scan
+
         // Super quick-n-cheap hack for perf
         internal static List<int> ViewListGamesNull = new List<int>();
 
@@ -955,6 +957,8 @@ namespace AngelLoader
             }
         }
 
+        #endregion
+
         #region Importing
 
         internal static async Task<bool>
@@ -1154,6 +1158,8 @@ namespace AngelLoader
             }
         }
 
+        #endregion
+
         internal static void ReportFMExtractProgress(int percent)
         {
             View.InvokeSync(new Action(() => ProgressBox.ReportFMExtractProgress(percent)));
@@ -1169,7 +1175,7 @@ namespace AngelLoader
             View.InvokeSync(new Action(ProgressBox.SetCancelingFMInstall));
         }
 
-        #endregion
+        #region DML
 
         internal static bool AddDML(FanMission fm, string sourceDMLPath)
         {
@@ -1239,50 +1245,9 @@ namespace AngelLoader
             }
         }
 
-        #region Cacheable FM data
-
-        // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
-        // a button, so don't worry about it
-        internal static async Task<CacheData> GetCacheableData(FanMission fm)
-        {
-            if (fm.Game == Game.Unsupported)
-            {
-                if (!fm.InstalledDir.IsEmpty())
-                {
-                    var fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
-                    if (!fmCachePath.TrimEnd('\\').EqualsI(Paths.FMsCache.TrimEnd('\\')) && Directory.Exists(fmCachePath))
-                    {
-                        try
-                        {
-                            foreach (var f in Directory.EnumerateFiles(fmCachePath, "*",
-                                SearchOption.TopDirectoryOnly))
-                            {
-                                File.Delete(f);
-                            }
-
-                            foreach (var d in Directory.EnumerateDirectories(fmCachePath, "*",
-                                SearchOption.TopDirectoryOnly))
-                            {
-                                Directory.Delete(d, recursive: true);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log(
-                                "Exception enumerating files or directories in cache for " + fm.Archive + " / " +
-                                fm.InstalledDir, ex);
-                        }
-                    }
-                }
-                return new CacheData();
-            }
-
-            return FMIsReallyInstalled(fm)
-                ? FMCache.GetCacheableDataInFMInstalledDir(fm)
-                : await FMCache.GetCacheableDataInFMCacheDir(fm, ProgressBox);
-        }
-
         #endregion
+
+        #region Readme
 
         internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
@@ -1338,8 +1303,8 @@ namespace AngelLoader
 
             string StripPunctuation(string str)
             {
-                return str.Replace(" ", "").Replace("-", "").Replace("_", "").Replace(".", "")
-                    .Replace(",", "").Replace(";", "").Replace("'", "");
+                return str.Replace(" ", "").Replace("-", "").Replace("_", "").Replace(".", "").Replace(",", "")
+                    .Replace(";", "").Replace("'", "");
             }
 
             bool allEqual = true;
@@ -1472,14 +1437,13 @@ namespace AngelLoader
                     }
                 }
 
-                if (numSafe == 1 && safeIndex > -1)
-                {
-                    safeReadme = readmeFiles[safeIndex];
-                }
+                if (numSafe == 1 && safeIndex > -1) safeReadme = readmeFiles[safeIndex];
             }
 
             return safeReadme;
         }
+
+        #endregion
 
         internal static void OpenFMFolder(FanMission fm)
         {
@@ -1573,6 +1537,8 @@ namespace AngelLoader
                 Log("Problem opening clickable link from rtfbox", ex);
             }
         }
+
+        #region Add/remove tag
 
         internal static List<string> ListMatchingTags(string searchText)
         {
@@ -1693,6 +1659,8 @@ namespace AngelLoader
 
             return true;
         }
+
+        #endregion
 
         internal static void UpdateConfig(
             FormWindowState mainWindowState,
