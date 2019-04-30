@@ -24,7 +24,7 @@ using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm : Form, IView, IEventDisabler, IKeyPressDisabler, ILocalizable, IMessageFilter
+    public partial class MainForm : Form, IView, IEventDisabler, IKeyPressDisabler, IMessageFilter
     {
         public object InvokeSync(Delegate method) => Invoke(method);
         public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
@@ -1334,23 +1334,21 @@ namespace AngelLoader.Forms
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
 #endif
 
-            var s = FMsDGV;
-
             #region Set filters that are stored in control state
 
-            s.Filter.Title = FilterTitleTextBox.Text;
-            s.Filter.Author = FilterAuthorTextBox.Text;
+            FMsDGV.Filter.Title = FilterTitleTextBox.Text;
+            FMsDGV.Filter.Author = FilterAuthorTextBox.Text;
 
-            s.Filter.Games.Clear();
-            if (FilterByThief1Button.Checked) s.Filter.Games.Add(Game.Thief1);
-            if (FilterByThief2Button.Checked) s.Filter.Games.Add(Game.Thief2);
-            if (FilterByThief3Button.Checked) s.Filter.Games.Add(Game.Thief3);
+            FMsDGV.Filter.Games.Clear();
+            if (FilterByThief1Button.Checked) FMsDGV.Filter.Games.Add(Game.Thief1);
+            if (FilterByThief2Button.Checked) FMsDGV.Filter.Games.Add(Game.Thief2);
+            if (FilterByThief3Button.Checked) FMsDGV.Filter.Games.Add(Game.Thief3);
 
-            s.Filter.Finished.Clear();
-            if (FilterByFinishedButton.Checked) s.Filter.Finished.Add(FinishedState.Finished);
-            if (FilterByUnfinishedButton.Checked) s.Filter.Finished.Add(FinishedState.Unfinished);
+            FMsDGV.Filter.Finished.Clear();
+            if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Finished);
+            if (FilterByUnfinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Unfinished);
 
-            s.Filter.ShowJunk = FilterShowJunkCheckBox.Checked;
+            FMsDGV.Filter.ShowJunk = FilterShowJunkCheckBox.Checked;
 
             #endregion
 
@@ -1358,32 +1356,32 @@ namespace AngelLoader.Forms
             // We also don't need it if we're forcing both things.
             var oldSelectedFM =
                 forceRefreshReadme && forceSuppressSelectionChangedEvent ? null :
-                s.SelectedRows.Count > 0 ? GetSelectedFM() : null;
+                FMsDGV.SelectedRows.Count > 0 ? GetSelectedFM() : null;
 
-            s.FilterShownIndexList.Clear();
+            FMsDGV.FilterShownIndexList.Clear();
 
             // This one gets checked in a loop, so cache it. Others are only checked twice at most, so leave them
             // be.
-            var titleIsWhitespace = s.Filter.Title.IsWhiteSpace();
+            var titleIsWhitespace = FMsDGV.Filter.Title.IsWhiteSpace();
 
             #region Early out
 
             if (titleIsWhitespace &&
-                s.Filter.Author.IsWhiteSpace() &&
-                s.Filter.Games.Count == 0 &&
-                s.Filter.Tags.Empty() &&
-                s.Filter.ReleaseDateFrom == null &&
-                s.Filter.ReleaseDateTo == null &&
-                s.Filter.LastPlayedFrom == null &&
-                s.Filter.LastPlayedTo == null &&
-                s.Filter.RatingFrom == -1 &&
-                s.Filter.RatingTo == 10 &&
-                (s.Filter.Finished.Count == 0 ||
-                 (s.Filter.Finished.Contains(FinishedState.Finished)
-                  && s.Filter.Finished.Contains(FinishedState.Unfinished))) &&
-                s.Filter.ShowJunk)
+                FMsDGV.Filter.Author.IsWhiteSpace() &&
+                FMsDGV.Filter.Games.Count == 0 &&
+                FMsDGV.Filter.Tags.Empty() &&
+                FMsDGV.Filter.ReleaseDateFrom == null &&
+                FMsDGV.Filter.ReleaseDateTo == null &&
+                FMsDGV.Filter.LastPlayedFrom == null &&
+                FMsDGV.Filter.LastPlayedTo == null &&
+                FMsDGV.Filter.RatingFrom == -1 &&
+                FMsDGV.Filter.RatingTo == 10 &&
+                (FMsDGV.Filter.Finished.Count == 0 ||
+                 (FMsDGV.Filter.Finished.Contains(FinishedState.Finished)
+                  && FMsDGV.Filter.Finished.Contains(FinishedState.Unfinished))) &&
+                FMsDGV.Filter.ShowJunk)
             {
-                s.Filtered = false;
+                FMsDGV.Filtered = false;
 
                 if (!suppressRefresh)
                 {
@@ -1404,11 +1402,11 @@ namespace AngelLoader.Forms
                 var fm = Core.FMsViewList[i];
 
                 if (titleIsWhitespace ||
-                    fm.Archive.ContainsI(s.Filter.Title) ||
-                    fm.Title.ContainsI(s.Filter.Title) ||
-                    fm.InstalledDir.ContainsI(s.Filter.Title))
+                    fm.Archive.ContainsI(FMsDGV.Filter.Title) ||
+                    fm.Title.ContainsI(FMsDGV.Filter.Title) ||
+                    fm.InstalledDir.ContainsI(FMsDGV.Filter.Title))
                 {
-                    s.FilterShownIndexList.Add(i);
+                    FMsDGV.FilterShownIndexList.Add(i);
                 }
             }
 
@@ -1416,15 +1414,15 @@ namespace AngelLoader.Forms
 
             #region Author
 
-            if (!s.Filter.Author.IsWhiteSpace())
+            if (!FMsDGV.Filter.Author.IsWhiteSpace())
             {
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmAuthor = Core.FMsViewList[s.FilterShownIndexList[i]].Author;
+                    var fmAuthor = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].Author;
 
-                    if (!fmAuthor.ContainsI(s.Filter.Author))
+                    if (!fmAuthor.ContainsI(FMsDGV.Filter.Author))
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                     }
                 }
@@ -1434,14 +1432,14 @@ namespace AngelLoader.Forms
 
             #region Show junk
 
-            if (!s.Filter.ShowJunk)
+            if (!FMsDGV.Filter.ShowJunk)
             {
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Core.FMsViewList[s.FilterShownIndexList[i]];
+                    var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
                     if (fm.Game == Game.Unsupported && !FilterShowJunkCheckBox.Checked)
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                     }
                 }
@@ -1451,14 +1449,14 @@ namespace AngelLoader.Forms
 
             #region Games
 
-            if (s.Filter.Games.Count > 0)
+            if (FMsDGV.Filter.Games.Count > 0)
             {
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Core.FMsViewList[s.FilterShownIndexList[i]];
-                    if (GameIsKnownAndSupported(fm) && !s.Filter.Games.Contains((Game)fm.Game))
+                    var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    if (GameIsKnownAndSupported(fm) && !FMsDGV.Filter.Games.Contains((Game)fm.Game))
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                     }
                 }
@@ -1468,20 +1466,20 @@ namespace AngelLoader.Forms
 
             #region Tags
 
-            if (s.Filter.Tags.AndTags.Count > 0 ||
-                s.Filter.Tags.OrTags.Count > 0 ||
-                s.Filter.Tags.NotTags.Count > 0)
+            if (FMsDGV.Filter.Tags.AndTags.Count > 0 ||
+                FMsDGV.Filter.Tags.OrTags.Count > 0 ||
+                FMsDGV.Filter.Tags.NotTags.Count > 0)
             {
-                var andTags = s.Filter.Tags.AndTags;
-                var orTags = s.Filter.Tags.OrTags;
-                var notTags = s.Filter.Tags.NotTags;
+                var andTags = FMsDGV.Filter.Tags.AndTags;
+                var orTags = FMsDGV.Filter.Tags.OrTags;
+                var notTags = FMsDGV.Filter.Tags.NotTags;
 
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmTags = Core.FMsViewList[s.FilterShownIndexList[i]].Tags;
+                    var fmTags = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].Tags;
                     if (fmTags.Count == 0 && notTags.Count == 0)
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                         continue;
                     }
@@ -1519,7 +1517,7 @@ namespace AngelLoader.Forms
 
                         if (!andPass)
                         {
-                            s.FilterShownIndexList.RemoveAt(i);
+                            FMsDGV.FilterShownIndexList.RemoveAt(i);
                             i--;
                             continue;
                         }
@@ -1558,7 +1556,7 @@ namespace AngelLoader.Forms
 
                         if (!orPass)
                         {
-                            s.FilterShownIndexList.RemoveAt(i);
+                            FMsDGV.FilterShownIndexList.RemoveAt(i);
                             i--;
                             continue;
                         }
@@ -1599,7 +1597,7 @@ namespace AngelLoader.Forms
 
                         if (!notPass)
                         {
-                            s.FilterShownIndexList.RemoveAt(i);
+                            FMsDGV.FilterShownIndexList.RemoveAt(i);
                             i--;
                             continue;
                         }
@@ -1613,18 +1611,18 @@ namespace AngelLoader.Forms
 
             #region Rating
 
-            if (!(s.Filter.RatingFrom == -1 && s.Filter.RatingTo == 10))
+            if (!(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10))
             {
-                var rf = s.Filter.RatingFrom;
-                var rt = s.Filter.RatingTo;
+                var rf = FMsDGV.Filter.RatingFrom;
+                var rt = FMsDGV.Filter.RatingTo;
 
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmRating = Core.FMsViewList[s.FilterShownIndexList[i]].Rating;
+                    var fmRating = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].Rating;
 
                     if (fmRating < rf || fmRating > rt)
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                     }
                 }
@@ -1634,14 +1632,14 @@ namespace AngelLoader.Forms
 
             #region Release date
 
-            if (s.Filter.ReleaseDateFrom != null || s.Filter.ReleaseDateTo != null)
+            if (FMsDGV.Filter.ReleaseDateFrom != null || FMsDGV.Filter.ReleaseDateTo != null)
             {
-                var rdf = s.Filter.ReleaseDateFrom;
-                var rdt = s.Filter.ReleaseDateTo;
+                var rdf = FMsDGV.Filter.ReleaseDateFrom;
+                var rdt = FMsDGV.Filter.ReleaseDateTo;
 
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmRelDate = Core.FMsViewList[s.FilterShownIndexList[i]].ReleaseDate;
+                    var fmRelDate = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate;
 
                     if (fmRelDate == null ||
                         (rdf != null &&
@@ -1649,7 +1647,7 @@ namespace AngelLoader.Forms
                         (rdt != null &&
                          fmRelDate.Value.Date.CompareTo(rdt.Value.Date) > 0))
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                     }
                 }
@@ -1659,14 +1657,14 @@ namespace AngelLoader.Forms
 
             #region Last played
 
-            if (s.Filter.LastPlayedFrom != null || s.Filter.LastPlayedTo != null)
+            if (FMsDGV.Filter.LastPlayedFrom != null || FMsDGV.Filter.LastPlayedTo != null)
             {
-                var lpdf = s.Filter.LastPlayedFrom;
-                var lpdt = s.Filter.LastPlayedTo;
+                var lpdf = FMsDGV.Filter.LastPlayedFrom;
+                var lpdt = FMsDGV.Filter.LastPlayedTo;
 
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmLastPlayed = Core.FMsViewList[s.FilterShownIndexList[i]].LastPlayed;
+                    var fmLastPlayed = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed;
 
                     if (fmLastPlayed == null ||
                         (lpdf != null &&
@@ -1674,7 +1672,7 @@ namespace AngelLoader.Forms
                         (lpdt != null &&
                          fmLastPlayed.Value.Date.CompareTo(lpdt.Value.Date) > 0))
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                     }
                 }
@@ -1684,18 +1682,18 @@ namespace AngelLoader.Forms
 
             #region Finished
 
-            if (s.Filter.Finished.Count > 0)
+            if (FMsDGV.Filter.Finished.Count > 0)
             {
-                for (int i = 0; i < s.FilterShownIndexList.Count; i++)
+                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Core.FMsViewList[s.FilterShownIndexList[i]];
+                    var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
                     var fmFinished = fm.FinishedOn;
                     var fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
-                    if (((fmFinished > 0 || fmFinishedOnUnknown) && !s.Filter.Finished.Contains(FinishedState.Finished)) ||
-                       ((fmFinished <= 0 && !fmFinishedOnUnknown) && !s.Filter.Finished.Contains(FinishedState.Unfinished)))
+                    if (((fmFinished > 0 || fmFinishedOnUnknown) && !FMsDGV.Filter.Finished.Contains(FinishedState.Finished)) ||
+                       ((fmFinished <= 0 && !fmFinishedOnUnknown) && !FMsDGV.Filter.Finished.Contains(FinishedState.Unfinished)))
                     {
-                        s.FilterShownIndexList.RemoveAt(i);
+                        FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
                     }
                 }
@@ -1703,7 +1701,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            s.Filtered = true;
+            FMsDGV.Filtered = true;
 
             // If the actual selected FM hasn't changed, don't reload its readme. While this can't eliminate the
             // lag when a filter selection first lands on a heavy readme, it at least prevents said readme from
@@ -1714,7 +1712,7 @@ namespace AngelLoader.Forms
             // NOTE: GetFMFromIndex(0) takes 0 because RefreshFMsList() sets the selection to 0.
             // Remember this if you ever change that.
             await RefreshFMsList(
-                refreshReadme: forceRefreshReadme || s.FilterShownIndexList.Count == 0 ||
+                refreshReadme: forceRefreshReadme || FMsDGV.FilterShownIndexList.Count == 0 ||
                                (oldSelectedFM != null && !oldSelectedFM.Equals(GetFMFromIndex(0))),
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                 suppressSuspendResume);
@@ -1985,11 +1983,9 @@ namespace AngelLoader.Forms
 
         private int FindRowIndex(char firstChar)
         {
-            var s = FMsDGV;
-
-            for (int i = 0; i < s.RowCount; i++)
+            for (int i = 0; i < FMsDGV.RowCount; i++)
             {
-                if (s.Rows[i].Cells[(int)Column.Title].Value.ToString().StartsWithI(firstChar.ToString()))
+                if (FMsDGV.Rows[i].Cells[(int)Column.Title].Value.ToString().StartsWithI(firstChar.ToString()))
                 {
                     return i;
                 }
@@ -2094,11 +2090,11 @@ namespace AngelLoader.Forms
 
         private void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
-            var s = (ToolStripMenuItem)sender;
+            var item = (ToolStripMenuItem)sender;
 
             var game =
-                s == PlayOriginalThief1MenuItem ? Game.Thief1 :
-                s == PlayOriginalThief2MenuItem ? Game.Thief2 :
+                item == PlayOriginalThief1MenuItem ? Game.Thief1 :
+                item == PlayOriginalThief2MenuItem ? Game.Thief2 :
                 Game.Thief3;
 
             InstallAndPlay.PlayOriginalGame(game);
@@ -2187,8 +2183,8 @@ namespace AngelLoader.Forms
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
                     : FMsDGV.RowTemplate.Height == 22
-                        ? RatingImageColumnWidth
-                        : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (RatingImageColumnWidth / 22);
+                    ? RatingImageColumnWidth
+                    : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (RatingImageColumnWidth / 22);
                 newRatingColumn.Visible = oldRatingColumn.Visible;
                 newRatingColumn.DisplayIndex = oldRatingColumn.DisplayIndex;
             }
@@ -2305,16 +2301,14 @@ namespace AngelLoader.Forms
 
         public void RefreshFMsListKeepSelection()
         {
-            var s = FMsDGV;
+            if (FMsDGV.RowCount == 0) return;
 
-            if (s.RowCount == 0) return;
-
-            var selectedRow = s.SelectedRows[0].Index;
+            var selectedRow = FMsDGV.SelectedRows[0].Index;
 
             using (new DisableEvents(this))
             {
-                s.Refresh();
-                s.Rows[selectedRow].Selected = true;
+                FMsDGV.Refresh();
+                FMsDGV.Rows[selectedRow].Selected = true;
             }
         }
 
@@ -2895,7 +2889,7 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
-        private void SaveCurrentTabSelectedFM(TabPage tabPage)
+        private (SelectedFM GameSelFM, Filter GameFilter) GetGameSelFMAndFilter(TabPage tabPage)
         {
             var gameSelFM =
                 tabPage == Thief1TabPage ? FMsDGV.GameTabsState.T1SelFM :
@@ -2912,8 +2906,13 @@ namespace AngelLoader.Forms
             Debug.Assert(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
             Debug.Assert(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
 
-            var selFM = GetSelectedFMPosInfo();
+            return (gameSelFM, gameFilter);
+        }
 
+        private void SaveCurrentTabSelectedFM(TabPage tabPage)
+        {
+            var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(tabPage);
+            var selFM = GetSelectedFMPosInfo();
             selFM.DeepCopyTo(gameSelFM);
             FMsDGV.Filter.DeepCopyTo(gameFilter);
         }
@@ -2928,22 +2927,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            var s = GamesTabControl;
-
-            var gameSelFM =
-                s.SelectedTab == Thief1TabPage ? FMsDGV.GameTabsState.T1SelFM :
-                s.SelectedTab == Thief2TabPage ? FMsDGV.GameTabsState.T2SelFM :
-                s.SelectedTab == Thief3TabPage ? FMsDGV.GameTabsState.T3SelFM :
-                null;
-
-            var gameFilter =
-                s.SelectedTab == Thief1TabPage ? FMsDGV.GameTabsState.T1Filter :
-                s.SelectedTab == Thief2TabPage ? FMsDGV.GameTabsState.T2Filter :
-                s.SelectedTab == Thief3TabPage ? FMsDGV.GameTabsState.T3Filter :
-                null;
-
-            Debug.Assert(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
-            Debug.Assert(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
+            var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(GamesTabControl.SelectedTab);
 
             FilterByThief1Button.Checked = gameSelFM == FMsDGV.GameTabsState.T1SelFM;
             FilterByThief2Button.Checked = gameSelFM == FMsDGV.GameTabsState.T2SelFM;
@@ -2961,7 +2945,6 @@ namespace AngelLoader.Forms
         private async void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var s = (TextBox)sender;
 
             if (FMsDGV.SelectedRows.Count == 0) return;
 
@@ -2972,8 +2955,8 @@ namespace AngelLoader.Forms
             // I'm doing the same, but bumping the cutoff point to 100 chars, which is still plenty fast.
             // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
             // 25,000+ character strings with nothing but slashes and linebreaks in them.
-            fm.Comment = s.Text.ToEscapes();
-            fm.CommentSingleLine = s.Text.ToSingleLineComment(100);
+            fm.Comment = CommentTextBox.Text.ToEscapes();
+            fm.CommentSingleLine = CommentTextBox.Text.ToSingleLineComment(100);
 
             await RefreshSelectedFMRowOnly();
         }
@@ -3069,22 +3052,24 @@ namespace AngelLoader.Forms
 
         private void AddTagListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var s = (ListBox)sender;
-            if (s.SelectedIndex == -1) return;
+            var lb = AddTagListBox;
+            if (lb.SelectedIndex == -1) return;
 
             var tb = AddTagTextBox;
 
-            using (new DisableEvents(this)) tb.Text = s.SelectedItem.ToString();
+            using (new DisableEvents(this)) tb.Text = lb.SelectedItem.ToString();
 
             if (tb.Text.Length > 0) tb.SelectionStart = tb.Text.Length;
         }
 
         private void RemoveTagButton_Click(object sender, EventArgs e)
         {
-            var s = TagsTreeView;
-            var fm = GetSelectedFM();
+            if (FMsDGV.SelectedRows.Count == 0) return;
 
-            var success = Core.RemoveTagFromFM(fm, s.SelectedNode.Parent?.Text, s.SelectedNode?.Text);
+            var fm = GetSelectedFM();
+            var tv = TagsTreeView;
+
+            var success = Core.RemoveTagFromFM(fm, tv.SelectedNode.Parent?.Text, tv.SelectedNode?.Text);
             if (!success) return;
 
             DisplayFMTags(fm);
@@ -3095,9 +3080,9 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Left) return;
 
-            var box = (ListBox)sender;
+            var lb = (ListBox)sender;
 
-            if (box.SelectedIndex > -1) AddTagOperation(GetSelectedFM(), box.SelectedItem.ToString());
+            if (lb.SelectedIndex > -1) AddTagOperation(GetSelectedFM(), lb.SelectedItem.ToString());
         }
 
         private void AddTagOperation(FanMission fm, string catAndTag)
@@ -3175,20 +3160,20 @@ namespace AngelLoader.Forms
 
         private void AddTagMenuItem_Click(object sender, EventArgs e)
         {
-            var s = (ToolStripMenuItem)sender;
-            if (s.HasDropDownItems) return;
+            var item = (ToolStripMenuItem)sender;
+            if (item.HasDropDownItems) return;
 
-            var cat = s.OwnerItem;
+            var cat = item.OwnerItem;
             if (cat == null) return;
 
-            AddTagOperation(GetSelectedFM(), cat.Text + @": " + s.Text);
+            AddTagOperation(GetSelectedFM(), cat.Text + @": " + item.Text);
         }
 
         private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
         {
-            var s = (ToolStripMenuItem)sender;
+            var item = (ToolStripMenuItem)sender;
 
-            var cat = s.OwnerItem;
+            var cat = item.OwnerItem;
             if (cat == null) return;
 
             AddTagTextBox.SetTextAndMoveCursorToEnd(cat.Text + @": ");
@@ -3459,16 +3444,16 @@ namespace AngelLoader.Forms
 
         private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
-            var s = (ToolStripMenuItem)sender;
+            var senderItem = (ToolStripMenuItem)sender;
 
             var fm = GetSelectedFM();
 
             fm.FinishedOn = 0;
             fm.FinishedOnUnknown = false;
 
-            if (s == FinishedOnUnknownMenuItem)
+            if (senderItem == FinishedOnUnknownMenuItem)
             {
-                fm.FinishedOnUnknown = s.Checked;
+                fm.FinishedOnUnknown = senderItem.Checked;
             }
             else
             {
@@ -3689,13 +3674,11 @@ namespace AngelLoader.Forms
 
         private void UpdateRatingLabel(bool suspendResume = true)
         {
-            var s = FilterByRatingButton;
-
             // For snappy visual layout performance
             if (suspendResume) FiltersFlowLayoutPanel.SuspendDrawing();
             try
             {
-                if (s.Checked)
+                if (FilterByRatingButton.Checked)
                 {
                     var ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
                     var rFrom = FMsDGV.Filter.RatingFrom;
@@ -3870,18 +3853,18 @@ namespace AngelLoader.Forms
 
         private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
         {
-            var s = PatchDMLsListBox;
-            if (s.SelectedIndex == -1) return;
+            var lb = PatchDMLsListBox;
+            if (lb.SelectedIndex == -1) return;
 
-            bool success = Core.RemoveDML(GetSelectedFM(), s.SelectedItem.ToString());
+            bool success = Core.RemoveDML(GetSelectedFM(), lb.SelectedItem.ToString());
             if (!success) return;
 
-            s.RemoveAndSelectNearest();
+            lb.RemoveAndSelectNearest();
         }
 
         private void PatchAddDMLButton_Click(object sender, EventArgs e)
         {
-            var s = PatchDMLsListBox;
+            var lb = PatchDMLsListBox;
 
             var dmlFiles = new List<string>();
 
@@ -3901,9 +3884,9 @@ namespace AngelLoader.Forms
                 if (!success) return;
 
                 var dml = Path.GetFileName(f);
-                if (!s.Items.Cast<string>().ToArray().ContainsI(dml))
+                if (!lb.Items.Cast<string>().ToArray().ContainsI(dml))
                 {
-                    s.Items.Add(Path.GetFileName(f));
+                    lb.Items.Add(Path.GetFileName(f));
                 }
             }
         }
