@@ -2133,8 +2133,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            var success =
-                await Core.ScanFMs(Core.FMsViewList, scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
+            var success = await Core.ScanFMs(Core.FMsViewList, scanOptions);
             if (success) await SortAndSetFilter(forceRefreshReadme: true);
         }
 
@@ -3830,7 +3829,7 @@ namespace AngelLoader.Forms
 
         private async Task<bool> ScanSelectedFM(ScanOptions scanOptions)
         {
-            bool success = await Core.ScanFM(GetSelectedFM(), scanOptions, overwriteUnscannedFields: false, markAsScanned: true);
+            bool success = await Core.ScanFM(GetSelectedFM(), scanOptions);
             if (success) await RefreshSelectedFM(refreshReadme: true);
             return success;
         }

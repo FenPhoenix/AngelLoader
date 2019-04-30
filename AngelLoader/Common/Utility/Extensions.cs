@@ -161,11 +161,11 @@ namespace AngelLoader.Common.Utility
             if (value == null) return false;
 
             var len = value.Length;
-            return (len > 4 &&
-                    value[len - 4] == '.' &&
-                    (value[len - 3] == 'T' || value[len - 3] == 't') &&
-                    (value[len - 2] == 'X' || value[len - 2] == 'x') &&
-                    (value[len - 1] == 'T' || value[len - 1] == 't'));
+            return len > 4 &&
+                   value[len - 4] == '.' &&
+                   (value[len - 3] == 'T' || value[len - 3] == 't') &&
+                   (value[len - 2] == 'X' || value[len - 2] == 'x') &&
+                   (value[len - 1] == 'T' || value[len - 1] == 't');
         }
 
         internal static bool ExtIsRtf(this string value)
@@ -173,11 +173,11 @@ namespace AngelLoader.Common.Utility
             if (value == null) return false;
 
             var len = value.Length;
-            return (len > 4 &&
-                    value[len - 4] == '.' &&
-                    (value[len - 3] == 'R' || value[len - 3] == 'r') &&
-                    (value[len - 2] == 'T' || value[len - 2] == 't') &&
-                    (value[len - 1] == 'F' || value[len - 1] == 'f'));
+            return len > 4 &&
+                   value[len - 4] == '.' &&
+                   (value[len - 3] == 'R' || value[len - 3] == 'r') &&
+                   (value[len - 2] == 'T' || value[len - 2] == 't') &&
+                   (value[len - 1] == 'F' || value[len - 1] == 'f');
         }
 
         internal static bool ExtIsWri(this string value)
@@ -185,11 +185,11 @@ namespace AngelLoader.Common.Utility
             if (value == null) return false;
 
             var len = value.Length;
-            return (len > 4 &&
-                    value[len - 4] == '.' &&
-                    (value[len - 3] == 'W' || value[len - 3] == 'w') &&
-                    (value[len - 2] == 'R' || value[len - 2] == 'r') &&
-                    (value[len - 1] == 'I' || value[len - 1] == 'i'));
+            return len > 4 &&
+                   value[len - 4] == '.' &&
+                   (value[len - 3] == 'W' || value[len - 3] == 'w') &&
+                   (value[len - 2] == 'R' || value[len - 2] == 'r') &&
+                   (value[len - 1] == 'I' || value[len - 1] == 'i');
         }
 
         internal static bool ExtIsHtml(this string value)
@@ -215,12 +215,12 @@ namespace AngelLoader.Common.Utility
             if (value == null) return false;
 
             var len = value.Length;
-            return (len > 5 &&
-                    value[len - 5] == '.' &&
-                    (value[len - 4] == 'G' || value[len - 4] == 'g') &&
-                    (value[len - 3] == 'L' || value[len - 3] == 'l') &&
-                    (value[len - 2] == 'M' || value[len - 2] == 'm') &&
-                    (value[len - 1] == 'L' || value[len - 1] == 'l'));
+            return len > 5 &&
+                   value[len - 5] == '.' &&
+                   (value[len - 4] == 'G' || value[len - 4] == 'g') &&
+                   (value[len - 3] == 'L' || value[len - 3] == 'l') &&
+                   (value[len - 2] == 'M' || value[len - 2] == 'm') &&
+                   (value[len - 1] == 'L' || value[len - 1] == 'l');
         }
 
         internal static bool ExtIsArchive(this string value) => value.ExtIsZip() || value.ExtIs7z();

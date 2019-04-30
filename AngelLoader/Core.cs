@@ -684,19 +684,20 @@ namespace AngelLoader
         // Super quick-n-cheap hack for perf
         internal static List<int> ViewListGamesNull = new List<int>();
 
-        internal static async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions,
-            bool overwriteUnscannedFields = true, bool markAsScanned = false)
+        internal static async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions)
         {
-            return await ScanFMs(new List<FanMission> { fm }, scanOptions, overwriteUnscannedFields, markAsScanned);
+            return await ScanFMs(new List<FanMission> { fm }, scanOptions);
         }
 
-        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions,
-            bool overwriteUnscannedFields = true, bool markAsScanned = false)
+        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions, bool markAsScanned = true)
         {
             if (fmsToScan == null || fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
             {
                 return false;
             }
+
+            // Removed from general use, but just in case I want to add the option back...
+            const bool overwriteUnscannedFields = false;
 
             void ReportProgress(ProgressReport pr)
             {
@@ -916,9 +917,8 @@ namespace AngelLoader
             }
             finally
             {
-                //View.BeginInvoke(new Action(View.Unblock));
                 View.Block(false);
-                View.InvokeSync(new Action(() => ProgressBox.HideThis()));
+                ProgressBox.HideThis();
             }
 
             return true;
@@ -948,7 +948,7 @@ namespace AngelLoader
 
                 try
                 {
-                    await ScanFMs(fmsToScan, scanOptions, overwriteUnscannedFields: false);
+                    await ScanFMs(fmsToScan, scanOptions, markAsScanned: false);
                 }
                 catch (Exception ex)
                 {
@@ -1053,11 +1053,11 @@ namespace AngelLoader
             return true;
         }
 
-        private static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions, bool overwriteUnscannedFields = false)
+        private static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions)
         {
             if (fms.Count == 0) return;
 
-            await ScanFMs(fms, scanOptions, overwriteUnscannedFields, markAsScanned: true);
+            await ScanFMs(fms, scanOptions);
             FindFMs.Find(FMDataIniList);
         }
 
