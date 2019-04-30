@@ -14,6 +14,18 @@ namespace AngelLoader.Common.Utility
 {
     internal static class Methods
     {
+        internal static string GetDromEdExe(Game game)
+        {
+            var gameExe = GetGameExeFromGameType(game);
+            if (gameExe.IsEmpty()) return "";
+
+            var gamePath = Path.GetDirectoryName(gameExe);
+            if (gamePath.IsEmpty()) return "";
+
+            var dromEdExe = Path.Combine(gamePath, Paths.DromEdExe);
+            return !gamePath.IsEmpty() && File.Exists(dromEdExe) ? dromEdExe : "";
+        }
+
         internal static void SetFMSizesToLocalized()
         {
             // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture

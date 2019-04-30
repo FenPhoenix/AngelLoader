@@ -860,7 +860,7 @@ namespace AngelLoader.Forms
                 if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(GetSelectedFM()))
                 {
                     e.SuppressKeyPress = true;
-                    await Core.InstallOrPlay(GetSelectedFM(), askConfIfRequired: true);
+                    await InstallAndPlay.InstallOrPlay(GetSelectedFM(), askConfIfRequired: true);
                 }
             }
             else if (e.KeyCode == Keys.Escape)
@@ -2018,7 +2018,7 @@ namespace AngelLoader.Forms
             {
                 if (e.Shift && !e.Control && !e.Alt)
                 {
-                    await RefreshFromDisk();
+                    await Core.RefreshFromDisk();
                 }
                 else if (!e.Shift)
                 {
@@ -2038,13 +2038,13 @@ namespace AngelLoader.Forms
             if (FMsDGV.RowCount == 0 || FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
         }
 
-        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await Core.InstallOrPlay(GetSelectedFM());
+        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrPlay(GetSelectedFM());
 
         private async void InstallUninstallMenuItem_Click(object sender, EventArgs e)
         {
             var fm = GetSelectedFM();
 
-            await Core.InstallOrUninstall(fm);
+            await InstallAndPlay.InstallOrUninstall(fm);
         }
 
         private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e)
@@ -2073,10 +2073,10 @@ namespace AngelLoader.Forms
         {
             var fm = GetSelectedFM();
 
-            await Core.InstallOrUninstall(fm);
+            await InstallAndPlay.InstallOrUninstall(fm);
         }
 
-        private async void PlayFMButton_Click(object sender, EventArgs e) => await Core.InstallOrPlay(GetSelectedFM());
+        private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrPlay(GetSelectedFM());
 
         #region Play original game
 
@@ -2101,7 +2101,7 @@ namespace AngelLoader.Forms
                 s == PlayOriginalThief2MenuItem ? Game.Thief2 :
                 Game.Thief3;
 
-            Core.PlayOriginalGame(game);
+            InstallAndPlay.PlayOriginalGame(game);
         }
 
         #endregion
@@ -2781,7 +2781,7 @@ namespace AngelLoader.Forms
 
         internal void CancelScan() => Core.CancelScan();
 
-        internal void CancelInstallFM() => FMInstallAndPlay.CancelInstallFM();
+        internal void CancelInstallFM() => InstallAndPlay.CancelInstallFM();
 
         #endregion
 
@@ -3914,9 +3914,9 @@ namespace AngelLoader.Forms
         {
             var fm = GetSelectedFM();
 
-            if (!fm.Installed && !await FMInstallAndPlay.InstallFM(fm)) return;
+            if (!fm.Installed && !await InstallAndPlay.InstallFM(fm)) return;
 
-            Core.OpenFMInDromEd(fm);
+            InstallAndPlay.OpenFMInDromEd(fm);
         }
 
         private void TopRightCollapseButton_Click(object sender, EventArgs e)
@@ -3940,16 +3940,10 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            await Core.InstallOrPlay(fm, askConfIfRequired: true);
+            await InstallAndPlay.InstallOrPlay(fm, askConfIfRequired: true);
         }
 
-        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await RefreshFromDisk();
-
-        private async Task RefreshFromDisk()
-        {
-            Core.FindFMs();
-            await SortAndSetFilter();
-        }
+        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
 
         // TODO: This isn't hooked up to anything, but things seem to work fine. Do I need this?!
         private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
