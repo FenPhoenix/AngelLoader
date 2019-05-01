@@ -3776,16 +3776,14 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
-            // selection changed event from firing while we do it, as that could be really bad potentially.
-            using (new DisableEvents(this))
-            {
-                bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
-                //if (!success) return;
-            }
+            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
+            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking))
+            SetRowCount(0);
 
-            // Always do this, because if our selection changed without an event, we may be displaying the wrong
-            // data
+            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
+
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
@@ -3808,26 +3806,23 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            //int successCount = 0;
+            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
+            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking))
+            SetRowCount(0);
+
             foreach (var file in iniFiles)
             {
                 if (file.IsWhiteSpace()) continue;
 
                 // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
                 // selection changed event from firing while we do it, as that could be really bad potentially.
-                using (new DisableEvents(this))
-                {
-                    bool success = await (importType == ImportType.FMSel
-                        ? Core.ImportFromFMSel(file)
-                        : Core.ImportFromNDL(file));
-                    //if (success) successCount++;
-                }
+                bool success = await (importType == ImportType.FMSel
+                    ? Core.ImportFromFMSel(file)
+                    : Core.ImportFromNDL(file));
             }
 
-            //if (successCount == 0) return;
-
-            // Always do this, because if our selection changed without an event, we may be displaying the wrong
-            // data
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
