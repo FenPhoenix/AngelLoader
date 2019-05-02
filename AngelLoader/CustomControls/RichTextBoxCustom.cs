@@ -116,6 +116,11 @@ namespace AngelLoader.CustomControls
             this.ResumeDrawing();
         }
 
+        private static readonly byte[] shppict = Encoding.ASCII.GetBytes(@"\shppict");
+        private static readonly byte[] shppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxx");
+        private static readonly byte[] nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
+        private static readonly byte[] nonshppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxxxxx");
+
         /// <summary>
         /// Loads a file into the box without resetting the zoom factor.
         /// </summary>
@@ -141,6 +146,17 @@ namespace AngelLoader.CustomControls
                     var text = File.ReadAllText(path);
                     Rtf = GLMLToRTF(text);
                 }
+                else if (fileType == RichTextBoxStreamType.RichText)
+                {
+                    // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace, combined, add
+                    // up to being ~30x slower
+                    var bytes = File.ReadAllBytes(path);
+
+                    ReplaceByteSequence(bytes, shppict, shppictBlanked);
+                    ReplaceByteSequence(bytes, nonshppict, nonshppictBlanked);
+
+                    using (var ms = new MemoryStream(bytes)) LoadFile(ms, RichTextBoxStreamType.RichText);
+                }
                 else
                 {
                     LoadFile(path, fileType);
@@ -152,6 +168,56 @@ namespace AngelLoader.CustomControls
                 RestoreZoom();
                 this.ResumeDrawing();
             }
+        }
+
+        /*
+        Alright kids, gather round while your ol' Grandpa Fen explains you the deal.
+        You can choose two different versions of RichTextBox. Old (3.0) or new (4.1). Both have their own unique
+        and beautiful ways of driving you up the wall.
+        Old:
+        -Garbles right side of horizontal lines when you scale them out too far.
+        -Flickers while scrolling if and only if another control is laid overtop of it.
+        +Displays image transparency correctly.
+        New:
+        +Doesn't flicker while scrolling even when controls are laid overtop of it.
+        +Doesn't garble the right edge of scaled-out horizontal lines no matter how far you scale.
+        -Displays image transparency as pure black.
+        -There's a compatibility option "\transmf" that looks like it would fix the above, but guess what, it's
+         not supported.
+
+        To stop the new version's brazen headlong charge straight off the edge of Mount Compatible, we replace all
+        instances of "\shppict" and "\nonshppict" with dummy strings. This fixes the problem. Hooray. Now get off
+        my lawn.
+        */
+
+        internal static bool ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
+        {
+            var firstByte = pattern[0];
+            int index = Array.IndexOf(input, firstByte);
+            var pLen = pattern.Length;
+
+            while (index > -1)
+            {
+                for (int i = 0; i < pLen; i++)
+                {
+                    if (index + i >= input.Length) return false;
+                    if (pattern[i] != input[index + i])
+                    {
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return false;
+                        break;
+                    }
+
+                    if (i == pLen - 1)
+                    {
+                        for (int j = index, ri = 0; j < index + pLen; j++, ri++)
+                        {
+                            input[j] = replacePattern[ri];
+                        }
+                    }
+                }
+            }
+
+            return index > -1;
         }
 
         #region GLML to RTF
@@ -192,15 +258,21 @@ namespace AngelLoader.CustomControls
             return true;
         }
 
-        private string GLMLToRTF(string text)
+        private static string GLMLToRTF(string text)
         {
-            ulong screenWidthTwips = (ulong)Screen.GetBounds(MainForm).Width * 15;
-            string wgoal = ((ulong)(screenWidthTwips / 8)).Clamp(30ul, 32767ul).ToString();
+            //ulong screenWidthTwips = (ulong)Screen.GetBounds(MainForm).Width * (ulong)Math.Ceiling((double)1440 / DeviceDpi);
+            //string wgoal = ((ulong)(screenWidthTwips / 8)).Clamp(30ul, 32767ul).ToString();
+
+            // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
+            // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
+            // and the double-screen-width method doesn't give a consistent width anymore.
+            const string wgoal = "32767";
 
             // There can be problems with the right edges of lines being garbled (on Windows 10 at least, anyway)
             // if we just scale them out indiscriminately, so scale them only to twice screen width. That means
             // they'll show their finiteness if you zoom really far out, but meh. Unreadable text is your bigger
             // problem in that case.
+            // (NOTE: No longer the case. See above. TODO: clean this up once we confirm new RichEdit is good.)
             string HorizontalLine =
                 // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc.
                 // picscalex is in percent
