@@ -468,8 +468,6 @@ namespace AngelLoader
                 // Perf so we don't have to iterate the list again later
                 if (item.Game == null) Core.ViewListGamesNull.Add(i);
 
-                Core.FMsViewList.Add(item);
-
                 item.Title =
                     !item.Title.IsEmpty() ? item.Title :
                     !item.Archive.IsEmpty() ? item.Archive.RemoveExtension() :
@@ -477,6 +475,8 @@ namespace AngelLoader
                 item.SizeString = ((long?)item.SizeBytes).ConvertSize();
                 item.CommentSingleLine = item.Comment.FromEscapes().ToSingleLineComment(100);
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
+
+                Core.FMsViewList.Add(item);
             }
         }
     }
