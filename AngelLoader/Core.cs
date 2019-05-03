@@ -595,10 +595,9 @@ namespace AngelLoader
                 }
             }
 
-            // Note: Using StartsWithI here because it's fast; obviously there's no need for case-awareness
             if (!path.IsEmpty() &&
-                (path.StartsWithI(".\\") || path.StartsWithI("..\\") ||
-                path.StartsWithI("./") || path.StartsWithI("../")))
+                (path.StartsWithFast_NoNullChecks(".\\") || path.StartsWithFast_NoNullChecks("..\\") ||
+                path.StartsWithFast_NoNullChecks("./") || path.StartsWithFast_NoNullChecks("../")))
             {
                 try
                 {
@@ -1314,19 +1313,10 @@ namespace AngelLoader
 
             var rtfHeader = new char[6];
 
-            try
-            {
-                using (var sr = new StreamReader(readmeOnDisk, Encoding.ASCII)) sr.ReadBlock(rtfHeader, 0, 6);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
+            using (var sr = new StreamReader(readmeOnDisk, Encoding.ASCII)) sr.ReadBlock(rtfHeader, 0, 6);
 
-            var rType = string.Concat(rtfHeader).EqualsI(@"{\rtf1")
-                ? ReadmeType.RichText
-                : ReadmeType.PlainText;
+            var rType = string.Concat(rtfHeader).EqualsI(@"{\rtf1") ? ReadmeType.RichText : ReadmeType.PlainText;
 
             return (readmeOnDisk, rType);
         }
