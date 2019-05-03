@@ -258,13 +258,11 @@ namespace AngelLoader.CustomControls
             // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
             // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
             // and the double-screen-width method doesn't give a consistent width anymore.
-            const string wgoal = "32767";
-
-            string HorizontalLine =
-                // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc.
-                // picscalex is in percent
-                // max value for anything is 32767
-                @"{\pict\wmetafile8\picw30\pich285\picwgoal" + wgoal + @"\pichgoal285\picscalex1600 " +
+            // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc. (at 96 dpi)
+            // picscalex is in percent
+            // max value for anything is 32767
+            const string HorizontalLine =
+                @"{\pict\wmetafile8\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 " +
                 HorizontalLineImagePart;
 
             var sb = new StringBuilder();
