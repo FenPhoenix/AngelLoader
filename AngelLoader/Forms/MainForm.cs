@@ -338,8 +338,6 @@ namespace AngelLoader.Forms
 
             #region Readme
 
-            ReadmeRichTextBox.InjectParent(this);
-
             // Set both at once to avoid an elusive bug that happens when you start up, the readme is blank, then
             // you shut down without loading a readme, whereupon it will save out ZoomFactor which is still 1.0.
             // You can't just save out StoredZoomFactor either because it doesn't change when the user zooms, as

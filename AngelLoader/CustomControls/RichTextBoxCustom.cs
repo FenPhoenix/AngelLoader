@@ -19,10 +19,6 @@ namespace AngelLoader.CustomControls
             set => _storedZoomFactor = value.Clamp(0.1f, 5.0f);
         }
 
-        // Just so it can determine which monitor the majority of the main window is on, for horizontal line crap
-        private Control MainForm;
-        internal void InjectParent(Control mainForm) => MainForm = mainForm;
-
         #region Zoom stuff
 
         internal void ZoomIn()
@@ -148,8 +144,7 @@ namespace AngelLoader.CustomControls
                 }
                 else if (fileType == RichTextBoxStreamType.RichText)
                 {
-                    // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace, combined, add
-                    // up to being ~30x slower
+                    // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower
                     var bytes = File.ReadAllBytes(path);
 
                     ReplaceByteSequence(bytes, shppict, shppictBlanked);
@@ -238,7 +233,7 @@ namespace AngelLoader.CustomControls
         private const string AlphaLower = "abcdefghijklmnopqrstuvwxyz";
 
         // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
-        // and scale the width out to twice the screen width (see below)
+        // and scale the width out
         private const string HorizontalLineImagePart =
             @"0100090000039000000000006700000000000400000003010800050000000b0200000000050000" +
             @"000c0213000200030000001e000400000007010400040000000701040067000000410b2000cc00" +
@@ -260,19 +255,11 @@ namespace AngelLoader.CustomControls
 
         private static string GLMLToRTF(string text)
         {
-            //ulong screenWidthTwips = (ulong)Screen.GetBounds(MainForm).Width * (ulong)Math.Ceiling((double)1440 / DeviceDpi);
-            //string wgoal = ((ulong)(screenWidthTwips / 8)).Clamp(30ul, 32767ul).ToString();
-
             // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
             // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
             // and the double-screen-width method doesn't give a consistent width anymore.
             const string wgoal = "32767";
 
-            // There can be problems with the right edges of lines being garbled (on Windows 10 at least, anyway)
-            // if we just scale them out indiscriminately, so scale them only to twice screen width. That means
-            // they'll show their finiteness if you zoom really far out, but meh. Unreadable text is your bigger
-            // problem in that case.
-            // (NOTE: No longer the case. See above. TODO: clean this up once we confirm new RichEdit is good.)
             string HorizontalLine =
                 // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc.
                 // picscalex is in percent
