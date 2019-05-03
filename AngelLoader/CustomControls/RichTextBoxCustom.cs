@@ -320,11 +320,16 @@ namespace AngelLoader.CustomControls
                                 else if (tag == "NL")
                                 {
                                     lastTagWasLineBreak = true;
-                                    sb.Append(@"\line ");
                                     if (alignLeftOnNextLine)
                                     {
-                                        sb.Append(@"\ql ");
+                                        // For newest rtfbox on Win10, we need to use \par instead of \line or
+                                        // else the \ql doesn't take. This works on Win7 too.
+                                        sb.Append(@"\par\ql ");
                                         alignLeftOnNextLine = false;
+                                    }
+                                    else
+                                    {
+                                        sb.Append(@"\line ");
                                     }
                                 }
                                 else if (tag == "LINE")

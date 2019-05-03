@@ -2663,25 +2663,17 @@ namespace AngelLoader.Forms
             #region Readme
 
             var readmeFiles = cacheData.Readmes;
+            readmeFiles.Sort();
 
             if (!readmeFiles.ContainsI(fm.SelectedReadme)) fm.SelectedReadme = null;
 
             using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
 
-            void FillAndSelectReadmeFromMulti(string readme)
-            {
-                using (new DisableEvents(this))
-                {
-                    ChooseReadmeComboBox.AddRangeFull(readmeFiles);
-                    ChooseReadmeComboBox.SelectBackingIndexOf(readme);
-                }
-            }
-
             if (!fm.SelectedReadme.IsEmpty())
             {
                 if (readmeFiles.Count > 1)
                 {
-                    FillAndSelectReadmeFromMulti(fm.SelectedReadme);
+                    ReadmeCB_FillAndSelect(readmeFiles, fm.SelectedReadme);
                 }
                 else
                 {
@@ -2708,7 +2700,7 @@ namespace AngelLoader.Forms
                     if (!safeReadme.IsEmpty())
                     {
                         fm.SelectedReadme = safeReadme;
-                        FillAndSelectReadmeFromMulti(safeReadme);
+                        ReadmeCB_FillAndSelect(readmeFiles, safeReadme);
                     }
                     else
                     {
@@ -2735,21 +2727,61 @@ namespace AngelLoader.Forms
 
             ChooseReadmePanel.Hide();
 
+            LoadReadme(fm);
+
+            #endregion
+        }
+
+        private void ReadmeCB_FillAndSelect(List<string> readmeFiles, string readme)
+        {
+            using (new DisableEvents(this))
+            {
+                ChooseReadmeComboBox.AddRangeFull(readmeFiles);
+                ChooseReadmeComboBox.SelectBackingIndexOf(readme);
+            }
+        }
+
+        private void LoadReadme(FanMission fm)
+        {
             try
             {
                 var (path, type) = Core.GetReadmeFileAndType(fm);
-                ReadmeLoad(path, type);
+                #region Debug
+
+                // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
+                // due to performance concerns.
+#if !ReleasePublic
+                DebugLabel.Text = int.TryParse(DebugLabel.Text, out var result) ? (result + 1).ToString() : "1";
+#endif
+
+                #endregion
+
+                if (type == ReadmeType.HTML)
+                {
+                    ViewHTMLReadmeButton.Show();
+                    ShowReadme(false);
+                    // In case the cursor is over the scroll bar area
+                    if (CursorOverReadmeArea()) ShowReadmeControls(true);
+                }
+                else
+                {
+                    ShowReadme(true);
+                    ViewHTMLReadmeButton.Hide();
+                    var fileType = type == ReadmeType.PlainText
+                        ? RichTextBoxStreamType.PlainText
+                        : RichTextBoxStreamType.RichText;
+
+                    ReadmeRichTextBox.LoadContent(path, fileType);
+                }
             }
             catch (Exception ex)
             {
-                Log(nameof(DisplaySelectedFM) + ": " + nameof(ReadmeLoad) + " failed.", ex);
+                Log(nameof(LoadReadme) + " failed.", ex);
 
                 ViewHTMLReadmeButton.Hide();
                 ShowReadme(true);
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
             }
-
-            #endregion
         }
 
         #region Progress window
@@ -3190,9 +3222,9 @@ namespace AngelLoader.Forms
 
         #region Choose readme
 
-        private async void ChooseReadmeButton_Click(object sender, EventArgs e)
+        private void ChooseReadmeButton_Click(object sender, EventArgs e)
         {
-            if (ChooseReadmeListBox.Items.Count == 0) return;
+            if (ChooseReadmeListBox.Items.Count == 0 || ChooseReadmeListBox.SelectedIndex == -1) return;
 
             var fm = GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeListBox.SelectedBackingItem();
@@ -3207,15 +3239,28 @@ namespace AngelLoader.Forms
                 ShowReadme(true);
             }
 
-            await RefreshSelectedFM(refreshReadme: true);
+            if (ChooseReadmeListBox.Items.Count > 1)
+            {
+                ReadmeCB_FillAndSelect(ChooseReadmeListBox.BackingItems, fm.SelectedReadme);
+                ShowReadmeControls(CursorOverReadmeArea());
+            }
+            else
+            {
+                using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
+                ChooseReadmeComboBox.Hide();
+            }
+
+            LoadReadme(fm);
         }
 
-        private async void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             var fm = GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
-            await RefreshSelectedFM(refreshReadme: true);
+            // Just load the readme; don't call DisplaySelectedFM() because that will re-get readmes and screw
+            // things up
+            LoadReadme(fm);
         }
 
         private void ChooseReadmeComboBox_DropDownClosed(object sender, EventArgs e)
@@ -3232,39 +3277,6 @@ namespace AngelLoader.Forms
         private void ZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();
 
         private void ResetZoomButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ResetZoomFactor();
-
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="IOException"></exception>
-        private void ReadmeLoad(string path, ReadmeType readmeType)
-        {
-            #region Debug
-
-            // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
-            // due to performance concerns.
-#if !ReleasePublic
-            DebugLabel.Text = int.TryParse(DebugLabel.Text, out var result) ? (result + 1).ToString() : "1";
-#endif
-
-            #endregion
-
-            if (readmeType == ReadmeType.HTML)
-            {
-                ViewHTMLReadmeButton.Show();
-                ShowReadme(false);
-                // In case the cursor is over the scroll bar area
-                if (CursorOverReadmeArea()) ShowReadmeControls(true);
-            }
-            else
-            {
-                ShowReadme(true);
-                ViewHTMLReadmeButton.Hide();
-                var fileType = readmeType == ReadmeType.PlainText
-                    ? RichTextBoxStreamType.PlainText
-                    : RichTextBoxStreamType.RichText;
-
-                ReadmeRichTextBox.LoadContent(path, fileType);
-            }
-        }
 
         private void ShowReadme(bool enabled)
         {
