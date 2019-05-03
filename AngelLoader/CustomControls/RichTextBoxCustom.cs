@@ -185,7 +185,7 @@ namespace AngelLoader.CustomControls
         my lawn.
         */
 
-        internal static bool ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
+        internal static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
         {
             var firstByte = pattern[0];
             int index = Array.IndexOf(input, firstByte);
@@ -195,10 +195,10 @@ namespace AngelLoader.CustomControls
             {
                 for (int i = 0; i < pLen; i++)
                 {
-                    if (index + i >= input.Length) return false;
+                    if (index + i >= input.Length) return;
                     if (pattern[i] != input[index + i])
                     {
-                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return false;
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return;
                         break;
                     }
 
@@ -211,8 +211,6 @@ namespace AngelLoader.CustomControls
                     }
                 }
             }
-
-            return index > -1;
         }
 
         #region GLML to RTF
