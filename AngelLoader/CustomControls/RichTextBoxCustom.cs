@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
@@ -210,6 +211,117 @@ namespace AngelLoader.CustomControls
                         }
                     }
                 }
+            }
+        }
+        
+        struct SCROLLINFO
+        {
+            public uint cbSize;
+            public uint fMask;
+            public int nMin;
+            public int nMax;
+            public uint nPage;
+            public int nPos;
+            public int nTrackPos;
+        }
+
+        private enum ScrollBarDirection
+        {
+            SB_HORZ = 0,
+            SB_VERT = 1,
+            SB_CTL = 2,
+            SB_BOTH = 3
+        }
+
+        public enum ScrollInfoMask
+        {
+            SIF_RANGE = 0x0001,
+            SIF_PAGE = 0x0002,
+            SIF_POS = 0x0004,
+            SIF_DISABLENOSCROLL = 0x0008,
+            SIF_TRACKPOS = 0x0010,
+            SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
+        }
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+        [DllImport("user32.dll")]
+        static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShowScrollBar(IntPtr hWnd, int wBar, [MarshalAs(UnmanagedType.Bool)] bool bShow);
+        [DllImport("user32.dll")]
+        private extern static int GetWindowLong(IntPtr hWnd, int index);
+        const uint WM_MOUSEWHEEL = 0x20A;
+        const uint WM_VSCROLL = 0x115;
+        const uint SB_THUMBTRACK = 5;
+
+        public static bool VerticalScrollBarVisible(Control ctl)
+        {
+            int style = GetWindowLong(ctl.Handle, -16);
+            return (style & 0x200000) != 0;
+        }
+
+        void BetterScroll(IntPtr handle, int pixles)
+        {
+            // Get current scroll position
+            SCROLLINFO si = new SCROLLINFO();
+            si.cbSize = (uint)Marshal.SizeOf(si);
+            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
+            GetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si);
+
+            // Update position by pixles
+            si.nPos += pixles;
+
+            // Reposition scroll
+            SetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si, true);
+
+            // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
+            // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
+            IntPtr ptrWparam = new IntPtr(SB_THUMBTRACK + 0x10000 * si.nPos);
+            IntPtr ptrLparam = new IntPtr(0);
+            if ((long)ptrWparam >= 0)
+            {
+                SendMessage(handle, WM_VSCROLL, ptrWparam, ptrLparam);
+            }
+            else
+            {
+                SendMessage(handle, WM_VSCROLL, (IntPtr)SB_THUMBTRACK, ptrLparam);
+            }
+        }
+
+        // Intercept mousewheel and make RichTextBox scroll using the above method
+        private void InterceptMousewheel(ref Message m)
+        {
+            int delta = (int)m.WParam >> 16 & 0xFF;
+            if (((ModifierKeys & Keys.Control) != 0) || !VerticalScrollBarVisible(this))
+            {
+                base.WndProc(ref m);
+                return;
+            }
+                if ((delta >> 7) == 1)
+            {
+                BetterScroll(m.HWnd, 50);
+            }
+            if ((delta >> 7) == 0)
+            {
+                BetterScroll(m.HWnd, -50);
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            switch ((uint)m.Msg)
+            {
+                case WM_MOUSEWHEEL:
+                    InterceptMousewheel(ref m);
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
             }
         }
 
