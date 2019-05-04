@@ -395,9 +395,6 @@ namespace AngelLoader.Forms
                 StatisticsTabPage;
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
-            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
-
-            ChangeGameOrganization();
 
             #endregion
 
@@ -421,6 +418,11 @@ namespace AngelLoader.Forms
         private void MainForm_Load(object sender, EventArgs e)
         {
             ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
+            // Not sure if this needs to go here, but it involves control sizes so...
+            ChangeGameOrganization();
+            // This has to go here because it depends on the width of a control and those don't get properly set
+            // until the Load event fires
+            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
