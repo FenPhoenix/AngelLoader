@@ -30,10 +30,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,6 +104,18 @@
             this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
             this.FilterBarScrollLeftButton = new System.Windows.Forms.Button();
             this.FMsDGV = new AngelLoader.CustomControls.DataGridViewCustom();
+            this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.TitleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ArchiveColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AuthorColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SizeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RatingTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FinishedColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.ReleaseDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LastPlayedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FiltersFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.FilterGamesLeftSepToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterGamesLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
@@ -129,12 +141,12 @@
             this.FilterByTagsButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparator4 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByFinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterShowUnsupportedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByUnfinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparator1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByRatingLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.FilterShowJunkCheckBox = new System.Windows.Forms.CheckBox();
             this.GamesTabControl = new System.Windows.Forms.TabControl();
             this.Thief1TabPage = new System.Windows.Forms.TabPage();
             this.Thief2TabPage = new System.Windows.Forms.TabPage();
@@ -216,18 +228,6 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
-            this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.TitleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ArchiveColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AuthorColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SizeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RatingTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FinishedColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.ReleaseDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LastPlayedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -839,12 +839,12 @@
             // TopSplitContainer.Panel1
             // 
             this.TopSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.TopSplitContainer.Panel1.Controls.Add(this.FMsDGV);
+            this.TopSplitContainer.Panel1.Controls.Add(this.FiltersFlowLayoutPanel);
             this.TopSplitContainer.Panel1.Controls.Add(this.RefreshClearToolStripCustom);
             this.TopSplitContainer.Panel1.Controls.Add(this.ResetLayoutButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarScrollRightButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarScrollLeftButton);
-            this.TopSplitContainer.Panel1.Controls.Add(this.FMsDGV);
-            this.TopSplitContainer.Panel1.Controls.Add(this.FiltersFlowLayoutPanel);
             this.TopSplitContainer.Panel1.Controls.Add(this.GamesTabControl);
             // 
             // TopSplitContainer.Panel2
@@ -1030,14 +1030,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -1053,26 +1053,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -1087,6 +1087,110 @@
             this.FMsDGV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FMsDGV_KeyPress);
             this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
             // 
+            // GameTypeColumn
+            // 
+            this.GameTypeColumn.HeaderText = "Game";
+            this.GameTypeColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.GameTypeColumn.MinimumWidth = 25;
+            this.GameTypeColumn.Name = "GameTypeColumn";
+            this.GameTypeColumn.ReadOnly = true;
+            this.GameTypeColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.GameTypeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // InstalledColumn
+            // 
+            this.InstalledColumn.HeaderText = "Installed";
+            this.InstalledColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.InstalledColumn.MinimumWidth = 25;
+            this.InstalledColumn.Name = "InstalledColumn";
+            this.InstalledColumn.ReadOnly = true;
+            this.InstalledColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.InstalledColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // TitleColumn
+            // 
+            this.TitleColumn.HeaderText = "Title";
+            this.TitleColumn.MinimumWidth = 25;
+            this.TitleColumn.Name = "TitleColumn";
+            this.TitleColumn.ReadOnly = true;
+            this.TitleColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // ArchiveColumn
+            // 
+            this.ArchiveColumn.HeaderText = "Archive";
+            this.ArchiveColumn.MinimumWidth = 25;
+            this.ArchiveColumn.Name = "ArchiveColumn";
+            this.ArchiveColumn.ReadOnly = true;
+            this.ArchiveColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // AuthorColumn
+            // 
+            this.AuthorColumn.HeaderText = "Author";
+            this.AuthorColumn.MinimumWidth = 25;
+            this.AuthorColumn.Name = "AuthorColumn";
+            this.AuthorColumn.ReadOnly = true;
+            this.AuthorColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // SizeColumn
+            // 
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            this.SizeColumn.HeaderText = "Size";
+            this.SizeColumn.MinimumWidth = 25;
+            this.SizeColumn.Name = "SizeColumn";
+            this.SizeColumn.ReadOnly = true;
+            this.SizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // RatingTextColumn
+            // 
+            this.RatingTextColumn.HeaderText = "Rating";
+            this.RatingTextColumn.MinimumWidth = 25;
+            this.RatingTextColumn.Name = "RatingTextColumn";
+            this.RatingTextColumn.ReadOnly = true;
+            this.RatingTextColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // FinishedColumn
+            // 
+            this.FinishedColumn.HeaderText = "Finished";
+            this.FinishedColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.FinishedColumn.Name = "FinishedColumn";
+            this.FinishedColumn.ReadOnly = true;
+            this.FinishedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.FinishedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.FinishedColumn.Width = 71;
+            // 
+            // ReleaseDateColumn
+            // 
+            this.ReleaseDateColumn.HeaderText = "Release Date";
+            this.ReleaseDateColumn.MinimumWidth = 25;
+            this.ReleaseDateColumn.Name = "ReleaseDateColumn";
+            this.ReleaseDateColumn.ReadOnly = true;
+            this.ReleaseDateColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // LastPlayedColumn
+            // 
+            this.LastPlayedColumn.HeaderText = "Last Played";
+            this.LastPlayedColumn.MinimumWidth = 25;
+            this.LastPlayedColumn.Name = "LastPlayedColumn";
+            this.LastPlayedColumn.ReadOnly = true;
+            this.LastPlayedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // DisabledModsColumn
+            // 
+            this.DisabledModsColumn.HeaderText = "Disabled Mods";
+            this.DisabledModsColumn.MinimumWidth = 25;
+            this.DisabledModsColumn.Name = "DisabledModsColumn";
+            this.DisabledModsColumn.ReadOnly = true;
+            this.DisabledModsColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // CommentColumn
+            // 
+            this.CommentColumn.HeaderText = "Comment";
+            this.CommentColumn.MinimumWidth = 25;
+            this.CommentColumn.Name = "CommentColumn";
+            this.CommentColumn.ReadOnly = true;
+            this.CommentColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
             // FiltersFlowLayoutPanel
             // 
             this.FiltersFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -1100,7 +1204,6 @@
             this.FiltersFlowLayoutPanel.Controls.Add(this.FilterAuthorLabel);
             this.FiltersFlowLayoutPanel.Controls.Add(this.FilterAuthorTextBox);
             this.FiltersFlowLayoutPanel.Controls.Add(this.FilterIconButtonsToolStripCustom);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterShowJunkCheckBox);
             this.FiltersFlowLayoutPanel.Location = new System.Drawing.Point(144, 0);
             this.FiltersFlowLayoutPanel.Name = "FiltersFlowLayoutPanel";
             this.FiltersFlowLayoutPanel.Size = new System.Drawing.Size(768, 100);
@@ -1281,12 +1384,13 @@
             this.toolStripSeparator1,
             this.FilterByRatingButton,
             this.FilterByRatingLabel,
-            this.toolStripSeparator3});
+            this.toolStripSeparator3,
+            this.FilterShowUnsupportedButton});
             this.FilterIconButtonsToolStripCustom.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterIconButtonsToolStripCustom.Location = new System.Drawing.Point(471, 0);
             this.FilterIconButtonsToolStripCustom.Name = "FilterIconButtonsToolStripCustom";
             this.FilterIconButtonsToolStripCustom.PaddingDrawNudge = 0;
-            this.FilterIconButtonsToolStripCustom.Size = new System.Drawing.Size(272, 26);
+            this.FilterIconButtonsToolStripCustom.Size = new System.Drawing.Size(328, 26);
             this.FilterIconButtonsToolStripCustom.TabIndex = 3;
             // 
             // toolStripSeparator5
@@ -1385,6 +1489,20 @@
             this.FilterByFinishedButton.ToolTipText = "Finished";
             this.FilterByFinishedButton.Click += new System.EventHandler(this.FilterByFinishedButton_Click);
             // 
+            // FilterShowJunkButton
+            // 
+            this.FilterShowUnsupportedButton.AutoSize = false;
+            this.FilterShowUnsupportedButton.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterShowUnsupportedButton.CheckOnClick = true;
+            this.FilterShowUnsupportedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterShowUnsupportedButton.Image = ((System.Drawing.Image)(resources.GetObject("FilterShowJunkButton.Image")));
+            this.FilterShowUnsupportedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterShowUnsupportedButton.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterShowUnsupportedButton.Name = "FilterShowUnsupportedButton";
+            this.FilterShowUnsupportedButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterShowUnsupportedButton.ToolTipText = "Unfinished";
+            this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.FilterShowJunkButton_Click);
+            // 
             // FilterByUnfinishedButton
             // 
             this.FilterByUnfinishedButton.AutoSize = false;
@@ -1432,18 +1550,6 @@
             this.toolStripSeparator3.AutoSize = false;
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 26);
-            // 
-            // FilterShowJunkCheckBox
-            // 
-            this.FilterShowJunkCheckBox.AutoSize = true;
-            this.FilterShowJunkCheckBox.Location = new System.Drawing.Point(746, 5);
-            this.FilterShowJunkCheckBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.FilterShowJunkCheckBox.Name = "FilterShowJunkCheckBox";
-            this.FilterShowJunkCheckBox.Size = new System.Drawing.Size(76, 17);
-            this.FilterShowJunkCheckBox.TabIndex = 9;
-            this.FilterShowJunkCheckBox.Text = "Show junk";
-            this.FilterShowJunkCheckBox.UseVisualStyleBackColor = true;
-            this.FilterShowJunkCheckBox.CheckedChanged += new System.EventHandler(this.FilterShowJunkCheckBox_CheckedChanged);
             // 
             // GamesTabControl
             // 
@@ -2380,110 +2486,6 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
-            // GameTypeColumn
-            // 
-            this.GameTypeColumn.HeaderText = "Game";
-            this.GameTypeColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.GameTypeColumn.MinimumWidth = 25;
-            this.GameTypeColumn.Name = "GameTypeColumn";
-            this.GameTypeColumn.ReadOnly = true;
-            this.GameTypeColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.GameTypeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // InstalledColumn
-            // 
-            this.InstalledColumn.HeaderText = "Installed";
-            this.InstalledColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.InstalledColumn.MinimumWidth = 25;
-            this.InstalledColumn.Name = "InstalledColumn";
-            this.InstalledColumn.ReadOnly = true;
-            this.InstalledColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.InstalledColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // TitleColumn
-            // 
-            this.TitleColumn.HeaderText = "Title";
-            this.TitleColumn.MinimumWidth = 25;
-            this.TitleColumn.Name = "TitleColumn";
-            this.TitleColumn.ReadOnly = true;
-            this.TitleColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // ArchiveColumn
-            // 
-            this.ArchiveColumn.HeaderText = "Archive";
-            this.ArchiveColumn.MinimumWidth = 25;
-            this.ArchiveColumn.Name = "ArchiveColumn";
-            this.ArchiveColumn.ReadOnly = true;
-            this.ArchiveColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // AuthorColumn
-            // 
-            this.AuthorColumn.HeaderText = "Author";
-            this.AuthorColumn.MinimumWidth = 25;
-            this.AuthorColumn.Name = "AuthorColumn";
-            this.AuthorColumn.ReadOnly = true;
-            this.AuthorColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // SizeColumn
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            this.SizeColumn.HeaderText = "Size";
-            this.SizeColumn.MinimumWidth = 25;
-            this.SizeColumn.Name = "SizeColumn";
-            this.SizeColumn.ReadOnly = true;
-            this.SizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // RatingTextColumn
-            // 
-            this.RatingTextColumn.HeaderText = "Rating";
-            this.RatingTextColumn.MinimumWidth = 25;
-            this.RatingTextColumn.Name = "RatingTextColumn";
-            this.RatingTextColumn.ReadOnly = true;
-            this.RatingTextColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // FinishedColumn
-            // 
-            this.FinishedColumn.HeaderText = "Finished";
-            this.FinishedColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.FinishedColumn.Name = "FinishedColumn";
-            this.FinishedColumn.ReadOnly = true;
-            this.FinishedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.FinishedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.FinishedColumn.Width = 71;
-            // 
-            // ReleaseDateColumn
-            // 
-            this.ReleaseDateColumn.HeaderText = "Release Date";
-            this.ReleaseDateColumn.MinimumWidth = 25;
-            this.ReleaseDateColumn.Name = "ReleaseDateColumn";
-            this.ReleaseDateColumn.ReadOnly = true;
-            this.ReleaseDateColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // LastPlayedColumn
-            // 
-            this.LastPlayedColumn.HeaderText = "Last Played";
-            this.LastPlayedColumn.MinimumWidth = 25;
-            this.LastPlayedColumn.Name = "LastPlayedColumn";
-            this.LastPlayedColumn.ReadOnly = true;
-            this.LastPlayedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // DisabledModsColumn
-            // 
-            this.DisabledModsColumn.HeaderText = "Disabled Mods";
-            this.DisabledModsColumn.MinimumWidth = 25;
-            this.DisabledModsColumn.Name = "DisabledModsColumn";
-            this.DisabledModsColumn.ReadOnly = true;
-            this.DisabledModsColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // CommentColumn
-            // 
-            this.CommentColumn.HeaderText = "Comment";
-            this.CommentColumn.MinimumWidth = 25;
-            this.CommentColumn.Name = "CommentColumn";
-            this.CommentColumn.ReadOnly = true;
-            this.CommentColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2679,7 +2681,6 @@
         private System.Windows.Forms.Button FilterBarScrollLeftButton;
         private CustomControls.ToolStripCustom FilterGamesLeftSepToolStripCustom;
         private CustomControls.ToolStripSeparatorCustom FilterGamesLeftSep;
-        private System.Windows.Forms.CheckBox FilterShowJunkCheckBox;
         private System.Windows.Forms.TextBox EditFMTitleTextBox;
         private CustomControls.DropDownButton EditFMAltTitlesDropDownButton;
         private System.Windows.Forms.ContextMenuStrip AltTitlesMenu;
@@ -2766,6 +2767,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
+        private CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
     }
 }
 

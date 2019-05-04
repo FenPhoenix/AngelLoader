@@ -472,7 +472,7 @@ namespace AngelLoader.Forms
                 {
                     FilterTitleTextBox.Text = filter.Title;
                     FilterAuthorTextBox.Text = filter.Author;
-                    FilterShowJunkCheckBox.Checked = filter.ShowJunk;
+                    FilterShowUnsupportedButton.Checked = filter.ShowJunk;
 
                     FilterByTagsButton.Checked = !filter.Tags.Empty();
 
@@ -555,7 +555,7 @@ namespace AngelLoader.Forms
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
                 FilterByRatingLabel.ToolTipText = LText.FilterBar.RatingToolTip;
 
-                FilterShowJunkCheckBox.Text = LText.FilterBar.ShowJunk;
+                FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowUnsupportedFMs;
 
                 #endregion
 
@@ -1337,7 +1337,7 @@ namespace AngelLoader.Forms
             if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Finished);
             if (FilterByUnfinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Unfinished);
 
-            FMsDGV.Filter.ShowJunk = FilterShowJunkCheckBox.Checked;
+            FMsDGV.Filter.ShowJunk = FilterShowUnsupportedButton.Checked;
 
             #endregion
 
@@ -1426,7 +1426,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
                     var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (fm.Game == Game.Unsupported && !FilterShowJunkCheckBox.Checked)
+                    if (fm.Game == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -3531,11 +3531,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FilterShowJunkCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            await SortAndSetFilter();
-        }
+        private async void FilterShowJunkButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
         private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
@@ -3696,7 +3692,7 @@ namespace AngelLoader.Forms
                     FilterByRatingButton.Checked = false;
                     FilterByRatingLabel.Visible = false;
 
-                    FilterShowJunkCheckBox.Checked = false;
+                    FilterShowUnsupportedButton.Checked = false;
                     FMsDGV.Filter.Clear(oneList);
                 }
                 finally
