@@ -184,7 +184,6 @@ namespace AngelLoader.CustomControls
         instances of "\shppict" and "\nonshppict" with dummy strings. This fixes the problem. Hooray. Now get off
         my lawn.
         */
-
         internal static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
         {
             var firstByte = pattern[0];
