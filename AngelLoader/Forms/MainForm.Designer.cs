@@ -31,10 +31,12 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InstallUninstallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenInDromedSep = new System.Windows.Forms.ToolStripSeparator();
             this.OpenInDromEdMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,18 +104,6 @@
             this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
             this.FilterBarScrollLeftButton = new System.Windows.Forms.Button();
             this.FMsDGV = new AngelLoader.CustomControls.DataGridViewCustom();
-            this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.TitleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ArchiveColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AuthorColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SizeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RatingTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FinishedColumn = new System.Windows.Forms.DataGridViewImageColumn();
-            this.ReleaseDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LastPlayedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FiltersFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.FilterGamesLeftSepToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterGamesLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
@@ -226,7 +216,18 @@
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
-            this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.TitleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ArchiveColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AuthorColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SizeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RatingTextColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FinishedColumn = new System.Windows.Forms.DataGridViewImageColumn();
+            this.ReleaseDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LastPlayedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -284,7 +285,7 @@
             this.FMRightClickMenuSep2,
             this.WebSearchMenuItem});
             this.FMRightClickMenu.Name = "FMRightClickMenu";
-            this.FMRightClickMenu.Size = new System.Drawing.Size(188, 248);
+            this.FMRightClickMenu.Size = new System.Drawing.Size(188, 226);
             this.FMRightClickMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FMRightClickMenu_Opening);
             // 
             // PlayFMMenuItem
@@ -293,6 +294,13 @@
             this.PlayFMMenuItem.Size = new System.Drawing.Size(187, 22);
             this.PlayFMMenuItem.Text = "Play FM";
             this.PlayFMMenuItem.Click += new System.EventHandler(this.PlayFMMenuItem_Click);
+            // 
+            // PlayFMAdvancedMenuItem
+            // 
+            this.PlayFMAdvancedMenuItem.Name = "PlayFMAdvancedMenuItem";
+            this.PlayFMAdvancedMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.PlayFMAdvancedMenuItem.Text = "Play FM (advanced)...";
+            this.PlayFMAdvancedMenuItem.Click += new System.EventHandler(this.PlayFMAdvancedMenuItem_Click);
             // 
             // InstallUninstallMenuItem
             // 
@@ -1045,26 +1053,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -1078,108 +1086,6 @@
             this.FMsDGV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FMsDGV_KeyDown);
             this.FMsDGV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FMsDGV_KeyPress);
             this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
-            // 
-            // GameTypeColumn
-            // 
-            this.GameTypeColumn.HeaderText = "Game";
-            this.GameTypeColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.GameTypeColumn.MinimumWidth = 25;
-            this.GameTypeColumn.Name = "GameTypeColumn";
-            this.GameTypeColumn.ReadOnly = true;
-            this.GameTypeColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.GameTypeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // InstalledColumn
-            // 
-            this.InstalledColumn.HeaderText = "Installed";
-            this.InstalledColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.InstalledColumn.MinimumWidth = 25;
-            this.InstalledColumn.Name = "InstalledColumn";
-            this.InstalledColumn.ReadOnly = true;
-            this.InstalledColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.InstalledColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // TitleColumn
-            // 
-            this.TitleColumn.HeaderText = "Title";
-            this.TitleColumn.MinimumWidth = 25;
-            this.TitleColumn.Name = "TitleColumn";
-            this.TitleColumn.ReadOnly = true;
-            this.TitleColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // ArchiveColumn
-            // 
-            this.ArchiveColumn.HeaderText = "Archive";
-            this.ArchiveColumn.MinimumWidth = 25;
-            this.ArchiveColumn.Name = "ArchiveColumn";
-            this.ArchiveColumn.ReadOnly = true;
-            this.ArchiveColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // AuthorColumn
-            // 
-            this.AuthorColumn.HeaderText = "Author";
-            this.AuthorColumn.MinimumWidth = 25;
-            this.AuthorColumn.Name = "AuthorColumn";
-            this.AuthorColumn.ReadOnly = true;
-            this.AuthorColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // SizeColumn
-            // 
-            this.SizeColumn.HeaderText = "Size";
-            this.SizeColumn.MinimumWidth = 25;
-            this.SizeColumn.Name = "SizeColumn";
-            this.SizeColumn.ReadOnly = true;
-            this.SizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // RatingTextColumn
-            // 
-            this.RatingTextColumn.HeaderText = "Rating";
-            this.RatingTextColumn.MinimumWidth = 25;
-            this.RatingTextColumn.Name = "RatingTextColumn";
-            this.RatingTextColumn.ReadOnly = true;
-            this.RatingTextColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // FinishedColumn
-            // 
-            this.FinishedColumn.HeaderText = "Finished";
-            this.FinishedColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.FinishedColumn.Name = "FinishedColumn";
-            this.FinishedColumn.ReadOnly = true;
-            this.FinishedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.FinishedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.FinishedColumn.Width = 71;
-            // 
-            // ReleaseDateColumn
-            // 
-            this.ReleaseDateColumn.HeaderText = "Release Date";
-            this.ReleaseDateColumn.MinimumWidth = 25;
-            this.ReleaseDateColumn.Name = "ReleaseDateColumn";
-            this.ReleaseDateColumn.ReadOnly = true;
-            this.ReleaseDateColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // LastPlayedColumn
-            // 
-            this.LastPlayedColumn.HeaderText = "Last Played";
-            this.LastPlayedColumn.MinimumWidth = 25;
-            this.LastPlayedColumn.Name = "LastPlayedColumn";
-            this.LastPlayedColumn.ReadOnly = true;
-            this.LastPlayedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // DisabledModsColumn
-            // 
-            this.DisabledModsColumn.HeaderText = "Disabled Mods";
-            this.DisabledModsColumn.MinimumWidth = 25;
-            this.DisabledModsColumn.Name = "DisabledModsColumn";
-            this.DisabledModsColumn.ReadOnly = true;
-            this.DisabledModsColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // CommentColumn
-            // 
-            this.CommentColumn.HeaderText = "Comment";
-            this.CommentColumn.MinimumWidth = 25;
-            this.CommentColumn.Name = "CommentColumn";
-            this.CommentColumn.ReadOnly = true;
-            this.CommentColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // FiltersFlowLayoutPanel
             // 
@@ -2474,12 +2380,109 @@
             this.ProgressBox.TabIndex = 39;
             this.ProgressBox.Visible = false;
             // 
-            // PlayFMAdvancedMenuItem
+            // GameTypeColumn
             // 
-            this.PlayFMAdvancedMenuItem.Name = "PlayFMAdvancedMenuItem";
-            this.PlayFMAdvancedMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.PlayFMAdvancedMenuItem.Text = "Play FM (advanced)...";
-            this.PlayFMAdvancedMenuItem.Click += new System.EventHandler(this.PlayFMAdvancedMenuItem_Click);
+            this.GameTypeColumn.HeaderText = "Game";
+            this.GameTypeColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.GameTypeColumn.MinimumWidth = 25;
+            this.GameTypeColumn.Name = "GameTypeColumn";
+            this.GameTypeColumn.ReadOnly = true;
+            this.GameTypeColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.GameTypeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // InstalledColumn
+            // 
+            this.InstalledColumn.HeaderText = "Installed";
+            this.InstalledColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.InstalledColumn.MinimumWidth = 25;
+            this.InstalledColumn.Name = "InstalledColumn";
+            this.InstalledColumn.ReadOnly = true;
+            this.InstalledColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.InstalledColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // TitleColumn
+            // 
+            this.TitleColumn.HeaderText = "Title";
+            this.TitleColumn.MinimumWidth = 25;
+            this.TitleColumn.Name = "TitleColumn";
+            this.TitleColumn.ReadOnly = true;
+            this.TitleColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // ArchiveColumn
+            // 
+            this.ArchiveColumn.HeaderText = "Archive";
+            this.ArchiveColumn.MinimumWidth = 25;
+            this.ArchiveColumn.Name = "ArchiveColumn";
+            this.ArchiveColumn.ReadOnly = true;
+            this.ArchiveColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // AuthorColumn
+            // 
+            this.AuthorColumn.HeaderText = "Author";
+            this.AuthorColumn.MinimumWidth = 25;
+            this.AuthorColumn.Name = "AuthorColumn";
+            this.AuthorColumn.ReadOnly = true;
+            this.AuthorColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // SizeColumn
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            this.SizeColumn.HeaderText = "Size";
+            this.SizeColumn.MinimumWidth = 25;
+            this.SizeColumn.Name = "SizeColumn";
+            this.SizeColumn.ReadOnly = true;
+            this.SizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // RatingTextColumn
+            // 
+            this.RatingTextColumn.HeaderText = "Rating";
+            this.RatingTextColumn.MinimumWidth = 25;
+            this.RatingTextColumn.Name = "RatingTextColumn";
+            this.RatingTextColumn.ReadOnly = true;
+            this.RatingTextColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // FinishedColumn
+            // 
+            this.FinishedColumn.HeaderText = "Finished";
+            this.FinishedColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.FinishedColumn.Name = "FinishedColumn";
+            this.FinishedColumn.ReadOnly = true;
+            this.FinishedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.FinishedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.FinishedColumn.Width = 71;
+            // 
+            // ReleaseDateColumn
+            // 
+            this.ReleaseDateColumn.HeaderText = "Release Date";
+            this.ReleaseDateColumn.MinimumWidth = 25;
+            this.ReleaseDateColumn.Name = "ReleaseDateColumn";
+            this.ReleaseDateColumn.ReadOnly = true;
+            this.ReleaseDateColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // LastPlayedColumn
+            // 
+            this.LastPlayedColumn.HeaderText = "Last Played";
+            this.LastPlayedColumn.MinimumWidth = 25;
+            this.LastPlayedColumn.Name = "LastPlayedColumn";
+            this.LastPlayedColumn.ReadOnly = true;
+            this.LastPlayedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // DisabledModsColumn
+            // 
+            this.DisabledModsColumn.HeaderText = "Disabled Mods";
+            this.DisabledModsColumn.MinimumWidth = 25;
+            this.DisabledModsColumn.Name = "DisabledModsColumn";
+            this.DisabledModsColumn.ReadOnly = true;
+            this.DisabledModsColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // CommentColumn
+            // 
+            this.CommentColumn.HeaderText = "Comment";
+            this.CommentColumn.MinimumWidth = 25;
+            this.CommentColumn.Name = "CommentColumn";
+            this.CommentColumn.ReadOnly = true;
+            this.CommentColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // MainForm
             // 
@@ -2670,18 +2673,6 @@
         private System.Windows.Forms.ToolStripMenuItem FinishedOnExpertMenuItem;
         private System.Windows.Forms.ToolStripMenuItem FinishedOnExtremeMenuItem;
         private System.Windows.Forms.Button EditFMFinishedOnButton;
-        private System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
-        private System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn TitleColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ArchiveColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn AuthorColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SizeColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn RatingTextColumn;
-        private System.Windows.Forms.DataGridViewImageColumn FinishedColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ReleaseDateColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         private System.Windows.Forms.Button ReadmeFullScreenButton;
         private System.Windows.Forms.Button WebSearchButton;
         private System.Windows.Forms.Button FilterBarScrollRightButton;
@@ -2763,6 +2754,18 @@
         private CustomControls.ToolStripButtonCustom FMsListZoomOutButton;
         private CustomControls.ToolStripButtonCustom FMsListResetZoomButton;
         private System.Windows.Forms.ToolStripMenuItem PlayFMAdvancedMenuItem;
+        private System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
+        private System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TitleColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ArchiveColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AuthorColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SizeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn RatingTextColumn;
+        private System.Windows.Forms.DataGridViewImageColumn FinishedColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ReleaseDateColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
     }
 }
 
