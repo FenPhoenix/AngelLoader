@@ -135,9 +135,7 @@ namespace AngelLoader.Forms
         private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
         {
             var senderButton = (Button)sender;
-            var otherButton = senderButton == FilterBarScrollLeftButton
-                ? FilterBarScrollRightButton
-                : FilterBarScrollLeftButton;
+            var otherButton = senderButton == FilterBarScrollLeftButton ? FilterBarScrollRightButton : FilterBarScrollLeftButton;
             if (!senderButton.Visible && otherButton.Visible) _repeatButtonRunning = false;
         }
 
@@ -397,9 +395,6 @@ namespace AngelLoader.Forms
                 StatisticsTabPage;
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
-            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
-
-            ChangeGameOrganization();
 
             #endregion
 
@@ -423,6 +418,11 @@ namespace AngelLoader.Forms
         private void MainForm_Load(object sender, EventArgs e)
         {
             ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
+            // Not sure if this needs to go here, but it involves control sizes so...
+            ChangeGameOrganization();
+            // This has to go here because it depends on the width of a control and those don't get properly set
+            // until the Load event fires
+            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
@@ -474,7 +474,7 @@ namespace AngelLoader.Forms
                 {
                     FilterTitleTextBox.Text = filter.Title;
                     FilterAuthorTextBox.Text = filter.Author;
-                    FilterShowJunkCheckBox.Checked = filter.ShowJunk;
+                    FilterShowUnsupportedButton.Checked = filter.ShowJunk;
 
                     FilterByTagsButton.Checked = !filter.Tags.Empty();
 
@@ -557,7 +557,7 @@ namespace AngelLoader.Forms
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
                 FilterByRatingLabel.ToolTipText = LText.FilterBar.RatingToolTip;
 
-                FilterShowJunkCheckBox.Text = LText.FilterBar.ShowJunk;
+                FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowUnsupportedFMs;
 
                 #endregion
 
@@ -835,10 +835,7 @@ namespace AngelLoader.Forms
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Normal)
-            {
-                NominalWindowLocation = new Point(Location.X, Location.Y);
-            }
+            if (WindowState == FormWindowState.Normal) NominalWindowLocation = new Point(Location.X, Location.Y);
         }
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -1107,10 +1104,7 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        private FanMission GetFMFromIndex(int index)
-        {
-            return FMsDGV.Filtered ? Core.FMsViewList[FMsDGV.FilterShownIndexList[index]] : Core.FMsViewList[index];
-        }
+        private FanMission GetFMFromIndex(int index) => Core.FMsViewList[FMsDGV.Filtered ? FMsDGV.FilterShownIndexList[index] : index];
 
         /// <summary>
         /// Gets the currently selected FM, taking the currently set filters into account.
@@ -1130,8 +1124,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < (FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Core.FMsViewList.Count); i++)
             {
-                var fm = GetFMFromIndex(i);
-                if (fm.InstalledDir.EqualsI(installedName)) return i;
+                if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
             }
 
             return 0;
@@ -1346,7 +1339,7 @@ namespace AngelLoader.Forms
             if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Finished);
             if (FilterByUnfinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Unfinished);
 
-            FMsDGV.Filter.ShowJunk = FilterShowJunkCheckBox.Checked;
+            FMsDGV.Filter.ShowJunk = FilterShowUnsupportedButton.Checked;
 
             #endregion
 
@@ -1435,7 +1428,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
                     var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (fm.Game == Game.Unsupported && !FilterShowJunkCheckBox.Checked)
+                    if (fm.Game == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2034,28 +2027,11 @@ namespace AngelLoader.Forms
 
         private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrPlay(GetSelectedFM());
 
-        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e)
-        {
-            var fm = GetSelectedFM();
+        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
 
-            await InstallAndPlay.InstallOrUninstall(fm);
-        }
+        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(GetSelectedFM());
 
-        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e)
-        {
-            var fm = GetSelectedFM();
-            if (!fm.Installed) return;
-
-            await Core.ConvertWAVsTo16Bit(fm);
-        }
-
-        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e)
-        {
-            var fm = GetSelectedFM();
-            if (!fm.Installed) return;
-
-            await Core.ConvertOGGsToWAVs(fm);
-        }
+        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(GetSelectedFM());
 
         #endregion
 
@@ -2063,12 +2039,7 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        private async void InstallUninstallFMButton_Click(object sender, EventArgs e)
-        {
-            var fm = GetSelectedFM();
-
-            await InstallAndPlay.InstallOrUninstall(fm);
-        }
+        private async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
 
         private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrPlay(GetSelectedFM());
 
@@ -3321,16 +3292,14 @@ namespace AngelLoader.Forms
         private async void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var fm = GetSelectedFM();
-            fm.Title = EditFMTitleTextBox.Text;
+            GetSelectedFM().Title = EditFMTitleTextBox.Text;
             await RefreshSelectedFMRowOnly();
         }
 
         private async void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var fm = GetSelectedFM();
-            fm.Author = EditFMAuthorTextBox.Text;
+            GetSelectedFM().Author = EditFMAuthorTextBox.Text;
             await RefreshSelectedFMRowOnly();
         }
 
@@ -3345,9 +3314,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
 
-            var fm = GetSelectedFM();
-
-            fm.ReleaseDate = EditFMReleaseDateCheckBox.Checked
+            GetSelectedFM().ReleaseDate = EditFMReleaseDateCheckBox.Checked
                 ? EditFMReleaseDateDateTimePicker.Value
                 : (DateTime?)null;
 
@@ -3358,8 +3325,7 @@ namespace AngelLoader.Forms
         private async void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var fm = GetSelectedFM();
-            fm.ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
+            GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3369,9 +3335,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
 
-            var fm = GetSelectedFM();
-
-            fm.LastPlayed = EditFMLastPlayedCheckBox.Checked
+            GetSelectedFM().LastPlayed = EditFMLastPlayedCheckBox.Checked
                 ? EditFMLastPlayedDateTimePicker.Value
                 : (DateTime?)null;
 
@@ -3382,8 +3346,7 @@ namespace AngelLoader.Forms
         private async void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var fm = GetSelectedFM();
-            fm.LastPlayed = EditFMLastPlayedDateTimePicker.Value;
+            GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3391,8 +3354,7 @@ namespace AngelLoader.Forms
         private async void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var fm = GetSelectedFM();
-            fm.DisabledMods = EditFMDisabledModsTextBox.Text;
+            GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
             await RefreshSelectedFMRowOnly();
         }
 
@@ -3407,8 +3369,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
 
-            var fm = GetSelectedFM();
-            fm.DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
+            GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3416,8 +3377,7 @@ namespace AngelLoader.Forms
         private async void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var fm = GetSelectedFM();
-            fm.Rating = EditFMRatingComboBox.SelectedIndex - 1;
+            GetSelectedFM().Rating = EditFMRatingComboBox.SelectedIndex - 1;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3426,13 +3386,10 @@ namespace AngelLoader.Forms
 
         private async void RatingRCMenuItems_Click(object sender, EventArgs e)
         {
-            var fm = GetSelectedFM();
-
             for (int i = 0; i < RatingRCSubMenu.DropDownItems.Count; i++)
             {
                 if (RatingRCSubMenu.DropDownItems[i] != sender) continue;
-
-                fm.Rating = i - 1;
+                GetSelectedFM().Rating = i - 1;
                 await RefreshSelectedFM(refreshReadme: false);
                 Core.WriteFullFMDataIni();
                 break;
@@ -3487,10 +3444,7 @@ namespace AngelLoader.Forms
 
         private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            if (FinishedOnUnknownMenuItem.Checked)
-            {
-                UncheckFinishedOnMenuItemsExceptUnknown();
-            }
+            if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
         private void UncheckFinishedOnMenuItemsExceptUnknown()
@@ -3579,11 +3533,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FilterShowJunkCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            await SortAndSetFilter();
-        }
+        private async void FilterShowJunkButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
         private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
@@ -3744,7 +3694,7 @@ namespace AngelLoader.Forms
                     FilterByRatingButton.Checked = false;
                     FilterByRatingLabel.Visible = false;
 
-                    FilterShowJunkCheckBox.Checked = false;
+                    FilterShowUnsupportedButton.Checked = false;
                     FMsDGV.Filter.Clear(oneList);
                 }
                 finally

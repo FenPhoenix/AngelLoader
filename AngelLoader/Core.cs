@@ -1107,7 +1107,7 @@ namespace AngelLoader
 
         internal static async Task ConvertOGGsToWAVs(FanMission fm)
         {
-            if (!GameIsDark(fm)) return;
+            if (!fm.Installed || !GameIsDark(fm)) return;
 
             Debug.Assert(fm.Game != null, "fm.Game != null");
 
@@ -1151,7 +1151,7 @@ namespace AngelLoader
 
         internal static async Task ConvertWAVsTo16Bit(FanMission fm)
         {
-            if (!GameIsDark(fm)) return;
+            if (!fm.Installed || !GameIsDark(fm)) return;
 
             Debug.Assert(fm.Game != null, "fm.Game != null");
 
