@@ -444,9 +444,9 @@ namespace AngelLoader.Ini
                         {
                             LText.FilterBar.RatingToolTip = lt.Substring(14);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("ShowUnsupportedFMs="))
+                        else if (lt.StartsWithFast_NoNullChecks("ShowJunk="))
                         {
-                            LText.FilterBar.ShowUnsupportedFMs = lt.Substring(19);
+                            LText.FilterBar.ShowJunk = lt.Substring(9);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("RefreshFromDiskButtonToolTip="))
                         {

@@ -557,7 +557,7 @@ namespace AngelLoader.Forms
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
                 FilterByRatingLabel.ToolTipText = LText.FilterBar.RatingToolTip;
 
-                FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowUnsupportedFMs;
+                FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowJunk;
 
                 #endregion
 
