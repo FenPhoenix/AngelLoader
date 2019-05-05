@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI;
@@ -19,6 +20,15 @@ namespace AngelLoader.CustomControls
         {
             get => _storedZoomFactor;
             set => _storedZoomFactor = value.Clamp(0.1f, 5.0f);
+        }
+
+        private SCROLLINFO _scrollInfo;
+
+        public RichTextBoxCustom()
+        {
+            // Make sure this is valid right from the start
+            _scrollInfo.cbSize = (uint)Marshal.SizeOf(_scrollInfo);
+            _scrollInfo.fMask = (uint)ScrollInfoMask.SIF_ALL;
         }
 
         #region Zoom stuff
@@ -93,6 +103,8 @@ namespace AngelLoader.CustomControls
         }
 
         #endregion
+
+        #region Load content
 
         /// <summary>
         /// Sets the text without resetting the zoom factor.
@@ -214,7 +226,58 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        #region Better vertical scrolling - contributed by Xanfre
+        #endregion
+
+        #region Better vertical scrolling - original contribution by Xanfre
+
+        private static SCROLLINFO GetCurrentScrollInfo(IntPtr handle)
+        {
+            var si = new SCROLLINFO();
+            si.cbSize = (uint)Marshal.SizeOf(si);
+            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
+            GetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si);
+            return si;
+        }
+
+        /*
+        When the rtfbox is first focused after content load, it will scroll to the top automatically (or more
+        specifically to the cursor location, which will always be at the top after content load and before focus).
+        Any subsequent de-focus and refocus will not cause this behavior, even if the cursor is still at the top,
+        until the next content load.
+        This auto-scroll-to-the-top behavior doesn't align with any events, and in fact seems to just happen in
+        the background as soon as it feels like it and as soon as the executing thread has a slot for it. Hence
+        this filthy hack where we keep track of the scroll position, and then on focus we do a brief async delay
+        to let the auto-scroll happen, then set correct scroll position again.
+        I don't like the "wait-and-hope" method at all, but hey... worst case, the auto-top-scroll will still
+        happen, and that's no worse than it was before.
+        */
+        protected override void OnVScroll(EventArgs e)
+        {
+            _scrollInfo = GetCurrentScrollInfo(Handle);
+
+            base.OnVScroll(e);
+        }
+
+        protected override async void OnEnter(EventArgs e)
+        {
+            var si = _scrollInfo;
+
+            this.SuspendDrawing();
+            try
+            {
+                await Task.Delay(20);
+
+                _scrollInfo = si;
+
+                RepositionScroll(Handle, si);
+            }
+            finally
+            {
+                this.ResumeDrawing();
+            }
+
+            base.OnEnter(e);
+        }
 
         private struct SCROLLINFO
         {
@@ -266,15 +329,16 @@ namespace AngelLoader.CustomControls
 
         private static void BetterScroll(IntPtr handle, int pixels)
         {
-            // Get current scroll position
-            SCROLLINFO si = new SCROLLINFO();
-            si.cbSize = (uint)Marshal.SizeOf(si);
-            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
-            GetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si);
+            var si = GetCurrentScrollInfo(handle);
 
             // Update position by pixels
             si.nPos += pixels;
 
+            RepositionScroll(handle, si);
+        }
+
+        private static void RepositionScroll(IntPtr handle, SCROLLINFO si)
+        {
             // Reposition scroll
             SetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si, true);
 
