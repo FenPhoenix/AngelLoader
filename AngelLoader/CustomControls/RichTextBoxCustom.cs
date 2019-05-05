@@ -321,10 +321,24 @@ namespace AngelLoader.CustomControls
         [DllImport("user32.dll")]
         private static extern int GetWindowLong(IntPtr hWnd, int index);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetCursor(IntPtr hCursor);
+
+        private const int WM_SETCURSOR = 0x20;
+
         private static bool VerticalScrollBarVisible(Control ctl)
         {
             int style = GetWindowLong(ctl.Handle, -16);
             return (style & 0x200000) != 0;
+        }
+
+        private bool CursorOverText(Control control, bool fullArea = false)
+        {
+            if (!control.Visible || !control.Enabled) return false;
+            var rpt = PointToClient(control.PointToScreen(new System.Drawing.Point(0, 0)));
+            var rcs = fullArea ? control.Size : control.ClientSize;
+            var ptc = PointToClient(Cursor.Position);
+            return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width && ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
         }
 
         private static void BetterScroll(IntPtr handle, int pixels)
@@ -375,12 +389,39 @@ namespace AngelLoader.CustomControls
             }
         }
 
+        // Intercept mouse cursor in order to keep it from flickering
+        private void InterceptCursor(ref Message m)
+        {
+            if (!CursorOverText(this, false))
+            {
+                if (Cursor != Cursors.Arrow)
+                {
+                    Cursor = Cursors.Arrow;
+                }
+            }
+            else
+            {
+                if ((Cursor != Cursors.IBeam) && (Cursor != Cursors.Hand))
+                {
+                    Cursor = Cursors.IBeam;
+                }
+            }
+            SetCursor(Cursor.Handle);
+        }
+
         protected override void WndProc(ref Message m)
         {
             switch ((uint)m.Msg)
             {
                 case InteropMisc.WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
+                    break;
+                case InteropMisc.WM_MBUTTONDOWN:
+                    break;
+                case InteropMisc.WM_MBUTTONDBLCLK:
+                    break;
+                case WM_SETCURSOR:
+                    InterceptCursor(ref m);
                     break;
                 default:
                     base.WndProc(ref m);
