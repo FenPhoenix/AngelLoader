@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
+using AngelLoader.WinAPI;
 using static AngelLoader.Common.HTMLNamedEscapes;
 
 namespace AngelLoader.CustomControls
@@ -212,16 +213,18 @@ namespace AngelLoader.CustomControls
                 }
             }
         }
-        
-        struct SCROLLINFO
+
+        #region Better vertical scrolling - contributed by Xanfre
+
+        private struct SCROLLINFO
         {
-            public uint cbSize;
-            public uint fMask;
-            public int nMin;
-            public int nMax;
-            public uint nPage;
-            public int nPos;
-            public int nTrackPos;
+            internal uint cbSize;
+            internal uint fMask;
+            internal int nMin;
+            internal int nMax;
+            internal uint nPage;
+            internal int nPos;
+            internal int nTrackPos;
         }
 
         private enum ScrollBarDirection
@@ -232,7 +235,7 @@ namespace AngelLoader.CustomControls
             SB_BOTH = 3
         }
 
-        public enum ScrollInfoMask
+        private enum ScrollInfoMask
         {
             SIF_RANGE = 0x0001,
             SIF_PAGE = 0x0002,
@@ -243,28 +246,25 @@ namespace AngelLoader.CustomControls
         }
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
-        [DllImport("user32.dll")]
-        static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ShowScrollBar(IntPtr hWnd, int wBar, [MarshalAs(UnmanagedType.Bool)] bool bShow);
-        [DllImport("user32.dll")]
-        private extern static int GetWindowLong(IntPtr hWnd, int index);
-        const uint WM_MOUSEWHEEL = 0x20A;
-        const uint WM_VSCROLL = 0x115;
-        const uint SB_THUMBTRACK = 5;
 
-        public static bool VerticalScrollBarVisible(Control ctl)
+        [DllImport("user32.dll")]
+        private static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int index);
+
+        private static bool VerticalScrollBarVisible(Control ctl)
         {
             int style = GetWindowLong(ctl.Handle, -16);
             return (style & 0x200000) != 0;
         }
 
-        void BetterScroll(IntPtr handle, int pixles)
+        private static void BetterScroll(IntPtr handle, int pixels)
         {
             // Get current scroll position
             SCROLLINFO si = new SCROLLINFO();
@@ -272,23 +272,23 @@ namespace AngelLoader.CustomControls
             si.fMask = (uint)ScrollInfoMask.SIF_ALL;
             GetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si);
 
-            // Update position by pixles
-            si.nPos += pixles;
+            // Update position by pixels
+            si.nPos += pixels;
 
             // Reposition scroll
             SetScrollInfo(handle, (int)ScrollBarDirection.SB_VERT, ref si, true);
 
             // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-            IntPtr ptrWparam = new IntPtr(SB_THUMBTRACK + 0x10000 * si.nPos);
+            IntPtr ptrWparam = new IntPtr(InteropMisc.SB_THUMBTRACK + 0x10000 * si.nPos);
             IntPtr ptrLparam = new IntPtr(0);
             if ((long)ptrWparam >= 0)
             {
-                SendMessage(handle, WM_VSCROLL, ptrWparam, ptrLparam);
+                SendMessage(handle, InteropMisc.WM_VSCROLL, ptrWparam, ptrLparam);
             }
             else
             {
-                SendMessage(handle, WM_VSCROLL, (IntPtr)SB_THUMBTRACK, ptrLparam);
+                SendMessage(handle, InteropMisc.WM_VSCROLL, (IntPtr)InteropMisc.SB_THUMBTRACK, ptrLparam);
             }
         }
 
@@ -301,7 +301,7 @@ namespace AngelLoader.CustomControls
                 base.WndProc(ref m);
                 return;
             }
-                if ((delta >> 7) == 1)
+            if ((delta >> 7) == 1)
             {
                 BetterScroll(m.HWnd, 50);
             }
@@ -315,7 +315,7 @@ namespace AngelLoader.CustomControls
         {
             switch ((uint)m.Msg)
             {
-                case WM_MOUSEWHEEL:
+                case InteropMisc.WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
                     break;
                 default:
@@ -323,6 +323,8 @@ namespace AngelLoader.CustomControls
                     break;
             }
         }
+
+        #endregion
 
         #region GLML to RTF
 

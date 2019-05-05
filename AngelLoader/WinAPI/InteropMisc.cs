@@ -31,6 +31,7 @@ namespace AngelLoader.WinAPI
         internal const int SB_ENDSCROLL = 8;
         internal const int SBM_GETPOS = 225;
         internal const int SB_HORZ = 0;
+        internal const uint SB_THUMBTRACK = 5;
 
         #endregion
 
