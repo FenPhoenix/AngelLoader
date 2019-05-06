@@ -454,7 +454,7 @@ xcopy "$(SolutionDir)doc" "%25destDir%25doc\" /y /i /e</PostBuildEvent>
   <PropertyGroup>
     <PreBuildEvent>rem Autogenerate code
 "$(SolutionDir)\FenGen\FenGen.exe" -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
-"$(SolutionDir)\FenGen\FenGen.exe" -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
+"$(SolutionDir)\FenGen\FenGen.exe" -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
 
 if $(ConfigurationName) == Release_Beta (
 "$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"

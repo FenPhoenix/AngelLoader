@@ -153,7 +153,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string UnfinishedToolTip = "Unfinished";
             internal static string RatingToolTip = "Rating";
             [FenGenBlankLine]
-            internal static string ShowUnsupportedFMs = "Show FMs marked as \"unsupported game or non-FM archive\"";
+            internal static string ShowJunk = "Show FMs marked as \"unsupported game or non-FM archive\"";
             [FenGenBlankLine]
             internal static string RefreshFromDiskButtonToolTip = "Refresh from disk";
             internal static string RefreshFilteredListButtonToolTip = "Refresh filtered list";
