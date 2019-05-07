@@ -30,10 +30,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,13 +59,6 @@
             this.RatingRCMenu8 = new System.Windows.Forms.ToolStripMenuItem();
             this.RatingRCMenu9 = new System.Windows.Forms.ToolStripMenuItem();
             this.RatingRCMenu10 = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
-            this.FinishedOnNormalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenuSep2 = new System.Windows.Forms.ToolStripSeparator();
             this.WebSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
@@ -80,17 +73,27 @@
             this.PlayFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
             this.InstallUninstallFMButton = new System.Windows.Forms.Button();
-            this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.WebSearchButton = new System.Windows.Forms.Button();
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
+            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
+            this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
+            this.FilterBarScrollLeftButton = new System.Windows.Forms.Button();
             this.FMsDGV = new AngelLoader.CustomControls.DataGridViewCustom();
             this.GameTypeColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.InstalledColumn = new System.Windows.Forms.DataGridViewImageColumn();
@@ -145,8 +148,6 @@
             this.ClearFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparatorCustom3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.ResetLayoutButton = new System.Windows.Forms.Button();
-            this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
-            this.FilterBarScrollLeftButton = new System.Windows.Forms.Button();
             this.GamesTabControl = new System.Windows.Forms.TabControl();
             this.Thief1TabPage = new System.Windows.Forms.TabPage();
             this.Thief2TabPage = new System.Windows.Forms.TabPage();
@@ -216,26 +217,24 @@
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
+            this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FinishedOnRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
+            this.FinishedOnNormalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
-            this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
             this.BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
-            this.BottomAreaToolStripCustom.SuspendLayout();
-            this.BottomAreaToolStripCustom2.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
+            this.PlayOriginalGameMenu.SuspendLayout();
+            this.ImportFromMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
@@ -264,8 +263,9 @@
             this.PatchDMLsPanel.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
-            this.PlayOriginalGameMenu.SuspendLayout();
-            this.ImportFromMenu.SuspendLayout();
+            this.BottomAreaToolStripCustom.SuspendLayout();
+            this.BottomAreaToolStripCustom2.SuspendLayout();
+            this.FinishedOnMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // FMRightClickMenu
@@ -464,70 +464,6 @@
             this.RatingRCMenu10.Text = "10";
             this.RatingRCMenu10.Click += new System.EventHandler(this.RatingRCMenuItems_Click);
             // 
-            // FinishedOnRCSubMenu
-            // 
-            this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
-            this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
-            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(187, 22);
-            this.FinishedOnRCSubMenu.Text = "Finished on";
-            // 
-            // FinishedOnMenu
-            // 
-            this.FinishedOnMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FinishedOnNormalMenuItem,
-            this.FinishedOnHardMenuItem,
-            this.FinishedOnExpertMenuItem,
-            this.FinishedOnExtremeMenuItem,
-            this.FinishedOnUnknownMenuItem});
-            this.FinishedOnMenu.Name = "FinishedOnMenu";
-            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
-            this.FinishedOnMenu.Size = new System.Drawing.Size(126, 114);
-            // 
-            // FinishedOnNormalMenuItem
-            // 
-            this.FinishedOnNormalMenuItem.CheckOnClick = true;
-            this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
-            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnNormalMenuItem.Tag = "";
-            this.FinishedOnNormalMenuItem.Text = "Normal";
-            this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnHardMenuItem
-            // 
-            this.FinishedOnHardMenuItem.CheckOnClick = true;
-            this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
-            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnHardMenuItem.Tag = "";
-            this.FinishedOnHardMenuItem.Text = "Hard";
-            this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnExpertMenuItem
-            // 
-            this.FinishedOnExpertMenuItem.CheckOnClick = true;
-            this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
-            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnExpertMenuItem.Tag = "";
-            this.FinishedOnExpertMenuItem.Text = "Expert";
-            this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnExtremeMenuItem
-            // 
-            this.FinishedOnExtremeMenuItem.CheckOnClick = true;
-            this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
-            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnExtremeMenuItem.Tag = "";
-            this.FinishedOnExtremeMenuItem.Text = "Extreme";
-            this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnUnknownMenuItem
-            // 
-            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
-            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
-            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnUnknownMenuItem.Text = "Unknown";
-            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
-            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
             // FMRightClickMenuSep2
             // 
             this.FMRightClickMenuSep2.Name = "FMRightClickMenuSep2";
@@ -701,44 +637,6 @@
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
             this.InstallUninstallFMButton.Click += new System.EventHandler(this.InstallUninstallFMButton_Click);
             // 
-            // BottomAreaToolStripCustom
-            // 
-            this.BottomAreaToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep1});
-            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
-            this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
-            this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom.TabIndex = 32;
-            // 
-            // BottomAreaSep1
-            // 
-            this.BottomAreaSep1.AutoSize = false;
-            this.BottomAreaSep1.Name = "BottomAreaSep1";
-            this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
-            // 
-            // BottomAreaToolStripCustom2
-            // 
-            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep2});
-            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
-            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
-            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom2.TabIndex = 35;
-            // 
-            // BottomAreaSep2
-            // 
-            this.BottomAreaSep2.AutoSize = false;
-            this.BottomAreaSep2.Name = "BottomAreaSep2";
-            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
-            // 
             // WebSearchButton
             // 
             this.WebSearchButton.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -796,6 +694,89 @@
             this.AddTagListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
             this.AddTagListBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
             this.AddTagListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AddTagListBox_MouseUp);
+            // 
+            // PlayOriginalGameMenu
+            // 
+            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayOriginalThief1MenuItem,
+            this.PlayOriginalThief2MenuItem,
+            this.PlayOriginalThief3MenuItem});
+            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
+            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
+            // 
+            // PlayOriginalThief1MenuItem
+            // 
+            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
+            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
+            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
+            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief2MenuItem
+            // 
+            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
+            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
+            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
+            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief3MenuItem
+            // 
+            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
+            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
+            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
+            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // AddTagMenu
+            // 
+            this.AddTagMenu.Name = "AddTagMenu";
+            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
+            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
+            // 
+            // AltTitlesMenu
+            // 
+            this.AltTitlesMenu.Name = "AltTitlesMenu";
+            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
+            // 
+            // ImportFromMenu
+            // 
+            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ImportFromDarkLoaderMenuItem,
+            this.ImportFromFMSelMenuItem,
+            this.ImportFromNewDarkLoaderMenuItem});
+            this.ImportFromMenu.Name = "ImportFromMenu";
+            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
+            // 
+            // ImportFromDarkLoaderMenuItem
+            // 
+            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
+            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
+            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
+            // 
+            // ImportFromFMSelMenuItem
+            // 
+            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
+            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromFMSelMenuItem.Text = "FMSel";
+            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
+            // 
+            // ImportFromNewDarkLoaderMenuItem
+            // 
+            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
+            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
+            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
+            // 
+            // ProgressBox
+            // 
+            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
+            this.ProgressBox.Name = "ProgressBox";
+            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
+            this.ProgressBox.TabIndex = 39;
+            this.ProgressBox.Visible = false;
             // 
             // MainSplitContainer
             // 
@@ -857,6 +838,40 @@
             this.TopSplitContainer.SplitterDistance = 1116;
             this.TopSplitContainer.TabIndex = 32;
             // 
+            // FilterBarScrollRightButton
+            // 
+            this.FilterBarScrollRightButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.FilterBarScrollRightButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.FilterBarScrollRightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
+            this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
+            this.FilterBarScrollRightButton.Size = new System.Drawing.Size(14, 24);
+            this.FilterBarScrollRightButton.TabIndex = 10;
+            this.FilterBarScrollRightButton.UseVisualStyleBackColor = true;
+            this.FilterBarScrollRightButton.Visible = false;
+            this.FilterBarScrollRightButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
+            this.FilterBarScrollRightButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
+            this.FilterBarScrollRightButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
+            this.FilterBarScrollRightButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
+            this.FilterBarScrollRightButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
+            // 
+            // FilterBarScrollLeftButton
+            // 
+            this.FilterBarScrollLeftButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowLeftSmall;
+            this.FilterBarScrollLeftButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.FilterBarScrollLeftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
+            this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
+            this.FilterBarScrollLeftButton.Size = new System.Drawing.Size(14, 24);
+            this.FilterBarScrollLeftButton.TabIndex = 2;
+            this.FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
+            this.FilterBarScrollLeftButton.Visible = false;
+            this.FilterBarScrollLeftButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
+            this.FilterBarScrollLeftButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
+            this.FilterBarScrollLeftButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
+            this.FilterBarScrollLeftButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
+            this.FilterBarScrollLeftButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
+            // 
             // FMsDGV
             // 
             this.FMsDGV.AllowUserToAddRows = false;
@@ -866,14 +881,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -889,26 +904,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -969,8 +984,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -1516,40 +1531,6 @@
             this.MainToolTip.SetToolTip(this.ResetLayoutButton, "Reset layout");
             this.ResetLayoutButton.UseVisualStyleBackColor = true;
             this.ResetLayoutButton.Click += new System.EventHandler(this.ResetLayoutButton_Click);
-            // 
-            // FilterBarScrollRightButton
-            // 
-            this.FilterBarScrollRightButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowRightSmall;
-            this.FilterBarScrollRightButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.FilterBarScrollRightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
-            this.FilterBarScrollRightButton.Name = "FilterBarScrollRightButton";
-            this.FilterBarScrollRightButton.Size = new System.Drawing.Size(14, 24);
-            this.FilterBarScrollRightButton.TabIndex = 10;
-            this.FilterBarScrollRightButton.UseVisualStyleBackColor = true;
-            this.FilterBarScrollRightButton.Visible = false;
-            this.FilterBarScrollRightButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
-            this.FilterBarScrollRightButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
-            this.FilterBarScrollRightButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
-            this.FilterBarScrollRightButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
-            this.FilterBarScrollRightButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
-            // 
-            // FilterBarScrollLeftButton
-            // 
-            this.FilterBarScrollLeftButton.BackgroundImage = global::AngelLoader.Properties.Resources.ArrowLeftSmall;
-            this.FilterBarScrollLeftButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.FilterBarScrollLeftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
-            this.FilterBarScrollLeftButton.Name = "FilterBarScrollLeftButton";
-            this.FilterBarScrollLeftButton.Size = new System.Drawing.Size(14, 24);
-            this.FilterBarScrollLeftButton.TabIndex = 2;
-            this.FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
-            this.FilterBarScrollLeftButton.Visible = false;
-            this.FilterBarScrollLeftButton.EnabledChanged += new System.EventHandler(this.FilterBarScrollButtons_EnabledChanged);
-            this.FilterBarScrollLeftButton.VisibleChanged += new System.EventHandler(this.FilterBarScrollButtons_VisibleChanged);
-            this.FilterBarScrollLeftButton.Click += new System.EventHandler(this.FilterBarScrollButtons_Click);
-            this.FilterBarScrollLeftButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollButtons_MouseDown);
-            this.FilterBarScrollLeftButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FilterBarScrollLeftButton_MouseUp);
             // 
             // GamesTabControl
             // 
@@ -2403,88 +2384,107 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             // 
-            // PlayOriginalGameMenu
+            // BottomAreaToolStripCustom
             // 
-            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayOriginalThief1MenuItem,
-            this.PlayOriginalThief2MenuItem,
-            this.PlayOriginalThief3MenuItem});
-            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
-            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
+            this.BottomAreaToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomAreaSep1});
+            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
+            this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
+            this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
+            this.BottomAreaToolStripCustom.Size = new System.Drawing.Size(8, 42);
+            this.BottomAreaToolStripCustom.TabIndex = 32;
             // 
-            // PlayOriginalThief1MenuItem
+            // BottomAreaSep1
             // 
-            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
-            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
-            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            this.BottomAreaSep1.AutoSize = false;
+            this.BottomAreaSep1.Name = "BottomAreaSep1";
+            this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
             // 
-            // PlayOriginalThief2MenuItem
+            // BottomAreaToolStripCustom2
             // 
-            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
-            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
-            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomAreaSep2});
+            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
+            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
+            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
+            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
+            this.BottomAreaToolStripCustom2.TabIndex = 35;
             // 
-            // PlayOriginalThief3MenuItem
+            // BottomAreaSep2
             // 
-            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
-            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
-            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            this.BottomAreaSep2.AutoSize = false;
+            this.BottomAreaSep2.Name = "BottomAreaSep2";
+            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
             // 
-            // AddTagMenu
+            // FinishedOnRCSubMenu
             // 
-            this.AddTagMenu.Name = "AddTagMenu";
-            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
-            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
+            this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
+            this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
+            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(187, 22);
+            this.FinishedOnRCSubMenu.Text = "Finished on";
             // 
-            // AltTitlesMenu
+            // FinishedOnMenu
             // 
-            this.AltTitlesMenu.Name = "AltTitlesMenu";
-            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
+            this.FinishedOnMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FinishedOnNormalMenuItem,
+            this.FinishedOnHardMenuItem,
+            this.FinishedOnExpertMenuItem,
+            this.FinishedOnExtremeMenuItem,
+            this.FinishedOnUnknownMenuItem});
+            this.FinishedOnMenu.Name = "FinishedOnMenu";
+            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
+            this.FinishedOnMenu.Size = new System.Drawing.Size(126, 114);
             // 
-            // ImportFromMenu
+            // FinishedOnNormalMenuItem
             // 
-            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ImportFromDarkLoaderMenuItem,
-            this.ImportFromFMSelMenuItem,
-            this.ImportFromNewDarkLoaderMenuItem});
-            this.ImportFromMenu.Name = "ImportFromMenu";
-            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
+            this.FinishedOnNormalMenuItem.CheckOnClick = true;
+            this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
+            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnNormalMenuItem.Tag = "";
+            this.FinishedOnNormalMenuItem.Text = "Normal";
+            this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ImportFromDarkLoaderMenuItem
+            // FinishedOnHardMenuItem
             // 
-            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
-            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
-            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
+            this.FinishedOnHardMenuItem.CheckOnClick = true;
+            this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
+            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnHardMenuItem.Tag = "";
+            this.FinishedOnHardMenuItem.Text = "Hard";
+            this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ImportFromFMSelMenuItem
+            // FinishedOnExpertMenuItem
             // 
-            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
-            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromFMSelMenuItem.Text = "FMSel";
-            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
+            this.FinishedOnExpertMenuItem.CheckOnClick = true;
+            this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
+            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnExpertMenuItem.Tag = "";
+            this.FinishedOnExpertMenuItem.Text = "Expert";
+            this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ImportFromNewDarkLoaderMenuItem
+            // FinishedOnExtremeMenuItem
             // 
-            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
-            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
-            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
+            this.FinishedOnExtremeMenuItem.CheckOnClick = true;
+            this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
+            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnExtremeMenuItem.Tag = "";
+            this.FinishedOnExtremeMenuItem.Text = "Extreme";
+            this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ProgressBox
+            // FinishedOnUnknownMenuItem
             // 
-            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
-            this.ProgressBox.Name = "ProgressBox";
-            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
-            this.ProgressBox.TabIndex = 39;
-            this.ProgressBox.Visible = false;
+            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
+            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
+            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnUnknownMenuItem.Text = "Unknown";
+            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
+            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
             // MainForm
             // 
@@ -2508,18 +2508,15 @@
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.FMRightClickMenu.ResumeLayout(false);
-            this.FinishedOnMenu.ResumeLayout(false);
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();
             this.BottomRightButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomRightButtonsFlowLayoutPanel.PerformLayout();
             this.BottomLeftButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomLeftButtonsFlowLayoutPanel.PerformLayout();
-            this.BottomAreaToolStripCustom.ResumeLayout(false);
-            this.BottomAreaToolStripCustom.PerformLayout();
-            this.BottomAreaToolStripCustom2.ResumeLayout(false);
-            this.BottomAreaToolStripCustom2.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
+            this.PlayOriginalGameMenu.ResumeLayout(false);
+            this.ImportFromMenu.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             this.MainSplitContainer.Panel2.PerformLayout();
@@ -2566,8 +2563,11 @@
             this.ChooseReadmePanel.ResumeLayout(false);
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
-            this.PlayOriginalGameMenu.ResumeLayout(false);
-            this.ImportFromMenu.ResumeLayout(false);
+            this.BottomAreaToolStripCustom.ResumeLayout(false);
+            this.BottomAreaToolStripCustom.PerformLayout();
+            this.BottomAreaToolStripCustom2.ResumeLayout(false);
+            this.BottomAreaToolStripCustom2.PerformLayout();
+            this.FinishedOnMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -638,10 +638,10 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
-        internal static void BlockWindow(this Form form, bool block)
+        internal static void BlockWindow(this Control control, bool block)
         {
-            if (!form.IsHandleCreated) return;
-            EnableWindow(form.Handle, bEnable: !block);
+            if (!control.IsHandleCreated) return;
+            EnableWindow(control.Handle, bEnable: !block);
         }
 
         /// <summary>
