@@ -12,6 +12,13 @@ namespace AngelLoader.WinAPI
 
         internal const int MK_CONTROL = 8;
 
+        internal const int WM_SETCURSOR = 0x20;
+
+        internal const int WM_USER = 0x0400;
+        internal const int WM_REFLECT = WM_USER + 0x1C00;
+        internal const int WM_NOTIFY = 0x004E;
+        internal const int EN_LINK = 0x070b;
+
         #region Scrollbar
 
         internal const int WM_SCROLL = 276;

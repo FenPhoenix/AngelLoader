@@ -114,16 +114,22 @@ namespace AngelLoader.CustomControls
         {
             SaveZoom();
 
-            this.SuspendDrawing();
+            try
+            {
+                this.SuspendDrawing();
 
-            // Blank the text to reset the scroll position to the top
-            Clear();
+                // Blank the text to reset the scroll position to the top
+                Clear();
+                ResetScrollInfo();
 
-            if (!text.IsEmpty()) Text = text;
+                if (!text.IsEmpty()) Text = text;
 
-            RestoreZoom();
-
-            this.ResumeDrawing();
+                RestoreZoom();
+            }
+            finally
+            {
+                this.ResumeDrawing();
+            }
         }
 
         private static readonly byte[] shppict = Encoding.ASCII.GetBytes(@"\shppict");
@@ -143,6 +149,7 @@ namespace AngelLoader.CustomControls
             try
             {
                 this.SuspendDrawing();
+
                 // On Windows 10 at least, images don't display if we're ReadOnly. Why not. We need to be ReadOnly
                 // though - it doesn't make sense to let the user edit a readme - so un-set us just long enough
                 // to load in the content correctly, then set us back again.
@@ -150,6 +157,7 @@ namespace AngelLoader.CustomControls
 
                 // Blank the text to reset the scroll position to the top
                 Clear();
+                ResetScrollInfo();
 
                 if (path.ExtIsGlml())
                 {
@@ -239,6 +247,16 @@ namespace AngelLoader.CustomControls
             return si;
         }
 
+        private void ResetScrollInfo()
+        {
+            var si = new SCROLLINFO();
+            si.cbSize = (uint)Marshal.SizeOf(si);
+            si.fMask = (uint)ScrollInfoMask.SIF_ALL;
+            si.nPos = 0;
+            _scrollInfo = si;
+            RepositionScroll(Handle, si);
+        }
+
         /*
         When the rtfbox is first focused after content load, it will scroll to the top automatically (or more
         specifically to the cursor location, which will always be at the top after content load and before focus).
@@ -251,33 +269,38 @@ namespace AngelLoader.CustomControls
         I don't like the "wait-and-hope" method at all, but hey... worst case, the auto-top-scroll will still
         happen, and that's no worse than it was before.
         */
-        //protected override void OnVScroll(EventArgs e)
-        //{
-        //    _scrollInfo = GetCurrentScrollInfo(Handle);
+        protected override void OnVScroll(EventArgs e)
+        {
+            _scrollInfo = GetCurrentScrollInfo(Handle);
 
-        //    base.OnVScroll(e);
-        //}
+            base.OnVScroll(e);
+        }
 
-        //protected override async void OnEnter(EventArgs e)
-        //{
-        //    var si = _scrollInfo;
+        protected override async void OnEnter(EventArgs e)
+        {
+            await SetScrollPositionToCorrect();
 
-        //    this.SuspendDrawing();
-        //    try
-        //    {
-        //        await Task.Delay(20);
+            base.OnEnter(e);
+        }
 
-        //        _scrollInfo = si;
+        private async Task SetScrollPositionToCorrect()
+        {
+            var si = _scrollInfo;
 
-        //        RepositionScroll(Handle, si);
-        //    }
-        //    finally
-        //    {
-        //        this.ResumeDrawing();
-        //    }
+            this.SuspendDrawing();
+            try
+            {
+                await Task.Delay(20);
 
-        //    base.OnEnter(e);
-        //}
+                _scrollInfo = si;
+
+                RepositionScroll(Handle, si);
+            }
+            finally
+            {
+                this.ResumeDrawing();
+            }
+        }
 
         private struct SCROLLINFO
         {
@@ -321,24 +344,10 @@ namespace AngelLoader.CustomControls
         [DllImport("user32.dll")]
         private static extern int GetWindowLong(IntPtr hWnd, int index);
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetCursor(IntPtr hCursor);
-
-        private const int WM_SETCURSOR = 0x20;
-
         private static bool VerticalScrollBarVisible(Control ctl)
         {
             int style = GetWindowLong(ctl.Handle, -16);
             return (style & 0x200000) != 0;
-        }
-
-        private bool CursorOverText(Control control, bool fullArea = false)
-        {
-            if (!control.Visible || !control.Enabled) return false;
-            var rpt = PointToClient(control.PointToScreen(new System.Drawing.Point(0, 0)));
-            var rcs = fullArea ? control.Size : control.ClientSize;
-            var ptc = PointToClient(Cursor.Position);
-            return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width && ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
         }
 
         private static void BetterScroll(IntPtr handle, int pixels)
@@ -389,25 +398,41 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        // Intercept mouse cursor in order to keep it from flickering
-        private void InterceptCursor(ref Message m)
+        #endregion
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetCursor(HandleRef hcursor);
+
+        #region Cursor fix junk
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct NMHDR
         {
-            if (!CursorOverText(this, false))
-            {
-                if (Cursor != Cursors.Arrow)
-                {
-                    Cursor = Cursors.Arrow;
-                }
-            }
-            else
-            {
-                if ((Cursor != Cursors.IBeam) && (Cursor != Cursors.Hand))
-                {
-                    Cursor = Cursors.IBeam;
-                }
-            }
-            SetCursor(Cursor.Handle);
+            internal IntPtr hwndFrom;
+            internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
+            internal int code;
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal class ENLINK
+        {
+            internal NMHDR nmhdr;
+            internal int msg = 0;
+            internal IntPtr wParam = IntPtr.Zero;
+            internal IntPtr lParam = IntPtr.Zero;
+            internal CHARRANGE charrange = null;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal class CHARRANGE
+        {
+            internal int cpMin;
+            internal int cpMax;
+        }
+
+        #endregion
+
+        private bool LinkCursor;
 
         protected override void WndProc(ref Message m)
         {
@@ -416,12 +441,31 @@ namespace AngelLoader.CustomControls
                 case InteropMisc.WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
                     break;
-                case InteropMisc.WM_MBUTTONDOWN:
+                // The below DefWndProc() call essentially "calls" this section, and this section "returns" whether
+                // the cursor was over a link (via LinkCursor)
+                case InteropMisc.WM_REFLECT + InteropMisc.WM_NOTIFY:
+                    if (((NMHDR)m.GetLParam(typeof(NMHDR))).code == InteropMisc.EN_LINK)
+                    {
+                        EnLinkMsgHandler(ref m);
+                    }
+                    else
+                    {
+                        base.WndProc(ref m);
+                    }
                     break;
-                case InteropMisc.WM_MBUTTONDBLCLK:
-                    break;
-                case WM_SETCURSOR:
-                    InterceptCursor(ref m);
+                case InteropMisc.WM_SETCURSOR:
+                    // We have to call WndProc again via DefWndProc to let it receive the WM_REFLECT + WM_NOTIFY
+                    // message, which is the one that will actually tell us whether the mouse is over a link.
+                    // Real dopey, but whatevs.
+                    LinkCursor = false;
+                    DefWndProc(ref m);
+                    if (LinkCursor)
+                    {
+                        SetCursor(new HandleRef(Cursors.Hand, Cursors.Hand.Handle));
+                        m.Result = (IntPtr)1;
+                    }
+                    // If the cursor isn't supposed to be Hand, then leave it be. Prevents cursor fighting where
+                    // it wants to set right-pointer but is then told to set IBeam etc.
                     break;
                 default:
                     base.WndProc(ref m);
@@ -429,7 +473,42 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        #endregion
+        private void EnLinkMsgHandler(ref Message m)
+        {
+            var enlink = (ENLINK)m.GetLParam(typeof(ENLINK));
+            /*
+            NOTE:
+            IF building for x64, then we have to do this instead (requires unsafe code and extra structs etc.):
+
+            if (IntPtr.Size == 8)
+            {
+                enlink = ConvertFromENLINK64((ENLINK64)m.GetLParam(typeof(ENLINK64)));
+            }
+            else
+            {
+                enlink = (ENLINK)m.GetLParam(typeof(ENLINK));
+            }
+            */
+
+            switch (enlink.msg)
+            {
+                case InteropMisc.WM_SETCURSOR:
+                    LinkCursor = true;
+                    m.Result = (IntPtr)1;
+                    return;
+                case InteropMisc.WM_LBUTTONDOWN:
+                    // Run base link-mousedown handler (eventually) - otherwise we'd have to re-implement
+                    // CharRangeToString() in managed code and junk
+                    base.WndProc(ref m);
+                    // Awful, awful, awful - async method call without await because you can't have async methods
+                    // with ref params! But needed to make sure the position-keep hack works (otherwise there could
+                    // be too long a delay before the auto-top-scroll happens and then it won't be re-positioned)
+                    SetScrollPositionToCorrect();
+                    return;
+            }
+            m.Result = IntPtr.Zero;
+        }
+
 
         #region GLML to RTF
 
