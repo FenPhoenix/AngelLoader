@@ -7,16 +7,13 @@ namespace AngelLoader.WinAPI
 {
     internal static class InteropMisc
     {
-        internal const int WH_MOUSE = 7;
-        internal const int WH_MOUSE_LL = 14;
-
         internal const int MK_CONTROL = 8;
-
-        internal const int WM_SETCURSOR = 0x20;
 
         internal const int WM_USER = 0x0400;
         internal const int WM_REFLECT = WM_USER + 0x1C00;
         internal const int WM_NOTIFY = 0x004E;
+        internal const int WM_SETREDRAW = 11;
+
         internal const int EN_LINK = 0x070b;
 
         #region Scrollbar
@@ -44,6 +41,11 @@ namespace AngelLoader.WinAPI
 
         #region Mouse
 
+        internal const int WM_SETCURSOR = 0x20;
+
+        internal const int WH_MOUSE = 7;
+        internal const int WH_MOUSE_LL = 14;
+
         internal const int WM_MOUSEWHEEL = 0x20A;
         internal const int WM_MOUSEMOVE = 0x200;
         internal const int WM_LBUTTONUP = 0x202;
@@ -65,23 +67,6 @@ namespace AngelLoader.WinAPI
         internal const int VK_ESCAPE = 0x1B;
 
         #endregion
-
-        internal const int WM_SETREDRAW = 11;
-
-        // This static method is required because legacy OSes do not support
-        // SetWindowLongPtr
-        public static IntPtr SetWindowLongPtr(HandleRef hWnd, int nIndex, IntPtr dwNewLong)
-        {
-            return IntPtr.Size == 8
-                ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong)
-                : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
-        }
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        private static extern int SetWindowLong32(HandleRef hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
-        private static extern IntPtr SetWindowLongPtr64(HandleRef hWnd, int nIndex, IntPtr dwNewLong);
 
         [DllImport("user32.dll")]
         internal static extern IntPtr WindowFromPoint(Point pt);

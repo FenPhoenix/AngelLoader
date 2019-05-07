@@ -432,8 +432,6 @@ namespace AngelLoader.Forms
             // This has to go here because it depends on the width of a control and those don't get properly set
             // until the Load event fires
             ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
-
-            //InteropMisc.SetWindowLongPtr(new HandleRef(ReadmeRichTextBox, ReadmeRichTextBox.Handle), -16, (IntPtr)0x01000000);
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
