@@ -726,7 +726,6 @@ namespace AngelLoader
                 else
                 {
                     // Block user input to the form to mimic the UI thread being blocked, because we're async here
-                    //View.BeginInvoke(new Action(View.Block));
                     View.Block(true);
                     ProgressBox.ProgressTask = ProgressPanel.ProgressTasks.ScanAllFMs;
                     ProgressBox.ShowProgressWindow(ProgressBox.ProgressTask, suppressShow: true);
@@ -968,10 +967,7 @@ namespace AngelLoader
             }
             else
             {
-                foreach (var fm in FMsViewList)
-                {
-                    if (fm.Game == null) fmsToScan.Add(fm);
-                }
+                foreach (var fm in FMsViewList) if (fm.Game == null) fmsToScan.Add(fm);
             }
 
             if (fmsToScan.Count > 0)
@@ -1455,6 +1451,8 @@ namespace AngelLoader
 
         #endregion
 
+        #region Open / run
+
         internal static void OpenFMFolder(FanMission fm)
         {
             var installsBasePath = GetFMInstallsBasePath(fm.Game);
@@ -1547,6 +1545,8 @@ namespace AngelLoader
                 Log("Problem opening clickable link from rtfbox", ex);
             }
         }
+
+        #endregion
 
         #region Add/remove tag
 
