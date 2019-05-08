@@ -504,11 +504,11 @@ namespace AngelLoader
 
                 if (Config.ConvertOGGsToWAVsOnInstall)
                 {
-                    await ac.ConvertOGGsToWAVsInternal();
+                    await ac.ConvertOGGsToWAVs();
                 }
                 else if (Config.ConvertWAVsTo16BitOnInstall)
                 {
-                    await ac.ConvertWAVsTo16BitInternal();
+                    await ac.ConvertWAVsTo16Bit();
                 }
             }
             catch (Exception ex)

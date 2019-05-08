@@ -24,96 +24,12 @@ namespace AngelLoader
             InstalledFMsBasePath = installedFMsBasePath;
         }
 
-        #region Audio conversion
-
         // TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
         // TODO: Handle if any files (or containing folders) to be converted are read-only (set them to not)
 
-        private string GetFMSoundPathByGame()
-        {
-            Debug.Assert(FM.Game != null, nameof(FM.Game) + " is null");
-            Debug.Assert(FM.Game != Game.Unsupported, nameof(FM.Game) + " is " + nameof(Game.Unsupported));
-            Debug.Assert(GameIsDark(FM), FM.Archive + " is not T1/T2");
-
-            // Only T1/T2 can have audio converted for now, because it looks like SU's FMSel pointedly doesn't do
-            // any conversion whatsoever, neither automatically nor even with a menu option. I'll assume Thief 3
-            // doesn't need it and leave it at that.
-            return Path.Combine(InstalledFMsBasePath, FM.InstalledDir, "snd");
-        }
-
-        internal async Task ConvertMP3sToWAVs() => await ConvertToWAVs("*.mp3");
-
-        // From the FMSel manual:
-        // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
-        // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
-        // them to WAV files during installation."
-        internal async Task ConvertOGGsToWAVsInternal() => await ConvertToWAVs("*.ogg");
-
-        private async Task ConvertToWAVs(string pattern)
-        {
-            if (!GameIsDark(FM)) return;
-
-            await Task.Run(async () =>
-            {
-                var fmSndPath = GetFMSoundPathByGame();
-                if (!Directory.Exists(fmSndPath)) return;
-
-                try
-                {
-                    var di = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
-                }
-                catch (Exception ex)
-                {
-                    Log("Unable to set directory attributes on " + fmSndPath, ex);
-                }
-
-                string[] files;
-                try
-                {
-                    files = Directory.GetFiles(fmSndPath, pattern, SearchOption.AllDirectories);
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception during file enumeration of " + fmSndPath, ex);
-                    return;
-                }
-
-                foreach (var f in files)
-                {
-                    try
-                    {
-                        new FileInfo(f).IsReadOnly = false;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Unable to set file attributes on " + f, ex);
-                    }
-
-                    try
-                    {
-                        var engine = new Engine(Paths.FFmpegExe);
-                        await engine.ConvertAsync(new MediaFile(f), new MediaFile(f.RemoveExtension() + ".wav"));
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Exception in FFmpeg convert", ex);
-                    }
-
-                    try
-                    {
-                        File.Delete(f);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Exception in deleting file " + f, ex);
-                    }
-                }
-            });
-        }
-
         // OpenAL doesn't play nice with anything over 16 bits, blasting out white noise when it tries to play
         // such. Converting all >16bit wavs to 16 bit fixes this.
-        internal async Task ConvertWAVsTo16BitInternal()
+        internal async Task ConvertWAVsTo16Bit()
         {
             if (!GameIsDark(FM)) return;
 
@@ -232,6 +148,92 @@ namespace AngelLoader
             });
         }
 
-        #endregion
+        // Dark engine games can't play MP3s, so they must be converted in all cases.
+        internal async Task ConvertMP3sToWAVs() => await ConvertToWAVs("*.mp3");
+
+        // From the FMSel manual:
+        // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
+        // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
+        // them to WAV files during installation."
+        internal async Task ConvertOGGsToWAVs() => await ConvertToWAVs("*.ogg");
+
+        private async Task ConvertToWAVs(string pattern)
+        {
+            if (!GameIsDark(FM)) return;
+
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    var fmSndPath = GetFMSoundPathByGame();
+                    if (!Directory.Exists(fmSndPath)) return;
+
+                    try
+                    {
+                        var di = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Unable to set directory attributes on " + fmSndPath, ex);
+                    }
+
+                    string[] files;
+                    try
+                    {
+                        files = Directory.GetFiles(fmSndPath, pattern, SearchOption.AllDirectories);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Exception during file enumeration of " + fmSndPath, ex);
+                        return;
+                    }
+
+                    foreach (var f in files)
+                    {
+                        try
+                        {
+                            new FileInfo(f).IsReadOnly = false;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Unable to set file attributes on " + f, ex);
+                        }
+
+                        try
+                        {
+                            var engine = new Engine(Paths.FFmpegExe);
+                            await engine.ConvertAsync(new MediaFile(f), new MediaFile(f.RemoveExtension() + ".wav"));
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception in FFmpeg convert", ex);
+                        }
+
+                        try
+                        {
+                            File.Delete(f);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception in deleting file " + f, ex);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in file conversion", ex);
+                }
+            });
+        }
+
+        private string GetFMSoundPathByGame()
+        {
+            // Only T1/T2 can have audio converted for now, because it looks like SU's FMSel pointedly doesn't do
+            // any conversion whatsoever, neither automatically nor even with a menu option. I'll assume Thief 3
+            // doesn't need it and leave it at that.
+            Debug.Assert(GameIsDark(FM), !FM.Archive.IsEmpty() ? FM.Archive : FM.InstalledDir + " is not T1/T2");
+
+            return Path.Combine(InstalledFMsBasePath, FM.InstalledDir, "snd");
+        }
     }
 }

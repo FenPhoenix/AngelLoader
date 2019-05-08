@@ -1103,7 +1103,7 @@ namespace AngelLoader
             await View.SortAndSetFilter();
         }
 
-        #region Install, Uninstall, Play
+        #region Audio conversion (mainly for pre-checks)
 
         internal static async Task ConvertOGGsToWAVs(FanMission fm)
         {
@@ -1141,7 +1141,7 @@ namespace AngelLoader
             try
             {
                 ProgressBox.ShowConvertingFiles();
-                await ac.ConvertOGGsToWAVsInternal();
+                await ac.ConvertOGGsToWAVs();
             }
             finally
             {
@@ -1184,7 +1184,7 @@ namespace AngelLoader
             try
             {
                 ProgressBox.ShowConvertingFiles();
-                await ac.ConvertWAVsTo16BitInternal();
+                await ac.ConvertWAVsTo16Bit();
             }
             finally
             {
@@ -1193,21 +1193,6 @@ namespace AngelLoader
         }
 
         #endregion
-
-        internal static void ReportFMExtractProgress(int percent)
-        {
-            View.InvokeSync(new Action(() => ProgressBox.ReportFMExtractProgress(percent)));
-        }
-
-        internal static void HideProgressBox()
-        {
-            View.InvokeSync(new Action(() => ProgressBox.HideThis()));
-        }
-
-        internal static void ProgressBoxSetCancelingFMInstall()
-        {
-            View.InvokeSync(new Action(ProgressBox.SetCancelingFMInstall));
-        }
 
         #region DML
 

@@ -314,7 +314,7 @@ namespace AngelLoader.Common.DataClasses
         internal string InstalledName
         {
             get => _installedName;
-            set => _installedName = value.ThisOrNull();
+            set => _installedName = value.IsEmpty() ? null : value;
         }
         /// <summary>
         /// The index relative to the first displayed item (not the first item period) in the list.
