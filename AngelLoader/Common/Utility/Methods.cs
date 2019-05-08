@@ -233,14 +233,11 @@ namespace AngelLoader.Common.Utility
 
         internal static bool GameIsDark(FanMission fm) => fm.Game == Game.Thief1 || fm.Game == Game.Thief2;
 
+        internal static bool GameIsDark(Game? game) => game == Game.Thief1 || game == Game.Thief2;
+
         internal static bool GameIsKnownAndSupported(FanMission fm) => fm.Game != null && fm.Game != Game.Unsupported;
 
-        internal static bool GameIsSupportedOrNull(FanMission fm) => fm.Game != Game.Unsupported;
-
-        internal static (bool IsNull, bool IsSupported) GameIsKnownAndSupportedReportIfNull(FanMission fm)
-        {
-            return fm.Game == null ? (true, false) : fm.Game == Game.Unsupported ? (false, false) : (false, true);
-        }
+        internal static bool GameIsKnownAndSupported(Game? game) => game != null && game != Game.Unsupported;
 
         // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
         // FMs, we don't want to spend time converting back and forth. So Tags is session-only, and only gets

@@ -83,24 +83,7 @@ namespace AngelLoader
                 return false;
             }
 
-            if (GameIsDark(fm))
-            {
-                var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
-                if (!success)
-                {
-                    Log("Unable to set us as the selector for " + fm.Game + " (" +
-                             nameof(SetDarkFMSelectorToAngelLoader) + " returned false)", stackTrace: true);
-                }
-            }
-            else if (fm.Game == Game.Thief3)
-            {
-                var success = SetT3FMSelectorToAngelLoader();
-                if (!success)
-                {
-                    Log("Unable to set us as the selector for Thief: Deadly Shadows (" +
-                             nameof(SetT3FMSelectorToAngelLoader) + " returned false)", stackTrace: true);
-                }
-            }
+            SetUsAsLoader(fm.Game);
 
             // Only use the stub if we need to pass something we can't pass on the command line
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
@@ -174,12 +157,7 @@ namespace AngelLoader
 
             #endregion
 
-            var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
-            if (!success)
-            {
-                Log("Unable to set us as the selector for " + fm.Game + " (" +
-                         nameof(SetDarkFMSelectorToAngelLoader) + " returned false)", stackTrace: true);
-            }
+            SetUsAsLoader(fm.Game);
 
             var gamePath = Path.GetDirectoryName(gameExe);
             if (gamePath.IsEmpty()) return false;
@@ -202,6 +180,30 @@ namespace AngelLoader
             }
 
             return true;
+        }
+
+        private static void SetUsAsLoader(Game? game)
+        {
+            if (game == null) return;
+
+            if (GameIsDark(game))
+            {
+                var success = SetDarkFMSelectorToAngelLoader((Game)game);
+                if (!success)
+                {
+                    Log("Unable to set us as the selector for " + game + " (" +
+                        nameof(SetDarkFMSelectorToAngelLoader) + " returned false)", stackTrace: true);
+                }
+            }
+            else if (game == Game.Thief3)
+            {
+                var success = SetT3FMSelectorToAngelLoader();
+                if (!success)
+                {
+                    Log("Unable to set us as the selector for Thief: Deadly Shadows (" +
+                        nameof(SetT3FMSelectorToAngelLoader) + " returned false)", stackTrace: true);
+                }
+            }
         }
 
         internal static bool PlayOriginalGame(Game game)
@@ -238,6 +240,11 @@ namespace AngelLoader
                     LText.AlertMessages.Alert);
                 return false;
             }
+
+            // Even though we're not actually loading an FM, we still want to set us as the loader so that our
+            // stub can explicitly tell Thief to play without an FM. Otherwise, if another loader was specified,
+            // then that loader would start upon running of the game exe, which would be bad.
+            SetUsAsLoader(game);
 
             // When the stub finds nothing in the stub comm folder, it will just start the game with no FM
             Paths.PrepareTempPath(Paths.StubCommTemp);
