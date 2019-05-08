@@ -459,12 +459,9 @@ namespace AngelLoader.Common.Utility
         {
             archiveName = archiveName.RemoveExtension();
 
-            if (truncate) archiveName = archiveName.Length > 30 ? archiveName.Substring(0, 30) : archiveName;
+            if (truncate && archiveName.Length > 30) archiveName = archiveName.Substring(0, 30);
 
-            for (var i = 0; i < illegalChars.Length; i++)
-            {
-                archiveName = archiveName.Replace(illegalChars[i], '_');
-            }
+            for (var i = 0; i < illegalChars.Length; i++) archiveName = archiveName.Replace(illegalChars[i], '_');
 
             return archiveName;
         }
@@ -532,22 +529,6 @@ namespace AngelLoader.Common.Utility
 
             return path.Substring(i + 1, end - (i + 1));
         }
-
-        /// <summary>
-        /// If <paramref name="value"/> is null or empty, returns null. Otherwise, returns <paramref name="value"/>
-        /// unchanged.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static string ThisOrNull(this string value) => value.IsEmpty() ? null : value;
-
-        /// <summary>
-        /// If <paramref name="value"/> is null, empty, or whitespace, returns null. Otherwise, returns
-        /// <paramref name="value"/> unchanged.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static string ThisOrNullWS(this string value) => value.IsWhiteSpace() ? null : value;
 
         /// <summary>
         /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>

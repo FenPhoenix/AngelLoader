@@ -25,7 +25,7 @@ namespace AngelLoader
 
         internal static async Task InstallOrUninstall(FanMission fm) => await (fm.Installed ? UninstallFM(fm) : InstallFM(fm));
 
-        internal static async Task InstallOrPlay(FanMission fm, bool askConfIfRequired = false)
+        internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false)
         {
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
@@ -44,7 +44,27 @@ namespace AngelLoader
             }
         }
 
-        internal static bool PlayFM(FanMission fm)
+        #region Play / open
+
+        internal static bool PlayOriginalGame(Game game)
+        {
+            var (success, gameExe, gamePath) = GetGameExeAndPath(game, LText.AlertMessages.Play_ExecutableNotFound);
+            if (!success) return false;
+
+            // Even though we're not actually loading an FM, we still want to set us as the selector so that our
+            // stub can explicitly tell Thief to play without an FM. Otherwise, if another selector was specified,
+            // then that selector would start upon running of the game exe, which would be bad.
+            SetUsAsSelector(game, gameExe, gamePath);
+
+            // When the stub finds nothing in the stub comm folder, it will just start the game with no FM
+            Paths.PrepareTempPath(Paths.StubCommTemp);
+
+            StartExe(gameExe, gamePath, null);
+
+            return true;
+        }
+
+        private static bool PlayFM(FanMission fm)
         {
             if (fm.Game == null)
             {
@@ -52,55 +72,10 @@ namespace AngelLoader
                 return false;
             }
 
-            var gameExe = GetGameExeFromGameType((Game)fm.Game);
+            var (success, gameExe, gamePath) = GetGameExeAndPath(fm.Game, LText.AlertMessages.Play_ExecutableNotFoundFM);
+            if (!success) return false;
 
-            #region Exe: Fail if blank or not found
-
-            var gameName = GetGameNameFromGameType((Game)fm.Game);
-
-            if (gameExe.IsEmpty() || !File.Exists(gameExe))
-            {
-                Core.View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_ExecutableNotFoundFM,
-                    LText.AlertMessages.Alert);
-                return false;
-            }
-
-            #endregion
-
-            #region Exe: Fail if already running
-
-            if (GameIsRunning(gameExe, checkAllGames: true))
-            {
-                Core.View.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
-                return false;
-            }
-
-            #endregion
-
-            var gamePath = Path.GetDirectoryName(gameExe);
-            if (gamePath.IsEmpty())
-            {
-                return false;
-            }
-
-            if (GameIsDark(fm))
-            {
-                var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
-                if (!success)
-                {
-                    Log("Unable to set us as the selector for " + fm.Game + " (" +
-                             nameof(SetDarkFMSelectorToAngelLoader) + " returned false)", stackTrace: true);
-                }
-            }
-            else if (fm.Game == Game.Thief3)
-            {
-                var success = SetT3FMSelectorToAngelLoader();
-                if (!success)
-                {
-                    Log("Unable to set us as the selector for Thief: Deadly Shadows (" +
-                             nameof(SetT3FMSelectorToAngelLoader) + " returned false)", stackTrace: true);
-                }
-            }
+            SetUsAsSelector((Game)fm.Game, gameExe, gamePath);
 
             // Only use the stub if we need to pass something we can't pass on the command line
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
@@ -125,20 +100,7 @@ namespace AngelLoader
                 }
             }
 
-            using (var proc = new Process())
-            {
-                proc.StartInfo.FileName = gameExe;
-                proc.StartInfo.Arguments = args;
-                proc.StartInfo.WorkingDirectory = gamePath;
-                try
-                {
-                    proc.Start();
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception starting game " + gameExe, ex);
-                }
-            }
+            StartExe(gameExe, gamePath, args);
 
             // Don't clear the temp folder here, because the stub program will need to read from it. It will
             // delete the temp file itself after it's done with it.
@@ -148,6 +110,8 @@ namespace AngelLoader
 
         internal static bool OpenFMInDromEd(FanMission fm)
         {
+            #region Checks (specific to DromEd)
+
             if (!GameIsDark(fm)) return false;
 
             if (fm.Game == null)
@@ -163,8 +127,6 @@ namespace AngelLoader
                 return false;
             }
 
-            #region Exe: Fail if blank or not found
-
             var dromedExe = GetDromEdExe((Game)fm.Game);
             if (dromedExe.IsEmpty())
             {
@@ -172,51 +134,58 @@ namespace AngelLoader
                 return false;
             }
 
-            #endregion
-
-            var success = SetDarkFMSelectorToAngelLoader((Game)fm.Game);
-            if (!success)
-            {
-                Log("Unable to set us as the selector for " + fm.Game + " (" +
-                         nameof(SetDarkFMSelectorToAngelLoader) + " returned false)", stackTrace: true);
-            }
-
             var gamePath = Path.GetDirectoryName(gameExe);
             if (gamePath.IsEmpty()) return false;
 
+            #endregion
+
+            SetUsAsSelector((Game)fm.Game, gameExe, gamePath);
+
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
+            StartExe(dromedExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
+
+            return true;
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private static void StartExe(string exe, string workingPath, string args)
+        {
             using (var proc = new Process())
             {
-                proc.StartInfo.FileName = dromedExe;
-                proc.StartInfo.Arguments = "-fm=\"" + fm.InstalledDir + "\"";
-                proc.StartInfo.WorkingDirectory = gamePath;
-
+                proc.StartInfo.FileName = exe;
+                if (!args.IsEmpty()) proc.StartInfo.Arguments = args;
+                proc.StartInfo.WorkingDirectory = workingPath;
                 try
                 {
                     proc.Start();
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception starting " + dromedExe, ex);
+                    Log("Exception starting " + exe, ex);
                 }
             }
-
-            return true;
         }
 
-        internal static bool PlayOriginalGame(Game game)
+        private static (bool Success, string gameExe, string gamePath)
+        GetGameExeAndPath(Game? game, string exeNotFoundMessage)
         {
-            var gameExe = GetGameExeFromGameType(game);
+            (bool, string, string) failed = (false, null, null);
+
+            if (game == null) return failed;
+
+            var gameExe = GetGameExeFromGameType((Game)game);
 
             #region Exe: Fail if blank or not found
 
-            var gameName = GetGameNameFromGameType(game);
+            var gameName = GetGameNameFromGameType((Game)game);
 
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
-                Core.View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_ExecutableNotFound,
-                    LText.AlertMessages.Alert);
-                return false;
+                Core.View.ShowAlert(gameName + ":\r\n" + exeNotFoundMessage, LText.AlertMessages.Alert);
+                return failed;
             }
 
             #endregion
@@ -226,7 +195,7 @@ namespace AngelLoader
             if (GameIsRunning(gameExe, checkAllGames: true))
             {
                 Core.View.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
-                return false;
+                return failed;
             }
 
             #endregion
@@ -236,45 +205,32 @@ namespace AngelLoader
             {
                 Core.View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
                     LText.AlertMessages.Alert);
-                return false;
+                return failed;
             }
 
-            // When the stub finds nothing in the stub comm folder, it will just start the game with no FM
-            Paths.PrepareTempPath(Paths.StubCommTemp);
-
-            try
-            {
-                using (var proc = new Process())
-                {
-                    proc.StartInfo.FileName = gameExe;
-                    proc.StartInfo.WorkingDirectory = gamePath;
-                    proc.Start();
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("Exception starting " + gameExe, ex);
-            }
-
-            return true;
+            return (true, gameExe, gamePath);
         }
 
-        private static bool SetDarkFMSelectorToAngelLoader(Game game)
+        #endregion
+
+        #region Set us as selector
+
+        private static void SetUsAsSelector(Game game, string gameExe, string gamePath)
+        {
+            Debug.Assert(GameIsKnownAndSupported(game), "!GameIsKnownAndSupported(game)");
+
+            bool success = GameIsDark(game) ? SetUsAsDarkFMSelector(gameExe, gamePath) : SetUsAsT3FMSelector();
+            if (!success)
+            {
+                Log("Unable to set us as the selector for " + gameExe + " (" +
+                    (GameIsDark(game) ? nameof(SetUsAsDarkFMSelector) : nameof(SetUsAsT3FMSelector)) +
+                    " returned false)", stackTrace: true);
+            }
+        }
+
+        private static bool SetUsAsDarkFMSelector(string gameExe, string gamePath)
         {
             const string fmSelectorKey = "fm_selector";
-            var gameExe = GetGameExeFromGameType(game);
-            if (gameExe.IsEmpty())
-            {
-                Log("gameExe is empty for " + game, stackTrace: true);
-                return false;
-            }
-
-            var gamePath = Path.GetDirectoryName(gameExe);
-            if (gamePath.IsEmpty())
-            {
-                Log("gamePath is empty for " + game, stackTrace: true);
-                return false;
-            }
 
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
             if (!File.Exists(camModIni))
@@ -372,7 +328,7 @@ namespace AngelLoader
         // If only you could do this with a command-line switch. You can say -fm to always start with the loader,
         // and you can say -fm=name to always start with the named FM, but you can't specify WHICH loader to use
         // on the command line. Only way to do it is through a file. Meh.
-        private static bool SetT3FMSelectorToAngelLoader()
+        private static bool SetUsAsT3FMSelector()
         {
             const string externSelectorKey = "ExternSelector=";
             bool existingKeyOverwritten = false;
@@ -439,6 +395,10 @@ namespace AngelLoader
 
             return true;
         }
+
+        #endregion
+
+        #region Install / uninstall
 
         internal static async Task<bool> InstallFM(FanMission fm)
         {
@@ -544,16 +504,16 @@ namespace AngelLoader
 
                 if (Config.ConvertOGGsToWAVsOnInstall)
                 {
-                    await ac.ConvertOGGsToWAVsInternal();
+                    await ac.ConvertOGGsToWAVs();
                 }
                 else if (Config.ConvertWAVsTo16BitOnInstall)
                 {
-                    await ac.ConvertWAVsTo16BitInternal();
+                    await ac.ConvertWAVsTo16Bit();
                 }
             }
-            finally
+            catch (Exception ex)
             {
-                Core.ProgressBox.HideThis();
+                Log("Exception in audio conversion", ex);
             }
 
             try
@@ -627,10 +587,6 @@ namespace AngelLoader
                         Core.View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
                 }
-                finally
-                {
-                    Core.View.InvokeSync(new Action(() => Core.ProgressBox.HideThis()));
-                }
             });
 
             return !canceled;
@@ -695,10 +651,6 @@ namespace AngelLoader
                        Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                            LText.AlertMessages.Alert)));
                 }
-                finally
-                {
-                    Core.View.InvokeSync(new Action(() => Core.ProgressBox.HideThis()));
-                }
             });
 
             return !canceled;
@@ -715,54 +667,7 @@ namespace AngelLoader
             }
         }
 
-        private static async Task<bool> DeleteFMInstalledDirectory(string path)
-        {
-            bool result = await Task.Run(() =>
-            {
-                var triedReadOnlyRemove = false;
-
-                // Failsafe cause this is nasty
-                for (int i = 0; i < 2; i++)
-                {
-                    try
-                    {
-                        Directory.Delete(path, recursive: true);
-                        return true;
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            if (triedReadOnlyRemove) return false;
-
-                            // FMs installed by us will not have any readonly attributes set, so we work on the
-                            // assumption that this is the rarer case and only do this extra work if we need to.
-                            foreach (var f in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
-                            {
-                                new FileInfo(f).IsReadOnly = false;
-                            }
-
-                            foreach (var d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
-                            {
-                                new DirectoryInfo(d).Attributes = FileAttributes.Normal;
-                            }
-
-                            triedReadOnlyRemove = true;
-                        }
-                        catch (Exception)
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                return false;
-            });
-
-            return result;
-        }
-
-        internal static async Task UninstallFM(FanMission fm)
+        private static async Task UninstallFM(FanMission fm)
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm)) return;
 
@@ -852,15 +757,11 @@ namespace AngelLoader
                     await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }
 
-                // --- DEBUG
-                //return;
-
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                 if (!await DeleteFMInstalledDirectory(fmInstalledPath))
                 {
                     // TODO: Make option to open the folder in Explorer and delete it manually?
-                    Core.View.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted,
-                        LText.AlertMessages.Alert);
+                    Core.View.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted, LText.AlertMessages.Alert);
                 }
 
                 fm.Installed = false;
@@ -881,14 +782,59 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception uninstalling FM " + fm.Archive + ", " + fm.InstalledDir, ex);
-                Core.View.InvokeSync(new Action(() =>
-                    Core.View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially,
-                        LText.AlertMessages.Alert)));
+                Core.View.ShowAlert(LText.AlertMessages.Uninstall_FailedFullyOrPartially, LText.AlertMessages.Alert);
             }
             finally
             {
                 Core.ProgressBox.HideThis();
             }
         }
+
+        private static async Task<bool> DeleteFMInstalledDirectory(string path)
+        {
+            return await Task.Run(() =>
+            {
+                var triedReadOnlyRemove = false;
+
+                // Failsafe cause this is nasty
+                for (int i = 0; i < 2; i++)
+                {
+                    try
+                    {
+                        Directory.Delete(path, recursive: true);
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            if (triedReadOnlyRemove) return false;
+
+                            // FMs installed by us will not have any readonly attributes set, so we work on the
+                            // assumption that this is the rarer case and only do this extra work if we need to.
+                            foreach (var f in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+                            {
+                                new FileInfo(f).IsReadOnly = false;
+                            }
+
+                            foreach (var d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                            {
+                                new DirectoryInfo(d).Attributes = FileAttributes.Normal;
+                            }
+
+                            triedReadOnlyRemove = true;
+                        }
+                        catch (Exception)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return false;
+            });
+        }
+
+        #endregion
     }
 }
