@@ -382,17 +382,16 @@ namespace AngelLoader.CustomControls
         // Intercept mousewheel and make RichTextBox scroll using the above method
         private void InterceptMousewheel(ref Message m)
         {
-            int delta = (int)m.WParam;
             if (((ModifierKeys & Keys.Control) != 0) || !VerticalScrollBarVisible(this))
             {
                 base.WndProc(ref m);
                 return;
             }
-            if (delta < 0)
+            if ((int)m.WParam < 0)
             {
                 BetterScroll(m.HWnd, 50);
             }
-            else
+            if ((int)m.WParam > 0)
             {
                 BetterScroll(m.HWnd, -50);
             }
