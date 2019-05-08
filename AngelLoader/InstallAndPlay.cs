@@ -558,9 +558,9 @@ namespace AngelLoader
                     await ac.ConvertWAVsTo16BitInternal();
                 }
             }
-            finally
+            catch (Exception ex)
             {
-                Core.ProgressBox.HideThis();
+                Log("Exception in audio conversion", ex);
             }
 
             try
@@ -634,10 +634,6 @@ namespace AngelLoader
                         Core.View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                             LText.AlertMessages.Alert)));
                 }
-                finally
-                {
-                    Core.View.InvokeSync(new Action(() => Core.ProgressBox.HideThis()));
-                }
             });
 
             return !canceled;
@@ -701,10 +697,6 @@ namespace AngelLoader
                     Core.View.InvokeSync(new Action(() =>
                        Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                            LText.AlertMessages.Alert)));
-                }
-                finally
-                {
-                    Core.View.InvokeSync(new Action(() => Core.ProgressBox.HideThis()));
                 }
             });
 
