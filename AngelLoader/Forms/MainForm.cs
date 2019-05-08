@@ -860,7 +860,7 @@ namespace AngelLoader.Forms
                 if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(GetSelectedFM()))
                 {
                     e.SuppressKeyPress = true;
-                    await InstallAndPlay.InstallOrPlay(GetSelectedFM(), askConfIfRequired: true);
+                    await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), askConfIfRequired: true);
                 }
             }
             else if (e.KeyCode == Keys.Escape)
@@ -2036,7 +2036,7 @@ namespace AngelLoader.Forms
             if (FMsDGV.RowCount == 0 || FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
         }
 
-        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrPlay(GetSelectedFM());
+        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
 
         private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
 
@@ -2052,7 +2052,7 @@ namespace AngelLoader.Forms
 
         private async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
 
-        private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrPlay(GetSelectedFM());
+        private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
 
         #region Play original game
 
@@ -3902,7 +3902,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            await InstallAndPlay.InstallOrPlay(fm, askConfIfRequired: true);
+            await InstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
         }
 
         private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
