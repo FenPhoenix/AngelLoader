@@ -382,17 +382,17 @@ namespace AngelLoader.CustomControls
         // Intercept mousewheel and make RichTextBox scroll using the above method
         private void InterceptMousewheel(ref Message m)
         {
-            int delta = (int)m.WParam >> 16 & 0xFF;
+            int delta = (int)m.WParam;
             if (((ModifierKeys & Keys.Control) != 0) || !VerticalScrollBarVisible(this))
             {
                 base.WndProc(ref m);
                 return;
             }
-            if ((delta >> 7) == 1)
+            if (delta < 0)
             {
                 BetterScroll(m.HWnd, 50);
             }
-            if ((delta >> 7) == 0)
+            else
             {
                 BetterScroll(m.HWnd, -50);
             }
@@ -440,6 +440,10 @@ namespace AngelLoader.CustomControls
             {
                 case InteropMisc.WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
+                    break;
+                case InteropMisc.WM_MBUTTONDOWN:
+                    break;
+                case InteropMisc.WM_MBUTTONDBLCLK:
                     break;
                 // The below DefWndProc() call essentially "calls" this section, and this section "returns" whether
                 // the cursor was over a link (via LinkCursor)
