@@ -440,10 +440,6 @@ namespace AngelLoader.CustomControls
                 case InteropMisc.WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
                     break;
-                case InteropMisc.WM_MBUTTONDOWN:
-                    break;
-                case InteropMisc.WM_MBUTTONDBLCLK:
-                    break;
                 // The below DefWndProc() call essentially "calls" this section, and this section "returns" whether
                 // the cursor was over a link (via LinkCursor)
                 case InteropMisc.WM_REFLECT + InteropMisc.WM_NOTIFY:
