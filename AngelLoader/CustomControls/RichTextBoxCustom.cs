@@ -354,7 +354,6 @@ namespace AngelLoader.CustomControls
         {
             var si = GetCurrentScrollInfo(handle);
 
-            // Update position by pixels
             si.nPos += pixels;
 
             RepositionScroll(handle, si);
@@ -367,16 +366,11 @@ namespace AngelLoader.CustomControls
 
             // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-            IntPtr ptrWparam = new IntPtr(InteropMisc.SB_THUMBTRACK + 0x10000 * si.nPos);
-            IntPtr ptrLparam = new IntPtr(0);
-            if ((long)ptrWparam >= 0)
-            {
-                SendMessage(handle, InteropMisc.WM_VSCROLL, ptrWparam, ptrLparam);
-            }
-            else
-            {
-                SendMessage(handle, InteropMisc.WM_VSCROLL, (IntPtr)InteropMisc.SB_THUMBTRACK, ptrLparam);
-            }
+            IntPtr ptrWParam = new IntPtr(InteropMisc.SB_THUMBTRACK + 0x10000 * si.nPos);
+            IntPtr ptrLParam = new IntPtr(0);
+
+            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)InteropMisc.SB_THUMBTRACK;
+            SendMessage(handle, InteropMisc.WM_VSCROLL, wp, ptrLParam);
         }
 
         // Intercept mousewheel and make RichTextBox scroll using the above method
@@ -387,14 +381,9 @@ namespace AngelLoader.CustomControls
                 base.WndProc(ref m);
                 return;
             }
-            if ((int)m.WParam < 0)
-            {
-                BetterScroll(m.HWnd, 50);
-            }
-            if ((int)m.WParam > 0)
-            {
-                BetterScroll(m.HWnd, -50);
-            }
+
+            int delta = (int)m.WParam;
+            if (delta != 0) BetterScroll(m.HWnd, delta < 0 ? 50 : -50);
         }
 
         #endregion
@@ -443,19 +432,11 @@ namespace AngelLoader.CustomControls
                     break;
                 // Fix the flickering that is present when reader mode is entered
                 case InteropMisc.WM_MBUTTONDOWN:
-                    this.SetStyle(ControlStyles.Selectable, false);
-                    DefWndProc(ref m);
-                    this.SetStyle(ControlStyles.Selectable, true);
-                    break;
                 case InteropMisc.WM_MBUTTONUP:
-                    this.SetStyle(ControlStyles.Selectable, false);
-                    DefWndProc(ref m);
-                    this.SetStyle(ControlStyles.Selectable, true);
-                    break;
                 case InteropMisc.WM_MBUTTONDBLCLK:
-                    this.SetStyle(ControlStyles.Selectable, false);
+                    SetStyle(ControlStyles.Selectable, false);
                     DefWndProc(ref m);
-                    this.SetStyle(ControlStyles.Selectable, true);
+                    SetStyle(ControlStyles.Selectable, true);
                     break;
                 // The below DefWndProc() call essentially "calls" this section, and this section "returns" whether
                 // the cursor was over a link (via LinkCursor)
