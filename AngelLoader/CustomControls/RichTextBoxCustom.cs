@@ -445,14 +445,17 @@ namespace AngelLoader.CustomControls
                 case InteropMisc.WM_MBUTTONDOWN:
                     this.SetStyle(ControlStyles.Selectable, false);
                     DefWndProc(ref m);
+                    this.SetStyle(ControlStyles.Selectable, true);
                     break;
                 case InteropMisc.WM_MBUTTONUP:
                     this.SetStyle(ControlStyles.Selectable, false);
                     DefWndProc(ref m);
+                    this.SetStyle(ControlStyles.Selectable, true);
                     break;
                 case InteropMisc.WM_MBUTTONDBLCLK:
                     this.SetStyle(ControlStyles.Selectable, false);
                     DefWndProc(ref m);
+                    this.SetStyle(ControlStyles.Selectable, true);
                     break;
                 // The below DefWndProc() call essentially "calls" this section, and this section "returns" whether
                 // the cursor was over a link (via LinkCursor)
