@@ -1,9 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.CustomControls
 {
@@ -53,121 +51,5 @@ namespace AngelLoader.CustomControls
             e.Graphics.FillRectangle(SystemBrushes.Control, 0, 0, Width, Height);
             base.OnPaint(e);
         }
-    }
-
-    internal sealed class ToolStripDropDownCustom : ToolStripDropDown, IMessageFilter
-    {
-        internal ToolStripDropDownCustom() => AutoClose = false;
-
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            // Message filters are apparently heavy, so only run it when we're visible
-            if (Visible)
-            {
-                AutoClose = false;
-                Application.AddMessageFilter(this);
-            }
-            else
-            {
-                Application.RemoveMessageFilter(this);
-            }
-            base.OnVisibleChanged(e);
-        }
-
-        internal void HideThis()
-        {
-            AutoClose = true;
-            Hide();
-        }
-
-        private bool CursorOutsideDropDown()
-        {
-            var thisRect = new Rectangle(PointToClient(PointToScreen(new Point(0, 0))), ClientSize);
-            Rectangle? cbDDRect = null;
-            foreach (ToolStripItem tsItem in Items)
-            {
-                if (tsItem is ToolStripComboBox cb && cb.ComboBox != null && cb.ComboBox.DroppedDown)
-                {
-                    var cbBox = cb.ComboBox;
-
-                    int width = 0;
-                    using (var g = cbBox.CreateGraphics())
-                    {
-                        foreach (var cbItem in cbBox.Items)
-                        {
-                            if (!(cbItem is string cbItemStr)) continue;
-                            int newWidth = (int)g.MeasureString(cbItemStr, cbBox.Font).Width;
-                            if (width < newWidth) width = newWidth;
-                        }
-                    }
-                    if (width < cbBox.DropDownWidth) width = cbBox.DropDownWidth;
-
-                    cbDDRect = new Rectangle(
-                        PointToClient(cbBox.PointToScreen(new Point(0, cb.Height))),
-                        new Size(width, cbBox.ItemHeight * cbBox.Items.Count)
-                    );
-
-                    break;
-                }
-
-            }
-
-            return !thisRect.Contains(PointToClient(Cursor.Position)) &&
-                   (cbDDRect == null || !((Rectangle)cbDDRect).Contains(PointToClient(Cursor.Position)));
-        }
-
-        public bool PreFilterMessage(ref Message m)
-        {
-            const bool BlockMessage = true;
-            const bool PassMessageOn = false;
-
-            if (m.Msg == WM_KEYDOWN && (int)m.WParam == VK_ESCAPE)
-            {
-                ComboBox cbBox = null;
-                foreach (ToolStripItem tsItem in Items)
-                {
-                    if (tsItem is ToolStripComboBox cb && cb.ComboBox != null && cb.ComboBox.DroppedDown)
-                    {
-                        cbBox = cb.ComboBox;
-                        break;
-                    }
-                }
-
-                if (cbBox == null) HideThis();
-            }
-            else if (m.Msg == WM_LBUTTONDOWN || m.Msg == WM_MBUTTONDOWN || m.Msg == WM_RBUTTONDOWN ||
-                     m.Msg == WM_LBUTTONDBLCLK || m.Msg == WM_MBUTTONDBLCLK || m.Msg == WM_RBUTTONDBLCLK)
-            {
-                // I don't think this will even be running if we're not visible?
-                if (!Visible) return PassMessageOn;
-
-                // Make dropdown behavior less flighty and more solid when it comes to mouse clicks
-
-
-                //if (!thisRect.Contains(PointToClient(Cursor.Position)) &&
-                //    (cbDDRect == null || !((Rectangle)cbDDRect).Contains(PointToClient(Cursor.Position))))
-                if (CursorOutsideDropDown())
-                {
-                    HideThis();
-                    return BlockMessage;
-                }
-            }
-
-            return PassMessageOn;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) Application.RemoveMessageFilter(this);
-            base.Dispose(disposing);
-        }
-    }
-
-    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip)]
-    public sealed class ToolStripCheckBoxCustom : ToolStripControlHost
-    {
-        public CheckBox CheckBox => Control as CheckBox;
-
-        public ToolStripCheckBoxCustom() : base(new CheckBox()) { }
     }
 }

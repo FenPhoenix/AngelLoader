@@ -179,14 +179,7 @@ namespace AngelLoader.Forms
                     else if (CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
                     {
                         var delta = wParam >> 16;
-                        if (delta > 0)
-                        {
-                            ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
-                        }
-                        else if (delta < 0)
-                        {
-                            ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
-                        }
+                        if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
                     }
                     else
                     {
@@ -230,10 +223,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void HookMouseUp(object sender, MouseEventExtArgs e)
-        {
-        }
-
         private void HookMouseMove(object sender, MouseEventExtArgs e)
         {
             if (!CanFocus) return;
@@ -267,7 +256,6 @@ namespace AngelLoader.Forms
 
             AppMouseHook = Hook.AppEvents();
             AppMouseHook.MouseDownExt += HookMouseDown;
-            AppMouseHook.MouseUpExt += HookMouseUp;
             AppMouseHook.MouseMoveExt += HookMouseMove;
             Application.AddMessageFilter(this);
 
