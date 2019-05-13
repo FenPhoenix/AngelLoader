@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -239,15 +238,7 @@ namespace AngelLoader.Forms
         {
             if (!CanFocus) return;
 
-            var cora = CursorOverReadmeArea();
-
-            //var rtfBoxActive = ReadmeRichTextBox.Visible && ReadmeRichTextBox.Enabled;
-            //if (rtfBoxActive && !ReadmeRichTextBox.test && cora)
-            //{
-            //    Cursor = Cursors.IBeam;
-            //    e.Handled = true;
-            //}
-            ShowReadmeControls(cora);
+            ShowReadmeControls(CursorOverReadmeArea());
         }
 
         #endregion
