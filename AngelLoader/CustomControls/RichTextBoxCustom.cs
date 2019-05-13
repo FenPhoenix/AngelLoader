@@ -426,7 +426,7 @@ namespace AngelLoader.CustomControls
         {
             switch ((uint)m.Msg)
             {
-                // Intercept the mousewheel call and direct direct it to use the fixed scrolling
+                // Intercept the mousewheel call and direct it to use the fixed scrolling
                 case InteropMisc.WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
                     break;
@@ -462,7 +462,7 @@ namespace AngelLoader.CustomControls
                         m.Result = (IntPtr)1;
                     }
                     // If the cursor isn't supposed to be Hand, then leave it be. Prevents cursor fighting where
-                    // it wants to set right-pointer but is then told to set IBeam etc.
+                    // it wants to set right-arrow-pointer but is then told to set IBeam etc.
                     break;
                 default:
                     base.WndProc(ref m);
@@ -505,7 +505,6 @@ namespace AngelLoader.CustomControls
             }
             m.Result = IntPtr.Zero;
         }
-
 
         #region GLML to RTF
 
