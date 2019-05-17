@@ -472,7 +472,7 @@ namespace AngelLoader
                     !item.Title.IsEmpty() ? item.Title :
                     !item.Archive.IsEmpty() ? item.Archive.RemoveExtension() :
                     item.InstalledDir;
-                item.SizeString = ((long?)item.SizeBytes).ConvertSize();
+                // SizeString gets set on UI localize so don't set it here, or it's duplicate work
                 item.CommentSingleLine = item.Comment.FromEscapes().ToSingleLineComment(100);
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
 
