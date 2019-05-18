@@ -34,7 +34,7 @@ namespace AngelLoader.CustomControls
             _scrollInfo.fMask = (uint)ScrollInfoMask.SIF_ALL;
             ReaderModeEnabled = true;
             tmrAutoScroll = new Timer();
-            tmrAutoScroll.Interval = AUTO_SCROLL_TICK_INTERVAL;
+            tmrAutoScroll.Interval = 10;
             tmrAutoScroll.Tick += new EventHandler(tmrAutoScroll_Tick);
             pbGlyph = new PictureBox();
             pbGlyph.Size = new Size(26, 26);
@@ -401,9 +401,6 @@ namespace AngelLoader.CustomControls
 
         #region Better reader mode
 
-        const int AUTO_SCROLL_TICK_INTERVAL = 25;
-        const int AUTO_SCROLL_DISTANCE_MULTIPLIER = 2;
-
         private class NativeMethods
         {
             [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
@@ -500,7 +497,7 @@ namespace AngelLoader.CustomControls
 
         private bool ReaderScrollCallback(ref InteropTypes.READERMODEINFO prmi, int dx, int dy)
         {
-            scrollIncrementY = dy * AUTO_SCROLL_DISTANCE_MULTIPLIER;
+            scrollIncrementY = dy;
 
             if (dy != 0) endOnMouseUp = true;
 
