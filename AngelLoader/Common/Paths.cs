@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security;
 using AngelLoader.Common.Utility;
+using AngelLoader.WinAPI;
 using Microsoft.Win32;
 using static AngelLoader.Common.Logger;
 
@@ -117,11 +118,7 @@ namespace AngelLoader.Common
             #region Safety check
 
             // Make sure we never delete any paths that are not safely tucked in our temp folder
-            var baseTemp = BaseTemp;
-            while (baseTemp[baseTemp.Length - 1] == '\\' || baseTemp[baseTemp.Length - 1] == '/')
-            {
-                baseTemp = baseTemp.TrimEnd('\\').TrimEnd('/');
-            }
+            var baseTemp = BaseTemp.TrimEnd('\\', '/', ' ');
 
             if (!path.StartsWithI(baseTemp + '\\') && !path.StartsWithI(baseTemp + '/')) return;
 
@@ -131,7 +128,7 @@ namespace AngelLoader.Common
             {
                 if (Directory.Exists(path))
                 {
-                    foreach (var f in Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly))
+                    foreach (var f in FastIO.GetFilesTopOnly(path, "*"))
                     {
                         File.Delete(f);
                     }

@@ -9,6 +9,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
+using AngelLoader.WinAPI;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
@@ -353,7 +354,7 @@ namespace AngelLoader
 
                 if (Directory.Exists(dlBakDir))
                 {
-                    foreach (var f in Directory.EnumerateFiles(dlBakDir, "*.zip", SearchOption.TopDirectoryOnly))
+                    foreach (var f in FastIO.GetFilesTopOnly(dlBakDir, "*.zip"))
                     {
                         var fn = f.GetFileNameFast();
                         int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);

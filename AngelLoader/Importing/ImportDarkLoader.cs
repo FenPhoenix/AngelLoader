@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.WinAPI;
 using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Importing
@@ -119,8 +120,7 @@ namespace AngelLoader.Importing
                                     try
                                     {
                                         // DarkLoader only does zip format
-                                        foreach (var f in Directory.EnumerateFiles(dir, "*.zip",
-                                            SearchOption.TopDirectoryOnly))
+                                        foreach (var f in FastIO.GetFilesTopOnly(dir, "*.zip"))
                                         {
                                             var fn = Path.GetFileNameWithoutExtension(f);
                                             if (RemoveDLArchiveBadChars(fn).EqualsI(archive))
@@ -306,7 +306,7 @@ namespace AngelLoader.Importing
 
                     // Converting takes too long, so just copy them to our backup folder and they'll be handled
                     // appropriately next time the user installs an FM
-                    foreach (var f in Directory.EnumerateFiles(savesPath, "*.zip", SearchOption.TopDirectoryOnly))
+                    foreach (var f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
                     {
                         var dest = Path.Combine(convertedPath, f.GetFileNameFast());
                         File.Copy(f, dest, overwrite: true);

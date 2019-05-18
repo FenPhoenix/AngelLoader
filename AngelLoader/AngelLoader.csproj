@@ -283,6 +283,7 @@
     <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinAPI\FastIO.cs" />
     <Compile Include="WinAPI\InteropMisc.cs" />
     <Compile Include="WinAPI\Taskbar\Interop.cs" />
     <Compile Include="WinAPI\Taskbar\TaskBarProgress.cs" />

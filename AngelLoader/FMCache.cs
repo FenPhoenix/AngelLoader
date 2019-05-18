@@ -9,6 +9,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
+using AngelLoader.WinAPI;
 using SevenZip;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.Common.Logger;
@@ -49,9 +50,17 @@ namespace AngelLoader
                 return new CacheData();
             }
 
-            return FMIsReallyInstalled(fm)
-                ? GetCacheableDataInFMInstalledDir(fm)
-                : await GetCacheableDataInFMCacheDir(fm, ProgressBox);
+            try
+            {
+                return FMIsReallyInstalled(fm)
+                    ? GetCacheableDataInFMInstalledDir(fm)
+                    : await GetCacheableDataInFMCacheDir(fm, ProgressBox);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in GetCacheableData", ex);
+                return new CacheData();
+            }
         }
 
         private static void ClearCacheDir(FanMission fm)
@@ -61,7 +70,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    foreach (var f in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.TopDirectoryOnly))
+                    foreach (var f in FastIO.GetFilesTopOnly(fmCachePath, "*"))
                     {
                         File.Delete(f);
                     }
@@ -100,11 +109,11 @@ namespace AngelLoader
             var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
 
             var path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
-            var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).ToList();
+            var files = FastIO.GetFilesTopOnly(path, "*");
             var t3ReadmePath1 = Path.Combine(path, Paths.T3ReadmeDir1);
             var t3ReadmePath2 = Path.Combine(path, Paths.T3ReadmeDir2);
-            if (Directory.Exists(t3ReadmePath1)) files.AddRange(Directory.GetFiles(t3ReadmePath1));
-            if (Directory.Exists(t3ReadmePath2)) files.AddRange(Directory.GetFiles(t3ReadmePath2));
+            if (Directory.Exists(t3ReadmePath1)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath1, "*"));
+            if (Directory.Exists(t3ReadmePath2)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath2, "*"));
 
             RemoveEmptyFiles(files);
 
@@ -126,7 +135,7 @@ namespace AngelLoader
 
             if (Directory.Exists(fmCachePath))
             {
-                foreach (var fn in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.TopDirectoryOnly))
+                foreach (var fn in FastIO.GetFilesTopOnly(fmCachePath, "*"))
                 {
                     if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
                     {
@@ -140,7 +149,7 @@ namespace AngelLoader
 
                     if (Directory.Exists(t3ReadmePath))
                     {
-                        foreach (var fn in Directory.EnumerateFiles(t3ReadmePath, "*", SearchOption.TopDirectoryOnly))
+                        foreach (var fn in FastIO.GetFilesTopOnly(t3ReadmePath, "*"))
                         {
                             if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
                             {

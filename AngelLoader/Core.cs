@@ -15,6 +15,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.Forms;
 using AngelLoader.Importing;
+using AngelLoader.WinAPI;
 using FMScanner;
 using Ookii.Dialogs.WinForms;
 using static AngelLoader.Common.Common;
@@ -112,13 +113,13 @@ namespace AngelLoader
             // Have to read langs here because which language to use will be stored in the config file.
             // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
             // name in its own language
-            var langFiles = Directory.GetFiles(Paths.Languages, "*.ini", SearchOption.TopDirectoryOnly);
+            var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
             bool selFound = false;
 
             // Do it ONCE here, not every loop!
             Config.LanguageNames.Clear();
 
-            for (int i = 0; i < langFiles.Length; i++)
+            for (int i = 0; i < langFiles.Count; i++)
             {
                 var f = langFiles[i];
                 var fn = f.GetFileNameFast().RemoveExtension();
@@ -1245,13 +1246,13 @@ namespace AngelLoader
         {
             try
             {
-                var dmlFiles = Directory.GetFiles(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir),
-                    "*.dml", SearchOption.TopDirectoryOnly);
-                for (int i = 0; i < dmlFiles.Length; i++)
+                var dmlFiles =
+                    FastIO.GetFilesTopOnly(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir), "*.dml");
+                for (int i = 0; i < dmlFiles.Count; i++)
                 {
                     dmlFiles[i] = Path.GetFileName(dmlFiles[i]);
                 }
-                return (true, dmlFiles);
+                return (true, dmlFiles.ToArray());
             }
             catch (Exception ex)
             {

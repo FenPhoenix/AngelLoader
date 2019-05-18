@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.WinAPI;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
@@ -110,7 +111,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
+                    var files = FastIO.GetFilesTopOnly(path, "*");
                     foreach (var f in files)
                     {
                         if (!fmArchives.ContainsI(f.GetFileNameFast()) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
