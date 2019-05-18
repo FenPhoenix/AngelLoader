@@ -1,6 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +32,14 @@ namespace AngelLoader.CustomControls
             // Make sure this is valid right from the start
             _scrollInfo.cbSize = (uint)Marshal.SizeOf(_scrollInfo);
             _scrollInfo.fMask = (uint)ScrollInfoMask.SIF_ALL;
+            ReaderModeEnabled = true;
+            tmrAutoScroll = new Timer();
+            tmrAutoScroll.Interval = AUTO_SCROLL_TICK_INTERVAL;
+            tmrAutoScroll.Tick += new EventHandler(tmrAutoScroll_Tick);
+            pbGlyph = new PictureBox();
+            pbGlyph.Size = new Size(26, 26);
+            pbGlyph.Visible = false;
+            Controls.Add(pbGlyph);
         }
 
         #region Zoom stuff
@@ -388,6 +399,152 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
+        #region Better reader mode
+
+        const int AUTO_SCROLL_TICK_INTERVAL = 25;
+        const int AUTO_SCROLL_DISTANCE_MULTIPLIER = 2;
+
+        private class NativeMethods
+        {
+            [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
+            public static extern void DoReaderMode(ref InteropTypes.READERMODEINFO prmi);
+        }
+
+        private class InteropTypes
+        {
+            public const int WM_MBUTTONDOWN = 0x0207;
+            public const int WM_MBUTTONUP = 0x0208;
+            public const int WM_XBUTTONDOWN = 0x020B;
+            public const int WM_LBUTTONDOWN = 0x0201;
+            public const int WM_RBUTTONDOWN = 0x0204;
+            public const int WM_MOUSELEAVE = 0x02A3;
+            public const int WM_MOUSEWHEEL = 0x020A;
+            public const int WM_MOUSEHWHEEL = 0x020E;
+            public const int WM_KEYDOWN = 0x0100;
+            public delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
+            public delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
+            [Flags]
+            public enum ReaderModeFlags
+            {
+                None = 0x00,
+                ZeroCursor = 0x01,
+                VerticalOnly = 0x02,
+                HorizontalOnly = 0x04
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            public struct READERMODEINFO
+            {
+                public int cbSize;
+                public IntPtr hwnd;
+                public ReaderModeFlags fFlags;
+                public IntPtr prc;
+                public ReaderScrollCallbackDelegate pfnScroll;
+                public TranslateDispatchCallbackDelegate fFlags2;
+                public IntPtr lParam;
+            }
+        }
+
+        Timer tmrAutoScroll;
+        int scrollIncrementY;
+        PictureBox pbGlyph;
+        bool endOnMouseUp;
+
+        [DefaultValue(true), Category("Behavior"), Description("Enables reader mode for the control.")]
+        public bool ReaderModeEnabled
+        {
+            get;
+            set;
+        }
+
+        void tmrAutoScroll_Tick(object sender, EventArgs e)
+        {
+            //Scroll RichTextBox using pixels rather than lines
+            BetterScroll(Handle, scrollIncrementY);
+        }
+
+        private bool TranslateDispatchCallback(ref Message msg)
+        {
+            bool isMouseDown = false;
+            switch (msg.Msg)
+            {
+                case InteropTypes.WM_LBUTTONDOWN:
+                case InteropTypes.WM_MBUTTONDOWN:
+                case InteropTypes.WM_RBUTTONDOWN:
+                case InteropTypes.WM_XBUTTONDOWN:
+                case InteropTypes.WM_MOUSEWHEEL:
+                case InteropTypes.WM_MOUSEHWHEEL:
+                case InteropTypes.WM_KEYDOWN:
+                    isMouseDown = true;
+                    break;
+            }
+
+            if (isMouseDown || (endOnMouseUp && (msg.Msg == InteropTypes.WM_MBUTTONUP)))
+            {
+                // exit reader mode
+                tmrAutoScroll.Stop();
+            }
+
+            if ((!endOnMouseUp && (msg.Msg == InteropTypes.WM_MBUTTONUP)) || (msg.Msg == InteropTypes.WM_MOUSELEAVE))
+            {
+                return true;
+            }
+
+            if (isMouseDown)
+            {
+                msg.Msg = InteropTypes.WM_MBUTTONDOWN;
+            }
+
+            return false;
+        }
+
+        private bool ReaderScrollCallback(ref InteropTypes.READERMODEINFO prmi, int dx, int dy)
+        {
+            scrollIncrementY = dy * AUTO_SCROLL_DISTANCE_MULTIPLIER;
+
+            if (dy != 0) endOnMouseUp = true;
+
+            return true;
+        }
+
+        private InteropTypes.ReaderModeFlags GetReaderModeFlags()
+        {
+            return InteropTypes.ReaderModeFlags.VerticalOnly;
+        }
+
+        private void EnterReaderMode()
+        {
+            // bounds to get the scrolling sensitivity			
+            Rectangle scrollBounds = new Rectangle(pbGlyph.Left, pbGlyph.Top, pbGlyph.Right, pbGlyph.Bottom);
+            IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
+
+            try
+            {
+                Marshal.StructureToPtr(scrollBounds, rectPtr, true);
+
+                InteropTypes.READERMODEINFO readerInfo = new InteropTypes.READERMODEINFO
+                {
+                    hwnd = Handle,
+                    fFlags = GetReaderModeFlags(),
+                    prc = rectPtr,
+                    lParam = IntPtr.Zero,
+                    fFlags2 = new InteropTypes.TranslateDispatchCallbackDelegate(TranslateDispatchCallback),
+                    pfnScroll = new InteropTypes.ReaderScrollCallbackDelegate(ReaderScrollCallback)
+                };
+
+                readerInfo.cbSize = Marshal.SizeOf(readerInfo);
+
+                // enable reader mode
+                NativeMethods.DoReaderMode(ref readerInfo);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(rectPtr);
+            }
+        }
+
+        #endregion
+
         [DllImport("user32.dll")]
         public static extern IntPtr SetCursor(HandleRef hcursor);
 
@@ -430,13 +587,23 @@ namespace AngelLoader.CustomControls
                 case InteropMisc.WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
                     break;
-                // Fix the flickering that is present when reader mode is entered
+                // Intercept the middle mouse button and direct it to use the fixed reader mode
                 case InteropMisc.WM_MBUTTONDOWN:
                 case InteropMisc.WM_MBUTTONUP:
                 case InteropMisc.WM_MBUTTONDBLCLK:
-                    SetStyle(ControlStyles.Selectable, false);
-                    DefWndProc(ref m);
-                    SetStyle(ControlStyles.Selectable, true);
+                    if ((ReaderModeEnabled))
+                    {
+                        if (VerticalScrollBarVisible(this))
+                        {
+                            // Enter reader mode
+                            pbGlyph.Location = Point.Subtract(this.PointToClient(Control.MousePosition), new Size(13, 13));
+                            SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
+                            m.Result = (IntPtr)1;
+                            tmrAutoScroll.Start();
+                            endOnMouseUp = false;
+                            EnterReaderMode();
+                        }
+                    }
                     break;
                 // The below DefWndProc() call essentially "calls" this section, and this section "returns" whether
                 // the cursor was over a link (via LinkCursor)
@@ -798,5 +965,15 @@ namespace AngelLoader.CustomControls
         }
 
         #endregion
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (tmrAutoScroll != null) tmrAutoScroll.Dispose();
+                if (pbGlyph != null) pbGlyph.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
