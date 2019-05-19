@@ -407,61 +407,6 @@ namespace AngelLoader
             Debug.Assert(comparer != null, nameof(comparer) + "==null: column not being handled");
 
             FMsViewList.Sort(comparer);
-
-            #region Disabled
-
-            //switch (column)
-            //{
-            //    case Column.Game:
-            //        FMsViewList.Sort(new FMGameComparer(sortDirection));
-            //        break;
-
-            //    case Column.Installed:
-            //        FMsViewList.Sort(new FMInstalledComparer(sortDirection));
-            //        break;
-
-            //    case Column.Title:
-            //        FMsViewList.Sort(new FMTitleComparer(sortDirection));
-            //        break;
-
-            //    case Column.Archive:
-            //        FMsViewList.Sort(new FMArchiveComparer(sortDirection));
-            //        break;
-
-            //    case Column.Author:
-            //        FMsViewList.Sort(new FMAuthorComparer(sortDirection));
-            //        break;
-
-            //    case Column.Size:
-            //        FMsViewList.Sort(new FMSizeComparer(sortDirection));
-            //        break;
-
-            //    case Column.Rating:
-            //        FMsViewList.Sort(new FMRatingComparer(sortDirection));
-            //        break;
-
-            //    case Column.Finished:
-            //        FMsViewList.Sort(new FMFinishedComparer(sortDirection));
-            //        break;
-
-            //    case Column.ReleaseDate:
-            //        FMsViewList.Sort(new FMReleaseDateComparer(sortDirection));
-            //        break;
-
-            //    case Column.LastPlayed:
-            //        FMsViewList.Sort(new FMLastPlayedComparer(sortDirection));
-            //        break;
-
-            //    case Column.DisabledMods:
-            //        FMsViewList.Sort(new FMDisabledModsComparer(sortDirection));
-            //        break;
-
-            //    case Column.Comment:
-            //        FMsViewList.Sort(new FMCommentComparer(sortDirection));
-            //        break;
-            //}
-
-            #endregion
         }
 
         private static Error CheckPaths()
