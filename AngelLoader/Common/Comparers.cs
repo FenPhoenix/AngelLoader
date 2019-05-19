@@ -191,12 +191,28 @@ namespace AngelLoader.Common
 
         public int Compare(FanMission x, FanMission y)
         {
-            int ret =
-                x == null || y == null ? 0 :
-                x.Rating == y.Rating ? TitleCompare(x, y) :
-                x.Rating == 0 ? -1 :
-                y.Rating == 0 ? 1 :
-                x.Rating < y.Rating ? -1 : 1;
+            int ret;
+            // Working
+            if (false)
+            {
+                int one = _sortOrder == SortOrder.Ascending ? 1 : -1;
+
+                ret =
+                    x == null || y == null ? 0 :
+                    x.Rating == y.Rating ? TitleCompare(x, y) :
+                    x.Rating == -1 && y.Rating > -1 ? one :
+                    x.Rating > -1 && y.Rating == -1 ? -one :
+                    x.Rating > -1 && y.Rating > -1 && x.Rating < y.Rating ? -1 : 1;
+            }
+            else
+            {
+                ret =
+                    x == null || y == null ? 0 :
+                    x.Rating == y.Rating ? TitleCompare(x, y) :
+                    x.Rating == 0 ? -1 :
+                    y.Rating == 0 ? 1 :
+                    x.Rating < y.Rating ? -1 : 1;
+            }
 
             return _sortOrder == SortOrder.Ascending ? ret : -ret;
         }
@@ -210,13 +226,31 @@ namespace AngelLoader.Common
 
         public int Compare(FanMission x, FanMission y)
         {
-            int ret =
-                x == null || y == null ? 0 :
-                !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
-                x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
-                (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
-                    ? TitleCompare(x, y) :
-                x.FinishedOn < y.FinishedOn ? -1 : 1;
+            int ret;
+            // Working: will add new option for this when done
+            if (false)
+            {
+                ret =
+                    x == null || y == null ? 0 :
+                    (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
+                        ? TitleCompare(x, y) :
+                    !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
+                    x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
+                    x.FinishedOn == 0 && y.FinishedOn > 0 ? 1 :
+                    x.FinishedOn > 0 && y.FinishedOn == 0 ? -1 :
+                    x.FinishedOn > 0 && y.FinishedOn > 0 && x.FinishedOn < y.FinishedOn ? -1 : 1;
+            }
+            else
+            {
+                ret =
+                    x == null || y == null ? 0 :
+                    !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
+                    x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
+                    (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
+                        ? TitleCompare(x, y) :
+                    x.FinishedOn < y.FinishedOn ? -1 : 1;
+            }
+
 
             return _sortOrder == SortOrder.Ascending ? ret : -ret;
         }
