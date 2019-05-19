@@ -389,116 +389,79 @@ namespace AngelLoader
 
         internal static void SortFMsViewList(Column column, SortOrder sortDirection)
         {
-            var articles = Config.EnableArticles ? Config.Articles : new List<string>();
+            var comparer =
+                column == Column.Game ? new FMGameComparer(sortDirection) :
+                column == Column.Installed ? new FMInstalledComparer(sortDirection) :
+                column == Column.Title ? new FMTitleComparer(sortDirection) :
+                column == Column.Archive ? new FMArchiveComparer(sortDirection) :
+                column == Column.Author ? new FMAuthorComparer(sortDirection) :
+                column == Column.Size ? new FMSizeComparer(sortDirection) :
+                column == Column.Rating ? new FMRatingComparer(sortDirection) :
+                column == Column.Finished ? new FMFinishedComparer(sortDirection) :
+                column == Column.ReleaseDate ? new FMReleaseDateComparer(sortDirection) :
+                column == Column.LastPlayed ? new FMLastPlayedComparer(sortDirection) :
+                column == Column.DisabledMods ? new FMDisabledModsComparer(sortDirection) :
+                column == Column.Comment ? new FMCommentComparer(sortDirection) :
+                (IComparer<FanMission>)null;
 
-            void SortByTitle(bool reverse = false)
-            {
-                var ascending = reverse ? SortOrder.Descending : SortOrder.Ascending;
+            Debug.Assert(comparer != null, nameof(comparer) + "==null: column not being handled");
 
-                FMsViewList = sortDirection == ascending
-                    ? FMsViewList.OrderBy(x => x.Title, new FMTitleComparer(articles)).ToList()
-                    : FMsViewList.OrderByDescending(x => x.Title, new FMTitleComparer(articles)).ToList();
-            }
+            FMsViewList.Sort(comparer);
 
-            // For any column which could have empty entries, sort by title first in order to maintain a
-            // consistent order
+            #region Disabled
 
-            switch (column)
-            {
-                case Column.Game:
-                    SortByTitle();
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.Game).ToList()
-                        : FMsViewList.OrderByDescending(x => x.Game).ToList();
-                    break;
+            //switch (column)
+            //{
+            //    case Column.Game:
+            //        FMsViewList.Sort(new FMGameComparer(sortDirection));
+            //        break;
 
-                case Column.Installed:
-                    SortByTitle();
-                    // Reverse this because "Installed" should go on top and blanks should go on bottom
-                    FMsViewList = sortDirection == SortOrder.Descending
-                        ? FMsViewList.OrderBy(x => x.Installed).ToList()
-                        : FMsViewList.OrderByDescending(x => x.Installed).ToList();
-                    break;
+            //    case Column.Installed:
+            //        FMsViewList.Sort(new FMInstalledComparer(sortDirection));
+            //        break;
 
-                case Column.Title:
-                    SortByTitle();
-                    break;
+            //    case Column.Title:
+            //        FMsViewList.Sort(new FMTitleComparer(sortDirection));
+            //        break;
 
-                case Column.Archive:
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.Archive).ToList()
-                        : FMsViewList.OrderByDescending(x => x.Archive).ToList();
-                    break;
+            //    case Column.Archive:
+            //        FMsViewList.Sort(new FMArchiveComparer(sortDirection));
+            //        break;
 
-                case Column.Author:
-                    SortByTitle();
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.Author).ToList()
-                        : FMsViewList.OrderByDescending(x => x.Author).ToList();
-                    break;
+            //    case Column.Author:
+            //        FMsViewList.Sort(new FMAuthorComparer(sortDirection));
+            //        break;
 
-                case Column.Size:
-                    SortByTitle();
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.SizeBytes).ToList()
-                        : FMsViewList.OrderByDescending(x => x.SizeBytes).ToList();
-                    break;
+            //    case Column.Size:
+            //        FMsViewList.Sort(new FMSizeComparer(sortDirection));
+            //        break;
 
-                case Column.Rating:
-                    SortByTitle();
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.Rating).ToList()
-                        : FMsViewList.OrderByDescending(x => x.Rating).ToList();
-                    break;
+            //    case Column.Rating:
+            //        FMsViewList.Sort(new FMRatingComparer(sortDirection));
+            //        break;
 
-                case Column.Finished:
-                    SortByTitle();
-                    // FinishedOnUnknown is a separate value, so...
-                    if (sortDirection == SortOrder.Ascending)
-                    {
-                        FMsViewList = FMsViewList.OrderBy(x => x.FinishedOn).ToList();
-                        FMsViewList = FMsViewList.OrderBy(x => x.FinishedOnUnknown).ToList();
-                    }
-                    else
-                    {
-                        FMsViewList = FMsViewList.OrderByDescending(x => x.FinishedOn).ToList();
-                        FMsViewList = FMsViewList.OrderByDescending(x => x.FinishedOnUnknown).ToList();
-                    }
-                    break;
+            //    case Column.Finished:
+            //        FMsViewList.Sort(new FMFinishedComparer(sortDirection));
+            //        break;
 
-                case Column.ReleaseDate:
-                    SortByTitle();
-                    // Sort this one down to the day only, because the exact time may very well not be known, and
-                    // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
-                    // sorted out of name order because of an invisible time difference.
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList()
-                        : FMsViewList.OrderByDescending(x => x.ReleaseDate?.Date ?? x.ReleaseDate).ToList();
-                    break;
+            //    case Column.ReleaseDate:
+            //        FMsViewList.Sort(new FMReleaseDateComparer(sortDirection));
+            //        break;
 
-                case Column.LastPlayed:
-                    SortByTitle();
-                    // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
-                    // second (you change it by playing it), and the user will expect precise sorting.
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.LastPlayed).ToList()
-                        : FMsViewList.OrderByDescending(x => x.LastPlayed).ToList();
-                    break;
+            //    case Column.LastPlayed:
+            //        FMsViewList.Sort(new FMLastPlayedComparer(sortDirection));
+            //        break;
 
-                case Column.DisabledMods:
-                    SortByTitle();
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.DisabledMods).ToList()
-                        : FMsViewList.OrderByDescending(x => x.DisabledMods).ToList();
-                    break;
+            //    case Column.DisabledMods:
+            //        FMsViewList.Sort(new FMDisabledModsComparer(sortDirection));
+            //        break;
 
-                case Column.Comment:
-                    SortByTitle();
-                    FMsViewList = sortDirection == SortOrder.Ascending
-                        ? FMsViewList.OrderBy(x => x.CommentSingleLine).ToList()
-                        : FMsViewList.OrderByDescending(x => x.CommentSingleLine).ToList();
-                    break;
-            }
+            //    case Column.Comment:
+            //        FMsViewList.Sort(new FMCommentComparer(sortDirection));
+            //        break;
+            //}
+
+            #endregion
         }
 
         private static Error CheckPaths()
@@ -1404,7 +1367,7 @@ namespace AngelLoader
 
                 if (safeReadmes.Count > 0)
                 {
-                    safeReadmes.Sort(new SafeReadmeComparer());
+                    safeReadmes.Sort(new FileNameNoExtComparer());
 
                     var eng = safeReadmes.FirstOrDefault(
                         x => Path.GetFileNameWithoutExtension(x).EndsWithI("en") ||
