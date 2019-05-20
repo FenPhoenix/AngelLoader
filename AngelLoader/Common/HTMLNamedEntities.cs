@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace AngelLoader.Common
 {
-    internal static class HTMLNamedEscapes
+    internal static class HTMLNamedEntities
     {
         // Copied direct from the HTML 5.2 spec. Overkill? :T
-        internal static readonly Dictionary<string, string> HTML5NamedEntities = new Dictionary<string, string>
+        internal static readonly Dictionary<string, string>
+        Entities = new Dictionary<string, string>
         {
             // Try to put common-ish ones first.
             // We don't support ones that map to multiple chars, because let's be REASONABLE.

@@ -1,21 +1,23 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
-using AngelLoader.WinAPI;
-using static AngelLoader.Common.HTMLNamedEscapes;
+using static AngelLoader.CustomControls.RichTextBoxCustom_Interop;
+using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.CustomControls
 {
     internal sealed class RichTextBoxCustom : RichTextBox
     {
+        #region Fields / properties
+
+        #region Zoom
+
         private bool initialReadmeZoomSet = true;
 
         private float _storedZoomFactor = 1.0f;
@@ -25,21 +27,46 @@ namespace AngelLoader.CustomControls
             set => _storedZoomFactor = value.Clamp(0.1f, 5.0f);
         }
 
+        #endregion
+
         private SCROLLINFO _scrollInfo;
+        private bool LinkCursor;
+
+        #region Reader mode
+
+        private readonly Timer tmrAutoScroll;
+        private int scrollIncrementY;
+        // No picture is used currently
+        private readonly PictureBox pbGlyph;
+        private bool endOnMouseUp;
+
+        #endregion
+
+        #region Workaround to fix black transparent regions in images
+
+        private static readonly byte[] shppict = Encoding.ASCII.GetBytes(@"\shppict");
+        private static readonly byte[] shppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxx");
+        private static readonly byte[] nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
+        private static readonly byte[] nonshppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxxxxx");
+
+        #endregion
+
+        #endregion
 
         public RichTextBoxCustom()
         {
             // Make sure this is valid right from the start
             _scrollInfo.cbSize = (uint)Marshal.SizeOf(_scrollInfo);
             _scrollInfo.fMask = (uint)ScrollInfoMask.SIF_ALL;
-            ReaderModeEnabled = true;
-            tmrAutoScroll = new Timer();
-            tmrAutoScroll.Interval = 10;
-            tmrAutoScroll.Tick += new EventHandler(tmrAutoScroll_Tick);
-            pbGlyph = new PictureBox();
-            pbGlyph.Size = new Size(26, 26);
-            pbGlyph.Visible = false;
+
+            #region Init reader mode
+
+            tmrAutoScroll = new Timer { Interval = 10 };
+            tmrAutoScroll.Tick += tmrAutoScroll_Tick;
+            pbGlyph = new PictureBox { Size = new Size(26, 26), Visible = false };
             Controls.Add(pbGlyph);
+
+            #endregion
         }
 
         #region Zoom stuff
@@ -143,11 +170,6 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        private static readonly byte[] shppict = Encoding.ASCII.GetBytes(@"\shppict");
-        private static readonly byte[] shppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxx");
-        private static readonly byte[] nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
-        private static readonly byte[] nonshppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxxxxx");
-
         /// <summary>
         /// Loads a file into the box without resetting the zoom factor.
         /// </summary>
@@ -217,7 +239,7 @@ namespace AngelLoader.CustomControls
         instances of "\shppict" and "\nonshppict" with dummy strings. This fixes the problem. Hooray. Now get off
         my lawn.
         */
-        internal static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
+        private static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
         {
             var firstByte = pattern[0];
             int index = Array.IndexOf(input, firstByte);
@@ -313,48 +335,6 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        private struct SCROLLINFO
-        {
-            internal uint cbSize;
-            internal uint fMask;
-            internal int nMin;
-            internal int nMax;
-            internal uint nPage;
-            internal int nPos;
-            internal int nTrackPos;
-        }
-
-        private enum ScrollBarDirection
-        {
-            SB_HORZ = 0,
-            SB_VERT = 1,
-            SB_CTL = 2,
-            SB_BOTH = 3
-        }
-
-        private enum ScrollInfoMask
-        {
-            SIF_RANGE = 0x0001,
-            SIF_PAGE = 0x0002,
-            SIF_POS = 0x0004,
-            SIF_DISABLENOSCROLL = 0x0008,
-            SIF_TRACKPOS = 0x0010,
-            SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
-        }
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
-
-        [DllImport("user32.dll")]
-        private static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowLong(IntPtr hWnd, int index);
-
         private static bool VerticalScrollBarVisible(Control ctl)
         {
             int style = GetWindowLong(ctl.Handle, -16);
@@ -377,11 +357,11 @@ namespace AngelLoader.CustomControls
 
             // Send a WM_VSCROLL scroll message using SB_THUMBTRACK as wParam
             // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-            IntPtr ptrWParam = new IntPtr(InteropMisc.SB_THUMBTRACK + 0x10000 * si.nPos);
+            IntPtr ptrWParam = new IntPtr(SB_THUMBTRACK + 0x10000 * si.nPos);
             IntPtr ptrLParam = new IntPtr(0);
 
-            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)InteropMisc.SB_THUMBTRACK;
-            SendMessage(handle, InteropMisc.WM_VSCROLL, wp, ptrLParam);
+            IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)SB_THUMBTRACK;
+            SendMessage(handle, WM_VSCROLL, wp, ptrLParam);
         }
 
         // Intercept mousewheel and make RichTextBox scroll using the above method
@@ -401,101 +381,73 @@ namespace AngelLoader.CustomControls
 
         #region Better reader mode
 
-        private class NativeMethods
+        private void EnterReaderMode()
         {
-            [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
-            public static extern void DoReaderMode(ref InteropTypes.READERMODEINFO prmi);
-        }
+            pbGlyph.Location = Point.Subtract(PointToClient(MousePosition), new Size(13, 13));
+            SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
+            tmrAutoScroll.Start();
+            endOnMouseUp = false;
 
-        private class InteropTypes
-        {
-            public const int WM_MBUTTONDOWN = 0x0207;
-            public const int WM_MBUTTONUP = 0x0208;
-            public const int WM_XBUTTONDOWN = 0x020B;
-            public const int WM_LBUTTONDOWN = 0x0201;
-            public const int WM_RBUTTONDOWN = 0x0204;
-            public const int WM_MOUSELEAVE = 0x02A3;
-            public const int WM_MOUSEWHEEL = 0x020A;
-            public const int WM_MOUSEHWHEEL = 0x020E;
-            public const int WM_KEYDOWN = 0x0100;
-            public delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
-            public delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
-            [Flags]
-            public enum ReaderModeFlags
+            // bounds to get the scrolling sensitivity			
+            var scrollBounds = new Rectangle(pbGlyph.Left, pbGlyph.Top, pbGlyph.Right, pbGlyph.Bottom);
+            IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
+
+            try
             {
-                None = 0x00,
-                ZeroCursor = 0x01,
-                VerticalOnly = 0x02,
-                HorizontalOnly = 0x04
+                Marshal.StructureToPtr(scrollBounds, rectPtr, true);
+
+                var readerInfo = new READERMODEINFO
+                {
+                    hwnd = Handle,
+                    fFlags = ReaderModeFlags.VerticalOnly,
+                    prc = rectPtr,
+                    lParam = IntPtr.Zero,
+                    fFlags2 = TranslateDispatchCallback,
+                    pfnScroll = ReaderScrollCallback
+                };
+
+                readerInfo.cbSize = Marshal.SizeOf(readerInfo);
+
+                DoReaderMode(ref readerInfo);
             }
-
-            [StructLayout(LayoutKind.Sequential)]
-            public struct READERMODEINFO
+            finally
             {
-                public int cbSize;
-                public IntPtr hwnd;
-                public ReaderModeFlags fFlags;
-                public IntPtr prc;
-                public ReaderScrollCallbackDelegate pfnScroll;
-                public TranslateDispatchCallbackDelegate fFlags2;
-                public IntPtr lParam;
+                Marshal.FreeHGlobal(rectPtr);
             }
         }
 
-        Timer tmrAutoScroll;
-        int scrollIncrementY;
-        PictureBox pbGlyph;
-        bool endOnMouseUp;
-
-        [DefaultValue(true), Category("Behavior"), Description("Enables reader mode for the control.")]
-        public bool ReaderModeEnabled
-        {
-            get;
-            set;
-        }
-
-        void tmrAutoScroll_Tick(object sender, EventArgs e)
-        {
-            //Scroll RichTextBox using pixels rather than lines
-            BetterScroll(Handle, scrollIncrementY);
-        }
+        void tmrAutoScroll_Tick(object sender, EventArgs e) => BetterScroll(Handle, scrollIncrementY);
 
         private bool TranslateDispatchCallback(ref Message msg)
         {
-            bool isMouseDown = false;
-            switch (msg.Msg)
-            {
-                case InteropTypes.WM_LBUTTONDOWN:
-                case InteropTypes.WM_MBUTTONDOWN:
-                case InteropTypes.WM_RBUTTONDOWN:
-                case InteropTypes.WM_XBUTTONDOWN:
-                case InteropTypes.WM_MOUSEWHEEL:
-                case InteropTypes.WM_MOUSEHWHEEL:
-                case InteropTypes.WM_KEYDOWN:
-                    isMouseDown = true;
-                    break;
-            }
+            bool isMouseDown = msg.Msg == WM_LBUTTONDOWN ||
+                               msg.Msg == WM_MBUTTONDOWN ||
+                               msg.Msg == WM_RBUTTONDOWN ||
+                               msg.Msg == WM_XBUTTONDOWN ||
+                               msg.Msg == WM_MOUSEWHEEL ||
+                               msg.Msg == WM_MOUSEHWHEEL ||
+                               msg.Msg == WM_KEYDOWN;
 
-            if (isMouseDown || (endOnMouseUp && (msg.Msg == InteropTypes.WM_MBUTTONUP)))
+            if (isMouseDown || (endOnMouseUp && (msg.Msg == WM_MBUTTONUP)))
             {
                 // exit reader mode
                 tmrAutoScroll.Stop();
             }
 
-            if ((!endOnMouseUp && (msg.Msg == InteropTypes.WM_MBUTTONUP)) || (msg.Msg == InteropTypes.WM_MOUSELEAVE))
+            if ((!endOnMouseUp && (msg.Msg == WM_MBUTTONUP)) || (msg.Msg == WM_MOUSELEAVE))
             {
                 return true;
             }
 
             if (isMouseDown)
             {
-                msg.Msg = InteropTypes.WM_MBUTTONDOWN;
+                msg.Msg = WM_MBUTTONDOWN;
             }
 
             return false;
         }
 
-        private bool ReaderScrollCallback(ref InteropTypes.READERMODEINFO prmi, int dx, int dy)
+        private bool ReaderScrollCallback(ref READERMODEINFO prmi, int dx, int dy)
         {
             scrollIncrementY = dy;
 
@@ -504,107 +456,29 @@ namespace AngelLoader.CustomControls
             return true;
         }
 
-        private InteropTypes.ReaderModeFlags GetReaderModeFlags()
-        {
-            return InteropTypes.ReaderModeFlags.VerticalOnly;
-        }
-
-        private void EnterReaderMode()
-        {
-            // bounds to get the scrolling sensitivity			
-            Rectangle scrollBounds = new Rectangle(pbGlyph.Left, pbGlyph.Top, pbGlyph.Right, pbGlyph.Bottom);
-            IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
-
-            try
-            {
-                Marshal.StructureToPtr(scrollBounds, rectPtr, true);
-
-                InteropTypes.READERMODEINFO readerInfo = new InteropTypes.READERMODEINFO
-                {
-                    hwnd = Handle,
-                    fFlags = GetReaderModeFlags(),
-                    prc = rectPtr,
-                    lParam = IntPtr.Zero,
-                    fFlags2 = new InteropTypes.TranslateDispatchCallbackDelegate(TranslateDispatchCallback),
-                    pfnScroll = new InteropTypes.ReaderScrollCallbackDelegate(ReaderScrollCallback)
-                };
-
-                readerInfo.cbSize = Marshal.SizeOf(readerInfo);
-
-                // enable reader mode
-                NativeMethods.DoReaderMode(ref readerInfo);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(rectPtr);
-            }
-        }
-
         #endregion
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetCursor(HandleRef hcursor);
-
-        #region Cursor fix junk
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct NMHDR
-        {
-            internal IntPtr hwndFrom;
-            internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
-            internal int code;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal class ENLINK
-        {
-            internal NMHDR nmhdr;
-            internal int msg = 0;
-            internal IntPtr wParam = IntPtr.Zero;
-            internal IntPtr lParam = IntPtr.Zero;
-            internal CHARRANGE charrange = null;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal class CHARRANGE
-        {
-            internal int cpMin;
-            internal int cpMax;
-        }
-
-        #endregion
-
-        private bool LinkCursor;
 
         protected override void WndProc(ref Message m)
         {
             switch ((uint)m.Msg)
             {
                 // Intercept the mousewheel call and direct it to use the fixed scrolling
-                case InteropMisc.WM_MOUSEWHEEL:
+                case WM_MOUSEWHEEL:
                     InterceptMousewheel(ref m);
                     break;
                 // Intercept the middle mouse button and direct it to use the fixed reader mode
-                case InteropMisc.WM_MBUTTONDOWN:
-                case InteropMisc.WM_MBUTTONDBLCLK:
-                    if ((ReaderModeEnabled))
+                case WM_MBUTTONDOWN:
+                case WM_MBUTTONDBLCLK:
+                    if (VerticalScrollBarVisible(this))
                     {
-                        if (VerticalScrollBarVisible(this))
-                        {
-                            // Enter reader mode
-                            pbGlyph.Location = Point.Subtract(this.PointToClient(Control.MousePosition), new Size(13, 13));
-                            SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
-                            m.Result = (IntPtr)1;
-                            tmrAutoScroll.Start();
-                            endOnMouseUp = false;
-                            EnterReaderMode();
-                        }
+                        m.Result = (IntPtr)1;
+                        EnterReaderMode();
                     }
                     break;
                 // The below DefWndProc() call essentially "calls" this section, and this section "returns" whether
                 // the cursor was over a link (via LinkCursor)
-                case InteropMisc.WM_REFLECT + InteropMisc.WM_NOTIFY:
-                    if (((NMHDR)m.GetLParam(typeof(NMHDR))).code == InteropMisc.EN_LINK)
+                case WM_REFLECT + WM_NOTIFY:
+                    if (((NMHDR)m.GetLParam(typeof(NMHDR))).code == EN_LINK)
                     {
                         EnLinkMsgHandler(ref m);
                     }
@@ -613,7 +487,7 @@ namespace AngelLoader.CustomControls
                         base.WndProc(ref m);
                     }
                     break;
-                case InteropMisc.WM_SETCURSOR:
+                case WM_SETCURSOR:
                     // We have to call WndProc again via DefWndProc to let it receive the WM_REFLECT + WM_NOTIFY
                     // message, which is the one that will actually tell us whether the mouse is over a link.
                     // Real dopey, but whatevs.
@@ -652,11 +526,11 @@ namespace AngelLoader.CustomControls
 
             switch (enlink.msg)
             {
-                case InteropMisc.WM_SETCURSOR:
+                case WM_SETCURSOR:
                     LinkCursor = true;
                     m.Result = (IntPtr)1;
                     return;
-                case InteropMisc.WM_LBUTTONDOWN:
+                case WM_LBUTTONDOWN:
                     // Run base link-mousedown handler (eventually) - otherwise we'd have to re-implement
                     // CharRangeToString() in managed code and junk
                     base.WndProc(ref m);
@@ -910,7 +784,7 @@ namespace AngelLoader.CustomControls
                             {
                                 var name = subSB.ToString();
 
-                                if (HTML5NamedEntities.TryGetValue(name, out string value))
+                                if (Common.HTMLNamedEntities.Entities.TryGetValue(name, out string value))
                                 {
                                     sb.Append(@"\u" + value + "?");
                                 }
@@ -966,8 +840,8 @@ namespace AngelLoader.CustomControls
         {
             if (disposing)
             {
-                if (tmrAutoScroll != null) tmrAutoScroll.Dispose();
-                if (pbGlyph != null) pbGlyph.Dispose();
+                tmrAutoScroll?.Dispose();
+                pbGlyph?.Dispose();
             }
             base.Dispose(disposing);
         }

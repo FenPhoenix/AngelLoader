@@ -169,7 +169,7 @@
     <Compile Include="Common\CatAndTags.cs" />
     <Compile Include="Common\CommonStatic.cs" />
     <Compile Include="Common\DataClasses\MiscSupporting.cs" />
-    <Compile Include="Common\HTMLNamedEscapes.cs" />
+    <Compile Include="Common\HTMLNamedEntities.cs" />
     <Compile Include="Common\DataClasses\Localization.cs" />
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\Misc.cs" />
@@ -189,6 +189,7 @@
     <Compile Include="CustomControls\ListBoxCustom.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControls\RichTextBoxCustom_Interop.cs" />
     <Compile Include="CustomControls\TabControlCustom.cs">
       <SubType>Component</SubType>
     </Compile>

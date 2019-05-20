@@ -47,17 +47,23 @@ namespace AngelLoader.WinAPI
         internal const int WH_MOUSE_LL = 14;
 
         internal const int WM_MOUSEWHEEL = 0x20A;
+        internal const int WM_MOUSEHWHEEL = 0x020E;
+
         internal const int WM_MOUSEMOVE = 0x200;
+
         internal const int WM_LBUTTONUP = 0x202;
         internal const int WM_MBUTTONUP = 0x208;
         internal const int WM_RBUTTONUP = 0x205;
         internal const int WM_LBUTTONDOWN = 0x201;
         internal const int WM_MBUTTONDOWN = 0x207;
         internal const int WM_RBUTTONDOWN = 0x204;
+        internal const int WM_XBUTTONDOWN = 0x020B;
 
         internal const int WM_LBUTTONDBLCLK = 0x203;
         internal const int WM_MBUTTONDBLCLK = 0x209;
         internal const int WM_RBUTTONDBLCLK = 0x206;
+
+        internal const int WM_MOUSELEAVE = 0x02A3;
 
         #endregion
 
@@ -82,6 +88,8 @@ namespace AngelLoader.WinAPI
 
         [DllImport("kernel32")]
         internal static extern uint GetCurrentThreadId();
+
+        #region Process
 
         [Flags]
         internal enum ProcessAccessFlags : uint
@@ -109,5 +117,7 @@ namespace AngelLoader.WinAPI
 
         [DllImport("kernel32.dll", SetLastError = true)]
         internal static extern bool CloseHandle(IntPtr hHandle);
+
+        #endregion
     }
 }
