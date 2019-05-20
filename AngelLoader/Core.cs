@@ -611,17 +611,12 @@ namespace AngelLoader
                 return false;
             }
 
+            var scanningOne = fmsToScan.Count == 1;
+
             // Removed from general use, but just in case I want to add the option back...
             const bool overwriteUnscannedFields = false;
 
-            void ReportProgress(ProgressReport pr)
-            {
-                var fmIsZip = pr.FMName.ExtIsArchive();
-                var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
-                ProgressBox.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
-            }
-
-            var scanningOne = fmsToScan.Count == 1;
+            #region Show progress box or block UI thread
 
             if (scanningOne)
             {
@@ -645,9 +640,19 @@ namespace AngelLoader
                 ProgressBox.ShowScanningAllFMs();
             }
 
-            // TODO: This is pretty hairy, try and organize this better
+            #endregion
+
+            void ReportProgress(ProgressReport pr)
+            {
+                var fmIsZip = pr.FMName.ExtIsArchive();
+                var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
+                ProgressBox.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
+            }
+
             try
             {
+                #region Init
+
                 ScanCts = new CancellationTokenSource();
 
                 var fms = new List<string>();
@@ -659,6 +664,10 @@ namespace AngelLoader
                 // cause then it will hit the actual disk rather than just going through a list of paths in
                 // memory
                 var archivePaths = await Task.Run(GetFMArchivePaths);
+
+                #endregion
+
+                #region Filter out invalid FMs from scan list
 
                 // Safety net to guarantee that the in and out lists will have the same count and order
                 var fmsToScanFiltered = new List<FanMission>();
@@ -689,6 +698,10 @@ namespace AngelLoader
                     }
                 }
 
+                #endregion
+
+                #region Run scanner
+
                 List<ScannedFMData> fmDataList;
                 try
                 {
@@ -713,9 +726,15 @@ namespace AngelLoader
                     ScanCts?.Dispose();
                 }
 
+                #endregion
+
+                #region Copy scanned data to FMs
+
                 for (var i = 0; i < fmsToScanFiltered.Count; i++)
                 {
                     var scannedFM = fmDataList[i];
+
+                    #region Checks
 
                     if (scannedFM == null)
                     {
@@ -739,6 +758,10 @@ namespace AngelLoader
                         if (scanningOne) return false;
                         continue;
                     }
+
+                    #endregion
+
+                    #region Set FM fields
 
                     var gameSup = scannedFM.Game != Games.Unsupported;
 
@@ -816,7 +839,11 @@ namespace AngelLoader
                     }
 
                     sel.MarkedScanned = markAsScanned;
+
+                    #endregion
                 }
+
+                #endregion
 
                 WriteFullFMDataIni();
             }

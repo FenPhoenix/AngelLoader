@@ -372,8 +372,6 @@ namespace AngelLoader
                     fmDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
                     fmDataIniList.FirstOrDefault(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
 
-                // TODO: Look in FMSel/NDL ini files here too?
-
                 if (tryArchive.IsEmpty()) return null;
 
                 if (!createFmselInf) return tryArchive;

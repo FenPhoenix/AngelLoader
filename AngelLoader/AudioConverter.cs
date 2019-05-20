@@ -25,7 +25,6 @@ namespace AngelLoader
         }
 
         // TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
-        // TODO: Handle if any files (or containing folders) to be converted are read-only (set them to not)
 
         // OpenAL doesn't play nice with anything over 16 bits, blasting out white noise when it tries to play
         // such. Converting all >16bit wavs to 16 bit fixes this.
@@ -121,7 +120,7 @@ namespace AngelLoader
                     var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
                     foreach (var f in wavFiles)
                     {
-                        new FileInfo(f).IsReadOnly = false;
+                        UnSetReadOnly(f);
 
                         int bits = GetBitDepthFast(f);
 
@@ -190,14 +189,7 @@ namespace AngelLoader
 
                     foreach (var f in files)
                     {
-                        try
-                        {
-                            new FileInfo(f).IsReadOnly = false;
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Unable to set file attributes on " + f, ex);
-                        }
+                        UnSetReadOnly(f);
 
                         try
                         {
