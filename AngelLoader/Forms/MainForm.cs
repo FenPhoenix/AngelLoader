@@ -149,43 +149,58 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
+            var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+            var hWnd = InteropMisc.WindowFromPoint(pos);
+
+            if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
+
+            // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
+            // needing to actually be focused. Vital for a good user experience.
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
                 if (CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
-                // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
-                // needing to actually be focused. Vital for a good user experience.
-                var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
-                var hWnd = InteropMisc.WindowFromPoint(pos);
                 int wParam = (int)m.WParam;
-                if (hWnd != IntPtr.Zero && Control.FromHandle(hWnd) != null)
+                int delta = wParam >> 16;
+                if (CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
                 {
-                    if (CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
+                    // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
+                    // and disappearing as appropriate
+                    if (delta != 0)
                     {
-                        // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
-                        // and disappearing as appropriate
-                        if (wParam != 0)
-                        {
-                            int direction = wParam > 0 ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
-                            int origSmallChange = FiltersFlowLayoutPanel.HorizontalScroll.SmallChange;
+                        int direction = delta > 0 ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
+                        int origSmallChange = FiltersFlowLayoutPanel.HorizontalScroll.SmallChange;
 
-                            FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = 45;
+                        FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = 45;
 
-                            InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL,
+                            (IntPtr)direction, IntPtr.Zero);
 
-                            FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = origSmallChange;
-                        }
+                        FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = origSmallChange;
                     }
-                    else if (CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
+                }
+                else if (CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
+                {
+                    if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
+                }
+                else
+                {
+                    InteropMisc.SendMessage(hWnd, m.Msg, m.WParam, m.LParam);
+                }
+                return BlockMessage;
+            }
+            else if (m.Msg == InteropMisc.WM_MOUSEHWHEEL)
+            {
+                if (CursorOverControl(FMsDGV))
+                {
+                    int delta = (int)m.WParam >> 16;
+                    if (delta != 0)
                     {
-                        var delta = wParam >> 16;
-                        if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
+                        int offset = FMsDGV.HorizontalScrollingOffset;
+                        offset = delta < 0 ? (offset - 15).ClampToZero() : offset + 15;
+                        FMsDGV.HorizontalScrollingOffset = offset;
+                        return BlockMessage;
                     }
-                    else
-                    {
-                        InteropMisc.SendMessage(hWnd, m.Msg, m.WParam, m.LParam);
-                    }
-                    return BlockMessage;
                 }
             }
 

@@ -532,45 +532,6 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        #region Horizontal scrolling
-
-        public const int WM_MOUSEHWHEEL = 0x020E;
-
-        protected override void WndProc(ref Message m)
-        {
-            base.WndProc(ref m);
-            if (m.HWnd != Handle)
-            {
-                return;
-            }
-            else
-            {
-                if (m.Msg == WM_MOUSEHWHEEL)
-                {
-                    int delta = (int)m.WParam;
-                    if (delta < 0)
-                    {
-                        if (HorizontalScrollingOffset > 14)
-                        {
-                            HorizontalScrollingOffset -= 15;
-                        }
-                        else
-                        {
-                            HorizontalScrollingOffset = 0;
-                        }
-                        m.Result = (IntPtr)1;
-                    }
-                    if (delta > 0)
-                    {
-                        HorizontalScrollingOffset += 15;
-                        m.Result = (IntPtr)1;
-                    }
-                }
-            }
-        }
-
-        #endregion
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
