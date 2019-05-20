@@ -586,7 +586,6 @@ namespace AngelLoader.CustomControls
                     break;
                 // Intercept the middle mouse button and direct it to use the fixed reader mode
                 case InteropMisc.WM_MBUTTONDOWN:
-                case InteropMisc.WM_MBUTTONUP:
                 case InteropMisc.WM_MBUTTONDBLCLK:
                     if ((ReaderModeEnabled))
                     {
