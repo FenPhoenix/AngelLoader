@@ -1548,6 +1548,13 @@ namespace AngelLoader
             return list;
         }
 
+        internal static void AddTagToFM(FanMission fm,string catAndTag)
+        {
+            AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
+            UpdateFMTagsString(fm);
+            WriteFullFMDataIni();
+        }
+
         internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText)
         {
             if (tagText.IsEmpty()) return false;
@@ -1598,6 +1605,8 @@ namespace AngelLoader
                     }
                 }
             }
+
+            WriteFullFMDataIni();
 
             return true;
         }

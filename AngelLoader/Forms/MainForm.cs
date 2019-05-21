@@ -3075,27 +3075,21 @@ namespace AngelLoader.Forms
             if (!success) return;
 
             DisplayFMTags(fm);
-            Core.WriteFullFMDataIni();
         }
 
         private void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
 
-            var lb = (ListBox)sender;
-
-            if (lb.SelectedIndex > -1) AddTagOperation(GetSelectedFM(), lb.SelectedItem.ToString());
+            if (AddTagListBox.SelectedIndex > -1) AddTagOperation(GetSelectedFM(), AddTagListBox.SelectedItem.ToString());
         }
 
         private void AddTagOperation(FanMission fm, string catAndTag)
         {
-            // Cock-blocked here too
-            if (AddTagTextBox.Text.CountChars(':') <= 1 && !AddTagTextBox.Text.IsWhiteSpace())
+            if (catAndTag.CountChars(':') <= 1 && !catAndTag.IsWhiteSpace())
             {
-                AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
-                UpdateFMTagsString(fm);
+                Core.AddTagToFM(fm, catAndTag);
                 DisplayFMTags(fm);
-                Core.WriteFullFMDataIni();
             }
 
             AddTagTextBox.Clear();
