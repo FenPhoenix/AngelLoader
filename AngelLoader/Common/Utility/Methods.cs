@@ -60,8 +60,25 @@ namespace AngelLoader.Common.Utility
 
         internal static bool FMIsReallyInstalled(FanMission fm)
         {
-            return fm.Installed &&
-                   Directory.Exists(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir));
+            if (fm.Installed)
+            {
+                var instPath = GetFMInstallsBasePath(fm.Game);
+                if (instPath.IsEmpty()) return false;
+
+                string path;
+                try
+                {
+                    path = Path.Combine(instPath, fm.InstalledDir);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+
+                return Directory.Exists(path);
+            }
+
+            return false;
         }
 
         internal static bool GameIsRunning(string gameExe, bool checkAllGames = false)
