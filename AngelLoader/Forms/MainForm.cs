@@ -173,8 +173,7 @@ namespace AngelLoader.Forms
 
                         FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = 45;
 
-                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL,
-                            (IntPtr)direction, IntPtr.Zero);
+                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
 
                         FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = origSmallChange;
                     }

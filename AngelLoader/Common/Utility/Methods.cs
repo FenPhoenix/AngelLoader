@@ -126,18 +126,13 @@ namespace AngelLoader.Common.Utility
 
         internal static string GetProcessPath(int procId)
         {
-            IntPtr hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId);
-            if (hProc != IntPtr.Zero)
+            using (var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId))
             {
-                try
+                if (!hProc.IsInvalid)
                 {
                     var buffer = new StringBuilder(1024);
                     int size = buffer.Capacity;
                     if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer.ToString();
-                }
-                finally
-                {
-                    CloseHandle(hProc);
                 }
             }
             return "";

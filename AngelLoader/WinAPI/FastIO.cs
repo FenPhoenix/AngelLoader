@@ -5,11 +5,34 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 
 namespace AngelLoader.WinAPI
 {
     internal static class FastIO
     {
+        #region Fields
+
+        private const int fileAttributeDirectory = 16;
+        private const int FIND_FIRST_EX_LARGE_FETCH = 2;
+        private const int ERROR_FILE_NOT_FOUND = 2;
+
+        #endregion
+
+        #region Classes / structs / enums
+
+        // So we don't have to remember to call FindClose()
+        internal class SafeSearchHandle : SafeHandleZeroOrMinusOneIsInvalid
+        {
+            internal SafeSearchHandle() : base(true) { }
+            protected override bool ReleaseHandle() => FindClose(handle);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            private static extern bool FindClose(IntPtr hFindFile);
+
+            public override bool IsInvalid => handle == new IntPtr(-1);
+        }
+
         private enum FINDEX_INFO_LEVELS
         {
             FindExInfoStandard = 0,
@@ -22,15 +45,6 @@ namespace AngelLoader.WinAPI
             FindExSearchLimitToDirectories = 1,
             FindExSearchLimitToDevices = 2
         }
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr FindFirstFileEx(
-            string lpFileName,
-            FINDEX_INFO_LEVELS fInfoLevelId,
-            out WIN32_FIND_DATA lpFindFileData,
-            FINDEX_SEARCH_OPS fSearchOp,
-            IntPtr lpSearchFilter,
-            int dwAdditionalFlags);
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
@@ -52,11 +66,23 @@ namespace AngelLoader.WinAPI
             internal string cAlternateFileName;
         }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATA lpFindFileData);
+        #endregion
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool FindClose(IntPtr hFindFile);
+        #region P/Invoke definitions
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern SafeSearchHandle FindFirstFileEx(
+            string lpFileName,
+            FINDEX_INFO_LEVELS fInfoLevelId,
+            out WIN32_FIND_DATA lpFindFileData,
+            FINDEX_SEARCH_OPS fSearchOp,
+            IntPtr lpSearchFilter,
+            int dwAdditionalFlags);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool FindNextFileW(SafeSearchHandle hFindFile, out WIN32_FIND_DATA lpFindFileData);
+
+        #endregion
 
         private static void ThrowException(string searchPattern, int err, string path)
         {
@@ -70,11 +96,6 @@ namespace AngelLoader.WinAPI
                 "path: '" + path + "'\r\n" +
                 "search pattern: " + searchPattern + "\r\n");
         }
-
-        private const int fileAttributeDirectory = 16;
-        private const int FIND_FIRST_EX_LARGE_FETCH = 2;
-        private const int ERROR_FILE_NOT_FOUND = 2;
-        private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
@@ -99,25 +120,21 @@ namespace AngelLoader.WinAPI
             //const int ERROR_REM_NOT_LIST = 0x33;
             //const int ERROR_BAD_NETPATH = 0x35;
 
-            IntPtr findHandle = FindFirstFileEx(@"\\?\" + path.TrimEnd('\\') + '\\' + searchPattern,
+            using (var findHandle = FindFirstFileEx(@"\\?\" + path.TrimEnd('\\') + '\\' + searchPattern,
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,
-                FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
-            if (findHandle == INVALID_HANDLE_VALUE)
+                FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH))
             {
-                var err = Marshal.GetLastWin32Error();
-                if (err == ERROR_FILE_NOT_FOUND) return ret;
 
-                FindClose(findHandle);
+                if (findHandle.IsInvalid)
+                {
+                    var err = Marshal.GetLastWin32Error();
+                    if (err == ERROR_FILE_NOT_FOUND) return ret;
 
-                // Since the framework isn't here to save us, we should blanket-catch and throw on every
-                // possible error other than file-not-found (as that's an intended scenario, obviously).
-                // This isn't as nice as you'd get from a framework method call, but it gets the job done.
-                ThrowException(searchPattern, err, path);
-            }
-            // Be extra careful so we don't leak handles
-            // Try surrounds loop so as not to enter it every loop (speculative perf)
-            try
-            {
+                    // Since the framework isn't here to save us, we should blanket-catch and throw on every
+                    // possible error other than file-not-found (as that's an intended scenario, obviously).
+                    // This isn't as nice as you'd get from a framework method call, but it gets the job done.
+                    ThrowException(searchPattern, err, path);
+                }
                 do
                 {
                     if ((findData.dwFileAttributes & fileAttributeDirectory) != fileAttributeDirectory &&
@@ -129,16 +146,9 @@ namespace AngelLoader.WinAPI
                         ret.Add(fullName);
                     }
                 } while (FindNextFileW(findHandle, out findData));
-            }
-            catch (Exception)
-            {
-                FindClose(findHandle);
-                throw;
-            }
 
-            FindClose(findHandle);
-
-            return ret;
+                return ret;
+            }
         }
     }
 }

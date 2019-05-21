@@ -7,7 +7,7 @@ namespace AngelLoader.CustomControls
     internal class RichTextBoxCustom_Interop
     {
         [DllImport("user32.dll")]
-        public static extern IntPtr SetCursor(HandleRef hcursor);
+        internal static extern IntPtr SetCursor(HandleRef hcursor);
 
         #region Reader mode
 
@@ -36,7 +36,7 @@ namespace AngelLoader.CustomControls
         }
 
         [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
-        public static extern void DoReaderMode(ref READERMODEINFO prmi);
+        internal static extern void DoReaderMode(ref READERMODEINFO prmi);
 
         #endregion
 
