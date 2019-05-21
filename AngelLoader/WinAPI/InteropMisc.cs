@@ -87,9 +87,6 @@ namespace AngelLoader.WinAPI
         [DllImport("user32.dll")]
         internal static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
 
-        [DllImport("kernel32")]
-        internal static extern uint GetCurrentThreadId();
-
         #region Process
 
         [Flags]
@@ -115,9 +112,6 @@ namespace AngelLoader.WinAPI
 
         [DllImport("kernel32.dll")]
         internal static extern SafeProcessHandle OpenProcess(ProcessAccessFlags dwDesiredAccess, bool bInheritHandle, int dwProcessId);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        internal static extern bool CloseHandle(IntPtr hHandle);
 
         #endregion
     }
