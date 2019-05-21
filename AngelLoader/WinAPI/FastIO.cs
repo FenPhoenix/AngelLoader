@@ -22,7 +22,7 @@ namespace AngelLoader.WinAPI
         #region Classes / structs / enums
 
         // So we don't have to remember to call FindClose()
-        internal class SafeSearchHandle : SafeHandleMinusOneIsInvalid
+        internal class SafeSearchHandle : SafeHandleZeroOrMinusOneIsInvalid
         {
             internal SafeSearchHandle() : base(true) { }
             protected override bool ReleaseHandle() => FindClose(handle);
