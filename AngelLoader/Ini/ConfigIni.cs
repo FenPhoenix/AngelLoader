@@ -819,7 +819,7 @@ namespace AngelLoader.Ini
 
                     #region Tags
 
-                    string TagsToString(List<CatAndTags> tagsList)
+                    string TagsToString(CatAndTagsList tagsList)
                     {
                         var intermediateTagsList = new List<string>();
                         foreach (var catAndTag in tagsList)

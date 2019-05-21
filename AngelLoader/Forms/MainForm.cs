@@ -478,7 +478,7 @@ namespace AngelLoader.Forms
                     FilterAuthorTextBox.Text = filter.Author;
                     FilterShowUnsupportedButton.Checked = filter.ShowJunk;
 
-                    FilterByTagsButton.Checked = !filter.Tags.Empty();
+                    FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
 
                     FilterByFinishedButton.Checked = filter.Finished.Contains(FinishedState.Finished);
                     FilterByUnfinishedButton.Checked = filter.Finished.Contains(FinishedState.Unfinished);
@@ -1363,7 +1363,7 @@ namespace AngelLoader.Forms
             if (titleIsWhitespace &&
                 FMsDGV.Filter.Author.IsWhiteSpace() &&
                 FMsDGV.Filter.Games.Count == 0 &&
-                FMsDGV.Filter.Tags.Empty() &&
+                FMsDGV.Filter.Tags.IsEmpty() &&
                 FMsDGV.Filter.ReleaseDateFrom == null &&
                 FMsDGV.Filter.ReleaseDateTo == null &&
                 FMsDGV.Filter.LastPlayedFrom == null &&
@@ -2194,8 +2194,8 @@ namespace AngelLoader.Forms
             {
                 if (tf.ShowDialog() != DialogResult.OK) return;
 
-                DeepCopyTagsFilter(tf.TagsFilter, FMsDGV.Filter.Tags);
-                FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.Empty();
+                tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
+                FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
             }
 
             await SortAndSetFilter();
@@ -2309,7 +2309,7 @@ namespace AngelLoader.Forms
 
                 if (fm.Tags.Count == 0) return;
 
-                fm.Tags.SortCat();
+                fm.Tags.SortAndMoveMiscToEnd();
 
                 foreach (var item in fm.Tags)
                 {
@@ -3109,7 +3109,7 @@ namespace AngelLoader.Forms
             var button = (Button)sender;
             var menu = AddTagMenu;
 
-            GlobalTags.SortCat();
+            GlobalTags.SortAndMoveMiscToEnd();
 
             menu.Items.Clear();
 

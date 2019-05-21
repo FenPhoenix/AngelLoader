@@ -1,10 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Common.DataClasses
 {
+    internal class CatAndTagsList : List<CatAndTags>
+    {
+        internal void DeepCopyTo(CatAndTagsList dest)
+        {
+            dest.Clear();
+
+            if (Count == 0) return;
+
+            foreach (var catAndTag in this)
+            {
+                var item = new CatAndTags { Category = catAndTag.Category };
+                foreach (var tag in catAndTag.Tags) item.Tags.Add(tag);
+                dest.Add(item);
+            }
+        }
+
+        internal void SortAndMoveMiscToEnd()
+        {
+            if (Count == 0) return;
+
+            Sort(new CategoryComparer());
+
+            if (this[Count - 1].Category == "misc") return;
+
+            for (var i = 0; i < Count; i++)
+            {
+                var item = this[i];
+                if (this[i].Category == "misc")
+                {
+                    Remove(item);
+                    Add(item);
+                    return;
+                }
+            }
+        }
+    }
+
+    internal class GlobalCatAndTagsList : List<GlobalCatAndTags>
+    {
+        internal void DeepCopyTo(GlobalCatAndTagsList dest)
+        {
+            dest.Clear();
+
+            if (Count == 0) return;
+
+            foreach (var catAndTag in this)
+            {
+                var item = new GlobalCatAndTags
+                {
+                    Category = new GlobalCatOrTag
+                    {
+                        Name = catAndTag.Category.Name,
+                        IsPreset = catAndTag.Category.IsPreset,
+                        UsedCount = catAndTag.Category.UsedCount
+                    }
+                };
+                foreach (var tag in catAndTag.Tags)
+                {
+                    item.Tags.Add(new GlobalCatOrTag
+                    {
+                        Name = tag.Name,
+                        IsPreset = tag.IsPreset,
+                        UsedCount = tag.UsedCount
+                    });
+                }
+
+                dest.Add(item);
+            }
+        }
+
+        internal void SortAndMoveMiscToEnd()
+        {
+            if (Count == 0) return;
+
+            Sort(new CategoryComparerGlobal());
+
+            if (this[Count - 1].Category.Name == "misc") return;
+
+            for (var i = 0; i < Count; i++)
+            {
+                var item = this[i];
+                if (this[i].Category.Name == "misc")
+                {
+                    Remove(item);
+                    Add(item);
+                    return;
+                }
+            }
+        }
+    }
+
     internal sealed class ConfigVar
     {
         internal string Name = "";
@@ -128,7 +218,7 @@ namespace AngelLoader.Common.DataClasses
             return Title.IsWhiteSpace() &&
                    Author.IsWhiteSpace() &&
                    Games.Count == 0 &&
-                   Tags.Empty() &&
+                   Tags.IsEmpty() &&
                    ReleaseDateFrom == null &&
                    ReleaseDateTo == null &&
                    LastPlayedFrom == null &&
@@ -256,12 +346,16 @@ namespace AngelLoader.Common.DataClasses
 
             foreach (var finished in Finished) dest.Finished.Add(finished);
             foreach (var game in Games) dest.Games.Add(game);
-            DeepCopyTagsFilter(Tags, dest.Tags);
+            Tags.DeepCopyTo(dest.Tags);
         }
     }
 
     internal sealed class TagsFilter
     {
+        internal CatAndTagsList AndTags = new CatAndTagsList();
+        internal CatAndTagsList OrTags = new CatAndTagsList();
+        internal CatAndTagsList NotTags = new CatAndTagsList();
+
         internal void Clear()
         {
             AndTags.Clear();
@@ -269,13 +363,16 @@ namespace AngelLoader.Common.DataClasses
             NotTags.Clear();
         }
 
-        internal bool Empty() => AndTags.Count == 0 &&
-                                 OrTags.Count == 0 &&
-                                 NotTags.Count == 0;
+        internal bool IsEmpty() => AndTags.Count == 0 &&
+                                   OrTags.Count == 0 &&
+                                   NotTags.Count == 0;
 
-        internal List<CatAndTags> AndTags = new List<CatAndTags>();
-        internal List<CatAndTags> OrTags = new List<CatAndTags>();
-        internal List<CatAndTags> NotTags = new List<CatAndTags>();
+        internal void DeepCopyTo(TagsFilter dest)
+        {
+            AndTags.DeepCopyTo(dest.AndTags);
+            OrTags.DeepCopyTo(dest.OrTags);
+            NotTags.DeepCopyTo(dest.NotTags);
+        }
     }
 
     internal enum TopRightTab

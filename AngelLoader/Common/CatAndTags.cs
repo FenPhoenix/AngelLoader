@@ -2,26 +2,26 @@
 
 namespace AngelLoader.Common
 {
-    public sealed class CatAndTags
+    internal sealed class CatAndTags
     {
-        public string Category;
-        public List<string> Tags = new List<string>();
+        internal string Category;
+        internal List<string> Tags = new List<string>();
     }
 
-    public sealed class GlobalCatAndTags
+    internal sealed class GlobalCatAndTags
     {
-        public GlobalCatOrTag Category = new GlobalCatOrTag();
-        public List<GlobalCatOrTag> Tags = new List<GlobalCatOrTag>();
+        internal GlobalCatOrTag Category = new GlobalCatOrTag();
+        internal List<GlobalCatOrTag> Tags = new List<GlobalCatOrTag>();
     }
 
-    public sealed class GlobalCatOrTag
+    internal sealed class GlobalCatOrTag
     {
-        public string Name;
+        internal string Name;
 
         /// <summary>
         /// If true, the tag will never be removed from the global list even if no FMs are using it.
         /// </summary>
-        public bool IsPreset;
+        internal bool IsPreset;
 
         /// <summary>
         /// Keeps track of the number of FMs that are using this tag. If a tag is removed from an FM and its
@@ -30,6 +30,6 @@ namespace AngelLoader.Common
         /// much faster to simply keep track of what needs removing than to rebuild the list every time a tag is
         /// removed.
         /// </summary>
-        public int UsedCount;
+        internal int UsedCount;
     }
 }

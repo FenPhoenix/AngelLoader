@@ -356,7 +356,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Tags Filter";
-            this.Load += new System.EventHandler(this.FilterTagsForm2_Load);
+            this.Load += new System.EventHandler(this.FilterTagsForm_Load);
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);

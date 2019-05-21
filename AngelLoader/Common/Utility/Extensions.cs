@@ -576,28 +576,6 @@ namespace AngelLoader.Common.Utility
 
         internal static string ToBackSlashes(this string value) => value?.Replace('/', '\\');
 
-        internal static void SortCat(this List<CatAndTags> list)
-        {
-            list.Sort(new CategoryComparer());
-            var misc = list.FirstOrDefault(x => x.Category == "misc");
-            if (misc != null)
-            {
-                list.Remove(misc);
-                list.Add(misc);
-            }
-        }
-
-        internal static void SortCat(this List<GlobalCatAndTags> list)
-        {
-            list.Sort(new CategoryComparerGlobal());
-            var misc = list.FirstOrDefault(x => x.Category.Name == "misc");
-            if (misc != null)
-            {
-                list.Remove(misc);
-                list.Add(misc);
-            }
-        }
-
         #endregion
 
         #region Control hacks

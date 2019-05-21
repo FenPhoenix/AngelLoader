@@ -28,7 +28,7 @@ namespace AngelLoader
             Core.View.SetRowCount(0);
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
-            DeepCopyGlobalTags(PresetTags, GlobalTags);
+            PresetTags.DeepCopyTo(GlobalTags);
 
             #region Back up lists and read FM data file
 

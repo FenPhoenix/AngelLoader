@@ -86,7 +86,7 @@ namespace AngelLoader.Common.DataClasses
         internal string LanguagesString;
 
         // [FenGen:DoNotSerialize]
-        internal List<CatAndTags> Tags = new List<CatAndTags>();
+        internal CatAndTagsList Tags = new CatAndTagsList();
         internal string TagsString;
     }
 }

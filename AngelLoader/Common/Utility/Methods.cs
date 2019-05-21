@@ -235,6 +235,8 @@ namespace AngelLoader.Common.Utility
 
         internal static bool GameIsKnownAndSupported(Game? game) => game != null && game != Game.Unsupported;
 
+        #region Tags
+
         // Update fm.TagsString here. We keep TagsString around because when we're reading, writing, and merging
         // FMs, we don't want to spend time converting back and forth. So Tags is session-only, and only gets
         // filled out for FMs that will be displayed. TagsString is the one that gets saved and loaded, and must
@@ -270,7 +272,7 @@ namespace AngelLoader.Common.Utility
 
         // Very awkward procedure that accesses global state in the name of only doing one iteration
         // TODO: Test perf when 1000+ FMs each have a bunch of tags
-        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, List<CatAndTags> existingFMTags)
+        internal static void AddTagsToFMAndGlobalList(string tagsToAdd, CatAndTagsList existingFMTags)
         {
             if (tagsToAdd.IsEmpty()) return;
 
@@ -361,57 +363,6 @@ namespace AngelLoader.Common.Utility
             return null;
         }
 
-        // Break the frigging references!! Arrrrrrrgh!
-        private static void DeepCopyCatAndTagsList(List<CatAndTags> source, List<CatAndTags> dest)
-        {
-            dest.Clear();
-
-            if (source.Count == 0) return;
-
-            foreach (var catAndTag in source)
-            {
-                var item = new CatAndTags { Category = catAndTag.Category };
-                foreach (var tag in catAndTag.Tags) item.Tags.Add(tag);
-                dest.Add(item);
-            }
-        }
-
-        internal static void DeepCopyTagsFilter(TagsFilter source, TagsFilter dest)
-        {
-            DeepCopyCatAndTagsList(source.AndTags, dest.AndTags);
-            DeepCopyCatAndTagsList(source.OrTags, dest.OrTags);
-            DeepCopyCatAndTagsList(source.NotTags, dest.NotTags);
-        }
-
-        internal static void DeepCopyGlobalTags(List<GlobalCatAndTags> source, List<GlobalCatAndTags> dest)
-        {
-            dest.Clear();
-
-            if (source.Count == 0) return;
-
-            foreach (var catAndTag in source)
-            {
-                var item = new GlobalCatAndTags
-                {
-                    Category = new GlobalCatOrTag
-                    {
-                        Name = catAndTag.Category.Name,
-                        IsPreset = catAndTag.Category.IsPreset,
-                        UsedCount = catAndTag.Category.UsedCount
-                    }
-                };
-                foreach (var tag in catAndTag.Tags)
-                {
-                    item.Tags.Add(new GlobalCatOrTag
-                    {
-                        Name = tag.Name,
-                        IsPreset = tag.IsPreset,
-                        UsedCount = tag.UsedCount
-                    });
-                }
-
-                dest.Add(item);
-            }
-        }
+        #endregion
     }
 }

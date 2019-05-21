@@ -11,16 +11,15 @@ namespace AngelLoader.Forms
 {
     public partial class FilterTagsForm : Form, ILocalizable
     {
-        private readonly List<GlobalCatAndTags> SourceTags = new List<GlobalCatAndTags>();
+        private readonly GlobalCatAndTagsList SourceTags = new GlobalCatAndTagsList();
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
-        internal FilterTagsForm(List<GlobalCatAndTags> sourceTags, TagsFilter tagsFilter)
+        internal FilterTagsForm(GlobalCatAndTagsList sourceTags, TagsFilter tagsFilter)
         {
             InitializeComponent();
 
-            Methods.DeepCopyGlobalTags(sourceTags, SourceTags);
-
-            Methods.DeepCopyTagsFilter(tagsFilter, TagsFilter);
+            sourceTags.DeepCopyTo(SourceTags);
+            tagsFilter.DeepCopyTo(TagsFilter);
 
             SetUITextToLocalized();
         }
@@ -57,11 +56,11 @@ namespace AngelLoader.Forms
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
 
-        private void FilterTagsForm2_Load(object sender, EventArgs e)
+        private void FilterTagsForm_Load(object sender, EventArgs e)
         {
             var tv = OriginTreeView;
 
-            SourceTags.SortCat();
+            SourceTags.SortAndMoveMiscToEnd();
 
             foreach (var catAndTags in SourceTags)
             {
@@ -78,7 +77,7 @@ namespace AngelLoader.Forms
             FillTreeView(TagsFilter.NotTags);
         }
 
-        private void FillTreeView(List<CatAndTags> tags)
+        private void FillTreeView(CatAndTagsList tags)
         {
             var tv =
                 tags == TagsFilter.AndTags ? AndTreeView :
