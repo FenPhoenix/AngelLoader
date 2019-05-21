@@ -55,11 +55,12 @@ namespace AngelLoader.Common
                 }
                 else
                 {
-                    var soIni = Path.Combine(regKey.ToString(), "Options", "SneakyOptions.ini");
+                    var regKeyStr = regKey.ToString();
+                    var soIni = Path.Combine(regKeyStr, "Options", "SneakyOptions.ini");
                     if (!File.Exists(soIni))
                     {
                         Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
-                            "Registry key path was: " + regKey.ToString() + "\r\n" +
+                            "Registry key path was: " + regKeyStr + "\r\n" +
                             "Full path was: " + soIni);
                         return null;
                     }

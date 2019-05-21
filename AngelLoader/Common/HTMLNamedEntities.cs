@@ -2135,7 +2135,7 @@ namespace AngelLoader.Common
             { "Zscr", "119989" },
             { "zscr", "120015" },
             { "zwj", "8205" },
-            { "zwnj", "8204" },
+            { "zwnj", "8204" }
         };
     }
 }

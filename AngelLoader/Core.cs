@@ -85,7 +85,7 @@ namespace AngelLoader
             {
                 const string message = "Failed to create required application directories on startup.";
                 Log(message, ex);
-                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
             }
 
@@ -439,14 +439,10 @@ namespace AngelLoader
                 Config.T3UseCentralSaves = useCentralSaves;
             }
 
-            if (!t1Exists && !t2Exists && !t3Exists) return Error.NoGamesSpecified;
-
-            if (!Directory.Exists(Config.FMsBackupPath))
-            {
-                return Error.BackupPathNotSpecified;
-            }
-
-            return Error.None;
+            return
+                !t1Exists && !t2Exists && !t3Exists ? Error.NoGamesSpecified :
+                !Directory.Exists(Config.FMsBackupPath) ? Error.BackupPathNotSpecified :
+                Error.None;
         }
 
         internal static string GetInstFMsPathFromCamModIni(string gamePath, out Error error)

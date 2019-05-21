@@ -115,7 +115,7 @@ namespace AngelLoader
                     var fmSndPath = GetFMSoundPathByGame();
                     if (!Directory.Exists(fmSndPath)) return;
 
-                    var di = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
+                    _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
 
                     var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
                     foreach (var f in wavFiles)
@@ -169,7 +169,7 @@ namespace AngelLoader
 
                     try
                     {
-                        var di = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
+                        _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
                     }
                     catch (Exception ex)
                     {

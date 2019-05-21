@@ -26,7 +26,7 @@ namespace AngelLoader.WinAPI.Taskbar
 
         // ITaskbarList3
         [PreserveSig]
-        void SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
+        void SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
         [PreserveSig]
         void SetProgressState(IntPtr hwnd, TaskbarStates state);
     }

@@ -865,7 +865,6 @@ namespace AngelLoader.Forms
 
                 HideAddTagDropDown();
             }
-
             else if (e.Control)
             {
                 if (e.KeyCode == Keys.F)
@@ -1041,7 +1040,7 @@ namespace AngelLoader.Forms
                 EditFMTabPosition = TopRightTabControl.TabPages.IndexOf(EditFMTabPage),
                 CommentTabPosition = TopRightTabControl.TabPages.IndexOf(CommentTabPage),
                 TagsTabPosition = TopRightTabControl.TabPages.IndexOf(TagsTabPage),
-                PatchTabPosition = TopRightTabControl.TabPages.IndexOf(PatchTabPage),
+                PatchTabPosition = TopRightTabControl.TabPages.IndexOf(PatchTabPage)
             };
 
             #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
@@ -2798,8 +2797,7 @@ namespace AngelLoader.Forms
         AskToContinueWithCancel(string message, string title)
         {
             var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-            if (result == DialogResult.Cancel) return (true, false);
-            return (false, result == DialogResult.Yes);
+            return result == DialogResult.Cancel ? (true, false) : (false, result == DialogResult.Yes);
         }
 
         public (bool Cancel, bool Continue, bool DontAskAgain)

@@ -209,7 +209,7 @@ namespace AngelLoader_Stub
 
                     #endregion
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return (int)eFMSelReturn.kSelFMRet_Cancel;
                 }

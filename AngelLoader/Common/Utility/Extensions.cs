@@ -675,6 +675,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="button"></param>
         /// <param name="text"></param>
         /// <param name="minWidth"></param>
+        /// <param name="preserveHeight"></param>
         internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, bool preserveHeight = false)
         {
             // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.

@@ -94,7 +94,11 @@ namespace AngelLoader.Ini
                 CatAndTags match = null;
                 for (int i = 0; i < tagsList.Count; i++)
                 {
-                    if (tagsList[i].Category == cat) match = tagsList[i];
+                    if (tagsList[i].Category == cat)
+                    {
+                        match = tagsList[i];
+                        break;
+                    }
                 }
                 if (match == null)
                 {
@@ -701,7 +705,7 @@ namespace AngelLoader.Ini
 
             try
             {
-                var temp = new DateTime(2000, 1, 1).ToString(formatString);
+                _ = new DateTime(2000, 1, 1).ToString(formatString);
                 config.DateCustomFormatString = formatString;
             }
             catch (FormatException)

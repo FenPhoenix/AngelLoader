@@ -109,8 +109,8 @@ namespace AngelLoader.WinAPI
             Synchronize = 0x00100000
         }
 
-        [DllImport("kernel32.dll")]
-        internal static extern bool QueryFullProcessImageName(IntPtr hprocess, int dwFlags, StringBuilder lpExeName, out int size);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern bool QueryFullProcessImageName([In]IntPtr hProcess, [In]int dwFlags, [Out]StringBuilder lpExeName, ref int lpdwSize);
 
         [DllImport("kernel32.dll")]
         internal static extern IntPtr OpenProcess(ProcessAccessFlags dwDesiredAccess, bool bInheritHandle, int dwProcessId);

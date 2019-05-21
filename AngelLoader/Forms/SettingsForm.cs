@@ -560,7 +560,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                var testDate = exampleDate.ToString(formatString);
+                _ = exampleDate.ToString(formatString);
                 OutConfig.DateCustomFormatString = formatString;
             }
             catch (FormatException)

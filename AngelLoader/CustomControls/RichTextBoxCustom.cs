@@ -416,7 +416,7 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        void tmrAutoScroll_Tick(object sender, EventArgs e) => BetterScroll(Handle, scrollIncrementY);
+        private void tmrAutoScroll_Tick(object sender, EventArgs e) => BetterScroll(Handle, scrollIncrementY);
 
         private bool TranslateDispatchCallback(ref Message msg)
         {
