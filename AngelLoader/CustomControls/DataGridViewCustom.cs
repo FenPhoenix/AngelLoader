@@ -423,8 +423,8 @@ namespace AngelLoader.CustomControls
         {
             column.Visible = visible;
             // Fix for zero-height glitch when Rating column gets swapped out when all columns are hidden
-            column.Width = column.Width + 1;
-            column.Width = column.Width - 1;
+            column.Width++;
+            column.Width--;
         }
 
         #region Column header context menu
