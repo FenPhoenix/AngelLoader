@@ -449,9 +449,27 @@ namespace AngelLoader.CustomControls
 
         private bool ReaderScrollCallback(ref READERMODEINFO prmi, int dx, int dy)
         {
-            scrollIncrementY = dy;
+            var cursY = Cursor.Position.Y;
+            var origY = PointToScreen(pbGlyph.Location).Y + 13;
 
-            if (dy != 0) endOnMouseUp = true;
+            // Give a reasonable deadzone
+            if (cursY > origY - 8 && cursY < origY + 8)
+            {
+                scrollIncrementY = 0;
+            }
+            else
+            {
+                int delta = cursY < origY ? origY - cursY : cursY - origY;
+
+                // Exponential scroll like most apps do - somewhat arbitrary values but has a decent feel.
+                // Clamp to 1 (pixel) to correct for loss of precision in divide where it could end up as 0 for
+                // too long.
+                int increment = (((delta * delta).Clamp(0, int.MaxValue) / 640).Clamp(1, int.MaxValue)).Clamp(0, 1024);
+
+                scrollIncrementY = cursY < origY ? -increment : increment;
+
+                endOnMouseUp = true;
+            }
 
             return true;
         }
