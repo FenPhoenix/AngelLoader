@@ -450,15 +450,17 @@ namespace AngelLoader.CustomControls
 
         private bool ReaderScrollCallback(ref READERMODEINFO prmi, int dx, int dy)
         {
-            var cursY = Cursor.Position.Y;
-            var origY = PointToScreen(pbGlyph.Location).Y + (pbGlyph.Height / 2);
-
             if (dy == 0)
             {
                 scrollIncrementY = 0;
             }
             else
             {
+                // Could be placebo, but using actual cursor delta rather than dy (which is a much smaller value)
+                // seems to allow for a smoother acceleration curve (I feel like I notice some minor chunkiness
+                // if I use dy)
+                int cursY = Cursor.Position.Y;
+                int origY = PointToScreen(pbGlyph.Location).Y + (pbGlyph.Height / 2);
                 int delta = cursY < origY ? origY - cursY : cursY - origY;
 
                 // Exponential scroll like most apps do - somewhat arbitrary values but has a decent feel.
