@@ -383,7 +383,8 @@ namespace AngelLoader.CustomControls
 
         private void EnterReaderMode()
         {
-            pbGlyph.Location = Point.Subtract(PointToClient(MousePosition), new Size(13, 13));
+            pbGlyph.Location = Point.Subtract(PointToClient(MousePosition), new Size(pbGlyph.Width / 2, pbGlyph.Height / 2));
+
             SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
             tmrAutoScroll.Start();
             endOnMouseUp = false;
@@ -450,10 +451,9 @@ namespace AngelLoader.CustomControls
         private bool ReaderScrollCallback(ref READERMODEINFO prmi, int dx, int dy)
         {
             var cursY = Cursor.Position.Y;
-            var origY = PointToScreen(pbGlyph.Location).Y + 13;
+            var origY = PointToScreen(pbGlyph.Location).Y + (pbGlyph.Height / 2);
 
-            // Give a reasonable deadzone
-            if (cursY > origY - 8 && cursY < origY + 8)
+            if (dy == 0)
             {
                 scrollIncrementY = 0;
             }
@@ -464,7 +464,7 @@ namespace AngelLoader.CustomControls
                 // Exponential scroll like most apps do - somewhat arbitrary values but has a decent feel.
                 // Clamp to 1 (pixel) to correct for loss of precision in divide where it could end up as 0 for
                 // too long.
-                int increment = (((delta * delta).Clamp(0, int.MaxValue) / 640).Clamp(1, int.MaxValue)).Clamp(0, 1024);
+                int increment = ((delta * delta).Clamp(0, int.MaxValue) / 640).Clamp(1, int.MaxValue).Clamp(0, 1024);
 
                 scrollIncrementY = cursY < origY ? -increment : increment;
 
