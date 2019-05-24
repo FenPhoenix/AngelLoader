@@ -466,7 +466,7 @@ namespace AngelLoader.CustomControls
                 // Exponential scroll like most apps do - somewhat arbitrary values but has a decent feel.
                 // Clamp to 1 (pixel) to correct for loss of precision in divide where it could end up as 0 for
                 // too long.
-                int increment = ((delta * delta).Clamp(0, int.MaxValue) / 640).Clamp(1, int.MaxValue).Clamp(0, 1024);
+                int increment = ((delta * delta).Clamp(0, int.MaxValue) / 640).Clamp(1, 1024);
 
                 scrollIncrementY = cursY < origY ? -increment : increment;
 
