@@ -421,7 +421,7 @@ namespace AngelLoader.CustomControls
 
         private void tmrAutoScroll_Tick(object sender, EventArgs e)
         {
-            if (scrollIncrementY != 0) {BetterScroll(Handle, scrollIncrementY);}
+            if (scrollIncrementY != 0) BetterScroll(Handle, scrollIncrementY);
         }
 
         private bool TranslateDispatchCallback(ref Message msg)
