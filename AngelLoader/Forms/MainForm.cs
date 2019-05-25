@@ -1156,6 +1156,10 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
+            using (var f = new SettingsForm2())
+            {
+                f.ShowDialog();
+            }
         }
 
         private void Test2Button_Click(object sender, EventArgs e)

@@ -207,6 +207,12 @@
     </Compile>
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
+    <Compile Include="Forms\SettingsForm2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SettingsForm2.Designer.cs">
+      <DependentUpon>SettingsForm2.cs</DependentUpon>
+    </Compile>
     <Compile Include="InstallAndPlay.cs" />
     <Compile Include="Forms\FilterRatingForm.cs">
       <SubType>Form</SubType>
@@ -314,6 +320,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScanAllFMsForm.resx">
       <DependentUpon>ScanAllFMsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SettingsForm2.resx">
+      <DependentUpon>SettingsForm2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
