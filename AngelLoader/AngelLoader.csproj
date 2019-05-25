@@ -190,6 +190,24 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomControls\RichTextBoxCustom_Interop.cs" />
+    <Compile Include="CustomControls\SettingsForm\FMDisplayPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\SettingsForm\FMDisplayPage.Designer.cs">
+      <DependentUpon>FMDisplayPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\SettingsForm\OtherPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\SettingsForm\OtherPage.Designer.cs">
+      <DependentUpon>OtherPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\SettingsForm\PathsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControls\SettingsForm\PathsPage.Designer.cs">
+      <DependentUpon>PathsPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\TabControlCustom.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -298,6 +316,15 @@
     <Compile Include="Common\Utility\Methods.cs" />
     <EmbeddedResource Include="CustomControls\ProgressPanel.resx">
       <DependentUpon>ProgressPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\SettingsForm\FMDisplayPage.resx">
+      <DependentUpon>FMDisplayPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\SettingsForm\OtherPage.resx">
+      <DependentUpon>OtherPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControls\SettingsForm\PathsPage.resx">
+      <DependentUpon>PathsPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilterRatingForm.resx">
       <DependentUpon>FilterRatingForm.cs</DependentUpon>

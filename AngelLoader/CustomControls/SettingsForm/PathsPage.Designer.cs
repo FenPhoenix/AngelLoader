@@ -1,0 +1,351 @@
+﻿namespace AngelLoader.CustomControls.SettingsForm
+{
+    partial class PathsPage
+    {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Component Designer generated code
+
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.PathsPanel = new System.Windows.Forms.Panel();
+            this.FMArchivePathsGroupBox = new System.Windows.Forms.GroupBox();
+            this.IncludeSubfoldersCheckBox = new System.Windows.Forms.CheckBox();
+            this.AddFMArchivePathButton = new System.Windows.Forms.Button();
+            this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
+            this.FMArchivePathsListBox = new System.Windows.Forms.ListBox();
+            this.OtherGroupBox = new System.Windows.Forms.GroupBox();
+            this.BackupPathLabel = new System.Windows.Forms.Label();
+            this.BackupPathBrowseButton = new System.Windows.Forms.Button();
+            this.BackupPathTextBox = new System.Windows.Forms.TextBox();
+            this.PathsToGameExesGroupBox = new System.Windows.Forms.GroupBox();
+            this.GameRequirementsPanel = new System.Windows.Forms.Panel();
+            this.GameRequirementsLabel = new System.Windows.Forms.Label();
+            this.Thief3ExePathLabel = new System.Windows.Forms.Label();
+            this.Thief2ExePathLabel = new System.Windows.Forms.Label();
+            this.Thief1ExePathLabel = new System.Windows.Forms.Label();
+            this.Thief3ExePathBrowseButton = new System.Windows.Forms.Button();
+            this.Thief2ExePathBrowseButton = new System.Windows.Forms.Button();
+            this.Thief1ExePathBrowseButton = new System.Windows.Forms.Button();
+            this.Thief3ExePathTextBox = new System.Windows.Forms.TextBox();
+            this.Thief2ExePathTextBox = new System.Windows.Forms.TextBox();
+            this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
+            this.PathsPanel.SuspendLayout();
+            this.FMArchivePathsGroupBox.SuspendLayout();
+            this.OtherGroupBox.SuspendLayout();
+            this.PathsToGameExesGroupBox.SuspendLayout();
+            this.GameRequirementsPanel.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // PathsPanel
+            // 
+            this.PathsPanel.AutoScroll = true;
+            this.PathsPanel.Controls.Add(this.FMArchivePathsGroupBox);
+            this.PathsPanel.Controls.Add(this.OtherGroupBox);
+            this.PathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
+            this.PathsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PathsPanel.Location = new System.Drawing.Point(0, 0);
+            this.PathsPanel.Name = "PathsPanel";
+            this.PathsPanel.Size = new System.Drawing.Size(632, 660);
+            this.PathsPanel.TabIndex = 3;
+            // 
+            // FMArchivePathsGroupBox
+            // 
+            this.FMArchivePathsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FMArchivePathsGroupBox.Controls.Add(this.IncludeSubfoldersCheckBox);
+            this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
+            this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
+            this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
+            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 288);
+            this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
+            this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(618, 256);
+            this.FMArchivePathsGroupBox.TabIndex = 3;
+            this.FMArchivePathsGroupBox.TabStop = false;
+            this.FMArchivePathsGroupBox.Text = "FM archive paths";
+            // 
+            // IncludeSubfoldersCheckBox
+            // 
+            this.IncludeSubfoldersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.IncludeSubfoldersCheckBox.AutoSize = true;
+            this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 228);
+            this.IncludeSubfoldersCheckBox.Name = "IncludeSubfoldersCheckBox";
+            this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
+            this.IncludeSubfoldersCheckBox.TabIndex = 1;
+            this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
+            this.IncludeSubfoldersCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // AddFMArchivePathButton
+            // 
+            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Add;
+            this.AddFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.AddFMArchivePathButton.Location = new System.Drawing.Point(580, 224);
+            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
+            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.AddFMArchivePathButton.TabIndex = 3;
+            this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
+            // 
+            // RemoveFMArchivePathButton
+            // 
+            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.RemoveFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(556, 224);
+            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
+            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.RemoveFMArchivePathButton.TabIndex = 2;
+            this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
+            // 
+            // FMArchivePathsListBox
+            // 
+            this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FMArchivePathsListBox.FormattingEnabled = true;
+            this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
+            this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
+            this.FMArchivePathsListBox.Size = new System.Drawing.Size(586, 199);
+            this.FMArchivePathsListBox.TabIndex = 0;
+            // 
+            // OtherGroupBox
+            // 
+            this.OtherGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.OtherGroupBox.Controls.Add(this.BackupPathLabel);
+            this.OtherGroupBox.Controls.Add(this.BackupPathBrowseButton);
+            this.OtherGroupBox.Controls.Add(this.BackupPathTextBox);
+            this.OtherGroupBox.Location = new System.Drawing.Point(8, 208);
+            this.OtherGroupBox.Name = "OtherGroupBox";
+            this.OtherGroupBox.Size = new System.Drawing.Size(618, 72);
+            this.OtherGroupBox.TabIndex = 2;
+            this.OtherGroupBox.TabStop = false;
+            this.OtherGroupBox.Text = "Other";
+            // 
+            // BackupPathLabel
+            // 
+            this.BackupPathLabel.AutoSize = true;
+            this.BackupPathLabel.Location = new System.Drawing.Point(16, 24);
+            this.BackupPathLabel.Name = "BackupPathLabel";
+            this.BackupPathLabel.Size = new System.Drawing.Size(88, 13);
+            this.BackupPathLabel.TabIndex = 0;
+            this.BackupPathLabel.Text = "FM backup path:";
+            // 
+            // BackupPathBrowseButton
+            // 
+            this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BackupPathBrowseButton.AutoSize = true;
+            this.BackupPathBrowseButton.Location = new System.Drawing.Point(530, 39);
+            this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
+            this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.BackupPathBrowseButton.TabIndex = 2;
+            this.BackupPathBrowseButton.Text = "Browse...";
+            this.BackupPathBrowseButton.UseVisualStyleBackColor = true;
+            // 
+            // BackupPathTextBox
+            // 
+            this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BackupPathTextBox.Location = new System.Drawing.Point(16, 40);
+            this.BackupPathTextBox.Name = "BackupPathTextBox";
+            this.BackupPathTextBox.Size = new System.Drawing.Size(514, 20);
+            this.BackupPathTextBox.TabIndex = 1;
+            // 
+            // PathsToGameExesGroupBox
+            // 
+            this.PathsToGameExesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PathsToGameExesGroupBox.Controls.Add(this.GameRequirementsPanel);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief3ExePathLabel);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief2ExePathLabel);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief1ExePathLabel);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief3ExePathBrowseButton);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief2ExePathBrowseButton);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief1ExePathBrowseButton);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief3ExePathTextBox);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief2ExePathTextBox);
+            this.PathsToGameExesGroupBox.Controls.Add(this.Thief1ExePathTextBox);
+            this.PathsToGameExesGroupBox.Location = new System.Drawing.Point(8, 8);
+            this.PathsToGameExesGroupBox.Name = "PathsToGameExesGroupBox";
+            this.PathsToGameExesGroupBox.Size = new System.Drawing.Size(618, 192);
+            this.PathsToGameExesGroupBox.TabIndex = 1;
+            this.PathsToGameExesGroupBox.TabStop = false;
+            this.PathsToGameExesGroupBox.Text = "Paths to game executables";
+            // 
+            // GameRequirementsPanel
+            // 
+            this.GameRequirementsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.GameRequirementsPanel.AutoScroll = true;
+            this.GameRequirementsPanel.Controls.Add(this.GameRequirementsLabel);
+            this.GameRequirementsPanel.Location = new System.Drawing.Point(16, 144);
+            this.GameRequirementsPanel.Name = "GameRequirementsPanel";
+            this.GameRequirementsPanel.Size = new System.Drawing.Size(586, 32);
+            this.GameRequirementsPanel.TabIndex = 9;
+            // 
+            // GameRequirementsLabel
+            // 
+            this.GameRequirementsLabel.AutoSize = true;
+            this.GameRequirementsLabel.Location = new System.Drawing.Point(0, 0);
+            this.GameRequirementsLabel.Name = "GameRequirementsLabel";
+            this.GameRequirementsLabel.Size = new System.Drawing.Size(191, 26);
+            this.GameRequirementsLabel.TabIndex = 1;
+            this.GameRequirementsLabel.Text = "* Thief 1 and Thief 2 require NewDark.\r\n* Thief 3 requires the Sneaky Upgrade.";
+            this.GameRequirementsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // Thief3ExePathLabel
+            // 
+            this.Thief3ExePathLabel.AutoSize = true;
+            this.Thief3ExePathLabel.Location = new System.Drawing.Point(16, 104);
+            this.Thief3ExePathLabel.Name = "Thief3ExePathLabel";
+            this.Thief3ExePathLabel.Size = new System.Drawing.Size(43, 13);
+            this.Thief3ExePathLabel.TabIndex = 8;
+            this.Thief3ExePathLabel.Text = "Thief 3:";
+            // 
+            // Thief2ExePathLabel
+            // 
+            this.Thief2ExePathLabel.AutoSize = true;
+            this.Thief2ExePathLabel.Location = new System.Drawing.Point(16, 64);
+            this.Thief2ExePathLabel.Name = "Thief2ExePathLabel";
+            this.Thief2ExePathLabel.Size = new System.Drawing.Size(43, 13);
+            this.Thief2ExePathLabel.TabIndex = 4;
+            this.Thief2ExePathLabel.Text = "Thief 2:";
+            // 
+            // Thief1ExePathLabel
+            // 
+            this.Thief1ExePathLabel.AutoSize = true;
+            this.Thief1ExePathLabel.Location = new System.Drawing.Point(16, 24);
+            this.Thief1ExePathLabel.Name = "Thief1ExePathLabel";
+            this.Thief1ExePathLabel.Size = new System.Drawing.Size(43, 13);
+            this.Thief1ExePathLabel.TabIndex = 0;
+            this.Thief1ExePathLabel.Text = "Thief 1:";
+            // 
+            // Thief3ExePathBrowseButton
+            // 
+            this.Thief3ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Thief3ExePathBrowseButton.AutoSize = true;
+            this.Thief3ExePathBrowseButton.Location = new System.Drawing.Point(530, 119);
+            this.Thief3ExePathBrowseButton.Name = "Thief3ExePathBrowseButton";
+            this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.Thief3ExePathBrowseButton.TabIndex = 6;
+            this.Thief3ExePathBrowseButton.Text = "Browse...";
+            this.Thief3ExePathBrowseButton.UseVisualStyleBackColor = true;
+            // 
+            // Thief2ExePathBrowseButton
+            // 
+            this.Thief2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Thief2ExePathBrowseButton.AutoSize = true;
+            this.Thief2ExePathBrowseButton.Location = new System.Drawing.Point(530, 79);
+            this.Thief2ExePathBrowseButton.Name = "Thief2ExePathBrowseButton";
+            this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.Thief2ExePathBrowseButton.TabIndex = 4;
+            this.Thief2ExePathBrowseButton.Text = "Browse...";
+            this.Thief2ExePathBrowseButton.UseVisualStyleBackColor = true;
+            // 
+            // Thief1ExePathBrowseButton
+            // 
+            this.Thief1ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Thief1ExePathBrowseButton.AutoSize = true;
+            this.Thief1ExePathBrowseButton.Location = new System.Drawing.Point(530, 39);
+            this.Thief1ExePathBrowseButton.Name = "Thief1ExePathBrowseButton";
+            this.Thief1ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.Thief1ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.Thief1ExePathBrowseButton.TabIndex = 2;
+            this.Thief1ExePathBrowseButton.Text = "Browse...";
+            this.Thief1ExePathBrowseButton.UseVisualStyleBackColor = true;
+            // 
+            // Thief3ExePathTextBox
+            // 
+            this.Thief3ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Thief3ExePathTextBox.Location = new System.Drawing.Point(16, 120);
+            this.Thief3ExePathTextBox.Name = "Thief3ExePathTextBox";
+            this.Thief3ExePathTextBox.Size = new System.Drawing.Size(514, 20);
+            this.Thief3ExePathTextBox.TabIndex = 5;
+            // 
+            // Thief2ExePathTextBox
+            // 
+            this.Thief2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Thief2ExePathTextBox.Location = new System.Drawing.Point(16, 80);
+            this.Thief2ExePathTextBox.Name = "Thief2ExePathTextBox";
+            this.Thief2ExePathTextBox.Size = new System.Drawing.Size(514, 20);
+            this.Thief2ExePathTextBox.TabIndex = 3;
+            // 
+            // Thief1ExePathTextBox
+            // 
+            this.Thief1ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Thief1ExePathTextBox.Location = new System.Drawing.Point(16, 40);
+            this.Thief1ExePathTextBox.Name = "Thief1ExePathTextBox";
+            this.Thief1ExePathTextBox.Size = new System.Drawing.Size(514, 20);
+            this.Thief1ExePathTextBox.TabIndex = 1;
+            // 
+            // PathsPage
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.PathsPanel);
+            this.Name = "PathsPage";
+            this.Size = new System.Drawing.Size(632, 660);
+            this.PathsPanel.ResumeLayout(false);
+            this.FMArchivePathsGroupBox.ResumeLayout(false);
+            this.FMArchivePathsGroupBox.PerformLayout();
+            this.OtherGroupBox.ResumeLayout(false);
+            this.OtherGroupBox.PerformLayout();
+            this.PathsToGameExesGroupBox.ResumeLayout(false);
+            this.PathsToGameExesGroupBox.PerformLayout();
+            this.GameRequirementsPanel.ResumeLayout(false);
+            this.GameRequirementsPanel.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Panel PathsPanel;
+        private System.Windows.Forms.GroupBox OtherGroupBox;
+        private System.Windows.Forms.Label BackupPathLabel;
+        private System.Windows.Forms.Button BackupPathBrowseButton;
+        private System.Windows.Forms.TextBox BackupPathTextBox;
+        private System.Windows.Forms.GroupBox PathsToGameExesGroupBox;
+        private System.Windows.Forms.Panel GameRequirementsPanel;
+        private System.Windows.Forms.Label GameRequirementsLabel;
+        private System.Windows.Forms.Label Thief3ExePathLabel;
+        private System.Windows.Forms.Label Thief2ExePathLabel;
+        private System.Windows.Forms.Label Thief1ExePathLabel;
+        private System.Windows.Forms.Button Thief3ExePathBrowseButton;
+        private System.Windows.Forms.Button Thief2ExePathBrowseButton;
+        private System.Windows.Forms.Button Thief1ExePathBrowseButton;
+        private System.Windows.Forms.TextBox Thief3ExePathTextBox;
+        private System.Windows.Forms.TextBox Thief2ExePathTextBox;
+        private System.Windows.Forms.TextBox Thief1ExePathTextBox;
+        private System.Windows.Forms.GroupBox FMArchivePathsGroupBox;
+        private System.Windows.Forms.CheckBox IncludeSubfoldersCheckBox;
+        private System.Windows.Forms.Button AddFMArchivePathButton;
+        private System.Windows.Forms.Button RemoveFMArchivePathButton;
+        private System.Windows.Forms.ListBox FMArchivePathsListBox;
+    }
+}
