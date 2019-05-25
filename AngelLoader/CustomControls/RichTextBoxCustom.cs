@@ -343,6 +343,8 @@ namespace AngelLoader.CustomControls
 
         private static void BetterScroll(IntPtr handle, int pixels)
         {
+            if (pixels == 0) return;
+
             var si = GetCurrentScrollInfo(handle);
 
             si.nPos += pixels;
@@ -417,7 +419,10 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        private void tmrAutoScroll_Tick(object sender, EventArgs e) => BetterScroll(Handle, scrollIncrementY);
+        private void tmrAutoScroll_Tick(object sender, EventArgs e)
+        {
+            if (scrollIncrementY != 0) {BetterScroll(Handle, scrollIncrementY);}
+        }
 
         private bool TranslateDispatchCallback(ref Message msg)
         {
