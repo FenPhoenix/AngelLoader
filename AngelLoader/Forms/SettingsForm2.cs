@@ -673,7 +673,10 @@ namespace AngelLoader.Forms
         // This is to allow for selection to change immediately on mousedown. In that case the event will fire
         // again when you let up the mouse, but that's okay because a re-select is a visual no-op and the work
         // is basically nothing.
-        private void PagesListBox_MouseDown(object sender, MouseEventArgs e) => ShowPage(PagesListBox.IndexFromPoint(e.Location));
+        private void PagesListBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left) ShowPage(PagesListBox.IndexFromPoint(e.Location));
+        }
 
         private void ShowPage(int index)
         {
