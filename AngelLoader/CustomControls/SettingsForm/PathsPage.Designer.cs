@@ -50,23 +50,23 @@
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
             this.AddFMArchivePathButton = new System.Windows.Forms.Button();
             this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
+            this.ActualPathsPanel = new System.Windows.Forms.Panel();
             this.PagePanel.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.GameRequirementsPanel.SuspendLayout();
+            this.ActualPathsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
-            this.PagePanel.Controls.Add(this.FMArchivePathsGroupBox);
-            this.PagePanel.Controls.Add(this.OtherGroupBox);
-            this.PagePanel.Controls.Add(this.PathsToGameExesGroupBox);
+            this.PagePanel.Controls.Add(this.ActualPathsPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(632, 660);
+            this.PagePanel.Size = new System.Drawing.Size(634, 695);
             this.PagePanel.TabIndex = 3;
             // 
             // FMArchivePathsGroupBox
@@ -303,13 +303,25 @@
             this.RemoveFMArchivePathButton.TabIndex = 2;
             this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
             // 
+            // ActualPathsPanel
+            // 
+            this.ActualPathsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
+            this.ActualPathsPanel.Controls.Add(this.FMArchivePathsGroupBox);
+            this.ActualPathsPanel.Controls.Add(this.OtherGroupBox);
+            this.ActualPathsPanel.Location = new System.Drawing.Point(0, 0);
+            this.ActualPathsPanel.Name = "ActualPathsPanel";
+            this.ActualPathsPanel.Size = new System.Drawing.Size(634, 552);
+            this.ActualPathsPanel.TabIndex = 4;
+            // 
             // PathsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "PathsPage";
-            this.Size = new System.Drawing.Size(632, 660);
+            this.Size = new System.Drawing.Size(634, 695);
             this.PagePanel.ResumeLayout(false);
             this.FMArchivePathsGroupBox.ResumeLayout(false);
             this.FMArchivePathsGroupBox.PerformLayout();
@@ -319,6 +331,7 @@
             this.PathsToGameExesGroupBox.PerformLayout();
             this.GameRequirementsPanel.ResumeLayout(false);
             this.GameRequirementsPanel.PerformLayout();
+            this.ActualPathsPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -347,5 +360,6 @@
         internal System.Windows.Forms.Button AddFMArchivePathButton;
         internal System.Windows.Forms.Button RemoveFMArchivePathButton;
         internal System.Windows.Forms.ListBox FMArchivePathsListBox;
+        internal System.Windows.Forms.Panel ActualPathsPanel;
     }
 }

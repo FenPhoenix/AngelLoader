@@ -77,7 +77,7 @@
             this.BottomFlowLayoutPanel.Controls.Add(this.ErrorLabel);
             this.BottomFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BottomFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomFlowLayoutPanel.Location = new System.Drawing.Point(0, 616);
+            this.BottomFlowLayoutPanel.Location = new System.Drawing.Point(0, 628);
             this.BottomFlowLayoutPanel.Name = "BottomFlowLayoutPanel";
             this.BottomFlowLayoutPanel.Size = new System.Drawing.Size(694, 40);
             this.BottomFlowLayoutPanel.TabIndex = 4;

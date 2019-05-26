@@ -359,7 +359,7 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(495, 525);
+            this.PagePanel.Size = new System.Drawing.Size(496, 525);
             this.PagePanel.TabIndex = 8;
             // 
             // DummyAutoScrollPanel
@@ -375,7 +375,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "FMDisplayPage";
-            this.Size = new System.Drawing.Size(495, 525);
+            this.Size = new System.Drawing.Size(496, 525);
             this.RatingDisplayStyleGroupBox.ResumeLayout(false);
             this.RatingDisplayStyleGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();

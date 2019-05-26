@@ -92,7 +92,7 @@ namespace AngelLoader.Common.DataClasses
         internal readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
 
         internal SettingsTab SettingsTab = SettingsTab.Paths;
-        internal Size SettingsWindowSize = new Size(710, 690);
+        internal Size SettingsWindowSize = new Size(710, 708);
         internal int SettingsWindowSplitterDistance = 155;
 
         internal TopRightTab TopRightTab = TopRightTab.Statistics;

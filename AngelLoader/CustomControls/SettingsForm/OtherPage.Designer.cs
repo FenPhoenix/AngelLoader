@@ -37,6 +37,7 @@
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
             this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
+            this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.WebSearchTitleExplanationLabel = new System.Windows.Forms.Label();
             this.WebSearchUrlTextBox = new System.Windows.Forms.TextBox();
             this.WebSearchUrlLabel = new System.Windows.Forms.Label();
@@ -49,7 +50,6 @@
             this.FMFileConversionGroupBox = new System.Windows.Forms.GroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new System.Windows.Forms.CheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new System.Windows.Forms.CheckBox();
-            this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.PagePanel.SuspendLayout();
             this.ShowOrHideUIElementsGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
@@ -71,7 +71,7 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 584);
+            this.PagePanel.Size = new System.Drawing.Size(440, 623);
             this.PagePanel.TabIndex = 0;
             // 
             // ShowOrHideUIElementsGroupBox
@@ -80,7 +80,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
-            this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 492);
+            this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 504);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
             this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(424, 80);
             this.ShowOrHideUIElementsGroupBox.TabIndex = 11;
@@ -114,7 +114,7 @@
             this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
-            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 428);
+            this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 440);
             this.PlayFMOnDCOrEnterGroupBox.Name = "PlayFMOnDCOrEnterGroupBox";
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
             this.PlayFMOnDCOrEnterGroupBox.TabIndex = 9;
@@ -164,15 +164,27 @@
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
             this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 324);
             this.WebSearchGroupBox.Name = "WebSearchGroupBox";
-            this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 96);
+            this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
             this.WebSearchGroupBox.TabIndex = 8;
             this.WebSearchGroupBox.TabStop = false;
             this.WebSearchGroupBox.Text = "Web search";
             // 
+            // WebSearchUrlResetButton
+            // 
+            this.WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.WebSearchUrlResetButton.BackgroundImage = global::AngelLoader.Properties.Resources.Refresh;
+            this.WebSearchUrlResetButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.WebSearchUrlResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.WebSearchUrlResetButton.Location = new System.Drawing.Point(386, 48);
+            this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
+            this.WebSearchUrlResetButton.Size = new System.Drawing.Size(20, 20);
+            this.WebSearchUrlResetButton.TabIndex = 2;
+            this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
+            // 
             // WebSearchTitleExplanationLabel
             // 
             this.WebSearchTitleExplanationLabel.AutoSize = true;
-            this.WebSearchTitleExplanationLabel.Location = new System.Drawing.Point(16, 72);
+            this.WebSearchTitleExplanationLabel.Location = new System.Drawing.Point(16, 78);
             this.WebSearchTitleExplanationLabel.Name = "WebSearchTitleExplanationLabel";
             this.WebSearchTitleExplanationLabel.Size = new System.Drawing.Size(140, 13);
             this.WebSearchTitleExplanationLabel.TabIndex = 3;
@@ -306,25 +318,13 @@
             this.ConvertWAVsTo16BitOnInstallCheckBox.Text = "Convert .wavs to 16 bit on install";
             this.ConvertWAVsTo16BitOnInstallCheckBox.UseVisualStyleBackColor = true;
             // 
-            // WebSearchUrlResetButton
-            // 
-            this.WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.WebSearchUrlResetButton.BackgroundImage = global::AngelLoader.Properties.Resources.Refresh;
-            this.WebSearchUrlResetButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.WebSearchUrlResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.WebSearchUrlResetButton.Location = new System.Drawing.Point(386, 48);
-            this.WebSearchUrlResetButton.Name = "WebSearchUrlResetButton";
-            this.WebSearchUrlResetButton.Size = new System.Drawing.Size(20, 20);
-            this.WebSearchUrlResetButton.TabIndex = 2;
-            this.WebSearchUrlResetButton.UseVisualStyleBackColor = true;
-            // 
             // OtherPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "OtherPage";
-            this.Size = new System.Drawing.Size(440, 584);
+            this.Size = new System.Drawing.Size(440, 623);
             this.PagePanel.ResumeLayout(false);
             this.ShowOrHideUIElementsGroupBox.ResumeLayout(false);
             this.PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
