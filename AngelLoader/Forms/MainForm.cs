@@ -158,7 +158,7 @@ namespace AngelLoader.Forms
             // needing to actually be focused. Vital for a good user experience.
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
-                if (CursorOutsideAddTagsDropDownArea()) return BlockMessage;
+                if (CursorOutsideAddTagsDropDownArea() || !CanFocus) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 int delta = wParam >> 16;
@@ -190,7 +190,7 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == InteropMisc.WM_MOUSEHWHEEL)
             {
-                if (CursorOverControl(FMsDGV))
+                if (CanFocus && CursorOverControl(FMsDGV))
                 {
                     int delta = (int)m.WParam >> 16;
                     if (delta != 0)

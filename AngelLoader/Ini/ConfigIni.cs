@@ -430,6 +430,26 @@ namespace AngelLoader.Ini
                         config.SettingsTab = (SettingsTab)field.GetValue(null);
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SettingsWindowSize) + "="))
+                {
+                    if (!val.Contains(',')) continue;
+
+                    var values = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var widthExists = int.TryParse(values[0].Trim(), out var width);
+                    var heightExists = int.TryParse(values[1].Trim(), out var height);
+
+                    if (widthExists && heightExists)
+                    {
+                        config.SettingsWindowSize = new Size(width, height);
+                    }
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SettingsWindowSplitterDistance) + "="))
+                {
+                    if (int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result))
+                    {
+                        config.SettingsWindowSplitterDistance = result;
+                    }
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FMArchivePath="))
                 {
                     config.FMArchivePaths.Add(val.Trim());
@@ -741,6 +761,8 @@ namespace AngelLoader.Ini
                 #region Settings window
 
                 sw.WriteLine(nameof(config.SettingsTab) + "=" + config.SettingsTab);
+                sw.WriteLine(nameof(config.SettingsWindowSize) + "=" + config.SettingsWindowSize.Width + "," + config.SettingsWindowSize.Height);
+                sw.WriteLine(nameof(config.SettingsWindowSplitterDistance) + "=" + config.SettingsWindowSplitterDistance);
 
                 #region Paths
 

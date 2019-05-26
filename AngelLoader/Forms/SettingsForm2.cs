@@ -20,22 +20,20 @@ using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Forms
 {
-    internal sealed partial class SettingsForm2 : Form, IEventDisabler, ILocalizable
+    internal sealed partial class SettingsForm2 : Form, IEventDisabler, ILocalizable, ISettingsWindow
     {
         private readonly ILocalizable OwnerForm;
 
         private readonly bool Startup;
 
         private readonly ConfigData InConfig;
-        internal readonly ConfigData OutConfig = new ConfigData();
+        public ConfigData OutConfig { get; } = new ConfigData();
 
         private readonly TextBox[] GameExePathTextBoxes;
 
-        private enum PathError
-        {
-            True,
-            False
-        }
+        public new DialogResult ShowDialog() => ((Form)this).ShowDialog();
+
+        private enum PathError { True, False }
 
         private enum PageIndex
         {
@@ -60,11 +58,60 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
+            OwnerForm = ownerForm;
+            InConfig = config;
+
+            #region Add pages
+
             Pages = new UserControl[] { PathsPage, FMDisplayPage, OtherPage };
 
-            OwnerForm = ownerForm;
+            PagePanel.Controls.Add(PathsPage);
+            PagePanel.Controls.Add(FMDisplayPage);
+            PagePanel.Controls.Add(OtherPage);
 
-            InConfig = config;
+            PathsPage.Dock = DockStyle.Fill;
+            FMDisplayPage.Dock = DockStyle.Fill;
+            OtherPage.Dock = DockStyle.Fill;
+
+            #endregion
+
+            #region Hook up page events
+
+            PathsPage.Thief1ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
+            PathsPage.Thief1ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+            PathsPage.Thief3ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+            PathsPage.Thief2ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+            PathsPage.Thief3ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
+            PathsPage.Thief2ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
+            PathsPage.AddFMArchivePathButton.Click += AddFMArchivePathButton_Click;
+            PathsPage.RemoveFMArchivePathButton.Click += RemoveFMArchivePathButton_Click;
+            PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
+            PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
+            FMDisplayPage.RatingUseStarsCheckBox.CheckedChanged += RatingUseStarsCheckBox_CheckedChanged;
+            FMDisplayPage.RatingFMSelDisplayStyleRadioButton.CheckedChanged += RatingOutOfFiveRadioButton_CheckedChanged;
+            FMDisplayPage.RatingNDLDisplayStyleRadioButton.CheckedChanged += RatingOutOfTenRadioButton_CheckedChanged;
+            FMDisplayPage.DateSeparator2TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
+            FMDisplayPage.Date1ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+            FMDisplayPage.DateSeparator1TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
+            FMDisplayPage.Date4ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+            FMDisplayPage.Date2ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+            FMDisplayPage.Date3ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+            FMDisplayPage.DateCustomRadioButton.CheckedChanged += DateCustomRadioButton_CheckedChanged;
+            FMDisplayPage.DateCurrentCultureLongRadioButton.CheckedChanged += DateCurrentCultureLongRadioButton_CheckedChanged;
+            FMDisplayPage.DateCurrentCultureShortRadioButton.CheckedChanged += DateCurrentCultureShortRadioButton_CheckedChanged;
+            FMDisplayPage.EnableIgnoreArticlesCheckBox.CheckedChanged += ArticlesCheckBox_CheckedChanged;
+            FMDisplayPage.ArticlesTextBox.Leave += ArticlesTextBox_Leave;
+            OtherPage.LanguageComboBox.SelectedIndexChanged += LanguageComboBox_SelectedIndexChanged;
+            OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
+
+            #endregion
+
+            GameExePathTextBoxes = new[]
+            {
+                PathsPage.Thief1ExePathTextBox,
+                PathsPage.Thief2ExePathTextBox,
+                PathsPage.Thief3ExePathTextBox
+            };
 
             Text = LText.SettingsWindow.TitleText;
 
@@ -77,13 +124,9 @@ namespace AngelLoader.Forms
             OKButton.Tag = OKButton.Size;
             Cancel_Button.Tag = Cancel_Button.Size;
 
-            SectionPanel.Controls.Add(PathsPage);
-            SectionPanel.Controls.Add(FMDisplayPage);
-            SectionPanel.Controls.Add(OtherPage);
-
-            PathsPage.Dock = DockStyle.Fill;
-            FMDisplayPage.Dock = DockStyle.Fill;
-            OtherPage.Dock = DockStyle.Fill;
+            Width = Math.Min(InConfig.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
+            Height = Math.Min(InConfig.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
+            MainSplitContainer.SplitterDistance = InConfig.SettingsWindowSplitterDistance;
         }
 
         private void SettingsForm_Load(object sender, EventArgs e)
@@ -393,20 +436,576 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void PagesListBox_SelectedIndexChanged(object sender, EventArgs e) => SelectPage(PagesListBox.SelectedIndex);
+        private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Special case: these are meta, so they should always be set even if the user clicked Cancel
+            OutConfig.SettingsTab =
+                PagesListBox.SelectedIndex == (int)PageIndex.FMDisplay ? SettingsTab.FMDisplay :
+                PagesListBox.SelectedIndex == (int)PageIndex.Other ? SettingsTab.Other :
+                SettingsTab.Paths;
+            OutConfig.SettingsWindowSize = Size;
+            OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
+
+            if (DialogResult != DialogResult.OK)
+            {
+                if (!Startup)
+                {
+                    try
+                    {
+                        if (!OtherPage.LanguageComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
+                        {
+                            Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Exception in language reading", ex);
+                        return;
+                    }
+
+                    try
+                    {
+                        OwnerForm.SetUITextToLocalized();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
+                    }
+                }
+                return;
+            }
+
+            FormatArticles();
+
+            #region Checks
+
+            bool error = false;
+
+            // TODO: Run a similar thing to Model.CheckPaths() to check for cam_mod.ini etc. to be thorough
+
+            foreach (var tb in GameExePathTextBoxes)
+            {
+                if (!tb.Text.IsWhiteSpace() && !File.Exists(tb.Text))
+                {
+                    error = true;
+                    ShowPathError(tb, true);
+                }
+            }
+
+            if (!Directory.Exists(PathsPage.BackupPathTextBox.Text))
+            {
+                error = true;
+                ShowPathError(PathsPage.BackupPathTextBox, true);
+            }
+
+            if (error)
+            {
+                e.Cancel = true;
+                PagesListBox.SelectedIndex = (int)PageIndex.Paths;
+                return;
+            }
+            else
+            {
+                foreach (var tb in GameExePathTextBoxes)
+                {
+                    tb.BackColor = SystemColors.Window;
+                    tb.Tag = PathError.False;
+                }
+                PathsPage.BackupPathTextBox.BackColor = SystemColors.Window;
+                PathsPage.BackupPathTextBox.Tag = PathError.False;
+                ErrorLabel.Hide();
+
+                // Extremely petty visual nicety - makes the error stuff go away before the form closes
+                Refresh();
+            }
+
+            #endregion
+
+            #region Paths page
+
+            OutConfig.T1Exe = PathsPage.Thief1ExePathTextBox.Text.Trim();
+            OutConfig.T2Exe = PathsPage.Thief2ExePathTextBox.Text.Trim();
+            OutConfig.T3Exe = PathsPage.Thief3ExePathTextBox.Text.Trim();
+
+            OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
+
+            // Manual so we can use Trim() on each
+            OutConfig.FMArchivePaths.Clear();
+            foreach (string path in PathsPage.FMArchivePathsListBox.Items) OutConfig.FMArchivePaths.Add(path.Trim());
+
+            OutConfig.FMArchivePathsIncludeSubfolders = PathsPage.IncludeSubfoldersCheckBox.Checked;
+
+            #endregion
+
+            #region FM Display page
+
+            #region Game organization
+
+            OutConfig.GameOrganization = FMDisplayPage.OrganizeGamesByTabRadioButton.Checked
+                    ? GameOrganization.ByTab
+                    : GameOrganization.OneList;
+
+            #endregion
+
+            #region Articles
+
+            OutConfig.EnableArticles = FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked;
+
+            var retArticles = FMDisplayPage.ArticlesTextBox.Text
+                .Replace(", ", ",")
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                .ToList();
+
+            // Just in case
+            for (var i = 0; i < retArticles.Count; i++)
+            {
+                if (retArticles[i].IsWhiteSpace())
+                {
+                    retArticles.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            OutConfig.Articles.ClearAndAdd(retArticles);
+
+            OutConfig.MoveArticlesToEnd = FMDisplayPage.MoveArticlesToEndCheckBox.Checked;
+
+            #endregion
+
+            #region Date format
+
+            OutConfig.DateFormat =
+                FMDisplayPage.DateCurrentCultureShortRadioButton.Checked ? DateFormat.CurrentCultureShort :
+                FMDisplayPage.DateCurrentCultureLongRadioButton.Checked ? DateFormat.CurrentCultureLong :
+                DateFormat.Custom;
+
+            OutConfig.DateCustomFormat1 = FMDisplayPage.Date1ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomSeparator1 = FMDisplayPage.DateSeparator1TextBox.Text;
+            OutConfig.DateCustomFormat2 = FMDisplayPage.Date2ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomSeparator2 = FMDisplayPage.DateSeparator2TextBox.Text;
+            OutConfig.DateCustomFormat3 = FMDisplayPage.Date3ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomSeparator3 = FMDisplayPage.DateSeparator3TextBox.Text;
+            OutConfig.DateCustomFormat4 = FMDisplayPage.Date4ComboBox.SelectedItem.ToString();
+
+            var formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
+                               FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
+                               FMDisplayPage.Date2ComboBox.SelectedItem +
+                               FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
+                               FMDisplayPage.Date3ComboBox.SelectedItem +
+                               FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
+                               FMDisplayPage.Date4ComboBox.SelectedItem;
+
+            try
+            {
+                _ = exampleDate.ToString(formatString);
+                OutConfig.DateCustomFormatString = formatString;
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat, LText.AlertMessages.Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Cancel = true;
+                return;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange, LText.AlertMessages.Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Cancel = true;
+                return;
+            }
+
+            #endregion
+
+            #region Rating display style
+
+            OutConfig.RatingDisplayStyle = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
+                ? RatingDisplayStyle.NewDarkLoader
+                : RatingDisplayStyle.FMSel;
+            OutConfig.RatingUseStars = FMDisplayPage.RatingUseStarsCheckBox.Checked;
+
+            #endregion
+
+            #endregion
+
+            #region Other page
+
+            #region File conversion
+
+            OutConfig.ConvertWAVsTo16BitOnInstall = OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Checked;
+            OutConfig.ConvertOGGsToWAVsOnInstall = OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked;
+
+            #endregion
+
+            #region Uninstalling FMs
+
+            OutConfig.ConfirmUninstall = OtherPage.ConfirmUninstallCheckBox.Checked;
+
+            OutConfig.BackupFMData = OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked
+                ? BackupFMData.SavesAndScreensOnly
+                : BackupFMData.AllChangedFiles;
+
+            OutConfig.BackupAlwaysAsk = OtherPage.BackupAlwaysAskCheckBox.Checked;
+
+            #endregion
+
+            OutConfig.Language = OtherPage.LanguageComboBox.SelectedBackingItem();
+
+            OutConfig.WebSearchUrl = OtherPage.WebSearchUrlTextBox.Text;
+
+            OutConfig.ConfirmPlayOnDCOrEnter = OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked;
+
+            #region Show/hide UI elements
+
+            OutConfig.HideUninstallButton = OtherPage.HideUninstallButtonCheckBox.Checked;
+            OutConfig.HideFMListZoomButtons = OtherPage.HideFMListZoomButtonsCheckBox.Checked;
+
+            #endregion
+
+            #endregion
+        }
+
+        #region Page selection handler
+
+        private void PagesListBox_SelectedIndexChanged(object sender, EventArgs e) => ShowPage(PagesListBox.SelectedIndex);
 
         // This is to allow for selection to change immediately on mousedown. In that case the event will fire
         // again when you let up the mouse, but that's okay because a re-select is a visual no-op and the work
         // is basically nothing.
-        private void PagesListBox_MouseDown(object sender, MouseEventArgs e) => SelectPage(PagesListBox.IndexFromPoint(e.Location));
+        private void PagesListBox_MouseDown(object sender, MouseEventArgs e) => ShowPage(PagesListBox.IndexFromPoint(e.Location));
 
-        private void SelectPage(int index)
+        private void ShowPage(int index)
         {
             int pagesLength = Pages.Length;
             if (index < 0 || index > pagesLength - 1) return;
 
             Pages[index].Show();
             for (int i = 0; i < pagesLength; i++) if (i != index) Pages[i].Hide();
+        }
+
+        #endregion
+
+        #region Paths page
+
+        #region Game exe paths
+
+        private void GameExePathTextBoxes_Leave(object sender, EventArgs e)
+        {
+            var s = (TextBox)sender;
+            ShowPathError(s, !s.Text.IsEmpty() && !File.Exists(s.Text));
+        }
+
+        private void GameExePathBrowseButtons_Click(object sender, EventArgs e)
+        {
+            var tb =
+                sender == PathsPage.Thief1ExePathBrowseButton ? PathsPage.Thief1ExePathTextBox :
+                sender == PathsPage.Thief2ExePathBrowseButton ? PathsPage.Thief2ExePathTextBox :
+                PathsPage.Thief3ExePathTextBox;
+
+            string initialPath = "";
+            try
+            {
+                initialPath = Path.GetDirectoryName(tb.Text);
+            }
+            catch
+            {
+                // ignore
+            }
+
+            var (result, fileName) = BrowseForExeFile(initialPath);
+            if (result == DialogResult.OK) tb.Text = fileName ?? "";
+        }
+
+        private void BackupPathTextBox_Leave(object sender, EventArgs e)
+        {
+            var s = (TextBox)sender;
+            ShowPathError(s, !Directory.Exists(s.Text));
+        }
+
+        private void BackupPathBrowseButton_Click(object sender, EventArgs e)
+        {
+            using (var d = new AutoFolderBrowserDialog())
+            {
+                d.InitialDirectory = PathsPage.BackupPathTextBox.Text;
+                d.MultiSelect = false;
+                if (d.ShowDialog() == DialogResult.OK) PathsPage.BackupPathTextBox.Text = d.DirectoryName;
+            }
+        }
+
+        private static (DialogResult Result, string FileName)
+        BrowseForExeFile(string initialPath)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.InitialDirectory = initialPath;
+                dialog.Filter = LText.BrowseDialogs.ExeFiles + @"|*.exe";
+                return (dialog.ShowDialog(), dialog.FileName);
+            }
+        }
+
+        #endregion
+
+        #region Archive paths
+
+        private bool FMArchivePathExistsInBox(string path)
+        {
+            foreach (var item in PathsPage.FMArchivePathsListBox.Items)
+            {
+                if (item.ToString().EqualsI(path)) return true;
+            }
+
+            return false;
+        }
+
+        private void AddFMArchivePathButton_Click(object sender, EventArgs e)
+        {
+            using (var d = new AutoFolderBrowserDialog())
+            {
+                var lb = PathsPage.FMArchivePathsListBox;
+                var initDir =
+                    lb.SelectedIndex > -1 ? lb.SelectedItem.ToString() :
+                    lb.Items.Count > 0 ? lb.Items[lb.Items.Count - 1].ToString() :
+                    "";
+                if (!initDir.IsWhiteSpace())
+                {
+                    try
+                    {
+                        d.InitialDirectory = Path.GetDirectoryName(initDir);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+                d.MultiSelect = true;
+                if (d.ShowDialog() == DialogResult.OK)
+                {
+                    foreach (var dir in d.DirectoryNames)
+                    {
+                        if (!FMArchivePathExistsInBox(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
+                    }
+                }
+            }
+        }
+
+        private void RemoveFMArchivePathButton_Click(object sender, EventArgs e) => PathsPage.FMArchivePathsListBox.RemoveAndSelectNearest();
+
+        #endregion
+
+        #endregion
+
+        #region FM Display page
+
+        #region Articles
+
+        private void ArticlesCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            FMDisplayPage.ArticlesTextBox.Enabled = FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked;
+            FMDisplayPage.MoveArticlesToEndCheckBox.Enabled = FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked;
+        }
+
+        private void ArticlesTextBox_Leave(object sender, EventArgs e) => FormatArticles();
+
+        private void FormatArticles()
+        {
+            var articles = FMDisplayPage.ArticlesTextBox.Text;
+
+            // Copied wholesale from Autovid, ridiculous looking, but works
+
+            if (articles.IsWhiteSpace())
+            {
+                FMDisplayPage.ArticlesTextBox.Text = "";
+                return;
+            }
+
+            // Remove duplicate consecutive spaces
+            articles = Regex.Replace(articles, @"\s{2,}", " ");
+
+            // Remove spaces surrounding commas
+            articles = Regex.Replace(articles, @"\s?\,\s?", ",");
+
+            // Remove duplicate consecutive commas
+            articles = Regex.Replace(articles, @"\,{2,}", ",");
+
+            // Remove commas from start and end
+            articles = articles.Trim(',');
+
+            var articlesArray = articles.Split(',', ' ').Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
+
+            articles = "";
+            for (var i = 0; i < articlesArray.Length; i++)
+            {
+                if (i > 0) articles += ", ";
+                articles += articlesArray[i];
+            }
+
+            FMDisplayPage.ArticlesTextBox.Text = articles;
+        }
+
+        #endregion
+
+        #region Date display
+
+        private void UpdateExampleDate()
+        {
+
+            var formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
+                               FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
+                               FMDisplayPage.Date2ComboBox.SelectedItem +
+                               FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
+                               FMDisplayPage.Date3ComboBox.SelectedItem +
+                               FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
+                               FMDisplayPage.Date4ComboBox.SelectedItem;
+
+            try
+            {
+                var date = exampleDate.ToString(formatString);
+                FMDisplayPage.PreviewDateLabel.Text = date;
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat, LText.AlertMessages.Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange, LText.AlertMessages.Error,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void DateCurrentCultureShortRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            FMDisplayPage.DateCustomFormatPanel.Enabled = false;
+            FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToShortDateString();
+        }
+
+        private void DateCurrentCultureLongRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            FMDisplayPage.DateCustomFormatPanel.Enabled = false;
+            FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToLongDateString();
+        }
+
+        private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = (RadioButton)sender;
+            FMDisplayPage.DateCustomFormatPanel.Enabled = s.Checked;
+
+            if (s.Checked) UpdateExampleDate();
+        }
+
+        private void DateComboBoxes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateExampleDate();
+        }
+
+        private void DateSeparatorTextBoxes_TextChanged(object sender, EventArgs e)
+        {
+            if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateExampleDate();
+        }
+
+        #endregion
+
+        #region Rating display
+
+        private void RatingOutOfTenRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            if (FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked)
+            {
+                FMDisplayPage.RatingUseStarsCheckBox.Enabled = false;
+                FMDisplayPage.RatingExamplePictureBox.Image = Resources.RatingExample_NDL;
+            }
+        }
+
+        private void RatingOutOfFiveRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            if (FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked)
+            {
+                FMDisplayPage.RatingUseStarsCheckBox.Enabled = true;
+                FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingUseStarsCheckBox.Checked
+                    ? Resources.RatingExample_FMSel_Stars
+                    : Resources.RatingExample_FMSel_Number;
+            }
+        }
+
+        private void RatingUseStarsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingUseStarsCheckBox.Checked
+                ? Resources.RatingExample_FMSel_Stars
+                : Resources.RatingExample_FMSel_Number;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Other page
+
+        private void WebSearchURLResetButton_Click(object sender, EventArgs e) => OtherPage.WebSearchUrlTextBox.Text = Defaults.WebSearchUrl;
+
+        private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            var s = OtherPage.LanguageComboBox;
+            try
+            {
+                Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
+                SetUITextToLocalized();
+                if (!Startup)
+                {
+                    try
+                    {
+                        OwnerForm.SetUITextToLocalized();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in language reading", ex);
+            }
+        }
+
+        #endregion
+
+        private void ShowPathError(TextBox textBox, bool shown)
+        {
+            if (shown)
+            {
+                if (textBox != null)
+                {
+                    textBox.BackColor = Color.MistyRose;
+                    textBox.Tag = PathError.True;
+                }
+                ErrorLabel.Text = LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid;
+                ErrorLabel.Show();
+            }
+            else
+            {
+                if (textBox != null)
+                {
+                    textBox.BackColor = SystemColors.Window;
+                    textBox.Tag = PathError.False;
+                }
+
+                bool errorsRemaining = PathsPage.BackupPathTextBox.Tag is PathError bError && bError == PathError.True;
+                foreach (var tb in GameExePathTextBoxes)
+                {
+                    if (tb.Tag is PathError gError && gError == PathError.True) errorsRemaining = true;
+                }
+                if (errorsRemaining) return;
+
+                ErrorLabel.Text = "";
+                ErrorLabel.Hide();
+            }
         }
     }
 }

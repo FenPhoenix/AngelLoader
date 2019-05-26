@@ -165,13 +165,15 @@ namespace AngelLoader
 
         public static async Task<bool> OpenSettings(bool startup = false)
         {
-            using (var sf = new SettingsForm(View, Config, startup))
+            using (var sf = startup ? (ISettingsWindow)new SettingsForm(View, Config, true) : new SettingsForm2(View, Config))
             {
                 // This needs to be separate so the below line can work
                 var result = sf.ShowDialog();
 
-                // Special case: this is meta, so it should always be set even if the user clicked Cancel
+                // Special case: these are meta, so they should always be set even if the user clicked Cancel
                 Config.SettingsTab = sf.OutConfig.SettingsTab;
+                Config.SettingsWindowSize = sf.OutConfig.SettingsWindowSize;
+                Config.SettingsWindowSplitterDistance = sf.OutConfig.SettingsWindowSplitterDistance;
 
                 if (result != DialogResult.OK) return false;
 
@@ -1548,7 +1550,7 @@ namespace AngelLoader
             return list;
         }
 
-        internal static void AddTagToFM(FanMission fm,string catAndTag)
+        internal static void AddTagToFM(FanMission fm, string catAndTag)
         {
             AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
             UpdateFMTagsString(fm);

@@ -13,22 +13,20 @@ using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Forms
 {
-    internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable
+    internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable, ISettingsWindow
     {
         private readonly ILocalizable OwnerForm;
 
         private readonly bool Startup;
 
         private readonly ConfigData InConfig;
-        internal readonly ConfigData OutConfig = new ConfigData();
+        public ConfigData OutConfig { get; } = new ConfigData();
 
         private readonly TextBox[] GameExePathTextBoxes;
 
-        private enum PathError
-        {
-            True,
-            False
-        }
+        public new DialogResult ShowDialog() => ((Form)this).ShowDialog();
+
+        private enum PathError { True, False }
 
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).

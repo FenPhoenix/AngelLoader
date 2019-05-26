@@ -92,10 +92,14 @@ namespace AngelLoader.Common.DataClasses
         internal readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
 
         internal SettingsTab SettingsTab = SettingsTab.Paths;
+        internal Size SettingsWindowSize = new Size(710, 690);
+        internal int SettingsWindowSplitterDistance = 155;
 
         internal TopRightTab TopRightTab = TopRightTab.Statistics;
 
         internal TopRightTabOrder TopRightTabOrder = new TopRightTabOrder();
+
+        #region Date format
 
         internal DateFormat DateFormat = DateFormat.CurrentCultureShort;
         // Clunky, but removes the need for parsing
@@ -108,6 +112,8 @@ namespace AngelLoader.Common.DataClasses
         internal string DateCustomFormat4;
         // Session-only; don't write out
         internal string DateCustomFormatString;
+
+        #endregion
 
         internal FormWindowState MainWindowState = FormWindowState.Maximized;
         internal Size MainWindowSize = new Size(1280, 720);
