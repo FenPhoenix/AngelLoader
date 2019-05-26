@@ -35,7 +35,6 @@
             this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new System.Windows.Forms.CheckBox();
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
-            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
             this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.WebSearchTitleExplanationLabel = new System.Windows.Forms.Label();
@@ -50,6 +49,8 @@
             this.FMFileConversionGroupBox = new System.Windows.Forms.GroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new System.Windows.Forms.CheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new System.Windows.Forms.CheckBox();
+            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
             this.PagePanel.SuspendLayout();
             this.ShowOrHideUIElementsGroupBox.SuspendLayout();
             this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
@@ -68,10 +69,11 @@
             this.PagePanel.Controls.Add(this.WebSearchGroupBox);
             this.PagePanel.Controls.Add(this.UninstallingFMsGroupBox);
             this.PagePanel.Controls.Add(this.FMFileConversionGroupBox);
+            this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 623);
+            this.PagePanel.Size = new System.Drawing.Size(440, 597);
             this.PagePanel.TabIndex = 0;
             // 
             // ShowOrHideUIElementsGroupBox
@@ -81,6 +83,7 @@
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideFMListZoomButtonsCheckBox);
             this.ShowOrHideUIElementsGroupBox.Controls.Add(this.HideUninstallButtonCheckBox);
             this.ShowOrHideUIElementsGroupBox.Location = new System.Drawing.Point(8, 504);
+            this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
             this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(424, 80);
             this.ShowOrHideUIElementsGroupBox.TabIndex = 11;
@@ -115,6 +118,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
             this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 440);
+            this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.PlayFMOnDCOrEnterGroupBox.Name = "PlayFMOnDCOrEnterGroupBox";
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
             this.PlayFMOnDCOrEnterGroupBox.TabIndex = 9;
@@ -139,20 +143,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LanguageGroupBox.Controls.Add(this.LanguageComboBox);
             this.LanguageGroupBox.Location = new System.Drawing.Point(8, 256);
+            this.LanguageGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
             this.LanguageGroupBox.Size = new System.Drawing.Size(424, 60);
             this.LanguageGroupBox.TabIndex = 10;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
-            // 
-            // LanguageComboBox
-            // 
-            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.LanguageComboBox.FormattingEnabled = true;
-            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
-            this.LanguageComboBox.Name = "LanguageComboBox";
-            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
-            this.LanguageComboBox.TabIndex = 0;
             // 
             // WebSearchGroupBox
             // 
@@ -163,6 +159,7 @@
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlTextBox);
             this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
             this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 324);
+            this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.WebSearchGroupBox.Name = "WebSearchGroupBox";
             this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
             this.WebSearchGroupBox.TabIndex = 8;
@@ -220,6 +217,7 @@
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
             this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
             this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 100);
+            this.UninstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.UninstallingFMsGroupBox.Name = "UninstallingFMsGroupBox";
             this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 148);
             this.UninstallingFMsGroupBox.TabIndex = 7;
@@ -288,6 +286,7 @@
             this.FMFileConversionGroupBox.Controls.Add(this.ConvertOGGsToWAVsOnInstallCheckBox);
             this.FMFileConversionGroupBox.Controls.Add(this.ConvertWAVsTo16BitOnInstallCheckBox);
             this.FMFileConversionGroupBox.Location = new System.Drawing.Point(8, 8);
+            this.FMFileConversionGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.FMFileConversionGroupBox.Name = "FMFileConversionGroupBox";
             this.FMFileConversionGroupBox.Size = new System.Drawing.Size(424, 84);
             this.FMFileConversionGroupBox.TabIndex = 6;
@@ -318,13 +317,29 @@
             this.ConvertWAVsTo16BitOnInstallCheckBox.Text = "Convert .wavs to 16 bit on install";
             this.ConvertWAVsTo16BitOnInstallCheckBox.UseVisualStyleBackColor = true;
             // 
+            // LanguageComboBox
+            // 
+            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.LanguageComboBox.FormattingEnabled = true;
+            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
+            this.LanguageComboBox.Name = "LanguageComboBox";
+            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
+            this.LanguageComboBox.TabIndex = 0;
+            // 
+            // DummyAutoScrollPanel
+            // 
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 248);
+            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
+            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
+            this.DummyAutoScrollPanel.TabIndex = 12;
+            // 
             // OtherPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "OtherPage";
-            this.Size = new System.Drawing.Size(440, 623);
+            this.Size = new System.Drawing.Size(440, 597);
             this.PagePanel.ResumeLayout(false);
             this.ShowOrHideUIElementsGroupBox.ResumeLayout(false);
             this.PlayFMOnDCOrEnterGroupBox.ResumeLayout(false);
@@ -363,5 +378,6 @@
         internal System.Windows.Forms.GroupBox FMFileConversionGroupBox;
         internal System.Windows.Forms.CheckBox ConvertOGGsToWAVsOnInstallCheckBox;
         internal System.Windows.Forms.CheckBox ConvertWAVsTo16BitOnInstallCheckBox;
+        internal System.Windows.Forms.Panel DummyAutoScrollPanel;
     }
 }

@@ -35,7 +35,6 @@
             this.RatingNDLDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.DateFormatGroupBox = new System.Windows.Forms.GroupBox();
             this.PreviewDateFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.PreviewDateLabel = new System.Windows.Forms.Label();
             this.DateCustomFormatPanel = new System.Windows.Forms.Panel();
             this.DateSeparator3TextBox = new System.Windows.Forms.TextBox();
             this.DateSeparator2TextBox = new System.Windows.Forms.TextBox();
@@ -56,6 +55,7 @@
             this.SortGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
+            this.PreviewDateLabel = new System.Windows.Forms.Label();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
@@ -152,16 +152,6 @@
             this.PreviewDateFlowLayoutPanel.Name = "PreviewDateFlowLayoutPanel";
             this.PreviewDateFlowLayoutPanel.Size = new System.Drawing.Size(464, 16);
             this.PreviewDateFlowLayoutPanel.TabIndex = 21;
-            // 
-            // PreviewDateLabel
-            // 
-            this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.PreviewDateLabel.AutoSize = true;
-            this.PreviewDateLabel.Location = new System.Drawing.Point(386, 0);
-            this.PreviewDateLabel.Name = "PreviewDateLabel";
-            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
-            this.PreviewDateLabel.TabIndex = 20;
-            this.PreviewDateLabel.Text = "[Preview date]";
             // 
             // DateCustomFormatPanel
             // 
@@ -330,6 +320,8 @@
             // 
             // OrganizeGamesByTabRadioButton
             // 
+            this.OrganizeGamesByTabRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.OrganizeGamesByTabRadioButton.Location = new System.Drawing.Point(16, 16);
             this.OrganizeGamesByTabRadioButton.Name = "OrganizeGamesByTabRadioButton";
             this.OrganizeGamesByTabRadioButton.Size = new System.Drawing.Size(456, 32);
@@ -339,6 +331,8 @@
             // 
             // SortGamesInOneListRadioButton
             // 
+            this.SortGamesInOneListRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.SortGamesInOneListRadioButton.Checked = true;
             this.SortGamesInOneListRadioButton.Location = new System.Drawing.Point(16, 44);
             this.SortGamesInOneListRadioButton.Name = "SortGamesInOneListRadioButton";
@@ -364,10 +358,20 @@
             // 
             // DummyAutoScrollPanel
             // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 80);
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 92);
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
             this.DummyAutoScrollPanel.TabIndex = 8;
+            // 
+            // PreviewDateLabel
+            // 
+            this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PreviewDateLabel.AutoSize = true;
+            this.PreviewDateLabel.Location = new System.Drawing.Point(386, 0);
+            this.PreviewDateLabel.Name = "PreviewDateLabel";
+            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
+            this.PreviewDateLabel.TabIndex = 20;
+            this.PreviewDateLabel.Text = "[Preview date]";
             // 
             // FMDisplayPage
             // 
@@ -419,9 +423,9 @@
         internal System.Windows.Forms.GroupBox GameOrganizationGroupBox;
         internal System.Windows.Forms.RadioButton OrganizeGamesByTabRadioButton;
         internal System.Windows.Forms.RadioButton SortGamesInOneListRadioButton;
-        internal System.Windows.Forms.Label PreviewDateLabel;
         internal System.Windows.Forms.Panel PagePanel;
         internal System.Windows.Forms.Panel DummyAutoScrollPanel;
         private System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
+        internal System.Windows.Forms.Label PreviewDateLabel;
     }
 }

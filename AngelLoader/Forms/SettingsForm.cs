@@ -47,7 +47,6 @@ namespace AngelLoader.Forms
 
         private readonly ComboBoxCustom LangComboBox;
 
-        //private readonly LanguageSoloPage LangSoloPage;
         private readonly GroupBox LangGroupBox;
         private readonly PathsPage PathsPage = new PathsPage { Visible = false };
         private readonly FMDisplayPage FMDisplayPage = new FMDisplayPage { Visible = false };
@@ -75,6 +74,7 @@ namespace AngelLoader.Forms
                 OtherPage.PagePanel.Controls.Remove(LangGroupBox);
                 LangGroupBox.Location = new Point(8, 8);
                 LangGroupBox.Width = PathsPage.Width - 16;
+                LangGroupBox.MinimumSize = new Size(LangGroupBox.Width, LangGroupBox.MinimumSize.Height);
                 PathsPage.ActualPathsPanel.Location = new Point(0, LangGroupBox.Height + 8);
             }
             else
