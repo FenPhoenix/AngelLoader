@@ -30,7 +30,6 @@
         {
             this.RatingDisplayStyleGroupBox = new System.Windows.Forms.GroupBox();
             this.RatingUseStarsCheckBox = new System.Windows.Forms.CheckBox();
-            this.RatingExamplePictureBox = new System.Windows.Forms.PictureBox();
             this.RatingFMSelDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.RatingNDLDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.DateFormatGroupBox = new System.Windows.Forms.GroupBox();
@@ -55,13 +54,14 @@
             this.PreviewDateLabel = new System.Windows.Forms.Label();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
+            this.RatingExamplePictureBox = new System.Windows.Forms.PictureBox();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
             this.DateCustomFormatPanel.SuspendLayout();
             this.SortingGroupBox.SuspendLayout();
             this.GameOrganizationGroupBox.SuspendLayout();
             this.PagePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // RatingDisplayStyleGroupBox
@@ -91,15 +91,6 @@
             this.RatingUseStarsCheckBox.TabIndex = 2;
             this.RatingUseStarsCheckBox.Text = "Use stars";
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // RatingExamplePictureBox
-            // 
-            this.RatingExamplePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RatingExamplePictureBox.Location = new System.Drawing.Point(395, 92);
-            this.RatingExamplePictureBox.Name = "RatingExamplePictureBox";
-            this.RatingExamplePictureBox.Size = new System.Drawing.Size(79, 23);
-            this.RatingExamplePictureBox.TabIndex = 1;
-            this.RatingExamplePictureBox.TabStop = false;
             // 
             // RatingFMSelDisplayStyleRadioButton
             // 
@@ -356,6 +347,15 @@
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
             this.DummyAutoScrollPanel.TabIndex = 8;
             // 
+            // RatingExamplePictureBox
+            // 
+            this.RatingExamplePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.RatingExamplePictureBox.Location = new System.Drawing.Point(395, 92);
+            this.RatingExamplePictureBox.Name = "RatingExamplePictureBox";
+            this.RatingExamplePictureBox.Size = new System.Drawing.Size(79, 23);
+            this.RatingExamplePictureBox.TabIndex = 1;
+            this.RatingExamplePictureBox.TabStop = false;
+            // 
             // FMDisplayPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -365,7 +365,6 @@
             this.Size = new System.Drawing.Size(495, 525);
             this.RatingDisplayStyleGroupBox.ResumeLayout(false);
             this.RatingDisplayStyleGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
             this.DateFormatGroupBox.ResumeLayout(false);
             this.DateFormatGroupBox.PerformLayout();
             this.DateCustomFormatPanel.ResumeLayout(false);
@@ -374,38 +373,39 @@
             this.SortingGroupBox.PerformLayout();
             this.GameOrganizationGroupBox.ResumeLayout(false);
             this.PagePanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.GroupBox RatingDisplayStyleGroupBox;
-        private System.Windows.Forms.CheckBox RatingUseStarsCheckBox;
-        private System.Windows.Forms.PictureBox RatingExamplePictureBox;
-        private System.Windows.Forms.RadioButton RatingFMSelDisplayStyleRadioButton;
-        private System.Windows.Forms.RadioButton RatingNDLDisplayStyleRadioButton;
-        private System.Windows.Forms.GroupBox DateFormatGroupBox;
-        private System.Windows.Forms.Panel DateCustomFormatPanel;
-        private System.Windows.Forms.TextBox DateSeparator3TextBox;
-        private System.Windows.Forms.TextBox DateSeparator2TextBox;
-        private System.Windows.Forms.ComboBox Date1ComboBox;
-        private System.Windows.Forms.TextBox DateSeparator1TextBox;
-        private System.Windows.Forms.ComboBox Date4ComboBox;
-        private System.Windows.Forms.ComboBox Date2ComboBox;
-        private System.Windows.Forms.ComboBox Date3ComboBox;
-        private System.Windows.Forms.RadioButton DateCustomRadioButton;
-        private System.Windows.Forms.RadioButton DateCurrentCultureLongRadioButton;
-        private System.Windows.Forms.RadioButton DateCurrentCultureShortRadioButton;
-        private System.Windows.Forms.GroupBox SortingGroupBox;
-        private System.Windows.Forms.CheckBox MoveArticlesToEndCheckBox;
-        private System.Windows.Forms.CheckBox EnableIgnoreArticlesCheckBox;
-        private System.Windows.Forms.TextBox ArticlesTextBox;
-        private System.Windows.Forms.GroupBox GameOrganizationGroupBox;
-        private System.Windows.Forms.RadioButton OrganizeGamesByTabRadioButton;
-        private System.Windows.Forms.RadioButton SortGamesInOneListRadioButton;
-        private System.Windows.Forms.Label PreviewDateLabel;
-        private System.Windows.Forms.Panel PagePanel;
-        private System.Windows.Forms.Panel DummyAutoScrollPanel;
+        internal System.Windows.Forms.GroupBox RatingDisplayStyleGroupBox;
+        internal System.Windows.Forms.CheckBox RatingUseStarsCheckBox;
+        internal System.Windows.Forms.PictureBox RatingExamplePictureBox;
+        internal System.Windows.Forms.RadioButton RatingFMSelDisplayStyleRadioButton;
+        internal System.Windows.Forms.RadioButton RatingNDLDisplayStyleRadioButton;
+        internal System.Windows.Forms.GroupBox DateFormatGroupBox;
+        internal System.Windows.Forms.Panel DateCustomFormatPanel;
+        internal System.Windows.Forms.TextBox DateSeparator3TextBox;
+        internal System.Windows.Forms.TextBox DateSeparator2TextBox;
+        internal System.Windows.Forms.ComboBox Date1ComboBox;
+        internal System.Windows.Forms.TextBox DateSeparator1TextBox;
+        internal System.Windows.Forms.ComboBox Date4ComboBox;
+        internal System.Windows.Forms.ComboBox Date2ComboBox;
+        internal System.Windows.Forms.ComboBox Date3ComboBox;
+        internal System.Windows.Forms.RadioButton DateCustomRadioButton;
+        internal System.Windows.Forms.RadioButton DateCurrentCultureLongRadioButton;
+        internal System.Windows.Forms.RadioButton DateCurrentCultureShortRadioButton;
+        internal System.Windows.Forms.GroupBox SortingGroupBox;
+        internal System.Windows.Forms.CheckBox MoveArticlesToEndCheckBox;
+        internal System.Windows.Forms.CheckBox EnableIgnoreArticlesCheckBox;
+        internal System.Windows.Forms.TextBox ArticlesTextBox;
+        internal System.Windows.Forms.GroupBox GameOrganizationGroupBox;
+        internal System.Windows.Forms.RadioButton OrganizeGamesByTabRadioButton;
+        internal System.Windows.Forms.RadioButton SortGamesInOneListRadioButton;
+        internal System.Windows.Forms.Label PreviewDateLabel;
+        internal System.Windows.Forms.Panel PagePanel;
+        internal System.Windows.Forms.Panel DummyAutoScrollPanel;
     }
 }

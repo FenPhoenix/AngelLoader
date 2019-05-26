@@ -28,11 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.PathsPanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new System.Windows.Forms.Panel();
             this.FMArchivePathsGroupBox = new System.Windows.Forms.GroupBox();
             this.IncludeSubfoldersCheckBox = new System.Windows.Forms.CheckBox();
-            this.AddFMArchivePathButton = new System.Windows.Forms.Button();
-            this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
             this.FMArchivePathsListBox = new System.Windows.Forms.ListBox();
             this.OtherGroupBox = new System.Windows.Forms.GroupBox();
             this.BackupPathLabel = new System.Windows.Forms.Label();
@@ -50,24 +48,26 @@
             this.Thief3ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief2ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
-            this.PathsPanel.SuspendLayout();
+            this.AddFMArchivePathButton = new System.Windows.Forms.Button();
+            this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
+            this.PagePanel.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.GameRequirementsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // PathsPanel
+            // PagePanel
             // 
-            this.PathsPanel.AutoScroll = true;
-            this.PathsPanel.Controls.Add(this.FMArchivePathsGroupBox);
-            this.PathsPanel.Controls.Add(this.OtherGroupBox);
-            this.PathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
-            this.PathsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PathsPanel.Location = new System.Drawing.Point(0, 0);
-            this.PathsPanel.Name = "PathsPanel";
-            this.PathsPanel.Size = new System.Drawing.Size(632, 660);
-            this.PathsPanel.TabIndex = 3;
+            this.PagePanel.AutoScroll = true;
+            this.PagePanel.Controls.Add(this.FMArchivePathsGroupBox);
+            this.PagePanel.Controls.Add(this.OtherGroupBox);
+            this.PagePanel.Controls.Add(this.PathsToGameExesGroupBox);
+            this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PagePanel.Location = new System.Drawing.Point(0, 0);
+            this.PagePanel.Name = "PagePanel";
+            this.PagePanel.Size = new System.Drawing.Size(632, 660);
+            this.PagePanel.TabIndex = 3;
             // 
             // FMArchivePathsGroupBox
             // 
@@ -94,28 +94,6 @@
             this.IncludeSubfoldersCheckBox.TabIndex = 1;
             this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
             this.IncludeSubfoldersCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // AddFMArchivePathButton
-            // 
-            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Add;
-            this.AddFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.AddFMArchivePathButton.Location = new System.Drawing.Point(580, 224);
-            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
-            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.AddFMArchivePathButton.TabIndex = 3;
-            this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
-            // 
-            // RemoveFMArchivePathButton
-            // 
-            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
-            this.RemoveFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(556, 224);
-            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
-            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveFMArchivePathButton.TabIndex = 2;
-            this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
             // 
             // FMArchivePathsListBox
             // 
@@ -303,14 +281,36 @@
             this.Thief1ExePathTextBox.Size = new System.Drawing.Size(514, 20);
             this.Thief1ExePathTextBox.TabIndex = 1;
             // 
+            // AddFMArchivePathButton
+            // 
+            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Add;
+            this.AddFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.AddFMArchivePathButton.Location = new System.Drawing.Point(580, 224);
+            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
+            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.AddFMArchivePathButton.TabIndex = 3;
+            this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
+            // 
+            // RemoveFMArchivePathButton
+            // 
+            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.RemoveFMArchivePathButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(556, 224);
+            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
+            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.RemoveFMArchivePathButton.TabIndex = 2;
+            this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
+            // 
             // PathsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.PathsPanel);
+            this.Controls.Add(this.PagePanel);
             this.Name = "PathsPage";
             this.Size = new System.Drawing.Size(632, 660);
-            this.PathsPanel.ResumeLayout(false);
+            this.PagePanel.ResumeLayout(false);
             this.FMArchivePathsGroupBox.ResumeLayout(false);
             this.FMArchivePathsGroupBox.PerformLayout();
             this.OtherGroupBox.ResumeLayout(false);
@@ -325,27 +325,27 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel PathsPanel;
-        private System.Windows.Forms.GroupBox OtherGroupBox;
-        private System.Windows.Forms.Label BackupPathLabel;
-        private System.Windows.Forms.Button BackupPathBrowseButton;
-        private System.Windows.Forms.TextBox BackupPathTextBox;
-        private System.Windows.Forms.GroupBox PathsToGameExesGroupBox;
-        private System.Windows.Forms.Panel GameRequirementsPanel;
-        private System.Windows.Forms.Label GameRequirementsLabel;
-        private System.Windows.Forms.Label Thief3ExePathLabel;
-        private System.Windows.Forms.Label Thief2ExePathLabel;
-        private System.Windows.Forms.Label Thief1ExePathLabel;
-        private System.Windows.Forms.Button Thief3ExePathBrowseButton;
-        private System.Windows.Forms.Button Thief2ExePathBrowseButton;
-        private System.Windows.Forms.Button Thief1ExePathBrowseButton;
-        private System.Windows.Forms.TextBox Thief3ExePathTextBox;
-        private System.Windows.Forms.TextBox Thief2ExePathTextBox;
-        private System.Windows.Forms.TextBox Thief1ExePathTextBox;
-        private System.Windows.Forms.GroupBox FMArchivePathsGroupBox;
-        private System.Windows.Forms.CheckBox IncludeSubfoldersCheckBox;
-        private System.Windows.Forms.Button AddFMArchivePathButton;
-        private System.Windows.Forms.Button RemoveFMArchivePathButton;
-        private System.Windows.Forms.ListBox FMArchivePathsListBox;
+        internal System.Windows.Forms.Panel PagePanel;
+        internal System.Windows.Forms.GroupBox OtherGroupBox;
+        internal System.Windows.Forms.Label BackupPathLabel;
+        internal System.Windows.Forms.Button BackupPathBrowseButton;
+        internal System.Windows.Forms.TextBox BackupPathTextBox;
+        internal System.Windows.Forms.GroupBox PathsToGameExesGroupBox;
+        internal System.Windows.Forms.Panel GameRequirementsPanel;
+        internal System.Windows.Forms.Label GameRequirementsLabel;
+        internal System.Windows.Forms.Label Thief3ExePathLabel;
+        internal System.Windows.Forms.Label Thief2ExePathLabel;
+        internal System.Windows.Forms.Label Thief1ExePathLabel;
+        internal System.Windows.Forms.Button Thief3ExePathBrowseButton;
+        internal System.Windows.Forms.Button Thief2ExePathBrowseButton;
+        internal System.Windows.Forms.Button Thief1ExePathBrowseButton;
+        internal System.Windows.Forms.TextBox Thief3ExePathTextBox;
+        internal System.Windows.Forms.TextBox Thief2ExePathTextBox;
+        internal System.Windows.Forms.TextBox Thief1ExePathTextBox;
+        internal System.Windows.Forms.GroupBox FMArchivePathsGroupBox;
+        internal System.Windows.Forms.CheckBox IncludeSubfoldersCheckBox;
+        internal System.Windows.Forms.Button AddFMArchivePathButton;
+        internal System.Windows.Forms.Button RemoveFMArchivePathButton;
+        internal System.Windows.Forms.ListBox FMArchivePathsListBox;
     }
 }

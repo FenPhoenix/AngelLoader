@@ -61,6 +61,7 @@
             // 
             // PagePanel
             // 
+            this.PagePanel.AutoScroll = true;
             this.PagePanel.Controls.Add(this.ShowOrHideUIElementsGroupBox);
             this.PagePanel.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.PagePanel.Controls.Add(this.LanguageGroupBox);
@@ -88,6 +89,8 @@
             // 
             // HideFMListZoomButtonsCheckBox
             // 
+            this.HideFMListZoomButtonsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.HideFMListZoomButtonsCheckBox.Location = new System.Drawing.Point(16, 44);
             this.HideFMListZoomButtonsCheckBox.Name = "HideFMListZoomButtonsCheckBox";
             this.HideFMListZoomButtonsCheckBox.Size = new System.Drawing.Size(392, 32);
@@ -97,6 +100,8 @@
             // 
             // HideUninstallButtonCheckBox
             // 
+            this.HideUninstallButtonCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.HideUninstallButtonCheckBox.Location = new System.Drawing.Point(16, 16);
             this.HideUninstallButtonCheckBox.Name = "HideUninstallButtonCheckBox";
             this.HideUninstallButtonCheckBox.Size = new System.Drawing.Size(392, 32);
@@ -184,6 +189,8 @@
             // 
             // WebSearchUrlLabel
             // 
+            this.WebSearchUrlLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.WebSearchUrlLabel.Location = new System.Drawing.Point(16, 16);
             this.WebSearchUrlLabel.Name = "WebSearchUrlLabel";
             this.WebSearchUrlLabel.Size = new System.Drawing.Size(392, 32);
@@ -277,6 +284,8 @@
             // 
             // ConvertOGGsToWAVsOnInstallCheckBox
             // 
+            this.ConvertOGGsToWAVsOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ConvertOGGsToWAVsOnInstallCheckBox.Location = new System.Drawing.Point(16, 44);
             this.ConvertOGGsToWAVsOnInstallCheckBox.Name = "ConvertOGGsToWAVsOnInstallCheckBox";
             this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
@@ -286,6 +295,8 @@
             // 
             // ConvertWAVsTo16BitOnInstallCheckBox
             // 
+            this.ConvertWAVsTo16BitOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ConvertWAVsTo16BitOnInstallCheckBox.Checked = true;
             this.ConvertWAVsTo16BitOnInstallCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ConvertWAVsTo16BitOnInstallCheckBox.Location = new System.Drawing.Point(16, 16);
@@ -330,27 +341,27 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel PagePanel;
-        private System.Windows.Forms.GroupBox ShowOrHideUIElementsGroupBox;
-        private System.Windows.Forms.CheckBox HideFMListZoomButtonsCheckBox;
-        private System.Windows.Forms.CheckBox HideUninstallButtonCheckBox;
-        private System.Windows.Forms.GroupBox PlayFMOnDCOrEnterGroupBox;
-        private System.Windows.Forms.CheckBox ConfirmPlayOnDCOrEnterCheckBox;
-        private System.Windows.Forms.GroupBox LanguageGroupBox;
-        private ComboBoxCustom LanguageComboBox;
-        private System.Windows.Forms.GroupBox WebSearchGroupBox;
-        private System.Windows.Forms.Button WebSearchUrlResetButton;
-        private System.Windows.Forms.Label WebSearchTitleExplanationLabel;
-        private System.Windows.Forms.TextBox WebSearchUrlTextBox;
-        private System.Windows.Forms.Label WebSearchUrlLabel;
-        private System.Windows.Forms.GroupBox UninstallingFMsGroupBox;
-        private System.Windows.Forms.CheckBox ConfirmUninstallCheckBox;
-        private System.Windows.Forms.Label WhatToBackUpLabel;
-        private System.Windows.Forms.CheckBox BackupAlwaysAskCheckBox;
-        private System.Windows.Forms.RadioButton BackupAllChangedDataRadioButton;
-        private System.Windows.Forms.RadioButton BackupSavesAndScreensOnlyRadioButton;
-        private System.Windows.Forms.GroupBox FMFileConversionGroupBox;
-        private System.Windows.Forms.CheckBox ConvertOGGsToWAVsOnInstallCheckBox;
-        private System.Windows.Forms.CheckBox ConvertWAVsTo16BitOnInstallCheckBox;
+        internal System.Windows.Forms.Panel PagePanel;
+        internal System.Windows.Forms.GroupBox ShowOrHideUIElementsGroupBox;
+        internal System.Windows.Forms.CheckBox HideFMListZoomButtonsCheckBox;
+        internal System.Windows.Forms.CheckBox HideUninstallButtonCheckBox;
+        internal System.Windows.Forms.GroupBox PlayFMOnDCOrEnterGroupBox;
+        internal System.Windows.Forms.CheckBox ConfirmPlayOnDCOrEnterCheckBox;
+        internal System.Windows.Forms.GroupBox LanguageGroupBox;
+        internal ComboBoxCustom LanguageComboBox;
+        internal System.Windows.Forms.GroupBox WebSearchGroupBox;
+        internal System.Windows.Forms.Button WebSearchUrlResetButton;
+        internal System.Windows.Forms.Label WebSearchTitleExplanationLabel;
+        internal System.Windows.Forms.TextBox WebSearchUrlTextBox;
+        internal System.Windows.Forms.Label WebSearchUrlLabel;
+        internal System.Windows.Forms.GroupBox UninstallingFMsGroupBox;
+        internal System.Windows.Forms.CheckBox ConfirmUninstallCheckBox;
+        internal System.Windows.Forms.Label WhatToBackUpLabel;
+        internal System.Windows.Forms.CheckBox BackupAlwaysAskCheckBox;
+        internal System.Windows.Forms.RadioButton BackupAllChangedDataRadioButton;
+        internal System.Windows.Forms.RadioButton BackupSavesAndScreensOnlyRadioButton;
+        internal System.Windows.Forms.GroupBox FMFileConversionGroupBox;
+        internal System.Windows.Forms.CheckBox ConvertOGGsToWAVsOnInstallCheckBox;
+        internal System.Windows.Forms.CheckBox ConvertWAVsTo16BitOnInstallCheckBox;
     }
 }
