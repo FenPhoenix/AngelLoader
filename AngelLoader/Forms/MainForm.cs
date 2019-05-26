@@ -158,11 +158,11 @@ namespace AngelLoader.Forms
             // needing to actually be focused. Vital for a good user experience.
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
-                if (CursorOutsideAddTagsDropDownArea() || !CanFocus) return BlockMessage;
+                if (CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 int delta = wParam >> 16;
-                if (CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
+                if (CanFocus && CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
                 {
                     // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
                     // and disappearing as appropriate
@@ -178,7 +178,7 @@ namespace AngelLoader.Forms
                         FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = origSmallChange;
                     }
                 }
-                else if (CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
+                else if (CanFocus && CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
                 {
                     if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
                 }
