@@ -30,9 +30,12 @@
         {
             this.RatingDisplayStyleGroupBox = new System.Windows.Forms.GroupBox();
             this.RatingUseStarsCheckBox = new System.Windows.Forms.CheckBox();
+            this.RatingExamplePictureBox = new System.Windows.Forms.PictureBox();
             this.RatingFMSelDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.RatingNDLDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.DateFormatGroupBox = new System.Windows.Forms.GroupBox();
+            this.PreviewDateFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.PreviewDateLabel = new System.Windows.Forms.Label();
             this.DateCustomFormatPanel = new System.Windows.Forms.Panel();
             this.DateSeparator3TextBox = new System.Windows.Forms.TextBox();
             this.DateSeparator2TextBox = new System.Windows.Forms.TextBox();
@@ -51,17 +54,16 @@
             this.GameOrganizationGroupBox = new System.Windows.Forms.GroupBox();
             this.OrganizeGamesByTabRadioButton = new System.Windows.Forms.RadioButton();
             this.SortGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
-            this.PreviewDateLabel = new System.Windows.Forms.Label();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
-            this.RatingExamplePictureBox = new System.Windows.Forms.PictureBox();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
+            this.PreviewDateFlowLayoutPanel.SuspendLayout();
             this.DateCustomFormatPanel.SuspendLayout();
             this.SortingGroupBox.SuspendLayout();
             this.GameOrganizationGroupBox.SuspendLayout();
             this.PagePanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // RatingDisplayStyleGroupBox
@@ -92,6 +94,15 @@
             this.RatingUseStarsCheckBox.Text = "Use stars";
             this.RatingUseStarsCheckBox.UseVisualStyleBackColor = true;
             // 
+            // RatingExamplePictureBox
+            // 
+            this.RatingExamplePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.RatingExamplePictureBox.Location = new System.Drawing.Point(395, 92);
+            this.RatingExamplePictureBox.Name = "RatingExamplePictureBox";
+            this.RatingExamplePictureBox.Size = new System.Drawing.Size(79, 23);
+            this.RatingExamplePictureBox.TabIndex = 1;
+            this.RatingExamplePictureBox.TabStop = false;
+            // 
             // RatingFMSelDisplayStyleRadioButton
             // 
             this.RatingFMSelDisplayStyleRadioButton.AutoSize = true;
@@ -118,7 +129,7 @@
             // 
             this.DateFormatGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.DateFormatGroupBox.Controls.Add(this.PreviewDateLabel);
+            this.DateFormatGroupBox.Controls.Add(this.PreviewDateFlowLayoutPanel);
             this.DateFormatGroupBox.Controls.Add(this.DateCustomFormatPanel);
             this.DateFormatGroupBox.Controls.Add(this.DateCustomRadioButton);
             this.DateFormatGroupBox.Controls.Add(this.DateCurrentCultureLongRadioButton);
@@ -130,6 +141,27 @@
             this.DateFormatGroupBox.TabIndex = 7;
             this.DateFormatGroupBox.TabStop = false;
             this.DateFormatGroupBox.Text = "Date format";
+            // 
+            // PreviewDateFlowLayoutPanel
+            // 
+            this.PreviewDateFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PreviewDateFlowLayoutPanel.Controls.Add(this.PreviewDateLabel);
+            this.PreviewDateFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.PreviewDateFlowLayoutPanel.Location = new System.Drawing.Point(8, 16);
+            this.PreviewDateFlowLayoutPanel.Name = "PreviewDateFlowLayoutPanel";
+            this.PreviewDateFlowLayoutPanel.Size = new System.Drawing.Size(464, 16);
+            this.PreviewDateFlowLayoutPanel.TabIndex = 21;
+            // 
+            // PreviewDateLabel
+            // 
+            this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PreviewDateLabel.AutoSize = true;
+            this.PreviewDateLabel.Location = new System.Drawing.Point(386, 0);
+            this.PreviewDateLabel.Name = "PreviewDateLabel";
+            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
+            this.PreviewDateLabel.TabIndex = 20;
+            this.PreviewDateLabel.Text = "[Preview date]";
             // 
             // DateCustomFormatPanel
             // 
@@ -316,16 +348,6 @@
             this.SortGamesInOneListRadioButton.Text = "Everything in one list, and games are filters";
             this.SortGamesInOneListRadioButton.UseVisualStyleBackColor = true;
             // 
-            // PreviewDateLabel
-            // 
-            this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.PreviewDateLabel.AutoSize = true;
-            this.PreviewDateLabel.Location = new System.Drawing.Point(396, 16);
-            this.PreviewDateLabel.Name = "PreviewDateLabel";
-            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
-            this.PreviewDateLabel.TabIndex = 20;
-            this.PreviewDateLabel.Text = "[Preview date]";
-            // 
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
@@ -347,15 +369,6 @@
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
             this.DummyAutoScrollPanel.TabIndex = 8;
             // 
-            // RatingExamplePictureBox
-            // 
-            this.RatingExamplePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RatingExamplePictureBox.Location = new System.Drawing.Point(395, 92);
-            this.RatingExamplePictureBox.Name = "RatingExamplePictureBox";
-            this.RatingExamplePictureBox.Size = new System.Drawing.Size(79, 23);
-            this.RatingExamplePictureBox.TabIndex = 1;
-            this.RatingExamplePictureBox.TabStop = false;
-            // 
             // FMDisplayPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -365,15 +378,17 @@
             this.Size = new System.Drawing.Size(495, 525);
             this.RatingDisplayStyleGroupBox.ResumeLayout(false);
             this.RatingDisplayStyleGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
             this.DateFormatGroupBox.ResumeLayout(false);
             this.DateFormatGroupBox.PerformLayout();
+            this.PreviewDateFlowLayoutPanel.ResumeLayout(false);
+            this.PreviewDateFlowLayoutPanel.PerformLayout();
             this.DateCustomFormatPanel.ResumeLayout(false);
             this.DateCustomFormatPanel.PerformLayout();
             this.SortingGroupBox.ResumeLayout(false);
             this.SortingGroupBox.PerformLayout();
             this.GameOrganizationGroupBox.ResumeLayout(false);
             this.PagePanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -407,5 +422,6 @@
         internal System.Windows.Forms.Label PreviewDateLabel;
         internal System.Windows.Forms.Panel PagePanel;
         internal System.Windows.Forms.Panel DummyAutoScrollPanel;
+        private System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
     }
 }
