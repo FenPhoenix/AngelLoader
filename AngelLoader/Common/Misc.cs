@@ -110,12 +110,6 @@ namespace AngelLoader.Common
         void SetUITextToLocalized(bool suspendResume = true);
     }
 
-    internal interface ISettingsWindow : IDisposable
-    {
-        ConfigData OutConfig { get; }
-        DialogResult ShowDialog();
-    }
-
     internal static class Regexes
     {
         // Uh, nothing in here at the moment.

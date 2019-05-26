@@ -165,8 +165,7 @@ namespace AngelLoader
 
         public static async Task<bool> OpenSettings(bool startup = false)
         {
-            //using (var sf = startup ? (ISettingsWindow)new SettingsForm(View, Config, true) : new SettingsForm2(View, Config))
-            using (var sf = new SettingsForm2(View, Config, startup))
+            using (var sf = new SettingsForm(View, Config, startup))
             {
                 // This needs to be separate so the below line can work
                 var result = sf.ShowDialog();
