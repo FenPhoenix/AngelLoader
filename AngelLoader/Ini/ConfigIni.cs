@@ -709,6 +709,26 @@ namespace AngelLoader.Ini
                     int.TryParse(val, out int result);
                     config.TopRightTabOrder.PatchTabPosition = result;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.StatsTabVisible) + "="))
+                {
+                    config.StatsTabVisible = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.EditFMTabVisible) + "="))
+                {
+                    config.EditFMTabVisible = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.CommentTabVisible) + "="))
+                {
+                    config.CommentTabVisible = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TagsTabVisible) + "="))
+                {
+                    config.TagsTabVisible = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.PatchTabVisible) + "="))
+                {
+                    config.PatchTabVisible = val.EqualsTrue();
+                }
             }
 
             var sep1 = config.DateCustomSeparator1.EscapeAllChars();
@@ -926,6 +946,12 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.TopRightTabOrder.CommentTabPosition) + "=" + config.TopRightTabOrder.CommentTabPosition);
                 sw.WriteLine(nameof(config.TopRightTabOrder.TagsTabPosition) + "=" + config.TopRightTabOrder.TagsTabPosition);
                 sw.WriteLine(nameof(config.TopRightTabOrder.PatchTabPosition) + "=" + config.TopRightTabOrder.PatchTabPosition);
+
+                sw.WriteLine(nameof(config.StatsTabVisible) + "=" + config.StatsTabVisible);
+                sw.WriteLine(nameof(config.EditFMTabVisible) + "=" + config.EditFMTabVisible);
+                sw.WriteLine(nameof(config.CommentTabVisible) + "=" + config.CommentTabVisible);
+                sw.WriteLine(nameof(config.TagsTabVisible) + "=" + config.TagsTabVisible);
+                sw.WriteLine(nameof(config.PatchTabVisible) + "=" + config.PatchTabVisible);
 
                 sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
 

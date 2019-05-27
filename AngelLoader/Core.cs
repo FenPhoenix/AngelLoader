@@ -1631,6 +1631,11 @@ namespace AngelLoader
             Game gameTab,
             TopRightTab topRightTab,
             TopRightTabOrder topRightTabOrder,
+            bool statsTabVisible,
+            bool editFMTabVisible,
+            bool commentTabVisible,
+            bool tagsTabVisible,
+            bool patchTabVisible,
             bool topRightPanelCollapsed,
             float readmeZoomFactor)
         {
@@ -1656,6 +1661,12 @@ namespace AngelLoader
             Config.TopRightTabOrder.CommentTabPosition = topRightTabOrder.CommentTabPosition;
             Config.TopRightTabOrder.TagsTabPosition = topRightTabOrder.TagsTabPosition;
             Config.TopRightTabOrder.PatchTabPosition = topRightTabOrder.PatchTabPosition;
+
+            Config.StatsTabVisible = statsTabVisible;
+            Config.EditFMTabVisible = editFMTabVisible;
+            Config.CommentTabVisible = commentTabVisible;
+            Config.TagsTabVisible = tagsTabVisible;
+            Config.PatchTabVisible = patchTabVisible;
 
             Config.TopRightPanelCollapsed = topRightPanelCollapsed;
 

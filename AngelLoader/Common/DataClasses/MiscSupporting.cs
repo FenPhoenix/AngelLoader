@@ -86,21 +86,27 @@ namespace AngelLoader.Common.DataClasses
 
     internal sealed class TopRightTabOrder
     {
+        internal const int StatsDefault = 0;
+        internal const int EditFMDefault = 1;
+        internal const int CommentDefault = 2;
+        internal const int TagsDefault = 3;
+        internal const int PatchDefault = 4;
+
         private const int MaxIndex = 4;
 
-        private int _statsTabPosition = 0;
+        private int _statsTabPosition = StatsDefault;
         internal int StatsTabPosition { get => _statsTabPosition; set => _statsTabPosition = value.Clamp(0, MaxIndex); }
 
-        private int _editFMTabPosition = 1;
+        private int _editFMTabPosition = EditFMDefault;
         internal int EditFMTabPosition { get => _editFMTabPosition; set => _editFMTabPosition = value.Clamp(0, MaxIndex); }
 
-        private int _commentTabPosition = 2;
+        private int _commentTabPosition = CommentDefault;
         internal int CommentTabPosition { get => _commentTabPosition; set => _commentTabPosition = value.Clamp(0, MaxIndex); }
 
-        private int _tagsTabPosition = 3;
+        private int _tagsTabPosition = TagsDefault;
         internal int TagsTabPosition { get => _tagsTabPosition; set => _tagsTabPosition = value.Clamp(0, MaxIndex); }
 
-        private int _patchTabPosition = 4;
+        private int _patchTabPosition = PatchDefault;
         internal int PatchTabPosition { get => _patchTabPosition; set => _patchTabPosition = value.Clamp(0, MaxIndex); }
     }
 

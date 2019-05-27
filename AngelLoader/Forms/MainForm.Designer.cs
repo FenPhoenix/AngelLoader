@@ -30,10 +30,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,6 +152,7 @@
             this.Thief1TabPage = new System.Windows.Forms.TabPage();
             this.Thief2TabPage = new System.Windows.Forms.TabPage();
             this.Thief3TabPage = new System.Windows.Forms.TabPage();
+            this.TopRightMenuButton = new System.Windows.Forms.Button();
             this.TopRightCollapseButton = new System.Windows.Forms.Button();
             this.TopRightTabControl = new AngelLoader.CustomControls.TabControlCustom();
             this.StatisticsTabPage = new System.Windows.Forms.TabPage();
@@ -228,6 +229,12 @@
             this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TopRightMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
+            this.TRM_StatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TRM_EditFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TRM_CommentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TRM_TagsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TRM_PatchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
@@ -266,6 +273,7 @@
             this.BottomAreaToolStripCustom.SuspendLayout();
             this.BottomAreaToolStripCustom2.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
+            this.TopRightMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // FMRightClickMenu
@@ -831,6 +839,7 @@
             // TopSplitContainer.Panel2
             // 
             this.TopSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.TopSplitContainer.Panel2.Controls.Add(this.TopRightMenuButton);
             this.TopSplitContainer.Panel2.Controls.Add(this.TopRightCollapseButton);
             this.TopSplitContainer.Panel2.Controls.Add(this.TopRightTabControl);
             this.TopSplitContainer.Panel2.SizeChanged += new System.EventHandler(this.TopSplitContainer_Panel2_SizeChanged);
@@ -881,14 +890,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -904,26 +913,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -984,8 +993,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -1579,17 +1588,31 @@
             this.Thief3TabPage.Text = "Thief 3";
             this.Thief3TabPage.UseVisualStyleBackColor = true;
             // 
+            // TopRightMenuButton
+            // 
+            this.TopRightMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.TopRightMenuButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("TopRightMenuButton.BackgroundImage")));
+            this.TopRightMenuButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.TopRightMenuButton.FlatAppearance.BorderSize = 0;
+            this.TopRightMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.TopRightMenuButton.Location = new System.Drawing.Point(534, 2);
+            this.TopRightMenuButton.Name = "TopRightMenuButton";
+            this.TopRightMenuButton.Size = new System.Drawing.Size(16, 16);
+            this.TopRightMenuButton.TabIndex = 13;
+            this.TopRightMenuButton.UseVisualStyleBackColor = true;
+            this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
+            // 
             // TopRightCollapseButton
             // 
             this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
             this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.TopRightCollapseButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
-            this.TopRightCollapseButton.Location = new System.Drawing.Point(0, 0);
+            this.TopRightCollapseButton.Location = new System.Drawing.Point(533, 20);
             this.TopRightCollapseButton.Name = "TopRightCollapseButton";
-            this.TopRightCollapseButton.Size = new System.Drawing.Size(16, 309);
+            this.TopRightCollapseButton.Size = new System.Drawing.Size(18, 287);
             this.TopRightCollapseButton.TabIndex = 14;
             this.TopRightCollapseButton.UseVisualStyleBackColor = true;
             this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
@@ -1604,10 +1627,10 @@
             this.TopRightTabControl.Controls.Add(this.CommentTabPage);
             this.TopRightTabControl.Controls.Add(this.TagsTabPage);
             this.TopRightTabControl.Controls.Add(this.PatchTabPage);
-            this.TopRightTabControl.Location = new System.Drawing.Point(16, 0);
+            this.TopRightTabControl.Location = new System.Drawing.Point(0, 0);
             this.TopRightTabControl.Name = "TopRightTabControl";
             this.TopRightTabControl.SelectedIndex = 0;
-            this.TopRightTabControl.Size = new System.Drawing.Size(537, 310);
+            this.TopRightTabControl.Size = new System.Drawing.Size(534, 310);
             this.TopRightTabControl.TabIndex = 15;
             // 
             // StatisticsTabPage
@@ -1619,7 +1642,7 @@
             this.StatisticsTabPage.Controls.Add(this.CustomResourcesLabel);
             this.StatisticsTabPage.Location = new System.Drawing.Point(4, 22);
             this.StatisticsTabPage.Name = "StatisticsTabPage";
-            this.StatisticsTabPage.Size = new System.Drawing.Size(529, 284);
+            this.StatisticsTabPage.Size = new System.Drawing.Size(526, 284);
             this.StatisticsTabPage.TabIndex = 0;
             this.StatisticsTabPage.Text = "Statistics";
             // 
@@ -1801,7 +1824,7 @@
             this.EditFMTabPage.Controls.Add(this.EditFMTitleLabel);
             this.EditFMTabPage.Location = new System.Drawing.Point(4, 22);
             this.EditFMTabPage.Name = "EditFMTabPage";
-            this.EditFMTabPage.Size = new System.Drawing.Size(529, 284);
+            this.EditFMTabPage.Size = new System.Drawing.Size(526, 284);
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
@@ -1835,7 +1858,7 @@
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMScanAuthorButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
             this.EditFMScanAuthorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(496, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(493, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
@@ -1847,7 +1870,7 @@
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMScanTitleButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
             this.EditFMScanTitleButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(496, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(493, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
@@ -1857,7 +1880,7 @@
             // EditFMAltTitlesDropDownButton
             // 
             this.EditFMAltTitlesDropDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMAltTitlesDropDownButton.Location = new System.Drawing.Point(480, 23);
+            this.EditFMAltTitlesDropDownButton.Location = new System.Drawing.Point(477, 23);
             this.EditFMAltTitlesDropDownButton.Name = "EditFMAltTitlesDropDownButton";
             this.EditFMAltTitlesDropDownButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesDropDownButton.TabIndex = 15;
@@ -1870,7 +1893,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(472, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(469, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             // 
@@ -1979,7 +2002,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
-            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(505, 20);
+            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(502, 20);
             this.EditFMDisabledModsTextBox.TabIndex = 29;
             this.EditFMDisabledModsTextBox.TextChanged += new System.EventHandler(this.EditFMDisabledModsTextBox_TextChanged);
             this.EditFMDisabledModsTextBox.Leave += new System.EventHandler(this.EditFMDisabledModsTextBox_Leave);
@@ -1999,7 +2022,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(488, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(485, 20);
             this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
@@ -2028,7 +2051,7 @@
             this.CommentTabPage.Controls.Add(this.CommentTextBox);
             this.CommentTabPage.Location = new System.Drawing.Point(4, 22);
             this.CommentTabPage.Name = "CommentTabPage";
-            this.CommentTabPage.Size = new System.Drawing.Size(529, 284);
+            this.CommentTabPage.Size = new System.Drawing.Size(526, 284);
             this.CommentTabPage.TabIndex = 0;
             this.CommentTabPage.Text = "Comment";
             // 
@@ -2041,7 +2064,7 @@
             this.CommentTextBox.Multiline = true;
             this.CommentTextBox.Name = "CommentTextBox";
             this.CommentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.CommentTextBox.Size = new System.Drawing.Size(513, 266);
+            this.CommentTextBox.Size = new System.Drawing.Size(510, 266);
             this.CommentTextBox.TabIndex = 32;
             this.CommentTextBox.TextChanged += new System.EventHandler(this.CommentTextBox_TextChanged);
             this.CommentTextBox.Leave += new System.EventHandler(this.CommentTextBox_Leave);
@@ -2055,7 +2078,7 @@
             this.TagsTabPage.Controls.Add(this.TagsTreeView);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
-            this.TagsTabPage.Size = new System.Drawing.Size(529, 284);
+            this.TagsTabPage.Size = new System.Drawing.Size(526, 284);
             this.TagsTabPage.TabIndex = 1;
             this.TagsTabPage.Text = "Tags";
             // 
@@ -2063,7 +2086,7 @@
             // 
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
-            this.AddTagButton.Location = new System.Drawing.Point(456, 7);
+            this.AddTagButton.Location = new System.Drawing.Point(453, 7);
             this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(72, 23);
@@ -2079,7 +2102,7 @@
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
             this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(448, 20);
+            this.AddTagTextBox.Size = new System.Drawing.Size(445, 20);
             this.AddTagTextBox.TabIndex = 0;
             this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
             this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
@@ -2092,7 +2115,7 @@
             this.flowLayoutPanel1.Controls.Add(this.RemoveTagButton);
             this.flowLayoutPanel1.Controls.Add(this.AddTagFromListButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(-8, 248);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(-11, 248);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(536, 24);
             this.flowLayoutPanel1.TabIndex = 3;
@@ -2132,7 +2155,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
             this.TagsTreeView.Name = "TagsTreeView";
-            this.TagsTreeView.Size = new System.Drawing.Size(520, 216);
+            this.TagsTreeView.Size = new System.Drawing.Size(517, 216);
             this.TagsTreeView.TabIndex = 2;
             // 
             // PatchTabPage
@@ -2143,7 +2166,7 @@
             this.PatchTabPage.Controls.Add(this.PatchFMNotInstalledLabel);
             this.PatchTabPage.Location = new System.Drawing.Point(4, 22);
             this.PatchTabPage.Name = "PatchTabPage";
-            this.PatchTabPage.Size = new System.Drawing.Size(529, 284);
+            this.PatchTabPage.Size = new System.Drawing.Size(526, 284);
             this.PatchTabPage.TabIndex = 3;
             this.PatchTabPage.Text = "Patch & Customize";
             // 
@@ -2225,7 +2248,7 @@
             // 
             this.PatchFMNotInstalledLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.PatchFMNotInstalledLabel.AutoSize = true;
-            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(-8, 264);
+            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(-9, 264);
             this.PatchFMNotInstalledLabel.Name = "PatchFMNotInstalledLabel";
             this.PatchFMNotInstalledLabel.Size = new System.Drawing.Size(232, 13);
             this.PatchFMNotInstalledLabel.TabIndex = 45;
@@ -2486,6 +2509,67 @@
             this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
             this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
+            // TopRightMenu
+            // 
+            this.TopRightMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.TRM_StatsMenuItem,
+            this.TRM_EditFMMenuItem,
+            this.TRM_CommentMenuItem,
+            this.TRM_TagsMenuItem,
+            this.TRM_PatchMenuItem});
+            this.TopRightMenu.Name = "TopRightMenu";
+            this.TopRightMenu.Size = new System.Drawing.Size(177, 114);
+            // 
+            // TRM_StatsMenuItem
+            // 
+            this.TRM_StatsMenuItem.Checked = true;
+            this.TRM_StatsMenuItem.CheckOnClick = true;
+            this.TRM_StatsMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TRM_StatsMenuItem.Name = "TRM_StatsMenuItem";
+            this.TRM_StatsMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.TRM_StatsMenuItem.Text = "Statistics";
+            this.TRM_StatsMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            // 
+            // TRM_EditFMMenuItem
+            // 
+            this.TRM_EditFMMenuItem.Checked = true;
+            this.TRM_EditFMMenuItem.CheckOnClick = true;
+            this.TRM_EditFMMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TRM_EditFMMenuItem.Name = "TRM_EditFMMenuItem";
+            this.TRM_EditFMMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.TRM_EditFMMenuItem.Text = "Edit FM";
+            this.TRM_EditFMMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            // 
+            // TRM_CommentMenuItem
+            // 
+            this.TRM_CommentMenuItem.Checked = true;
+            this.TRM_CommentMenuItem.CheckOnClick = true;
+            this.TRM_CommentMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TRM_CommentMenuItem.Name = "TRM_CommentMenuItem";
+            this.TRM_CommentMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.TRM_CommentMenuItem.Text = "Comment";
+            this.TRM_CommentMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            // 
+            // TRM_TagsMenuItem
+            // 
+            this.TRM_TagsMenuItem.Checked = true;
+            this.TRM_TagsMenuItem.CheckOnClick = true;
+            this.TRM_TagsMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TRM_TagsMenuItem.Name = "TRM_TagsMenuItem";
+            this.TRM_TagsMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.TRM_TagsMenuItem.Text = "Tags";
+            this.TRM_TagsMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            // 
+            // TRM_PatchMenuItem
+            // 
+            this.TRM_PatchMenuItem.Checked = true;
+            this.TRM_PatchMenuItem.CheckOnClick = true;
+            this.TRM_PatchMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.TRM_PatchMenuItem.Name = "TRM_PatchMenuItem";
+            this.TRM_PatchMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.TRM_PatchMenuItem.Text = "Patch && Customize";
+            this.TRM_PatchMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2494,7 +2578,6 @@
             this.Controls.Add(this.ProgressBox);
             this.Controls.Add(this.EverythingPanel);
             this.DoubleBuffered = true;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(894, 260);
             this.Name = "MainForm";
@@ -2568,6 +2651,7 @@
             this.BottomAreaToolStripCustom2.ResumeLayout(false);
             this.BottomAreaToolStripCustom2.PerformLayout();
             this.FinishedOnMenu.ResumeLayout(false);
+            this.TopRightMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -2768,6 +2852,13 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         private CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
+        private System.Windows.Forms.Button TopRightMenuButton;
+        private CustomControls.ContextMenuStripCustom TopRightMenu;
+        private System.Windows.Forms.ToolStripMenuItem TRM_StatsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_EditFMMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_CommentMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_TagsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_PatchMenuItem;
     }
 }
 

@@ -290,17 +290,47 @@ namespace AngelLoader.Forms
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
 
-            var indexes = new SortedDictionary<int, TabPage>
+            SortedDictionary<int, TabPage> indexes;
+
+            try
             {
-                { Config.TopRightTabOrder.StatsTabPosition, StatisticsTabPage },
-                { Config.TopRightTabOrder.EditFMTabPosition, EditFMTabPage },
-                { Config.TopRightTabOrder.CommentTabPosition, CommentTabPage },
-                { Config.TopRightTabOrder.TagsTabPosition, TagsTabPage },
-                { Config.TopRightTabOrder.PatchTabPosition, PatchTabPage }
-            };
+                indexes = new SortedDictionary<int, TabPage>
+                {
+                    { Config.TopRightTabOrder.StatsTabPosition, StatisticsTabPage },
+                    { Config.TopRightTabOrder.EditFMTabPosition, EditFMTabPage },
+                    { Config.TopRightTabOrder.CommentTabPosition, CommentTabPage },
+                    { Config.TopRightTabOrder.TagsTabPosition, TagsTabPage },
+                    { Config.TopRightTabOrder.PatchTabPosition, PatchTabPage }
+                };
+            }
+            catch (Exception)
+            {
+                indexes = new SortedDictionary<int, TabPage>
+                {
+                    { TopRightTabOrder.StatsDefault, StatisticsTabPage },
+                    { TopRightTabOrder.EditFMDefault, EditFMTabPage },
+                    { TopRightTabOrder.CommentDefault, CommentTabPage },
+                    { TopRightTabOrder.TagsDefault, TagsTabPage },
+                    { TopRightTabOrder.PatchDefault, PatchTabPage }
+                };
+            }
 
             TopRightTabControl.TabPages.Clear();
-            foreach (var item in indexes) TopRightTabControl.TabPages.Add(item.Value);
+            var tabs = new List<TabPage>();
+            foreach (var item in indexes) tabs.Add(item.Value);
+            TopRightTabControl.AddTabsFull(tabs);
+
+            TopRightTabControl.ShowTab(StatisticsTabPage, Config.StatsTabVisible);
+            TopRightTabControl.ShowTab(EditFMTabPage, Config.EditFMTabVisible);
+            TopRightTabControl.ShowTab(CommentTabPage, Config.CommentTabVisible);
+            TopRightTabControl.ShowTab(TagsTabPage, Config.TagsTabVisible);
+            TopRightTabControl.ShowTab(PatchTabPage, Config.PatchTabVisible);
+
+            TRM_StatsMenuItem.Checked = Config.StatsTabVisible;
+            TRM_EditFMMenuItem.Checked = Config.EditFMTabVisible;
+            TRM_CommentMenuItem.Checked = Config.CommentTabVisible;
+            TRM_TagsMenuItem.Checked = Config.TagsTabVisible;
+            TRM_PatchMenuItem.Checked = Config.PatchTabVisible;
 
             #region SplitContainers
 
@@ -379,22 +409,31 @@ namespace AngelLoader.Forms
             FinishedOnMenu.Size = Size.Empty;
             AddTagMenu.Size = Size.Empty;
             ImportFromMenu.Size = Size.Empty;
+            TopRightMenu.Size = Size.Empty;
 
             #endregion
 
             FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnNormalMenuItem, FinishedOnHardMenuItem,
                 FinishedOnExpertMenuItem, FinishedOnExtremeMenuItem, FinishedOnUnknownMenuItem);
 
+            TopRightMenu.SetPreventCloseOnClickItems(TopRightMenu.Items.Cast<ToolStripMenuItem>().ToArray());
+
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
             EditFMFinishedOnButton.Tag = EditFMFinishedOnButton.Size;
             ChooseReadmeButton.Tag = ChooseReadmeButton.Size;
 
             TopRightTabControl.SelectedTab =
-                Config.TopRightTab == TopRightTab.EditFM ? EditFMTabPage :
-                Config.TopRightTab == TopRightTab.Comment ? CommentTabPage :
-                Config.TopRightTab == TopRightTab.Tags ? TagsTabPage :
-                Config.TopRightTab == TopRightTab.Patch ? PatchTabPage :
-                StatisticsTabPage;
+                Config.TopRightTab == TopRightTab.EditFM && Config.EditFMTabVisible ? EditFMTabPage :
+                Config.TopRightTab == TopRightTab.Comment && Config.CommentTabVisible ? CommentTabPage :
+                Config.TopRightTab == TopRightTab.Tags && Config.TagsTabVisible ? TagsTabPage :
+                Config.TopRightTab == TopRightTab.Patch && Config.PatchTabVisible ? PatchTabPage :
+                Config.StatsTabVisible ? StatisticsTabPage :
+                null;
+
+            if (TopRightTabControl.SelectedTab == null && TopRightTabControl.TabPages.Count > 0)
+            {
+                TopRightTabControl.SelectedTab = TopRightTabControl.TabPages[0];
+            }
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
 
@@ -1033,14 +1072,35 @@ namespace AngelLoader.Forms
 
             var selectedFM = GetSelectedFMPosInfo();
 
-            var topRightTabOrder = new TopRightTabOrder
+            TopRightTabOrder topRightTabOrder;
+
+            try
             {
-                StatsTabPosition = TopRightTabControl.TabPages.IndexOf(StatisticsTabPage),
-                EditFMTabPosition = TopRightTabControl.TabPages.IndexOf(EditFMTabPage),
-                CommentTabPosition = TopRightTabControl.TabPages.IndexOf(CommentTabPage),
-                TagsTabPosition = TopRightTabControl.TabPages.IndexOf(TagsTabPage),
-                PatchTabPosition = TopRightTabControl.TabPages.IndexOf(PatchTabPage)
-            };
+                topRightTabOrder = new TopRightTabOrder();
+                (topRightTabOrder.StatsTabPosition, _) = TopRightTabControl.FindBackingTab(StatisticsTabPage);
+                (topRightTabOrder.EditFMTabPosition, _) = TopRightTabControl.FindBackingTab(EditFMTabPage);
+                (topRightTabOrder.CommentTabPosition, _) = TopRightTabControl.FindBackingTab(CommentTabPage);
+                (topRightTabOrder.TagsTabPosition, _) = TopRightTabControl.FindBackingTab(TagsTabPage);
+                (topRightTabOrder.PatchTabPosition, _) = TopRightTabControl.FindBackingTab(PatchTabPage);
+            }
+            catch (Exception)
+            {
+                topRightTabOrder = new TopRightTabOrder
+                {
+                    StatsTabPosition = TopRightTabControl.TabPages.IndexOf(StatisticsTabPage),
+                    EditFMTabPosition = TopRightTabControl.TabPages.IndexOf(EditFMTabPage),
+                    CommentTabPosition = TopRightTabControl.TabPages.IndexOf(CommentTabPage),
+                    TagsTabPosition = TopRightTabControl.TabPages.IndexOf(TagsTabPage),
+                    PatchTabPosition = TopRightTabControl.TabPages.IndexOf(PatchTabPage)
+                };
+            }
+
+
+            bool statsTabVisible = TopRightTabControl.Contains(StatisticsTabPage);
+            bool editFMTabVisible = TopRightTabControl.Contains(EditFMTabPage);
+            bool commentTabVisible = TopRightTabControl.Contains(CommentTabPage);
+            bool tagsTabVisible = TopRightTabControl.Contains(TagsTabPage);
+            bool patchTabVisible = TopRightTabControl.Contains(PatchTabPage);
 
             #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
 
@@ -1067,17 +1127,22 @@ namespace AngelLoader.Forms
                 mainSplitterPercent,
                 topSplitterPercent,
                 FMsDGV.ColumnsToColumnData(),
-                FMsDGV.CurrentSortedColumn,
-                FMsDGV.CurrentSortDirection,
-                FMsDGV.DefaultCellStyle.Font.SizeInPoints,
-                FMsDGV.Filter,
-                selectedFM,
-                FMsDGV.GameTabsState,
-                gameTab,
-                topRightTab,
-                topRightTabOrder,
-                TopSplitContainer.FullScreen,
-                ReadmeRichTextBox.ZoomFactor);
+                            FMsDGV.CurrentSortedColumn,
+                            FMsDGV.CurrentSortDirection,
+                            FMsDGV.DefaultCellStyle.Font.SizeInPoints,
+                            FMsDGV.Filter,
+                            selectedFM,
+                            FMsDGV.GameTabsState,
+                            gameTab,
+                            topRightTab,
+                            topRightTabOrder,
+                            statsTabVisible,
+                            editFMTabVisible,
+                            commentTabVisible,
+                            tagsTabVisible,
+                            patchTabVisible,
+                            TopSplitContainer.FullScreen,
+                            ReadmeRichTextBox.ZoomFactor);
         }
 
         private bool CursorOverReadmeArea()
@@ -3911,6 +3976,29 @@ namespace AngelLoader.Forms
         private void PlayFMAdvancedMenuItem_Click(object sender, EventArgs e)
         {
             // Throw up dialog with config var options
+        }
+
+        private void TRM_StatsMenuItem_Click(object sender, EventArgs e)
+        {
+            var s = (ToolStripMenuItem)sender;
+            var tab =
+                s == TRM_StatsMenuItem ? StatisticsTabPage :
+                s == TRM_EditFMMenuItem ? EditFMTabPage :
+                s == TRM_CommentMenuItem ? CommentTabPage :
+                s == TRM_TagsMenuItem ? TagsTabPage :
+                s == TRM_PatchMenuItem ? PatchTabPage :
+                null;
+
+            Debug.Assert(tab != null, nameof(tab) + " is null - tab is not being handled");
+
+            TopRightTabControl.ShowTab(tab, s.Checked);
+        }
+
+        private void TopRightMenuButton_Click(object sender, EventArgs e)
+        {
+            var menu = TopRightMenu;
+            var button = TopRightMenuButton;
+            menu.Show(button, -(menu.Width - button.Width), button.Height);
         }
     }
 }

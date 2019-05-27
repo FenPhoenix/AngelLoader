@@ -99,6 +99,12 @@ namespace AngelLoader.Common.DataClasses
 
         internal TopRightTabOrder TopRightTabOrder = new TopRightTabOrder();
 
+        internal bool StatsTabVisible = true;
+        internal bool EditFMTabVisible = true;
+        internal bool CommentTabVisible = true;
+        internal bool TagsTabVisible = true;
+        internal bool PatchTabVisible = true;
+
         #region Date format
 
         internal DateFormat DateFormat = DateFormat.CurrentCultureShort;
