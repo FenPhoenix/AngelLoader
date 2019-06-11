@@ -327,6 +327,10 @@ namespace AngelLoader.Forms
                 !Config.PatchTabVisible)
             {
                 Config.StatsTabVisible = true;
+                Config.EditFMTabVisible = true;
+                Config.CommentTabVisible = true;
+                Config.TagsTabVisible = true;
+                Config.PatchTabVisible = true;
             }
 
             TopRightTabControl.ShowTab(StatisticsTabPage, Config.StatsTabVisible);
