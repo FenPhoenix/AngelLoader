@@ -28,7 +28,7 @@ namespace AngelLoader.CustomControls
         }
 
         private MainForm Owner;
-        internal ProgressTasks ProgressTask { get; set; }
+        internal ProgressTasks ProgressTask;
 
         #endregion
 

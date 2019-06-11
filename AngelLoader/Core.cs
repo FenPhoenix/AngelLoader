@@ -65,7 +65,7 @@ namespace AngelLoader
 
     internal static class Core
     {
-        internal static IView View { get; set; }
+        internal static IView View;
         internal static ProgressPanel ProgressBox;
 
         internal static List<FanMission> FMsViewList = new List<FanMission>();

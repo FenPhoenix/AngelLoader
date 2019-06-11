@@ -33,8 +33,8 @@ namespace AngelLoader
 
         internal sealed class NameAndIndex
         {
-            internal string Name { get; set; }
-            internal int Index { get; set; } = -1;
+            internal string Name;
+            internal int Index = -1;
         }
 
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking

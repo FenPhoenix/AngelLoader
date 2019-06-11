@@ -22,7 +22,7 @@ namespace AngelLoader.Forms
         private readonly bool Startup;
 
         private readonly ConfigData InConfig;
-        public ConfigData OutConfig { get; } = new ConfigData();
+        public readonly ConfigData OutConfig = new ConfigData();
 
         private readonly TextBox[] GameExePathTextBoxes;
 

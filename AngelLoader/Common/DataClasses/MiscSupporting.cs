@@ -86,6 +86,8 @@ namespace AngelLoader.Common.DataClasses
         Extreme = 8
     }
 
+    #region Top-right tabs
+
     // Dopey, but for perf so we only have to get it once
     internal static class TopRightTabEnumStatic
     {
@@ -170,6 +172,8 @@ namespace AngelLoader.Common.DataClasses
             for (int i = 0; i < Tabs.Length; i++) Tabs[i].Position = i;
         }
     }
+
+    #endregion
 
     internal sealed class Filter
     {
@@ -409,12 +413,12 @@ namespace AngelLoader.Common.DataClasses
             T3SelFM.Clear();
         }
 
-        internal SelectedFM T1SelFM { get; } = new SelectedFM();
-        internal SelectedFM T2SelFM { get; } = new SelectedFM();
-        internal SelectedFM T3SelFM { get; } = new SelectedFM();
+        internal readonly SelectedFM T1SelFM = new SelectedFM();
+        internal readonly SelectedFM T2SelFM = new SelectedFM();
+        internal readonly SelectedFM T3SelFM = new SelectedFM();
 
-        internal Filter T1Filter { get; } = new Filter();
-        internal Filter T2Filter { get; } = new Filter();
-        internal Filter T3Filter { get; } = new Filter();
+        internal readonly Filter T1Filter = new Filter();
+        internal readonly Filter T2Filter = new Filter();
+        internal readonly Filter T3Filter = new Filter();
     }
 }

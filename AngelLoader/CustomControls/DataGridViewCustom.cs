@@ -176,7 +176,7 @@ namespace AngelLoader.CustomControls
 
         #region Filter
 
-        internal Filter Filter { get; set; } = new Filter();
+        internal Filter Filter = new Filter();
 
         // Slightly janky separate value here, but we need it because:
         // -We can't check the filtered index list for length > 0 because it could be empty when ALL FMs are being

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
+// TODO: Draggable tabs get buggy when there's only two. Fix this.
+
 namespace AngelLoader.CustomControls
 {
     internal class TabControlCustom : TabControl
