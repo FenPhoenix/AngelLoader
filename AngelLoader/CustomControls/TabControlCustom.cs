@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace AngelLoader.CustomControls
@@ -35,12 +33,13 @@ namespace AngelLoader.CustomControls
         }
 
         internal (int index, BackingTab backingTab)
-        FindBackingTab(TabPage tab)
+        FindBackingTab(TabPage tab, bool indexVisibleOnly = false)
         {
-            for (int i = 0; i < BackingTabList.Count; i++)
+            for (int i = 0, vi = 0; i < BackingTabList.Count; i++)
             {
                 var bt = BackingTabList[i];
-                if (bt?.Tab == tab) return (i, bt);
+                if (indexVisibleOnly && bt.Visible) vi++;
+                if (bt?.Tab == tab) return (indexVisibleOnly ? vi : i, bt);
             }
 
             return (-1, null);
@@ -48,18 +47,13 @@ namespace AngelLoader.CustomControls
 
         internal void ShowTab(TabPage tab, bool show)
         {
-            var (index, bt) = FindBackingTab(tab);
+            var (index, bt) = FindBackingTab(tab, indexVisibleOnly: true);
             if (index < 0 || bt == null) return;
 
             if (show)
             {
                 bt.Visible = true;
-                if (!TabPages.Contains(bt.Tab))
-                {
-                    TabPages.Insert(Math.Min(index, TabPages.Count), bt.Tab);
-                    //BackingTabList.Remove(bt);
-                    //BackingTabList.Insert(TabPages.IndexOf(tab), bt);
-                }
+                if (!TabPages.Contains(bt.Tab)) TabPages.Insert(Math.Min(index, TabPages.Count), bt.Tab);
             }
             else
             {
@@ -96,7 +90,6 @@ namespace AngelLoader.CustomControls
             var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location);
             if (bNewTabIndex == -1 || newTab == null || newTab == DragTab) return;
 
-            // TODO: Sync backing list - take into account hidden tabs (ack) - wait, do I need to?
             int newTabIndex = TabPages.IndexOf(newTab);
             TabPages[dragTabIndex] = newTab;
             TabPages[newTabIndex] = DragTab;
@@ -105,12 +98,6 @@ namespace AngelLoader.CustomControls
             BackingTabList[bNewTabIndex].Tab = DragTab;
 
             SelectedTab = DragTab;
-
-            Trace.WriteLine("-----------");
-            foreach (var bt in BackingTabList)
-            {
-                Trace.WriteLine(bt.Tab);
-            }
 
             base.OnMouseMove(e);
         }
