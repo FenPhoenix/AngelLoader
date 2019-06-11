@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-// TODO: Draggable tabs get buggy when there's only two. Fix this.
-
 namespace AngelLoader.CustomControls
 {
     internal class TabControlCustom : TabControl
@@ -57,7 +55,7 @@ namespace AngelLoader.CustomControls
             if (show)
             {
                 bt.Visible = true;
-                if (!TabPages.Contains(bt.Tab)) TabPages.Insert(Math.Min(index, TabPages.Count), bt.Tab);
+                if (!TabPages.Contains(bt.Tab)) TabPages.Insert(Math.Min(index, TabCount), bt.Tab);
             }
             else
             {
@@ -83,10 +81,12 @@ namespace AngelLoader.CustomControls
 
             var dragTabRect = GetTabRect(dragTabIndex);
 
-            if (dragTabIndex < TabPages.Count - 1 &&
-                e.Location.X < dragTabRect.Left + GetTabRect(dragTabIndex + 1).Width &&
-                dragTabIndex > 0 &&
-                e.Location.X > GetTabRect(dragTabIndex - 1).Left + dragTabRect.Width)
+            // Special-case for if there's 2 tabs. This is not the most readable thing, but hey... it works.
+            var rightNotYet = dragTabIndex < TabCount - 1 &&
+                              e.Location.X < dragTabRect.Left + GetTabRect(dragTabIndex + 1).Width;
+            var leftNotYet = dragTabIndex > 0 &&
+                             e.Location.X > GetTabRect(dragTabIndex - 1).Left + dragTabRect.Width;
+            if ((TabCount == 2 && (rightNotYet || leftNotYet)) || (rightNotYet && leftNotYet))
             {
                 return;
             }
