@@ -2528,7 +2528,7 @@
             this.TRM_StatsMenuItem.Name = "TRM_StatsMenuItem";
             this.TRM_StatsMenuItem.Size = new System.Drawing.Size(176, 22);
             this.TRM_StatsMenuItem.Text = "Statistics";
-            this.TRM_StatsMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            this.TRM_StatsMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
             // 
             // TRM_EditFMMenuItem
             // 
@@ -2538,7 +2538,7 @@
             this.TRM_EditFMMenuItem.Name = "TRM_EditFMMenuItem";
             this.TRM_EditFMMenuItem.Size = new System.Drawing.Size(176, 22);
             this.TRM_EditFMMenuItem.Text = "Edit FM";
-            this.TRM_EditFMMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            this.TRM_EditFMMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
             // 
             // TRM_CommentMenuItem
             // 
@@ -2548,7 +2548,7 @@
             this.TRM_CommentMenuItem.Name = "TRM_CommentMenuItem";
             this.TRM_CommentMenuItem.Size = new System.Drawing.Size(176, 22);
             this.TRM_CommentMenuItem.Text = "Comment";
-            this.TRM_CommentMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            this.TRM_CommentMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
             // 
             // TRM_TagsMenuItem
             // 
@@ -2558,7 +2558,7 @@
             this.TRM_TagsMenuItem.Name = "TRM_TagsMenuItem";
             this.TRM_TagsMenuItem.Size = new System.Drawing.Size(176, 22);
             this.TRM_TagsMenuItem.Text = "Tags";
-            this.TRM_TagsMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            this.TRM_TagsMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
             // 
             // TRM_PatchMenuItem
             // 
@@ -2568,7 +2568,7 @@
             this.TRM_PatchMenuItem.Name = "TRM_PatchMenuItem";
             this.TRM_PatchMenuItem.Size = new System.Drawing.Size(176, 22);
             this.TRM_PatchMenuItem.Text = "Patch && Customize";
-            this.TRM_PatchMenuItem.Click += new System.EventHandler(this.TRM_StatsMenuItem_Click);
+            this.TRM_PatchMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
             // 
             // MainForm
             // 

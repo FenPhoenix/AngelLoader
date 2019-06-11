@@ -320,6 +320,15 @@ namespace AngelLoader.Forms
             foreach (var item in indexes) tabs.Add(item.Value);
             TopRightTabControl.AddTabsFull(tabs);
 
+            if (!Config.StatsTabVisible &&
+                !Config.EditFMTabVisible &&
+                !Config.CommentTabVisible &&
+                !Config.TagsTabVisible &&
+                !Config.PatchTabVisible)
+            {
+                Config.StatsTabVisible = true;
+            }
+
             TopRightTabControl.ShowTab(StatisticsTabPage, Config.StatsTabVisible);
             TopRightTabControl.ShowTab(EditFMTabPage, Config.EditFMTabVisible);
             TopRightTabControl.ShowTab(CommentTabPage, Config.CommentTabVisible);
@@ -3978,7 +3987,7 @@ namespace AngelLoader.Forms
             // Throw up dialog with config var options
         }
 
-        private void TRM_StatsMenuItem_Click(object sender, EventArgs e)
+        private void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItem)sender;
             var tab =
@@ -3990,6 +3999,12 @@ namespace AngelLoader.Forms
                 null;
 
             Debug.Assert(tab != null, nameof(tab) + " is null - tab is not being handled");
+
+            if (!s.Checked && TopRightTabControl.TabPages.Count == 1)
+            {
+                s.Checked = true;
+                return;
+            }
 
             TopRightTabControl.ShowTab(tab, s.Checked);
         }
