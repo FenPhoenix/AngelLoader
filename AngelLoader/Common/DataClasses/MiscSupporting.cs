@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 
 namespace AngelLoader.Common.DataClasses
 {
@@ -84,30 +86,89 @@ namespace AngelLoader.Common.DataClasses
         Extreme = 8
     }
 
-    internal sealed class TopRightTabOrder
+    // Dopey, but for perf so we only have to get it once
+    internal static class TopRightTabEnumStatic
     {
-        internal const int StatsDefault = 0;
-        internal const int EditFMDefault = 1;
-        internal const int CommentDefault = 2;
-        internal const int TagsDefault = 3;
-        internal const int PatchDefault = 4;
+        internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
+    }
 
-        private const int MaxIndex = 4;
+    internal enum TopRightTab
+    {
+        Statistics,
+        EditFM,
+        Comment,
+        Tags,
+        Patch
+    }
 
-        private int _statsTabPosition = StatsDefault;
-        internal int StatsTabPosition { get => _statsTabPosition; set => _statsTabPosition = value.Clamp(0, MaxIndex); }
+    internal sealed class TopRightTabData
+    {
+        private int _position;
+        internal int Position
+        {
+            get => _position;
+            set => _position = value.Clamp(0, TopRightTabsCount);
+        }
 
-        private int _editFMTabPosition = EditFMDefault;
-        internal int EditFMTabPosition { get => _editFMTabPosition; set => _editFMTabPosition = value.Clamp(0, MaxIndex); }
+        internal bool Visible = true;
+    }
 
-        private int _commentTabPosition = CommentDefault;
-        internal int CommentTabPosition { get => _commentTabPosition; set => _commentTabPosition = value.Clamp(0, MaxIndex); }
+    internal sealed class TopRightTabsData
+    {
+        internal TopRightTabData[] Tabs = new TopRightTabData[TopRightTabsCount];
 
-        private int _tagsTabPosition = TagsDefault;
-        internal int TagsTabPosition { get => _tagsTabPosition; set => _tagsTabPosition = value.Clamp(0, MaxIndex); }
+        internal TopRightTab SelectedTab = TopRightTab.Statistics;
 
-        private int _patchTabPosition = PatchDefault;
-        internal int PatchTabPosition { get => _patchTabPosition; set => _patchTabPosition = value.Clamp(0, MaxIndex); }
+        internal TopRightTabsData()
+        {
+            for (int i = 0; i < Tabs.Length; i++) Tabs[i] = new TopRightTabData();
+            ResetAllPositions();
+        }
+
+        internal TopRightTabData StatsTab => Tabs[(int)TopRightTab.Statistics];
+        internal TopRightTabData EditFMTab => Tabs[(int)TopRightTab.EditFM];
+        internal TopRightTabData CommentTab => Tabs[(int)TopRightTab.Comment];
+        internal TopRightTabData TagsTab => Tabs[(int)TopRightTab.Tags];
+        internal TopRightTabData PatchTab => Tabs[(int)TopRightTab.Patch];
+
+        internal void EnsureValidity()
+        {
+            // Fallback if multiple tabs have the same position
+            if (Tabs.Distinct(new TopRightTabPositionComparer()).Count() != Tabs.Length) ResetAllPositions();
+
+            // Fallback if no tabs are visible
+            if (NoneVisible()) SetAllVisible(true);
+
+            // Fallback if selected tab is not marked as visible
+            if (!Tabs[(int)SelectedTab].Visible)
+            {
+                for (int i = 0; i < Tabs.Length; i++)
+                {
+                    if (Tabs[i].Visible)
+                    {
+                        SelectedTab = (TopRightTab)i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private bool NoneVisible()
+        {
+            int count = 0;
+            for (int i = 0; i < Tabs.Length; i++) if (Tabs[i].Visible) count++;
+            return count == 0;
+        }
+
+        private void SetAllVisible(bool visible)
+        {
+            for (int i = 0; i < Tabs.Length; i++) Tabs[i].Visible = visible;
+        }
+
+        private void ResetAllPositions()
+        {
+            for (int i = 0; i < Tabs.Length; i++) Tabs[i].Position = i;
+        }
     }
 
     internal sealed class Filter
@@ -288,15 +349,6 @@ namespace AngelLoader.Common.DataClasses
             OrTags.DeepCopyTo(dest.OrTags);
             NotTags.DeepCopyTo(dest.NotTags);
         }
-    }
-
-    internal enum TopRightTab
-    {
-        Statistics,
-        EditFM,
-        Comment,
-        Tags,
-        Patch
     }
 
     internal enum SettingsTab

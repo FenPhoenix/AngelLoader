@@ -95,15 +95,7 @@ namespace AngelLoader.Common.DataClasses
         internal Size SettingsWindowSize = new Size(710, 708);
         internal int SettingsWindowSplitterDistance = 155;
 
-        internal TopRightTab TopRightTab = TopRightTab.Statistics;
-
-        internal TopRightTabOrder TopRightTabOrder = new TopRightTabOrder();
-
-        internal bool StatsTabVisible = true;
-        internal bool EditFMTabVisible = true;
-        internal bool CommentTabVisible = true;
-        internal bool TagsTabVisible = true;
-        internal bool PatchTabVisible = true;
+        internal TopRightTabsData TopRightTabsData = new TopRightTabsData();
 
         #region Date format
 

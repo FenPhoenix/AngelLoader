@@ -414,12 +414,12 @@ namespace AngelLoader.Ini
                 {
                     config.RatingUseStars = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTab) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("TopRightTab="))
                 {
                     var field = typeof(TopRightTab).GetField(val, BFlagsEnum);
                     if (field != null)
                     {
-                        config.TopRightTab = (TopRightTab)field.GetValue(null);
+                        config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SettingsTab) + "="))
@@ -684,52 +684,55 @@ namespace AngelLoader.Ini
                 {
                     config.ConfirmPlayOnDCOrEnter = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.StatsTabPosition) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("StatsTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabOrder.StatsTabPosition = result;
+                    config.TopRightTabsData.StatsTab.Position = result;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.EditFMTabPosition) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("EditFMTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabOrder.EditFMTabPosition = result;
+                    config.TopRightTabsData.EditFMTab.Position = result;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.CommentTabPosition) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("CommentTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabOrder.CommentTabPosition = result;
+                    config.TopRightTabsData.CommentTab.Position = result;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.TagsTabPosition) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("TagsTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabOrder.TagsTabPosition = result;
+                    config.TopRightTabsData.TagsTab.Position = result;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TopRightTabOrder.PatchTabPosition) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("PatchTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabOrder.PatchTabPosition = result;
+                    config.TopRightTabsData.PatchTab.Position = result;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.StatsTabVisible) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("StatsTabVisible="))
                 {
-                    config.StatsTabVisible = val.EqualsTrue();
+                    config.TopRightTabsData.StatsTab.Visible = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.EditFMTabVisible) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("EditFMTabVisible="))
                 {
-                    config.EditFMTabVisible = val.EqualsTrue();
+                    config.TopRightTabsData.EditFMTab.Visible = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.CommentTabVisible) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("CommentTabVisible="))
                 {
-                    config.CommentTabVisible = val.EqualsTrue();
+                    config.TopRightTabsData.CommentTab.Visible = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.TagsTabVisible) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("TagsTabVisible="))
                 {
-                    config.TagsTabVisible = val.EqualsTrue();
+                    config.TopRightTabsData.TagsTab.Visible = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.PatchTabVisible) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("PatchTabVisible="))
                 {
-                    config.PatchTabVisible = val.EqualsTrue();
+                    config.TopRightTabsData.PatchTab.Visible = val.EqualsTrue();
                 }
             }
+
+            // Vital, don't remove
+            config.TopRightTabsData.EnsureValidity();
 
             var sep1 = config.DateCustomSeparator1.EscapeAllChars();
             var sep2 = config.DateCustomSeparator2.EscapeAllChars();
@@ -939,19 +942,19 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.TopRightPanelCollapsed) + "=" + config.TopRightPanelCollapsed);
 
                 sw.WriteLine(nameof(config.GameTab) + "=" + config.GameTab);
-                sw.WriteLine(nameof(config.TopRightTab) + "=" + config.TopRightTab);
+                sw.WriteLine("TopRightTab=" + config.TopRightTabsData.SelectedTab);
 
-                sw.WriteLine(nameof(config.TopRightTabOrder.StatsTabPosition) + "=" + config.TopRightTabOrder.StatsTabPosition);
-                sw.WriteLine(nameof(config.TopRightTabOrder.EditFMTabPosition) + "=" + config.TopRightTabOrder.EditFMTabPosition);
-                sw.WriteLine(nameof(config.TopRightTabOrder.CommentTabPosition) + "=" + config.TopRightTabOrder.CommentTabPosition);
-                sw.WriteLine(nameof(config.TopRightTabOrder.TagsTabPosition) + "=" + config.TopRightTabOrder.TagsTabPosition);
-                sw.WriteLine(nameof(config.TopRightTabOrder.PatchTabPosition) + "=" + config.TopRightTabOrder.PatchTabPosition);
+                sw.WriteLine("StatsTabPosition=" + config.TopRightTabsData.StatsTab.Position);
+                sw.WriteLine("EditFMTabPosition=" + config.TopRightTabsData.EditFMTab.Position);
+                sw.WriteLine("CommentTabPosition=" + config.TopRightTabsData.CommentTab.Position);
+                sw.WriteLine("TagsTabPosition=" + config.TopRightTabsData.TagsTab.Position);
+                sw.WriteLine("PatchTabPosition=" + config.TopRightTabsData.PatchTab.Position);
 
-                sw.WriteLine(nameof(config.StatsTabVisible) + "=" + config.StatsTabVisible);
-                sw.WriteLine(nameof(config.EditFMTabVisible) + "=" + config.EditFMTabVisible);
-                sw.WriteLine(nameof(config.CommentTabVisible) + "=" + config.CommentTabVisible);
-                sw.WriteLine(nameof(config.TagsTabVisible) + "=" + config.TagsTabVisible);
-                sw.WriteLine(nameof(config.PatchTabVisible) + "=" + config.PatchTabVisible);
+                sw.WriteLine("StatsTabVisible=" + config.TopRightTabsData.StatsTab.Visible);
+                sw.WriteLine("EditFMTabVisible=" + config.TopRightTabsData.EditFMTab.Visible);
+                sw.WriteLine("CommentTabVisible=" + config.TopRightTabsData.CommentTab.Visible);
+                sw.WriteLine("TagsTabVisible=" + config.TopRightTabsData.TagsTab.Visible);
+                sw.WriteLine("PatchTabVisible=" + config.TopRightTabsData.PatchTab.Visible);
 
                 sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
 

@@ -19,6 +19,7 @@ using FMScanner;
 using Gma.System.MouseKeyHook;
 using Ookii.Dialogs.WinForms;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 
@@ -39,6 +40,8 @@ namespace AngelLoader.Forms
 
         private float FMsListDefaultFontSizeInPoints;
         private int FMsListDefaultRowHeight;
+
+        private TabPage[] TopRightTabsInEnumOrder;
 
         private enum ZoomFMsDGVType
         {
@@ -268,11 +271,6 @@ namespace AngelLoader.Forms
             Test2Button.Hide();
 #endif
 
-            AppMouseHook = Hook.AppEvents();
-            AppMouseHook.MouseDownExt += HookMouseDown;
-            AppMouseHook.MouseMoveExt += HookMouseMove;
-            Application.AddMessageFilter(this);
-
             // Aside from a possible OpenSettings() call in Model.Init() if it needs to throw up the Settings
             // window (which doesn't show the view, so the startup process is still left intact), this code is
             // now a nice straight line with no back-and-forth spaghetti method calls.
@@ -290,60 +288,37 @@ namespace AngelLoader.Forms
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
 
-            SortedDictionary<int, TabPage> indexes;
+            // Putting these into a list whose order matches the enum allows us to just iterate the list without
+            // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
+            // when we add new tab pages.
+            TopRightTabsInEnumOrder = new[]
+            {
+                StatisticsTabPage,
+                EditFMTabPage,
+                CommentTabPage,
+                TagsTabPage,
+                PatchTabPage
+            };
 
-            try
+            var sortedTabPages = new SortedDictionary<int, TabPage>();
+            for (int i = 0; i < TopRightTabsCount; i++)
             {
-                indexes = new SortedDictionary<int, TabPage>
-                {
-                    { Config.TopRightTabOrder.StatsTabPosition, StatisticsTabPage },
-                    { Config.TopRightTabOrder.EditFMTabPosition, EditFMTabPage },
-                    { Config.TopRightTabOrder.CommentTabPosition, CommentTabPage },
-                    { Config.TopRightTabOrder.TagsTabPosition, TagsTabPage },
-                    { Config.TopRightTabOrder.PatchTabPosition, PatchTabPage }
-                };
-            }
-            catch (Exception)
-            {
-                indexes = new SortedDictionary<int, TabPage>
-                {
-                    { TopRightTabOrder.StatsDefault, StatisticsTabPage },
-                    { TopRightTabOrder.EditFMDefault, EditFMTabPage },
-                    { TopRightTabOrder.CommentDefault, CommentTabPage },
-                    { TopRightTabOrder.TagsDefault, TagsTabPage },
-                    { TopRightTabOrder.PatchDefault, PatchTabPage }
-                };
+                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, TopRightTabsInEnumOrder[i]);
             }
 
+            // There will be a set of tabs for design purposes already, so we need to get rid of those first
             TopRightTabControl.TabPages.Clear();
+
             var tabs = new List<TabPage>();
-            foreach (var item in indexes) tabs.Add(item.Value);
+            foreach (var item in sortedTabPages) tabs.Add(item.Value);
+
             TopRightTabControl.AddTabsFull(tabs);
 
-            if (!Config.StatsTabVisible &&
-                !Config.EditFMTabVisible &&
-                !Config.CommentTabVisible &&
-                !Config.TagsTabVisible &&
-                !Config.PatchTabVisible)
+            for (int i = 0; i < TopRightTabsCount; i++)
             {
-                Config.StatsTabVisible = true;
-                Config.EditFMTabVisible = true;
-                Config.CommentTabVisible = true;
-                Config.TagsTabVisible = true;
-                Config.PatchTabVisible = true;
+                TopRightTabControl.ShowTab(TopRightTabsInEnumOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
+                ((ToolStripMenuItem)TopRightMenu.Items[i]).Checked = Config.TopRightTabsData.Tabs[i].Visible;
             }
-
-            TopRightTabControl.ShowTab(StatisticsTabPage, Config.StatsTabVisible);
-            TopRightTabControl.ShowTab(EditFMTabPage, Config.EditFMTabVisible);
-            TopRightTabControl.ShowTab(CommentTabPage, Config.CommentTabVisible);
-            TopRightTabControl.ShowTab(TagsTabPage, Config.TagsTabVisible);
-            TopRightTabControl.ShowTab(PatchTabPage, Config.PatchTabVisible);
-
-            TRM_StatsMenuItem.Checked = Config.StatsTabVisible;
-            TRM_EditFMMenuItem.Checked = Config.EditFMTabVisible;
-            TRM_CommentMenuItem.Checked = Config.CommentTabVisible;
-            TRM_TagsMenuItem.Checked = Config.TagsTabVisible;
-            TRM_PatchMenuItem.Checked = Config.PatchTabVisible;
 
             #region SplitContainers
 
@@ -435,17 +410,14 @@ namespace AngelLoader.Forms
             EditFMFinishedOnButton.Tag = EditFMFinishedOnButton.Size;
             ChooseReadmeButton.Tag = ChooseReadmeButton.Size;
 
-            TopRightTabControl.SelectedTab =
-                Config.TopRightTab == TopRightTab.EditFM && Config.EditFMTabVisible ? EditFMTabPage :
-                Config.TopRightTab == TopRightTab.Comment && Config.CommentTabVisible ? CommentTabPage :
-                Config.TopRightTab == TopRightTab.Tags && Config.TagsTabVisible ? TagsTabPage :
-                Config.TopRightTab == TopRightTab.Patch && Config.PatchTabVisible ? PatchTabPage :
-                Config.StatsTabVisible ? StatisticsTabPage :
-                null;
-
-            if (TopRightTabControl.SelectedTab == null && TopRightTabControl.TabPages.Count > 0)
+            // EnsureValidity() guarantees selected tab will not be invisible
+            for (int i = 0; i < TopRightTabsCount; i++)
             {
-                TopRightTabControl.SelectedTab = TopRightTabControl.TabPages[0];
+                if ((int)Config.TopRightTabsData.SelectedTab == i)
+                {
+                    TopRightTabControl.SelectedTab = TopRightTabsInEnumOrder[i];
+                    break;
+                }
             }
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
@@ -467,6 +439,12 @@ namespace AngelLoader.Forms
             ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
 
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
+
+            // Hook these up last so they don't cause anything to happen while we're initializing
+            AppMouseHook = Hook.AppEvents();
+            AppMouseHook.MouseDownExt += HookMouseDown;
+            AppMouseHook.MouseMoveExt += HookMouseMove;
+            Application.AddMessageFilter(this);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -1075,45 +1053,19 @@ namespace AngelLoader.Forms
                 gameTab = Game.Thief1;
             }
 
-            var selTopRightTab = TopRightTabControl.SelectedTab;
-            var topRightTab =
-                selTopRightTab == EditFMTabPage ? TopRightTab.EditFM :
-                selTopRightTab == CommentTabPage ? TopRightTab.Comment :
-                selTopRightTab == TagsTabPage ? TopRightTab.Tags :
-                selTopRightTab == PatchTabPage ? TopRightTab.Patch :
-                TopRightTab.Statistics;
-
             var selectedFM = GetSelectedFMPosInfo();
 
-            TopRightTabOrder topRightTabOrder;
-
-            try
+            var topRightTabs = new TopRightTabsData
             {
-                topRightTabOrder = new TopRightTabOrder();
-                (topRightTabOrder.StatsTabPosition, _) = TopRightTabControl.FindBackingTab(StatisticsTabPage);
-                (topRightTabOrder.EditFMTabPosition, _) = TopRightTabControl.FindBackingTab(EditFMTabPage);
-                (topRightTabOrder.CommentTabPosition, _) = TopRightTabControl.FindBackingTab(CommentTabPage);
-                (topRightTabOrder.TagsTabPosition, _) = TopRightTabControl.FindBackingTab(TagsTabPage);
-                (topRightTabOrder.PatchTabPosition, _) = TopRightTabControl.FindBackingTab(PatchTabPage);
-            }
-            catch (Exception)
+                SelectedTab =
+                    (TopRightTab)Array.IndexOf(TopRightTabsInEnumOrder, TopRightTabControl.SelectedTab)
+            };
+
+            for (int i = 0; i < TopRightTabsCount; i++)
             {
-                topRightTabOrder = new TopRightTabOrder
-                {
-                    StatsTabPosition = TopRightTabControl.TabPages.IndexOf(StatisticsTabPage),
-                    EditFMTabPosition = TopRightTabControl.TabPages.IndexOf(EditFMTabPage),
-                    CommentTabPosition = TopRightTabControl.TabPages.IndexOf(CommentTabPage),
-                    TagsTabPosition = TopRightTabControl.TabPages.IndexOf(TagsTabPage),
-                    PatchTabPosition = TopRightTabControl.TabPages.IndexOf(PatchTabPage)
-                };
+                (topRightTabs.Tabs[i].Position, _) = TopRightTabControl.FindBackingTab(TopRightTabsInEnumOrder[i]);
+                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(TopRightTabsInEnumOrder[i]);
             }
-
-
-            bool statsTabVisible = TopRightTabControl.Contains(StatisticsTabPage);
-            bool editFMTabVisible = TopRightTabControl.Contains(EditFMTabPage);
-            bool commentTabVisible = TopRightTabControl.Contains(CommentTabPage);
-            bool tagsTabVisible = TopRightTabControl.Contains(TagsTabPage);
-            bool patchTabVisible = TopRightTabControl.Contains(PatchTabPage);
 
             #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
 
@@ -1140,22 +1092,16 @@ namespace AngelLoader.Forms
                 mainSplitterPercent,
                 topSplitterPercent,
                 FMsDGV.ColumnsToColumnData(),
-                            FMsDGV.CurrentSortedColumn,
-                            FMsDGV.CurrentSortDirection,
-                            FMsDGV.DefaultCellStyle.Font.SizeInPoints,
-                            FMsDGV.Filter,
-                            selectedFM,
-                            FMsDGV.GameTabsState,
-                            gameTab,
-                            topRightTab,
-                            topRightTabOrder,
-                            statsTabVisible,
-                            editFMTabVisible,
-                            commentTabVisible,
-                            tagsTabVisible,
-                            patchTabVisible,
-                            TopSplitContainer.FullScreen,
-                            ReadmeRichTextBox.ZoomFactor);
+                FMsDGV.CurrentSortedColumn,
+                FMsDGV.CurrentSortDirection,
+                FMsDGV.DefaultCellStyle.Font.SizeInPoints,
+                FMsDGV.Filter,
+                selectedFM,
+                FMsDGV.GameTabsState,
+                gameTab,
+                topRightTabs,
+                TopSplitContainer.FullScreen,
+                ReadmeRichTextBox.ZoomFactor);
         }
 
         private bool CursorOverReadmeArea()
@@ -3994,15 +3940,18 @@ namespace AngelLoader.Forms
         private void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItem)sender;
-            var tab =
-                s == TRM_StatsMenuItem ? StatisticsTabPage :
-                s == TRM_EditFMMenuItem ? EditFMTabPage :
-                s == TRM_CommentMenuItem ? CommentTabPage :
-                s == TRM_TagsMenuItem ? TagsTabPage :
-                s == TRM_PatchMenuItem ? PatchTabPage :
-                null;
 
-            Debug.Assert(tab != null, nameof(tab) + " is null - tab is not being handled");
+            TabPage tab = null;
+            for (int i = 0; i < TopRightTabsCount; i++)
+            {
+                if (s == (ToolStripMenuItem)TopRightMenu.Items[i])
+                {
+                    tab = TopRightTabsInEnumOrder[i];
+                    break;
+                }
+            }
+
+            Debug.Assert(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
 
             if (!s.Checked && TopRightTabControl.TabPages.Count == 1)
             {

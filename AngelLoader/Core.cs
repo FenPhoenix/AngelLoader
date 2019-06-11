@@ -19,6 +19,7 @@ using AngelLoader.WinAPI;
 using FMScanner;
 using Ookii.Dialogs.WinForms;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.Ini.Ini;
@@ -1629,13 +1630,7 @@ namespace AngelLoader
             SelectedFM selectedFM,
             GameTabsState gameTabsState,
             Game gameTab,
-            TopRightTab topRightTab,
-            TopRightTabOrder topRightTabOrder,
-            bool statsTabVisible,
-            bool editFMTabVisible,
-            bool commentTabVisible,
-            bool tagsTabVisible,
-            bool patchTabVisible,
+            TopRightTabsData topRightTabsData,
             bool topRightPanelCollapsed,
             float readmeZoomFactor)
         {
@@ -1654,19 +1649,19 @@ namespace AngelLoader
 
             filter.DeepCopyTo(Config.Filter);
 
-            Config.TopRightTab = topRightTab;
+            #region Top-right tabs
 
-            Config.TopRightTabOrder.StatsTabPosition = topRightTabOrder.StatsTabPosition;
-            Config.TopRightTabOrder.EditFMTabPosition = topRightTabOrder.EditFMTabPosition;
-            Config.TopRightTabOrder.CommentTabPosition = topRightTabOrder.CommentTabPosition;
-            Config.TopRightTabOrder.TagsTabPosition = topRightTabOrder.TagsTabPosition;
-            Config.TopRightTabOrder.PatchTabPosition = topRightTabOrder.PatchTabPosition;
+            Config.TopRightTabsData.SelectedTab = topRightTabsData.SelectedTab;
 
-            Config.StatsTabVisible = statsTabVisible;
-            Config.EditFMTabVisible = editFMTabVisible;
-            Config.CommentTabVisible = commentTabVisible;
-            Config.TagsTabVisible = tagsTabVisible;
-            Config.PatchTabVisible = patchTabVisible;
+            for (int i = 0; i < TopRightTabsCount; i++)
+            {
+                Config.TopRightTabsData.Tabs[i].Position = topRightTabsData.Tabs[i].Position;
+                Config.TopRightTabsData.Tabs[i].Visible = topRightTabsData.Tabs[i].Visible;
+            }
+
+            Config.TopRightTabsData.EnsureValidity();
+
+            #endregion
 
             Config.TopRightPanelCollapsed = topRightPanelCollapsed;
 
