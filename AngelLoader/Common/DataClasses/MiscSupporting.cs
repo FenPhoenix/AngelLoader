@@ -12,11 +12,13 @@ namespace AngelLoader.Common.DataClasses
         internal string Command = "";
     }
 
+    #region Columns
+
     internal sealed class ColumnData
     {
         internal Column Id;
         internal int DisplayIndex = -1;
-        internal int Width = 100;
+        internal int Width = Defaults.ColumnWidth;
         internal bool Visible = true;
     }
 
@@ -37,54 +39,22 @@ namespace AngelLoader.Common.DataClasses
         Comment
     }
 
-    internal enum DateFormat
-    {
-        CurrentCultureShort,
-        CurrentCultureLong,
-        Custom
-    }
+    #endregion
 
-    internal enum Game
-    {
-        Thief1,
-        Thief2,
-        Thief3,
-        Unsupported
-    }
+    internal enum Game { Thief1, Thief2, Thief3, Unsupported }
 
-    internal enum FinishedState
-    {
-        Finished,
-        Unfinished
-    }
+    internal enum GameOrganization { ByTab, OneList }
 
-    internal enum BackupFMData
-    {
-        SavesAndScreensOnly,
-        AllChangedFiles
-    }
+    // Public for interface use
+    public enum RatingDisplayStyle { NewDarkLoader, FMSel }
 
-    internal enum GameOrganization
-    {
-        ByTab,
-        OneList
-    }
+    internal enum DateFormat { CurrentCultureShort, CurrentCultureLong, Custom }
 
-    public enum RatingDisplayStyle
-    {
-        NewDarkLoader,
-        FMSel
-    }
+    internal enum FinishedState { Finished, Unfinished }
 
-    [Flags]
-    internal enum FinishedOn
-    {
-        None = 0,
-        Normal = 1,
-        Hard = 2,
-        Expert = 4,
-        Extreme = 8
-    }
+    [Flags] internal enum FinishedOn { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
+
+    internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
     #region Top-right tabs
 
@@ -94,23 +64,12 @@ namespace AngelLoader.Common.DataClasses
         internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
     }
 
-    internal enum TopRightTab
-    {
-        Statistics,
-        EditFM,
-        Comment,
-        Tags,
-        Patch
-    }
+    internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch }
 
     internal sealed class TopRightTabData
     {
         private int _position;
-        internal int Position
-        {
-            get => _position;
-            set => _position = value.Clamp(0, TopRightTabsCount);
-        }
+        internal int Position { get => _position; set => _position = value.Clamp(0, TopRightTabsCount); }
 
         internal bool Visible = true;
     }
@@ -174,6 +133,8 @@ namespace AngelLoader.Common.DataClasses
     }
 
     #endregion
+
+    #region Filter
 
     internal sealed class Filter
     {
@@ -355,18 +316,12 @@ namespace AngelLoader.Common.DataClasses
         }
     }
 
-    internal enum SettingsTab
-    {
-        Paths,
-        FMDisplay,
-        Other
-    }
+    #endregion
+
+    internal enum SettingsTab { Paths, FMDisplay, Other }
 
     internal sealed class SelectedFM
     {
-        private int _indexFromTop;
-        private string _installedName;
-
         internal void DeepCopyTo(SelectedFM dest)
         {
             dest.IndexFromTop = IndexFromTop;
@@ -379,23 +334,26 @@ namespace AngelLoader.Common.DataClasses
             InstalledName = null;
         }
 
-        internal string InstalledName
-        {
-            get => _installedName;
-            set => _installedName = value.IsEmpty() ? null : value;
-        }
+        private string _installedName;
+        internal string InstalledName { get => _installedName; set => _installedName = value.IsEmpty() ? null : value; }
+
+        private int _indexFromTop;
         /// <summary>
         /// The index relative to the first displayed item (not the first item period) in the list.
         /// </summary>
-        internal int IndexFromTop
-        {
-            get => _indexFromTop;
-            set => _indexFromTop = value.ClampToZero();
-        }
+        internal int IndexFromTop { get => _indexFromTop; set => _indexFromTop = value.ClampToZero(); }
     }
 
     internal sealed class GameTabsState
     {
+        internal readonly SelectedFM T1SelFM = new SelectedFM();
+        internal readonly SelectedFM T2SelFM = new SelectedFM();
+        internal readonly SelectedFM T3SelFM = new SelectedFM();
+
+        internal readonly Filter T1Filter = new Filter();
+        internal readonly Filter T2Filter = new Filter();
+        internal readonly Filter T3Filter = new Filter();
+
         internal void DeepCopyTo(GameTabsState dest)
         {
             T1Filter.DeepCopyTo(dest.T1Filter);
@@ -412,13 +370,5 @@ namespace AngelLoader.Common.DataClasses
             T2SelFM.Clear();
             T3SelFM.Clear();
         }
-
-        internal readonly SelectedFM T1SelFM = new SelectedFM();
-        internal readonly SelectedFM T2SelFM = new SelectedFM();
-        internal readonly SelectedFM T3SelFM = new SelectedFM();
-
-        internal readonly Filter T1Filter = new Filter();
-        internal readonly Filter T2Filter = new Filter();
-        internal readonly Filter T3Filter = new Filter();
     }
 }

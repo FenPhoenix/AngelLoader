@@ -91,11 +91,13 @@ namespace AngelLoader.Common.DataClasses
         // Session-only; don't write out
         internal readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
 
+        #region Settings window state
+
         internal SettingsTab SettingsTab = SettingsTab.Paths;
         internal Size SettingsWindowSize = new Size(710, 708);
         internal int SettingsWindowSplitterDistance = 155;
 
-        internal TopRightTabsData TopRightTabsData = new TopRightTabsData();
+        #endregion
 
         #region Date format
 
@@ -113,37 +115,49 @@ namespace AngelLoader.Common.DataClasses
 
         #endregion
 
+        #region Main window state
+
         internal FormWindowState MainWindowState = FormWindowState.Maximized;
         internal Size MainWindowSize = new Size(1280, 720);
         internal Point MainWindowLocation = new Point(100, 100);
 
         private float _mainSplitterPercent = Defaults.MainSplitterPercent;
-        internal float MainSplitterPercent
-        {
-            get => _mainSplitterPercent;
-            set => _mainSplitterPercent = value.Clamp(0, 1.0f);
-        }
+        internal float MainSplitterPercent { get => _mainSplitterPercent; set => _mainSplitterPercent = value.Clamp(0, 1.0f); }
 
         private float _topSplitterPercent = Defaults.TopSplitterPercent;
-        internal float TopSplitterPercent
-        {
-            get => _topSplitterPercent;
-            set => _topSplitterPercent = value.Clamp(0, 1.0f);
-        }
+        internal float TopSplitterPercent { get => _topSplitterPercent; set => _topSplitterPercent = value.Clamp(0, 1.0f); }
 
         internal bool TopRightPanelCollapsed = false;
 
+        internal TopRightTabsData TopRightTabsData = new TopRightTabsData();
+
+        internal float _readmeZoomFactor = 1;
+        internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f); }
+
+        #endregion
+
+        #region Rating display style
+
         internal RatingDisplayStyle RatingDisplayStyle = RatingDisplayStyle.FMSel;
-        // Only relevant if we're using FMSel-style rating display
         internal bool RatingUseStars = true;
+
+        #endregion
+
+        #region Audio conversion
 
         internal bool ConvertWAVsTo16BitOnInstall = true;
         internal bool ConvertOGGsToWAVsOnInstall = false;
+
+        #endregion
+
+        #region Uninstall
 
         internal bool ConfirmUninstall = true;
 
         internal BackupFMData BackupFMData = BackupFMData.AllChangedFiles;
         internal bool BackupAlwaysAsk = true;
+
+        #endregion
 
         internal string WebSearchUrl = Defaults.WebSearchUrl;
 
@@ -157,12 +171,5 @@ namespace AngelLoader.Common.DataClasses
         #endregion
 
         internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
-
-        internal float _readmeZoomFactor = 1;
-        internal float ReadmeZoomFactor
-        {
-            get => _readmeZoomFactor;
-            set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f);
-        }
     }
 }

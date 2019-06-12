@@ -4,6 +4,7 @@ using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Common
 {
+    // Class instead of enum so we don't have to keep casting its fields
     internal static class ByteSize
     {
         internal static int KB = 1024;
@@ -35,12 +36,7 @@ namespace AngelLoader.Common
         internal List<string> Readmes = new List<string>();
     }
 
-    internal enum ReadmeType
-    {
-        PlainText,
-        RichText,
-        HTML
-    }
+    internal enum ReadmeType { PlainText, RichText, HTML }
 
     #region DisableEvents
 
