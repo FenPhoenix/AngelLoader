@@ -399,6 +399,8 @@ namespace AngelLoader.Common.Utility
 
         #region Modifications
 
+        internal static string EscapeAmpersands(this string value) => value.Replace("&", "&&");
+
         internal static void ClearAndAdd<T>(this List<T> list, params T[] items)
         {
             list.Clear();

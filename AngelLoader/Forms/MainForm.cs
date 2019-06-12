@@ -630,29 +630,29 @@ namespace AngelLoader.Forms
 
                 #region FM context menu
 
-                PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM;
+                PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
 
-                //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced;
+                //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced.EscapeAmpersands();
                 Core.SetDefaultConfigVarNamesToLocalized();
 
-                InstallUninstallMenuItem.Text = sayInstall
+                InstallUninstallMenuItem.Text = (sayInstall
                     ? LText.FMsList.FMMenu_InstallFM
-                    : LText.FMsList.FMMenu_UninstallFM;
+                    : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
 
-                OpenInDromEdMenuItem.Text = LText.FMsList.FMMenu_OpenInDromEd;
+                OpenInDromEdMenuItem.Text = LText.FMsList.FMMenu_OpenInDromEd.EscapeAmpersands();
 
-                ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM;
+                ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
 
-                ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio;
-                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit;
-                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs;
+                ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
+                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit.EscapeAmpersands();
+                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs.EscapeAmpersands();
 
-                RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating;
-                RatingRCMenuUnrated.Text = LText.Global.Unrated;
+                RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating.EscapeAmpersands();
+                RatingRCMenuUnrated.Text = LText.Global.Unrated.EscapeAmpersands();
 
-                FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn;
+                FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
 
-                WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch;
+                WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
 
                 #endregion
 
@@ -660,11 +660,11 @@ namespace AngelLoader.Forms
 
                 var fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
 
-                FinishedOnNormalMenuItem.Text = fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal;
-                FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;
-                FinishedOnExpertMenuItem.Text = fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert;
-                FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
-                FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown;
+                FinishedOnNormalMenuItem.Text = (fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
+                FinishedOnHardMenuItem.Text = (fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
+                FinishedOnExpertMenuItem.Text = (fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
+                FinishedOnExtremeMenuItem.Text = (fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme).EscapeAmpersands();
+                FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown.EscapeAmpersands();
 
                 #endregion
 
@@ -672,9 +672,21 @@ namespace AngelLoader.Forms
 
                 #region Play original games menu
 
-                PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1;
-                PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2;
-                PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3;
+                PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
+                PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2.EscapeAmpersands();
+                PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();;
+
+                #endregion
+
+                #region Top-right tabs area
+
+                #region Show/hide tabs menu
+
+                TRM_StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
+                TRM_EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
+                TRM_CommentMenuItem.Text = LText.CommentTab.TabText.EscapeAmpersands();
+                TRM_TagsMenuItem.Text = LText.TagsTab.TabText.EscapeAmpersands();
+                TRM_PatchMenuItem.Text = LText.PatchTab.TabText.EscapeAmpersands();
 
                 #endregion
 
@@ -751,6 +763,8 @@ namespace AngelLoader.Forms
                 PatchFMNotInstalledLabel.Text = LText.PatchTab.FMNotInstalled;
                 PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
                 PatchOpenFMFolderButton.SetTextAutoSize(LText.PatchTab.OpenFMFolder, PatchOpenFMFolderButton.Width);
+
+                #endregion
 
                 #endregion
 

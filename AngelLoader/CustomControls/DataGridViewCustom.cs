@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
+using AngelLoader.Common.Utility;
 
 namespace AngelLoader.CustomControls
 {
@@ -272,22 +273,22 @@ namespace AngelLoader.CustomControls
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {
-            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible;
-            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
-            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
+            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
+            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
+            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions.EscapeAmpersands();
 
-            ShowGameMenuItem.Text = LText.FMsList.GameColumn;
-            ShowInstalledMenuItem.Text = LText.FMsList.InstalledColumn;
-            ShowTitleMenuItem.Text = LText.FMsList.TitleColumn;
-            ShowArchiveMenuItem.Text = LText.FMsList.ArchiveColumn;
-            ShowAuthorMenuItem.Text = LText.FMsList.AuthorColumn;
-            ShowSizeMenuItem.Text = LText.FMsList.SizeColumn;
-            ShowRatingMenuItem.Text = LText.FMsList.RatingColumn;
-            ShowFinishedMenuItem.Text = LText.FMsList.FinishedColumn;
-            ShowReleaseDateMenuItem.Text = LText.FMsList.ReleaseDateColumn;
-            ShowLastPlayedMenuItem.Text = LText.FMsList.LastPlayedColumn;
-            ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn;
-            ShowCommentMenuItem.Text = LText.FMsList.CommentColumn;
+            ShowGameMenuItem.Text = LText.FMsList.GameColumn.EscapeAmpersands();
+            ShowInstalledMenuItem.Text = LText.FMsList.InstalledColumn.EscapeAmpersands();
+            ShowTitleMenuItem.Text = LText.FMsList.TitleColumn.EscapeAmpersands();
+            ShowArchiveMenuItem.Text = LText.FMsList.ArchiveColumn.EscapeAmpersands();
+            ShowAuthorMenuItem.Text = LText.FMsList.AuthorColumn.EscapeAmpersands();
+            ShowSizeMenuItem.Text = LText.FMsList.SizeColumn.EscapeAmpersands();
+            ShowRatingMenuItem.Text = LText.FMsList.RatingColumn.EscapeAmpersands();
+            ShowFinishedMenuItem.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
+            ShowReleaseDateMenuItem.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
+            ShowLastPlayedMenuItem.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
+            ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
+            ShowCommentMenuItem.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
         }
 
         #region Main
