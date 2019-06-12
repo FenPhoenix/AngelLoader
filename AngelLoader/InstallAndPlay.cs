@@ -31,8 +31,10 @@ namespace AngelLoader
             {
                 var (cancel, dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Play_ConfirmMessage,
                     LText.AlertMessages.Confirm, icon: null, showDontAskAgain: true, yes: null, no: null);
-                Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
+                
                 if (cancel) return;
+                
+                Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
             }
 
             if (!fm.Installed && !await InstallFM(fm)) return;
@@ -679,8 +681,10 @@ namespace AngelLoader
                     Core.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Uninstall_Confirm,
                         LText.AlertMessages.Confirm, TaskDialogIcon.Warning, showDontAskAgain: true,
                         LText.AlertMessages.Uninstall, LText.Global.Cancel);
-                Config.ConfirmUninstall = !dontAskAgain;
+                
                 if (cancel) return;
+                
+                Config.ConfirmUninstall = !dontAskAgain;
             }
 
             var gameExe = GetGameExeFromGameType((Game)fm.Game);
@@ -748,8 +752,10 @@ namespace AngelLoader
                             message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                             LText.AlertMessages.Confirm, null, showDontAskAgain: true,
                             LText.AlertMessages.BackUp, LText.AlertMessages.DontBackUp, LText.Global.Cancel);
-                    Config.BackupAlwaysAsk = !dontAskAgain;
+                    
                     if (cancel) return;
+                    
+                    Config.BackupAlwaysAsk = !dontAskAgain;
                     if (cont) await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }
                 else
