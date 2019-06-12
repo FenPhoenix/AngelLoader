@@ -91,6 +91,39 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Show menu
+
+        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
+
+        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos, bool unstickMenu = false)
+        {
+            int x = pos == MenuPos.LeftUp || pos == MenuPos.LeftDown || pos == MenuPos.TopRight || pos == MenuPos.BottomRight
+                ? 0
+                : control.Width;
+
+            int y = pos == MenuPos.LeftDown || pos == MenuPos.TopLeft || pos == MenuPos.TopRight || pos == MenuPos.RightDown
+                ? 0
+                : control.Height;
+
+            var dir =
+                pos == MenuPos.LeftUp || pos == MenuPos.TopLeft ? ToolStripDropDownDirection.AboveLeft :
+                pos == MenuPos.RightUp || pos == MenuPos.TopRight ? ToolStripDropDownDirection.AboveRight :
+                pos == MenuPos.LeftDown || pos == MenuPos.BottomLeft ? ToolStripDropDownDirection.BelowLeft :
+                ToolStripDropDownDirection.BelowRight;
+
+            if (unstickMenu)
+            {
+                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
+                // then carry on with the final show below
+                menu.Show();
+                menu.Hide();
+            }
+
+            menu.Show(control, new Point(x, y), dir);
+        }
+
+        #endregion
+
         public int CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
         public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
 
@@ -674,7 +707,7 @@ namespace AngelLoader.Forms
 
                 PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
                 PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2.EscapeAmpersands();
-                PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();;
+                PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();
 
                 #endregion
 
@@ -2088,14 +2121,11 @@ namespace AngelLoader.Forms
 
         private void PlayOriginalGameButton_Click(object sender, EventArgs e)
         {
-            var button = PlayOriginalGameButton;
-            var menu = PlayOriginalGameMenu;
-
             PlayOriginalThief1MenuItem.Enabled = !Config.T1Exe.IsEmpty();
             PlayOriginalThief2MenuItem.Enabled = !Config.T2Exe.IsEmpty();
             PlayOriginalThief3MenuItem.Enabled = !Config.T3Exe.IsEmpty();
 
-            menu.Show(button, 0, -menu.Height);
+            ShowMenu(PlayOriginalGameMenu, PlayOriginalGameButton, MenuPos.TopRight);
         }
 
         private void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
@@ -3138,12 +3168,8 @@ namespace AngelLoader.Forms
 
         private void TagPresetsButton_Click(object sender, EventArgs e)
         {
-            var button = (Button)sender;
-            var menu = AddTagMenu;
-
             GlobalTags.SortAndMoveMiscToEnd();
-
-            menu.Items.Clear();
+            AddTagMenu.Items.Clear();
 
             var addTagMenuItems = new List<ToolStripItem>();
             foreach (var catAndTag in GlobalTags)
@@ -3189,7 +3215,7 @@ namespace AngelLoader.Forms
 
             AddTagMenu.Items.AddRange(addTagMenuItems.ToArray());
 
-            menu.Show(button, -menu.Width, 0);
+            ShowMenu(AddTagMenu, AddTagFromListButton, MenuPos.LeftDown);
         }
 
         private void AddTagMenuItem_Click(object sender, EventArgs e)
@@ -3309,13 +3335,7 @@ namespace AngelLoader.Forms
 
         #region Edit FM tab
 
-        private void EditFMAltTitlesDropDownButton_Click(object sender, EventArgs e)
-        {
-            var button = EditFMAltTitlesDropDownButton;
-            var menu = AltTitlesMenu;
-
-            menu.Show(button, -(menu.Width - button.Width), button.Height);
-        }
+        private void EditFMAltTitlesDropDownButton_Click(object sender, EventArgs e) => ShowMenu(AltTitlesMenu, EditFMAltTitlesDropDownButton, MenuPos.BottomLeft);
 
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {
@@ -3430,17 +3450,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
-        {
-            var button = EditFMFinishedOnButton;
-            var menu = FinishedOnMenu;
-
-            // Menu could be stuck to a submenu, so show, hide, show to get it unstuck and showing in the right
-            // place
-            menu.Show();
-            menu.Hide();
-            menu.Show(button, 0, button.Height);
-        }
+        private void EditFMFinishedOnButton_Click(object sender, EventArgs e) => ShowMenu(FinishedOnMenu, EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
 
         private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
@@ -3744,12 +3754,7 @@ namespace AngelLoader.Forms
 
         private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(GetSelectedFM());
 
-        private void ImportButton_Click(object sender, EventArgs e)
-        {
-            var menu = ImportFromMenu;
-            var button = ImportButton;
-            menu.Show(button, -(menu.Width - button.Width), -menu.Height);
-        }
+        private void ImportButton_Click(object sender, EventArgs e) => ShowMenu(ImportFromMenu, ImportButton, MenuPos.TopLeft);
 
         private async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
         {
@@ -3976,11 +3981,6 @@ namespace AngelLoader.Forms
             TopRightTabControl.ShowTab(tab, s.Checked);
         }
 
-        private void TopRightMenuButton_Click(object sender, EventArgs e)
-        {
-            var menu = TopRightMenu;
-            var button = TopRightMenuButton;
-            menu.Show(button, -(menu.Width - button.Width), button.Height);
-        }
+        private void TopRightMenuButton_Click(object sender, EventArgs e) => ShowMenu(TopRightMenu, TopRightMenuButton, MenuPos.BottomLeft);
     }
 }
