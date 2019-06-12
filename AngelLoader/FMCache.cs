@@ -178,7 +178,7 @@ namespace AngelLoader
             }
             else
             {
-                await SevenZipExtract(fmArchivePath, fm.InstalledDir, fmCachePath, readmes, progressBox);
+                await SevenZipExtract(fmArchivePath, fmCachePath, readmes, progressBox);
             }
 
             // TODO: Support .7z here too
@@ -342,8 +342,8 @@ namespace AngelLoader
             }
         }
 
-        private static async Task SevenZipExtract(string fmArchivePath, string fmInstalledDir, string fmCachePath,
-            List<string> readmes, ProgressPanel progressBox)
+        private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes,
+            ProgressPanel progressBox)
         {
             await Task.Run(() =>
             {
