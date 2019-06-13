@@ -31,17 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <DllExportIdent>2638AF1C-A1CF-41A3-80FF-AB38ADC25D3F</DllExportIdent>
-    <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
-    <DllExportNamespace>AngelLoader_Stub</DllExportNamespace>
-    <DllExportDDNSCecil>true</DllExportDDNSCecil>
     <PlatformTarget>x86</PlatformTarget>
-    <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
-    <DllExportGenExpLib>false</DllExportGenExpLib>
-    <DllExportOurILAsm>false</DllExportOurILAsm>
-    <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
-    <DllExportTimeout>30000</DllExportTimeout>
-    <DllExportPeCheck>2</DllExportPeCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -106,7 +96,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
-      <HintPath>$(SolutionDir)packages\DllExport.1.6.3\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
+      <HintPath>$(SolutionDir)packages\DllExport.1.6.2\gcache\metalib\$(DllExportNamespace)\$(DllExportMetaLibName)</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -125,18 +115,30 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rem xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\Thief2-ND-TP-AngelLoader-Test\" /y
-rem xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\Thief2-ND-TP-AngelLoader-Test-All-1098\" /y
-rem xcopy "$(TargetDir)AngelLoader_Stub.dll" "C:\Thief Games\ThiefG-ND-1.26-AngelLoader-Test\" /y
-
-xcopy "$(TargetDir)AngelLoader_Stub.dll" "$(SolutionDir)AngelLoader\$(OutDir)" /y</PostBuildEvent>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetDir)AngelLoader_Stub.dll" "$(SolutionDir)AngelLoader\$(OutDir)" /y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DllExportIdent>2638AF1C-A1CF-41A3-80FF-AB38ADC25D3F</DllExportIdent>
+    <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
+    <DllExportNamespace>AngelLoader_Stub</DllExportNamespace>
+    <DllExportDDNSCecil>true</DllExportDDNSCecil>
+    <PlatformTarget>x86</PlatformTarget>
+    <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
+    <DllExportGenExpLib>false</DllExportGenExpLib>
+    <DllExportOurILAsm>false</DllExportOurILAsm>
+    <DllExportLeaveIntermediateFiles>false</DllExportLeaveIntermediateFiles>
+    <DllExportTimeout>30000</DllExportTimeout>
+    <DllExportPeCheck>2</DllExportPeCheck>
   </PropertyGroup>
   <ImportGroup Label=".NET DllExport">
-    <Import Project="$(SolutionDir)packages\DllExport.1.6.3\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.6.3\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
+    <Import Project="$(SolutionDir)packages\DllExport.1.6.2\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.6.2\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
   </ImportGroup>
   <Target Name="DllExportRestorePkg" BeforeTargets="PrepareForBuild">
     <Error Condition="!Exists('$(SolutionDir)DllExport.bat')" Text="DllExport.bat is not found. Path: '$(SolutionDir)' - https://github.com/3F/DllExport" />
-    <Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.6.3\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command="DllExport.bat  -dxp-version 1.6.3 -action Restore" WorkingDirectory="$(SolutionDir)" />
+    <Exec Condition="('$(DllExportModImported)' != 'true' Or !Exists('$(SolutionDir)packages\DllExport.1.6.2\tools\net.r_eg.DllExport.targets')) And Exists('$(SolutionDir)DllExport.bat')" Command="DllExport.bat  -action Restore" WorkingDirectory="$(SolutionDir)" />
   </Target>
   <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
     <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />

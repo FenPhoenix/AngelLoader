@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.Common;
@@ -76,6 +77,61 @@ namespace AngelLoader.Forms
             FillTreeView(TagsFilter.NotTags);
         }
 
+        #region Find box
+
+        private static TreeNode FindFirstCatNodeStartingWithText(TreeView tv, string text)
+        {
+            foreach (TreeNode node in tv.Nodes)
+            {
+                if (node.Text.StartsWithI(text)) return node;
+            }
+            return null;
+        }
+
+        private static TreeNode FindFirstCatAndTagStartingWithText(TreeView tv, string tag, string cat)
+        {
+            foreach (TreeNode node in tv.Nodes)
+            {
+                if (node.Text == tag && node.Nodes.Count > 0)
+                {
+                    foreach (TreeNode tagNode in node.Nodes)
+                    {
+                        if (tagNode.Text.StartsWithI(cat)) return tagNode;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void FindTagTextBox_TextChanged(object sender, EventArgs e)
+        {
+            var text = FindTagTextBox.Text.Replace(" ", "").Replace("\t", "");
+            if (!text.Contains(':'))
+            {
+                var node = FindFirstCatNodeStartingWithText(OriginTreeView, text);
+                if (node != null)
+                {
+                    OriginTreeView.SelectedNode = node;
+                }
+            }
+            else
+            {
+                var index = text.IndexOf(':');
+                if (index > 0)
+                {
+                    var cat = text.Substring(0, index);
+                    var tag = text.Substring(index + 1);
+                    var node = FindFirstCatAndTagStartingWithText(OriginTreeView, cat, tag);
+                    if (node != null)
+                    {
+                        OriginTreeView.SelectedNode = node;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         private void FillTreeView(CatAndTagsList tags)
         {
             var tv =
@@ -91,6 +147,7 @@ namespace AngelLoader.Forms
             foreach (var catAndTags in tags)
             {
                 tv.Nodes.Add(catAndTags.Category);
+                //tv.Nodes.Add(new TreeNode { BackColor = SystemColors.Highlight, Text = catAndTags.Category });
                 var last = tv.Nodes[tv.Nodes.Count - 1];
                 foreach (var tag in catAndTags.Tags) last.Nodes.Add(tag);
             }
@@ -213,10 +270,7 @@ namespace AngelLoader.Forms
             FillTreeView(TagsFilter.NotTags);
         }
 
-        private void OriginTreeView_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            CheckTagInAny();
-        }
+        private void OriginTreeView_AfterSelect(object sender, TreeViewEventArgs e) => CheckTagInAny();
 
         private void CheckTagInAny()
         {

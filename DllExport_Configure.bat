@@ -1,1 +1,1 @@
-DllExport -action Configure %*
+ DllExport -action Configure %*

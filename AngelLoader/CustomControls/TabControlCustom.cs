@@ -42,9 +42,15 @@ namespace AngelLoader.CustomControls
                 if (bt?.Tab == tab) return (indexVisibleOnly ? vi : i, bt);
             }
 
-            throw new Exception(nameof(FindBackingTab) + " couldn't find the specified tab page '" +
-                                tab.Name +
-                                "'. That's not supposed to happen. All tab pages should always exist in the backing list.");
+            if (!DesignMode)
+            {
+                throw new Exception(nameof(FindBackingTab) + " couldn't find the specified tab page '" +
+                                    tab.Name +
+                                    "'. That's not supposed to happen. All tab pages should always exist in the backing list.");
+            }
+
+            // To keep design mode tab selection happy
+            return (-1, null);
         }
 
         internal void ShowTab(TabPage tab, bool show)

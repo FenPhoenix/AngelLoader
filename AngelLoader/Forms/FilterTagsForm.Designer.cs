@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.OriginTreeView = new System.Windows.Forms.TreeView();
+            this.OriginTreeView = new AngelLoader.CustomControls.TreeViewCustom();
             this.AndTreeView = new System.Windows.Forms.TreeView();
             this.OrTreeView = new System.Windows.Forms.TreeView();
             this.NotTreeView = new System.Windows.Forms.TreeView();
@@ -54,6 +54,7 @@
             this.toolStripSeparatorCustom1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.MoveButtonsPanel = new System.Windows.Forms.Panel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.FindTagTextBox = new System.Windows.Forms.TextBox();
             this.FilterLabelsPanel.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.toolStripCustom1.SuspendLayout();
@@ -64,9 +65,11 @@
             // 
             this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.OriginTreeView.Location = new System.Drawing.Point(8, 8);
+            this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
+            this.OriginTreeView.HideSelection = false;
+            this.OriginTreeView.Location = new System.Drawing.Point(8, 32);
             this.OriginTreeView.Name = "OriginTreeView";
-            this.OriginTreeView.Size = new System.Drawing.Size(224, 648);
+            this.OriginTreeView.Size = new System.Drawing.Size(224, 624);
             this.OriginTreeView.TabIndex = 0;
             this.OriginTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OriginTreeView_AfterSelect);
             // 
@@ -74,6 +77,7 @@
             // 
             this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.AndTreeView.HideSelection = false;
             this.AndTreeView.Location = new System.Drawing.Point(344, 24);
             this.AndTreeView.Name = "AndTreeView";
             this.AndTreeView.Size = new System.Drawing.Size(224, 632);
@@ -83,6 +87,7 @@
             // 
             this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.OrTreeView.HideSelection = false;
             this.OrTreeView.Location = new System.Drawing.Point(576, 24);
             this.OrTreeView.Name = "OrTreeView";
             this.OrTreeView.Size = new System.Drawing.Size(224, 632);
@@ -92,6 +97,7 @@
             // 
             this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.NotTreeView.HideSelection = false;
             this.NotTreeView.Location = new System.Drawing.Point(808, 24);
             this.NotTreeView.Name = "NotTreeView";
             this.NotTreeView.Size = new System.Drawing.Size(224, 632);
@@ -332,6 +338,14 @@
             this.MoveButtonsPanel.Size = new System.Drawing.Size(112, 552);
             this.MoveButtonsPanel.TabIndex = 1;
             // 
+            // FindTagTextBox
+            // 
+            this.FindTagTextBox.Location = new System.Drawing.Point(8, 8);
+            this.FindTagTextBox.Name = "FindTagTextBox";
+            this.FindTagTextBox.Size = new System.Drawing.Size(224, 20);
+            this.FindTagTextBox.TabIndex = 7;
+            this.FindTagTextBox.TextChanged += new System.EventHandler(this.FindTagTextBox_TextChanged);
+            // 
             // FilterTagsForm
             // 
             this.AcceptButton = this.OKButton;
@@ -339,6 +353,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(1040, 692);
+            this.Controls.Add(this.FindTagTextBox);
             this.Controls.Add(this.MoveButtonsPanel);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.FilterLabelsPanel);
@@ -366,12 +381,13 @@
             this.MoveButtonsPanel.ResumeLayout(false);
             this.MoveButtonsPanel.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TreeView OriginTreeView;
+        private AngelLoader.CustomControls.TreeViewCustom OriginTreeView;
         private System.Windows.Forms.TreeView AndTreeView;
         private System.Windows.Forms.TreeView OrTreeView;
         private System.Windows.Forms.TreeView NotTreeView;
@@ -396,5 +412,6 @@
         private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom1;
         private System.Windows.Forms.Panel MoveButtonsPanel;
         private System.Windows.Forms.ToolTip MainToolTip;
+        private System.Windows.Forms.TextBox FindTagTextBox;
     }
 }
