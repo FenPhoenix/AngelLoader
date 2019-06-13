@@ -109,23 +109,16 @@ namespace AngelLoader.Forms
             if (!text.Contains(':'))
             {
                 var node = FindFirstCatNodeStartingWithText(OriginTreeView, text);
-                if (node != null)
-                {
-                    OriginTreeView.SelectedNode = node;
-                }
+                if (node != null) OriginTreeView.SelectedNode = node;
             }
             else
             {
                 var index = text.IndexOf(':');
                 if (index > 0)
                 {
-                    var cat = text.Substring(0, index);
-                    var tag = text.Substring(index + 1);
+                    string cat = text.Substring(0, index), tag = text.Substring(index + 1);
                     var node = FindFirstCatAndTagStartingWithText(OriginTreeView, cat, tag);
-                    if (node != null)
-                    {
-                        OriginTreeView.SelectedNode = node;
-                    }
+                    if (node != null) OriginTreeView.SelectedNode = node;
                 }
             }
         }
