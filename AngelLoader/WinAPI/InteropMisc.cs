@@ -17,6 +17,8 @@ namespace AngelLoader.WinAPI
 
         internal const int EN_LINK = 0x070b;
 
+        internal const int CB_GETDROPPEDCONTROLRECT = 338;
+
         [StructLayout(LayoutKind.Sequential)]
         internal struct RECT
         {

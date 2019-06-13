@@ -731,6 +731,17 @@ namespace AngelLoader.Common.Utility
             }
         }
 
+        internal static Rectangle GetDroppedDownRect(this ComboBox comboBox)
+        {
+            var rect = new RECT();
+
+            var result = SendMessage(comboBox.Handle, CB_GETDROPPEDCONTROLRECT, IntPtr.Zero, ref rect);
+
+            return result == 0
+                ? Rectangle.Empty
+                : new Rectangle(rect.left, rect.top + comboBox.Height, rect.right - rect.left, (rect.bottom - rect.top) - comboBox.Height);
+        }
+
         #endregion
     }
 }
