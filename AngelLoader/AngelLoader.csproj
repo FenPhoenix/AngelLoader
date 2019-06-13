@@ -465,7 +465,14 @@ set destDir="C:\AngelLoader\"
 
 xcopy "$(TargetDir)AngelLoader.exe" %25destDir%25 /y
 xcopy "$(TargetDir)AngelLoader.exe.config" %25destDir%25 /y
+
 xcopy "$(TargetDir)*.dll" %25destDir%25 /y
+
+rem Dumb hack to get rid of the JetBrains.Annotations.dll because ludicrously
+rem xcopy requires you to make an entire file just to list excludes, rather than
+rem specifying them on the command line like someone who is not clinically insane
+del /F "%25destDir%25JetBrains.Annotations.dll"
+
 xcopy "$(TargetDir)log4net.config" %25destDir%25 /y
 xcopy "$(TargetDir)x86\7z.dll" %25destDir%25 /y
 xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
