@@ -30,10 +30,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,13 +59,6 @@
             this.RatingRCMenu8 = new System.Windows.Forms.ToolStripMenuItem();
             this.RatingRCMenu9 = new System.Windows.Forms.ToolStripMenuItem();
             this.RatingRCMenu10 = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
-            this.FinishedOnNormalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenuSep2 = new System.Windows.Forms.ToolStripSeparator();
             this.WebSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
@@ -80,15 +73,23 @@
             this.PlayFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
             this.InstallUninstallFMButton = new System.Windows.Forms.Button();
-            this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.WebSearchButton = new System.Windows.Forms.Button();
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
+            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
@@ -122,6 +123,7 @@
             this.FilterAuthorTextBox = new System.Windows.Forms.TextBox();
             this.FilterIconButtonsToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
             this.toolStripSeparator5 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.TestTSB = new System.Windows.Forms.ToolStripButton();
             this.FilterByReleaseDateButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByReleaseDateLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparatorCustom1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
@@ -134,6 +136,7 @@
             this.FilterByUnfinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.toolStripSeparator1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterByRatingTSDDB = new System.Windows.Forms.ToolStripDropDownButton();
             this.FilterByRatingLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterShowUnsupportedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
@@ -217,32 +220,32 @@
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
+            this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FinishedOnRCSubMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
+            this.FinishedOnNormalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnHardMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnExpertMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnExtremeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FinishedOnUnknownMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TopRightMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
             this.TRM_StatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_EditFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_CommentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_TagsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_PatchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBoxCustom1 = new AngelLoader.CustomControls.ToolStripComboBoxCustom();
+            this.toolStripComboBoxCustom2 = new AngelLoader.CustomControls.ToolStripComboBoxCustom();
             this.FMRightClickMenu.SuspendLayout();
-            this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
             this.BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
-            this.BottomAreaToolStripCustom.SuspendLayout();
-            this.BottomAreaToolStripCustom2.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
+            this.PlayOriginalGameMenu.SuspendLayout();
+            this.ImportFromMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
@@ -271,8 +274,9 @@
             this.PatchDMLsPanel.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.ChooseReadmeOKFlowLayoutPanel.SuspendLayout();
-            this.PlayOriginalGameMenu.SuspendLayout();
-            this.ImportFromMenu.SuspendLayout();
+            this.BottomAreaToolStripCustom.SuspendLayout();
+            this.BottomAreaToolStripCustom2.SuspendLayout();
+            this.FinishedOnMenu.SuspendLayout();
             this.TopRightMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -472,70 +476,6 @@
             this.RatingRCMenu10.Text = "10";
             this.RatingRCMenu10.Click += new System.EventHandler(this.RatingRCMenuItems_Click);
             // 
-            // FinishedOnRCSubMenu
-            // 
-            this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
-            this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
-            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(187, 22);
-            this.FinishedOnRCSubMenu.Text = "Finished on";
-            // 
-            // FinishedOnMenu
-            // 
-            this.FinishedOnMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FinishedOnNormalMenuItem,
-            this.FinishedOnHardMenuItem,
-            this.FinishedOnExpertMenuItem,
-            this.FinishedOnExtremeMenuItem,
-            this.FinishedOnUnknownMenuItem});
-            this.FinishedOnMenu.Name = "FinishedOnMenu";
-            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
-            this.FinishedOnMenu.Size = new System.Drawing.Size(126, 114);
-            // 
-            // FinishedOnNormalMenuItem
-            // 
-            this.FinishedOnNormalMenuItem.CheckOnClick = true;
-            this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
-            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnNormalMenuItem.Tag = "";
-            this.FinishedOnNormalMenuItem.Text = "Normal";
-            this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnHardMenuItem
-            // 
-            this.FinishedOnHardMenuItem.CheckOnClick = true;
-            this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
-            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnHardMenuItem.Tag = "";
-            this.FinishedOnHardMenuItem.Text = "Hard";
-            this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnExpertMenuItem
-            // 
-            this.FinishedOnExpertMenuItem.CheckOnClick = true;
-            this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
-            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnExpertMenuItem.Tag = "";
-            this.FinishedOnExpertMenuItem.Text = "Expert";
-            this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnExtremeMenuItem
-            // 
-            this.FinishedOnExtremeMenuItem.CheckOnClick = true;
-            this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
-            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnExtremeMenuItem.Tag = "";
-            this.FinishedOnExtremeMenuItem.Text = "Extreme";
-            this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
-            // FinishedOnUnknownMenuItem
-            // 
-            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
-            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
-            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.FinishedOnUnknownMenuItem.Text = "Unknown";
-            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
-            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
-            // 
             // FMRightClickMenuSep2
             // 
             this.FMRightClickMenuSep2.Name = "FMRightClickMenuSep2";
@@ -709,44 +649,6 @@
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
             this.InstallUninstallFMButton.Click += new System.EventHandler(this.InstallUninstallFMButton_Click);
             // 
-            // BottomAreaToolStripCustom
-            // 
-            this.BottomAreaToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep1});
-            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
-            this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
-            this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom.TabIndex = 32;
-            // 
-            // BottomAreaSep1
-            // 
-            this.BottomAreaSep1.AutoSize = false;
-            this.BottomAreaSep1.Name = "BottomAreaSep1";
-            this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
-            // 
-            // BottomAreaToolStripCustom2
-            // 
-            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep2});
-            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
-            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
-            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom2.TabIndex = 35;
-            // 
-            // BottomAreaSep2
-            // 
-            this.BottomAreaSep2.AutoSize = false;
-            this.BottomAreaSep2.Name = "BottomAreaSep2";
-            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
-            // 
             // WebSearchButton
             // 
             this.WebSearchButton.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -804,6 +706,89 @@
             this.AddTagListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
             this.AddTagListBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
             this.AddTagListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AddTagListBox_MouseUp);
+            // 
+            // PlayOriginalGameMenu
+            // 
+            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayOriginalThief1MenuItem,
+            this.PlayOriginalThief2MenuItem,
+            this.PlayOriginalThief3MenuItem});
+            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
+            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
+            // 
+            // PlayOriginalThief1MenuItem
+            // 
+            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
+            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
+            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
+            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief2MenuItem
+            // 
+            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
+            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
+            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
+            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // PlayOriginalThief3MenuItem
+            // 
+            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
+            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
+            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
+            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            // 
+            // AddTagMenu
+            // 
+            this.AddTagMenu.Name = "AddTagMenu";
+            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
+            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
+            // 
+            // AltTitlesMenu
+            // 
+            this.AltTitlesMenu.Name = "AltTitlesMenu";
+            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
+            // 
+            // ImportFromMenu
+            // 
+            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ImportFromDarkLoaderMenuItem,
+            this.ImportFromFMSelMenuItem,
+            this.ImportFromNewDarkLoaderMenuItem});
+            this.ImportFromMenu.Name = "ImportFromMenu";
+            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
+            // 
+            // ImportFromDarkLoaderMenuItem
+            // 
+            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
+            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
+            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
+            // 
+            // ImportFromFMSelMenuItem
+            // 
+            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
+            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromFMSelMenuItem.Text = "FMSel";
+            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
+            // 
+            // ImportFromNewDarkLoaderMenuItem
+            // 
+            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
+            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
+            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
+            // 
+            // ProgressBox
+            // 
+            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
+            this.ProgressBox.Name = "ProgressBox";
+            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
+            this.ProgressBox.TabIndex = 39;
+            this.ProgressBox.Visible = false;
             // 
             // MainSplitContainer
             // 
@@ -909,14 +894,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -932,26 +917,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -1012,8 +997,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -1131,7 +1116,7 @@
             this.FilterGameButtonsToolStrip.Location = new System.Drawing.Point(6, 0);
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
             this.FilterGameButtonsToolStrip.PaddingDrawNudge = 0;
-            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(85, 26);
+            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(85, 29);
             this.FilterGameButtonsToolStrip.TabIndex = 3;
             // 
             // FilterByThief1Button
@@ -1250,6 +1235,7 @@
             this.FilterIconButtonsToolStripCustom.ImageScalingSize = new System.Drawing.Size(22, 22);
             this.FilterIconButtonsToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripSeparator5,
+            this.TestTSB,
             this.FilterByReleaseDateButton,
             this.FilterByReleaseDateLabel,
             this.toolStripSeparatorCustom1,
@@ -1262,6 +1248,7 @@
             this.FilterByUnfinishedButton,
             this.toolStripSeparator1,
             this.FilterByRatingButton,
+            this.FilterByRatingTSDDB,
             this.FilterByRatingLabel,
             this.toolStripSeparator3,
             this.FilterShowUnsupportedButton});
@@ -1269,7 +1256,7 @@
             this.FilterIconButtonsToolStripCustom.Location = new System.Drawing.Point(471, 0);
             this.FilterIconButtonsToolStripCustom.Name = "FilterIconButtonsToolStripCustom";
             this.FilterIconButtonsToolStripCustom.PaddingDrawNudge = 0;
-            this.FilterIconButtonsToolStripCustom.Size = new System.Drawing.Size(297, 26);
+            this.FilterIconButtonsToolStripCustom.Size = new System.Drawing.Size(388, 29);
             this.FilterIconButtonsToolStripCustom.TabIndex = 3;
             // 
             // toolStripSeparator5
@@ -1278,6 +1265,16 @@
             this.toolStripSeparator5.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 26);
+            // 
+            // TestTSB
+            // 
+            this.TestTSB.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TestTSB.Image = ((System.Drawing.Image)(resources.GetObject("TestTSB.Image")));
+            this.TestTSB.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TestTSB.Name = "TestTSB";
+            this.TestTSB.Size = new System.Drawing.Size(26, 26);
+            this.TestTSB.Text = "toolStripButton1";
+            this.TestTSB.Click += new System.EventHandler(this.TestTSB_Click);
             // 
             // FilterByReleaseDateButton
             // 
@@ -1400,6 +1397,19 @@
             this.FilterByRatingButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByRatingButton.ToolTipText = "Rating";
             this.FilterByRatingButton.Click += new System.EventHandler(this.FilterByRatingButton_Click);
+            // 
+            // FilterByRatingTSDDB
+            // 
+            this.FilterByRatingTSDDB.AutoSize = false;
+            this.FilterByRatingTSDDB.AutoToolTip = false;
+            this.FilterByRatingTSDDB.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterByRatingTSDDB.Image = global::AngelLoader.Properties.Resources.FilterByRating;
+            this.FilterByRatingTSDDB.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterByRatingTSDDB.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterByRatingTSDDB.Name = "FilterByRatingTSDDB";
+            this.FilterByRatingTSDDB.Size = new System.Drawing.Size(34, 25);
+            this.FilterByRatingTSDDB.Text = "FilterByRatingTSDDB";
+            this.FilterByRatingTSDDB.ToolTipText = "Test tooltip!";
             // 
             // FilterByRatingLabel
             // 
@@ -2427,88 +2437,107 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             // 
-            // PlayOriginalGameMenu
+            // BottomAreaToolStripCustom
             // 
-            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayOriginalThief1MenuItem,
-            this.PlayOriginalThief2MenuItem,
-            this.PlayOriginalThief3MenuItem});
-            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
-            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
+            this.BottomAreaToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomAreaSep1});
+            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
+            this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
+            this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
+            this.BottomAreaToolStripCustom.Size = new System.Drawing.Size(8, 42);
+            this.BottomAreaToolStripCustom.TabIndex = 32;
             // 
-            // PlayOriginalThief1MenuItem
+            // BottomAreaSep1
             // 
-            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
-            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
-            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            this.BottomAreaSep1.AutoSize = false;
+            this.BottomAreaSep1.Name = "BottomAreaSep1";
+            this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
             // 
-            // PlayOriginalThief2MenuItem
+            // BottomAreaToolStripCustom2
             // 
-            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
-            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
-            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomAreaSep2});
+            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
+            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
+            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
+            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
+            this.BottomAreaToolStripCustom2.TabIndex = 35;
             // 
-            // PlayOriginalThief3MenuItem
+            // BottomAreaSep2
             // 
-            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
-            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
-            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
-            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
+            this.BottomAreaSep2.AutoSize = false;
+            this.BottomAreaSep2.Name = "BottomAreaSep2";
+            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
             // 
-            // AddTagMenu
+            // FinishedOnRCSubMenu
             // 
-            this.AddTagMenu.Name = "AddTagMenu";
-            this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
-            this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
+            this.FinishedOnRCSubMenu.DropDown = this.FinishedOnMenu;
+            this.FinishedOnRCSubMenu.Name = "FinishedOnRCSubMenu";
+            this.FinishedOnRCSubMenu.Size = new System.Drawing.Size(187, 22);
+            this.FinishedOnRCSubMenu.Text = "Finished on";
             // 
-            // AltTitlesMenu
+            // FinishedOnMenu
             // 
-            this.AltTitlesMenu.Name = "AltTitlesMenu";
-            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
+            this.FinishedOnMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FinishedOnNormalMenuItem,
+            this.FinishedOnHardMenuItem,
+            this.FinishedOnExpertMenuItem,
+            this.FinishedOnExtremeMenuItem,
+            this.FinishedOnUnknownMenuItem});
+            this.FinishedOnMenu.Name = "FinishedOnMenu";
+            this.FinishedOnMenu.OwnerItem = this.FinishedOnRCSubMenu;
+            this.FinishedOnMenu.Size = new System.Drawing.Size(126, 114);
             // 
-            // ImportFromMenu
+            // FinishedOnNormalMenuItem
             // 
-            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ImportFromDarkLoaderMenuItem,
-            this.ImportFromFMSelMenuItem,
-            this.ImportFromNewDarkLoaderMenuItem});
-            this.ImportFromMenu.Name = "ImportFromMenu";
-            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
+            this.FinishedOnNormalMenuItem.CheckOnClick = true;
+            this.FinishedOnNormalMenuItem.Name = "FinishedOnNormalMenuItem";
+            this.FinishedOnNormalMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnNormalMenuItem.Tag = "";
+            this.FinishedOnNormalMenuItem.Text = "Normal";
+            this.FinishedOnNormalMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ImportFromDarkLoaderMenuItem
+            // FinishedOnHardMenuItem
             // 
-            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
-            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
-            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
+            this.FinishedOnHardMenuItem.CheckOnClick = true;
+            this.FinishedOnHardMenuItem.Name = "FinishedOnHardMenuItem";
+            this.FinishedOnHardMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnHardMenuItem.Tag = "";
+            this.FinishedOnHardMenuItem.Text = "Hard";
+            this.FinishedOnHardMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ImportFromFMSelMenuItem
+            // FinishedOnExpertMenuItem
             // 
-            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
-            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromFMSelMenuItem.Text = "FMSel";
-            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
+            this.FinishedOnExpertMenuItem.CheckOnClick = true;
+            this.FinishedOnExpertMenuItem.Name = "FinishedOnExpertMenuItem";
+            this.FinishedOnExpertMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnExpertMenuItem.Tag = "";
+            this.FinishedOnExpertMenuItem.Text = "Expert";
+            this.FinishedOnExpertMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ImportFromNewDarkLoaderMenuItem
+            // FinishedOnExtremeMenuItem
             // 
-            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
-            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
-            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
+            this.FinishedOnExtremeMenuItem.CheckOnClick = true;
+            this.FinishedOnExtremeMenuItem.Name = "FinishedOnExtremeMenuItem";
+            this.FinishedOnExtremeMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnExtremeMenuItem.Tag = "";
+            this.FinishedOnExtremeMenuItem.Text = "Extreme";
+            this.FinishedOnExtremeMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
-            // ProgressBox
+            // FinishedOnUnknownMenuItem
             // 
-            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
-            this.ProgressBox.Name = "ProgressBox";
-            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
-            this.ProgressBox.TabIndex = 39;
-            this.ProgressBox.Visible = false;
+            this.FinishedOnUnknownMenuItem.CheckOnClick = true;
+            this.FinishedOnUnknownMenuItem.Name = "FinishedOnUnknownMenuItem";
+            this.FinishedOnUnknownMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.FinishedOnUnknownMenuItem.Text = "Unknown";
+            this.FinishedOnUnknownMenuItem.CheckedChanged += new System.EventHandler(this.FinishedOnUnknownMenuItem_CheckedChanged);
+            this.FinishedOnUnknownMenuItem.Click += new System.EventHandler(this.FinishedOnMenuItems_Click);
             // 
             // TopRightMenu
             // 
@@ -2571,6 +2600,16 @@
             this.TRM_PatchMenuItem.Text = "Patch && Customize";
             this.TRM_PatchMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
             // 
+            // toolStripComboBoxCustom1
+            // 
+            this.toolStripComboBoxCustom1.Name = "toolStripComboBoxCustom1";
+            this.toolStripComboBoxCustom1.Size = new System.Drawing.Size(121, 21);
+            // 
+            // toolStripComboBoxCustom2
+            // 
+            this.toolStripComboBoxCustom2.Name = "toolStripComboBoxCustom2";
+            this.toolStripComboBoxCustom2.Size = new System.Drawing.Size(121, 21);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2592,18 +2631,15 @@
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.FMRightClickMenu.ResumeLayout(false);
-            this.FinishedOnMenu.ResumeLayout(false);
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();
             this.BottomRightButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomRightButtonsFlowLayoutPanel.PerformLayout();
             this.BottomLeftButtonsFlowLayoutPanel.ResumeLayout(false);
             this.BottomLeftButtonsFlowLayoutPanel.PerformLayout();
-            this.BottomAreaToolStripCustom.ResumeLayout(false);
-            this.BottomAreaToolStripCustom.PerformLayout();
-            this.BottomAreaToolStripCustom2.ResumeLayout(false);
-            this.BottomAreaToolStripCustom2.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
+            this.PlayOriginalGameMenu.ResumeLayout(false);
+            this.ImportFromMenu.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             this.MainSplitContainer.Panel2.PerformLayout();
@@ -2650,8 +2686,11 @@
             this.ChooseReadmePanel.ResumeLayout(false);
             this.ChooseReadmeOKFlowLayoutPanel.ResumeLayout(false);
             this.ChooseReadmeOKFlowLayoutPanel.PerformLayout();
-            this.PlayOriginalGameMenu.ResumeLayout(false);
-            this.ImportFromMenu.ResumeLayout(false);
+            this.BottomAreaToolStripCustom.ResumeLayout(false);
+            this.BottomAreaToolStripCustom.PerformLayout();
+            this.BottomAreaToolStripCustom2.ResumeLayout(false);
+            this.BottomAreaToolStripCustom2.PerformLayout();
+            this.FinishedOnMenu.ResumeLayout(false);
             this.TopRightMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -2860,6 +2899,10 @@
         private System.Windows.Forms.ToolStripMenuItem TRM_CommentMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TRM_TagsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TRM_PatchMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton FilterByRatingTSDDB;
+        private CustomControls.ToolStripComboBoxCustom toolStripComboBoxCustom1;
+        private CustomControls.ToolStripComboBoxCustom toolStripComboBoxCustom2;
+        private System.Windows.Forms.ToolStripButton TestTSB;
     }
 }
 
