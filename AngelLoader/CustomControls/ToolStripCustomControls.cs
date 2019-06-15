@@ -1,8 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using AngelLoader.Common.Utility;
 
 namespace AngelLoader.CustomControls
 {
@@ -60,59 +60,22 @@ namespace AngelLoader.CustomControls
     {
         internal ToolStripDropDownCustom() => AutoClose = false;
 
-        protected override void OnVisibleChanged(EventArgs e)
+        internal bool CursorOutsideDropDown()
         {
-            // Message filters are apparently heavy, so only run it when we're visible
-            if (Visible)
-            {
-                AutoClose = false;
-            }
-            else
-            {
-            }
-            base.OnVisibleChanged(e);
-        }
-
-        internal void HideThis()
-        {
-            AutoClose = true;
-            Hide();
-        }
-
-        private bool CursorOutsideDropDown()
-        {
-            var thisRect = new Rectangle(PointToClient(PointToScreen(new Point(0, 0))), ClientSize);
             Rectangle? cbDDRect = null;
             foreach (ToolStripItem tsItem in Items)
             {
                 if (tsItem is ToolStripComboBox cb && cb.ComboBox != null && cb.ComboBox.DroppedDown)
                 {
-                    var cbBox = cb.ComboBox;
-
-                    int width = 0;
-                    using (var g = cbBox.CreateGraphics())
-                    {
-                        foreach (var cbItem in cbBox.Items)
-                        {
-                            if (!(cbItem is string cbItemStr)) continue;
-                            int newWidth = (int)g.MeasureString(cbItemStr, cbBox.Font).Width;
-                            if (width < newWidth) width = newWidth;
-                        }
-                    }
-                    if (width < cbBox.DropDownWidth) width = cbBox.DropDownWidth;
-
-                    cbDDRect = new Rectangle(
-                        PointToClient(cbBox.PointToScreen(new Point(0, cb.Height))),
-                        new Size(width, cbBox.ItemHeight * cbBox.Items.Count)
-                    );
-
+                    // It should only be possible to have one combobox dropped-down at a time, so just break on
+                    // the first dropped-down one found
+                    cbDDRect = cb.ComboBox.GetDropDownRect();
                     break;
                 }
-
             }
 
-            return !thisRect.Contains(PointToClient(Cursor.Position)) &&
-                   (cbDDRect == null || !((Rectangle)cbDDRect).Contains(PointToClient(Cursor.Position)));
+            var curPos = PointToClient(Cursor.Position);
+            return !ClientRectangle.Contains(curPos) && (cbDDRect == null || !((Rectangle)cbDDRect).Contains(curPos));
         }
 
         //public bool PreFilterMessage(ref Message m)
