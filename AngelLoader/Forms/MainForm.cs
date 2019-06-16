@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using AngelLoader.CustomControls;
 using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
@@ -267,13 +266,6 @@ namespace AngelLoader.Forms
             // CanFocus will be false if there are modal windows open
             if (!CanFocus) return;
 
-            // debug, this will be an actual UI control later
-            var test = new ToolStripDropDownCustom();
-            if (test.Visible && test.CursorOutsideDropDown())
-            {
-                test.Hide();
-                e.Handled = true;
-            }
             if (CursorOutsideAddTagsDropDownArea())
             {
                 HideAddTagDropDown();
