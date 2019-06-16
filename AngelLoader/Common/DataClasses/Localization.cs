@@ -102,6 +102,8 @@ namespace AngelLoader.Common.DataClasses
             internal static string DromEd_ExecutableNotFound = "DromEd.exe was not found in the game directory. Unable to open FM.";
             internal static string DromEd_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to open FM.";
             [FenGenBlankLine]
+            internal static string Thief2_Multiplayer_ExecutableNotFound = "Thief2MP.exe was not found in the game directory. Unable to play FM in multiplayer mode.";
+            [FenGenBlankLine]
             internal static string Patch_AddDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to add patch.";
             internal static string Patch_AddDML_UnableToAdd = "Unable to add patch to fan mission folder.";
             internal static string Patch_RemoveDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to remove patch.";
@@ -187,6 +189,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string ColumnMenu_ResetAllColumnPositions = "Reset all column positions";
             [FenGenBlankLine]
             internal static string FMMenu_PlayFM = "Play FM";
+            internal static string FMMenu_PlayFMInMultiplayer = "Play FM (multiplayer)";
             internal static string FMMenu_InstallFM = "Install FM";
             internal static string FMMenu_UninstallFM = "Uninstall FM";
             internal static string FMMenu_OpenInDromEd = "Open FM in DromEd";
@@ -285,6 +288,7 @@ namespace AngelLoader.Common.DataClasses
         {
             internal static string Thief1 = "Thief 1";
             internal static string Thief2 = "Thief 2";
+            internal static string Thief2_Multiplayer = "Thief 2 (multiplayer)";
             internal static string Thief3 = "Thief 3";
         }
 

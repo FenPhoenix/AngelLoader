@@ -23,7 +23,18 @@ namespace AngelLoader.Common.Utility
             if (gamePath.IsEmpty()) return "";
 
             var dromEdExe = Path.Combine(gamePath, Paths.DromEdExe);
-            return !gamePath.IsEmpty() && File.Exists(dromEdExe) ? dromEdExe : "";
+            return File.Exists(dromEdExe) ? dromEdExe : "";
+        }
+
+        internal static string GetT2MultiplayerExe()
+        {
+            if (Config.T2Exe.IsEmpty()) return "";
+
+            var gamePath = Path.GetDirectoryName(Config.T2Exe);
+            if (gamePath.IsEmpty()) return "";
+
+            var t2MPExe = Path.Combine(gamePath, Paths.T2MPExe);
+            return File.Exists(t2MPExe) ? t2MPExe : "";
         }
 
         internal static void SetFMSizesToLocalized()
@@ -86,6 +97,15 @@ namespace AngelLoader.Common.Utility
             //Log("Checking if " + gameExe + " is running. Listing processes...");
             Log("Checking if " + gameExe + " is running.");
 
+            string t2MPExe = "";
+            string T2MPExe()
+            {
+                if (!t2MPExe.IsEmpty()) return t2MPExe;
+                if (Config.T2Exe.IsEmpty()) return "";
+                var t2Path = Path.GetDirectoryName(Config.T2Exe);
+                return t2MPExe = (t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe));
+            }
+
             // We're doing this whole rigamarole because the game might have been started by someone other than
             // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
             foreach (var proc in Process.GetProcesses())
@@ -100,7 +120,8 @@ namespace AngelLoader.Common.Utility
                         if ((checkAllGames &&
                              ((!Config.T1Exe.IsEmpty() && fnb.EqualsI(Config.T1Exe.ToBackSlashes())) ||
                               (!Config.T2Exe.IsEmpty() && fnb.EqualsI(Config.T2Exe.ToBackSlashes())) ||
-                              (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())))) ||
+                              (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())) ||
+                              (!T2MPExe().IsEmpty() && fnb.EqualsI(T2MPExe().ToBackSlashes())))) ||
                             (!checkAllGames &&
                              (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
                         {

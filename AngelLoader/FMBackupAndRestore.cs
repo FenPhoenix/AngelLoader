@@ -39,6 +39,8 @@ namespace AngelLoader
     {
         private const string T3SavesDir = "SaveGames";
         private const string DarkSavesDir = "saves";
+        // For multiplayer (currently T2-only)
+        private const string DarkNetSavesDir = "netsaves";
         private const string ScreensDir = "screenshots";
         private const string RemoveFileEq = "RemoveFile=";
 
@@ -68,6 +70,7 @@ namespace AngelLoader
                 var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
                 var savesDir = fm.Game == Game.Thief3 ? T3SavesDir : DarkSavesDir;
                 var savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
+                var netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, DarkNetSavesDir);
                 // Screenshots directory name is the same for T1/T2/T3
                 var screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, ScreensDir);
 
@@ -82,6 +85,10 @@ namespace AngelLoader
                     if (Directory.Exists(savesPath))
                     {
                         savesAndScreensFiles.AddRange(Directory.GetFiles(savesPath, "*", SearchOption.AllDirectories));
+                    }
+                    if (Directory.Exists(netSavesPath))
+                    {
+                        savesAndScreensFiles.AddRange(Directory.GetFiles(netSavesPath, "*", SearchOption.AllDirectories));
                     }
                     if (Directory.Exists(screensPath))
                     {
@@ -180,7 +187,7 @@ namespace AngelLoader
         {
             return path.StartsWithI(ScreensDir + '/') ||
                    (fmIsT3 && path.StartsWithI(T3SavesDir + '/')) ||
-                   (!fmIsT3 && path.StartsWithI(DarkSavesDir + '/'));
+                   (!fmIsT3 && (path.StartsWithI(DarkSavesDir + '/') || path.StartsWithI(DarkNetSavesDir + '/')));
         }
 
         private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
@@ -433,7 +440,8 @@ namespace AngelLoader
                             var f = archive.Entries[i];
                             var fn = f.FullName.ToForwardSlashed();
                             if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
-                                !fn.StartsWithI(DarkSavesDir + '/'))
+                                !fn.StartsWithI(DarkSavesDir + '/') ||
+                                !fn.StartsWithI(DarkNetSavesDir + '/'))
                             {
                                 continue;
                             }
@@ -455,7 +463,9 @@ namespace AngelLoader
                                 var fn = f.FullName.ToForwardSlashed();
 
                                 if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
-                                    (!fn.StartsWithI(savesDir + '/') && !fn.StartsWithI(ScreensDir + '/')))
+                                    (!fn.StartsWithI(savesDir + '/') &&
+                                     !fn.StartsWithI(DarkNetSavesDir + '/') &&
+                                     !fn.StartsWithI(ScreensDir + '/')))
                                 {
                                     continue;
                                 }
@@ -471,7 +481,7 @@ namespace AngelLoader
                             var fmSelInf = archive.GetEntry(Paths.FMSelInf);
                             // Cap the length, cause... well, nobody's going to put a 500MB binary file named
                             // fmsel.inf, but hey...
-                            if (fmSelInf != null && fmSelInf.Length < ByteSize.MB * 5)
+                            if (fmSelInf != null && fmSelInf.Length < ByteSize.MB * 10)
                             {
                                 using (var eo = fmSelInf.Open())
                                 using (var sr = new StreamReader(eo))
@@ -483,6 +493,7 @@ namespace AngelLoader
 
                                         var val = line.Substring(11).ToForwardSlashed().Trim();
                                         if (!val.StartsWithI(savesDir + '/') &&
+                                            !val.StartsWithI(DarkNetSavesDir + '/') &&
                                             !val.StartsWithI(ScreensDir + '/') &&
                                             !val.EqualsI(Paths.FMSelInf) &&
                                             // Reject malformed and/or maliciously formed paths - we're going to
@@ -526,8 +537,7 @@ namespace AngelLoader
                 {
                     foreach (var f in Directory.EnumerateFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
-                        if (excludes.ContainsI(f.Substring(fmInstalledPath.Length)
-                            .Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
+                        if (excludes.ContainsI(f.Substring(fmInstalledPath.Length).Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
                         {
                             File.Delete(f);
                         }

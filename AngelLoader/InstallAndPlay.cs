@@ -25,21 +25,29 @@ namespace AngelLoader
 
         internal static async Task InstallOrUninstall(FanMission fm) => await (fm.Installed ? UninstallFM(fm) : InstallFM(fm));
 
-        internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false)
+        internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
         {
+            Debug.Assert(!playMP || fm.Game == Game.Thief2, nameof(playMP) + " is true and fm.Game is not Thief 2");
+
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
                 var (cancel, dontAskAgain) = Core.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Play_ConfirmMessage,
                     LText.AlertMessages.Confirm, icon: null, showDontAskAgain: true, yes: null, no: null);
-                
+
                 if (cancel) return;
-                
+
                 Config.ConfirmPlayOnDCOrEnter = !dontAskAgain;
             }
 
             if (!fm.Installed && !await InstallFM(fm)) return;
 
-            if (PlayFM(fm))
+            if (playMP && fm.Game == Game.Thief2 && GetT2MultiplayerExe().IsEmpty())
+            {
+                Core.View.ShowAlert(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound, LText.AlertMessages.Alert);
+                return;
+            }
+
+            if (PlayFM(fm, playMP))
             {
                 fm.LastPlayed = DateTime.Now;
                 await Core.View.RefreshSelectedFM(refreshReadme: false);
@@ -48,7 +56,7 @@ namespace AngelLoader
 
         #region Play / open
 
-        internal static bool PlayOriginalGame(Game game)
+        internal static bool PlayOriginalGame(Game game, bool playMP = false)
         {
             var (success, gameExe, gamePath) = GetGameExeAndPath(game, LText.AlertMessages.Play_ExecutableNotFound);
             if (!success) return false;
@@ -61,12 +69,14 @@ namespace AngelLoader
             // When the stub finds nothing in the stub comm folder, it will just start the game with no FM
             Paths.PrepareTempPath(Paths.StubCommTemp);
 
+            if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
+
             StartExe(gameExe, gamePath, null);
 
             return true;
         }
 
-        private static bool PlayFM(FanMission fm)
+        private static bool PlayFM(FanMission fm, bool playMP = false)
         {
             if (fm.Game == null)
             {
@@ -74,7 +84,8 @@ namespace AngelLoader
                 return false;
             }
 
-            var (success, gameExe, gamePath) = GetGameExeAndPath(fm.Game, LText.AlertMessages.Play_ExecutableNotFoundFM);
+            var (success, gameExe, gamePath) =
+                GetGameExeAndPath(fm.Game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
             if (!success) return false;
 
             SetUsAsSelector((Game)fm.Game, gameExe, gamePath);
@@ -172,7 +183,7 @@ namespace AngelLoader
         }
 
         private static (bool Success, string gameExe, string gamePath)
-        GetGameExeAndPath(Game? game, string exeNotFoundMessage)
+        GetGameExeAndPath(Game? game, string exeNotFoundMessage, bool playMP = false)
         {
             (bool, string, string) failed = (false, null, null);
 
@@ -209,6 +220,8 @@ namespace AngelLoader
                     LText.AlertMessages.Alert);
                 return failed;
             }
+
+            if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
             return (true, gameExe, gamePath);
         }
@@ -681,9 +694,9 @@ namespace AngelLoader
                     Core.View.AskToContinueYesNoCustomStrings(LText.AlertMessages.Uninstall_Confirm,
                         LText.AlertMessages.Confirm, TaskDialogIcon.Warning, showDontAskAgain: true,
                         LText.AlertMessages.Uninstall, LText.Global.Cancel);
-                
+
                 if (cancel) return;
-                
+
                 Config.ConfirmUninstall = !dontAskAgain;
             }
 
@@ -752,9 +765,9 @@ namespace AngelLoader
                             message + "\r\n\r\n" + LText.AlertMessages.Uninstall_BackupChooseNoNote,
                             LText.AlertMessages.Confirm, null, showDontAskAgain: true,
                             LText.AlertMessages.BackUp, LText.AlertMessages.DontBackUp, LText.Global.Cancel);
-                    
+
                     if (cancel) return;
-                    
+
                     Config.BackupAlwaysAsk = !dontAskAgain;
                     if (cont) await BackupFM(fm, fmInstalledPath, fmArchivePath);
                 }

@@ -241,6 +241,8 @@ namespace AngelLoader
                     : "";
                 Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
 
+                Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
+
                 if (!Config.T3Exe.IsWhiteSpace())
                 {
                     var (error, useCentralSaves, t3FMInstPath) = GetInstFMsPathFromT3();
@@ -431,6 +433,7 @@ namespace AngelLoader
                 var gamePath = Path.GetDirectoryName(Config.T2Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
                 Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
+                Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
                 if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
                 Config.T2FMInstallPath = gameFMsPath;
             }

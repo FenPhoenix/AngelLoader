@@ -664,6 +664,7 @@ namespace AngelLoader.Forms
                 #region FM context menu
 
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
+                PlayFMInMPMenuItem.Text = LText.FMsList.FMMenu_PlayFMInMultiplayer.EscapeAmpersands();
 
                 //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced.EscapeAmpersands();
                 Core.SetDefaultConfigVarNamesToLocalized();
@@ -707,6 +708,7 @@ namespace AngelLoader.Forms
 
                 PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
                 PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2.EscapeAmpersands();
+                PlayOriginalThief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer.EscapeAmpersands();
                 PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();
 
                 #endregion
@@ -2101,6 +2103,8 @@ namespace AngelLoader.Forms
 
         private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
 
+        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: true);
+
         private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
 
         private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(GetSelectedFM());
@@ -2134,10 +2138,12 @@ namespace AngelLoader.Forms
 
             var game =
                 item == PlayOriginalThief1MenuItem ? Game.Thief1 :
-                item == PlayOriginalThief2MenuItem ? Game.Thief2 :
+                item == PlayOriginalThief2MenuItem || item == PlayOriginalThief2MPMenuItem ? Game.Thief2 :
                 Game.Thief3;
 
-            InstallAndPlay.PlayOriginalGame(game);
+            bool playMP = item == PlayOriginalThief2MPMenuItem;
+
+            InstallAndPlay.PlayOriginalGame(game, playMP);
         }
 
         #endregion
@@ -2426,8 +2432,12 @@ namespace AngelLoader.Forms
             PlayFMMenuItem.Enabled = false;
             PlayFMButton.Enabled = false;
 
+            PlayFMInMPMenuItem.Visible = false;
+
             OpenInDromedSep.Visible = false;
             OpenInDromEdMenuItem.Visible = false;
+
+            PlayOriginalThief2MPMenuItem.Visible = false;
 
             ScanFMMenuItem.Enabled = false;
 
@@ -2545,6 +2555,17 @@ namespace AngelLoader.Forms
             {
                 OpenInDromedSep.Visible = false;
                 OpenInDromEdMenuItem.Visible = false;
+            }
+
+            if (fm.Game == Game.Thief2 && Config.T2MPDetected)
+            {
+                PlayFMInMPMenuItem.Visible = true;
+                PlayOriginalThief2MPMenuItem.Visible = true;
+            }
+            else
+            {
+                PlayFMInMPMenuItem.Visible = false;
+                PlayOriginalThief2MPMenuItem.Visible = false;
             }
 
             InstallUninstallFMButton.Enabled = installable;

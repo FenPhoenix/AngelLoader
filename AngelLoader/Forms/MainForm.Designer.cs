@@ -30,12 +30,13 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.FMRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayFMInMPMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayFMAdvancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.InstallUninstallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenInDromedSep = new System.Windows.Forms.ToolStripSeparator();
@@ -235,6 +236,7 @@
             this.TRM_CommentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_TagsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_PatchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PlayOriginalThief2MPMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FMRightClickMenu.SuspendLayout();
             this.FinishedOnMenu.SuspendLayout();
             this.BottomPanel.SuspendLayout();
@@ -280,6 +282,7 @@
             // 
             this.FMRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PlayFMMenuItem,
+            this.PlayFMInMPMenuItem,
             this.PlayFMAdvancedMenuItem,
             this.InstallUninstallMenuItem,
             this.OpenInDromedSep,
@@ -293,7 +296,7 @@
             this.FMRightClickMenuSep2,
             this.WebSearchMenuItem});
             this.FMRightClickMenu.Name = "FMRightClickMenu";
-            this.FMRightClickMenu.Size = new System.Drawing.Size(188, 226);
+            this.FMRightClickMenu.Size = new System.Drawing.Size(188, 248);
             this.FMRightClickMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FMRightClickMenu_Opening);
             // 
             // PlayFMMenuItem
@@ -302,6 +305,13 @@
             this.PlayFMMenuItem.Size = new System.Drawing.Size(187, 22);
             this.PlayFMMenuItem.Text = "Play FM";
             this.PlayFMMenuItem.Click += new System.EventHandler(this.PlayFMMenuItem_Click);
+            // 
+            // PlayFMInMPMenuItem
+            // 
+            this.PlayFMInMPMenuItem.Name = "PlayFMInMPMenuItem";
+            this.PlayFMInMPMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.PlayFMInMPMenuItem.Text = "Play FM (Multiplayer)";
+            this.PlayFMInMPMenuItem.Click += new System.EventHandler(this.PlayFMInMPMenuItem_Click);
             // 
             // PlayFMAdvancedMenuItem
             // 
@@ -909,14 +919,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -932,26 +942,26 @@
             this.DisabledModsColumn,
             this.CommentColumn});
             this.FMsDGV.ContextMenuStrip = this.FMRightClickMenu;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -1012,8 +1022,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -2432,15 +2442,16 @@
             this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PlayOriginalThief1MenuItem,
             this.PlayOriginalThief2MenuItem,
+            this.PlayOriginalThief2MPMenuItem,
             this.PlayOriginalThief3MenuItem});
             this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
-            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(111, 70);
+            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(182, 114);
             // 
             // PlayOriginalThief1MenuItem
             // 
             this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
             this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(181, 22);
             this.PlayOriginalThief1MenuItem.Text = "Thief 1";
             this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
@@ -2448,7 +2459,7 @@
             // 
             this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
             this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(181, 22);
             this.PlayOriginalThief2MenuItem.Text = "Thief 2";
             this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
@@ -2456,7 +2467,7 @@
             // 
             this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
             this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(110, 22);
+            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(181, 22);
             this.PlayOriginalThief3MenuItem.Text = "Thief 3";
             this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
@@ -2570,6 +2581,14 @@
             this.TRM_PatchMenuItem.Size = new System.Drawing.Size(176, 22);
             this.TRM_PatchMenuItem.Text = "Patch && Customize";
             this.TRM_PatchMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
+            // 
+            // PlayOriginalThief2MPMenuItem
+            // 
+            this.PlayOriginalThief2MPMenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
+            this.PlayOriginalThief2MPMenuItem.Name = "PlayOriginalThief2MPMenuItem";
+            this.PlayOriginalThief2MPMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.PlayOriginalThief2MPMenuItem.Text = "Thief 2 (multiplayer)";
+            this.PlayOriginalThief2MPMenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2860,6 +2879,8 @@
         private System.Windows.Forms.ToolStripMenuItem TRM_CommentMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TRM_TagsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TRM_PatchMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem PlayFMInMPMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief2MPMenuItem;
     }
 }
 

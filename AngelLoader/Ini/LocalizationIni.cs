@@ -280,6 +280,10 @@ namespace AngelLoader.Ini
                         {
                             LText.AlertMessages.DromEd_UnknownGameType = lt.Substring(23);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Multiplayer_ExecutableNotFound="))
+                        {
+                            LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound = lt.Substring(38);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Patch_AddDML_InstallDirNotFound="))
                         {
                             LText.AlertMessages.Patch_AddDML_InstallDirNotFound = lt.Substring(32);
@@ -555,6 +559,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_PlayFM="))
                         {
                             LText.FMsList.FMMenu_PlayFM = lt.Substring(14);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_PlayFMInMultiplayer="))
+                        {
+                            LText.FMsList.FMMenu_PlayFMInMultiplayer = lt.Substring(27);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_InstallFM="))
                         {
@@ -883,6 +891,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Thief2="))
                         {
                             LText.PlayOriginalGameMenu.Thief2 = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Multiplayer="))
+                        {
+                            LText.PlayOriginalGameMenu.Thief2_Multiplayer = lt.Substring(19);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Thief3="))
                         {

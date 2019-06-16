@@ -90,6 +90,8 @@ namespace AngelLoader.Common
 
         internal static readonly string DromEdExe = "DromEd.exe";
 
+        internal static readonly string T2MPExe = "Thief2MP.exe";
+
         internal static readonly string DarkLoaderSaveBakDir = "DarkLoader";
 
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");

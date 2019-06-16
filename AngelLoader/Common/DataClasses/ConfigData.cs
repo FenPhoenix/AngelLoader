@@ -24,6 +24,8 @@ namespace AngelLoader.Common.DataClasses
         internal string T3FMInstallPath = null;
         internal bool T1DromEdDetected;
         internal bool T2DromEdDetected;
+        // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)
+        internal bool T2MPDetected;
 
         internal bool T3UseCentralSaves = false;
 
