@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.PagesListBox = new System.Windows.Forms.ListBox();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.BottomFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.Cancel_Button = new System.Windows.Forms.Button();
@@ -38,6 +37,9 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
+            this.OtherRadioButton = new System.Windows.Forms.RadioButton();
+            this.FMDisplayRadioButton = new System.Windows.Forms.RadioButton();
+            this.PathsRadioButton = new System.Windows.Forms.RadioButton();
             this.BottomFlowLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
@@ -45,22 +47,6 @@
             this.MainSplitContainer.Panel2.SuspendLayout();
             this.MainSplitContainer.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // PagesListBox
-            // 
-            this.PagesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PagesListBox.FormattingEnabled = true;
-            this.PagesListBox.IntegralHeight = false;
-            this.PagesListBox.Items.AddRange(new object[] {
-            "Paths",
-            "FM Display",
-            "Other"});
-            this.PagesListBox.Location = new System.Drawing.Point(0, 0);
-            this.PagesListBox.Name = "PagesListBox";
-            this.PagesListBox.Size = new System.Drawing.Size(155, 613);
-            this.PagesListBox.TabIndex = 1;
-            this.PagesListBox.SelectedIndexChanged += new System.EventHandler(this.PagesListBox_SelectedIndexChanged);
-            this.PagesListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PagesListBox_MouseDown);
             // 
             // PagePanel
             // 
@@ -77,7 +63,7 @@
             this.BottomFlowLayoutPanel.Controls.Add(this.ErrorLabel);
             this.BottomFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BottomFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomFlowLayoutPanel.Location = new System.Drawing.Point(0, 628);
+            this.BottomFlowLayoutPanel.Location = new System.Drawing.Point(0, 616);
             this.BottomFlowLayoutPanel.Name = "BottomFlowLayoutPanel";
             this.BottomFlowLayoutPanel.Size = new System.Drawing.Size(694, 40);
             this.BottomFlowLayoutPanel.TabIndex = 4;
@@ -142,7 +128,9 @@
             // MainSplitContainer.Panel1
             // 
             this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.MainSplitContainer.Panel1.Controls.Add(this.PagesListBox);
+            this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
+            this.MainSplitContainer.Panel1.Controls.Add(this.FMDisplayRadioButton);
+            this.MainSplitContainer.Panel1.Controls.Add(this.PathsRadioButton);
             // 
             // MainSplitContainer.Panel2
             // 
@@ -151,6 +139,51 @@
             this.MainSplitContainer.Size = new System.Drawing.Size(694, 613);
             this.MainSplitContainer.SplitterDistance = 155;
             this.MainSplitContainer.TabIndex = 5;
+            // 
+            // OtherRadioButton
+            // 
+            this.OtherRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.OtherRadioButton.Appearance = System.Windows.Forms.Appearance.Button;
+            this.OtherRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.OtherRadioButton.Location = new System.Drawing.Point(8, 64);
+            this.OtherRadioButton.Name = "OtherRadioButton";
+            this.OtherRadioButton.Size = new System.Drawing.Size(136, 25);
+            this.OtherRadioButton.TabIndex = 0;
+            this.OtherRadioButton.TabStop = true;
+            this.OtherRadioButton.Text = "Other";
+            this.OtherRadioButton.UseVisualStyleBackColor = true;
+            this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
+            // 
+            // FMDisplayRadioButton
+            // 
+            this.FMDisplayRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FMDisplayRadioButton.Appearance = System.Windows.Forms.Appearance.Button;
+            this.FMDisplayRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.FMDisplayRadioButton.Location = new System.Drawing.Point(8, 36);
+            this.FMDisplayRadioButton.Name = "FMDisplayRadioButton";
+            this.FMDisplayRadioButton.Size = new System.Drawing.Size(136, 25);
+            this.FMDisplayRadioButton.TabIndex = 0;
+            this.FMDisplayRadioButton.TabStop = true;
+            this.FMDisplayRadioButton.Text = "FM Display";
+            this.FMDisplayRadioButton.UseVisualStyleBackColor = true;
+            this.FMDisplayRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
+            // 
+            // PathsRadioButton
+            // 
+            this.PathsRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PathsRadioButton.Appearance = System.Windows.Forms.Appearance.Button;
+            this.PathsRadioButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.PathsRadioButton.Location = new System.Drawing.Point(8, 8);
+            this.PathsRadioButton.Name = "PathsRadioButton";
+            this.PathsRadioButton.Size = new System.Drawing.Size(136, 25);
+            this.PathsRadioButton.TabIndex = 0;
+            this.PathsRadioButton.TabStop = true;
+            this.PathsRadioButton.Text = "Paths";
+            this.PathsRadioButton.UseVisualStyleBackColor = true;
+            this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
             // 
             // SettingsForm
             // 
@@ -184,8 +217,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ListBox PagesListBox;
         private System.Windows.Forms.Panel PagePanel;
         private System.Windows.Forms.FlowLayoutPanel BottomFlowLayoutPanel;
         private System.Windows.Forms.Button Cancel_Button;
@@ -194,5 +225,8 @@
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.Label ErrorLabel;
         private AngelLoader.CustomControls.SplitContainerCustom MainSplitContainer;
+        private System.Windows.Forms.RadioButton OtherRadioButton;
+        private System.Windows.Forms.RadioButton FMDisplayRadioButton;
+        private System.Windows.Forms.RadioButton PathsRadioButton;
     }
 }

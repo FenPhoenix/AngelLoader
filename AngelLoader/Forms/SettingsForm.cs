@@ -144,16 +144,31 @@ namespace AngelLoader.Forms
                 // _Load is too late for some of this stuff, so might as well put everything here
                 StartPosition = FormStartPosition.CenterScreen;
                 ShowInTaskbar = true;
-                PagesListBox.Items.Clear();
-                PagesListBox.Items.Add(LText.SettingsWindow.Paths_TabText);
-                PagesListBox.SelectedIndex = 0;
+                //PagesListBox.Items.Clear();
+                //PagesListBox.Items.Add(LText.SettingsWindow.Paths_TabText);
+                //PagesListBox.SelectedIndex = 0;
+                PathsRadioButton.Checked = true;
+                FMDisplayRadioButton.Hide();
+                OtherRadioButton.Hide();
             }
             else
             {
-                PagesListBox.SelectedIndex = (int)(
-                    InConfig.SettingsTab == SettingsTab.FMDisplay ? PageIndex.FMDisplay :
-                    InConfig.SettingsTab == SettingsTab.Other ? PageIndex.Other :
-                    PageIndex.Paths);
+                //PagesListBox.SelectedIndex = (int)(
+                //    InConfig.SettingsTab == SettingsTab.FMDisplay ? PageIndex.FMDisplay :
+                //    InConfig.SettingsTab == SettingsTab.Other ? PageIndex.Other :
+                //    PageIndex.Paths);
+                switch (InConfig.SettingsTab)
+                {
+                    case SettingsTab.FMDisplay:
+                        FMDisplayRadioButton.Checked = true;
+                        break;
+                    case SettingsTab.Other:
+                        OtherRadioButton.Checked = true;
+                        break;
+                    default:
+                        PathsRadioButton.Checked = true;
+                        break;
+                }
             }
 
             // Language can change while the form is open, so store original sizes for later use as minimums
@@ -374,7 +389,11 @@ namespace AngelLoader.Forms
 
                 #region Paths tab
 
-                PagesListBox.Items[(int)PageIndex.Paths] = Startup
+                //PagesListBox.Items[(int)PageIndex.Paths] = Startup
+                //    ? LText.SettingsWindow.InitialSettings_TabText
+                //    : LText.SettingsWindow.Paths_TabText;
+
+                PathsRadioButton.Text = Startup
                     ? LText.SettingsWindow.InitialSettings_TabText
                     : LText.SettingsWindow.Paths_TabText;
 
@@ -423,7 +442,8 @@ namespace AngelLoader.Forms
                 {
                     #region FM Display tab
 
-                    PagesListBox.Items[(int)PageIndex.FMDisplay] = LText.SettingsWindow.FMDisplay_TabText;
+                    //PagesListBox.Items[(int)PageIndex.FMDisplay] = LText.SettingsWindow.FMDisplay_TabText;
+                    FMDisplayRadioButton.Text = LText.SettingsWindow.FMDisplay_TabText;
 
                     FMDisplayPage.GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
                     FMDisplayPage.OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationByTab;
@@ -447,7 +467,8 @@ namespace AngelLoader.Forms
 
                     #region Other tab
 
-                    PagesListBox.Items[(int)PageIndex.Other] = LText.SettingsWindow.Other_TabText;
+                    //PagesListBox.Items[(int)PageIndex.Other] = LText.SettingsWindow.Other_TabText;
+                    OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
 
                     OtherPage.FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
                     OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
@@ -486,9 +507,13 @@ namespace AngelLoader.Forms
         private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Special case: these are meta, so they should always be set even if the user clicked Cancel
+            //OutConfig.SettingsTab =
+            //    PagesListBox.SelectedIndex == (int)PageIndex.FMDisplay ? SettingsTab.FMDisplay :
+            //    PagesListBox.SelectedIndex == (int)PageIndex.Other ? SettingsTab.Other :
+            //    SettingsTab.Paths;
             OutConfig.SettingsTab =
-                PagesListBox.SelectedIndex == (int)PageIndex.FMDisplay ? SettingsTab.FMDisplay :
-                PagesListBox.SelectedIndex == (int)PageIndex.Other ? SettingsTab.Other :
+                FMDisplayRadioButton.Checked ? SettingsTab.FMDisplay :
+                OtherRadioButton.Checked ? SettingsTab.Other :
                 SettingsTab.Paths;
             OutConfig.SettingsWindowSize = Size;
             OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
@@ -548,7 +573,8 @@ namespace AngelLoader.Forms
             if (error)
             {
                 e.Cancel = true;
-                PagesListBox.SelectedIndex = (int)PageIndex.Paths;
+                //PagesListBox.SelectedIndex = (int)PageIndex.Paths;
+                PathsRadioButton.Checked = true;
                 return;
             }
             else
@@ -723,14 +749,10 @@ namespace AngelLoader.Forms
 
         #region Page selection handler
 
-        private void PagesListBox_SelectedIndexChanged(object sender, EventArgs e) => ShowPage(PagesListBox.SelectedIndex);
-
-        // This is to allow for selection to change immediately on mousedown. In that case the event will fire
-        // again when you let up the mouse, but that's okay because a re-select is a visual no-op and the work
-        // is basically nothing.
-        private void PagesListBox_MouseDown(object sender, MouseEventArgs e)
+        private void PageRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
-            if (e.Button == MouseButtons.Left) ShowPage(PagesListBox.IndexFromPoint(e.Location));
+            int index = sender == FMDisplayRadioButton ? 1 : sender == OtherRadioButton ? 2 : 0;
+            ShowPage(index);
         }
 
         private void ShowPage(int index)
