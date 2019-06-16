@@ -1,10 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 
 namespace AngelLoader.CustomControls
@@ -59,50 +56,11 @@ namespace AngelLoader.CustomControls
 
     #region Dropdown working
 
-    public class ToolStripDropDownCustom : ToolStripDropDownMenu
+    internal sealed class ToolStripDropDownCustom : ToolStripDropDown
     {
-        private ToolStripDropDownButton Owner;
-        private string oldToolTipText;
+        internal ToolStripDropDownCustom() => AutoClose = false;
 
-        public ToolStripDropDownCustom()
-        {
-            //AutoClose = false;
-        }
-
-        public void Inject(ToolStripDropDownButton owner) => Owner = owner;
-
-        // This AutoClose toggling thing is necessary because if we leave AutoClose on, it will close when the
-        // mouse merely moves over another ToolStrip item. So we want it off when we're open, but when we want
-        // to close our dropdown, we have to turn it on again.
-        protected override void OnVisibleChanged(EventArgs e)
-        {
-            if (Owner != null)
-            {
-                if (Visible)
-                {
-                    oldToolTipText = Owner.ToolTipText;
-                    Owner.ToolTipText = "";
-                }
-                else
-                {
-                    Owner.ToolTipText = oldToolTipText;
-                }
-            }
-
-            if (Visible)
-            {
-                //AutoClose = false;
-            }
-            base.OnVisibleChanged(e);
-        }
-
-        public void HideThis()
-        {
-            //AutoClose = true;
-            Hide();
-        }
-
-        public bool CursorOutsideDropDown()
+        internal bool CursorOutsideDropDown()
         {
             Rectangle? cbDDRect = null;
             foreach (ToolStripItem tsItem in Items)
@@ -119,64 +77,54 @@ namespace AngelLoader.CustomControls
             var curPos = PointToClient(Cursor.Position);
             return !ClientRectangle.Contains(curPos) && (cbDDRect == null || !((Rectangle)cbDDRect).Contains(curPos));
         }
+
+        //public bool PreFilterMessage(ref Message m)
+        //{
+        //    const bool BlockMessage = true;
+        //    const bool PassMessageOn = false;
+
+        //    if (m.Msg == WM_KEYDOWN && (int)m.WParam == VK_ESCAPE)
+        //    {
+        //        ComboBox cbBox = null;
+        //        foreach (ToolStripItem tsItem in Items)
+        //        {
+        //            if (tsItem is ToolStripComboBox cb && cb.ComboBox != null && cb.ComboBox.DroppedDown)
+        //            {
+        //                cbBox = cb.ComboBox;
+        //                break;
+        //            }
+        //        }
+
+        //        if (cbBox == null) HideThis();
+        //    }
+        //    else if (m.Msg == WM_LBUTTONDOWN || m.Msg == WM_MBUTTONDOWN || m.Msg == WM_RBUTTONDOWN ||
+        //             m.Msg == WM_LBUTTONDBLCLK || m.Msg == WM_MBUTTONDBLCLK || m.Msg == WM_RBUTTONDBLCLK)
+        //    {
+        //        // I don't think this will even be running if we're not visible?
+        //        if (!Visible) return PassMessageOn;
+
+        //        // Make dropdown behavior less flighty and more solid when it comes to mouse clicks
+
+
+        //        //if (!thisRect.Contains(PointToClient(Cursor.Position)) &&
+        //        //    (cbDDRect == null || !((Rectangle)cbDDRect).Contains(PointToClient(Cursor.Position))))
+        //        if (CursorOutsideDropDown())
+        //        {
+        //            HideThis();
+        //            return BlockMessage;
+        //        }
+        //    }
+
+        //    return PassMessageOn;
+        //}
     }
 
-    // Welp, it finally happened. I finally used inheritance on one of my own classes. *shudder*
-    public sealed class FilterByRatingDropDown : ToolStripDropDownCustom, ILocalizable
-    {
-        public ToolStripLabel FromLabel = new ToolStripLabel();
-        public ToolStripLabel ToLabel = new ToolStripLabel();
-        public ToolStripComboBoxCustom FromComboBox = new ToolStripComboBoxCustom { AutoSize = false, Width = 150 };
-        public ToolStripComboBoxCustom ToComboBox = new ToolStripComboBoxCustom { AutoSize = false, Width = 150 };
-        public ToolStripNormalButtonCustom ResetButton = new ToolStripNormalButtonCustom();
-
-        public FilterByRatingDropDown()
-        {
-            AutoSize = true;
-            ShowCheckMargin = false;
-            ShowImageMargin = false;
-
-            //FromComboBox.ComboBox.Width = 150;
-            //ToComboBox.ComboBox.Width = 150;
-
-            Items.Add(FromLabel);
-            Items.Add(FromComboBox);
-            Items.Add(ToLabel);
-            Items.Add(ToComboBox);
-            Items.Add(ResetButton);
-        }
-
-        public void SetUITextToLocalized(bool suspendResume = true)
-        {
-            FromLabel.Text = LText.RatingFilterBox.From;
-            ToLabel.Text = LText.RatingFilterBox.To;
-
-            ResetButton.Text = LText.Global.Reset;
-        }
-    }
-
-    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip)]
     public sealed class ToolStripCheckBoxCustom : ToolStripControlHost
     {
         public CheckBox CheckBox => Control as CheckBox;
 
         public ToolStripCheckBoxCustom() : base(new CheckBox()) { }
-    }
-
-    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
-    public sealed class ToolStripComboBoxCustom : ToolStripControlHost
-    {
-        public ComboBox ComboBox => Control as ComboBox;
-
-        public ToolStripComboBoxCustom() : base(new ComboBox()) { }
-    }
-
-    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
-    public sealed class ToolStripNormalButtonCustom : ToolStripControlHost
-    {
-        public Button Button => Control as Button;
-
-        public ToolStripNormalButtonCustom() : base(new Button()) { }
     }
 
     #endregion

@@ -267,10 +267,11 @@ namespace AngelLoader.Forms
             // CanFocus will be false if there are modal windows open
             if (!CanFocus) return;
 
-            var dropDown = (FilterByRatingDropDown)FilterByRatingTSDDB.DropDown;
-            if (dropDown.Visible && dropDown.CursorOutsideDropDown())
+            // debug, this will be an actual UI control later
+            var test = new ToolStripDropDownCustom();
+            if (test.Visible && test.CursorOutsideDropDown())
             {
-                dropDown.HideThis();
+                test.Hide();
                 e.Handled = true;
             }
             if (CursorOutsideAddTagsDropDownArea())
@@ -285,19 +286,6 @@ namespace AngelLoader.Forms
             if (!CanFocus) return;
 
             ShowReadmeControls(CursorOverReadmeArea());
-
-            //if (TopRightMenu.Visible)
-            //{
-            //    TopRightMenu.AutoClose = true;
-            //    TopRightMenu.Hide();
-            //}
-
-            var dropDown = (FilterByRatingDropDown)FilterByRatingTSDDB.DropDown;
-            if (dropDown.Visible && dropDown.CursorOutsideDropDown() &&
-                CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
-            {
-                e.Handled = true;
-            }
         }
 
         #endregion
@@ -433,10 +421,6 @@ namespace AngelLoader.Forms
 
             Config.Filter.DeepCopyTo(FMsDGV.Filter);
             SetUIFilterValues(FMsDGV.Filter);
-
-            var fbr = new FilterByRatingDropDown();
-            fbr.Inject(FilterByRatingTSDDB);
-            FilterByRatingTSDDB.DropDown = fbr;
 
             #endregion
 
@@ -911,17 +895,8 @@ namespace AngelLoader.Forms
 
         public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMButton.Visible = enabled;
 
-        private void HideToolStripDropDowns()
-        {
-            (FilterByRatingTSDDB.DropDown as FilterByRatingDropDown)?.HideThis();
-        }
-
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
-            Trace.WriteLine("Deactivate:");
-            Trace.WriteLine("Focused: " + Focused);
-            Trace.WriteLine("TopMost: " + TopMost);
-
             FMsDGV.CancelColumnResize();
             MainSplitContainer.CancelResize();
             TopSplitContainer.CancelResize();
@@ -943,14 +918,11 @@ namespace AngelLoader.Forms
             if (AddTagListBox.Visible) HideAddTagDropDown();
 
             SetFilterBarScrollButtons();
-
-            HideToolStripDropDowns();
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Normal) NominalWindowLocation = new Point(Location.X, Location.Y);
-            HideToolStripDropDowns();
         }
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -3545,17 +3517,9 @@ namespace AngelLoader.Forms
 
         private void SearchWeb() => Core.OpenWebSearchUrl(GetSelectedFM());
 
-        private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e)
-        {
-            HideToolStripDropDowns();
-            SetFilterBarScrollButtons();
-        }
+        private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
 
-        private void FiltersFlowLayoutPanel_Scroll(object sender, ScrollEventArgs e)
-        {
-            HideToolStripDropDowns();
-            SetFilterBarScrollButtons();
-        }
+        private void FiltersFlowLayoutPanel_Scroll(object sender, ScrollEventArgs e) => SetFilterBarScrollButtons();
 
         private void SetFilterBarScrollButtons()
         {
@@ -4026,11 +3990,5 @@ namespace AngelLoader.Forms
         }
 
         private void TopRightMenuButton_Click(object sender, EventArgs e) => ShowMenu(TopRightMenu, TopRightMenuButton, MenuPos.BottomLeft);
-
-        private void TestTSB_Click(object sender, EventArgs e)
-        {
-            TopRightMenu.AutoClose = false;
-            TopRightMenu.Show(FilterIconButtonsToolStripCustom, TestTSB.Bounds.Left, TestTSB.Bounds.Height);
-        }
     }
 }
