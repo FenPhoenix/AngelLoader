@@ -17,15 +17,6 @@ namespace AngelLoader.WinAPI
 
         internal const int EN_LINK = 0x070b;
 
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct RECT
-        {
-            internal int left;
-            internal int top;
-            internal int right;
-            internal int bottom;
-        }
-
         #region Scrollbar
 
         internal const int WM_SCROLL = 276;
@@ -89,9 +80,6 @@ namespace AngelLoader.WinAPI
 
         [DllImport("user32.dll")]
         internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        internal static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref RECT lParam);
 
         [DllImport("user32.dll")]
         internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
