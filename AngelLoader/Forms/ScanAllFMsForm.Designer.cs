@@ -40,10 +40,10 @@
             this.ScanButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.ScanAllFMsForLabel = new System.Windows.Forms.Label();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.flowLayoutPanel1.SuspendLayout();
-            this.flowLayoutPanel2.SuspendLayout();
+            this.OKCancelButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.OKCancelButtonsFLP.SuspendLayout();
+            this.SelectButtonsFLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // TitleCheckBox
@@ -188,24 +188,24 @@
             this.ScanAllFMsForLabel.TabIndex = 1;
             this.ScanAllFMsForLabel.Text = "Scan all FMs for:";
             // 
-            // flowLayoutPanel1
+            // OKCancelButtonsFLP
             // 
-            this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
-            this.flowLayoutPanel1.Controls.Add(this.ScanButton);
-            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 184);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(416, 30);
-            this.flowLayoutPanel1.TabIndex = 0;
+            this.OKCancelButtonsFLP.Controls.Add(this.Cancel_Button);
+            this.OKCancelButtonsFLP.Controls.Add(this.ScanButton);
+            this.OKCancelButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.OKCancelButtonsFLP.Location = new System.Drawing.Point(0, 184);
+            this.OKCancelButtonsFLP.Name = "OKCancelButtonsFLP";
+            this.OKCancelButtonsFLP.Size = new System.Drawing.Size(416, 30);
+            this.OKCancelButtonsFLP.TabIndex = 0;
             // 
-            // flowLayoutPanel2
+            // SelectButtonsFLP
             // 
-            this.flowLayoutPanel2.Controls.Add(this.SelectAllButton);
-            this.flowLayoutPanel2.Controls.Add(this.SelectNoneButton);
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(15, 152);
-            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(401, 28);
-            this.flowLayoutPanel2.TabIndex = 9;
+            this.SelectButtonsFLP.Controls.Add(this.SelectAllButton);
+            this.SelectButtonsFLP.Controls.Add(this.SelectNoneButton);
+            this.SelectButtonsFLP.Location = new System.Drawing.Point(15, 152);
+            this.SelectButtonsFLP.Name = "SelectButtonsFLP";
+            this.SelectButtonsFLP.Size = new System.Drawing.Size(401, 28);
+            this.SelectButtonsFLP.TabIndex = 9;
             // 
             // ScanAllFMsForm
             // 
@@ -214,8 +214,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(416, 214);
-            this.Controls.Add(this.flowLayoutPanel2);
-            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.SelectButtonsFLP);
+            this.Controls.Add(this.OKCancelButtonsFLP);
             this.Controls.Add(this.ScanAllFMsForLabel);
             this.Controls.Add(this.TagsCheckBox);
             this.Controls.Add(this.ReleaseDateCheckBox);
@@ -233,10 +233,10 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Scan all FMs";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanAllFMs_FormClosing);
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
-            this.flowLayoutPanel2.ResumeLayout(false);
-            this.flowLayoutPanel2.PerformLayout();
+            this.OKCancelButtonsFLP.ResumeLayout(false);
+            this.OKCancelButtonsFLP.PerformLayout();
+            this.SelectButtonsFLP.ResumeLayout(false);
+            this.SelectButtonsFLP.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -256,7 +256,7 @@
         private System.Windows.Forms.Button ScanButton;
         private System.Windows.Forms.Button Cancel_Button;
         private System.Windows.Forms.Label ScanAllFMsForLabel;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.FlowLayoutPanel OKCancelButtonsFLP;
+        private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;
     }
 }
