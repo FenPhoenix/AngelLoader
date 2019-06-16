@@ -664,7 +664,7 @@ namespace AngelLoader.Forms
                 #region FM context menu
 
                 PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
-                PlayFMInMPMenuItem.Text = LText.FMsList.FMMenu_PlayFMInMultiplayer.EscapeAmpersands();
+                PlayFMInMPMenuItem.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer.EscapeAmpersands();
 
                 //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced.EscapeAmpersands();
                 Core.SetDefaultConfigVarNamesToLocalized();
@@ -2437,8 +2437,6 @@ namespace AngelLoader.Forms
             OpenInDromedSep.Visible = false;
             OpenInDromEdMenuItem.Visible = false;
 
-            PlayOriginalThief2MPMenuItem.Visible = false;
-
             ScanFMMenuItem.Enabled = false;
 
             // Hide instead of clear to avoid zoom factor pain
@@ -2557,16 +2555,8 @@ namespace AngelLoader.Forms
                 OpenInDromEdMenuItem.Visible = false;
             }
 
-            if (fm.Game == Game.Thief2 && Config.T2MPDetected)
-            {
-                PlayFMInMPMenuItem.Visible = true;
-                PlayOriginalThief2MPMenuItem.Visible = true;
-            }
-            else
-            {
-                PlayFMInMPMenuItem.Visible = false;
-                PlayOriginalThief2MPMenuItem.Visible = false;
-            }
+            PlayFMInMPMenuItem.Visible = fm.Game == Game.Thief2 && Config.T2MPDetected;
+            PlayOriginalThief2MPMenuItem.Visible = Config.T2MPDetected;
 
             InstallUninstallFMButton.Enabled = installable;
             // Special-cased; don't autosize this one

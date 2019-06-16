@@ -560,9 +560,9 @@ namespace AngelLoader.Ini
                         {
                             LText.FMsList.FMMenu_PlayFM = lt.Substring(14);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_PlayFMInMultiplayer="))
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_PlayFM_Multiplayer="))
                         {
-                            LText.FMsList.FMMenu_PlayFMInMultiplayer = lt.Substring(27);
+                            LText.FMsList.FMMenu_PlayFM_Multiplayer = lt.Substring(26);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_InstallFM="))
                         {

@@ -189,7 +189,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string ColumnMenu_ResetAllColumnPositions = "Reset all column positions";
             [FenGenBlankLine]
             internal static string FMMenu_PlayFM = "Play FM";
-            internal static string FMMenu_PlayFMInMultiplayer = "Play FM (multiplayer)";
+            internal static string FMMenu_PlayFM_Multiplayer = "Play FM (multiplayer)";
             internal static string FMMenu_InstallFM = "Install FM";
             internal static string FMMenu_UninstallFM = "Uninstall FM";
             internal static string FMMenu_OpenInDromEd = "Open FM in DromEd";
