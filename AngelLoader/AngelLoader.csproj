@@ -161,6 +161,9 @@
     <Compile Include="Common\DataClasses\ConfigData.cs" />
     <Compile Include="Common\Errors.cs" />
     <Compile Include="Common\DataClasses\FanMissionData.cs" />
+    <Compile Include="CustomControls\RadioButtonCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\ComboBoxCustom.cs">
       <SubType>Component</SubType>
     </Compile>

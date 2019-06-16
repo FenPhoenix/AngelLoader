@@ -86,7 +86,7 @@
             this.ShowOrHideUIElementsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.ShowOrHideUIElementsGroupBox.Name = "ShowOrHideUIElementsGroupBox";
             this.ShowOrHideUIElementsGroupBox.Size = new System.Drawing.Size(424, 80);
-            this.ShowOrHideUIElementsGroupBox.TabIndex = 11;
+            this.ShowOrHideUIElementsGroupBox.TabIndex = 5;
             this.ShowOrHideUIElementsGroupBox.TabStop = false;
             this.ShowOrHideUIElementsGroupBox.Text = "Show or hide interface elements";
             // 
@@ -121,7 +121,7 @@
             this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.PlayFMOnDCOrEnterGroupBox.Name = "PlayFMOnDCOrEnterGroupBox";
             this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
-            this.PlayFMOnDCOrEnterGroupBox.TabIndex = 9;
+            this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
             this.PlayFMOnDCOrEnterGroupBox.TabStop = false;
             this.PlayFMOnDCOrEnterGroupBox.Text = "Play FM on double-click / Enter";
             // 
@@ -146,7 +146,7 @@
             this.LanguageGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.LanguageGroupBox.Name = "LanguageGroupBox";
             this.LanguageGroupBox.Size = new System.Drawing.Size(424, 60);
-            this.LanguageGroupBox.TabIndex = 10;
+            this.LanguageGroupBox.TabIndex = 0;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
             // 
@@ -171,7 +171,7 @@
             this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.WebSearchGroupBox.Name = "WebSearchGroupBox";
             this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 108);
-            this.WebSearchGroupBox.TabIndex = 8;
+            this.WebSearchGroupBox.TabIndex = 3;
             this.WebSearchGroupBox.TabStop = false;
             this.WebSearchGroupBox.Text = "Web search";
             // 
@@ -229,7 +229,7 @@
             this.UninstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.UninstallingFMsGroupBox.Name = "UninstallingFMsGroupBox";
             this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 148);
-            this.UninstallingFMsGroupBox.TabIndex = 7;
+            this.UninstallingFMsGroupBox.TabIndex = 2;
             this.UninstallingFMsGroupBox.TabStop = false;
             this.UninstallingFMsGroupBox.Text = "Uninstalling FMs";
             // 
@@ -298,7 +298,7 @@
             this.FMFileConversionGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.FMFileConversionGroupBox.Name = "FMFileConversionGroupBox";
             this.FMFileConversionGroupBox.Size = new System.Drawing.Size(424, 84);
-            this.FMFileConversionGroupBox.TabIndex = 6;
+            this.FMFileConversionGroupBox.TabIndex = 1;
             this.FMFileConversionGroupBox.TabStop = false;
             this.FMFileConversionGroupBox.Text = "FM file conversion";
             // 

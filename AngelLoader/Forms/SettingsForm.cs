@@ -39,6 +39,8 @@ namespace AngelLoader.Forms
 
         private readonly UserControl[] Pages;
 
+        private readonly RadioButtonCustom[] PageRadioButtons;
+
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
         private readonly DateTime exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
@@ -62,6 +64,8 @@ namespace AngelLoader.Forms
 
             LangGroupBox = OtherPage.LanguageGroupBox;
             LangComboBox = OtherPage.LanguageComboBox;
+
+            PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
 
             #region Add pages
 
@@ -144,19 +148,12 @@ namespace AngelLoader.Forms
                 // _Load is too late for some of this stuff, so might as well put everything here
                 StartPosition = FormStartPosition.CenterScreen;
                 ShowInTaskbar = true;
-                //PagesListBox.Items.Clear();
-                //PagesListBox.Items.Add(LText.SettingsWindow.Paths_TabText);
-                //PagesListBox.SelectedIndex = 0;
                 PathsRadioButton.Checked = true;
                 FMDisplayRadioButton.Hide();
                 OtherRadioButton.Hide();
             }
             else
             {
-                //PagesListBox.SelectedIndex = (int)(
-                //    InConfig.SettingsTab == SettingsTab.FMDisplay ? PageIndex.FMDisplay :
-                //    InConfig.SettingsTab == SettingsTab.Other ? PageIndex.Other :
-                //    PageIndex.Paths);
                 switch (InConfig.SettingsTab)
                 {
                     case SettingsTab.FMDisplay:
@@ -389,10 +386,6 @@ namespace AngelLoader.Forms
 
                 #region Paths tab
 
-                //PagesListBox.Items[(int)PageIndex.Paths] = Startup
-                //    ? LText.SettingsWindow.InitialSettings_TabText
-                //    : LText.SettingsWindow.Paths_TabText;
-
                 PathsRadioButton.Text = Startup
                     ? LText.SettingsWindow.InitialSettings_TabText
                     : LText.SettingsWindow.Paths_TabText;
@@ -442,7 +435,6 @@ namespace AngelLoader.Forms
                 {
                     #region FM Display tab
 
-                    //PagesListBox.Items[(int)PageIndex.FMDisplay] = LText.SettingsWindow.FMDisplay_TabText;
                     FMDisplayRadioButton.Text = LText.SettingsWindow.FMDisplay_TabText;
 
                     FMDisplayPage.GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
@@ -467,7 +459,6 @@ namespace AngelLoader.Forms
 
                     #region Other tab
 
-                    //PagesListBox.Items[(int)PageIndex.Other] = LText.SettingsWindow.Other_TabText;
                     OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
 
                     OtherPage.FMFileConversionGroupBox.Text = LText.SettingsWindow.Other_FMFileConversion;
@@ -507,10 +498,6 @@ namespace AngelLoader.Forms
         private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Special case: these are meta, so they should always be set even if the user clicked Cancel
-            //OutConfig.SettingsTab =
-            //    PagesListBox.SelectedIndex == (int)PageIndex.FMDisplay ? SettingsTab.FMDisplay :
-            //    PagesListBox.SelectedIndex == (int)PageIndex.Other ? SettingsTab.Other :
-            //    SettingsTab.Paths;
             OutConfig.SettingsTab =
                 FMDisplayRadioButton.Checked ? SettingsTab.FMDisplay :
                 OtherRadioButton.Checked ? SettingsTab.Other :
@@ -573,7 +560,6 @@ namespace AngelLoader.Forms
             if (error)
             {
                 e.Cancel = true;
-                //PagesListBox.SelectedIndex = (int)PageIndex.Paths;
                 PathsRadioButton.Checked = true;
                 return;
             }
@@ -749,9 +735,23 @@ namespace AngelLoader.Forms
 
         #region Page selection handler
 
-        private void PageRadioButtons_CheckedChanged(object sender, EventArgs e)
+        // This is to handle keyboard "clicks"
+        private void PageRadioButtons_Click(object sender, EventArgs e) => ((RadioButtonCustom)sender).Checked = true;
+
+        // This is for mouse use, to give a snappier experience, we change on MouseDown
+        private void Paths_RadioButton_MouseDown(object sender, MouseEventArgs e)
         {
-            int index = sender == FMDisplayRadioButton ? 1 : sender == OtherRadioButton ? 2 : 0;
+            if (e.Button == MouseButtons.Left) ((RadioButtonCustom)sender).Checked = true;
+        }
+
+        private void PathsRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = (RadioButtonCustom)sender;
+            if (!s.Checked) return;
+
+            foreach (var b in PageRadioButtons) if (s != b) b.Checked = false;
+
+            int index = s == FMDisplayRadioButton ? 1 : s == OtherRadioButton ? 2 : 0;
             ShowPage(index);
         }
 
