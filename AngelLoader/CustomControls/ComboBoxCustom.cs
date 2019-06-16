@@ -12,7 +12,17 @@ namespace AngelLoader.CustomControls
     {
         private const uint WM_CTLCOLORLISTBOX = 308;
         private const int SWP_NOSIZE = 1;
-        
+        private const int CB_GETDROPPEDCONTROLRECT = 338;
+
+        internal Rectangle GetDroppedDownRect()
+        {
+            var rect = new InteropMisc.RECT();
+
+            var result = InteropMisc.SendMessage(Handle, CB_GETDROPPEDCONTROLRECT, IntPtr.Zero, ref rect);
+
+            return result == 0 ? Rectangle.Empty : new Rectangle(rect.left, rect.top + Height, rect.right - rect.left, (rect.bottom - rect.top) - Height);
+        }
+
         #region Backing items
 
         // For when the backing items should be different from the displayed items
