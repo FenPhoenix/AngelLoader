@@ -731,7 +731,7 @@ namespace AngelLoader.Common.Utility
             }
         }
 
-        internal static Rectangle GetDropDownRect(this ComboBox comboBox)
+        internal static Rectangle GetDroppedDownRect(this ComboBox comboBox)
         {
             var rect = new RECT();
 
