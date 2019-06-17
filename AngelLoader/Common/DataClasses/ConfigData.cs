@@ -12,16 +12,16 @@ namespace AngelLoader.Common.DataClasses
 
         internal readonly List<string> FMArchivePaths = new List<string>();
         internal bool FMArchivePathsIncludeSubfolders = false;
-        internal string FMsBackupPath = null;
+        internal string FMsBackupPath = "";
 
-        internal string T1Exe = null;
-        internal string T2Exe = null;
-        internal string T3Exe = null;
+        internal string T1Exe = "";
+        internal string T2Exe = "";
+        internal string T3Exe = "";
 
         // Session-only; don't write these out
-        internal string T1FMInstallPath = null;
-        internal string T2FMInstallPath = null;
-        internal string T3FMInstallPath = null;
+        internal string T1FMInstallPath = "";
+        internal string T2FMInstallPath = "";
+        internal string T3FMInstallPath = "";
         internal bool T1DromEdDetected;
         internal bool T2DromEdDetected;
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)

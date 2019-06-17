@@ -2601,6 +2601,7 @@
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(894, 260);
             this.Name = "MainForm";
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.Text = "AngelLoader";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);

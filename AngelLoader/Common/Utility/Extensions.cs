@@ -567,6 +567,9 @@ namespace AngelLoader.Common.Utility
         /// <returns></returns>
         internal static string EscapeAllChars(this string value)
         {
+            // Don't remove this freaking null check, or Config reading might fail
+            if (value.IsEmpty()) return "";
+
             var ret = "";
             foreach (char c in value) ret += '\\' + c.ToString();
 

@@ -159,7 +159,7 @@ namespace AngelLoader
 
             SetInstalledNames(fmDataIniList);
 
-            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs);
+            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs, startup);
         }
 
         private static void SetArchiveNames(List<string> fmArchives, List<FanMission> fmDataIniList)
@@ -425,7 +425,7 @@ namespace AngelLoader
             return archiveName;
         }
 
-        private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList, List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs)
+        private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList, List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs, bool startup)
         {
             Core.ViewListGamesNull.Clear();
             for (var i = 0; i < fmDataIniList.Count; i++)
@@ -471,7 +471,8 @@ namespace AngelLoader
                     !item.Title.IsEmpty() ? item.Title :
                     !item.Archive.IsEmpty() ? item.Archive.RemoveExtension() :
                     item.InstalledDir;
-                // SizeString gets set on UI localize so don't set it here, or it's duplicate work
+                // SizeString gets set on UI localize so don't set it here on startup, or it's duplicate work
+                if (!startup) item.SizeString = ((long?)item.SizeBytes).ConvertSize();
                 item.CommentSingleLine = item.Comment.FromEscapes().ToSingleLineComment(100);
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
 

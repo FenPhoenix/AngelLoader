@@ -104,6 +104,9 @@ Currently AngelLoader is portable-only, so it must be placed in a non-protected 
 
 <p><img src="images/initial_setup.png" /></p>
 
+<h4>Language</h4>
+If other languages are available, you can choose them here. Changes will take effect immediately.
+
 <h4><a name="paths_to_game_exes" />Paths to game executables</h4>
 Here you can choose the executable files for the Thief games you have installed. These fields are optional - you can set some, all, or none. You will still be able to see and manage all of your fan missions even if you haven't set their corresponding executable, but of course you won't be able to install or play any of them unless their executable is set.
 <p><b>Thief 1</b> and <b>Thief 2</b> must be patched with NewDark in order for AngelLoader to be able to use them. <b>Thief 3</b> must be patched with the Sneaky Upgrade. Version 1.1.9.1 or above is recommended; while versions as far back as 1.1.3 may work, they haven't been tested and are not officially supported.</p>
@@ -114,9 +117,6 @@ This is a required field. This is the folder that will be used for backing up sa
 <h4>FM archive paths</h4>
 Here you can set the directory or directories where your fan mission archives (.zip or .7z files) are located. If you enable "Include subfolders", then all subfolders inside all directories you specify will also be searched for FM archives (this matches NewDarkLoader's behavior). Otherwise, only the exact directories you specify will be searched.
 A note on fan mission archive directories: Because multiple directories are allowed, there is the potential for duplicate files. In this case, AngelLoader will simply use the first file it finds, and ignore any further files with the same name. It is recommended that you don't put duplicate files in your archive directories, but if you do, then as long as they're exact copies (ie., not different files with the same name) then it will be fine. It's also recommended that your archive directories should <b>only</b> contain fan missions and/or FMSel/NewDarkLoader backup files. While AngelLoader does attempt to reject non-mission archives on scan, it's still best to keep unrelated files out of your FM directories.
-
-<h4>Language</h4>
-If other languages are available, you can choose them here. Changes will take effect immediately.
 
 <hr>
 
@@ -164,7 +164,8 @@ In addition to clicking the zoom buttons, the readme can also be zoomed by press
 Click this button to play the currently selected FM. If the FM is not installed, it will be installed automatically first.
 
 <h4>Play original game button</h4>
-Click this button to bring up a list of supported games. Only games that you've <a href="#paths_to_game_exes">provided a path to</a> will be enabled; others will be grayed out. Clicking on one of these games will let you play it without loading an FM.
+Click this button to bring up a list of supported games. Only games that you've <a href="#paths_to_game_exes">provided a path to</a> will be enabled; others will be grayed out. Clicking on one of these games will let you play it without loading an FM.<br>
+If you have NewDark 1.27 or later and have installed the multiplayer option (meaning Thief2MP.exe exists in your Thief 2 directory), then there will be an additional option in the list to play Thief 2 in multiplayer mode.
 
 <h4>Install / Uninstall FM button</h4>
 If the currently selected FM is not installed, this button will install it; otherwise, it will uninstall it.
@@ -264,6 +265,9 @@ Right-click on a fan mission in the list to bring up this menu.
 <h4>Play FM</h4>
 Plays the currently selected FM. If the FM is not installed, it will be installed automatically first.
 
+<h4>Play FM (multiplayer)</h4>
+This item will only appear if Thief2MP.exe was found in the Thief 2 directory. Clicking it will allow you to play the selected FM in multiplayer mode (requires NewDark 1.27 or later). If the FM is not installed, it will be installed automatically first.
+
 <h4>Install / Uninstall FM</h4>
 If the currently selected FM is not installed, this will install it; otherwise, it will uninstall it.
 
@@ -293,7 +297,7 @@ Click this to search the web for the selected mission. You can set the search UR
 
 <h3><a name="top_right_tabs" />Top-right tabs</h3>
 
-These tabs allow you to edit the selected FM's data and to view more detailed information about it. The tabs can be dragged to change their order if you wish.
+These tabs allow you to edit the selected FM's data and to view more detailed information about it. The tabs can be dragged to change their order if you wish, and they can also be selectively hidden using the menu button at the top-right.
 
 <h4>Collapse / expand button</h4>
 Click this to collapse (hide) the top-right section. Click it again to expand it.
@@ -382,6 +386,9 @@ Here you can choose how to display dates: either in the short or long form of yo
 
 <p><img src="images/setup_other_tab.png" /></p>
 
+<h4>Language</h4>
+If other languages are available, you can choose them here. Changes will take effect immediately.
+
 <h4><a name="settings_audio_conversion" />Convert .wavs to 16 bit on install</h4>
 Depending on your setup, .wav files that are higher than 16 bit may cause audio problems when played by Thief 1 or Thief 2, such as intermittent or constant static noise. Converting all .wav files to 16 bit will solve this issue, and does not result in a perceptible loss of fidelity. Therefore, this option is turned on by default.<br>
 <b>This option has no effect for Thief: Deadly Shadows.</b>
@@ -396,9 +403,6 @@ If this is enabled, you will be prompted for confirmation when uninstalling an F
 
 <h4><a name="settings_backup" />Back up data when uninstalling</h4>
 When an FM is uninstalled, you will normally want to back up its saves and screenshots so they can be restored if you install it again. You can also choose to back up all changed files, in which case the backup will also include all files in the installed folder that have been added, removed, or modified as compared to the files in the archive. This is useful if you have added <a href="#dml_patches">.dml patches</a> to the FM, or made other modifications such as creating or modifying an fm.cfg file, fixing readables, etc. Because AngelLoader aims to be patch-friendly, this option is the default. You can also choose to always be asked if you want to back up data when uninstalling an FM.
-
-<h4>Language</h4>
-If other languages are available, you can choose them here. Changes will take effect immediately.
 
 <h4><a name="settings_web_search" />Web search</h4>
 Here you can edit the URL that will be used when searching for FMs on the web. The string $TITLE$ can be placed anywhere in the URL to insert the fan mission's title into the final string. For instance, if the URL was
@@ -458,6 +462,7 @@ FMSel, the official NewDark fan mission loader, has always supported 7-Zip (.7z)
 
 I'd like to thank the following people, in no particular order:
 <p><b>Dahenjo</b> for helping me hunt down some bugs and suggesting features.</p>
+<p><b>Xanfre</b> for contributing some excellent improvements to the RichTextBox behavior.</p>
 <p><b>EnYB0La</b> for providing the impetus to start writing what became FMScanner, AngelLoader's scanner module. Without it, I never would have attempted to create a standalone NewDark-supporting loader!</p>
 <p><b>Björn Henke</b> and <b>Telliamed</b> for creating DarkLoader, the de facto standard Thief loader for many years, and the original inspiration for AngelLoader's UI and standalone nature.</p>
 <p><b>R Soul</b> for creating NewDarkLoader, a modern loader with the classic DarkLoader UI, and also a source of inspiration for several aspects of AngelLoader.</p>
@@ -474,7 +479,7 @@ I'd like to thank the following people, in no particular order:
 <a href="https://github.com/cmxl/FFmpeg.NET">FFmpeg.NET</a><br>
 <a href="https://github.com/gmamaladze/globalmousekeyhook">GlobalMouseKeyHook</a><br>
 <a href="https://github.com/khalidsalomao/SimpleHelpers.Net/">SimpleHelpers.Net</a><br>
-<a href="https://github.com/errepi/ude">UDE</a><br>
+<a href="https://github.com/yinyue200/ude">UDE.NetStandard</a><br>
 <a href="https://github.com/caioproiete/ookii-dialogs-winforms">Ookii Dialogs</a><br>
 <a href="https://github.com/dotnet/corefx">Modified portions of .NET Core's System.IO.Compression code</a> (tuned for scanning performance)<br>
 
