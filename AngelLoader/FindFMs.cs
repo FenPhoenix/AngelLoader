@@ -425,7 +425,9 @@ namespace AngelLoader
             return archiveName;
         }
 
-        private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList, List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs, bool startup)
+        private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList,
+            List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs,
+            bool startup)
         {
             Core.ViewListGamesNull.Clear();
             for (var i = 0; i < fmDataIniList.Count; i++)

@@ -24,22 +24,14 @@ namespace AngelLoader.Forms
         private readonly ConfigData InConfig;
         public readonly ConfigData OutConfig = new ConfigData();
 
+        private readonly RadioButtonCustom[] PageRadioButtons;
+        private readonly UserControl[] Pages;
+
         private readonly TextBox[] GameExePathTextBoxes;
 
         public new DialogResult ShowDialog() => ((Form)this).ShowDialog();
 
         private enum PathError { True, False }
-
-        private enum PageIndex
-        {
-            Paths,
-            FMDisplay,
-            Other
-        }
-
-        private readonly UserControl[] Pages;
-
-        private readonly RadioButtonCustom[] PageRadioButtons;
 
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
@@ -74,6 +66,8 @@ namespace AngelLoader.Forms
 
             if (startup)
             {
+                Pages = new UserControl[] { PathsPage };
+
                 PathsPage.PagePanel.Controls.Add(LangGroupBox);
                 OtherPage.PagePanel.Controls.Remove(LangGroupBox);
                 LangGroupBox.Location = new Point(8, 8);
@@ -93,7 +87,6 @@ namespace AngelLoader.Forms
                 FMDisplayPage.Dock = DockStyle.Fill;
                 OtherPage.Dock = DockStyle.Fill;
             }
-
 
             #endregion
 
@@ -751,8 +744,7 @@ namespace AngelLoader.Forms
 
             foreach (var b in PageRadioButtons) if (s != b) b.Checked = false;
 
-            int index = s == FMDisplayRadioButton ? 1 : s == OtherRadioButton ? 2 : 0;
-            ShowPage(index);
+            ShowPage(Array.IndexOf(PageRadioButtons, s));
         }
 
         private void ShowPage(int index)
