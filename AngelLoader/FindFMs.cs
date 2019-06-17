@@ -362,7 +362,10 @@ namespace AngelLoader
             string FixUp(bool createFmselInf)
             {
                 // Make a best-effort attempt to find what this FM's archive name should be
-                // TODO: This is really slow. 8ms to run it once (~1500 set) with no hits.
+                // PERF: 5ms to run it once on the ~1500 set with no hits, but the time taken is all in the
+                // ToInstDirname* calls. So, it doesn't really scale if the user has a bunch of installed FMs
+                // with no matching archives, but... whatcha gonna do? We need this automatic linkup thing.
+                // TODO: If you come up with any brilliant ideas for the archive-linkup search...
                 bool truncate = fm.Game != Game.Thief3;
                 var tryArchive =
                     archives.FirstOrDefault(x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
