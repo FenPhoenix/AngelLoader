@@ -149,8 +149,8 @@ namespace AngelLoader.CustomControls
             if (ContentIsPlainText)
             {
                 Font = useFixed
-                    ? new Font(FontFamily.GenericMonospace, Font.SizeInPoints)
-                    : new Font(FontFamily.GenericSansSerif, Font.SizeInPoints);
+                    ? new Font(FontFamily.GenericMonospace, 10.0f)
+                    : new Font(FontFamily.GenericSansSerif, 8.25f);
 
                 // We have to reload because links don't get recognized until we do
                 Text = Text;
