@@ -1236,6 +1236,14 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Other_HideFMListZoomButtons = lt.Substring(28);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_ReadmeBox="))
+                        {
+                            LText.SettingsWindow.Other_ReadmeBox = lt.Substring(16);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Other_ReadmeUseFixedWidthFont="))
+                        {
+                            LText.SettingsWindow.Other_ReadmeUseFixedWidthFont = lt.Substring(30);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;

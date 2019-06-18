@@ -481,6 +481,9 @@ namespace AngelLoader.Forms
                     OtherPage.HideUninstallButtonCheckBox.Text = LText.SettingsWindow.Other_HideUninstallButton;
                     OtherPage.HideFMListZoomButtonsCheckBox.Text = LText.SettingsWindow.Other_HideFMListZoomButtons;
 
+                    OtherPage.ReadmeGroupBox.Text = LText.SettingsWindow.Other_ReadmeBox;
+                    OtherPage.ReadmeFixedWidthFontCheckBox.Text = LText.SettingsWindow.Other_ReadmeUseFixedWidthFont;
+
                     #endregion
                 }
             }
