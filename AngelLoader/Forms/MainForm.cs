@@ -455,6 +455,8 @@ namespace AngelLoader.Forms
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
 
+            ChangeRTFBoxFont(Config.ReadmeUseFixedWidthFont);
+
             #endregion
 
             // Set here so as to avoid the changes being visible
@@ -530,37 +532,127 @@ namespace AngelLoader.Forms
             NominalWindowLocation = new Point(loc.X, loc.Y);
         }
 
-        private void SetUIFilterValues(Filter filter)
+        private void MainForm_Deactivate(object sender, EventArgs e)
         {
-            using (new DisableEvents(this))
+            FMsDGV.CancelColumnResize();
+            MainSplitContainer.CancelResize();
+            TopSplitContainer.CancelResize();
+        }
+
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            if (WindowState != FormWindowState.Minimized)
             {
-                FiltersFlowLayoutPanel.SuspendDrawing();
-                try
+                NominalWindowState = WindowState;
+                if (WindowState != FormWindowState.Maximized)
                 {
-                    FilterTitleTextBox.Text = filter.Title;
-                    FilterAuthorTextBox.Text = filter.Author;
-                    FilterShowUnsupportedButton.Checked = filter.ShowJunk;
-
-                    FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
-
-                    FilterByFinishedButton.Checked = filter.Finished.Contains(FinishedState.Finished);
-                    FilterByUnfinishedButton.Checked = filter.Finished.Contains(FinishedState.Unfinished);
-
-                    FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
-                    UpdateRatingLabel(suspendResume: false);
-
-                    FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
-                    UpdateDateLabel(lastPlayed: false, suspendResume: false);
-
-                    FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
-                    UpdateDateLabel(lastPlayed: true, suspendResume: false);
+                    NominalWindowSize = Size;
+                    NominalWindowLocation = new Point(Location.X, Location.Y);
                 }
-                finally
+            }
+
+            if (ProgressBox.Visible) ProgressBox.Center();
+            if (AddTagListBox.Visible) HideAddTagDropDown();
+
+            SetFilterBarScrollButtons();
+        }
+
+        private void MainForm_LocationChanged(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Normal) NominalWindowLocation = new Point(Location.X, Location.Y);
+        }
+
+        private async void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (KeyPressesDisabled)
+            {
+                e.SuppressKeyPress = true;
+                return;
+            }
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(GetSelectedFM()))
                 {
-                    FiltersFlowLayoutPanel.ResumeDrawing();
+                    e.SuppressKeyPress = true;
+                    await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), askConfIfRequired: true);
+                }
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                FMsDGV.CancelColumnResize();
+                MainSplitContainer.CancelResize();
+                TopSplitContainer.CancelResize();
+
+                HideAddTagDropDown();
+            }
+            else if (e.Control)
+            {
+                if (e.KeyCode == Keys.F)
+                {
+                    FilterTitleTextBox.Focus();
+                    FilterTitleTextBox.SelectAll();
+                }
+                else if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
+                {
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ZoomIn();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+                    }
+                }
+                else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
+                {
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ZoomOut();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+                    }
+                }
+                else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
+                {
+                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
+                    {
+                        ReadmeRichTextBox.ResetZoomFactor();
+                    }
+                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
+                    {
+                        ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+                    }
                 }
             }
         }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
+            // separate and detached thread to complete. Argh. Threading sucks.
+            if (!EverythingPanel.Enabled)
+            {
+                MessageBox.Show(LText.AlertMessages.AppClosing_OperationInProgress, LText.AlertMessages.Alert,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Cancel = true;
+                return;
+            }
+
+            Application.RemoveMessageFilter(this);
+            // Mouse hook will dispose along with the form
+
+            // Argh, stupid hack to get this to not run TWICE on Application.Exit()
+            // Application.Exit() is the worst thing ever. Before closing it just does whatever the hell it wants.
+            FormClosing -= MainForm_FormClosing;
+
+            UpdateConfig();
+            Core.Shutdown();
+        }
+
+        #endregion
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {
@@ -887,129 +979,41 @@ namespace AngelLoader.Forms
             if (suspendResume) RefreshFMsListKeepSelection();
         }
 
+        private void SetUIFilterValues(Filter filter)
+        {
+            using (new DisableEvents(this))
+            {
+                FiltersFlowLayoutPanel.SuspendDrawing();
+                try
+                {
+                    FilterTitleTextBox.Text = filter.Title;
+                    FilterAuthorTextBox.Text = filter.Author;
+                    FilterShowUnsupportedButton.Checked = filter.ShowJunk;
+
+                    FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
+
+                    FilterByFinishedButton.Checked = filter.Finished.Contains(FinishedState.Finished);
+                    FilterByUnfinishedButton.Checked = filter.Finished.Contains(FinishedState.Unfinished);
+
+                    FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
+                    UpdateRatingLabel(suspendResume: false);
+
+                    FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
+                    UpdateDateLabel(lastPlayed: false, suspendResume: false);
+
+                    FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
+                    UpdateDateLabel(lastPlayed: true, suspendResume: false);
+                }
+                finally
+                {
+                    FiltersFlowLayoutPanel.ResumeDrawing();
+                }
+            }
+        }
+
         public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMButton.Visible = enabled;
 
-        private void MainForm_Deactivate(object sender, EventArgs e)
-        {
-            FMsDGV.CancelColumnResize();
-            MainSplitContainer.CancelResize();
-            TopSplitContainer.CancelResize();
-        }
-
-        private void MainForm_SizeChanged(object sender, EventArgs e)
-        {
-            if (WindowState != FormWindowState.Minimized)
-            {
-                NominalWindowState = WindowState;
-                if (WindowState != FormWindowState.Maximized)
-                {
-                    NominalWindowSize = Size;
-                    NominalWindowLocation = new Point(Location.X, Location.Y);
-                }
-            }
-
-            if (ProgressBox.Visible) ProgressBox.Center();
-            if (AddTagListBox.Visible) HideAddTagDropDown();
-
-            SetFilterBarScrollButtons();
-        }
-
-        private void MainForm_LocationChanged(object sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Normal) NominalWindowLocation = new Point(Location.X, Location.Y);
-        }
-
-        private async void MainForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (KeyPressesDisabled)
-            {
-                e.SuppressKeyPress = true;
-                return;
-            }
-
-            if (e.KeyCode == Keys.Enter)
-            {
-                if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(GetSelectedFM()))
-                {
-                    e.SuppressKeyPress = true;
-                    await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), askConfIfRequired: true);
-                }
-            }
-            else if (e.KeyCode == Keys.Escape)
-            {
-                FMsDGV.CancelColumnResize();
-                MainSplitContainer.CancelResize();
-                TopSplitContainer.CancelResize();
-
-                HideAddTagDropDown();
-            }
-            else if (e.Control)
-            {
-                if (e.KeyCode == Keys.F)
-                {
-                    FilterTitleTextBox.Focus();
-                    FilterTitleTextBox.SelectAll();
-                }
-                else if (e.KeyCode == Keys.Add || e.KeyCode == Keys.Oemplus)
-                {
-                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
-                    {
-                        ReadmeRichTextBox.ZoomIn();
-                    }
-                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
-                    {
-                        ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
-                    }
-                }
-                else if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.OemMinus)
-                {
-                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
-                    {
-                        ReadmeRichTextBox.ZoomOut();
-                    }
-                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
-                    {
-                        ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
-                    }
-                }
-                else if (e.KeyCode == Keys.D0 || e.KeyCode == Keys.NumPad0)
-                {
-                    if ((ReadmeRichTextBox.Focused && !CursorOverControl(FMsDGV)) || CursorOverReadmeArea())
-                    {
-                        ReadmeRichTextBox.ResetZoomFactor();
-                    }
-                    else if ((FMsDGV.Focused && !CursorOverReadmeArea()) || CursorOverControl(FMsDGV))
-                    {
-                        ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
-                    }
-                }
-            }
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
-            // separate and detached thread to complete. Argh. Threading sucks.
-            if (!EverythingPanel.Enabled)
-            {
-                MessageBox.Show(LText.AlertMessages.AppClosing_OperationInProgress, LText.AlertMessages.Alert,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                e.Cancel = true;
-                return;
-            }
-
-            Application.RemoveMessageFilter(this);
-            // Mouse hook will dispose along with the form
-
-            // Argh, stupid hack to get this to not run TWICE on Application.Exit()
-            // Application.Exit() is the worst thing ever. Before closing it just does whatever the hell it wants.
-            FormClosing -= MainForm_FormClosing;
-
-            UpdateConfig();
-            Core.Shutdown();
-        }
-
-        #endregion
+        public void ChangeRTFBoxFont(bool useFixed) => ReadmeRichTextBox.ChangeFont(useFixed);
 
         private void PositionFilterBarAfterTabs()
         {

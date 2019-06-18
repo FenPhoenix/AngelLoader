@@ -332,6 +332,8 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                OtherPage.ReadmeFixedWidthFontCheckBox.Checked = InConfig.ReadmeUseFixedWidthFont;
+
                 #endregion
             }
 
@@ -721,6 +723,8 @@ namespace AngelLoader.Forms
                 OutConfig.HideFMListZoomButtons = OtherPage.HideFMListZoomButtonsCheckBox.Checked;
 
                 #endregion
+
+                OutConfig.ReadmeUseFixedWidthFont = OtherPage.ReadmeFixedWidthFontCheckBox.Checked;
 
                 #endregion
             }

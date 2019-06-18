@@ -61,6 +61,8 @@ namespace AngelLoader
         (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
             bool showDontAskAgain, string yes, string no, string cancel);
+
+        void ChangeRTFBoxFont(bool useFixed);
     }
 
     internal static class Core
@@ -213,6 +215,9 @@ namespace AngelLoader
                 bool languageChanged =
                     !startup && !Config.Language.EqualsI(sf.OutConfig.Language);
 
+                bool useFixedFontChanged =
+                    !startup && Config.ReadmeUseFixedWidthFont != sf.OutConfig.ReadmeUseFixedWidthFont;
+
                 #endregion
 
                 #region Set config data
@@ -321,6 +326,8 @@ namespace AngelLoader
                 Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
                 Config.HideFMListZoomButtons = sf.OutConfig.HideFMListZoomButtons;
 
+                Config.ReadmeUseFixedWidthFont = sf.OutConfig.ReadmeUseFixedWidthFont;
+
                 #endregion
 
                 // These ones MUST NOT be set on startup, because the source values won't be valid
@@ -356,6 +363,10 @@ namespace AngelLoader
                 {
                     // Do this again if the FMs list might have changed
                     SetFMSizesToLocalized();
+                }
+                if (useFixedFontChanged)
+                {
+                    View.ChangeRTFBoxFont(sf.OutConfig.ReadmeUseFixedWidthFont);
                 }
 
                 #endregion

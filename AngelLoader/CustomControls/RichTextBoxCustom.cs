@@ -21,11 +21,7 @@ namespace AngelLoader.CustomControls
         private bool initialReadmeZoomSet = true;
 
         private float _storedZoomFactor = 1.0f;
-        internal float StoredZoomFactor
-        {
-            get => _storedZoomFactor;
-            set => _storedZoomFactor = value.Clamp(0.1f, 5.0f);
-        }
+        internal float StoredZoomFactor { get => _storedZoomFactor; set => _storedZoomFactor = value.Clamp(0.1f, 5.0f); }
 
         #endregion
 
@@ -50,6 +46,8 @@ namespace AngelLoader.CustomControls
         private static readonly byte[] nonshppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxxxxx");
 
         #endregion
+
+        internal bool ContentIsPlainText;
 
         #endregion
 
@@ -142,6 +140,23 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
+        internal void ChangeFont(bool useFixed) => ChangeFontInternal(ContentIsPlainText, useFixed);
+
+        private void ChangeFontInternal(bool newValForContentIsPlainText, bool useFixed)
+        {
+            ContentIsPlainText = newValForContentIsPlainText;
+
+            if (ContentIsPlainText)
+            {
+                Font = useFixed
+                    ? new Font(FontFamily.GenericMonospace, Font.SizeInPoints)
+                    : new Font(FontFamily.GenericSansSerif, Font.SizeInPoints);
+
+                // We have to reload because links don't get recognized until we do
+                Text = Text;
+            }
+        }
+
         #region Load content
 
         /// <summary>
@@ -161,6 +176,7 @@ namespace AngelLoader.CustomControls
                 ResetScrollInfo();
 
                 if (!text.IsEmpty()) Text = text;
+                ChangeFontInternal(true, Common.Common.Config.ReadmeUseFixedWidthFont);
 
                 RestoreZoom();
             }
@@ -195,6 +211,10 @@ namespace AngelLoader.CustomControls
                 if (path.ExtIsGlml())
                 {
                     var text = File.ReadAllText(path);
+                    // Do this BEFORE the load, just to reset to the default font in case RTF uses it (I don't
+                    // know if it does?)
+                    // Don't do it after the load, or else it messes up the RTf.
+                    ChangeFontInternal(false, false);
                     Rtf = GLMLToRTF(text);
                 }
                 else if (fileType == RichTextBoxStreamType.RichText)
@@ -205,11 +225,14 @@ namespace AngelLoader.CustomControls
                     ReplaceByteSequence(bytes, shppict, shppictBlanked);
                     ReplaceByteSequence(bytes, nonshppict, nonshppictBlanked);
 
+                    // Ditto the above
+                    ChangeFontInternal(false, false);
                     using (var ms = new MemoryStream(bytes)) LoadFile(ms, RichTextBoxStreamType.RichText);
                 }
-                else
+                else // Plain text
                 {
                     LoadFile(path, fileType);
+                    ChangeFontInternal(true, Common.Common.Config.ReadmeUseFixedWidthFont);
                 }
             }
             finally

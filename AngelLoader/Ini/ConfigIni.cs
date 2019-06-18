@@ -584,6 +584,10 @@ namespace AngelLoader.Ini
                         config.ReadmeZoomFactor = result;
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ReadmeUseFixedWidthFont) + "="))
+                {
+                    config.ReadmeUseFixedWidthFont = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MainWindowState) + "="))
                 {
                     var field = typeof(FormWindowState).GetField(val, BFlagsEnum);
@@ -957,6 +961,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine("PatchTabVisible=" + config.TopRightTabsData.PatchTab.Visible);
 
                 sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
+                sw.WriteLine(nameof(config.ReadmeUseFixedWidthFont) + "=" + config.ReadmeUseFixedWidthFont);
 
                 #endregion
             }
