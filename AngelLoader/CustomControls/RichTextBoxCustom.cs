@@ -213,7 +213,7 @@ namespace AngelLoader.CustomControls
                     var text = File.ReadAllText(path);
                     // Do this BEFORE the load, just to reset to the default font in case RTF uses it (I don't
                     // know if it does?)
-                    // Don't do it after the load, or else it messes up the RTf.
+                    // Don't do it after the load, or else it messes up the RTF.
                     ChangeFontInternal(false, false);
                     Rtf = GLMLToRTF(text);
                 }
