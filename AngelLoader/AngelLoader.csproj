@@ -489,7 +489,6 @@ rem xcopy requires you to make an entire file just to list excludes, rather than
 rem specifying them on the command line like someone who is not clinically insane
 del /F "%25destDir%25JetBrains.Annotations.dll"
 
-xcopy "$(TargetDir)log4net.config" %25destDir%25 /y
 xcopy "$(TargetDir)x86\7z.dll" %25destDir%25 /y
 xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
 
@@ -499,7 +498,11 @@ xcopy "$(TargetDir)ffmpeg.txt" %25destDir%25 /y
 
 xcopy "$(TargetDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
 
+if $(ConfigurationName) != Release_Public(
 xcopy "$(ProjectDir)Languages" "%25destDir%25Data\Languages\" /y /i /e
+) else (
+xcopy "$(ProjectDir)Languages\English.ini" "%25destDir%25Data\Languages\" /y
+)
 
 xcopy "$(SolutionDir)BinReleaseOnly" "%25destDir%25" /y /i /e
 
