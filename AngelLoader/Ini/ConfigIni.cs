@@ -450,6 +450,27 @@ namespace AngelLoader.Ini
                         config.SettingsWindowSplitterDistance = result;
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SettingsPathsVScrollPos) + "="))
+                {
+                    if (int.TryParse(val, out int result))
+                    {
+                        config.SettingsPathsVScrollPos = result;
+                    }
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SettingsFMDisplayVScrollPos) + "="))
+                {
+                    if (int.TryParse(val, out int result))
+                    {
+                        config.SettingsFMDisplayVScrollPos = result;
+                    }
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SettingsOtherVScrollPos) + "="))
+                {
+                    if (int.TryParse(val, out int result))
+                    {
+                        config.SettingsOtherVScrollPos = result;
+                    }
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FMArchivePath="))
                 {
                     config.FMArchivePaths.Add(val.Trim());
@@ -787,9 +808,17 @@ namespace AngelLoader.Ini
 
                 #region Settings window
 
+                #region Settings window state
+
                 sw.WriteLine(nameof(config.SettingsTab) + "=" + config.SettingsTab);
                 sw.WriteLine(nameof(config.SettingsWindowSize) + "=" + config.SettingsWindowSize.Width + "," + config.SettingsWindowSize.Height);
                 sw.WriteLine(nameof(config.SettingsWindowSplitterDistance) + "=" + config.SettingsWindowSplitterDistance);
+
+                sw.WriteLine(nameof(config.SettingsPathsVScrollPos) + "=" + config.SettingsPathsVScrollPos);
+                sw.WriteLine(nameof(config.SettingsFMDisplayVScrollPos) + "=" + config.SettingsFMDisplayVScrollPos);
+                sw.WriteLine(nameof(config.SettingsOtherVScrollPos) + "=" + config.SettingsOtherVScrollPos);
+
+                #endregion
 
                 #region Paths
 
@@ -931,7 +960,7 @@ namespace AngelLoader.Ini
 
                 #endregion
 
-                #region Window state
+                #region Main window state
 
                 sw.WriteLine(nameof(config.MainWindowState) + "=" +
                              (config.MainWindowState == FormWindowState.Minimized

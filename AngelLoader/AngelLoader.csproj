@@ -183,6 +183,7 @@
     <Compile Include="CustomControls\SettingsForm\FMDisplayPage.Designer.cs">
       <DependentUpon>FMDisplayPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\SettingsForm\Interfaces.cs" />
     <Compile Include="CustomControls\SettingsForm\OtherPage.cs">
       <SubType>UserControl</SubType>
     </Compile>

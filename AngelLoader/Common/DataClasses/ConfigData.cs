@@ -98,6 +98,9 @@ namespace AngelLoader.Common.DataClasses
         internal SettingsTab SettingsTab = SettingsTab.Paths;
         internal Size SettingsWindowSize = new Size(710, 708);
         internal int SettingsWindowSplitterDistance = 155;
+        internal int SettingsPathsVScrollPos = 0;
+        internal int SettingsFMDisplayVScrollPos = 0;
+        internal int SettingsOtherVScrollPos = 0;
 
         #endregion
 

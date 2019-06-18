@@ -173,10 +173,18 @@ namespace AngelLoader
                 // This needs to be separate so the below line can work
                 var result = sf.ShowDialog();
 
+                #region Save window state
+
                 // Special case: these are meta, so they should always be set even if the user clicked Cancel
                 Config.SettingsTab = sf.OutConfig.SettingsTab;
                 Config.SettingsWindowSize = sf.OutConfig.SettingsWindowSize;
                 Config.SettingsWindowSplitterDistance = sf.OutConfig.SettingsWindowSplitterDistance;
+
+                Config.SettingsPathsVScrollPos = sf.OutConfig.SettingsPathsVScrollPos;
+                Config.SettingsFMDisplayVScrollPos = sf.OutConfig.SettingsFMDisplayVScrollPos;
+                Config.SettingsOtherVScrollPos = sf.OutConfig.SettingsOtherVScrollPos;
+
+                #endregion
 
                 if (result != DialogResult.OK) return false;
 

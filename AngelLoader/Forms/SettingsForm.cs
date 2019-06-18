@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,7 @@ using AngelLoader.CustomControls.SettingsForm;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI.Dialogs;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.CustomControls.SettingsForm.Interfaces;
 
 namespace AngelLoader.Forms
 {
@@ -25,7 +27,7 @@ namespace AngelLoader.Forms
         public readonly ConfigData OutConfig = new ConfigData();
 
         private readonly RadioButtonCustom[] PageRadioButtons;
-        private readonly UserControl[] Pages;
+        private readonly ISettingsPage[] Pages;
 
         private readonly TextBox[] GameExePathTextBoxes;
 
@@ -66,7 +68,7 @@ namespace AngelLoader.Forms
 
             if (startup)
             {
-                Pages = new UserControl[] { PathsPage };
+                Pages = new ISettingsPage[] { PathsPage };
 
                 PathsPage.PagePanel.Controls.Add(LangGroupBox);
                 OtherPage.PagePanel.Controls.Remove(LangGroupBox);
@@ -79,7 +81,7 @@ namespace AngelLoader.Forms
             {
                 LangComboBox = OtherPage.LanguageComboBox;
 
-                Pages = new UserControl[] { PathsPage, FMDisplayPage, OtherPage };
+                Pages = new ISettingsPage[] { PathsPage, FMDisplayPage, OtherPage };
 
                 PagePanel.Controls.Add(FMDisplayPage);
                 PagePanel.Controls.Add(OtherPage);
@@ -135,29 +137,32 @@ namespace AngelLoader.Forms
 
             Text = LText.SettingsWindow.TitleText;
 
-            if (startup)
+            using (new DisableEvents(this))
             {
-                Text = LText.SettingsWindow.StartupTitleText;
-                // _Load is too late for some of this stuff, so might as well put everything here
-                StartPosition = FormStartPosition.CenterScreen;
-                ShowInTaskbar = true;
-                PathsRadioButton.Checked = true;
-                FMDisplayRadioButton.Hide();
-                OtherRadioButton.Hide();
-            }
-            else
-            {
-                switch (InConfig.SettingsTab)
+                if (startup)
                 {
-                    case SettingsTab.FMDisplay:
-                        FMDisplayRadioButton.Checked = true;
-                        break;
-                    case SettingsTab.Other:
-                        OtherRadioButton.Checked = true;
-                        break;
-                    default:
-                        PathsRadioButton.Checked = true;
-                        break;
+                    Text = LText.SettingsWindow.StartupTitleText;
+                    // _Load is too late for some of this stuff, so might as well put everything here
+                    StartPosition = FormStartPosition.CenterScreen;
+                    ShowInTaskbar = true;
+                    PathsRadioButton.Checked = true;
+                    FMDisplayRadioButton.Hide();
+                    OtherRadioButton.Hide();
+                }
+                else
+                {
+                    switch (InConfig.SettingsTab)
+                    {
+                        case SettingsTab.FMDisplay:
+                            FMDisplayRadioButton.Checked = true;
+                            break;
+                        case SettingsTab.Other:
+                            OtherRadioButton.Checked = true;
+                            break;
+                        default:
+                            PathsRadioButton.Checked = true;
+                            break;
+                    }
                 }
             }
 
@@ -168,6 +173,19 @@ namespace AngelLoader.Forms
             Width = Math.Min(InConfig.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
             Height = Math.Min(InConfig.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
             MainSplitContainer.SplitterDistance = InConfig.SettingsWindowSplitterDistance;
+        }
+
+        private void SetPageScrollPos(ISettingsPage page)
+        {
+            int? pos =
+                page == PathsPage ? InConfig.SettingsPathsVScrollPos :
+                page == FMDisplayPage ? InConfig.SettingsFMDisplayVScrollPos :
+                page == OtherPage ? InConfig.SettingsOtherVScrollPos :
+                (int?)null;
+
+            Debug.Assert(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
+
+            page.SetVScrollPos((int)pos);
         }
 
         private void SettingsForm_Load(object sender, EventArgs e)
@@ -335,6 +353,40 @@ namespace AngelLoader.Forms
                 OtherPage.ReadmeFixedWidthFontCheckBox.Checked = InConfig.ReadmeUseFixedWidthFont;
 
                 #endregion
+
+                #region Set page vertical scroll positions
+
+                // We have to show every page temporarily to get it to take its scroll position. Ugh.
+                try
+                {
+                    this.SuspendDrawing();
+
+                    for (var i = 0; i < Pages.Length; i++)
+                    {
+                        ShowPage(i);
+                        SetPageScrollPos(Pages[i]);
+                    }
+                }
+                finally
+                {
+                    this.ResumeDrawing();
+                }
+
+                #endregion
+            }
+
+            // Do this after everything else - now we're ready to show them with their proper scrolled position
+            if (PathsRadioButton.Checked)
+            {
+                ShowPage(Array.IndexOf(PageRadioButtons, PathsRadioButton));
+            }
+            else if (FMDisplayRadioButton.Checked)
+            {
+                ShowPage(Array.IndexOf(PageRadioButtons, FMDisplayRadioButton));
+            }
+            else if (OtherRadioButton.Checked)
+            {
+                ShowPage(Array.IndexOf(PageRadioButtons, OtherRadioButton));
             }
 
             SetUITextToLocalized();
@@ -495,6 +547,8 @@ namespace AngelLoader.Forms
 
         private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            #region Save window state
+
             // Special case: these are meta, so they should always be set even if the user clicked Cancel
             OutConfig.SettingsTab =
                 FMDisplayRadioButton.Checked ? SettingsTab.FMDisplay :
@@ -502,6 +556,12 @@ namespace AngelLoader.Forms
                 SettingsTab.Paths;
             OutConfig.SettingsWindowSize = Size;
             OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
+
+            OutConfig.SettingsPathsVScrollPos = PathsPage.PagePanel.VerticalScroll.Value;
+            OutConfig.SettingsFMDisplayVScrollPos = FMDisplayPage.PagePanel.VerticalScroll.Value;
+            OutConfig.SettingsOtherVScrollPos = OtherPage.PagePanel.VerticalScroll.Value;
+
+            #endregion
 
             if (DialogResult != DialogResult.OK)
             {
@@ -746,6 +806,8 @@ namespace AngelLoader.Forms
 
         private void PathsRadioButton_CheckedChanged(object sender, EventArgs e)
         {
+            if (EventsDisabled) return;
+
             var s = (RadioButtonCustom)sender;
             if (!s.Checked) return;
 
@@ -765,8 +827,8 @@ namespace AngelLoader.Forms
                 int pagesLength = Pages.Length;
                 if (index < 0 || index > pagesLength - 1) return;
 
-                Pages[index].Show();
-                for (int i = 0; i < pagesLength; i++) if (i != index) Pages[i].Hide();
+                Pages[index].ShowPage();
+                for (int i = 0; i < pagesLength; i++) if (i != index) Pages[i].HidePage();
             }
         }
 
