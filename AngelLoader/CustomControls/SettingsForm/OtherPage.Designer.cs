@@ -30,12 +30,14 @@
         {
             this.PagePanel = new System.Windows.Forms.Panel();
             this.ReadmeGroupBox = new System.Windows.Forms.GroupBox();
+            this.ReadmeFixedWidthFontCheckBox = new System.Windows.Forms.CheckBox();
             this.ShowOrHideUIElementsGroupBox = new System.Windows.Forms.GroupBox();
             this.HideFMListZoomButtonsCheckBox = new System.Windows.Forms.CheckBox();
             this.HideUninstallButtonCheckBox = new System.Windows.Forms.CheckBox();
             this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new System.Windows.Forms.CheckBox();
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
+            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
             this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.WebSearchTitleExplanationLabel = new System.Windows.Forms.Label();
@@ -51,8 +53,6 @@
             this.ConvertOGGsToWAVsOnInstallCheckBox = new System.Windows.Forms.CheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new System.Windows.Forms.CheckBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
-            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
-            this.ReadmeFixedWidthFontCheckBox = new System.Windows.Forms.CheckBox();
             this.PagePanel.SuspendLayout();
             this.ReadmeGroupBox.SuspendLayout();
             this.ShowOrHideUIElementsGroupBox.SuspendLayout();
@@ -82,6 +82,8 @@
             // 
             // ReadmeGroupBox
             // 
+            this.ReadmeGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeGroupBox.Controls.Add(this.ReadmeFixedWidthFontCheckBox);
             this.ReadmeGroupBox.Location = new System.Drawing.Point(8, 616);
             this.ReadmeGroupBox.Name = "ReadmeGroupBox";
@@ -89,6 +91,17 @@
             this.ReadmeGroupBox.TabIndex = 13;
             this.ReadmeGroupBox.TabStop = false;
             this.ReadmeGroupBox.Text = "Readme box";
+            // 
+            // ReadmeFixedWidthFontCheckBox
+            // 
+            this.ReadmeFixedWidthFontCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReadmeFixedWidthFontCheckBox.Location = new System.Drawing.Point(16, 24);
+            this.ReadmeFixedWidthFontCheckBox.Name = "ReadmeFixedWidthFontCheckBox";
+            this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(400, 32);
+            this.ReadmeFixedWidthFontCheckBox.TabIndex = 0;
+            this.ReadmeFixedWidthFontCheckBox.Text = "Use a fixed-width font when displaying plain text";
+            this.ReadmeFixedWidthFontCheckBox.UseVisualStyleBackColor = true;
             // 
             // ShowOrHideUIElementsGroupBox
             // 
@@ -163,6 +176,15 @@
             this.LanguageGroupBox.TabIndex = 0;
             this.LanguageGroupBox.TabStop = false;
             this.LanguageGroupBox.Text = "Language";
+            // 
+            // LanguageComboBox
+            // 
+            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.LanguageComboBox.FormattingEnabled = true;
+            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
+            this.LanguageComboBox.Name = "LanguageComboBox";
+            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
+            this.LanguageComboBox.TabIndex = 0;
             // 
             // WebSearchGroupBox
             // 
@@ -313,7 +335,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ConvertOGGsToWAVsOnInstallCheckBox.Location = new System.Drawing.Point(16, 44);
             this.ConvertOGGsToWAVsOnInstallCheckBox.Name = "ConvertOGGsToWAVsOnInstallCheckBox";
-            this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(408, 32);
+            this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
             this.ConvertOGGsToWAVsOnInstallCheckBox.TabIndex = 1;
             this.ConvertOGGsToWAVsOnInstallCheckBox.Text = "Convert .oggs to .wavs on install";
             this.ConvertOGGsToWAVsOnInstallCheckBox.UseVisualStyleBackColor = true;
@@ -326,7 +348,7 @@
             this.ConvertWAVsTo16BitOnInstallCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ConvertWAVsTo16BitOnInstallCheckBox.Location = new System.Drawing.Point(16, 16);
             this.ConvertWAVsTo16BitOnInstallCheckBox.Name = "ConvertWAVsTo16BitOnInstallCheckBox";
-            this.ConvertWAVsTo16BitOnInstallCheckBox.Size = new System.Drawing.Size(408, 32);
+            this.ConvertWAVsTo16BitOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
             this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
             this.ConvertWAVsTo16BitOnInstallCheckBox.Text = "Convert .wavs to 16 bit on install";
             this.ConvertWAVsTo16BitOnInstallCheckBox.UseVisualStyleBackColor = true;
@@ -337,26 +359,6 @@
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
             this.DummyAutoScrollPanel.TabIndex = 12;
-            // 
-            // LanguageComboBox
-            // 
-            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.LanguageComboBox.FormattingEnabled = true;
-            this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
-            this.LanguageComboBox.Name = "LanguageComboBox";
-            this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
-            this.LanguageComboBox.TabIndex = 0;
-            // 
-            // ReadmeFixedWidthFontCheckBox
-            // 
-            this.ReadmeFixedWidthFontCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ReadmeFixedWidthFontCheckBox.Location = new System.Drawing.Point(16, 24);
-            this.ReadmeFixedWidthFontCheckBox.Name = "ReadmeFixedWidthFontCheckBox";
-            this.ReadmeFixedWidthFontCheckBox.Size = new System.Drawing.Size(400, 32);
-            this.ReadmeFixedWidthFontCheckBox.TabIndex = 0;
-            this.ReadmeFixedWidthFontCheckBox.Text = "Use a fixed-width font when displaying plain text";
-            this.ReadmeFixedWidthFontCheckBox.UseVisualStyleBackColor = true;
             // 
             // OtherPage
             // 
