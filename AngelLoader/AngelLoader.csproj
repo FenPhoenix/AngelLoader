@@ -498,10 +498,10 @@ xcopy "$(TargetDir)ffmpeg.txt" %25destDir%25 /y
 
 xcopy "$(TargetDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
 
-if $(ConfigurationName) != Release_Public(
-xcopy "$(ProjectDir)Languages" "%25destDir%25Data\Languages\" /y /i /e
-) else (
+if $(ConfigurationName) == Release_Public (
 xcopy "$(ProjectDir)Languages\English.ini" "%25destDir%25Data\Languages\" /y
+) else (
+xcopy "$(ProjectDir)Languages" "%25destDir%25Data\Languages\" /y /i /e
 )
 
 xcopy "$(SolutionDir)BinReleaseOnly" "%25destDir%25" /y /i /e
