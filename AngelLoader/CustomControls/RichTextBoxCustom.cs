@@ -572,7 +572,7 @@ namespace AngelLoader.CustomControls
             var enlink = (ENLINK)m.GetLParam(typeof(ENLINK));
             /*
             NOTE:
-            IF building for x64, then we have to do this instead (requires unsafe code and extra structs etc.):
+            If building for x64, then we have to do this instead (requires unsafe code and extra structs etc.):
 
             if (IntPtr.Size == 8)
             {
