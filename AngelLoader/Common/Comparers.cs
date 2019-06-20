@@ -101,8 +101,8 @@ namespace AngelLoader.Common
             int ret =
                 x == null || y == null ? 0 :
                 x.Game == y.Game ? TitleCompare(x, y) :
-                x.Game == null ? -1 :
-                y.Game == null ? 1 :
+                x.Game == Game.Null ? -1 :
+                y.Game == Game.Null ? 1 :
                 x.Game < y.Game ? -1 : 1;
 
             return _sortOrder == SortOrder.Ascending ? ret : -ret;

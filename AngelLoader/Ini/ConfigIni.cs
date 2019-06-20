@@ -285,13 +285,13 @@ namespace AngelLoader.Ini
                         switch (game.Trim())
                         {
                             case nameof(Game.Thief1):
-                                config.Filter.Games.Add(Game.Thief1);
+                                config.Filter.Games |= Game.Thief1;
                                 break;
                             case nameof(Game.Thief2):
-                                config.Filter.Games.Add(Game.Thief2);
+                                config.Filter.Games |= Game.Thief2;
                                 break;
                             case nameof(Game.Thief3):
-                                config.Filter.Games.Add(Game.Thief3);
+                                config.Filter.Games |= Game.Thief3;
                                 break;
                         }
                     }
@@ -801,6 +801,33 @@ namespace AngelLoader.Ini
                 return ret;
             }
 
+            string commaCombineGameFlags(Game games)
+            {
+                var ret = "";
+
+                // Hmm... doesn't make for good code, but fast...
+                bool notEmpty = false;
+
+                if ((games & Game.Thief1) == Game.Thief1)
+                {
+                    ret += nameof(Game.Thief1);
+                    notEmpty = true;
+                }
+                if ((games & Game.Thief2) == Game.Thief2)
+                {
+                    if (notEmpty) ret += ",";
+                    ret += nameof(Game.Thief2);
+                    notEmpty = true;
+                }
+                if ((games & Game.Thief3) == Game.Thief3)
+                {
+                    if (notEmpty) ret += ",";
+                    ret += nameof(Game.Thief3);
+                }
+                
+                return ret;
+            }
+
             StreamWriter sw = null;
             try
             {
@@ -877,7 +904,7 @@ namespace AngelLoader.Ini
                         config.GameTabsState.T3Filter;
                     var p = fi == 0 ? "" : fi == 1 ? "T1" : fi == 2 ? "T2" : "T3";
 
-                    if (fi == 0) sw.WriteLine("FilterGames=" + commaCombine(config.Filter.Games));
+                    if (fi == 0) sw.WriteLine("FilterGames=" + commaCombineGameFlags(config.Filter.Games));
 
                     sw.WriteLine(p + "FilterTitle=" + filter.Title);
                     sw.WriteLine(p + "FilterAuthor=" + filter.Author);

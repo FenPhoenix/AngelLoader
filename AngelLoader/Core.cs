@@ -360,7 +360,7 @@ namespace AngelLoader
                     Config.ClearAllFilters();
                     Config.GameTab = Game.Thief1;
                     await View.ClearAllUIAndInternalFilters();
-                    if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games.Add(Game.Thief1);
+                    if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                     View.ChangeGameOrganization();
                 }
                 if (ratingDisplayStyleChanged)
@@ -719,6 +719,8 @@ namespace AngelLoader
                     }
                 }
 
+                if (fmsToScanFiltered.Count == 0) return false;
+
                 #endregion
 
                 #region Run scanner
@@ -839,7 +841,7 @@ namespace AngelLoader
                             scannedFM.Game == Games.TDP ? Game.Thief1 :
                             scannedFM.Game == Games.TMA ? Game.Thief2 :
                             scannedFM.Game == Games.TDS ? Game.Thief3 :
-                            (Game?)null;
+                            Game.Null;
                     }
 
                     if (overwriteUnscannedFields || scanOptions.ScanLanguages)
@@ -924,7 +926,7 @@ namespace AngelLoader
             }
             else
             {
-                foreach (var fm in FMsViewList) if (fm.Game == null) fmsToScan.Add(fm);
+                foreach (var fm in FMsViewList) if (fm.Game == Game.Null) fmsToScan.Add(fm);
             }
 
             if (fmsToScan.Count > 0)

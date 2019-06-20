@@ -41,7 +41,7 @@ namespace AngelLoader.Common.DataClasses
 
     #endregion
 
-    internal enum Game { Thief1, Thief2, Thief3, Unsupported }
+    [Flags] internal enum Game : uint { Null = 0, Thief1 = 1, Thief2 = 2, Thief3 = 4, Unsupported = 8 }
 
     internal enum GameOrganization { ByTab, OneList }
 
@@ -142,7 +142,7 @@ namespace AngelLoader.Common.DataClasses
         {
             Title = "";
             Author = "";
-            if (clearGames) Games.Clear();
+            if (clearGames) Games = Game.Null;
             Tags.Clear();
             RatingFrom = -1;
             RatingTo = 10;
@@ -158,7 +158,7 @@ namespace AngelLoader.Common.DataClasses
         {
             return Title.IsWhiteSpace() &&
                    Author.IsWhiteSpace() &&
-                   Games.Count == 0 &&
+                   Games == Game.Null &&
                    Tags.IsEmpty() &&
                    ReleaseDateFrom == null &&
                    ReleaseDateTo == null &&
@@ -172,7 +172,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal string Title = "";
         internal string Author = "";
-        internal List<Game> Games = new List<Game>();
+        internal Game Games = Game.Null;
         internal TagsFilter Tags = new TagsFilter();
 
         #region Rating
@@ -286,7 +286,7 @@ namespace AngelLoader.Common.DataClasses
             dest.SetLastPlayedFromAndTo(lpFrom, lpTo);
 
             foreach (var finished in Finished) dest.Finished.Add(finished);
-            foreach (var game in Games) dest.Games.Add(game);
+            dest.Games = Games;
             Tags.DeepCopyTo(dest.Tags);
         }
     }

@@ -176,7 +176,7 @@ namespace AngelLoader.Common.Utility
             return "";
         }
 
-        internal static string GetFMInstallsBasePath(Game? game)
+        internal static string GetFMInstallsBasePath(Game game)
         {
             var thisFMInstallsBasePath =
                 game == Game.Thief1 ? Config.T1FMInstallPath :
@@ -267,11 +267,11 @@ namespace AngelLoader.Common.Utility
 
         internal static bool GameIsDark(FanMission fm) => fm.Game == Game.Thief1 || fm.Game == Game.Thief2;
 
-        internal static bool GameIsDark(Game? game) => game == Game.Thief1 || game == Game.Thief2;
+        internal static bool GameIsDark(Game game) => game == Game.Thief1 || game == Game.Thief2;
 
-        internal static bool GameIsKnownAndSupported(FanMission fm) => fm.Game != null && fm.Game != Game.Unsupported;
+        internal static bool GameIsKnownAndSupported(FanMission fm) => fm.Game != Game.Null && fm.Game != Game.Unsupported;
 
-        internal static bool GameIsKnownAndSupported(Game? game) => game != null && game != Game.Unsupported;
+        internal static bool GameIsKnownAndSupported(Game game) => game != Game.Null && game != Game.Unsupported;
 
         #region Tags
 

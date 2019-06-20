@@ -1048,7 +1048,7 @@ namespace AngelLoader.Forms
             else // ByTab
             {
                 // In case they don't match
-                Config.Filter.Games.ClearAndAdd(Config.GameTab);
+                Config.Filter.Games = Config.GameTab;
 
                 PositionFilterBarAfterTabs();
 
@@ -1084,9 +1084,9 @@ namespace AngelLoader.Forms
             }
 
             // Do these even if we're not in startup, because we may have changed the game organization mode
-            FilterByThief1Button.Checked = Config.Filter.Games.Contains(Game.Thief1);
-            FilterByThief2Button.Checked = Config.Filter.Games.Contains(Game.Thief2);
-            FilterByThief3Button.Checked = Config.Filter.Games.Contains(Game.Thief3);
+            FilterByThief1Button.Checked = (Config.Filter.Games & Game.Thief1) == Game.Thief1;
+            FilterByThief2Button.Checked = (Config.Filter.Games & Game.Thief2) == Game.Thief2;
+            FilterByThief3Button.Checked = (Config.Filter.Games & Game.Thief3) == Game.Thief3;
         }
 
         private void UpdateConfig()
@@ -1410,10 +1410,10 @@ namespace AngelLoader.Forms
             FMsDGV.Filter.Title = FilterTitleTextBox.Text;
             FMsDGV.Filter.Author = FilterAuthorTextBox.Text;
 
-            FMsDGV.Filter.Games.Clear();
-            if (FilterByThief1Button.Checked) FMsDGV.Filter.Games.Add(Game.Thief1);
-            if (FilterByThief2Button.Checked) FMsDGV.Filter.Games.Add(Game.Thief2);
-            if (FilterByThief3Button.Checked) FMsDGV.Filter.Games.Add(Game.Thief3);
+            FMsDGV.Filter.Games = Game.Null;
+            if (FilterByThief1Button.Checked) FMsDGV.Filter.Games |= Game.Thief1;
+            if (FilterByThief2Button.Checked) FMsDGV.Filter.Games |= Game.Thief2;
+            if (FilterByThief3Button.Checked) FMsDGV.Filter.Games |= Game.Thief3;
 
             FMsDGV.Filter.Finished.Clear();
             if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Finished);
@@ -1439,7 +1439,7 @@ namespace AngelLoader.Forms
 
             if (titleIsWhitespace &&
                 FMsDGV.Filter.Author.IsWhiteSpace() &&
-                FMsDGV.Filter.Games.Count == 0 &&
+                FMsDGV.Filter.Games == Game.Null &&
                 FMsDGV.Filter.Tags.IsEmpty() &&
                 FMsDGV.Filter.ReleaseDateFrom == null &&
                 FMsDGV.Filter.ReleaseDateTo == null &&
@@ -1520,12 +1520,12 @@ namespace AngelLoader.Forms
 
             #region Games
 
-            if (FMsDGV.Filter.Games.Count > 0)
+            if (FMsDGV.Filter.Games > Game.Null)
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
                     var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (GameIsKnownAndSupported(fm) && !FMsDGV.Filter.Games.Contains((Game)fm.Game))
+                    if (GameIsKnownAndSupported(fm) && (FMsDGV.Filter.Games & fm.Game) != fm.Game)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2518,7 +2518,7 @@ namespace AngelLoader.Forms
         {
             var fm = GetSelectedFM();
 
-            if (fm.Game == null || (GameIsKnownAndSupported(fm) && !fm.MarkedScanned))
+            if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm) && !fm.MarkedScanned))
             {
                 using (new DisableKeyPresses(this))
                 {

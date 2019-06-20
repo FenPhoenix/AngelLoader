@@ -344,8 +344,15 @@ namespace AngelLoader
 
         private static string GetArchiveNameFromInstalledDir(List<FanMission> fmDataIniList, FanMission fm, List<string> archives)
         {
-            // The game type is supposed to be inferred from the installed location, so it should always be known
-            Debug.Assert(fm.Game != null, "fm.Game == null: Game type is blank for an installed FM?!");
+            // The game type is supposed to be inferred from the installed location, but it could be unknown in
+            // the following scenario:
+            // -An FM is in the ini list which has an installed folder but no archive name, the game type has been
+            // removed from the FM, and the FM no longer exists in any game's installed folder (so its game type
+            // can't be inferred). Very rare and unlikely, but I came across it recently, so removing the assert
+            // and just returning null here.
+            // Note: It looks like this is handled below with a return on empty anyway, so in release mode there's
+            // no bug. But we're more explicit now.
+            if (fm.Game == Game.Null) return null;
 
             var gamePath =
                 fm.Game == Game.Thief1 ? Config.T1FMInstallPath :
@@ -470,7 +477,7 @@ namespace AngelLoader
                 #endregion
 
                 // Perf so we don't have to iterate the list again later
-                if (item.Game == null) Core.ViewListGamesNull.Add(i);
+                if (item.Game == Game.Null) Core.ViewListGamesNull.Add(i);
 
                 item.Title =
                     !item.Title.IsEmpty() ? item.Title :

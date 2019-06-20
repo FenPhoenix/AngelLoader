@@ -35,7 +35,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal string Author = "";
 
-        internal Game? Game;
+        internal Game Game = Game.Null;
 
         internal bool Installed;
 

@@ -78,7 +78,7 @@ namespace AngelLoader
 
         private static bool PlayFM(FanMission fm, bool playMP = false)
         {
-            if (fm.Game == null)
+            if (fm.Game == Game.Null)
             {
                 Core.View.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
@@ -127,7 +127,7 @@ namespace AngelLoader
 
             if (!GameIsDark(fm)) return false;
 
-            if (fm.Game == null)
+            if (fm.Game == Game.Null)
             {
                 Core.View.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
@@ -183,11 +183,11 @@ namespace AngelLoader
         }
 
         private static (bool Success, string gameExe, string gamePath)
-        GetGameExeAndPath(Game? game, string exeNotFoundMessage, bool playMP = false)
+        GetGameExeAndPath(Game game, string exeNotFoundMessage, bool playMP = false)
         {
             (bool, string, string) failed = (false, null, null);
 
-            if (game == null) return failed;
+            if (game == Game.Null) return failed;
 
             var gameExe = GetGameExeFromGameType((Game)game);
 
@@ -419,7 +419,7 @@ namespace AngelLoader
         {
             Debug.Assert(!fm.Installed, "!fm.Installed");
 
-            if (fm.Game == null)
+            if (fm.Game == Game.Null)
             {
                 Core.View.ShowAlert(LText.AlertMessages.Install_UnknownGameType, LText.AlertMessages.Alert);
                 return false;

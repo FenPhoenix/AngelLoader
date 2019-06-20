@@ -96,7 +96,7 @@ namespace AngelLoader.Ini
                     }
                     else
                     {
-                        fm.Game = null;
+                        fm.Game = Game.Null;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("Installed="))
@@ -322,7 +322,7 @@ namespace AngelLoader.Ini
                     {
                         sw.WriteLine("Author=" + fm.Author);
                     }
-                    if (fm.Game != null)
+                    if (fm.Game != Game.Null)
                     {
                         sw.WriteLine("Game=" + fm.Game.ToString());
                     }
