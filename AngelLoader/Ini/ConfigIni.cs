@@ -122,10 +122,10 @@ namespace AngelLoader.Ini
                 switch (finishedState.Trim())
                 {
                     case nameof(FinishedState.Finished):
-                        filter.Finished.Add(FinishedState.Finished);
+                        filter.Finished |= FinishedState.Finished;
                         break;
                     case nameof(FinishedState.Unfinished):
-                        filter.Finished.Add(FinishedState.Unfinished);
+                        filter.Finished |= FinishedState.Unfinished;
                         break;
                 }
             }
@@ -801,6 +801,10 @@ namespace AngelLoader.Ini
                 return ret;
             }
 
+            #region Enum-specific commaCombine() methods
+
+            // TODO: Figure out a better way to be fast without this dopey manual code. Code generation?
+
             string commaCombineGameFlags(Game games)
             {
                 var ret = "";
@@ -824,9 +828,31 @@ namespace AngelLoader.Ini
                     if (notEmpty) ret += ",";
                     ret += nameof(Game.Thief3);
                 }
-                
+
                 return ret;
             }
+
+            string commaCombineFinishedStates(FinishedState finished)
+            {
+                var ret = "";
+
+                bool notEmpty = false;
+
+                if ((finished & FinishedState.Finished) == FinishedState.Finished)
+                {
+                    ret += nameof(FinishedState.Finished);
+                    notEmpty = true;
+                }
+                if ((finished & FinishedState.Unfinished) == FinishedState.Unfinished)
+                {
+                    if (notEmpty) ret += ",";
+                    ret += nameof(FinishedState.Unfinished);
+                }
+
+                return ret;
+            }
+
+            #endregion
 
             StreamWriter sw = null;
             try
@@ -915,7 +941,7 @@ namespace AngelLoader.Ini
                     sw.WriteLine(p + "FilterLastPlayedFrom=" + FilterDate(filter.LastPlayedFrom));
                     sw.WriteLine(p + "FilterLastPlayedTo=" + FilterDate(filter.LastPlayedTo));
 
-                    sw.WriteLine(p + "FilterFinishedStates=" + commaCombine(filter.Finished));
+                    sw.WriteLine(p + "FilterFinishedStates=" + commaCombineFinishedStates(filter.Finished));
 
                     sw.WriteLine(p + "FilterRatingFrom=" + filter.RatingFrom);
                     sw.WriteLine(p + "FilterRatingTo=" + filter.RatingTo);

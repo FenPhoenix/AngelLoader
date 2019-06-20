@@ -992,8 +992,8 @@ namespace AngelLoader.Forms
 
                     FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
 
-                    FilterByFinishedButton.Checked = filter.Finished.Contains(FinishedState.Finished);
-                    FilterByUnfinishedButton.Checked = filter.Finished.Contains(FinishedState.Unfinished);
+                    FilterByFinishedButton.Checked = (filter.Finished & FinishedState.Finished) == FinishedState.Finished;
+                    FilterByUnfinishedButton.Checked = (filter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished;
 
                     FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
                     UpdateRatingLabel(suspendResume: false);
@@ -1415,9 +1415,9 @@ namespace AngelLoader.Forms
             if (FilterByThief2Button.Checked) FMsDGV.Filter.Games |= Game.Thief2;
             if (FilterByThief3Button.Checked) FMsDGV.Filter.Games |= Game.Thief3;
 
-            FMsDGV.Filter.Finished.Clear();
-            if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Finished);
-            if (FilterByUnfinishedButton.Checked) FMsDGV.Filter.Finished.Add(FinishedState.Unfinished);
+            FMsDGV.Filter.Finished = FinishedState.Null;
+            if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Finished;
+            if (FilterByUnfinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Unfinished;
 
             FMsDGV.Filter.ShowJunk = FilterShowUnsupportedButton.Checked;
 
@@ -1447,9 +1447,9 @@ namespace AngelLoader.Forms
                 FMsDGV.Filter.LastPlayedTo == null &&
                 FMsDGV.Filter.RatingFrom == -1 &&
                 FMsDGV.Filter.RatingTo == 10 &&
-                (FMsDGV.Filter.Finished.Count == 0 ||
-                 (FMsDGV.Filter.Finished.Contains(FinishedState.Finished)
-                  && FMsDGV.Filter.Finished.Contains(FinishedState.Unfinished))) &&
+                (FMsDGV.Filter.Finished == FinishedState.Null ||
+                 ((FMsDGV.Filter.Finished & FinishedState.Finished) == FinishedState.Finished &&
+                 (FMsDGV.Filter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished)) &&
                 FMsDGV.Filter.ShowJunk)
             {
                 FMsDGV.Filtered = false;
@@ -1753,7 +1753,7 @@ namespace AngelLoader.Forms
 
             #region Finished
 
-            if (FMsDGV.Filter.Finished.Count > 0)
+            if (FMsDGV.Filter.Finished > FinishedState.Null)
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
@@ -1761,8 +1761,8 @@ namespace AngelLoader.Forms
                     var fmFinished = fm.FinishedOn;
                     var fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
-                    if (((fmFinished > 0 || fmFinishedOnUnknown) && !FMsDGV.Filter.Finished.Contains(FinishedState.Finished)) ||
-                       ((fmFinished <= 0 && !fmFinishedOnUnknown) && !FMsDGV.Filter.Finished.Contains(FinishedState.Unfinished)))
+                    if (((fmFinished > 0 || fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
+                        ((fmFinished <= 0 && !fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;

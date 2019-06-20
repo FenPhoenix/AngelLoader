@@ -50,7 +50,7 @@ namespace AngelLoader.Common.DataClasses
 
     internal enum DateFormat { CurrentCultureShort, CurrentCultureLong, Custom }
 
-    internal enum FinishedState { Finished, Unfinished }
+    [Flags] internal enum FinishedState : uint { Null = 0, Finished = 1, Unfinished = 2 }
 
     [Flags] internal enum FinishedOn { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
@@ -150,7 +150,7 @@ namespace AngelLoader.Common.DataClasses
             ReleaseDateTo = null;
             LastPlayedFrom = null;
             LastPlayedTo = null;
-            Finished.Clear();
+            Finished = FinishedState.Null;
             ShowJunk = false;
         }
 
@@ -166,7 +166,7 @@ namespace AngelLoader.Common.DataClasses
                    LastPlayedTo == null &&
                    RatingFrom == -1 &&
                    RatingTo == 10 &&
-                   Finished.Count == 0 &&
+                   Finished == FinishedState.Null &&
                    ShowJunk;
         }
 
@@ -251,7 +251,7 @@ namespace AngelLoader.Common.DataClasses
 
         #endregion
 
-        internal List<FinishedState> Finished = new List<FinishedState>();
+        internal FinishedState Finished = FinishedState.Null;
 
         internal bool ShowJunk;
 
@@ -285,7 +285,7 @@ namespace AngelLoader.Common.DataClasses
 
             dest.SetLastPlayedFromAndTo(lpFrom, lpTo);
 
-            foreach (var finished in Finished) dest.Finished.Add(finished);
+            dest.Finished = Finished;
             dest.Games = Games;
             Tags.DeepCopyTo(dest.Tags);
         }
