@@ -1064,10 +1064,10 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsDark(fm)) return;
 
-            Debug.Assert(fm.Game != null, "fm.Game != null");
+            Debug.Assert(fm.Game != Game.Null, "fm.Game is Game.Null");
 
-            var gameExe = GetGameExeFromGameType((Game)fm.Game);
-            var gameName = GetGameNameFromGameType((Game)fm.Game);
+            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
                 View.ShowAlert(
@@ -1108,10 +1108,10 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsDark(fm)) return;
 
-            Debug.Assert(fm.Game != null, "fm.Game != null");
+            Debug.Assert(fm.Game != Game.Null, "fm.Game is Game.Null");
 
-            var gameExe = GetGameExeFromGameType((Game)fm.Game);
-            var gameName = GetGameNameFromGameType((Game)fm.Game);
+            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
                 View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,

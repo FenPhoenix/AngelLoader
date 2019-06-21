@@ -88,7 +88,7 @@ namespace AngelLoader
                 GetGameExeAndPath(fm.Game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
             if (!success) return false;
 
-            SetUsAsSelector((Game)fm.Game, gameExe, gamePath);
+            SetUsAsSelector(fm.Game, gameExe, gamePath);
 
             // Only use the stub if we need to pass something we can't pass on the command line
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
@@ -133,14 +133,14 @@ namespace AngelLoader
                 return false;
             }
 
-            var gameExe = GetGameExeFromGameType((Game)fm.Game);
+            var gameExe = GetGameExeFromGameType(fm.Game);
             if (gameExe.IsEmpty())
             {
                 Log("gameExe is empty for " + fm.Game, stackTrace: true);
                 return false;
             }
 
-            var dromedExe = GetDromEdExe((Game)fm.Game);
+            var dromedExe = GetDromEdExe(fm.Game);
             if (dromedExe.IsEmpty())
             {
                 Core.View.ShowAlert(LText.AlertMessages.DromEd_ExecutableNotFound, LText.AlertMessages.Alert);
@@ -152,7 +152,7 @@ namespace AngelLoader
 
             #endregion
 
-            SetUsAsSelector((Game)fm.Game, gameExe, gamePath);
+            SetUsAsSelector(fm.Game, gameExe, gamePath);
 
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
             StartExe(dromedExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
@@ -189,11 +189,11 @@ namespace AngelLoader
 
             if (game == Game.Null) return failed;
 
-            var gameExe = GetGameExeFromGameType((Game)game);
+            var gameExe = GetGameExeFromGameType(game);
 
             #region Exe: Fail if blank or not found
 
-            var gameName = GetGameNameFromGameType((Game)game);
+            var gameName = GetGameNameFromGameType(game);
 
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
@@ -441,8 +441,8 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var gameExe = GetGameExeFromGameType((Game)fm.Game);
-            var gameName = GetGameNameFromGameType((Game)fm.Game);
+            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameName = GetGameNameFromGameType(fm.Game);
             if (!File.Exists(gameExe))
             {
                 Core.View.ShowAlert(gameName + ":\r\n" +
@@ -686,7 +686,7 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm)) return;
 
-            Debug.Assert(fm.Game != null, "fm.Game != null");
+            Debug.Assert(fm.Game != Game.Null, "fm.Game is Game.Null");
 
             if (Config.ConfirmUninstall)
             {
@@ -700,8 +700,8 @@ namespace AngelLoader
                 Config.ConfirmUninstall = !dontAskAgain;
             }
 
-            var gameExe = GetGameExeFromGameType((Game)fm.Game);
-            var gameName = GetGameNameFromGameType((Game)fm.Game);
+            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
                 Core.View.ShowAlert(
