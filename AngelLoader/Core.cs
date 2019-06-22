@@ -1707,19 +1707,29 @@ namespace AngelLoader
             Config.ReadmeZoomFactor = readmeZoomFactor;
         }
 
-        private static readonly ReaderWriterLockSlim ReadWriteLock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim FMDataIniRWLock = new ReaderWriterLockSlim();
 
         internal static void WriteFullFMDataIni()
         {
             try
             {
-                ReadWriteLock.EnterWriteLock();
+                FMDataIniRWLock.EnterWriteLock();
                 WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
-                ReadWriteLock.ExitWriteLock();
             }
             catch (Exception ex)
             {
                 Log("Exception writing FM data ini", ex);
+            }
+            finally
+            {
+                try
+                {
+                    FMDataIniRWLock.ExitWriteLock();
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception exiting " + nameof(FMDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
+                }
             }
         }
 

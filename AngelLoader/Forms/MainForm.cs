@@ -138,7 +138,7 @@ namespace AngelLoader.Forms
         {
             if (_repeatButtonRunning) return;
             int direction = sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
-            InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+            InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
         }
 
         private void FilterBarScrollButtons_MouseDown(object sender, MouseEventArgs e)
@@ -157,7 +157,7 @@ namespace AngelLoader.Forms
                 {
                     Invoke(new Action(() =>
                     {
-                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
                     }));
                     Thread.Sleep(150);
                 }
@@ -198,20 +198,20 @@ namespace AngelLoader.Forms
 
                 int wParam = (int)m.WParam;
                 int delta = wParam >> 16;
-                if (CanFocus && CursorOverControl(FiltersFlowLayoutPanel) && !CursorOverControl(FMsDGV))
+                if (CanFocus && CursorOverControl(FilterBarFLP) && !CursorOverControl(FMsDGV))
                 {
                     // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing
                     // and disappearing as appropriate
                     if (delta != 0)
                     {
                         int direction = delta > 0 ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
-                        int origSmallChange = FiltersFlowLayoutPanel.HorizontalScroll.SmallChange;
+                        int origSmallChange = FilterBarFLP.HorizontalScroll.SmallChange;
 
-                        FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = 45;
+                        FilterBarFLP.HorizontalScroll.SmallChange = 45;
 
-                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
 
-                        FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = origSmallChange;
+                        FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                     }
                 }
                 else if (CanFocus && CursorOverControl(FMsDGV) && (wParam & 0xFFFF) == InteropMisc.MK_CONTROL)
@@ -402,7 +402,7 @@ namespace AngelLoader.Forms
 
             #region Filters
 
-            FiltersFlowLayoutPanel.HorizontalScroll.SmallChange = 20;
+            FilterBarFLP.HorizontalScroll.SmallChange = 20;
 
             // Set these to invisible here, because if you do it on the UI, it constantly marks the form file as
             // unsaved every time you open it even though no changes were made. Aggravating as hell. ToolStrips
@@ -983,7 +983,7 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                FiltersFlowLayoutPanel.SuspendDrawing();
+                FilterBarFLP.SuspendDrawing();
                 try
                 {
                     FilterTitleTextBox.Text = filter.Title;
@@ -1006,7 +1006,7 @@ namespace AngelLoader.Forms
                 }
                 finally
                 {
-                    FiltersFlowLayoutPanel.ResumeDrawing();
+                    FilterBarFLP.ResumeDrawing();
                 }
             }
         }
@@ -1017,19 +1017,20 @@ namespace AngelLoader.Forms
 
         private void PositionFilterBarAfterTabs()
         {
-            int FilterBarAfterTabsX()
+            int FilterBarAfterTabsX;
+            // In case I decide to allow a variable number of tabs based on which games are defined
+            if (GamesTabControl.TabCount == 0)
             {
-                // In case I decide to allow a variable number of tabs based on which games are defined
-                if (GamesTabControl.TabCount == 0) return 0;
-
+                FilterBarAfterTabsX = 0;
+            }
+            else
+            {
                 var lastRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
-                return lastRect.X + lastRect.Width + 5;
+                FilterBarAfterTabsX = lastRect.X + lastRect.Width + 5;
             }
 
-            FiltersFlowLayoutPanel.Location =
-                new Point(FilterBarAfterTabsX(), FiltersFlowLayoutPanel.Location.Y);
-            FiltersFlowLayoutPanel.Width =
-                (RefreshClearToolStripCustom.Location.X - 4) - FiltersFlowLayoutPanel.Location.X;
+            FilterBarFLP.Location = new Point(FilterBarAfterTabsX, FilterBarFLP.Location.Y);
+            FilterBarFLP.Width = (RefreshClearToolStripCustom.Location.X - 4) - FilterBarFLP.Location.X;
         }
 
         public void ChangeGameOrganization()
@@ -1038,9 +1039,10 @@ namespace AngelLoader.Forms
             {
                 FilterGamesLeftSepToolStripCustom.Hide();
                 GamesTabControl.Hide();
-                var plusWidth = FiltersFlowLayoutPanel.Location.X;
-                FiltersFlowLayoutPanel.Location = new Point(0, FiltersFlowLayoutPanel.Location.Y);
-                FiltersFlowLayoutPanel.Width += plusWidth;
+                // Don't inline this var - it stores the X value to persist it through a change
+                var plusWidth = FilterBarFLP.Location.X;
+                FilterBarFLP.Location = new Point(0, FilterBarFLP.Location.Y);
+                FilterBarFLP.Width += plusWidth;
                 FilterGameButtonsToolStrip.Show();
 
                 Config.SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
@@ -1110,8 +1112,7 @@ namespace AngelLoader.Forms
 
             var topRightTabs = new TopRightTabsData
             {
-                SelectedTab =
-                    (TopRightTab)Array.IndexOf(TopRightTabsInEnumOrder, TopRightTabControl.SelectedTab)
+                SelectedTab = (TopRightTab)Array.IndexOf(TopRightTabsInEnumOrder, TopRightTabControl.SelectedTab)
             };
 
             for (int i = 0; i < TopRightTabsCount; i++)
@@ -2194,7 +2195,7 @@ namespace AngelLoader.Forms
             FMsListZoomInButton.Visible = visible;
             FMsListZoomOutButton.Visible = visible;
             FMsListResetZoomButton.Visible = visible;
-            FiltersFlowLayoutPanel.Width = (RefreshClearToolStripCustom.Location.X - 4) - FiltersFlowLayoutPanel.Location.X;
+            FilterBarFLP.Width = (RefreshClearToolStripCustom.Location.X - 4) - FilterBarFLP.Location.X;
         }
 
         public void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup)
@@ -3482,7 +3483,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                int at = 1;
+                uint at = 1;
                 foreach (ToolStripMenuItem item in FinishedOnMenu.Items)
                 {
                     if (item == FinishedOnUnknownMenuItem) continue;
@@ -3532,7 +3533,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            var flp = FiltersFlowLayoutPanel;
+            var flp = FilterBarFLP;
             void ShowLeft()
             {
                 FilterBarScrollLeftButton.Location = new Point(flp.Location.X, flp.Location.Y + 1);
@@ -3549,7 +3550,7 @@ namespace AngelLoader.Forms
                 FilterBarScrollRightButton.Show();
             }
 
-            var hs = FiltersFlowLayoutPanel.HorizontalScroll;
+            var hs = FilterBarFLP.HorizontalScroll;
             if (!hs.Visible)
             {
                 FilterBarScrollLeftButton.Hide();
@@ -3568,7 +3569,7 @@ namespace AngelLoader.Forms
                     // WinForms? Argh!
                     for (int i = 0; i < 8; i++)
                     {
-                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINELEFT, IntPtr.Zero);
+                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINELEFT, IntPtr.Zero);
                     }
                 }
             }
@@ -3581,7 +3582,7 @@ namespace AngelLoader.Forms
                     // Ditto the above
                     for (int i = 0; i < 8; i++)
                     {
-                        InteropMisc.SendMessage(FiltersFlowLayoutPanel.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINERIGHT, IntPtr.Zero);
+                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)InteropMisc.SB_LINERIGHT, IntPtr.Zero);
                     }
                 }
             }
@@ -3615,7 +3616,7 @@ namespace AngelLoader.Forms
 
             using (var f = new FilterDateForm(title, fromDate, toDate))
             {
-                f.Location = FiltersFlowLayoutPanel.PointToScreen(new Point(
+                f.Location = FilterBarFLP.PointToScreen(new Point(
                     FilterIconButtonsToolStripCustom.Location.X + button.Bounds.X,
                     FilterIconButtonsToolStripCustom.Location.Y + button.Bounds.Y + button.Height));
 
@@ -3646,7 +3647,7 @@ namespace AngelLoader.Forms
 
             // Normally you can see the re-layout kind of "sequentially happen", this stops that and makes it
             // snappy
-            if (suspendResume) FiltersFlowLayoutPanel.SuspendDrawing();
+            if (suspendResume) FilterBarFLP.SuspendDrawing();
             try
             {
                 if (button.Checked)
@@ -3663,7 +3664,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (suspendResume) FiltersFlowLayoutPanel.ResumeDrawing();
+                if (suspendResume) FilterBarFLP.ResumeDrawing();
             }
         }
 
@@ -3673,7 +3674,7 @@ namespace AngelLoader.Forms
             using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
             {
                 f.Location =
-                    FiltersFlowLayoutPanel.PointToScreen(new Point(
+                    FilterBarFLP.PointToScreen(new Point(
                         FilterIconButtonsToolStripCustom.Location.X +
                         FilterByRatingButton.Bounds.X,
                         FilterIconButtonsToolStripCustom.Location.Y +
@@ -3693,7 +3694,7 @@ namespace AngelLoader.Forms
         private void UpdateRatingLabel(bool suspendResume = true)
         {
             // For snappy visual layout performance
-            if (suspendResume) FiltersFlowLayoutPanel.SuspendDrawing();
+            if (suspendResume) FilterBarFLP.SuspendDrawing();
             try
             {
                 if (FilterByRatingButton.Checked)
@@ -3717,7 +3718,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (suspendResume) FiltersFlowLayoutPanel.ResumeDrawing();
+                if (suspendResume) FilterBarFLP.ResumeDrawing();
             }
         }
 
@@ -3727,7 +3728,7 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                FiltersFlowLayoutPanel.SuspendDrawing();
+                FilterBarFLP.SuspendDrawing();
                 try
                 {
                     bool oneList = Config.GameOrganization == GameOrganization.OneList;
@@ -3758,7 +3759,7 @@ namespace AngelLoader.Forms
                 }
                 finally
                 {
-                    FiltersFlowLayoutPanel.ResumeDrawing();
+                    FilterBarFLP.ResumeDrawing();
                 }
             }
 

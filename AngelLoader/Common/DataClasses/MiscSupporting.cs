@@ -52,7 +52,7 @@ namespace AngelLoader.Common.DataClasses
 
     [Flags] internal enum FinishedState : uint { Null = 0, Finished = 1, Unfinished = 2 }
 
-    [Flags] internal enum FinishedOn { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
+    [Flags] internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 

@@ -269,7 +269,7 @@ namespace AngelLoader.Common.Utility
 
         #region StartsWith and EndsWith
 
-        private enum CaseComparison
+        private enum CaseComparison : uint
         {
             CaseSensitive,
             CaseInsensitive,
@@ -277,7 +277,7 @@ namespace AngelLoader.Common.Utility
             GivenOrLower
         }
 
-        private enum StartOrEnd
+        private enum StartOrEnd : uint
         {
             Start,
             End
@@ -494,7 +494,7 @@ namespace AngelLoader.Common.Utility
             int i1 = path.LastIndexOf('\\');
             int i2 = path.LastIndexOf('/');
 
-            if (i1 == -1 & i2 == -1) return path;
+            if (i1 == -1 && i2 == -1) return path;
 
             return path.Substring(Math.Max(i1, i2) + 1);
         }
@@ -503,15 +503,12 @@ namespace AngelLoader.Common.Utility
         {
             if (path == null) return null;
 
-            while (path[path.Length - 1] == '\\' || path[path.Length - 1] == '/')
-            {
-                path = path.TrimEnd('\\').TrimEnd('/');
-            }
+            path = path.TrimEnd('\\', '/');
 
             int i1 = path.LastIndexOf('\\');
             int i2 = path.LastIndexOf('/');
 
-            if (i1 == -1 & i2 == -1) return path;
+            if (i1 == -1 && i2 == -1) return path;
 
             return path.Substring(Math.Max(i1, i2) + 1);
         }

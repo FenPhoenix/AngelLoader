@@ -58,9 +58,9 @@ namespace AngelLoader.Common.DataClasses
         internal DateTime? LastPlayed = null;
 
         // [FenGen:DoNotSerialize]
-        private int _finishedOn = 0;
+        private uint _finishedOn = 0;
         // [FenGen:NumericEmpty=0]
-        internal int FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0, 15); }
+        internal uint FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0u, 15u); }
         internal bool FinishedOnUnknown;
 
         // [FenGen:DoNotSerialize]

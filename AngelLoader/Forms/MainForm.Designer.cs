@@ -107,7 +107,7 @@
             this.LastPlayedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FiltersFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.FilterBarFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.FilterGamesLeftSepToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterGamesLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterGameButtonsToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
@@ -254,7 +254,7 @@
             this.TopSplitContainer.Panel2.SuspendLayout();
             this.TopSplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FMsDGV)).BeginInit();
-            this.FiltersFlowLayoutPanel.SuspendLayout();
+            this.FilterBarFLP.SuspendLayout();
             this.FilterGamesLeftSepToolStripCustom.SuspendLayout();
             this.FilterGameButtonsToolStrip.SuspendLayout();
             this.TitleAuthorSep.SuspendLayout();
@@ -860,7 +860,7 @@
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarScrollRightButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarScrollLeftButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FMsDGV);
-            this.TopSplitContainer.Panel1.Controls.Add(this.FiltersFlowLayoutPanel);
+            this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarFLP);
             this.TopSplitContainer.Panel1.Controls.Add(this.RefreshClearToolStripCustom);
             this.TopSplitContainer.Panel1.Controls.Add(this.ResetLayoutButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.GamesTabControl);
@@ -1082,24 +1082,24 @@
             // 
             // FiltersFlowLayoutPanel
             // 
-            this.FiltersFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FiltersFlowLayoutPanel.AutoScroll = true;
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterGamesLeftSepToolStripCustom);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterGameButtonsToolStrip);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterTitleLabel);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterTitleTextBox);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.TitleAuthorSep);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterAuthorLabel);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterAuthorTextBox);
-            this.FiltersFlowLayoutPanel.Controls.Add(this.FilterIconButtonsToolStripCustom);
-            this.FiltersFlowLayoutPanel.Location = new System.Drawing.Point(144, 0);
-            this.FiltersFlowLayoutPanel.Name = "FiltersFlowLayoutPanel";
-            this.FiltersFlowLayoutPanel.Size = new System.Drawing.Size(768, 100);
-            this.FiltersFlowLayoutPanel.TabIndex = 11;
-            this.FiltersFlowLayoutPanel.WrapContents = false;
-            this.FiltersFlowLayoutPanel.Scroll += new System.Windows.Forms.ScrollEventHandler(this.FiltersFlowLayoutPanel_Scroll);
-            this.FiltersFlowLayoutPanel.SizeChanged += new System.EventHandler(this.FiltersFlowLayoutPanel_SizeChanged);
+            this.FilterBarFLP.AutoScroll = true;
+            this.FilterBarFLP.Controls.Add(this.FilterGamesLeftSepToolStripCustom);
+            this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
+            this.FilterBarFLP.Controls.Add(this.FilterTitleLabel);
+            this.FilterBarFLP.Controls.Add(this.FilterTitleTextBox);
+            this.FilterBarFLP.Controls.Add(this.TitleAuthorSep);
+            this.FilterBarFLP.Controls.Add(this.FilterAuthorLabel);
+            this.FilterBarFLP.Controls.Add(this.FilterAuthorTextBox);
+            this.FilterBarFLP.Controls.Add(this.FilterIconButtonsToolStripCustom);
+            this.FilterBarFLP.Location = new System.Drawing.Point(144, 0);
+            this.FilterBarFLP.Name = "FilterBarFLP";
+            this.FilterBarFLP.Size = new System.Drawing.Size(768, 100);
+            this.FilterBarFLP.TabIndex = 11;
+            this.FilterBarFLP.WrapContents = false;
+            this.FilterBarFLP.Scroll += new System.Windows.Forms.ScrollEventHandler(this.FiltersFlowLayoutPanel_Scroll);
+            this.FilterBarFLP.SizeChanged += new System.EventHandler(this.FiltersFlowLayoutPanel_SizeChanged);
             // 
             // FilterGamesLeftSepToolStripCustom
             // 
@@ -2635,8 +2635,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.TopSplitContainer)).EndInit();
             this.TopSplitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.FMsDGV)).EndInit();
-            this.FiltersFlowLayoutPanel.ResumeLayout(false);
-            this.FiltersFlowLayoutPanel.PerformLayout();
+            this.FilterBarFLP.ResumeLayout(false);
+            this.FilterBarFLP.PerformLayout();
             this.FilterGamesLeftSepToolStripCustom.ResumeLayout(false);
             this.FilterGamesLeftSepToolStripCustom.PerformLayout();
             this.FilterGameButtonsToolStrip.ResumeLayout(false);
@@ -2751,7 +2751,7 @@
         private System.Windows.Forms.Label EditFMDisabledModsLabel;
         private CustomControls.ProgressPanel ProgressBox;
         private System.Windows.Forms.Label DebugLabel2;
-        private System.Windows.Forms.FlowLayoutPanel FiltersFlowLayoutPanel;
+        private System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
         private AngelLoader.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
         private AngelLoader.CustomControls.ToolStripButtonCustom FilterByThief1Button;
         private AngelLoader.CustomControls.ToolStripButtonCustom FilterByThief2Button;
