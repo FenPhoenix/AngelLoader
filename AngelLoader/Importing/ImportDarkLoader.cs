@@ -207,7 +207,7 @@ namespace AngelLoader.Importing
                                     }
                                     else if (lts.StartsWith("finished="))
                                     {
-                                        int.TryParse(ltb.Substring(9), out int result);
+                                        uint.TryParse(ltb.Substring(9), out uint result);
                                         // result will be 0 on fail, which is the empty value so it's fine
                                         fm.FinishedOn = result;
                                     }

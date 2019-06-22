@@ -112,7 +112,7 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Finished="))
                             {
-                                int.TryParse(lineFM.Substring(9), out int result);
+                                uint.TryParse(lineFM.Substring(9), out uint result);
                                 // result will be 0 on fail, which is the empty value so it's fine
                                 fm.FinishedOn = result;
                             }

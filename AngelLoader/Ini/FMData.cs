@@ -189,7 +189,7 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("FinishedOn="))
                 {
                     var val = lineT.Substring(11);
-                    int.TryParse(val, out int result);
+                    uint.TryParse(val, out uint result);
                     fm.FinishedOn = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FinishedOnUnknown="))
