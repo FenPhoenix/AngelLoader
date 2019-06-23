@@ -470,6 +470,8 @@ namespace AngelLoader
                 Error.None;
         }
 
+        #region Get FM install paths
+
         internal static string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
         {
             string CreateAndReturn(string fmsPath)
@@ -615,15 +617,14 @@ namespace AngelLoader
                 : (Error.T3FMInstPathNotFound, false, null);
         }
 
+        #endregion
+
         #region Scan
 
         // Super quick-n-cheap hack for perf
         internal static List<int> ViewListGamesNull = new List<int>();
 
-        internal static async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions)
-        {
-            return await ScanFMs(new List<FanMission> { fm }, scanOptions);
-        }
+        internal static async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions) => await ScanFMs(new List<FanMission> { fm }, scanOptions);
 
         internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions, bool markAsScanned = true)
         {
@@ -1261,7 +1262,13 @@ namespace AngelLoader
             return (readmeOnDisk, rType);
         }
 
-        // Autodetect safe (non-spoiler) readme
+        /// <summary>
+        /// Given a list of readme filenames, attempts to find one that doesn't contain spoilers by "eyeballing"
+        /// the list of names similarly to how a human would to determine the same thing.
+        /// </summary>
+        /// <param name="readmeFiles"></param>
+        /// <param name="fmTitle"></param>
+        /// <returns></returns>
         internal static string DetectSafeReadme(List<string> readmeFiles, string fmTitle)
         {
             // Since an FM's readmes are very few in number, we can afford to be all kinds of lazy and slow here
@@ -1512,10 +1519,7 @@ namespace AngelLoader
         internal static List<string> ListMatchingTags(string searchText)
         {
             // Smartasses who try to break it get nothing
-            if (searchText.CountChars(':') > 1 || searchText.IsWhiteSpace())
-            {
-                return null;
-            }
+            if (searchText.CountChars(':') > 1 || searchText.IsWhiteSpace()) return null;
 
             (string First, string Second) text;
 
@@ -1658,11 +1662,17 @@ namespace AngelLoader
             bool topRightPanelCollapsed,
             float readmeZoomFactor)
         {
+            #region Main window state
+
             Config.MainWindowState = mainWindowState;
             Config.MainWindowSize = new Size { Width = mainWindowSize.Width, Height = mainWindowSize.Height };
             Config.MainWindowLocation = new Point(mainWindowLocation.X, mainWindowLocation.Y);
             Config.MainSplitterPercent = mainSplitterPercent;
             Config.TopSplitterPercent = topSplitterPercent;
+
+            #endregion
+
+            #region FMs list
 
             Config.Columns.ClearAndAdd(columns);
 
@@ -1671,9 +1681,11 @@ namespace AngelLoader
 
             Config.FMsListFontSizeInPoints = fmsListFontSizeInPoints;
 
+            #endregion
+
             filter.DeepCopyTo(Config.Filter);
 
-            #region Top-right tabs
+            #region Top-right panel
 
             Config.TopRightTabsData.SelectedTab = topRightTabsData.SelectedTab;
 
@@ -1685,9 +1697,11 @@ namespace AngelLoader
 
             Config.TopRightTabsData.EnsureValidity();
 
+            Config.TopRightPanelCollapsed = topRightPanelCollapsed;
+
             #endregion
 
-            Config.TopRightPanelCollapsed = topRightPanelCollapsed;
+            #region Selected FM and game tab state
 
             switch (Config.GameOrganization)
             {
@@ -1703,6 +1717,8 @@ namespace AngelLoader
                     Config.GameTab = gameTab;
                     break;
             }
+
+            #endregion
 
             Config.ReadmeZoomFactor = readmeZoomFactor;
         }

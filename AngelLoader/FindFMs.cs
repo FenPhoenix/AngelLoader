@@ -485,7 +485,7 @@ namespace AngelLoader
                     item.InstalledDir;
                 // SizeString gets set on UI localize so don't set it here on startup, or it's duplicate work
                 if (!startup) item.SizeString = ((long?)item.SizeBytes).ConvertSize();
-                item.CommentSingleLine = item.Comment.FromEscapes().ToSingleLineComment(100);
+                item.CommentSingleLine = item.Comment.FromRNEscapes().ToSingleLineComment(100);
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
 
                 Core.FMsViewList.Add(item);

@@ -44,8 +44,6 @@ namespace AngelLoader
         private const string ScreensDir = "screenshots";
         private const string RemoveFileEq = "RemoveFile=";
 
-        private static string ToForwardSlashed(this string str) => str.Replace('\\', '/');
-
         private static string ToSystemDirSep(this string str)
         {
             return str.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
@@ -134,7 +132,7 @@ namespace AngelLoader
                     {
                         foreach (var f in installedFMFiles)
                         {
-                            var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashed().Trim('/');
+                            var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
                             if (IsSaveOrScreenshot(fn, fmIsT3) ||
                                 (!fn.EqualsI(Paths.FMSelInf) && (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
                             {
@@ -206,7 +204,7 @@ namespace AngelLoader
                     for (var i = 0; i < archive.Entries.Count; i++)
                     {
                         var entry = archive.Entries[i];
-                        var efn = entry.FullName.ToForwardSlashed();
+                        var efn = entry.FullName.ToForwardSlashes();
 
                         if (efn.EqualsI(Paths.FMSelInf) ||
                             (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
@@ -253,7 +251,7 @@ namespace AngelLoader
                     }
                     foreach (var f in installedFMFiles)
                     {
-                        var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashed().Trim('/');
+                        var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
 
                         if (fn.EqualsI(Paths.FMSelInf) || IsSaveOrScreenshot(fn, fmIsT3))
                         {
@@ -280,7 +278,7 @@ namespace AngelLoader
                     for (var i = 0; i < archive.ArchiveFileData.Count; i++)
                     {
                         var entry = archive.ArchiveFileData[i];
-                        var efn = entry.FileName.ToForwardSlashed();
+                        var efn = entry.FileName.ToForwardSlashes();
 
                         if (efn.EqualsI(Paths.FMSelInf) ||
                             // IsDirectory has been unreliable in the past, so check manually here too
@@ -324,13 +322,13 @@ namespace AngelLoader
                     {
                         if (Path.GetFileName(f).EqualsI(Paths.FMSelInf)) continue;
 
-                        var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashed().Trim('/');
+                        var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
 
                         bool found = false;
                         for (var i = 0; i < archive.ArchiveFileData.Count; i++)
                         {
                             var entry = archive.ArchiveFileData[i];
-                            var efn = entry.FileName.ToForwardSlashed();
+                            var efn = entry.FileName.ToForwardSlashes();
                             if (!entry.IsDirectory && efn.EqualsI(fn))
                             {
                                 found = true;
@@ -438,7 +436,7 @@ namespace AngelLoader
                         for (var i = 0; i < filesCount; i++)
                         {
                             var f = archive.Entries[i];
-                            var fn = f.FullName.ToForwardSlashed();
+                            var fn = f.FullName.ToForwardSlashes();
                             if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
                                 !fn.StartsWithI(DarkSavesDir + '/') ||
                                 !fn.StartsWithI(DarkNetSavesDir + '/'))
@@ -460,7 +458,7 @@ namespace AngelLoader
                             for (var i = 0; i < filesCount; i++)
                             {
                                 var f = archive.Entries[i];
-                                var fn = f.FullName.ToForwardSlashed();
+                                var fn = f.FullName.ToForwardSlashes();
 
                                 if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
                                     (!fn.StartsWithI(savesDir + '/') &&
@@ -491,7 +489,7 @@ namespace AngelLoader
                                     {
                                         if (!line.StartsWithFast_NoNullChecks(RemoveFileEq)) continue;
 
-                                        var val = line.Substring(11).ToForwardSlashed().Trim();
+                                        var val = line.Substring(11).ToForwardSlashes().Trim();
                                         if (!val.StartsWithI(savesDir + '/') &&
                                             !val.StartsWithI(DarkNetSavesDir + '/') &&
                                             !val.StartsWithI(ScreensDir + '/') &&
@@ -512,7 +510,7 @@ namespace AngelLoader
                             for (var i = 0; i < filesCount; i++)
                             {
                                 var f = archive.Entries[i];
-                                var fn = f.FullName.ToForwardSlashed();
+                                var fn = f.FullName.ToForwardSlashes();
 
                                 if (fn.EqualsI(Paths.FMSelInf) ||
                                     (fn.Length > 0 && fn[fn.Length - 1] == '/') ||

@@ -2019,15 +2019,10 @@ namespace AngelLoader.Forms
                     : SortOrder.Ascending;
 
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
-            if (FMsDGV.Filtered)
-            {
-                // SetFilter() calls a refresh on its own
-                await SetFilter(forceRefreshReadme: true);
-            }
-            else
-            {
-                await RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true);
-            }
+
+            await (FMsDGV.Filtered
+                ? SetFilter(forceRefreshReadme: true) // SetFilter() calls a refresh on its own
+                : RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true));
         }
 
         private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
@@ -2697,7 +2692,7 @@ namespace AngelLoader.Forms
 
                 EditFMRatingComboBox.SelectedIndex = fm.Rating + 1;
 
-                CommentTextBox.Text = fm.Comment.FromEscapes();
+                CommentTextBox.Text = fm.Comment.FromRNEscapes();
 
                 AddTagTextBox.Text = "";
 
@@ -3049,7 +3044,7 @@ namespace AngelLoader.Forms
             // I'm doing the same, but bumping the cutoff point to 100 chars, which is still plenty fast.
             // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
             // 25,000+ character strings with nothing but slashes and linebreaks in them.
-            fm.Comment = CommentTextBox.Text.ToEscapes();
+            fm.Comment = CommentTextBox.Text.ToRNEscapes();
             fm.CommentSingleLine = CommentTextBox.Text.ToSingleLineComment(100);
 
             await RefreshSelectedFMRowOnly();

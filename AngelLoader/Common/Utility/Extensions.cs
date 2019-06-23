@@ -29,10 +29,11 @@ namespace AngelLoader.Common.Utility
             return count;
         }
 
+        #region Contains
+
         internal static bool Contains(this string value, string substring, StringComparison comparison)
         {
-            if (value.IsEmpty() || substring.IsEmpty()) return false;
-            return value.IndexOf(substring, comparison) >= 0;
+            return !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
         }
 
         internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
@@ -43,10 +44,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="value"></param>
         /// <param name="substring"></param>
         /// <returns></returns>
-        internal static bool ContainsI(this string value, string substring)
-        {
-            return value.Contains(substring, StringComparison.OrdinalIgnoreCase);
-        }
+        internal static bool ContainsI(this string value, string substring) => value.Contains(substring, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Case-insensitive Contains for List&lt;string&gt;. Avoiding IEnumerable like the plague for speed.
@@ -54,15 +52,9 @@ namespace AngelLoader.Common.Utility
         /// <param name="list"></param>
         /// <param name="str"></param>
         /// <returns></returns>
-        internal static bool ContainsI(this List<string> list, string str)
-        {
-            return list.Contains(str, StringComparison.OrdinalIgnoreCase);
-        }
+        internal static bool ContainsI(this List<string> list, string str) => list.Contains(str, StringComparison.OrdinalIgnoreCase);
 
-        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str)
-        {
-            return list.ContainsRemoveFirstHit(str, StringComparison.OrdinalIgnoreCase);
-        }
+        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Case-insensitive Contains for string[]. Avoiding IEnumerable like the plague for speed.
@@ -70,15 +62,10 @@ namespace AngelLoader.Common.Utility
         /// <param name="array"></param>
         /// <param name="str"></param>
         /// <returns></returns>
-        internal static bool ContainsI(this string[] array, string str)
-        {
-            return array.Contains(str, StringComparison.OrdinalIgnoreCase);
-        }
+        internal static bool ContainsI(this string[] array, string str) => array.Contains(str, StringComparison.OrdinalIgnoreCase);
 
-        internal static bool ContainsRemoveFirstHit(this List<string> value, string substring,
-            StringComparison stringComparison = StringComparison.Ordinal)
+        internal static bool ContainsRemoveFirstHit(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
         {
-            // Dead simple, dead fast
             for (int i = 0; i < value.Count; i++)
             {
                 if (value[i].Equals(substring, stringComparison))
@@ -90,25 +77,21 @@ namespace AngelLoader.Common.Utility
             return false;
         }
 
-        internal static bool Contains(this List<string> value, string substring,
-            StringComparison stringComparison = StringComparison.Ordinal)
+        internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
         {
-            // Dead simple, dead fast
-            for (int i = 0; i < value.Count; i++)
-            {
-                if (value[i].Equals(substring, stringComparison)) return true;
-            }
+            for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, stringComparison)) return true;
             return false;
         }
 
         internal static bool Contains(this string[] value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
         {
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i].Equals(substring, stringComparison)) return true;
-            }
+            for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, stringComparison)) return true;
             return false;
         }
+
+        #endregion
+
+        #region Equals
 
         /// <summary>
         /// Case-insensitive Equals.
@@ -116,33 +99,13 @@ namespace AngelLoader.Common.Utility
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        internal static bool EqualsI(this string first, string second)
-        {
-            return string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
-        }
+        internal static bool EqualsI(this string first, string second) => string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
 
-        internal static bool EqualsTrue(this string value)
-        {
-            return string.Equals(value, bool.TrueString, StringComparison.OrdinalIgnoreCase);
-        }
+        internal static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, StringComparison.OrdinalIgnoreCase);
 
-        internal static bool EqualsFalse(this string value)
-        {
-            return string.Equals(value, bool.FalseString, StringComparison.OrdinalIgnoreCase);
-        }
+        #endregion
 
-        #region Extension checks
-
-        /// <summary>
-        /// Returns true if the string ends with extension (case-insensitive).
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="extension"></param>
-        /// <returns></returns>
-        internal static bool ExtEqualsI(this string value, string extension)
-        {
-            return value.EndsWithI(extension[0] != '.' ? "." + extension : extension);
-        }
+        #region Filename extension checks
 
         internal static bool IsValidReadme(this string value)
         {
@@ -251,6 +214,8 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
+        #region Empty / whitespace checks
+
         /// <summary>
         /// Returns true if <paramref name="value"/> is null or empty.
         /// </summary>
@@ -267,21 +232,11 @@ namespace AngelLoader.Common.Utility
         [ContractAnnotation("null => true")]
         internal static bool IsWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
 
+        #endregion
+
         #region StartsWith and EndsWith
 
-        private enum CaseComparison : uint
-        {
-            CaseSensitive,
-            CaseInsensitive,
-            GivenOrUpper,
-            GivenOrLower
-        }
-
-        private enum StartOrEnd : uint
-        {
-            Start,
-            End
-        }
+        private enum StartOrEnd { Start, End }
 
         /// <summary>
         /// StartsWith (case-insensitive). Uses a fast ASCII compare where possible.
@@ -289,32 +244,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="str"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static bool StartsWithI(this string str, string value)
-        {
-            return StartsWithOrEndsWithFast(str, value, CaseComparison.CaseInsensitive, StartOrEnd.Start);
-        }
-
-        /// <summary>
-        /// StartsWith (given case or uppercase). Uses a fast ASCII compare where possible.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static bool StartsWithGU(this string str, string value)
-        {
-            return StartsWithOrEndsWithFast(str, value, CaseComparison.GivenOrUpper, StartOrEnd.Start);
-        }
-
-        /// <summary>
-        /// StartsWith (given case or lowercase). Uses a fast ASCII compare where possible.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static bool StartsWithGL(this string str, string value)
-        {
-            return StartsWithOrEndsWithFast(str, value, CaseComparison.GivenOrLower, StartOrEnd.Start);
-        }
+        internal static bool StartsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, StartOrEnd.Start);
 
         /// <summary>
         /// EndsWith (case-insensitive). Uses a fast ASCII compare where possible.
@@ -322,13 +252,9 @@ namespace AngelLoader.Common.Utility
         /// <param name="str"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static bool EndsWithI(this string str, string value)
-        {
-            return StartsWithOrEndsWithFast(str, value, CaseComparison.CaseInsensitive, StartOrEnd.End);
-        }
+        internal static bool EndsWithI(this string str, string value) => StartsWithOrEndsWithIFast(str, value, StartOrEnd.End);
 
-        private static bool StartsWithOrEndsWithFast(this string str, string value,
-            CaseComparison caseComparison, StartOrEnd startOrEnd)
+        private static bool StartsWithOrEndsWithIFast(this string str, string value, StartOrEnd startOrEnd)
         {
             if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -350,38 +276,18 @@ namespace AngelLoader.Common.Utility
                 // in fact non-ASCII chars in value.
                 if (value[vi] > 127)
                 {
-                    switch (caseComparison)
-                    {
-                        case CaseComparison.CaseSensitive:
-                            return start
-                                ? str.StartsWith(value, StringComparison.Ordinal)
-                                : str.EndsWith(value, StringComparison.Ordinal);
-                        case CaseComparison.CaseInsensitive:
-                            return start
-                                ? str.StartsWith(value, StringComparison.OrdinalIgnoreCase)
-                                : str.EndsWith(value, StringComparison.OrdinalIgnoreCase);
-                        case CaseComparison.GivenOrUpper:
-                            return start
-                                ? str.StartsWith(value, StringComparison.Ordinal) ||
-                                  str.StartsWith(value.ToUpperInvariant(), StringComparison.Ordinal)
-                                : str.EndsWith(value, StringComparison.Ordinal) ||
-                                  str.EndsWith(value.ToUpperInvariant(), StringComparison.Ordinal);
-                        case CaseComparison.GivenOrLower:
-                            return start
-                                ? str.StartsWith(value, StringComparison.Ordinal) ||
-                                  str.StartsWith(value.ToLowerInvariant(), StringComparison.Ordinal)
-                                : str.EndsWith(value, StringComparison.Ordinal) ||
-                                  str.EndsWith(value.ToLowerInvariant(), StringComparison.Ordinal);
-                    }
+                    return start
+                        ? str.StartsWith(value, StringComparison.OrdinalIgnoreCase)
+                        : str.EndsWith(value, StringComparison.OrdinalIgnoreCase);
                 }
 
                 if (str[si] >= 65 && str[si] <= 90 && value[vi] >= 97 && value[vi] <= 122)
                 {
-                    if (caseComparison == CaseComparison.GivenOrLower || str[si] != value[vi] - 32) return false;
+                    if (str[si] != value[vi] - 32) return false;
                 }
                 else if (value[vi] >= 65 && value[vi] <= 90 && str[si] >= 97 && str[si] <= 122)
                 {
-                    if (caseComparison == CaseComparison.GivenOrUpper || str[si] != value[vi] + 32) return false;
+                    if (str[si] != value[vi] + 32) return false;
                 }
                 else if (str[si] != value[vi])
                 {
@@ -398,7 +304,7 @@ namespace AngelLoader.Common.Utility
 
         #region Modifications
 
-        internal static string EscapeAmpersands(this string value) => value.Replace("&", "&&");
+        #region Clear and add
 
         internal static void ClearAndAdd<T>(this List<T> list, params T[] items)
         {
@@ -412,6 +318,10 @@ namespace AngelLoader.Common.Utility
             list.AddRange(items);
         }
 
+        #endregion
+
+        #region Clamping
+
         /// <summary>
         /// Clamps a number to between min and max.
         /// </summary>
@@ -424,6 +334,16 @@ namespace AngelLoader.Common.Utility
             return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
         }
 
+        /// <summary>
+        /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>
+        /// unchanged.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static int ClampToZero(this int value) => Math.Max(value, 0);
+
+        #endregion
+
         internal static string ConvertSize(this long? size)
         {
             if (size == null || size == 0) return "";
@@ -435,15 +355,14 @@ namespace AngelLoader.Common.Utility
                  : Math.Round((double)(size / 1024f / 1024f / 1024f), 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
         }
 
+        #region FM installed name conversion
+
         /// <summary>
         /// Format an FM archive name to conform to NewDarkLoader's FM install directory name requirements.
         /// </summary>
         /// <param name="archiveName">Filename without path or extension.</param>
         /// <returns></returns>
-        internal static string ToInstDirNameNDL(this string archiveName)
-        {
-            return ToInstDirName(archiveName, "+.~ ", truncate: true);
-        }
+        internal static string ToInstDirNameNDL(this string archiveName) => ToInstDirName(archiveName, "+.~ ", truncate: true);
 
         /// <summary>
         /// Format an FM archive name to conform to FMSel's FM install directory name requirements.
@@ -451,10 +370,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="archiveName">Filename without path or extension.</param>
         /// <param name="truncate">Whether to truncate the name to 30 characters or less.</param>
         /// <returns></returns>
-        internal static string ToInstDirNameFMSel(this string archiveName, bool truncate = true)
-        {
-            return ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
-        }
+        internal static string ToInstDirNameFMSel(this string archiveName, bool truncate = true) => ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
 
         private static string ToInstDirName(string archiveName, string illegalChars, bool truncate)
         {
@@ -466,6 +382,8 @@ namespace AngelLoader.Common.Utility
 
             return archiveName;
         }
+
+        #endregion
 
         /// <summary>
         /// Just removes the extension from a filename, without the rather large overhead of
@@ -479,6 +397,8 @@ namespace AngelLoader.Common.Utility
             int i;
             return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
         }
+
+        #region Get file / dir names
 
         /// <summary>
         /// Strips the path from the filename, taking into account only the current OS's directory separator char.
@@ -538,13 +458,7 @@ namespace AngelLoader.Common.Utility
             return path.Substring(i + 1, end - (i + 1));
         }
 
-        /// <summary>
-        /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>
-        /// unchanged.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static int ClampToZero(this int value) => Math.Max(value, 0);
+        #endregion
 
         internal static string ToSingleLineComment(this string value, int maxLength)
         {
@@ -557,15 +471,13 @@ namespace AngelLoader.Common.Utility
                 : value.Substring(0, Math.Min(value.Length, maxLength));
         }
 
-        internal static string FromEscapes(this string value)
-        {
-            return value.IsEmpty() ? value : value.Replace(@"\r\n", "\r\n").Replace(@"\\", "\\");
-        }
+        #region Escaping
 
-        internal static string ToEscapes(this string value)
-        {
-            return value.IsEmpty() ? value : value.Replace("\\", @"\\").Replace("\r\n", @"\r\n");
-        }
+        internal static string FromRNEscapes(this string value) => value?.Replace(@"\r\n", "\r\n").Replace(@"\\", "\\");
+
+        internal static string ToRNEscapes(this string value) => value?.Replace("\\", @"\\").Replace("\r\n", @"\r\n");
+
+        internal static string EscapeAmpersands(this string value) => value?.Replace("&", "&&");
 
         /// <summary>
         /// Just puts a \ in front of each character in the string.
@@ -583,9 +495,15 @@ namespace AngelLoader.Common.Utility
             return ret;
         }
 
+        #endregion
+
+        #region Forward/backslash conversion
+
         internal static string ToForwardSlashes(this string value) => value?.Replace('\\', '/');
 
         internal static string ToBackSlashes(this string value) => value?.Replace('/', '\\');
+
+        #endregion
 
         #endregion
 
@@ -649,9 +567,7 @@ namespace AngelLoader.Common.Utility
         {
             var pWidth = clientSize ? parent.ClientSize.Width : parent.Width;
             var pHeight = clientSize ? parent.ClientSize.Height : parent.Height;
-            control.Location = new Point(
-                (pWidth / 2) - (control.Width / 2),
-                (pHeight / 2) - (control.Height / 2));
+            control.Location = new Point((pWidth / 2) - (control.Width / 2), (pHeight / 2) - (control.Height / 2));
         }
 
         #endregion
@@ -678,7 +594,7 @@ namespace AngelLoader.Common.Utility
 
         /// <summary>
         /// Sets a <see cref="Button"/>'s text, and autosizes and repositions the <see cref="Button"/> and a
-        /// <see cref="TextBox"/> horizontally together to accomodate it.
+        /// <see cref="TextBox"/> horizontally together to accommodate it.
         /// </summary>
         /// <param name="button"></param>
         /// <param name="textBox"></param>
@@ -703,21 +619,13 @@ namespace AngelLoader.Common.Utility
                 button.Width < oldWidth ? oldWidth - button.Width : 0;
 
             button.Left += diff;
-            //textBox.Width += diff;
             // For some reason the diff doesn't work when scaling is > 100% so, yeah
-            textBox.Width = button.Left > textBox.Left
-                ? ((button.Left) - textBox.Left) - 1
-                : 0;
+            textBox.Width = button.Left > textBox.Left ? (button.Left - textBox.Left) - 1 : 0;
 
             button.Anchor = oldAnchor;
         }
 
         #endregion
-
-        internal static void ShowIfHidden(this Control control)
-        {
-            if (!control.Visible) control.Show();
-        }
 
         internal static void RemoveAndSelectNearest(this ListBox listBox)
         {
