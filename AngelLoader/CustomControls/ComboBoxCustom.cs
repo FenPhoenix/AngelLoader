@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using AngelLoader.Common.Utility;
 
 namespace AngelLoader.CustomControls
 {
@@ -19,18 +18,10 @@ namespace AngelLoader.CustomControls
 
         internal readonly List<string> BackingItems = new List<string>();
 
-        internal void AddFullItem(string item)
+        internal void AddFullItem(string backingItem, string item)
         {
-            BackingItems.Add(item);
-            Items.Add(
-                item.Contains('\\') ? item.Substring(item.LastIndexOf('\\') + 1) :
-                item.Contains('/') ? item.Substring(item.LastIndexOf('/') + 1) :
-                item);
-        }
-
-        internal void AddRangeFull(List<string> items)
-        {
-            for (int i = 0; i < items.Count; i++) AddFullItem(items[i]);
+            BackingItems.Add(backingItem);
+            Items.Add(item);
         }
 
         internal void ClearFullItems()
@@ -46,6 +37,8 @@ namespace AngelLoader.CustomControls
         internal void SelectBackingIndexOf(string item) => SelectedIndex = BackingIndexOf(item);
 
         #endregion
+
+        #region Dropdown features
 
         [DllImport("user32.dll")]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
@@ -83,5 +76,7 @@ namespace AngelLoader.CustomControls
 
             base.OnDropDown(e);
         }
+
+        #endregion
     }
 }

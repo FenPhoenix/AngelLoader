@@ -480,6 +480,11 @@ namespace AngelLoader.Common.Utility
             return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
         }
 
+        /// <summary>
+        /// Strips the path from the filename, taking into account only the current OS's directory separator char.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         internal static string GetFileNameFast(this string path)
         {
             if (path == null) return null;
@@ -487,7 +492,12 @@ namespace AngelLoader.Common.Utility
             return (i = path.LastIndexOf(Path.DirectorySeparatorChar)) == -1 ? path : path.Substring(i + 1);
         }
 
-        internal static string GetFileNameFastZip(this string path)
+        /// <summary>
+        /// Strips the leading path from the filename, taking into account both / and \ chars.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        internal static string GetFileNameFastBothDSC(this string path)
         {
             if (path == null) return null;
 

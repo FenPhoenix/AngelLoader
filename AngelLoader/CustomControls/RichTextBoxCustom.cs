@@ -18,6 +18,7 @@ namespace AngelLoader.CustomControls
 
         #region Zoom
 
+        // TODO: See if this can be removed.
         private bool initialReadmeZoomSet = true;
 
         private float _storedZoomFactor = 1.0f;
@@ -140,6 +141,8 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
+        #region Change font (plaintext only)
+
         internal void ChangeFont(bool useFixed) => ChangeFontInternal(ContentIsPlainText, useFixed);
 
         private void ChangeFontInternal(bool newValForContentIsPlainText, bool useFixed)
@@ -156,6 +159,8 @@ namespace AngelLoader.CustomControls
                 Text = Text;
             }
         }
+
+        #endregion
 
         #region Load content
 

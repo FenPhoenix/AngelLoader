@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -79,8 +81,6 @@ namespace AngelLoader.Forms
             }
             else
             {
-                LangComboBox = OtherPage.LanguageComboBox;
-
                 Pages = new ISettingsPage[] { PathsPage, FMDisplayPage, OtherPage };
 
                 PagePanel.Controls.Add(FMDisplayPage);
@@ -396,25 +396,18 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                foreach (var item in InConfig.LanguageNames)
-                {
-                    LangComboBox.BackingItems.Add(item.Key);
-                    LangComboBox.Items.Add(item.Value);
-                }
+                var langDict = new OrderedDictionary();
+
+                foreach (var item in InConfig.LanguageNames) langDict[item.Key] = item.Value;
 
                 const string engLang = "English";
 
-                if (LangComboBox.BackingItems.ContainsI(engLang))
+                if (langDict.Contains(engLang)) langDict.Remove(engLang);
+                langDict.Insert(0, engLang, engLang);
+
+                foreach (DictionaryEntry item in langDict)
                 {
-                    LangComboBox.BackingItems.Remove(engLang);
-                    LangComboBox.BackingItems.Insert(0, engLang);
-                    LangComboBox.Items.Remove(engLang);
-                    LangComboBox.Items.Insert(0, engLang);
-                }
-                else
-                {
-                    LangComboBox.BackingItems.Insert(0, engLang);
-                    LangComboBox.Items.Insert(0, engLang);
+                    LangComboBox.AddFullItem(item.Key.ToString(), item.Value.ToString());
                 }
 
                 LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(InConfig.Language)
@@ -557,9 +550,9 @@ namespace AngelLoader.Forms
             OutConfig.SettingsWindowSize = Size;
             OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
 
-            OutConfig.SettingsPathsVScrollPos = PathsPage.PagePanel.VerticalScroll.Value;
-            OutConfig.SettingsFMDisplayVScrollPos = FMDisplayPage.PagePanel.VerticalScroll.Value;
-            OutConfig.SettingsOtherVScrollPos = OtherPage.PagePanel.VerticalScroll.Value;
+            OutConfig.SettingsPathsVScrollPos = PathsPage.GetVScrollPos();
+            OutConfig.SettingsFMDisplayVScrollPos = FMDisplayPage.GetVScrollPos();
+            OutConfig.SettingsOtherVScrollPos = OtherPage.GetVScrollPos();
 
             #endregion
 

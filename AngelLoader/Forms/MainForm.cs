@@ -77,6 +77,7 @@ namespace AngelLoader.Forms
 
         private DataGridViewImageColumn RatingImageColumn;
 
+        // TODO: I suspect this can be removed entirely.
         private bool InitialSelectedFMHasBeenSet;
 
         public bool EventsDisabled { get; set; }
@@ -312,14 +313,10 @@ namespace AngelLoader.Forms
 
             #region Set up form and control state
 
-            // TODO: Stop hiding this when we get the feature in fully; this is for release
-            PlayFMAdvancedMenuItem.Visible = false;
-
-            FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
-            FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
-
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
+
+            #region Top-right tabs
 
             // Putting these into a list whose order matches the enum allows us to just iterate the list without
             // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
@@ -353,6 +350,10 @@ namespace AngelLoader.Forms
                 ((ToolStripMenuItem)TopRightMenu.Items[i]).Checked = Config.TopRightTabsData.Tabs[i].Visible;
             }
 
+            TopRightMenu.SetPreventCloseOnClickItems(TopRightMenu.Items.Cast<ToolStripMenuItem>().ToArray());
+
+            #endregion
+
             #region SplitContainers
 
             MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, suspendResume: false);
@@ -362,6 +363,11 @@ namespace AngelLoader.Forms
             TopSplitContainer.InjectSibling(MainSplitContainer);
 
             #endregion
+
+            #region FMs DataGridView
+
+            FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
+            FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
             #region Columns
 
@@ -387,7 +393,12 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region Readme
+            #endregion
+
+            // TODO: Stop hiding this when we get the feature in fully; this is for release
+            PlayFMAdvancedMenuItem.Visible = false;
+
+            #region Readme area
 
             // Set both at once to avoid an elusive bug that happens when you start up, the readme is blank, then
             // you shut down without loading a readme, whereupon it will save out ZoomFactor which is still 1.0.
@@ -434,10 +445,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnNormalMenuItem, FinishedOnHardMenuItem,
-                FinishedOnExpertMenuItem, FinishedOnExtremeMenuItem, FinishedOnUnknownMenuItem);
-
-            TopRightMenu.SetPreventCloseOnClickItems(TopRightMenu.Items.Cast<ToolStripMenuItem>().ToArray());
+            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItem>().ToArray());
 
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
             EditFMFinishedOnButton.Tag = EditFMFinishedOnButton.Size;
@@ -2766,7 +2774,7 @@ namespace AngelLoader.Forms
                         ViewHTMLReadmeButton.Hide();
 
                         ChooseReadmeListBox.ClearFullItems();
-                        ChooseReadmeListBox.AddRangeFull(readmeFiles);
+                        foreach (var f in readmeFiles) ChooseReadmeListBox.AddFullItem(f, f.GetFileNameFastBothDSC());
 
                         ShowReadmeControls(false);
 
@@ -2794,7 +2802,7 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                ChooseReadmeComboBox.AddRangeFull(readmeFiles);
+                foreach (var f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f, f.GetFileNameFastBothDSC());
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
             }
         }
