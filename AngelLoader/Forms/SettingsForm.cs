@@ -559,14 +559,11 @@ namespace AngelLoader.Forms
 
             if (DialogResult != DialogResult.OK)
             {
-                if (!Startup)
+                if (!Startup && !LangComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
                 {
                     try
                     {
-                        if (!LangComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
-                        {
-                            Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
-                        }
+                        Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
                     }
                     catch (Exception ex)
                     {
@@ -583,6 +580,7 @@ namespace AngelLoader.Forms
                         Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
                     }
                 }
+
                 return;
             }
 
