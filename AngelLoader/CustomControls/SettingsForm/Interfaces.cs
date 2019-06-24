@@ -4,6 +4,7 @@
     {
         internal interface ISettingsPage
         {
+            bool IsVisible { get; set; }
             void SetVScrollPos(int value);
             int GetVScrollPos();
             void ShowPage();

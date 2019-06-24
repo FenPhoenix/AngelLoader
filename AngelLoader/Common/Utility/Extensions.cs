@@ -574,6 +574,10 @@ namespace AngelLoader.Common.Utility
 
         #region Autosizing
 
+        // TODO: These are relatively expensive operations (10ms to make 3 calls from SettingsForm)
+        // See if we can manually calculate some or all of this and end up with the same result as if we let the
+        // layout do the work as we do now.
+
         /// <summary>
         /// Sets a <see cref="Button"/>'s text, and autosizes it horizontally to accomodate it.
         /// </summary>

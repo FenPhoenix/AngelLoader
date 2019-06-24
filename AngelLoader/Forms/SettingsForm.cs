@@ -19,6 +19,18 @@ using static AngelLoader.CustomControls.SettingsForm.Interfaces;
 
 namespace AngelLoader.Forms
 {
+    /*
+    PERF (2019-06-24):
+    _Load: ~31ms
+    ctor: ~17ms
+    
+    Major bottlenecks are:
+    -SetUITextToLocalized - SetTextAutoSize() calls being the main contributors
+    -ShowPage() (for Other page) - nothing we can do about this
+    -Page ctors - lazy-loading these would be a giant headache - not really worth it
+    */
+
+
     internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable
     {
         private readonly ILocalizable OwnerForm;
@@ -30,6 +42,7 @@ namespace AngelLoader.Forms
 
         private readonly RadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
+        private readonly int?[] PageVScrollValues;
 
         private readonly TextBox[] GameExePathTextBoxes;
 
@@ -62,6 +75,13 @@ namespace AngelLoader.Forms
             LangComboBox = OtherPage.LanguageComboBox;
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
+
+            PageVScrollValues = new[]
+            {
+                (int?)InConfig.SettingsPathsVScrollPos,
+                (int?)InConfig.SettingsFMDisplayVScrollPos,
+                (int?)InConfig.SettingsOtherVScrollPos
+            };
 
             #region Add pages
 
@@ -353,43 +373,23 @@ namespace AngelLoader.Forms
                 OtherPage.ReadmeFixedWidthFontCheckBox.Checked = InConfig.ReadmeUseFixedWidthFont;
 
                 #endregion
-
-                #region Set page vertical scroll positions
-
-                // We have to show every page temporarily to get it to take its scroll position. Ugh.
-                try
-                {
-                    this.SuspendDrawing();
-
-                    for (var i = 0; i < Pages.Length; i++)
-                    {
-                        ShowPage(i);
-                        SetPageScrollPos(Pages[i]);
-                    }
-                }
-                finally
-                {
-                    this.ResumeDrawing();
-                }
-
-                #endregion
             }
 
             // Do this after everything else - now we're ready to show them with their proper scrolled position
             if (PathsRadioButton.Checked)
             {
-                ShowPage(Array.IndexOf(PageRadioButtons, PathsRadioButton));
+                ShowPage(Array.IndexOf(PageRadioButtons, PathsRadioButton), initialCall: true);
             }
             else if (FMDisplayRadioButton.Checked)
             {
-                ShowPage(Array.IndexOf(PageRadioButtons, FMDisplayRadioButton));
+                ShowPage(Array.IndexOf(PageRadioButtons, FMDisplayRadioButton), initialCall: true);
             }
             else if (OtherRadioButton.Checked)
             {
-                ShowPage(Array.IndexOf(PageRadioButtons, OtherRadioButton));
+                ShowPage(Array.IndexOf(PageRadioButtons, OtherRadioButton), initialCall: true);
             }
 
-            SetUITextToLocalized();
+            SetUITextToLocalized(suspendResume: false);
         }
 
         private void LoadLanguages()
@@ -550,9 +550,11 @@ namespace AngelLoader.Forms
             OutConfig.SettingsWindowSize = Size;
             OutConfig.SettingsWindowSplitterDistance = MainSplitContainer.SplitterDistance;
 
-            OutConfig.SettingsPathsVScrollPos = PathsPage.GetVScrollPos();
-            OutConfig.SettingsFMDisplayVScrollPos = FMDisplayPage.GetVScrollPos();
-            OutConfig.SettingsOtherVScrollPos = OtherPage.GetVScrollPos();
+            // If some pages haven't had their vertical scroll value loaded, just take the value from the backing
+            // store
+            OutConfig.SettingsPathsVScrollPos = PageVScrollValues[0] ?? PathsPage.GetVScrollPos();
+            OutConfig.SettingsFMDisplayVScrollPos = PageVScrollValues[1] ?? FMDisplayPage.GetVScrollPos();
+            OutConfig.SettingsOtherVScrollPos = PageVScrollValues[2] ?? OtherPage.GetVScrollPos();
 
             #endregion
 
@@ -804,15 +806,18 @@ namespace AngelLoader.Forms
             var s = (RadioButtonCustom)sender;
             if (!s.Checked) return;
 
-            foreach (var b in PageRadioButtons) if (s != b) b.Checked = false;
+            using (new DisableEvents(this)) foreach (var b in PageRadioButtons) if (s != b) b.Checked = false;
 
             ShowPage(Array.IndexOf(PageRadioButtons, s));
         }
 
-        private void ShowPage(int index)
+        private void ShowPage(int index, bool initialCall = false)
         {
+            if (Pages[index].IsVisible) return;
+
             if (Startup)
             {
+                // Don't bother with position saving if this is the Initial Settings window
                 PathsPage.Show();
             }
             else
@@ -820,8 +825,33 @@ namespace AngelLoader.Forms
                 int pagesLength = Pages.Length;
                 if (index < 0 || index > pagesLength - 1) return;
 
-                Pages[index].ShowPage();
-                for (int i = 0; i < pagesLength; i++) if (i != index) Pages[i].HidePage();
+                bool pagePosWasStored = PageVScrollValues[index] != null;
+                try
+                {
+                    if (!initialCall && pagePosWasStored) this.SuspendDrawing();
+
+                    Pages[index].ShowPage();
+                    for (int i = 0; i < pagesLength; i++) if (i != index) Pages[i].HidePage();
+
+                    // Lazy-load for faster initial startup
+                    if (pagePosWasStored)
+                    {
+                        SetPageScrollPos(Pages[index]);
+                        if (!initialCall)
+                        {
+                            // Infuriating hack to get the scroll bar to show up in the right position (the content
+                            // already does)
+                            Pages[index].HidePage();
+                            Pages[index].ShowPage();
+                        }
+
+                        PageVScrollValues[index] = null;
+                    }
+                }
+                finally
+                {
+                    if (!initialCall && pagePosWasStored) this.ResumeDrawing();
+                }
             }
         }
 
