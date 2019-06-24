@@ -30,7 +30,6 @@ namespace AngelLoader.Forms
     -Page ctors - lazy-loading these would be a giant headache - not really worth it
     */
 
-
     internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable
     {
         private readonly ILocalizable OwnerForm;
