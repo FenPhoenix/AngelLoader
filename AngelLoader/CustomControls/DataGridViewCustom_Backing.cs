@@ -8,7 +8,7 @@ namespace AngelLoader.CustomControls
         private bool _columnHeaderMenuCreated;
         private readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
 
-        private bool _fmMenuCreated;
+        internal bool FMMenuCreated { get; private set; }
 
         private void InitColumnHeaderContextMenu()
         {
@@ -382,7 +382,41 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            _fmMenuCreated = true;
+            #region Event hookups
+
+            FMContextMenu.Opening += FMContextMenu_Opening;
+            PlayFMMenuItem.Click += PlayFMMenuItem_Click;
+            PlayFMInMPMenuItem.Click += PlayFMInMPMenuItem_Click;
+            InstallUninstallMenuItem.Click += InstallUninstallMenuItem_Click;
+            OpenInDromEdMenuItem.Click += OpenInDromEdMenuItem_Click;
+            ScanFMMenuItem.Click += ScanFMMenuItem_Click;
+            ConvertWAVsTo16BitMenuItem.Click += ConvertWAVsTo16BitMenuItem_Click;
+            ConvertOGGsToWAVsMenuItem.Click += ConvertOGGsToWAVsMenuItem_Click;
+
+            RatingRCMenuUnrated.Click += RatingRCMenuItems_Click;
+            RatingRCMenu0.Click += RatingRCMenuItems_Click;
+            RatingRCMenu1.Click += RatingRCMenuItems_Click;
+            RatingRCMenu2.Click += RatingRCMenuItems_Click;
+            RatingRCMenu3.Click += RatingRCMenuItems_Click;
+            RatingRCMenu4.Click += RatingRCMenuItems_Click;
+            RatingRCMenu5.Click += RatingRCMenuItems_Click;
+            RatingRCMenu6.Click += RatingRCMenuItems_Click;
+            RatingRCMenu7.Click += RatingRCMenuItems_Click;
+            RatingRCMenu8.Click += RatingRCMenuItems_Click;
+            RatingRCMenu9.Click += RatingRCMenuItems_Click;
+            RatingRCMenu10.Click += RatingRCMenuItems_Click;
+
+            FinishedOnNormalMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnHardMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnExpertMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnExtremeMenuItem.Click += FinishedOnMenuItems_Click;
+            FinishedOnUnknownMenuItem.Click += FinishedOnMenuItems_Click;
+
+            WebSearchMenuItem.Click += WebSearchMenuItem_Click;
+
+            #endregion
+
+            FMMenuCreated = true;
 
             SetFMMenuTextToLocalized();
         }

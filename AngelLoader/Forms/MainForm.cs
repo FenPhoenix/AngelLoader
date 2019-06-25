@@ -311,6 +311,8 @@ namespace AngelLoader.Forms
 
             Core.ProgressBox = ProgressBox;
 
+            FMsDGV.InjectOwner(this);
+
             #region Set up form and control state
 
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
@@ -2059,15 +2061,15 @@ namespace AngelLoader.Forms
             if (FMsDGV.RowCount == 0 || FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
         }
 
-        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
+        internal async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 
-        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), playMP: true);
+        internal async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), playMP: true);
 
-        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
+        internal async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
 
-        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(FMsDGV.GetSelectedFM());
+        internal async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(FMsDGV.GetSelectedFM());
 
-        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(FMsDGV.GetSelectedFM());
+        internal async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(FMsDGV.GetSelectedFM());
 
         #endregion
 
@@ -2237,7 +2239,7 @@ namespace AngelLoader.Forms
 
         #region Refresh FMs list
 
-        internal async Task RefreshSelectedFMRowOnly() => await RefreshSelectedFM(false, true);
+        public async Task RefreshSelectedFMRowOnly() => await RefreshSelectedFM(false, true);
 
         public async Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false)
         {
@@ -2479,7 +2481,7 @@ namespace AngelLoader.Forms
                 using (new DisableKeyPresses(this))
                 {
                     // If successful, this method will be called again, so exit to avoid running it twice
-                    if (await ScanSelectedFM(GetDefaultScanOptions())) return;
+                    if (await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM())) return;
                 }
             }
 
@@ -3476,9 +3478,7 @@ namespace AngelLoader.Forms
             ShowReadmeControls(CursorOverReadmeArea());
         }
 
-        private void WebSearchButton_Click(object sender, EventArgs e) => SearchWeb();
-
-        private void SearchWeb() => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
+        private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
 
         private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
 
@@ -3796,22 +3796,15 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
-        private void WebSearchMenuItem_Click(object sender, EventArgs e) => SearchWeb();
+        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
 
-        private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanTitle: true));
+        private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
 
-        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanAuthor: true));
+        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
 
-        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanReleaseDate: true));
+        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
 
-        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e) => await ScanSelectedFM(ScanOptions.FalseDefault(scanCustomResources: true));
-
-        private async Task<bool> ScanSelectedFM(ScanOptions scanOptions)
-        {
-            bool success = await Core.ScanFM(FMsDGV.GetSelectedFM(), scanOptions);
-            if (success) await RefreshSelectedFM(refreshReadme: true);
-            return success;
-        }
+        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
@@ -3827,7 +3820,7 @@ namespace AngelLoader.Forms
                 : 0;
         }
 
-        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await ScanSelectedFM(GetDefaultScanOptions());
+        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM());
 
         private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
         {

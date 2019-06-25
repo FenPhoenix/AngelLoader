@@ -52,6 +52,7 @@ namespace AngelLoader
         Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false);
         Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false);
+        Task RefreshSelectedFMRowOnly();
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)
@@ -623,6 +624,14 @@ namespace AngelLoader
 
         // Super quick-n-cheap hack for perf
         internal static List<int> ViewListGamesNull = new List<int>();
+
+        internal static async Task<bool> ScanFMAndRefresh(FanMission fm, ScanOptions scanOptions = null)
+        {
+            if (scanOptions == null) scanOptions = GetDefaultScanOptions();
+            bool success = await ScanFM(fm, scanOptions);
+            if (success) await View.RefreshSelectedFM(refreshReadme: true);
+            return success;
+        }
 
         internal static async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions) => await ScanFMs(new List<FanMission> { fm }, scanOptions);
 

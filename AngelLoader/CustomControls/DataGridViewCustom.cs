@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -14,6 +15,10 @@ namespace AngelLoader.CustomControls
     public sealed partial class DataGridViewCustom : DataGridView, ILocalizable
     {
         #region Fields / Properties
+
+        private IView Owner;
+
+        internal ToolStripDropDown GetFinishedOnMenu() => FinishedOnRCSubMenu.DropDown;
 
         #region Column header context menu
 
@@ -92,6 +97,8 @@ namespace AngelLoader.CustomControls
             Debug.Assert(Enum.GetValues(typeof(Column)).Length == ColumnCheckedStates.Length,
                 nameof(Column) + ".Length != " + nameof(ColumnCheckedStates) + ".Length");
         }
+
+        internal void InjectOwner(IView owner) => Owner = owner;
 
         #region Get FM selected/index etc.
 
@@ -178,7 +185,7 @@ namespace AngelLoader.CustomControls
 
         private void SetFMMenuTextToLocalized()
         {
-            if (!_fmMenuCreated) return;
+            if (!FMMenuCreated) return;
 
             #region Get current FM info
 
@@ -241,7 +248,7 @@ namespace AngelLoader.CustomControls
 
         internal void UpdateRatingList(bool fmSelStyle)
         {
-            if (_fmMenuCreated)
+            if (FMMenuCreated)
             {
                 for (int i = 0; i <= 10; i++)
                 {
@@ -461,6 +468,84 @@ namespace AngelLoader.CustomControls
 
             MakeColumnVisible(Columns[(int)s.Tag], s.Checked);
         }
+
+        #endregion
+
+        #region FM context menu
+
+        private void FMContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+            // Fix for a corner case where the user could press the right mouse button, hold it, keyboard-switch
+            // to an empty tab, then let up the mouse and a menu would come up even though no FM was selected.
+            if (RowCount == 0 || SelectedRows.Count == 0) e.Cancel = true;
+        }
+
+        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
+
+        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: true);
+
+        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
+
+        private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
+        {
+            var fm = GetSelectedFM();
+
+            if (fm.Installed || await InstallAndPlay.InstallFM(fm)) InstallAndPlay.OpenFMInDromEd(fm);
+        }
+
+        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(GetSelectedFM());
+
+        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(GetSelectedFM());
+
+        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(GetSelectedFM());
+
+        private async void RatingRCMenuItems_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < RatingRCSubMenu.DropDownItems.Count; i++)
+            {
+                if (RatingRCSubMenu.DropDownItems[i] != sender) continue;
+                GetSelectedFM().Rating = i - 1;
+                await Owner.RefreshSelectedFM(refreshReadme: false);
+                Core.WriteFullFMDataIni();
+                break;
+            }
+        }
+
+        private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
+        {
+            var senderItem = (ToolStripMenuItem)sender;
+
+            var fm = GetSelectedFM();
+
+            fm.FinishedOn = 0;
+            fm.FinishedOnUnknown = false;
+
+            if (senderItem == FinishedOnUnknownMenuItem)
+            {
+                fm.FinishedOnUnknown = senderItem.Checked;
+            }
+            else
+            {
+                uint at = 1;
+                foreach (ToolStripMenuItem item in FinishedOnRCSubMenu.DropDownItems)
+                {
+                    if (item == FinishedOnUnknownMenuItem) continue;
+
+                    if (item.Checked) fm.FinishedOn |= at;
+                    at <<= 1;
+                }
+                if (fm.FinishedOn > 0)
+                {
+                    FinishedOnUnknownMenuItem.Checked = false;
+                    fm.FinishedOnUnknown = false;
+                }
+            }
+
+            await Owner.RefreshSelectedFMRowOnly();
+            Core.WriteFullFMDataIni();
+        }
+
+        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM());
 
         #endregion
 
