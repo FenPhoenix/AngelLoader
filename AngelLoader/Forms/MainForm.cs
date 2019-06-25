@@ -580,10 +580,10 @@ namespace AngelLoader.Forms
 
             if (e.KeyCode == Keys.Enter)
             {
-                if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(GetSelectedFM()))
+                if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(FMsDGV.GetSelectedFM()))
                 {
                     e.SuppressKeyPress = true;
-                    await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), askConfIfRequired: true);
+                    await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), askConfIfRequired: true);
                 }
             }
             else if (e.KeyCode == Keys.Escape)
@@ -666,7 +666,7 @@ namespace AngelLoader.Forms
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
-            var selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFM() : null;
+            var selFM = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
 
             if (suspendResume)
@@ -1116,7 +1116,7 @@ namespace AngelLoader.Forms
                 gameTab = Game.Thief1;
             }
 
-            var selectedFM = GetSelectedFMPosInfo();
+            var selectedFM = FMsDGV.GetSelectedFMPosInfo();
 
             var topRightTabs = new TopRightTabsData
             {
@@ -1184,60 +1184,6 @@ namespace AngelLoader.Forms
                    ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
         }
 
-        #region Get FM selected/index etc.
-
-        /// <summary>
-        /// Gets the FM at <paramref name="index"/>, taking the currently set filters into account.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        private FanMission GetFMFromIndex(int index) => Core.FMsViewList[FMsDGV.Filtered ? FMsDGV.FilterShownIndexList[index] : index];
-
-        /// <summary>
-        /// Gets the currently selected FM, taking the currently set filters into account.
-        /// </summary>
-        /// <returns></returns>
-        private FanMission GetSelectedFM()
-        {
-            Debug.Assert(FMsDGV.SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
-
-            return GetFMFromIndex(FMsDGV.SelectedRows[0].Index);
-        }
-
-        private int GetIndexFromInstalledName(string installedName)
-        {
-            // Graceful default if a value is missing
-            if (installedName.IsEmpty()) return 0;
-
-            for (int i = 0; i < (FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Core.FMsViewList.Count); i++)
-            {
-                if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
-            }
-
-            return 0;
-        }
-
-        private SelectedFM GetSelectedFMPosInfo()
-        {
-            var ret = new SelectedFM { InstalledName = null, IndexFromTop = 0 };
-
-            if (FMsDGV.SelectedRows.Count == 0) return ret;
-
-            int sel = FMsDGV.SelectedRows[0].Index;
-            int firstDisplayed = FMsDGV.FirstDisplayedScrollingRowIndex;
-            int lastDisplayed = firstDisplayed + FMsDGV.DisplayedRowCount(false);
-
-            int indexFromTop = sel >= firstDisplayed && sel <= lastDisplayed
-                ? sel - firstDisplayed
-                : FMsDGV.DisplayedRowCount(true) / 2;
-
-            ret.InstalledName = GetFMFromIndex(sel).InstalledDir;
-            ret.IndexFromTop = indexFromTop;
-            return ret;
-        }
-
-        #endregion
-
         #region Test / debug
 
         private void TestButton_Click(object sender, EventArgs e)
@@ -1273,7 +1219,7 @@ namespace AngelLoader.Forms
             {
                 // No goal escapes me, mate
 
-                SelectedFM selFM = FMsDGV.SelectedRows.Count > 0 ? GetSelectedFMPosInfo() : null;
+                SelectedFM selFM = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFMPosInfo() : null;
 
                 var f = FMsDGV.DefaultCellStyle.Font;
 
@@ -1432,11 +1378,11 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // Skip the GetSelectedFM() check during a state where it may fail.
+            // Skip the FMsDGV.GetSelectedFM() check during a state where it may fail.
             // We also don't need it if we're forcing both things.
             var oldSelectedFM =
                 forceRefreshReadme && forceSuppressSelectionChangedEvent ? null :
-                FMsDGV.SelectedRows.Count > 0 ? GetSelectedFM() : null;
+                FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFM() : null;
 
             FMsDGV.FilterShownIndexList.Clear();
 
@@ -1466,7 +1412,7 @@ namespace AngelLoader.Forms
                 if (!suppressRefresh)
                 {
                     await RefreshFMsList(
-                        refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(GetFMFromIndex(0))),
+                        refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume);
                 }
@@ -1793,7 +1739,7 @@ namespace AngelLoader.Forms
             // Remember this if you ever change that.
             await RefreshFMsList(
                 refreshReadme: forceRefreshReadme || FMsDGV.FilterShownIndexList.Count == 0 ||
-                               (oldSelectedFM != null && !oldSelectedFM.Equals(GetFMFromIndex(0))),
+                               (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                 suppressSuspendResume);
         }
@@ -1906,7 +1852,7 @@ namespace AngelLoader.Forms
 
             if (FMsDGV.Filtered && FMsDGV.FilterShownIndexList.Count == 0) return;
 
-            var fm = GetFMFromIndex(e.RowIndex);
+            var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
             // PERF: ~0.14ms per FM for en-US Long Date format
             string FormattedDate(DateTime dt)
@@ -2035,13 +1981,13 @@ namespace AngelLoader.Forms
 
             if (ht.Type == DataGridViewHitTestType.ColumnHeader || ht.Type == DataGridViewHitTestType.None)
             {
-                FMsDGV.SetContextMenu(FMsDGV.FMColumnHeaderRightClickMenu);
+                FMsDGV.SetContextMenu(FMsDGV.FMColumnHeaderContextMenu);
             }
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
                 FMsDGV.SetContextMenu(FMRightClickMenu);
 
-                var fm = GetFMFromIndex(ht.RowIndex);
+                var fm = FMsDGV.GetFMFromIndex(ht.RowIndex);
 
                 ConvertAudioRCSubMenu.Enabled = GameIsDark(fm) && fm.Installed;
                 FMsDGV.Rows[ht.RowIndex].Selected = true;
@@ -2113,15 +2059,15 @@ namespace AngelLoader.Forms
             if (FMsDGV.RowCount == 0 || FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
         }
 
-        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
+        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 
-        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: true);
+        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), playMP: true);
 
-        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
+        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
 
-        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(GetSelectedFM());
+        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(FMsDGV.GetSelectedFM());
 
-        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(GetSelectedFM());
+        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(FMsDGV.GetSelectedFM());
 
         #endregion
 
@@ -2129,9 +2075,9 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        private async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
+        private async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
 
-        private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
+        private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 
         #region Play original game
 
@@ -2224,6 +2170,8 @@ namespace AngelLoader.Forms
                     EditFMRatingComboBox.Items[i + 1] = num;
                 }
             }
+
+            FMsDGV.UpdateRatingList(fmSelStyle);
         }
 
         private void UpdateRatingColumn(bool startup)
@@ -2326,7 +2274,7 @@ namespace AngelLoader.Forms
                     }
                     else
                     {
-                        row = GetIndexFromInstalledName(FMsDGV.CurrentSelFM.InstalledName).ClampToZero();
+                        row = FMsDGV.GetIndexFromInstalledName(FMsDGV.CurrentSelFM.InstalledName).ClampToZero();
                         try
                         {
                             FMsDGV.FirstDisplayedScrollingRowIndex = (row - FMsDGV.CurrentSelFM.IndexFromTop).ClampToZero();
@@ -2524,7 +2472,7 @@ namespace AngelLoader.Forms
         // It's really hard to come up with a succinct name that makes it clear what this does and doesn't do
         private async Task DisplaySelectedFM(bool refreshReadme = false)
         {
-            var fm = GetSelectedFM();
+            var fm = FMsDGV.GetSelectedFM();
 
             if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm) && !fm.MarkedScanned))
             {
@@ -3005,7 +2953,7 @@ namespace AngelLoader.Forms
         private void SaveCurrentTabSelectedFM(TabPage tabPage)
         {
             var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(tabPage);
-            var selFM = GetSelectedFMPosInfo();
+            var selFM = FMsDGV.GetSelectedFMPosInfo();
             selFM.DeepCopyTo(gameSelFM);
             FMsDGV.Filter.DeepCopyTo(gameFilter);
         }
@@ -3041,7 +2989,7 @@ namespace AngelLoader.Forms
 
             if (FMsDGV.SelectedRows.Count == 0) return;
 
-            var fm = GetSelectedFM();
+            var fm = FMsDGV.GetSelectedFM();
 
             // Converting a multiline comment to single line:
             // DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first.
@@ -3135,7 +3083,7 @@ namespace AngelLoader.Forms
                     break;
                 case Keys.Enter:
                     var catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem.ToString();
-                    AddTagOperation(GetSelectedFM(), catAndTag);
+                    AddTagOperation(FMsDGV.GetSelectedFM(), catAndTag);
                     break;
                 default:
                     if (sender == AddTagListBox) AddTagTextBox.Focus();
@@ -3159,7 +3107,7 @@ namespace AngelLoader.Forms
         {
             if (FMsDGV.SelectedRows.Count == 0) return;
 
-            var fm = GetSelectedFM();
+            var fm = FMsDGV.GetSelectedFM();
             var tv = TagsTreeView;
 
             var success = Core.RemoveTagFromFM(fm, tv.SelectedNode.Parent?.Text, tv.SelectedNode?.Text);
@@ -3172,7 +3120,7 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Left) return;
 
-            if (AddTagListBox.SelectedIndex > -1) AddTagOperation(GetSelectedFM(), AddTagListBox.SelectedItem.ToString());
+            if (AddTagListBox.SelectedIndex > -1) AddTagOperation(FMsDGV.GetSelectedFM(), AddTagListBox.SelectedItem.ToString());
         }
 
         private void AddTagOperation(FanMission fm, string catAndTag)
@@ -3187,7 +3135,7 @@ namespace AngelLoader.Forms
             HideAddTagDropDown();
         }
 
-        private void AddTagButton_Click(object sender, EventArgs e) => AddTagOperation(GetSelectedFM(), AddTagTextBox.Text);
+        private void AddTagButton_Click(object sender, EventArgs e) => AddTagOperation(FMsDGV.GetSelectedFM(), AddTagTextBox.Text);
 
         private void TagPresetsButton_Click(object sender, EventArgs e)
         {
@@ -3249,7 +3197,7 @@ namespace AngelLoader.Forms
             var cat = item.OwnerItem;
             if (cat == null) return;
 
-            AddTagOperation(GetSelectedFM(), cat.Text + @": " + item.Text);
+            AddTagOperation(FMsDGV.GetSelectedFM(), cat.Text + @": " + item.Text);
         }
 
         private void AddTagMenuCustomItem_Click(object sender, EventArgs e)
@@ -3280,7 +3228,7 @@ namespace AngelLoader.Forms
         {
             if (ChooseReadmeListBox.Items.Count == 0 || ChooseReadmeListBox.SelectedIndex == -1) return;
 
-            var fm = GetSelectedFM();
+            var fm = FMsDGV.GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeListBox.SelectedBackingItem();
             ChooseReadmePanel.Hide();
 
@@ -3310,7 +3258,7 @@ namespace AngelLoader.Forms
         private void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var fm = GetSelectedFM();
+            var fm = FMsDGV.GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
             // Just load the readme; don't call DisplaySelectedFM() because that will re-get readmes and screw
             // things up
@@ -3369,14 +3317,14 @@ namespace AngelLoader.Forms
         private async void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GetSelectedFM().Title = EditFMTitleTextBox.Text;
+            FMsDGV.GetSelectedFM().Title = EditFMTitleTextBox.Text;
             await RefreshSelectedFMRowOnly();
         }
 
         private async void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GetSelectedFM().Author = EditFMAuthorTextBox.Text;
+            FMsDGV.GetSelectedFM().Author = EditFMAuthorTextBox.Text;
             await RefreshSelectedFMRowOnly();
         }
 
@@ -3391,7 +3339,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
 
-            GetSelectedFM().ReleaseDate = EditFMReleaseDateCheckBox.Checked
+            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateCheckBox.Checked
                 ? EditFMReleaseDateDateTimePicker.Value
                 : (DateTime?)null;
 
@@ -3402,7 +3350,7 @@ namespace AngelLoader.Forms
         private async void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
+            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3412,7 +3360,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
 
-            GetSelectedFM().LastPlayed = EditFMLastPlayedCheckBox.Checked
+            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedCheckBox.Checked
                 ? EditFMLastPlayedDateTimePicker.Value
                 : (DateTime?)null;
 
@@ -3423,7 +3371,7 @@ namespace AngelLoader.Forms
         private async void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
+            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3431,7 +3379,7 @@ namespace AngelLoader.Forms
         private async void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
+            FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
             await RefreshSelectedFMRowOnly();
         }
 
@@ -3446,7 +3394,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
 
-            GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
+            FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3454,7 +3402,7 @@ namespace AngelLoader.Forms
         private async void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            GetSelectedFM().Rating = EditFMRatingComboBox.SelectedIndex - 1;
+            FMsDGV.GetSelectedFM().Rating = EditFMRatingComboBox.SelectedIndex - 1;
             await RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
@@ -3466,7 +3414,7 @@ namespace AngelLoader.Forms
             for (int i = 0; i < RatingRCSubMenu.DropDownItems.Count; i++)
             {
                 if (RatingRCSubMenu.DropDownItems[i] != sender) continue;
-                GetSelectedFM().Rating = i - 1;
+                FMsDGV.GetSelectedFM().Rating = i - 1;
                 await RefreshSelectedFM(refreshReadme: false);
                 Core.WriteFullFMDataIni();
                 break;
@@ -3479,7 +3427,7 @@ namespace AngelLoader.Forms
         {
             var senderItem = (ToolStripMenuItem)sender;
 
-            var fm = GetSelectedFM();
+            var fm = FMsDGV.GetSelectedFM();
 
             fm.FinishedOn = 0;
             fm.FinishedOnUnknown = false;
@@ -3530,7 +3478,7 @@ namespace AngelLoader.Forms
 
         private void WebSearchButton_Click(object sender, EventArgs e) => SearchWeb();
 
-        private void SearchWeb() => Core.OpenWebSearchUrl(GetSelectedFM());
+        private void SearchWeb() => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
 
         private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
 
@@ -3775,7 +3723,7 @@ namespace AngelLoader.Forms
 
         private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(GetSelectedFM());
+        private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
         private void ImportButton_Click(object sender, EventArgs e) => ShowMenu(ImportFromMenu, ImportButton, MenuPos.TopLeft);
 
@@ -3860,14 +3808,14 @@ namespace AngelLoader.Forms
 
         private async Task<bool> ScanSelectedFM(ScanOptions scanOptions)
         {
-            bool success = await Core.ScanFM(GetSelectedFM(), scanOptions);
+            bool success = await Core.ScanFM(FMsDGV.GetSelectedFM(), scanOptions);
             if (success) await RefreshSelectedFM(refreshReadme: true);
             return success;
         }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
-            GetSelectedFM().RefreshCache = true;
+            FMsDGV.GetSelectedFM().RefreshCache = true;
             await DisplaySelectedFM(refreshReadme: true);
         }
 
@@ -3886,7 +3834,7 @@ namespace AngelLoader.Forms
             var lb = PatchDMLsListBox;
             if (lb.SelectedIndex == -1) return;
 
-            bool success = Core.RemoveDML(GetSelectedFM(), lb.SelectedItem.ToString());
+            bool success = Core.RemoveDML(FMsDGV.GetSelectedFM(), lb.SelectedItem.ToString());
             if (!success) return;
 
             lb.RemoveAndSelectNearest();
@@ -3910,7 +3858,7 @@ namespace AngelLoader.Forms
             {
                 if (f.IsEmpty()) continue;
 
-                bool success = Core.AddDML(GetSelectedFM(), f);
+                bool success = Core.AddDML(FMsDGV.GetSelectedFM(), f);
                 if (!success) return;
 
                 var dml = Path.GetFileName(f);
@@ -3921,11 +3869,11 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(GetSelectedFM());
+        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
 
         private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
         {
-            var fm = GetSelectedFM();
+            var fm = FMsDGV.GetSelectedFM();
 
             if (!fm.Installed && !await InstallAndPlay.InstallFM(fm)) return;
 
@@ -3948,7 +3896,7 @@ namespace AngelLoader.Forms
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             FanMission fm;
-            if (e.RowIndex < 0 || FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(fm = GetSelectedFM()))
+            if (e.RowIndex < 0 || FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(fm = FMsDGV.GetSelectedFM()))
             {
                 return;
             }

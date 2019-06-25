@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -58,7 +59,7 @@ namespace AngelLoader.CustomControls
         private int ColumnToResizeOriginalMouseX;
         private int ColumnToResizeOriginalWidth;
 
-        private ContextMenuStrip OriginalRightClickMenu;
+        private ContextMenuStrip OriginalContextMenu;
 
         #endregion
 
@@ -92,6 +93,60 @@ namespace AngelLoader.CustomControls
                 nameof(Column) + ".Length != " + nameof(ColumnCheckedStates) + ".Length");
         }
 
+        #region Get FM selected/index etc.
+
+        /// <summary>
+        /// Gets the FM at <paramref name="index"/>, taking the currently set filters into account.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        internal FanMission GetFMFromIndex(int index) => Core.FMsViewList[Filtered ? FilterShownIndexList[index] : index];
+
+        /// <summary>
+        /// Gets the currently selected FM, taking the currently set filters into account.
+        /// </summary>
+        /// <returns></returns>
+        internal FanMission GetSelectedFM()
+        {
+            Debug.Assert(SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
+
+            return GetFMFromIndex(SelectedRows[0].Index);
+        }
+
+        internal int GetIndexFromInstalledName(string installedName)
+        {
+            // Graceful default if a value is missing
+            if (installedName.IsEmpty()) return 0;
+
+            for (int i = 0; i < (Filtered ? FilterShownIndexList.Count : Core.FMsViewList.Count); i++)
+            {
+                if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
+            }
+
+            return 0;
+        }
+
+        internal SelectedFM GetSelectedFMPosInfo()
+        {
+            var ret = new SelectedFM { InstalledName = null, IndexFromTop = 0 };
+
+            if (SelectedRows.Count == 0) return ret;
+
+            int sel = SelectedRows[0].Index;
+            int firstDisplayed = FirstDisplayedScrollingRowIndex;
+            int lastDisplayed = firstDisplayed + DisplayedRowCount(false);
+
+            int indexFromTop = sel >= firstDisplayed && sel <= lastDisplayed
+                ? sel - firstDisplayed
+                : DisplayedRowCount(true) / 2;
+
+            ret.InstalledName = GetFMFromIndex(sel).InstalledDir;
+            ret.IndexFromTop = indexFromTop;
+            return ret;
+        }
+
+        #endregion
+
         #region Localization
 
         public void SetUITextToLocalized(bool suspendResume = true)
@@ -121,6 +176,85 @@ namespace AngelLoader.CustomControls
             ShowCommentMenuItem.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
         }
 
+        private void SetFMMenuTextToLocalized()
+        {
+            if (!_fmMenuCreated) return;
+
+            #region Get current FM info
+
+            // Some menu items' text depends on FM state. Because this could be run after startup, we need to
+            // make sure those items' text is set correctly.
+            var selFM = SelectedRows.Count > 0 ? GetSelectedFM() : null;
+            bool sayInstall = selFM == null || !selFM.Installed;
+
+            #endregion
+
+            #region Play
+
+            PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
+            PlayFMInMPMenuItem.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer.EscapeAmpersands();
+
+            //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced.EscapeAmpersands();
+            //Core.SetDefaultConfigVarNamesToLocalized();
+
+            #endregion
+
+            InstallUninstallMenuItem.Text = (sayInstall
+                ? LText.FMsList.FMMenu_InstallFM
+                : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
+
+            OpenInDromEdMenuItem.Text = LText.FMsList.FMMenu_OpenInDromEd.EscapeAmpersands();
+
+            ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
+
+            #region Convert submenu
+
+            ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
+            ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit.EscapeAmpersands();
+            ConvertOGGsToWAVsMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs.EscapeAmpersands();
+
+            #endregion
+
+            #region Rating submenu
+
+            RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating.EscapeAmpersands();
+            RatingRCMenuUnrated.Text = LText.Global.Unrated.EscapeAmpersands();
+
+            #endregion
+
+            #region Finished On submenu
+
+            FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
+
+            var fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
+
+            FinishedOnNormalMenuItem.Text = (fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
+            FinishedOnHardMenuItem.Text = (fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
+            FinishedOnExpertMenuItem.Text = (fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
+            FinishedOnExtremeMenuItem.Text = (fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme).EscapeAmpersands();
+            FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown.EscapeAmpersands();
+
+            #endregion
+
+            WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
+        }
+
+        internal void UpdateRatingList(bool fmSelStyle)
+        {
+            if (_fmMenuCreated)
+            {
+                for (int i = 0; i <= 10; i++)
+                {
+                    string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
+                    RatingRCSubMenu.DropDownItems[i + 1].Text = num;
+                }
+            }
+            else
+            {
+                // update backing
+            }
+        }
+
         #endregion
 
         #region Main
@@ -132,8 +266,8 @@ namespace AngelLoader.CustomControls
             if (!ColumnResizeInProgress) return;
 
             ColumnResizeInProgress = false;
-            // Prevents the right-click menu from popping up if the user right-clicked to cancel. The menu will
-            // be set back to what it should be when the user right-clicks while a resize is not progress.
+            // Prevents the context menu from popping up if the user right-clicked to cancel. The menu will be
+            // set back to what it should be when the user right-clicks while a resize is not progress.
             SetContextMenu(null);
             Columns[ColumnToResize].Width = ColumnToResizeOriginalWidth;
         }
@@ -155,7 +289,7 @@ namespace AngelLoader.CustomControls
             var ht = HitTest(e.X, e.Y);
 
             // Manual implementation of real-time column width resizing (the column changes size as you drag)
-            // TODO: If you mousedown while a right-click menu is up, the cursor isn't a size cursor. Fix it for
+            // TODO: If you mousedown while a context menu is up, the cursor isn't a size cursor. Fix it for
             // TODO: "the dev thought of everything" points.
             if (Cursor.Current == Cursors.SizeWE && e.Button == MouseButtons.Left)
             {
@@ -186,7 +320,7 @@ namespace AngelLoader.CustomControls
                 ColumnToResizeOriginalMouseX = e.X;
                 ColumnToResizeOriginalWidth = Columns[ColumnToResize].Width;
                 ColumnResizeInProgress = true;
-                OriginalRightClickMenu = ContextMenuStrip;
+                OriginalContextMenu = ContextMenuStrip;
                 return;
             }
             else if (e.Button == MouseButtons.Right)
@@ -198,7 +332,7 @@ namespace AngelLoader.CustomControls
                 }
                 else
                 {
-                    SetContextMenu(OriginalRightClickMenu);
+                    SetContextMenu(OriginalContextMenu);
                 }
             }
 
@@ -264,7 +398,7 @@ namespace AngelLoader.CustomControls
 
         internal void SetContextMenu(ContextMenuStrip menu)
         {
-            if (!_columnHeaderMenuCreated && menu == FMColumnHeaderRightClickMenu)
+            if (!_columnHeaderMenuCreated && menu == FMColumnHeaderContextMenu)
             {
                 InitColumnHeaderContextMenu();
             }
