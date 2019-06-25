@@ -18,8 +18,6 @@ namespace AngelLoader.CustomControls
 
         private IView Owner;
 
-        internal ToolStripDropDown GetFinishedOnMenu() => FinishedOnRCSubMenu.DropDown;
-
         #region Column header context menu
 
         private enum ColumnProperties { Visible, DisplayIndex, Width }
@@ -183,9 +181,9 @@ namespace AngelLoader.CustomControls
             ShowCommentMenuItem.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
         }
 
-        private void SetFMMenuTextToLocalized()
+        internal void SetFMMenuTextToLocalized()
         {
-            if (!FMMenuCreated) return;
+            if (!_fmMenuCreated) return;
 
             #region Get current FM info
 
@@ -248,7 +246,7 @@ namespace AngelLoader.CustomControls
 
         internal void UpdateRatingList(bool fmSelStyle)
         {
-            if (FMMenuCreated)
+            if (_fmMenuCreated)
             {
                 for (int i = 0; i <= 10; i++)
                 {
@@ -409,6 +407,10 @@ namespace AngelLoader.CustomControls
             {
                 InitColumnHeaderContextMenu();
             }
+            else if (!_fmMenuCreated && menu == FMContextMenu)
+            {
+                InitFMContextMenu();
+            }
 
             ContextMenuStrip = menu;
         }
@@ -472,6 +474,75 @@ namespace AngelLoader.CustomControls
         #endregion
 
         #region FM context menu
+
+        internal void SetFinishedOnMenuItemChecked(FinishedOn finishedOn, bool value)
+        {
+            if (value && !_fmMenuCreated) _finishedOnUnknownChecked = false;
+
+            switch (finishedOn)
+            {
+                case FinishedOn.Normal:
+                    if (_fmMenuCreated)
+                    {
+                        FinishedOnNormalMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnNormalChecked = value;
+                    }
+                    break;
+                case FinishedOn.Hard:
+                    if (_fmMenuCreated)
+                    {
+                        FinishedOnHardMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnHardChecked = value;
+                    }
+                    break;
+                case FinishedOn.Expert:
+                    if (_fmMenuCreated)
+                    {
+                        FinishedOnExpertMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExpertChecked = value;
+                    }
+                    break;
+                case FinishedOn.Extreme:
+                    if (_fmMenuCreated)
+                    {
+                        FinishedOnExtremeMenuItem.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExtremeChecked = value;
+                    }
+                    break;
+            }
+        }
+
+        internal void SetFinishedOnUnknownMenuItemChecked(bool value)
+        {
+            if (value && !_fmMenuCreated)
+            {
+                _finishedOnNormalChecked = false;
+                _finishedOnHardChecked = false;
+                _finishedOnExpertChecked = false;
+                _finishedOnExtremeChecked = false;
+            }
+
+            if (_fmMenuCreated)
+            {
+                FinishedOnUnknownMenuItem.Checked = value;
+            }
+            else
+            {
+                _finishedOnUnknownChecked = value;
+            }
+        }
 
         private void FMContextMenu_Opening(object sender, CancelEventArgs e)
         {
@@ -543,6 +614,19 @@ namespace AngelLoader.CustomControls
 
             await Owner.RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
+        }
+
+        private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
+        }
+
+        internal void UncheckFinishedOnMenuItemsExceptUnknown()
+        {
+            FinishedOnNormalMenuItem.Checked = false;
+            FinishedOnHardMenuItem.Checked = false;
+            FinishedOnExpertMenuItem.Checked = false;
+            FinishedOnExtremeMenuItem.Checked = false;
         }
 
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM());

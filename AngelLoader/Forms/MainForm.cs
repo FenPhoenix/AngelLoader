@@ -397,9 +397,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // TODO: Stop hiding this when we get the feature in fully; this is for release
-            PlayFMAdvancedMenuItem.Visible = false;
-
             #region Readme area
 
             // Set both at once to avoid an elusive bug that happens when you start up, the readme is blank, then
@@ -437,17 +434,13 @@ namespace AngelLoader.Forms
             // to be shown in the wrong location when you call Show() with the height as a parameter. Setting a
             // menu's size to empty causes it to autosize back to its actual proper size. I swear, this stuff.
 
-            FMRightClickMenu.Size = Size.Empty;
             AltTitlesMenu.Size = Size.Empty;
             PlayOriginalGameMenu.Size = Size.Empty;
-            FinishedOnMenu.Size = Size.Empty;
             AddTagMenu.Size = Size.Empty;
             ImportFromMenu.Size = Size.Empty;
             TopRightMenu.Size = Size.Empty;
 
             #endregion
-
-            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItem>().ToArray());
 
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
             EditFMFinishedOnButton.Tag = EditFMFinishedOnButton.Size;
@@ -763,48 +756,9 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                #region FM context menu
-
-                PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
-                PlayFMInMPMenuItem.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer.EscapeAmpersands();
-
-                //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced.EscapeAmpersands();
-                Core.SetDefaultConfigVarNamesToLocalized();
-
-                InstallUninstallMenuItem.Text = (sayInstall
-                    ? LText.FMsList.FMMenu_InstallFM
-                    : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
-
-                OpenInDromEdMenuItem.Text = LText.FMsList.FMMenu_OpenInDromEd.EscapeAmpersands();
-
-                ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
-
-                ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
-                ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit.EscapeAmpersands();
-                ConvertOGGsToWAVsToolStripMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs.EscapeAmpersands();
-
-                RatingRCSubMenu.Text = LText.FMsList.FMMenu_Rating.EscapeAmpersands();
-                RatingRCMenuUnrated.Text = LText.Global.Unrated.EscapeAmpersands();
-
-                FinishedOnRCSubMenu.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
-
-                WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
-
                 #endregion
 
-                #region Finished On menu
-
-                var fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
-
-                FinishedOnNormalMenuItem.Text = (fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
-                FinishedOnHardMenuItem.Text = (fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
-                FinishedOnExpertMenuItem.Text = (fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
-                FinishedOnExtremeMenuItem.Text = (fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme).EscapeAmpersands();
-                FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown.EscapeAmpersands();
-
-                #endregion
-
-                #endregion
+                FMsDGV.SetFMMenuTextToLocalized();
 
                 #region Play original games menu
 
@@ -1987,11 +1941,11 @@ namespace AngelLoader.Forms
             }
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
-                FMsDGV.SetContextMenu(FMRightClickMenu);
+                FMsDGV.SetContextMenu(FMsDGV.FMContextMenu);
 
                 var fm = FMsDGV.GetFMFromIndex(ht.RowIndex);
 
-                ConvertAudioRCSubMenu.Enabled = GameIsDark(fm) && fm.Installed;
+                FMsDGV.ConvertAudioRCSubMenu.Enabled = GameIsDark(fm) && fm.Installed;
                 FMsDGV.Rows[ht.RowIndex].Selected = true;
             }
             else
@@ -2046,20 +2000,13 @@ namespace AngelLoader.Forms
             }
             else if (e.KeyCode == Keys.Apps)
             {
-                FMsDGV.SetContextMenu(FMRightClickMenu);
+                FMsDGV.SetContextMenu(FMsDGV.FMContextMenu);
             }
         }
 
         #endregion
 
         #region FM context menu
-
-        private void FMRightClickMenu_Opening(object sender, CancelEventArgs e)
-        {
-            // Fix for a corner case where the user could press the right mouse button, hold it, keyboard-switch
-            // to an empty tab, then let up the mouse and a menu would come up even though no FM was selected.
-            if (FMsDGV.RowCount == 0 || FMsDGV.SelectedRows.Count == 0) e.Cancel = true;
-        }
 
         internal async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 
@@ -2168,7 +2115,6 @@ namespace AngelLoader.Forms
                 for (int i = 0; i <= 10; i++)
                 {
                     string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                    RatingRCSubMenu.DropDownItems[i + 1].Text = num;
                     EditFMRatingComboBox.Items[i + 1] = num;
                 }
             }
@@ -2385,21 +2331,21 @@ namespace AngelLoader.Forms
         {
             if (Core.FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
 
-            InstallUninstallMenuItem.Text = LText.FMsList.FMMenu_InstallFM;
-            InstallUninstallMenuItem.Enabled = false;
+            FMsDGV.InstallUninstallMenuItem.Text = LText.FMsList.FMMenu_InstallFM;
+            FMsDGV.InstallUninstallMenuItem.Enabled = false;
             // Special-cased; don't autosize this one
             InstallUninstallFMButton.Text = LText.MainButtons.InstallFM;
             InstallUninstallFMButton.Image = Resources.Install_24;
             InstallUninstallFMButton.Enabled = false;
-            PlayFMMenuItem.Enabled = false;
+            FMsDGV.PlayFMMenuItem.Enabled = false;
             PlayFMButton.Enabled = false;
 
-            PlayFMInMPMenuItem.Visible = false;
+            FMsDGV.PlayFMInMPMenuItem.Visible = false;
 
-            OpenInDromedSep.Visible = false;
-            OpenInDromEdMenuItem.Visible = false;
+            FMsDGV.OpenInDromEdSep.Visible = false;
+            FMsDGV.OpenInDromEdMenuItem.Visible = false;
 
-            ScanFMMenuItem.Enabled = false;
+            FMsDGV.ScanFMMenuItem.Enabled = false;
 
             // Hide instead of clear to avoid zoom factor pain
             ShowReadme(false);
@@ -2436,7 +2382,7 @@ namespace AngelLoader.Forms
                     c.Enabled = false;
                 }
 
-                UncheckFinishedOnMenuItemsExceptUnknown();
+                FMsDGV.UncheckFinishedOnMenuItemsExceptUnknown();
                 FinishedOnUnknownMenuItem.Checked = false;
 
                 CommentTextBox.Text = "";
@@ -2500,24 +2446,24 @@ namespace AngelLoader.Forms
 
             var installable = GameIsKnownAndSupported(fm);
 
-            InstallUninstallMenuItem.Enabled = installable;
-            InstallUninstallMenuItem.Text = fm.Installed
+            FMsDGV.InstallUninstallMenuItem.Enabled = installable;
+            FMsDGV.InstallUninstallMenuItem.Text = fm.Installed
                 ? LText.FMsList.FMMenu_UninstallFM
                 : LText.FMsList.FMMenu_InstallFM;
 
             if ((fm.Game == Game.Thief1 && Config.T1DromEdDetected) ||
                 (fm.Game == Game.Thief2 && Config.T2DromEdDetected))
             {
-                OpenInDromedSep.Visible = true;
-                OpenInDromEdMenuItem.Visible = true;
+                FMsDGV.OpenInDromEdSep.Visible = true;
+                FMsDGV.OpenInDromEdMenuItem.Visible = true;
             }
             else
             {
-                OpenInDromedSep.Visible = false;
-                OpenInDromEdMenuItem.Visible = false;
+                FMsDGV.OpenInDromEdSep.Visible = false;
+                FMsDGV.OpenInDromEdMenuItem.Visible = false;
             }
 
-            PlayFMInMPMenuItem.Visible = fm.Game == Game.Thief2 && Config.T2MPDetected;
+            FMsDGV.PlayFMInMPMenuItem.Visible = fm.Game == Game.Thief2 && Config.T2MPDetected;
             PlayOriginalThief2MPMenuItem.Visible = Config.T2MPDetected;
 
             InstallUninstallFMButton.Enabled = installable;
@@ -2529,10 +2475,10 @@ namespace AngelLoader.Forms
                 ? Resources.Uninstall_24
                 : Resources.Install_24;
 
-            PlayFMMenuItem.Enabled = installable;
+            FMsDGV.PlayFMMenuItem.Enabled = installable;
             PlayFMButton.Enabled = installable;
 
-            ScanFMMenuItem.Enabled = true;
+            FMsDGV.ScanFMMenuItem.Enabled = true;
 
             WebSearchButton.Enabled = true;
 
@@ -2557,7 +2503,7 @@ namespace AngelLoader.Forms
             if (fm.FinishedOnUnknown)
             {
                 FinishedOnUnknownMenuItem.Checked = true;
-                UncheckFinishedOnMenuItemsExceptUnknown();
+                FMsDGV.UncheckFinishedOnMenuItemsExceptUnknown();
             }
             else
             {
@@ -3411,65 +3357,10 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private async void RatingRCMenuItems_Click(object sender, EventArgs e)
+        private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < RatingRCSubMenu.DropDownItems.Count; i++)
-            {
-                if (RatingRCSubMenu.DropDownItems[i] != sender) continue;
-                FMsDGV.GetSelectedFM().Rating = i - 1;
-                await RefreshSelectedFM(refreshReadme: false);
-                Core.WriteFullFMDataIni();
-                break;
-            }
-        }
-
-        private void EditFMFinishedOnButton_Click(object sender, EventArgs e) => ShowMenu(FinishedOnMenu, EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
-
-        private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
-        {
-            var senderItem = (ToolStripMenuItem)sender;
-
-            var fm = FMsDGV.GetSelectedFM();
-
-            fm.FinishedOn = 0;
-            fm.FinishedOnUnknown = false;
-
-            if (senderItem == FinishedOnUnknownMenuItem)
-            {
-                fm.FinishedOnUnknown = senderItem.Checked;
-            }
-            else
-            {
-                uint at = 1;
-                foreach (ToolStripMenuItem item in FinishedOnMenu.Items)
-                {
-                    if (item == FinishedOnUnknownMenuItem) continue;
-
-                    if (item.Checked) fm.FinishedOn |= at;
-                    at <<= 1;
-                }
-                if (fm.FinishedOn > 0)
-                {
-                    FinishedOnUnknownMenuItem.Checked = false;
-                    fm.FinishedOnUnknown = false;
-                }
-            }
-
-            await RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
-        }
-
-        private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
-        }
-
-        private void UncheckFinishedOnMenuItemsExceptUnknown()
-        {
-            FinishedOnNormalMenuItem.Checked = false;
-            FinishedOnHardMenuItem.Checked = false;
-            FinishedOnExpertMenuItem.Checked = false;
-            FinishedOnExtremeMenuItem.Checked = false;
+            FMsDGV.InitFMContextMenu();
+            ShowMenu(FinishedOnMenu, EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
         }
 
         private void ReadmeFullScreenButton_Click(object sender, EventArgs e)
@@ -3796,8 +3687,6 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
-        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
-
         private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
 
         private async void EditFMScanAuthorButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
@@ -3819,8 +3708,6 @@ namespace AngelLoader.Forms
                 ? (AddTagButton.Left - AddTagTextBox.Left) - 1
                 : 0;
         }
-
-        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM());
 
         private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
         {
@@ -3864,15 +3751,6 @@ namespace AngelLoader.Forms
 
         private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
 
-        private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
-        {
-            var fm = FMsDGV.GetSelectedFM();
-
-            if (!fm.Installed && !await InstallAndPlay.InstallFM(fm)) return;
-
-            InstallAndPlay.OpenFMInDromEd(fm);
-        }
-
         private void TopRightCollapseButton_Click(object sender, EventArgs e)
         {
             TopSplitContainer.ToggleFullScreen();
@@ -3914,11 +3792,6 @@ namespace AngelLoader.Forms
         private void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
 
         private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
-
-        private void PlayFMAdvancedMenuItem_Click(object sender, EventArgs e)
-        {
-            // Throw up dialog with config var options
-        }
 
         private void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
         {
