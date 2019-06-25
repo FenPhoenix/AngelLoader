@@ -5,11 +5,118 @@ namespace AngelLoader.CustomControls
 {
     public sealed partial class DataGridViewCustom
     {
-        private void InitializeComponent()
+        private void InitColumnHeaderContextMenu()
         {
-            #region Init column header context menu
+            #region Instantiation
 
-            FMColumnHeaderRightClickMenu.Name = "FMColumnHeaderRightClickMenu";
+            FMColumnHeaderRightClickMenu = new ContextMenuStripCustom
+            {
+                Name = "FMColumnHeaderRightClickMenu"
+            };
+            ResetColumnVisibilityMenuItem = new ToolStripMenuItem
+            {
+                Name = "ResetColumnVisibilityMenuItem"
+            };
+            ResetAllColumnWidthsMenuItem = new ToolStripMenuItem
+            {
+                Name = "ResetAllColumnWidthsMenuItem"
+            };
+            ResetColumnPositionsMenuItem = new ToolStripMenuItem
+            {
+                Name = "ResetColumnPositionsMenuItem"
+            };
+            ColumnHeaderRightClickMenuSeparator1 = new ToolStripSeparator
+            {
+                Name = "ColumnHeaderRightClickMenuSeparator1"
+            };
+            ShowGameMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowGameMenuItem",
+                Tag = Column.Game
+            };
+            ShowInstalledMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowInstalledMenuItem",
+                Tag = Column.Installed
+            };
+            ShowTitleMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowTitleMenuItem",
+                Tag = Column.Title
+            };
+            ShowArchiveMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowArchiveMenuItem",
+                Tag = Column.Archive
+            };
+            ShowAuthorMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowAuthorMenuItem",
+                Tag = Column.Author
+            };
+            ShowSizeMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowSizeMenuItem",
+                Tag = Column.Size
+            };
+            ShowRatingMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowRatingMenuItem",
+                Tag = Column.Rating
+            };
+            ShowFinishedMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowFinishedMenuItem",
+                Tag = Column.Finished
+            };
+            ShowReleaseDateMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowReleaseDateMenuItem",
+                Tag = Column.ReleaseDate
+            };
+            ShowLastPlayedMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowLastPlayedMenuItem",
+                Tag = Column.LastPlayed
+            };
+            ShowDisabledModsMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowDisabledModsMenuItem",
+                Tag = Column.DisabledMods
+            };
+            ShowCommentMenuItem = new ToolStripMenuItem
+            {
+                Checked = true,
+                CheckOnClick = true,
+                Name = "ShowCommentMenuItem",
+                Tag = Column.Comment
+            };
+
+            #endregion
+
+            #region Event hookups
 
             ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
             ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
@@ -27,6 +134,10 @@ namespace AngelLoader.CustomControls
             ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
             ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
             ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
+
+            #endregion
+
+            #region Add items to menu
 
             FMColumnHeaderRightClickMenu.Items.AddRange(new ToolStripItem[]
             {
@@ -48,6 +159,10 @@ namespace AngelLoader.CustomControls
                 ShowCommentMenuItem
             });
 
+            #endregion
+
+            #region Fill ColumnHeaderCheckBoxMenuItems array
+
             ColumnHeaderCheckBoxMenuItems = new[]
             {
                 ShowGameMenuItem,
@@ -64,22 +179,9 @@ namespace AngelLoader.CustomControls
                 ShowCommentMenuItem
             };
 
-            FMColumnHeaderRightClickMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
-
-            ShowGameMenuItem.Tag = Column.Game;
-            ShowInstalledMenuItem.Tag = Column.Installed;
-            ShowTitleMenuItem.Tag = Column.Title;
-            ShowArchiveMenuItem.Tag = Column.Archive;
-            ShowAuthorMenuItem.Tag = Column.Author;
-            ShowSizeMenuItem.Tag = Column.Size;
-            ShowRatingMenuItem.Tag = Column.Rating;
-            ShowFinishedMenuItem.Tag = Column.Finished;
-            ShowReleaseDateMenuItem.Tag = Column.ReleaseDate;
-            ShowLastPlayedMenuItem.Tag = Column.LastPlayed;
-            ShowDisabledModsMenuItem.Tag = Column.DisabledMods;
-            ShowCommentMenuItem.Tag = Column.Comment;
-
             #endregion
+
+            FMColumnHeaderRightClickMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
         }
 
         protected override void Dispose(bool disposing)
@@ -108,110 +210,30 @@ namespace AngelLoader.CustomControls
             base.Dispose(disposing);
         }
 
-        #region Fields
+        #region Column header context menu fields
+
+        internal ContextMenuStripCustom FMColumnHeaderRightClickMenu;
 
         private ToolStripMenuItem[] ColumnHeaderCheckBoxMenuItems;
-        internal ContextMenuStripCustom FMColumnHeaderRightClickMenu = new ContextMenuStripCustom();
-        private readonly ToolStripMenuItem ResetColumnVisibilityMenuItem = new ToolStripMenuItem
-        {
-            Name = "ResetColumnVisibilityMenuItem"
-        };
-        private readonly ToolStripMenuItem ResetAllColumnWidthsMenuItem = new ToolStripMenuItem
-        {
-            Name = "ResetAllColumnWidthsMenuItem"
-        };
-        private readonly ToolStripMenuItem ResetColumnPositionsMenuItem = new ToolStripMenuItem
-        {
-            Name = "ResetColumnPositionsMenuItem"
-        };
-        private readonly ToolStripSeparator ColumnHeaderRightClickMenuSeparator1 = new ToolStripSeparator
-        {
-            Name = "ColumnHeaderRightClickMenuSeparator1"
-        };
-        private readonly ToolStripMenuItem ShowGameMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowGameMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowInstalledMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowInstalledMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowTitleMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowTitleMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowArchiveMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowArchiveMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowAuthorMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowAuthorMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowSizeMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowSizeMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowRatingMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowRatingMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowFinishedMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowFinishedMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowReleaseDateMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowReleaseDateMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowLastPlayedMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowLastPlayedMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowDisabledModsMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowDisabledModsMenuItem"
-        };
-        private readonly ToolStripMenuItem ShowCommentMenuItem = new ToolStripMenuItem
-        {
-            Checked = true,
-            CheckOnClick = true,
-            CheckState = CheckState.Checked,
-            Name = "ShowCommentMenuItem"
-        };
+
+        private ToolStripMenuItem ResetColumnVisibilityMenuItem;
+        private ToolStripMenuItem ResetAllColumnWidthsMenuItem;
+        private ToolStripMenuItem ResetColumnPositionsMenuItem;
+
+        private ToolStripSeparator ColumnHeaderRightClickMenuSeparator1;
+
+        private ToolStripMenuItem ShowGameMenuItem;
+        private ToolStripMenuItem ShowInstalledMenuItem;
+        private ToolStripMenuItem ShowTitleMenuItem;
+        private ToolStripMenuItem ShowArchiveMenuItem;
+        private ToolStripMenuItem ShowAuthorMenuItem;
+        private ToolStripMenuItem ShowSizeMenuItem;
+        private ToolStripMenuItem ShowRatingMenuItem;
+        private ToolStripMenuItem ShowFinishedMenuItem;
+        private ToolStripMenuItem ShowReleaseDateMenuItem;
+        private ToolStripMenuItem ShowLastPlayedMenuItem;
+        private ToolStripMenuItem ShowDisabledModsMenuItem;
+        private ToolStripMenuItem ShowCommentMenuItem;
 
         #endregion
     }

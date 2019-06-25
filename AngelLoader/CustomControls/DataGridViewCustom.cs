@@ -92,7 +92,7 @@ namespace AngelLoader.CustomControls
         {
             DoubleBuffered = true;
 
-            InitializeComponent();
+            InitColumnHeaderContextMenu();
         }
 
         public void SetUITextToLocalized(bool suspendResume = true)
