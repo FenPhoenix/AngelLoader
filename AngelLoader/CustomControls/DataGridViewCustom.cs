@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -15,12 +16,7 @@ namespace AngelLoader.CustomControls
 
         #region Column header context menu
 
-        private enum ColumnProperties
-        {
-            Visible,
-            DisplayIndex,
-            Width
-        }
+        private enum ColumnProperties { Visible, DisplayIndex, Width }
 
         #endregion
 
@@ -92,11 +88,21 @@ namespace AngelLoader.CustomControls
         {
             DoubleBuffered = true;
 
-            InitColumnHeaderContextMenu();
+            Debug.Assert(Enum.GetValues(typeof(Column)).Length == ColumnCheckedStates.Length,
+                nameof(Column) + ".Length != " + nameof(ColumnCheckedStates) + ".Length");
         }
+
+        #region Localization
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {
+            SetColumnHeaderMenuItemTextToLocalized();
+        }
+
+        private void SetColumnHeaderMenuItemTextToLocalized()
+        {
+            if (!_columnHeaderMenuCreated) return;
+
             ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
             ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
             ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions.EscapeAmpersands();
@@ -114,6 +120,8 @@ namespace AngelLoader.CustomControls
             ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
             ShowCommentMenuItem.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
         }
+
+        #endregion
 
         #region Main
 
@@ -254,6 +262,16 @@ namespace AngelLoader.CustomControls
 
         #region Column header context menu
 
+        protected override void OnContextMenuStripChanged(EventArgs e)
+        {
+            if (!_columnHeaderMenuCreated && ContextMenuStrip == FMColumnHeaderRightClickMenu)
+            {
+                InitColumnHeaderContextMenu();
+            }
+
+            base.OnContextMenuStripChanged(e);
+        }
+
         private void ResetPropertyOnAllColumns(ColumnProperties property)
         {
             for (var i = 0; i < Columns.Count; i++)
@@ -272,7 +290,19 @@ namespace AngelLoader.CustomControls
                         break;
                 }
 
-                ColumnHeaderCheckBoxMenuItems[c.Index].Checked = c.Visible;
+                SetColumnChecked(c.Index, c.Visible);
+            }
+        }
+
+        private void SetColumnChecked(int index, bool enabled)
+        {
+            if (_columnHeaderMenuCreated)
+            {
+                ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
+            }
+            else
+            {
+                ColumnCheckedStates[index] = enabled;
             }
         }
 
@@ -351,7 +381,7 @@ namespace AngelLoader.CustomControls
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
                 MakeColumnVisible(col, colData.Visible);
 
-                ColumnHeaderCheckBoxMenuItems[(int)colData.Id].Checked = colData.Visible;
+                SetColumnChecked((int)colData.Id, colData.Visible);
             }
         }
 

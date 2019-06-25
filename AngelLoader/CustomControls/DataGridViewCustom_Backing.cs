@@ -5,6 +5,9 @@ namespace AngelLoader.CustomControls
 {
     public sealed partial class DataGridViewCustom
     {
+        private bool _columnHeaderMenuCreated;
+        private readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
+
         private void InitColumnHeaderContextMenu()
         {
             #region Instantiation
@@ -31,84 +34,72 @@ namespace AngelLoader.CustomControls
             };
             ShowGameMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowGameMenuItem",
                 Tag = Column.Game
             };
             ShowInstalledMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowInstalledMenuItem",
                 Tag = Column.Installed
             };
             ShowTitleMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowTitleMenuItem",
                 Tag = Column.Title
             };
             ShowArchiveMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowArchiveMenuItem",
                 Tag = Column.Archive
             };
             ShowAuthorMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowAuthorMenuItem",
                 Tag = Column.Author
             };
             ShowSizeMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowSizeMenuItem",
                 Tag = Column.Size
             };
             ShowRatingMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowRatingMenuItem",
                 Tag = Column.Rating
             };
             ShowFinishedMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowFinishedMenuItem",
                 Tag = Column.Finished
             };
             ShowReleaseDateMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowReleaseDateMenuItem",
                 Tag = Column.ReleaseDate
             };
             ShowLastPlayedMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowLastPlayedMenuItem",
                 Tag = Column.LastPlayed
             };
             ShowDisabledModsMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowDisabledModsMenuItem",
                 Tag = Column.DisabledMods
             };
             ShowCommentMenuItem = new ToolStripMenuItem
             {
-                Checked = true,
                 CheckOnClick = true,
                 Name = "ShowCommentMenuItem",
                 Tag = Column.Comment
@@ -116,24 +107,28 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            #region Event hookups
+            #region Fill ColumnHeaderCheckBoxMenuItems array
 
-            ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
-            ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
-            ResetColumnPositionsMenuItem.Click += ResetColumnPositionsMenuItem_Click;
+            ColumnHeaderCheckBoxMenuItems = new[]
+            {
+                ShowGameMenuItem,
+                ShowInstalledMenuItem,
+                ShowTitleMenuItem,
+                ShowArchiveMenuItem,
+                ShowAuthorMenuItem,
+                ShowSizeMenuItem,
+                ShowRatingMenuItem,
+                ShowFinishedMenuItem,
+                ShowReleaseDateMenuItem,
+                ShowLastPlayedMenuItem,
+                ShowDisabledModsMenuItem,
+                ShowCommentMenuItem
+            };
 
-            ShowGameMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowInstalledMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowTitleMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowArchiveMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowAuthorMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowSizeMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowRatingMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowFinishedMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowReleaseDateMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
+            for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
+            {
+                ColumnHeaderCheckBoxMenuItems[i].Checked = ColumnCheckedStates[i];
+            }
 
             #endregion
 
@@ -161,27 +156,32 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            #region Fill ColumnHeaderCheckBoxMenuItems array
+            FMColumnHeaderRightClickMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
 
-            ColumnHeaderCheckBoxMenuItems = new[]
-            {
-                ShowGameMenuItem,
-                ShowInstalledMenuItem,
-                ShowTitleMenuItem,
-                ShowArchiveMenuItem,
-                ShowAuthorMenuItem,
-                ShowSizeMenuItem,
-                ShowRatingMenuItem,
-                ShowFinishedMenuItem,
-                ShowReleaseDateMenuItem,
-                ShowLastPlayedMenuItem,
-                ShowDisabledModsMenuItem,
-                ShowCommentMenuItem
-            };
+            #region Event hookups
+
+            ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
+            ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
+            ResetColumnPositionsMenuItem.Click += ResetColumnPositionsMenuItem_Click;
+
+            ShowGameMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowInstalledMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowTitleMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowArchiveMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowAuthorMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowSizeMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowRatingMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowFinishedMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowReleaseDateMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
+            ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
 
             #endregion
 
-            FMColumnHeaderRightClickMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
+            _columnHeaderMenuCreated = true;
+
+            SetColumnHeaderMenuItemTextToLocalized();
         }
 
         protected override void Dispose(bool disposing)

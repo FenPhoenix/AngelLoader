@@ -1080,7 +1080,7 @@
             this.CommentColumn.ReadOnly = true;
             this.CommentColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
-            // FiltersFlowLayoutPanel
+            // FilterBarFLP
             // 
             this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -2598,10 +2598,10 @@
             this.Controls.Add(this.ProgressBox);
             this.Controls.Add(this.EverythingPanel);
             this.DoubleBuffered = true;
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(894, 260);
             this.Name = "MainForm";
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.Text = "AngelLoader";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);

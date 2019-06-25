@@ -2096,6 +2096,10 @@ namespace AngelLoader.Forms
                     await SortAndSetFilter();
                 }
             }
+            else if (e.KeyCode == Keys.Apps)
+            {
+                FMsDGV.ContextMenuStrip = FMRightClickMenu;
+            }
         }
 
         #endregion
