@@ -134,7 +134,7 @@ namespace AngelLoader.CustomControls
             ColumnResizeInProgress = false;
             // Prevents the right-click menu from popping up if the user right-clicked to cancel. The menu will
             // be set back to what it should be when the user right-clicks while a resize is not progress.
-            ContextMenuStrip = null;
+            SetContextMenu(null);
             Columns[ColumnToResize].Width = ColumnToResizeOriginalWidth;
         }
 
@@ -198,7 +198,7 @@ namespace AngelLoader.CustomControls
                 }
                 else
                 {
-                    ContextMenuStrip = OriginalRightClickMenu;
+                    SetContextMenu(OriginalRightClickMenu);
                 }
             }
 
@@ -262,14 +262,14 @@ namespace AngelLoader.CustomControls
 
         #region Column header context menu
 
-        protected override void OnContextMenuStripChanged(EventArgs e)
+        internal void SetContextMenu(ContextMenuStrip menu)
         {
-            if (!_columnHeaderMenuCreated && ContextMenuStrip == FMColumnHeaderRightClickMenu)
+            if (!_columnHeaderMenuCreated && menu == FMColumnHeaderRightClickMenu)
             {
                 InitColumnHeaderContextMenu();
             }
 
-            base.OnContextMenuStripChanged(e);
+            ContextMenuStrip = menu;
         }
 
         private void ResetPropertyOnAllColumns(ColumnProperties property)

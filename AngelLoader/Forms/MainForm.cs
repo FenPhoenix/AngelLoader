@@ -2035,11 +2035,11 @@ namespace AngelLoader.Forms
 
             if (ht.Type == DataGridViewHitTestType.ColumnHeader || ht.Type == DataGridViewHitTestType.None)
             {
-                FMsDGV.ContextMenuStrip = FMsDGV.FMColumnHeaderRightClickMenu;
+                FMsDGV.SetContextMenu(FMsDGV.FMColumnHeaderRightClickMenu);
             }
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
-                FMsDGV.ContextMenuStrip = FMRightClickMenu;
+                FMsDGV.SetContextMenu(FMRightClickMenu);
 
                 var fm = GetFMFromIndex(ht.RowIndex);
 
@@ -2048,7 +2048,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                FMsDGV.ContextMenuStrip = null;
+                FMsDGV.SetContextMenu(null);
             }
 
             #endregion
@@ -2098,7 +2098,7 @@ namespace AngelLoader.Forms
             }
             else if (e.KeyCode == Keys.Apps)
             {
-                FMsDGV.ContextMenuStrip = FMRightClickMenu;
+                FMsDGV.SetContextMenu(FMRightClickMenu);
             }
         }
 
