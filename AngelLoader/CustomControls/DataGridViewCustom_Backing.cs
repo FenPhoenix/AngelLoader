@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
+using static AngelLoader.Common.Common;
 
 namespace AngelLoader.CustomControls
 {
@@ -10,6 +11,14 @@ namespace AngelLoader.CustomControls
         private readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
 
         private bool _fmMenuCreated;
+        private bool _installUninstallMenuEnabled = true;
+        private bool _sayInstall;
+        private bool _playFMMenuItemEnabled = true;
+        private bool _scanFMMenuItemEnabled = true;
+        private bool _openInDromEdSepVisible;
+        private bool _openInDromEdMenuItemVisible;
+        private bool _playFMInMPMenuItemVisible;
+        private bool _convertAudioSubMenuEnabled = true;
         private int _rating = -1;
         private bool _finishedOnNormalChecked;
         private bool _finishedOnHardChecked;
@@ -23,9 +32,9 @@ namespace AngelLoader.CustomControls
 
             #region Instantiation
 
-            FMColumnHeaderContextMenu = new ContextMenuStripCustom
+            ColumnHeaderContextMenu = new ContextMenuStripCustom
             {
-                Name = nameof(FMColumnHeaderContextMenu)
+                Name = nameof(ColumnHeaderContextMenu)
             };
             ResetColumnVisibilityMenuItem = new ToolStripMenuItem
             {
@@ -145,7 +154,7 @@ namespace AngelLoader.CustomControls
 
             #region Add items to menu
 
-            FMColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
+            ColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
             {
                 ResetColumnVisibilityMenuItem,
                 ResetAllColumnWidthsMenuItem,
@@ -167,7 +176,7 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            FMColumnHeaderContextMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
+            ColumnHeaderContextMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
 
             #region Event hookups
 
@@ -201,109 +210,82 @@ namespace AngelLoader.CustomControls
 
             #region Instantiation
 
-            FMContextMenu = new ContextMenuStrip
-            {
-                Name = nameof(FMContextMenu)
-            };
-            PlayFMMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(PlayFMMenuItem)
-            };
-            PlayFMInMPMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(PlayFMInMPMenuItem)
-            };
-            PlayFMAdvancedMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(PlayFMAdvancedMenuItem)
-            };
-            InstallUninstallMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(InstallUninstallMenuItem)
-            };
-            OpenInDromEdSep = new ToolStripMenuItem
-            {
-                Name = nameof(OpenInDromEdSep)
-            };
-            OpenInDromEdMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(OpenInDromEdMenuItem)
-            };
-            FMContextMenuSep1 = new ToolStripMenuItem
-            {
-                Name = nameof(FMContextMenuSep1)
-            };
-            ScanFMMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(ScanFMMenuItem)
-            };
-            ConvertAudioRCSubMenu = new ToolStripMenuItem
-            {
-                Name = nameof(ConvertAudioRCSubMenu)
-            };
-            ConvertWAVsTo16BitMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(ConvertWAVsTo16BitMenuItem)
-            };
-            ConvertOGGsToWAVsMenuItem = new ToolStripMenuItem
-            {
-                Name = nameof(ConvertOGGsToWAVsMenuItem)
-            };
-            FMContextMenuSep2 = new ToolStripMenuItem
-            {
-                Name = nameof(FMContextMenuSep2)
-            };
+            FMContextMenu = new ContextMenuStrip { Name = nameof(FMContextMenu) };
+            PlayFMMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMMenuItem) };
+            PlayFMInMPMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMInMPMenuItem) };
+            PlayFMAdvancedMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMAdvancedMenuItem) };
+            InstallUninstallMenuItem = new ToolStripMenuItem { Name = nameof(InstallUninstallMenuItem) };
+            OpenInDromEdSep = new ToolStripSeparator { Name = nameof(OpenInDromEdSep) };
+            OpenInDromEdMenuItem = new ToolStripMenuItem { Name = nameof(OpenInDromEdMenuItem) };
+            FMContextMenuSep1 = new ToolStripSeparator { Name = nameof(FMContextMenuSep1) };
+            ScanFMMenuItem = new ToolStripMenuItem { Name = nameof(ScanFMMenuItem) };
+            ConvertAudioRCSubMenu = new ToolStripMenuItem { Name = nameof(ConvertAudioRCSubMenu) };
+            ConvertWAVsTo16BitMenuItem = new ToolStripMenuItem { Name = nameof(ConvertWAVsTo16BitMenuItem) };
+            ConvertOGGsToWAVsMenuItem = new ToolStripMenuItem { Name = nameof(ConvertOGGsToWAVsMenuItem) };
+            FMContextMenuSep2 = new ToolStripSeparator { Name = nameof(FMContextMenuSep2) };
             RatingRCSubMenu = new ToolStripMenuItem
             {
                 Name = nameof(RatingRCSubMenu)
             };
             RatingRCMenuUnrated = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenuUnrated)
+                Name = nameof(RatingRCMenuUnrated),
+                CheckOnClick = true
             };
             RatingRCMenu0 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu0)
+                Name = nameof(RatingRCMenu0),
+                CheckOnClick = true
             };
             RatingRCMenu1 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu1)
+                Name = nameof(RatingRCMenu1),
+                CheckOnClick = true
             };
             RatingRCMenu2 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu2)
+                Name = nameof(RatingRCMenu2),
+                CheckOnClick = true
             };
             RatingRCMenu3 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu3)
+                Name = nameof(RatingRCMenu3),
+                CheckOnClick = true
             };
             RatingRCMenu4 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu4)
+                Name = nameof(RatingRCMenu4),
+                CheckOnClick = true
             };
             RatingRCMenu5 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu5)
+                Name = nameof(RatingRCMenu5),
+                CheckOnClick = true
             };
             RatingRCMenu6 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu6)
+                Name = nameof(RatingRCMenu6),
+                CheckOnClick = true
             };
             RatingRCMenu7 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu7)
+                Name = nameof(RatingRCMenu7),
+                CheckOnClick = true
             };
             RatingRCMenu8 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu8)
+                Name = nameof(RatingRCMenu8),
+                CheckOnClick = true
             };
             RatingRCMenu9 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu9)
+                Name = nameof(RatingRCMenu9),
+                CheckOnClick = true
             };
             RatingRCMenu10 = new ToolStripMenuItem
             {
-                Name = nameof(RatingRCMenu10)
+                Name = nameof(RatingRCMenu10),
+                CheckOnClick = true
             };
             FinishedOnRCSubMenu = new ToolStripMenuItem
             {
@@ -315,25 +297,30 @@ namespace AngelLoader.CustomControls
             };
             FinishedOnNormalMenuItem = new ToolStripMenuItem
             {
-                Name = nameof(FinishedOnNormalMenuItem)
+                Name = nameof(FinishedOnNormalMenuItem),
+                CheckOnClick = true
             };
             FinishedOnHardMenuItem = new ToolStripMenuItem
             {
-                Name = nameof(FinishedOnHardMenuItem)
+                Name = nameof(FinishedOnHardMenuItem),
+                CheckOnClick = true
             };
             FinishedOnExpertMenuItem = new ToolStripMenuItem
             {
-                Name = nameof(FinishedOnExpertMenuItem)
+                Name = nameof(FinishedOnExpertMenuItem),
+                CheckOnClick = true
             };
             FinishedOnExtremeMenuItem = new ToolStripMenuItem
             {
-                Name = nameof(FinishedOnExtremeMenuItem)
+                Name = nameof(FinishedOnExtremeMenuItem),
+                CheckOnClick = true
             };
             FinishedOnUnknownMenuItem = new ToolStripMenuItem
             {
-                Name = nameof(FinishedOnUnknownMenuItem)
+                Name = nameof(FinishedOnUnknownMenuItem),
+                CheckOnClick = true
             };
-            FMContextMenuSep3 = new ToolStripMenuItem
+            FMContextMenuSep3 = new ToolStripSeparator
             {
                 Name = nameof(FMContextMenuSep3)
             };
@@ -350,7 +337,7 @@ namespace AngelLoader.CustomControls
             {
                 PlayFMMenuItem,
                 PlayFMInMPMenuItem,
-                PlayFMAdvancedMenuItem,
+                //PlayFMAdvancedMenuItem,
                 InstallUninstallMenuItem,
                 OpenInDromEdSep,
                 OpenInDromEdMenuItem,
@@ -386,7 +373,7 @@ namespace AngelLoader.CustomControls
                 RatingRCMenu10,
             });
 
-            FinishedOnRCSubMenu.DropDownItems.AddRange(new ToolStripItem[]
+            FinishedOnMenu.Items.AddRange(new ToolStripItem[]
             {
                 FinishedOnNormalMenuItem,
                 FinishedOnHardMenuItem,
@@ -395,9 +382,10 @@ namespace AngelLoader.CustomControls
                 FinishedOnUnknownMenuItem
             });
 
-            #endregion
+            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnMenu.Items.Cast<ToolStripMenuItem>().ToArray());
+            FinishedOnRCSubMenu.DropDown = FinishedOnMenu;
 
-            FinishedOnMenu.SetPreventCloseOnClickItems(FinishedOnRCSubMenu.DropDown.Items.Cast<ToolStripMenuItem>().ToArray());
+            #endregion
 
             #region Event hookups
 
@@ -409,6 +397,12 @@ namespace AngelLoader.CustomControls
             ScanFMMenuItem.Click += ScanFMMenuItem_Click;
             ConvertWAVsTo16BitMenuItem.Click += ConvertWAVsTo16BitMenuItem_Click;
             ConvertOGGsToWAVsMenuItem.Click += ConvertOGGsToWAVsMenuItem_Click;
+
+            foreach (ToolStripMenuItem item in RatingRCSubMenu.DropDownItems)
+            {
+                item.Click += RatingRCMenuItems_Click;
+                item.CheckedChanged += RatingRCMenuItems_CheckedChanged;
+            }
 
             RatingRCMenuUnrated.Click += RatingRCMenuItems_Click;
             RatingRCMenu0.Click += RatingRCMenuItems_Click;
@@ -434,7 +428,28 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
+            FinishedOnNormalMenuItem.Checked = _finishedOnNormalChecked;
+            FinishedOnHardMenuItem.Checked = _finishedOnHardChecked;
+            FinishedOnExpertMenuItem.Checked = _finishedOnExpertChecked;
+            FinishedOnExtremeMenuItem.Checked = _finishedOnExtremeChecked;
+            FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
+
             _fmMenuCreated = true;
+
+            UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
+
+            SetRatingMenuItemChecked(_rating);
+
+            InstallUninstallMenuItem.Enabled = _installUninstallMenuEnabled;
+            InstallUninstallMenuItem.Text = _sayInstall
+                    ? LText.FMsList.FMMenu_InstallFM
+                    : LText.FMsList.FMMenu_UninstallFM;
+            PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
+            PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
+            ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
+            OpenInDromEdSep.Visible = _openInDromEdSepVisible;
+            OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
+            ConvertAudioRCSubMenu.Enabled = _convertAudioSubMenuEnabled;
 
             SetFMMenuTextToLocalized();
         }
@@ -443,11 +458,9 @@ namespace AngelLoader.CustomControls
         {
             if (disposing)
             {
-                OriginalContextMenu?.Dispose();
-
                 #region Column context menu
 
-                FMColumnHeaderContextMenu?.Dispose();
+                ColumnHeaderContextMenu?.Dispose();
                 ShowTitleMenuItem?.Dispose();
                 ShowArchiveMenuItem?.Dispose();
                 ShowSizeMenuItem?.Dispose();
@@ -512,7 +525,7 @@ namespace AngelLoader.CustomControls
 
         #region Column header context menu fields
 
-        internal ContextMenuStripCustom FMColumnHeaderContextMenu;
+        internal ContextMenuStripCustom ColumnHeaderContextMenu;
 
         private ToolStripMenuItem[] ColumnHeaderCheckBoxMenuItems;
 
@@ -546,18 +559,18 @@ namespace AngelLoader.CustomControls
         private ToolStripMenuItem PlayFMAdvancedMenuItem;
         internal ToolStripMenuItem InstallUninstallMenuItem;
 
-        internal ToolStripMenuItem OpenInDromEdSep;
+        internal ToolStripSeparator OpenInDromEdSep;
 
         internal ToolStripMenuItem OpenInDromEdMenuItem;
 
-        private ToolStripMenuItem FMContextMenuSep1;
+        private ToolStripSeparator FMContextMenuSep1;
 
         internal ToolStripMenuItem ScanFMMenuItem;
         internal ToolStripMenuItem ConvertAudioRCSubMenu;
         private ToolStripMenuItem ConvertWAVsTo16BitMenuItem;
         private ToolStripMenuItem ConvertOGGsToWAVsMenuItem;
 
-        private ToolStripMenuItem FMContextMenuSep2;
+        private ToolStripSeparator FMContextMenuSep2;
 
         private ToolStripMenuItem RatingRCSubMenu;
         private ToolStripMenuItem RatingRCMenuUnrated;
@@ -581,7 +594,7 @@ namespace AngelLoader.CustomControls
         internal ToolStripMenuItem FinishedOnExtremeMenuItem;
         internal ToolStripMenuItem FinishedOnUnknownMenuItem;
 
-        private ToolStripMenuItem FMContextMenuSep3;
+        private ToolStripSeparator FMContextMenuSep3;
 
         private ToolStripMenuItem WebSearchMenuItem;
 

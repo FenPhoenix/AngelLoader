@@ -62,8 +62,6 @@ namespace AngelLoader.CustomControls
         private int ColumnToResizeOriginalMouseX;
         private int ColumnToResizeOriginalWidth;
 
-        private ContextMenuStrip OriginalContextMenu;
-
         #endregion
 
         internal readonly SelectedFM CurrentSelFM = new SelectedFM();
@@ -157,6 +155,7 @@ namespace AngelLoader.CustomControls
         public void SetUITextToLocalized(bool suspendResume = true)
         {
             SetColumnHeaderMenuItemTextToLocalized();
+            SetFMMenuTextToLocalized();
         }
 
         private void SetColumnHeaderMenuItemTextToLocalized()
@@ -244,23 +243,18 @@ namespace AngelLoader.CustomControls
             WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
         }
 
+        #endregion
+
         internal void UpdateRatingList(bool fmSelStyle)
         {
-            if (_fmMenuCreated)
+            if (!_fmMenuCreated) return;
+
+            for (int i = 0; i <= 10; i++)
             {
-                for (int i = 0; i <= 10; i++)
-                {
-                    string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                    RatingRCSubMenu.DropDownItems[i + 1].Text = num;
-                }
-            }
-            else
-            {
-                // update backing
+                string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
+                RatingRCSubMenu.DropDownItems[i + 1].Text = num;
             }
         }
-
-        #endregion
 
         #region Main
 
@@ -273,7 +267,7 @@ namespace AngelLoader.CustomControls
             ColumnResizeInProgress = false;
             // Prevents the context menu from popping up if the user right-clicked to cancel. The menu will be
             // set back to what it should be when the user right-clicks while a resize is not progress.
-            SetContextMenu(null);
+            SetContextMenuToNone();
             Columns[ColumnToResize].Width = ColumnToResizeOriginalWidth;
         }
 
@@ -325,7 +319,6 @@ namespace AngelLoader.CustomControls
                 ColumnToResizeOriginalMouseX = e.X;
                 ColumnToResizeOriginalWidth = Columns[ColumnToResize].Width;
                 ColumnResizeInProgress = true;
-                OriginalContextMenu = ContextMenuStrip;
                 return;
             }
             else if (e.Button == MouseButtons.Right)
@@ -334,10 +327,6 @@ namespace AngelLoader.CustomControls
                 {
                     CancelColumnResize();
                     return;
-                }
-                else
-                {
-                    SetContextMenu(OriginalContextMenu);
                 }
             }
 
@@ -399,21 +388,25 @@ namespace AngelLoader.CustomControls
             column.Width--;
         }
 
-        #region Column header context menu
+        #region Set context menu
 
-        internal void SetContextMenu(ContextMenuStrip menu)
+        internal void SetContextMenuToNone() => ContextMenuStrip = null;
+
+        internal void SetContextMenuToColumnHeader()
         {
-            if (!_columnHeaderMenuCreated && menu == FMColumnHeaderContextMenu)
-            {
-                InitColumnHeaderContextMenu();
-            }
-            else if (!_fmMenuCreated && menu == FMContextMenu)
-            {
-                InitFMContextMenu();
-            }
-
-            ContextMenuStrip = menu;
+            InitColumnHeaderContextMenu();
+            ContextMenuStrip = ColumnHeaderContextMenu;
         }
+
+        internal void SetContextMenuToFM()
+        {
+            InitFMContextMenu();
+            ContextMenuStrip = FMContextMenu;
+        }
+
+        #endregion
+
+        #region Column header context menu
 
         private void ResetPropertyOnAllColumns(ColumnProperties property)
         {
@@ -475,6 +468,110 @@ namespace AngelLoader.CustomControls
 
         #region FM context menu
 
+        #region Sets
+
+        internal void SetPlayFMMenuItemEnabled(bool value)
+        {
+            if (_fmMenuCreated)
+            {
+                PlayFMMenuItem.Enabled = value;
+            }
+            else
+            {
+                _playFMMenuItemEnabled = value;
+            }
+        }
+
+        internal void SetPlayFMInMPMenuItemVisible(bool value)
+        {
+            if (_fmMenuCreated)
+            {
+                PlayFMInMPMenuItem.Visible = value;
+            }
+            else
+            {
+                _playFMInMPMenuItemVisible = value;
+            }
+        }
+
+        internal void SetInstallUninstallMenuItemEnabled(bool value)
+        {
+            if (_fmMenuCreated)
+            {
+                InstallUninstallMenuItem.Enabled = value;
+            }
+            else
+            {
+                _installUninstallMenuEnabled = value;
+            }
+        }
+
+        internal void SetInstallUninstallMenuItemText(bool sayInstall)
+        {
+            if (_fmMenuCreated)
+            {
+                InstallUninstallMenuItem.Text = sayInstall
+                        ? LText.FMsList.FMMenu_InstallFM
+                        : LText.FMsList.FMMenu_UninstallFM;
+            }
+            else
+            {
+                _sayInstall = sayInstall;
+            }
+        }
+
+        internal void SetOpenInDromEdVisible(bool value)
+        {
+            if (_fmMenuCreated)
+            {
+                OpenInDromEdSep.Visible = value;
+                OpenInDromEdMenuItem.Visible = value;
+            }
+            else
+            {
+                _openInDromEdSepVisible = value;
+                _openInDromEdMenuItemVisible = value;
+            }
+        }
+
+        internal void SetScanFMMenuItemEnabled(bool value)
+        {
+            if (_fmMenuCreated)
+            {
+                ScanFMMenuItem.Enabled = value;
+            }
+            else
+            {
+                _scanFMMenuItemEnabled = value;
+            }
+        }
+
+        internal void SetConvertAudioRCSubMenuEnabled(bool value)
+        {
+            if (_fmMenuCreated)
+            {
+                ConvertAudioRCSubMenu.Enabled = value;
+            }
+            else
+            {
+                _convertAudioSubMenuEnabled = value;
+            }
+        }
+
+        internal void SetRatingMenuItemChecked(int value)
+        {
+            value = value.Clamp(-1, 10);
+
+            if (_fmMenuCreated)
+            {
+                ((ToolStripMenuItem)RatingRCSubMenu.DropDownItems[value + 1]).Checked = true;
+            }
+            else
+            {
+                _rating = value;
+            }
+        }
+
         internal void SetFinishedOnMenuItemChecked(FinishedOn finishedOn, bool value)
         {
             if (value && !_fmMenuCreated) _finishedOnUnknownChecked = false;
@@ -524,6 +621,25 @@ namespace AngelLoader.CustomControls
             }
         }
 
+        internal void SetFinishedOnMenuItemText(FinishedOn finishedOn, string text)
+        {
+            switch (finishedOn)
+            {
+                case FinishedOn.Normal:
+                    if (_fmMenuCreated) FinishedOnNormalMenuItem.Text = text;
+                    break;
+                case FinishedOn.Hard:
+                    if (_fmMenuCreated) FinishedOnHardMenuItem.Text = text;
+                    break;
+                case FinishedOn.Expert:
+                    if (_fmMenuCreated) FinishedOnExpertMenuItem.Text = text;
+                    break;
+                case FinishedOn.Extreme:
+                    if (_fmMenuCreated) FinishedOnExtremeMenuItem.Text = text;
+                    break;
+            }
+        }
+
         internal void SetFinishedOnUnknownMenuItemChecked(bool value)
         {
             if (value && !_fmMenuCreated)
@@ -543,6 +659,8 @@ namespace AngelLoader.CustomControls
                 _finishedOnUnknownChecked = value;
             }
         }
+
+        #endregion
 
         private void FMContextMenu_Opening(object sender, CancelEventArgs e)
         {
@@ -582,6 +700,17 @@ namespace AngelLoader.CustomControls
             }
         }
 
+        private void RatingRCMenuItems_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = (ToolStripMenuItem)sender;
+            if (!s.Checked) return;
+
+            foreach (ToolStripMenuItem item in RatingRCSubMenu.DropDownItems)
+            {
+                if (item != s) item.Checked = false;
+            }
+        }
+
         private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
             var senderItem = (ToolStripMenuItem)sender;
@@ -598,7 +727,7 @@ namespace AngelLoader.CustomControls
             else
             {
                 uint at = 1;
-                foreach (ToolStripMenuItem item in FinishedOnRCSubMenu.DropDownItems)
+                foreach (ToolStripMenuItem item in FinishedOnMenu.Items)
                 {
                     if (item == FinishedOnUnknownMenuItem) continue;
 
@@ -623,15 +752,27 @@ namespace AngelLoader.CustomControls
 
         internal void UncheckFinishedOnMenuItemsExceptUnknown()
         {
-            FinishedOnNormalMenuItem.Checked = false;
-            FinishedOnHardMenuItem.Checked = false;
-            FinishedOnExpertMenuItem.Checked = false;
-            FinishedOnExtremeMenuItem.Checked = false;
+            if (_fmMenuCreated)
+            {
+                FinishedOnNormalMenuItem.Checked = false;
+                FinishedOnHardMenuItem.Checked = false;
+                FinishedOnExpertMenuItem.Checked = false;
+                FinishedOnExtremeMenuItem.Checked = false;
+            }
+            else
+            {
+                _finishedOnNormalChecked = false;
+                _finishedOnHardChecked = false;
+                _finishedOnExpertChecked = false;
+                _finishedOnExtremeChecked = false;
+            }
         }
 
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM());
 
         #endregion
+
+        #region Column data in/out
 
         internal List<ColumnData> ColumnsToColumnData()
         {
@@ -687,6 +828,8 @@ namespace AngelLoader.CustomControls
                 SetColumnChecked((int)colData.Id, colData.Visible);
             }
         }
+
+        #endregion
 
         #endregion
     }

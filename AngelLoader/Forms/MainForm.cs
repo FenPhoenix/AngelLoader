@@ -758,8 +758,6 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                FMsDGV.SetFMMenuTextToLocalized();
-
                 #region Play original games menu
 
                 PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
@@ -1937,20 +1935,16 @@ namespace AngelLoader.Forms
 
             if (ht.Type == DataGridViewHitTestType.ColumnHeader || ht.Type == DataGridViewHitTestType.None)
             {
-                FMsDGV.SetContextMenu(FMsDGV.FMColumnHeaderContextMenu);
+                FMsDGV.SetContextMenuToColumnHeader();
             }
             else if (ht.Type == DataGridViewHitTestType.Cell && ht.ColumnIndex > -1 && ht.RowIndex > -1)
             {
-                FMsDGV.SetContextMenu(FMsDGV.FMContextMenu);
-
-                var fm = FMsDGV.GetFMFromIndex(ht.RowIndex);
-
-                FMsDGV.ConvertAudioRCSubMenu.Enabled = GameIsDark(fm) && fm.Installed;
+                FMsDGV.SetContextMenuToFM();
                 FMsDGV.Rows[ht.RowIndex].Selected = true;
             }
             else
             {
-                FMsDGV.SetContextMenu(null);
+                FMsDGV.SetContextMenuToNone();
             }
 
             #endregion
@@ -2000,23 +1994,9 @@ namespace AngelLoader.Forms
             }
             else if (e.KeyCode == Keys.Apps)
             {
-                FMsDGV.SetContextMenu(FMsDGV.FMContextMenu);
+                FMsDGV.SetContextMenuToFM();
             }
         }
-
-        #endregion
-
-        #region FM context menu
-
-        internal async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
-
-        internal async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), playMP: true);
-
-        internal async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
-
-        internal async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(FMsDGV.GetSelectedFM());
-
-        internal async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(FMsDGV.GetSelectedFM());
 
         #endregion
 
@@ -2331,21 +2311,25 @@ namespace AngelLoader.Forms
         {
             if (Core.FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
 
-            FMsDGV.InstallUninstallMenuItem.Text = LText.FMsList.FMMenu_InstallFM;
-            FMsDGV.InstallUninstallMenuItem.Enabled = false;
+            FMsDGV.SetInstallUninstallMenuItemText(true);
+            FMsDGV.SetInstallUninstallMenuItemEnabled(false);
+
             // Special-cased; don't autosize this one
             InstallUninstallFMButton.Text = LText.MainButtons.InstallFM;
+
             InstallUninstallFMButton.Image = Resources.Install_24;
             InstallUninstallFMButton.Enabled = false;
-            FMsDGV.PlayFMMenuItem.Enabled = false;
+
+            FMsDGV.SetPlayFMMenuItemEnabled(false);
             PlayFMButton.Enabled = false;
 
-            FMsDGV.PlayFMInMPMenuItem.Visible = false;
+            FMsDGV.SetPlayFMInMPMenuItemVisible(false);
 
-            FMsDGV.OpenInDromEdSep.Visible = false;
-            FMsDGV.OpenInDromEdMenuItem.Visible = false;
+            FMsDGV.SetOpenInDromEdVisible(false);
 
-            FMsDGV.ScanFMMenuItem.Enabled = false;
+            FMsDGV.SetScanFMMenuItemEnabled(false);
+
+            FMsDGV.SetConvertAudioRCSubMenuEnabled(false);
 
             // Hide instead of clear to avoid zoom factor pain
             ShowReadme(false);
@@ -2383,7 +2367,7 @@ namespace AngelLoader.Forms
                 }
 
                 FMsDGV.UncheckFinishedOnMenuItemsExceptUnknown();
-                FinishedOnUnknownMenuItem.Checked = false;
+                FMsDGV.SetFinishedOnUnknownMenuItemChecked(false);
 
                 CommentTextBox.Text = "";
                 CommentTextBox.Enabled = false;
@@ -2438,32 +2422,21 @@ namespace AngelLoader.Forms
             // We should never get here when FMsList.Count == 0, but hey
             if (Core.FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
 
-            FinishedOnNormalMenuItem.Text = fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal;
-            FinishedOnHardMenuItem.Text = fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard;
-            FinishedOnExpertMenuItem.Text = fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert;
-            FinishedOnExtremeMenuItem.Text = fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme;
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Normal, fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal);
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Hard, fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard);
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Expert, fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert);
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme);
             // FinishedOnUnknownMenuItem text stays the same
 
             var installable = GameIsKnownAndSupported(fm);
 
-            FMsDGV.InstallUninstallMenuItem.Enabled = installable;
-            FMsDGV.InstallUninstallMenuItem.Text = fm.Installed
-                ? LText.FMsList.FMMenu_UninstallFM
-                : LText.FMsList.FMMenu_InstallFM;
+            FMsDGV.SetInstallUninstallMenuItemEnabled(installable);
+            FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
 
-            if ((fm.Game == Game.Thief1 && Config.T1DromEdDetected) ||
-                (fm.Game == Game.Thief2 && Config.T2DromEdDetected))
-            {
-                FMsDGV.OpenInDromEdSep.Visible = true;
-                FMsDGV.OpenInDromEdMenuItem.Visible = true;
-            }
-            else
-            {
-                FMsDGV.OpenInDromEdSep.Visible = false;
-                FMsDGV.OpenInDromEdMenuItem.Visible = false;
-            }
+            FMsDGV.SetOpenInDromEdVisible((fm.Game == Game.Thief1 && Config.T1DromEdDetected) ||
+                                          (fm.Game == Game.Thief2 && Config.T2DromEdDetected));
 
-            FMsDGV.PlayFMInMPMenuItem.Visible = fm.Game == Game.Thief2 && Config.T2MPDetected;
+            FMsDGV.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
             PlayOriginalThief2MPMenuItem.Visible = Config.T2MPDetected;
 
             InstallUninstallFMButton.Enabled = installable;
@@ -2475,10 +2448,12 @@ namespace AngelLoader.Forms
                 ? Resources.Uninstall_24
                 : Resources.Install_24;
 
-            FMsDGV.PlayFMMenuItem.Enabled = installable;
+            FMsDGV.SetPlayFMMenuItemEnabled(installable);
             PlayFMButton.Enabled = installable;
 
-            FMsDGV.ScanFMMenuItem.Enabled = true;
+            FMsDGV.SetScanFMMenuItemEnabled(true);
+
+            FMsDGV.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm) && fm.Installed);
 
             WebSearchButton.Enabled = true;
 
@@ -2502,18 +2477,18 @@ namespace AngelLoader.Forms
 
             if (fm.FinishedOnUnknown)
             {
-                FinishedOnUnknownMenuItem.Checked = true;
+                FMsDGV.SetFinishedOnUnknownMenuItemChecked(true);
                 FMsDGV.UncheckFinishedOnMenuItemsExceptUnknown();
             }
             else
             {
                 var val = (FinishedOn)fm.FinishedOn;
                 // I don't have to disable events because I'm only wired up to Click, not Checked
-                FinishedOnNormalMenuItem.Checked = (val & FinishedOn.Normal) == FinishedOn.Normal;
-                FinishedOnHardMenuItem.Checked = (val & FinishedOn.Hard) == FinishedOn.Hard;
-                FinishedOnExpertMenuItem.Checked = (val & FinishedOn.Expert) == FinishedOn.Expert;
-                FinishedOnExtremeMenuItem.Checked = (val & FinishedOn.Extreme) == FinishedOn.Extreme;
-                FinishedOnUnknownMenuItem.Checked = false;
+                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Normal, (val & FinishedOn.Normal) == FinishedOn.Normal);
+                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Hard, (val & FinishedOn.Hard) == FinishedOn.Hard);
+                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Expert, (val & FinishedOn.Expert) == FinishedOn.Expert);
+                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Extreme, (val & FinishedOn.Extreme) == FinishedOn.Extreme);
+                FMsDGV.SetFinishedOnUnknownMenuItemChecked(false);
             }
 
             #endregion
@@ -2590,6 +2565,7 @@ namespace AngelLoader.Forms
                 EditFMDisabledModsTextBox.Text = fm.DisabledMods;
                 EditFMDisabledModsTextBox.Enabled = !fm.DisableAllMods;
 
+                FMsDGV.SetRatingMenuItemChecked(fm.Rating);
                 EditFMRatingComboBox.SelectedIndex = fm.Rating + 1;
 
                 CommentTextBox.Text = fm.Comment.FromRNEscapes();
@@ -3360,7 +3336,7 @@ namespace AngelLoader.Forms
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
         {
             FMsDGV.InitFMContextMenu();
-            ShowMenu(FinishedOnMenu, EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
+            ShowMenu(FMsDGV.FinishedOnMenu, EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
         }
 
         private void ReadmeFullScreenButton_Click(object sender, EventArgs e)
