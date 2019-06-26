@@ -8,8 +8,6 @@ namespace AngelLoader.WinAPI
 {
     internal static class InteropMisc
     {
-        internal const int MK_CONTROL = 8;
-
         internal const int WM_USER = 0x0400;
         internal const int WM_REFLECT = WM_USER + 0x1C00;
         internal const int WM_NOTIFY = 0x004E;
@@ -70,6 +68,7 @@ namespace AngelLoader.WinAPI
 
         #region Keyboard
 
+        internal const int MK_CONTROL = 8;
         internal const int WM_KEYDOWN = 0x100;
         internal const int VK_ESCAPE = 0x1B;
 
