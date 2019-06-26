@@ -82,7 +82,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal TopRightTabsData()
         {
-            for (int i = 0; i < Tabs.Length; i++) Tabs[i] = new TopRightTabData();
+            for (int i = 0; i < TopRightTabsCount; i++) Tabs[i] = new TopRightTabData();
             ResetAllPositions();
         }
 
@@ -95,7 +95,7 @@ namespace AngelLoader.Common.DataClasses
         internal void EnsureValidity()
         {
             // Fallback if multiple tabs have the same position
-            if (Tabs.Distinct(new TopRightTabPositionComparer()).Count() != Tabs.Length) ResetAllPositions();
+            if (Tabs.Distinct(new TopRightTabPositionComparer()).Count() != TopRightTabsCount) ResetAllPositions();
 
             // Fallback if no tabs are visible
             if (NoneVisible()) SetAllVisible(true);
@@ -103,7 +103,7 @@ namespace AngelLoader.Common.DataClasses
             // Fallback if selected tab is not marked as visible
             if (!Tabs[(int)SelectedTab].Visible)
             {
-                for (int i = 0; i < Tabs.Length; i++)
+                for (int i = 0; i < TopRightTabsCount; i++)
                 {
                     if (Tabs[i].Visible)
                     {
@@ -117,18 +117,18 @@ namespace AngelLoader.Common.DataClasses
         private bool NoneVisible()
         {
             int count = 0;
-            for (int i = 0; i < Tabs.Length; i++) if (Tabs[i].Visible) count++;
+            for (int i = 0; i < TopRightTabsCount; i++) if (Tabs[i].Visible) count++;
             return count == 0;
         }
 
         private void SetAllVisible(bool visible)
         {
-            for (int i = 0; i < Tabs.Length; i++) Tabs[i].Visible = visible;
+            for (int i = 0; i < TopRightTabsCount; i++) Tabs[i].Visible = visible;
         }
 
         private void ResetAllPositions()
         {
-            for (int i = 0; i < Tabs.Length; i++) Tabs[i].Position = i;
+            for (int i = 0; i < TopRightTabsCount; i++) Tabs[i].Position = i;
         }
     }
 

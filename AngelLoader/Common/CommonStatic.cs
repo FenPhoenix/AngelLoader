@@ -8,14 +8,14 @@ namespace AngelLoader.Common
         internal static readonly ConfigData Config = new ConfigData();
 
         // These are the FMSel preset tags. Conforming to standards here.
-        internal static readonly GlobalCatAndTagsList PresetTags = new GlobalCatAndTagsList
+        internal static readonly GlobalCatAndTagsList PresetTags = new GlobalCatAndTagsList(6)
         {
             new GlobalCatAndTags {Category = new GlobalCatOrTag {Name = "author", IsPreset = true}},
             new GlobalCatAndTags {Category = new GlobalCatOrTag {Name = "contest", IsPreset = true}},
             new GlobalCatAndTags
             {
                 Category = new GlobalCatOrTag {Name = "genre", IsPreset = true},
-                Tags = new List<GlobalCatOrTag>
+                Tags = new List<GlobalCatOrTag>(5)
                 {
                     new GlobalCatOrTag {Name = "action", IsPreset = true},
                     new GlobalCatOrTag {Name = "crime", IsPreset = true},
@@ -27,7 +27,7 @@ namespace AngelLoader.Common
             new GlobalCatAndTags
             {
                 Category = new GlobalCatOrTag {Name = "language", IsPreset = true},
-                Tags = new List<GlobalCatOrTag>
+                Tags = new List<GlobalCatOrTag>(11)
                 {
                     new GlobalCatOrTag {Name = "English", IsPreset = true},
                     new GlobalCatOrTag {Name = "Czech", IsPreset = true},
@@ -46,7 +46,7 @@ namespace AngelLoader.Common
             new GlobalCatAndTags
             {
                 Category = new GlobalCatOrTag {Name = "misc", IsPreset = true},
-                Tags = new List<GlobalCatOrTag>
+                Tags = new List<GlobalCatOrTag>(6)
                 {
                     new GlobalCatOrTag {Name = "campaign", IsPreset = true},
                     new GlobalCatOrTag {Name = "demo", IsPreset = true},

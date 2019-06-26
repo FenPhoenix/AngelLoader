@@ -53,6 +53,10 @@ namespace AngelLoader.Common
 
     internal class GlobalCatAndTagsList : List<GlobalCatAndTags>
     {
+        public GlobalCatAndTagsList() { }
+
+        public GlobalCatAndTagsList(int capacity) : base(capacity) { }
+
         internal void DeepCopyTo(GlobalCatAndTagsList dest)
         {
             dest.Clear();
