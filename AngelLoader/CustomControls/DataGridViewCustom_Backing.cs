@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
+using AngelLoader.Common.Utility;
 using static AngelLoader.Common.Common;
 
 namespace AngelLoader.CustomControls
@@ -428,22 +429,13 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            FinishedOnNormalMenuItem.Checked = _finishedOnNormalChecked;
-            FinishedOnHardMenuItem.Checked = _finishedOnHardChecked;
-            FinishedOnExpertMenuItem.Checked = _finishedOnExpertChecked;
-            FinishedOnExtremeMenuItem.Checked = _finishedOnExtremeChecked;
-            FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
 
-            _fmMenuCreated = true;
-
-            UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
-
-            SetRatingMenuItemChecked(_rating);
+            #region Set main menu item values
 
             InstallUninstallMenuItem.Enabled = _installUninstallMenuEnabled;
-            InstallUninstallMenuItem.Text = _sayInstall
+            InstallUninstallMenuItem.Text = (_sayInstall
                     ? LText.FMsList.FMMenu_InstallFM
-                    : LText.FMsList.FMMenu_UninstallFM;
+                    : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
@@ -451,6 +443,22 @@ namespace AngelLoader.CustomControls
             OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
             ConvertAudioRCSubMenu.Enabled = _convertAudioSubMenuEnabled;
 
+            #region Set Finished On checked values
+
+            FinishedOnNormalMenuItem.Checked = _finishedOnNormalChecked;
+            FinishedOnHardMenuItem.Checked = _finishedOnHardChecked;
+            FinishedOnExpertMenuItem.Checked = _finishedOnExpertChecked;
+            FinishedOnExtremeMenuItem.Checked = _finishedOnExtremeChecked;
+            FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
+
+            #endregion
+
+            #endregion
+
+            _fmMenuCreated = true;
+
+            UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
+            SetRatingMenuItemChecked(_rating);
             SetFMMenuTextToLocalized();
         }
 
