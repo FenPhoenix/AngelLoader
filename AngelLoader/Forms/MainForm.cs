@@ -391,7 +391,7 @@ namespace AngelLoader.Forms
             UpdateRatingLists(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             UpdateRatingColumn(startup: true);
 
-            FMsDGV.FillColumns(Config.Columns);
+            FMsDGV.SetColumnData(Config.Columns);
 
             #endregion
 
@@ -1107,7 +1107,7 @@ namespace AngelLoader.Forms
                 NominalWindowLocation,
                 mainSplitterPercent,
                 topSplitterPercent,
-                FMsDGV.ColumnsToColumnData(),
+                FMsDGV.GetColumnData(),
                 FMsDGV.CurrentSortedColumn,
                 FMsDGV.CurrentSortDirection,
                 FMsDGV.DefaultCellStyle.Font.SizeInPoints,
@@ -2145,7 +2145,7 @@ namespace AngelLoader.Forms
 
             if (!startup)
             {
-                FMsDGV.FillColumns(FMsDGV.ColumnsToColumnData());
+                FMsDGV.SetColumnData(FMsDGV.GetColumnData());
                 RefreshFMsListKeepSelection();
             }
         }
@@ -2366,8 +2366,7 @@ namespace AngelLoader.Forms
                     c.Enabled = false;
                 }
 
-                FMsDGV.UncheckFinishedOnMenuItemsExceptUnknown();
-                FMsDGV.SetFinishedOnUnknownMenuItemChecked(false);
+                FMsDGV.ClearFinishedOnMenuItemChecks();
 
                 CommentTextBox.Text = "";
                 CommentTextBox.Enabled = false;
@@ -2478,7 +2477,6 @@ namespace AngelLoader.Forms
             if (fm.FinishedOnUnknown)
             {
                 FMsDGV.SetFinishedOnUnknownMenuItemChecked(true);
-                FMsDGV.UncheckFinishedOnMenuItemsExceptUnknown();
             }
             else
             {
@@ -3335,8 +3333,7 @@ namespace AngelLoader.Forms
 
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
         {
-            FMsDGV.InitFMContextMenu();
-            ShowMenu(FMsDGV.FinishedOnMenu, EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
+            ShowMenu(FMsDGV.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
         }
 
         private void ReadmeFullScreenButton_Click(object sender, EventArgs e)

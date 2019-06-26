@@ -161,7 +161,13 @@
     <Compile Include="Common\DataClasses\ConfigData.cs" />
     <Compile Include="Common\Errors.cs" />
     <Compile Include="Common\DataClasses\FanMissionData.cs" />
-    <Compile Include="CustomControls\DataGridViewCustom_Backing.cs">
+    <Compile Include="CustomControls\DataGridViewCustom\ColumnResize.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\DataGridViewCustom\Menu_ColumnHeader.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\DataGridViewCustom\Menu_FM.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomControls\RadioButtonCustom.cs">
@@ -271,7 +277,7 @@
     <Compile Include="Ini\FMData.cs" />
     <Compile Include="Ini\IniCommon.cs" />
     <Compile Include="Common\Paths.cs" />
-    <Compile Include="CustomControls\DataGridViewCustom.cs">
+    <Compile Include="CustomControls\DataGridViewCustom\DataGridViewCustom.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomControls\RichTextBoxCustom.cs">
