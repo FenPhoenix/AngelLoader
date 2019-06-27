@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-
 namespace AngelLoader.Ini
 {
     internal static partial class Ini
@@ -17,6 +16,8 @@ namespace AngelLoader.Ini
 
             if (fmsList.Count > 0) fmsList.Clear();
 
+            bool fmsListIsEmpty = true;
+
             foreach (var line in iniLines)
             {
                 var lineT = line.TrimStart();
@@ -26,10 +27,13 @@ namespace AngelLoader.Ini
                     if (lineT.Length >= 4 && lineT[1] == 'F' && lineT[2] == 'M' && lineT[3] == ']')
                     {
                         fmsList.Add(new FanMission());
+                        if (fmsListIsEmpty) fmsListIsEmpty = false;
                     }
 
                     continue;
                 }
+
+                if (fmsListIsEmpty) continue;
 
                 // Comment chars (;) and blank lines will be rejected implicitly.
                 // Since they're rare cases, checking for them would only slow us down.
