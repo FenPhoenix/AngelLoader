@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.CustomControls
 {
-    internal class RichTextBoxCustom_Interop
+    internal static class RichTextBoxCustom_Interop
     {
         [DllImport("user32.dll")]
         internal static extern IntPtr SetCursor(HandleRef hcursor);
