@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -975,7 +974,7 @@ namespace AngelLoader.Forms
 
         public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMButton.Visible = enabled;
 
-        public void ChangeRTFBoxFont(bool useFixed) => ReadmeRichTextBox.ChangeFont(useFixed);
+        public void ChangeRTFBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
 
         private void PositionFilterBarAfterTabs()
         {

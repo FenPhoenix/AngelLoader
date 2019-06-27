@@ -185,7 +185,13 @@
     <Compile Include="CustomControls\ListBoxCustom.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CustomControls\RichTextBoxCustom_Interop.cs" />
+    <Compile Include="CustomControls\RichTextBoxCustom\GLML.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\RichTextBoxCustom\Interop.cs" />
+    <Compile Include="CustomControls\RichTextBoxCustom\Workarounds.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\SettingsForm\FMDisplayPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -280,7 +286,7 @@
     <Compile Include="CustomControls\DataGridViewCustom\DataGridViewCustom.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CustomControls\RichTextBoxCustom.cs">
+    <Compile Include="CustomControls\RichTextBoxCustom\RichTextBoxCustom.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomControls\SplitContainerCustom.cs">
