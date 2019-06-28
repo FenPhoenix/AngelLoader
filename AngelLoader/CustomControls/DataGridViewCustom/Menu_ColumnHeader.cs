@@ -8,53 +8,104 @@ namespace AngelLoader.CustomControls
 {
     public sealed partial class DataGridViewCustom
     {
-        #region Backing fields
-
-        private bool _columnHeaderMenuCreated;
-        private readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
-
-        #endregion
-
-        private enum ColumnProperties { Visible, DisplayIndex, Width }
-
-        private IDisposable[] ColumnHeaderMenuDisposables;
-
-        #region Column header context menu fields
-
-        internal ContextMenuStripCustom ColumnHeaderContextMenu;
-
-        private ToolStripMenuItem ResetColumnVisibilityMenuItem;
-        private ToolStripMenuItem ResetAllColumnWidthsMenuItem;
-        private ToolStripMenuItem ResetColumnPositionsMenuItem;
-
-        private ToolStripSeparator ColumnHeaderContextMenuSep1;
-
-        private ToolStripMenuItem[] ColumnHeaderCheckBoxMenuItems;
-        private ToolStripMenuItem ShowGameMenuItem;
-        private ToolStripMenuItem ShowInstalledMenuItem;
-        private ToolStripMenuItem ShowTitleMenuItem;
-        private ToolStripMenuItem ShowArchiveMenuItem;
-        private ToolStripMenuItem ShowAuthorMenuItem;
-        private ToolStripMenuItem ShowSizeMenuItem;
-        private ToolStripMenuItem ShowRatingMenuItem;
-        private ToolStripMenuItem ShowFinishedMenuItem;
-        private ToolStripMenuItem ShowReleaseDateMenuItem;
-        private ToolStripMenuItem ShowLastPlayedMenuItem;
-        private ToolStripMenuItem ShowDisabledModsMenuItem;
-        private ToolStripMenuItem ShowCommentMenuItem;
-
-        #endregion
-
-        #region Private methods
-
-        private void InitColumnHeaderContextMenu()
+        private static class ColumnHeaderLLMenu
         {
-            if (_columnHeaderMenuCreated) return;
+            #region Control backing fields
 
-            #region Instantiation
+            private static bool _columnHeaderMenuCreated;
+            // Internal only because of a Debug.Assert() for length and I don't wanna make a method just for that
+            internal static readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
 
-            ColumnHeaderMenuDisposables = new IDisposable[]
+            #endregion
+
+            private static DataGridViewColumnCollection Columns;
+
+            private enum ColumnProperties { Visible, DisplayIndex, Width }
+
+            private static IDisposable[] ColumnHeaderMenuDisposables;
+
+            #region Column header context menu fields
+
+            private static ContextMenuStripCustom ColumnHeaderContextMenu;
+
+            private static ToolStripMenuItem ResetColumnVisibilityMenuItem;
+            private static ToolStripMenuItem ResetAllColumnWidthsMenuItem;
+            private static ToolStripMenuItem ResetColumnPositionsMenuItem;
+
+            private static ToolStripSeparator ColumnHeaderContextMenuSep1;
+
+            private static ToolStripMenuItem[] ColumnHeaderCheckBoxMenuItems;
+            private static ToolStripMenuItem ShowGameMenuItem;
+            private static ToolStripMenuItem ShowInstalledMenuItem;
+            private static ToolStripMenuItem ShowTitleMenuItem;
+            private static ToolStripMenuItem ShowArchiveMenuItem;
+            private static ToolStripMenuItem ShowAuthorMenuItem;
+            private static ToolStripMenuItem ShowSizeMenuItem;
+            private static ToolStripMenuItem ShowRatingMenuItem;
+            private static ToolStripMenuItem ShowFinishedMenuItem;
+            private static ToolStripMenuItem ShowReleaseDateMenuItem;
+            private static ToolStripMenuItem ShowLastPlayedMenuItem;
+            private static ToolStripMenuItem ShowDisabledModsMenuItem;
+            private static ToolStripMenuItem ShowCommentMenuItem;
+
+            #endregion
+
+            #region Private methods
+
+            private static void ResetPropertyOnAllColumns(ColumnProperties property)
             {
+                for (var i = 0; i < Columns.Count; i++)
+                {
+                    DataGridViewColumn c = Columns[i];
+                    switch (property)
+                    {
+                        case ColumnProperties.Visible:
+                            MakeColumnVisible(c, true);
+                            break;
+                        case ColumnProperties.DisplayIndex:
+                            c.DisplayIndex = c.Index;
+                            break;
+                        case ColumnProperties.Width:
+                            if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
+                            break;
+                    }
+
+                    SetColumnChecked(c.Index, c.Visible);
+                }
+            }
+
+            #endregion
+
+            #region Private event handlers
+
+            private static void ResetColumnVisibilityMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
+
+            private static void ResetColumnPositionsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
+
+            private static void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
+
+            private static void CheckBoxMenuItem_Click(object sender, EventArgs e)
+            {
+                var s = (ToolStripMenuItem)sender;
+                MakeColumnVisible(Columns[(int)s.Tag], s.Checked);
+            }
+
+            #endregion
+
+            #region Internal methods
+
+            internal static ContextMenuStrip GetContextMenu() => ColumnHeaderContextMenu;
+
+            internal static void InitColumnHeaderContextMenu(DataGridViewColumnCollection columns)
+            {
+                if (_columnHeaderMenuCreated) return;
+
+                Columns = columns;
+
+                #region Instantiation
+
+                ColumnHeaderMenuDisposables = new IDisposable[]
+                {
                 (ColumnHeaderContextMenu = new ContextMenuStripCustom { Name = nameof(ColumnHeaderContextMenu) }),
                 (ResetColumnVisibilityMenuItem = new ToolStripMenuItem { Name = nameof(ResetColumnVisibilityMenuItem) }),
                 (ResetAllColumnWidthsMenuItem = new ToolStripMenuItem { Name = nameof(ResetAllColumnWidthsMenuItem) }),
@@ -132,14 +183,14 @@ namespace AngelLoader.CustomControls
                     Name = nameof(ShowCommentMenuItem),
                     Tag = Column.Comment
                 })
-            };
+                };
 
-            #endregion
+                #endregion
 
-            #region Fill ColumnHeaderCheckBoxMenuItems array
+                #region Fill ColumnHeaderCheckBoxMenuItems array
 
-            ColumnHeaderCheckBoxMenuItems = new[]
-            {
+                ColumnHeaderCheckBoxMenuItems = new[]
+                {
                 ShowGameMenuItem,
                 ShowInstalledMenuItem,
                 ShowTitleMenuItem,
@@ -154,17 +205,17 @@ namespace AngelLoader.CustomControls
                 ShowCommentMenuItem
             };
 
-            for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
-            {
-                ColumnHeaderCheckBoxMenuItems[i].Checked = ColumnCheckedStates[i];
-            }
+                for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
+                {
+                    ColumnHeaderCheckBoxMenuItems[i].Checked = ColumnCheckedStates[i];
+                }
 
-            #endregion
+                #endregion
 
-            #region Add items to menu
+                #region Add items to menu
 
-            ColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
-            {
+                ColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
+                {
                 ResetColumnVisibilityMenuItem,
                 ResetAllColumnWidthsMenuItem,
                 ResetColumnPositionsMenuItem,
@@ -181,118 +232,81 @@ namespace AngelLoader.CustomControls
                 ShowLastPlayedMenuItem,
                 ShowDisabledModsMenuItem,
                 ShowCommentMenuItem
-            });
+                });
 
-            #endregion
+                #endregion
 
-            ColumnHeaderContextMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
+                ColumnHeaderContextMenu.SetPreventCloseOnClickItems(ColumnHeaderCheckBoxMenuItems);
 
-            #region Event hookups
+                #region Event hookups
 
-            ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
-            ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
-            ResetColumnPositionsMenuItem.Click += ResetColumnPositionsMenuItem_Click;
+                ResetColumnVisibilityMenuItem.Click += ResetColumnVisibilityMenuItem_Click;
+                ResetAllColumnWidthsMenuItem.Click += ResetAllColumnWidthsMenuItem_Click;
+                ResetColumnPositionsMenuItem.Click += ResetColumnPositionsMenuItem_Click;
 
-            ShowGameMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowInstalledMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowTitleMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowArchiveMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowAuthorMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowSizeMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowRatingMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowFinishedMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowReleaseDateMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
-            ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowGameMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowInstalledMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowTitleMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowArchiveMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowAuthorMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowSizeMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowRatingMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowFinishedMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowReleaseDateMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
 
-            #endregion
+                #endregion
 
-            _columnHeaderMenuCreated = true;
+                _columnHeaderMenuCreated = true;
 
-            SetColumnHeaderMenuItemTextToLocalized();
-        }
+                SetColumnHeaderMenuItemTextToLocalized();
+            }
 
-        private void SetColumnHeaderMenuItemTextToLocalized()
-        {
-            if (!_columnHeaderMenuCreated) return;
-
-            ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
-            ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
-            ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions.EscapeAmpersands();
-
-            ShowGameMenuItem.Text = LText.FMsList.GameColumn.EscapeAmpersands();
-            ShowInstalledMenuItem.Text = LText.FMsList.InstalledColumn.EscapeAmpersands();
-            ShowTitleMenuItem.Text = LText.FMsList.TitleColumn.EscapeAmpersands();
-            ShowArchiveMenuItem.Text = LText.FMsList.ArchiveColumn.EscapeAmpersands();
-            ShowAuthorMenuItem.Text = LText.FMsList.AuthorColumn.EscapeAmpersands();
-            ShowSizeMenuItem.Text = LText.FMsList.SizeColumn.EscapeAmpersands();
-            ShowRatingMenuItem.Text = LText.FMsList.RatingColumn.EscapeAmpersands();
-            ShowFinishedMenuItem.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
-            ShowReleaseDateMenuItem.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
-            ShowLastPlayedMenuItem.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
-            ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
-            ShowCommentMenuItem.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
-        }
-        
-        private void ResetPropertyOnAllColumns(ColumnProperties property)
-        {
-            for (var i = 0; i < Columns.Count; i++)
+            internal static void SetColumnHeaderMenuItemTextToLocalized()
             {
-                DataGridViewColumn c = Columns[i];
-                switch (property)
+                if (!_columnHeaderMenuCreated) return;
+
+                ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
+                ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
+                ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions.EscapeAmpersands();
+
+                ShowGameMenuItem.Text = LText.FMsList.GameColumn.EscapeAmpersands();
+                ShowInstalledMenuItem.Text = LText.FMsList.InstalledColumn.EscapeAmpersands();
+                ShowTitleMenuItem.Text = LText.FMsList.TitleColumn.EscapeAmpersands();
+                ShowArchiveMenuItem.Text = LText.FMsList.ArchiveColumn.EscapeAmpersands();
+                ShowAuthorMenuItem.Text = LText.FMsList.AuthorColumn.EscapeAmpersands();
+                ShowSizeMenuItem.Text = LText.FMsList.SizeColumn.EscapeAmpersands();
+                ShowRatingMenuItem.Text = LText.FMsList.RatingColumn.EscapeAmpersands();
+                ShowFinishedMenuItem.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
+                ShowReleaseDateMenuItem.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
+                ShowLastPlayedMenuItem.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
+                ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
+                ShowCommentMenuItem.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
+            }
+
+            internal static void SetColumnChecked(int index, bool enabled)
+            {
+                if (_columnHeaderMenuCreated)
                 {
-                    case ColumnProperties.Visible:
-                        MakeColumnVisible(c, true);
-                        break;
-                    case ColumnProperties.DisplayIndex:
-                        c.DisplayIndex = c.Index;
-                        break;
-                    case ColumnProperties.Width:
-                        if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
-                        break;
+                    ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
                 }
-
-                SetColumnChecked(c.Index, c.Visible);
+                else
+                {
+                    ColumnCheckedStates[index] = enabled;
+                }
             }
-        }
 
-        private void SetColumnChecked(int index, bool enabled)
-        {
-            if (_columnHeaderMenuCreated)
+            internal static void Dispose()
             {
-                ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
+                for (int i = 0; i < ColumnHeaderMenuDisposables?.Length; i++)
+                {
+                    ColumnHeaderMenuDisposables[i]?.Dispose();
+                }
             }
-            else
-            {
-                ColumnCheckedStates[index] = enabled;
-            }
-        }
 
-        #endregion
-
-        #region Event handlers
-
-        private void ResetColumnVisibilityMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Visible);
-
-        private void ResetColumnPositionsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.DisplayIndex);
-
-        private void ResetAllColumnWidthsMenuItem_Click(object sender, EventArgs e) => ResetPropertyOnAllColumns(ColumnProperties.Width);
-
-        private void CheckBoxMenuItem_Click(object sender, EventArgs e)
-        {
-            var s = (ToolStripMenuItem)sender;
-            MakeColumnVisible(Columns[(int)s.Tag], s.Checked);
-        }
-
-        #endregion
-
-        private void DisposeColumnHeaderMenu()
-        {
-            for (int i = 0; i < ColumnHeaderMenuDisposables?.Length; i++)
-            {
-                ColumnHeaderMenuDisposables[i]?.Dispose();
-            }
+            #endregion
         }
     }
 }

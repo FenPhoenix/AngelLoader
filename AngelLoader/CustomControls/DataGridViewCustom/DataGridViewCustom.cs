@@ -75,8 +75,8 @@ namespace AngelLoader.CustomControls
         {
             DoubleBuffered = true;
 
-            Debug.Assert(Enum.GetValues(typeof(Column)).Length == ColumnCheckedStates.Length,
-                nameof(Column) + ".Length != " + nameof(ColumnCheckedStates) + ".Length");
+            Debug.Assert(Enum.GetValues(typeof(Column)).Length == ColumnHeaderLLMenu.ColumnCheckedStates.Length,
+                nameof(Column) + ".Length != " + nameof(ColumnHeaderLLMenu.ColumnCheckedStates) + ".Length");
         }
 
         internal void InjectOwner(IView owner) => Owner = owner;
@@ -143,8 +143,8 @@ namespace AngelLoader.CustomControls
 
         internal void SetContextMenuToColumnHeader()
         {
-            InitColumnHeaderContextMenu();
-            ContextMenuStrip = ColumnHeaderContextMenu;
+            ColumnHeaderLLMenu.InitColumnHeaderContextMenu(Columns);
+            ContextMenuStrip = ColumnHeaderLLMenu.GetContextMenu();
         }
 
         internal void SetContextMenuToFM()
@@ -208,7 +208,7 @@ namespace AngelLoader.CustomControls
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
                 MakeColumnVisible(col, colData.Visible);
 
-                SetColumnChecked((int)colData.Id, colData.Visible);
+                ColumnHeaderLLMenu.SetColumnChecked((int)colData.Id, colData.Visible);
             }
         }
 
@@ -216,7 +216,7 @@ namespace AngelLoader.CustomControls
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {
-            SetColumnHeaderMenuItemTextToLocalized();
+            ColumnHeaderLLMenu.SetColumnHeaderMenuItemTextToLocalized();
             SetFMMenuTextToLocalized();
         }
 
@@ -265,7 +265,7 @@ namespace AngelLoader.CustomControls
         {
             if (disposing)
             {
-                DisposeColumnHeaderMenu();
+                ColumnHeaderLLMenu.Dispose();
                 DisposeFMContextMenu();
             }
             base.Dispose(disposing);
