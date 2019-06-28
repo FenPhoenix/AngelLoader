@@ -1,13 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2048
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngelLoader", "AngelLoader\AngelLoader.csproj", "{AF85B663-5D2C-481A-B301-D9047D494C2C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngelLoader_Stub", "AngelLoader_Stub\AngelLoader_Stub.csproj", "{6E7D8852-C691-4923-89B7-1D16165E215E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FMScanner", "..\FMScanner\FMScanner\FMScanner.csproj", "{C1821715-157D-4A33-8170-2953714BB7C0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FenGen", "FenGen\FenGen.csproj", "{F8729702-3C79-44D3-97A0-836D30D452B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +94,26 @@ Global
 		{C1821715-157D-4A33-8170-2953714BB7C0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C1821715-157D-4A33-8170-2953714BB7C0}.Release|x86.ActiveCfg = Release|x86
 		{C1821715-157D-4A33-8170-2953714BB7C0}.Release|x86.Build.0 = Release|x86
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Debug|x86.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Debug|x86.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Beta|Any CPU.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Beta|Any CPU.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Beta|x86.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Beta|x86.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Public|Any CPU.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Public|Any CPU.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Public|x86.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Public|x86.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Testing|Any CPU.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Testing|x86.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release_Testing|x86.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release|x86.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

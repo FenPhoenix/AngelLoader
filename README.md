@@ -26,9 +26,3 @@ In short, AngelLoader aims to be a complete successor to DarkLoader, being an al
     - For the minimal build:
         - Just extract the ffmpeg folder to the solution base dir.
     - My custom build should be a NuGet package, but I can't figure out how to make a NuGet package consisting only of binaries, as no matter what I try it just gleefully vomits out an empty .dll along with the actual stuff
-    
-- **(Optional)** Download [AL_FenGen](https://github.com/FenPhoenix/AL_FenGen). Change its Build Events copy line to point to `[your AngelLoader solution directory]\FenGen` and build it (must be built in Release mode as Debug mode will show a form and not complete automatically!) .**\***
-
-**\*** AL_FenGen is an _extremely_ Internal Tool<sup>TM</sup> and liable to screw up spectacularly if you don't have an intimate knowledge of its internal functionings. It's not strictly needed, it just regenerates some files that already exist and which you can edit by hand if you absolutely need to (eg., it generates ini readers and writers in order to avoid runtime reflection, unnecessary IndexOf()s and string concatenations, etc. and therefore achieve the fastest possible performance, which is critical for files of unbounded length that need to be read on startup).
-
-If you're just changing or adding language strings, if you follow the format that's already there, it shouldn't have any problem. Changing the FanMissionData class is much more problematic. Adding fields that are enums (or making changes to enums that are already there) or non-primitive types will most probably require additions to AL_FenGen's code. AL_FenGen is provided as a convenience only.

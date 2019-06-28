@@ -525,14 +525,18 @@ xcopy "$(SolutionDir)doc" "%25destDir%25doc\" /y /i /e</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>rem Autogenerate code
-"$(SolutionDir)\FenGen\FenGen.exe" -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
-"$(SolutionDir)\FenGen\FenGen.exe" -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
+rem ---
+set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
+
+%25FenGen%25 -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
+%25FenGen%25 -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
 
 if $(ConfigurationName) == Release_Beta (
-"$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"
+%25FenGen%25 -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"
 ) else if $(ConfigurationName) == Release_Public (
-rem "$(SolutionDir)\FenGen\FenGen.exe" -version "$(ProjectDir)Properties\AssemblyInfo.cs" "public"
+rem %25FenGen%25 -version "$(ProjectDir)Properties\AssemblyInfo.cs" "public"
 )
+rem ---
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
   </PropertyGroup>
