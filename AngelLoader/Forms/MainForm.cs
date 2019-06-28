@@ -669,8 +669,8 @@ namespace AngelLoader.Forms
             }
             else
             {
-                BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
-                BottomRightButtonsFlowLayoutPanel.SuspendLayout();
+                BottomLeftButtonsFLP.SuspendLayout();
+                BottomRightButtonsFLP.SuspendLayout();
                 StatsCheckBoxesPanel.SuspendLayout();
                 EditFMTabPage.SuspendLayout();
                 CommentTabPage.SuspendLayout();
@@ -919,8 +919,8 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    BottomLeftButtonsFlowLayoutPanel.ResumeLayout();
-                    BottomRightButtonsFlowLayoutPanel.ResumeLayout();
+                    BottomLeftButtonsFLP.ResumeLayout();
+                    BottomRightButtonsFLP.ResumeLayout();
                     StatsCheckBoxesPanel.ResumeLayout();
                     EditFMTabPage.ResumeLayout();
                     CommentTabPage.ResumeLayout();
@@ -991,14 +991,14 @@ namespace AngelLoader.Forms
             }
 
             FilterBarFLP.Location = new Point(FilterBarAfterTabsX, FilterBarFLP.Location.Y);
-            FilterBarFLP.Width = (RefreshClearToolStripCustom.Location.X - 4) - FilterBarFLP.Location.X;
+            FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
         }
 
         public void ChangeGameOrganization()
         {
             if (Config.GameOrganization == GameOrganization.OneList)
             {
-                FilterGamesLeftSepToolStripCustom.Hide();
+                FilterGamesLeftSepToolStrip.Hide();
                 GamesTabControl.Hide();
                 // Don't inline this var - it stores the X value to persist it through a change
                 var plusWidth = FilterBarFLP.Location.X;
@@ -1016,7 +1016,7 @@ namespace AngelLoader.Forms
                 PositionFilterBarAfterTabs();
 
                 FilterGameButtonsToolStrip.Hide();
-                FilterGamesLeftSepToolStripCustom.Show();
+                FilterGamesLeftSepToolStrip.Show();
                 GamesTabControl.Show();
 
                 Config.GameTabsState.DeepCopyTo(FMsDGV.GameTabsState);
@@ -2076,7 +2076,7 @@ namespace AngelLoader.Forms
             FMsListZoomInButton.Visible = visible;
             FMsListZoomOutButton.Visible = visible;
             FMsListResetZoomButton.Visible = visible;
-            FilterBarFLP.Width = (RefreshClearToolStripCustom.Location.X - 4) - FilterBarFLP.Location.X;
+            FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
         }
 
         public void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup)
@@ -3363,7 +3363,7 @@ namespace AngelLoader.Forms
                 // Don't set it based on the filter bar width and location, otherwise it gets it slightly wrong
                 // the first time
                 FilterBarScrollRightButton.Location = new Point(
-                    RefreshClearToolStripCustom.Location.X - FilterBarScrollRightButton.Width - 4,
+                    RefreshAreaToolStrip.Location.X - FilterBarScrollRightButton.Width - 4,
                     flp.Location.Y + 1);
                 FilterBarScrollRightButton.Show();
             }
@@ -3435,8 +3435,8 @@ namespace AngelLoader.Forms
             using (var f = new FilterDateForm(title, fromDate, toDate))
             {
                 f.Location = FilterBarFLP.PointToScreen(new Point(
-                    FilterIconButtonsToolStripCustom.Location.X + button.Bounds.X,
-                    FilterIconButtonsToolStripCustom.Location.Y + button.Bounds.Y + button.Height));
+                    FilterIconButtonsToolStrip.Location.X + button.Bounds.X,
+                    FilterIconButtonsToolStrip.Location.Y + button.Bounds.Y + button.Height));
 
                 if (f.ShowDialog() != DialogResult.OK) return;
 
@@ -3493,9 +3493,9 @@ namespace AngelLoader.Forms
             {
                 f.Location =
                     FilterBarFLP.PointToScreen(new Point(
-                        FilterIconButtonsToolStripCustom.Location.X +
+                        FilterIconButtonsToolStrip.Location.X +
                         FilterByRatingButton.Bounds.X,
-                        FilterIconButtonsToolStripCustom.Location.Y +
+                        FilterIconButtonsToolStrip.Location.Y +
                         FilterByRatingButton.Bounds.Y +
                         FilterByRatingButton.Height));
 

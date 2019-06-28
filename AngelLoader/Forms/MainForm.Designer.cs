@@ -30,26 +30,26 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
             this.Test2Button = new System.Windows.Forms.Button();
             this.TestButton = new System.Windows.Forms.Button();
             this.ScanAllFMsButton = new System.Windows.Forms.Button();
             this.BottomPanel = new System.Windows.Forms.Panel();
-            this.BottomRightButtonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SettingsButton = new System.Windows.Forms.Button();
             this.ImportButton = new System.Windows.Forms.Button();
-            this.BottomLeftButtonsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
             this.InstallUninstallFMButton = new System.Windows.Forms.Button();
-            this.BottomAreaToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.BottomAreaToolStripCustom2 = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomAreaSep2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.BottomScanAllFMsSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomScanAllFMsLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.BottomWebSearchLeftSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
+            this.BottomWebSearchLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.WebSearchButton = new System.Windows.Forms.Button();
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
@@ -73,45 +73,45 @@
             this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FilterBarFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.FilterGamesLeftSepToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
+            this.FilterGamesLeftSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterGamesLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterGameButtonsToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterByThief1Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByThief2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByThief3Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.toolStripSeparator6 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterTitleLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterTitleLabel = new System.Windows.Forms.Label();
             this.FilterTitleTextBox = new System.Windows.Forms.TextBox();
-            this.TitleAuthorSep = new AngelLoader.CustomControls.ToolStripCustom();
-            this.toolStripSeparatorCustom2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterAuthorLeftSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
+            this.FilterAuthorLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterAuthorLabel = new System.Windows.Forms.Label();
             this.FilterAuthorTextBox = new System.Windows.Forms.TextBox();
-            this.FilterIconButtonsToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
-            this.toolStripSeparator5 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterIconButtonsToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
+            this.FilterReleaseDateLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByReleaseDateButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByReleaseDateLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparatorCustom1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterLastPlayedLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByLastPlayedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByLastPlayedLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator2 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterTagsLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByTagsButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.toolStripSeparator4 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterFinishedLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByFinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByUnfinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.toolStripSeparator1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterRatingLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByRatingLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.FilterShowUnsupportedLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterShowUnsupportedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.RefreshClearToolStripCustom = new AngelLoader.CustomControls.ToolStripCustom();
+            this.RefreshAreaToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.FMsListZoomInButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FMsListZoomOutButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FMsListResetZoomButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.toolStripSeparatorCustom4 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.RefreshAreaLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.RefreshFromDiskButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.ClearFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.toolStripSeparatorCustom3 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.ResetLayoutLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.ResetLayoutButton = new System.Windows.Forms.Button();
             this.GamesTabControl = new System.Windows.Forms.TabControl();
             this.Thief1TabPage = new System.Windows.Forms.TabPage();
@@ -159,7 +159,7 @@
             this.TagsTabPage = new System.Windows.Forms.TabPage();
             this.AddTagButton = new System.Windows.Forms.Button();
             this.AddTagTextBox = new AngelLoader.CustomControls.TextBoxCustom();
-            this.AddRemoveTagFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.AddRemoveTagFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.RemoveTagButton = new System.Windows.Forms.Button();
             this.AddTagFromListButton = new System.Windows.Forms.Button();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
@@ -179,7 +179,7 @@
             this.ResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ChooseReadmePanel = new System.Windows.Forms.Panel();
-            this.ChooseReadmeOKFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.ChooseReadmeOKFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
@@ -203,10 +203,10 @@
             this.TRM_TagsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_PatchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomPanel.SuspendLayout();
-            this.BottomRightButtonsFlowLayoutPanel.SuspendLayout();
-            this.BottomLeftButtonsFlowLayoutPanel.SuspendLayout();
-            this.BottomAreaToolStripCustom.SuspendLayout();
-            this.BottomAreaToolStripCustom2.SuspendLayout();
+            this.BottomRightButtonsFLP.SuspendLayout();
+            this.BottomLeftButtonsFLP.SuspendLayout();
+            this.BottomScanAllFMsSepToolStrip.SuspendLayout();
+            this.BottomWebSearchLeftSepToolStrip.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
@@ -218,11 +218,11 @@
             this.TopSplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FMsDGV)).BeginInit();
             this.FilterBarFLP.SuspendLayout();
-            this.FilterGamesLeftSepToolStripCustom.SuspendLayout();
+            this.FilterGamesLeftSepToolStrip.SuspendLayout();
             this.FilterGameButtonsToolStrip.SuspendLayout();
-            this.TitleAuthorSep.SuspendLayout();
-            this.FilterIconButtonsToolStripCustom.SuspendLayout();
-            this.RefreshClearToolStripCustom.SuspendLayout();
+            this.FilterAuthorLeftSepToolStrip.SuspendLayout();
+            this.FilterIconButtonsToolStrip.SuspendLayout();
+            this.RefreshAreaToolStrip.SuspendLayout();
             this.GamesTabControl.SuspendLayout();
             this.TopRightTabControl.SuspendLayout();
             this.StatisticsTabPage.SuspendLayout();
@@ -230,12 +230,12 @@
             this.EditFMTabPage.SuspendLayout();
             this.CommentTabPage.SuspendLayout();
             this.TagsTabPage.SuspendLayout();
-            this.AddRemoveTagFlowLayoutPanel.SuspendLayout();
+            this.AddRemoveTagFLP.SuspendLayout();
             this.PatchTabPage.SuspendLayout();
             this.PatchMainPanel.SuspendLayout();
             this.PatchDMLsPanel.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
-            this.ChooseReadmeOKFlowLayoutPanel.SuspendLayout();
+            this.ChooseReadmeOKFLP.SuspendLayout();
             this.PlayOriginalGameMenu.SuspendLayout();
             this.ImportFromMenu.SuspendLayout();
             this.TopRightMenu.SuspendLayout();
@@ -286,8 +286,8 @@
             // 
             // BottomPanel
             // 
-            this.BottomPanel.Controls.Add(this.BottomRightButtonsFlowLayoutPanel);
-            this.BottomPanel.Controls.Add(this.BottomLeftButtonsFlowLayoutPanel);
+            this.BottomPanel.Controls.Add(this.BottomRightButtonsFLP);
+            this.BottomPanel.Controls.Add(this.BottomLeftButtonsFLP);
             this.BottomPanel.Controls.Add(this.DebugLabel);
             this.BottomPanel.Controls.Add(this.DebugLabel2);
             this.BottomPanel.Controls.Add(this.Test2Button);
@@ -298,18 +298,18 @@
             this.BottomPanel.Size = new System.Drawing.Size(1671, 44);
             this.BottomPanel.TabIndex = 1;
             // 
-            // BottomRightButtonsFlowLayoutPanel
+            // BottomRightButtonsFLP
             // 
-            this.BottomRightButtonsFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BottomRightButtonsFlowLayoutPanel.AutoSize = true;
-            this.BottomRightButtonsFlowLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BottomRightButtonsFlowLayoutPanel.Controls.Add(this.SettingsButton);
-            this.BottomRightButtonsFlowLayoutPanel.Controls.Add(this.ImportButton);
-            this.BottomRightButtonsFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomRightButtonsFlowLayoutPanel.Location = new System.Drawing.Point(1443, 0);
-            this.BottomRightButtonsFlowLayoutPanel.Name = "BottomRightButtonsFlowLayoutPanel";
-            this.BottomRightButtonsFlowLayoutPanel.Size = new System.Drawing.Size(226, 42);
-            this.BottomRightButtonsFlowLayoutPanel.TabIndex = 37;
+            this.BottomRightButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BottomRightButtonsFLP.AutoSize = true;
+            this.BottomRightButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BottomRightButtonsFLP.Controls.Add(this.SettingsButton);
+            this.BottomRightButtonsFLP.Controls.Add(this.ImportButton);
+            this.BottomRightButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomRightButtonsFLP.Location = new System.Drawing.Point(1443, 0);
+            this.BottomRightButtonsFLP.Name = "BottomRightButtonsFLP";
+            this.BottomRightButtonsFLP.Size = new System.Drawing.Size(226, 42);
+            this.BottomRightButtonsFLP.TabIndex = 37;
             // 
             // SettingsButton
             // 
@@ -341,21 +341,21 @@
             this.ImportButton.UseVisualStyleBackColor = true;
             this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
             // 
-            // BottomLeftButtonsFlowLayoutPanel
+            // BottomLeftButtonsFLP
             // 
-            this.BottomLeftButtonsFlowLayoutPanel.AutoSize = true;
-            this.BottomLeftButtonsFlowLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.PlayFMButton);
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.PlayOriginalGameButton);
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.InstallUninstallFMButton);
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.BottomAreaToolStripCustom);
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.ScanAllFMsButton);
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.BottomAreaToolStripCustom2);
-            this.BottomLeftButtonsFlowLayoutPanel.Controls.Add(this.WebSearchButton);
-            this.BottomLeftButtonsFlowLayoutPanel.Location = new System.Drawing.Point(2, 0);
-            this.BottomLeftButtonsFlowLayoutPanel.Name = "BottomLeftButtonsFlowLayoutPanel";
-            this.BottomLeftButtonsFlowLayoutPanel.Size = new System.Drawing.Size(616, 42);
-            this.BottomLeftButtonsFlowLayoutPanel.TabIndex = 36;
+            this.BottomLeftButtonsFLP.AutoSize = true;
+            this.BottomLeftButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BottomLeftButtonsFLP.Controls.Add(this.PlayFMButton);
+            this.BottomLeftButtonsFLP.Controls.Add(this.PlayOriginalGameButton);
+            this.BottomLeftButtonsFLP.Controls.Add(this.InstallUninstallFMButton);
+            this.BottomLeftButtonsFLP.Controls.Add(this.BottomScanAllFMsSepToolStrip);
+            this.BottomLeftButtonsFLP.Controls.Add(this.ScanAllFMsButton);
+            this.BottomLeftButtonsFLP.Controls.Add(this.BottomWebSearchLeftSepToolStrip);
+            this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
+            this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
+            this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
+            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(616, 42);
+            this.BottomLeftButtonsFLP.TabIndex = 36;
             // 
             // PlayFMButton
             // 
@@ -402,43 +402,43 @@
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
             this.InstallUninstallFMButton.Click += new System.EventHandler(this.InstallUninstallFMButton_Click);
             // 
-            // BottomAreaToolStripCustom
+            // BottomScanAllFMsSepToolStrip
             // 
-            this.BottomAreaToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep1});
-            this.BottomAreaToolStripCustom.Location = new System.Drawing.Point(354, 0);
-            this.BottomAreaToolStripCustom.Name = "BottomAreaToolStripCustom";
-            this.BottomAreaToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom.TabIndex = 32;
+            this.BottomScanAllFMsSepToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomScanAllFMsSepToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomScanAllFMsSepToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomScanAllFMsLeftSep});
+            this.BottomScanAllFMsSepToolStrip.Location = new System.Drawing.Point(354, 0);
+            this.BottomScanAllFMsSepToolStrip.Name = "BottomScanAllFMsSepToolStrip";
+            this.BottomScanAllFMsSepToolStrip.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomScanAllFMsSepToolStrip.PaddingDrawNudge = 0;
+            this.BottomScanAllFMsSepToolStrip.Size = new System.Drawing.Size(8, 42);
+            this.BottomScanAllFMsSepToolStrip.TabIndex = 32;
             // 
-            // BottomAreaSep1
+            // BottomScanAllFMsLeftSep
             // 
-            this.BottomAreaSep1.AutoSize = false;
-            this.BottomAreaSep1.Name = "BottomAreaSep1";
-            this.BottomAreaSep1.Size = new System.Drawing.Size(6, 42);
+            this.BottomScanAllFMsLeftSep.AutoSize = false;
+            this.BottomScanAllFMsLeftSep.Name = "BottomScanAllFMsLeftSep";
+            this.BottomScanAllFMsLeftSep.Size = new System.Drawing.Size(6, 42);
             // 
-            // BottomAreaToolStripCustom2
+            // BottomWebSearchLeftSepToolStrip
             // 
-            this.BottomAreaToolStripCustom2.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomAreaToolStripCustom2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomAreaSep2});
-            this.BottomAreaToolStripCustom2.Location = new System.Drawing.Point(491, 0);
-            this.BottomAreaToolStripCustom2.Name = "BottomAreaToolStripCustom2";
-            this.BottomAreaToolStripCustom2.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomAreaToolStripCustom2.PaddingDrawNudge = 0;
-            this.BottomAreaToolStripCustom2.Size = new System.Drawing.Size(8, 42);
-            this.BottomAreaToolStripCustom2.TabIndex = 35;
+            this.BottomWebSearchLeftSepToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
+            this.BottomWebSearchLeftSepToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.BottomWebSearchLeftSepToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BottomWebSearchLeftSep});
+            this.BottomWebSearchLeftSepToolStrip.Location = new System.Drawing.Point(491, 0);
+            this.BottomWebSearchLeftSepToolStrip.Name = "BottomWebSearchLeftSepToolStrip";
+            this.BottomWebSearchLeftSepToolStrip.Padding = new System.Windows.Forms.Padding(0);
+            this.BottomWebSearchLeftSepToolStrip.PaddingDrawNudge = 0;
+            this.BottomWebSearchLeftSepToolStrip.Size = new System.Drawing.Size(8, 42);
+            this.BottomWebSearchLeftSepToolStrip.TabIndex = 35;
             // 
-            // BottomAreaSep2
+            // BottomWebSearchLeftSep
             // 
-            this.BottomAreaSep2.AutoSize = false;
-            this.BottomAreaSep2.Name = "BottomAreaSep2";
-            this.BottomAreaSep2.Size = new System.Drawing.Size(6, 42);
+            this.BottomWebSearchLeftSep.AutoSize = false;
+            this.BottomWebSearchLeftSep.Name = "BottomWebSearchLeftSep";
+            this.BottomWebSearchLeftSep.Size = new System.Drawing.Size(6, 42);
             // 
             // WebSearchButton
             // 
@@ -544,7 +544,7 @@
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarScrollLeftButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.FMsDGV);
             this.TopSplitContainer.Panel1.Controls.Add(this.FilterBarFLP);
-            this.TopSplitContainer.Panel1.Controls.Add(this.RefreshClearToolStripCustom);
+            this.TopSplitContainer.Panel1.Controls.Add(this.RefreshAreaToolStrip);
             this.TopSplitContainer.Panel1.Controls.Add(this.ResetLayoutButton);
             this.TopSplitContainer.Panel1.Controls.Add(this.GamesTabControl);
             // 
@@ -602,14 +602,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -624,26 +624,26 @@
             this.LastPlayedColumn,
             this.DisabledModsColumn,
             this.CommentColumn});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -704,8 +704,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -767,14 +767,14 @@
             this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
-            this.FilterBarFLP.Controls.Add(this.FilterGamesLeftSepToolStripCustom);
+            this.FilterBarFLP.Controls.Add(this.FilterGamesLeftSepToolStrip);
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
             this.FilterBarFLP.Controls.Add(this.FilterTitleLabel);
             this.FilterBarFLP.Controls.Add(this.FilterTitleTextBox);
-            this.FilterBarFLP.Controls.Add(this.TitleAuthorSep);
+            this.FilterBarFLP.Controls.Add(this.FilterAuthorLeftSepToolStrip);
             this.FilterBarFLP.Controls.Add(this.FilterAuthorLabel);
             this.FilterBarFLP.Controls.Add(this.FilterAuthorTextBox);
-            this.FilterBarFLP.Controls.Add(this.FilterIconButtonsToolStripCustom);
+            this.FilterBarFLP.Controls.Add(this.FilterIconButtonsToolStrip);
             this.FilterBarFLP.Location = new System.Drawing.Point(144, 0);
             this.FilterBarFLP.Name = "FilterBarFLP";
             this.FilterBarFLP.Size = new System.Drawing.Size(768, 100);
@@ -783,19 +783,19 @@
             this.FilterBarFLP.Scroll += new System.Windows.Forms.ScrollEventHandler(this.FiltersFlowLayoutPanel_Scroll);
             this.FilterBarFLP.SizeChanged += new System.EventHandler(this.FiltersFlowLayoutPanel_SizeChanged);
             // 
-            // FilterGamesLeftSepToolStripCustom
+            // FilterGamesLeftSepToolStrip
             // 
-            this.FilterGamesLeftSepToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
-            this.FilterGamesLeftSepToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.FilterGamesLeftSepToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FilterGamesLeftSepToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
+            this.FilterGamesLeftSepToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.FilterGamesLeftSepToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FilterGamesLeftSep});
-            this.FilterGamesLeftSepToolStripCustom.Location = new System.Drawing.Point(0, 0);
-            this.FilterGamesLeftSepToolStripCustom.Name = "FilterGamesLeftSepToolStripCustom";
-            this.FilterGamesLeftSepToolStripCustom.Padding = new System.Windows.Forms.Padding(0);
-            this.FilterGamesLeftSepToolStripCustom.PaddingDrawNudge = 1;
-            this.FilterGamesLeftSepToolStripCustom.Size = new System.Drawing.Size(6, 26);
-            this.FilterGamesLeftSepToolStripCustom.TabIndex = 2;
-            this.FilterGamesLeftSepToolStripCustom.Text = "toolStripCustom2";
+            this.FilterGamesLeftSepToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.FilterGamesLeftSepToolStrip.Name = "FilterGamesLeftSepToolStrip";
+            this.FilterGamesLeftSepToolStrip.Padding = new System.Windows.Forms.Padding(0);
+            this.FilterGamesLeftSepToolStrip.PaddingDrawNudge = 1;
+            this.FilterGamesLeftSepToolStrip.Size = new System.Drawing.Size(6, 26);
+            this.FilterGamesLeftSepToolStrip.TabIndex = 2;
+            this.FilterGamesLeftSepToolStrip.Text = "toolStripCustom2";
             // 
             // FilterGamesLeftSep
             // 
@@ -818,7 +818,7 @@
             this.FilterByThief1Button,
             this.FilterByThief2Button,
             this.FilterByThief3Button,
-            this.toolStripSeparator6});
+            this.FilterTitleLeftSep});
             this.FilterGameButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterGameButtonsToolStrip.Location = new System.Drawing.Point(6, 0);
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
@@ -866,12 +866,12 @@
             this.FilterByThief3Button.ToolTipText = "Thief 3";
             this.FilterByThief3Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
             // 
-            // toolStripSeparator6
+            // FilterTitleLeftSep
             // 
-            this.toolStripSeparator6.AutoSize = false;
-            this.toolStripSeparator6.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 26);
+            this.FilterTitleLeftSep.AutoSize = false;
+            this.FilterTitleLeftSep.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.FilterTitleLeftSep.Name = "FilterTitleLeftSep";
+            this.FilterTitleLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterTitleLabel
             // 
@@ -891,26 +891,26 @@
             this.FilterTitleTextBox.TabIndex = 6;
             this.FilterTitleTextBox.TextChanged += new System.EventHandler(this.FilterTextBoxes_TextChanged);
             // 
-            // TitleAuthorSep
+            // FilterAuthorLeftSepToolStrip
             // 
-            this.TitleAuthorSep.GripMargin = new System.Windows.Forms.Padding(0);
-            this.TitleAuthorSep.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.TitleAuthorSep.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSeparatorCustom2});
-            this.TitleAuthorSep.Location = new System.Drawing.Point(271, 0);
-            this.TitleAuthorSep.Name = "TitleAuthorSep";
-            this.TitleAuthorSep.Padding = new System.Windows.Forms.Padding(0);
-            this.TitleAuthorSep.PaddingDrawNudge = 1;
-            this.TitleAuthorSep.Size = new System.Drawing.Size(6, 26);
-            this.TitleAuthorSep.TabIndex = 45;
-            this.TitleAuthorSep.Text = "toolStripCustom2";
+            this.FilterAuthorLeftSepToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
+            this.FilterAuthorLeftSepToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.FilterAuthorLeftSepToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FilterAuthorLeftSep});
+            this.FilterAuthorLeftSepToolStrip.Location = new System.Drawing.Point(271, 0);
+            this.FilterAuthorLeftSepToolStrip.Name = "FilterAuthorLeftSepToolStrip";
+            this.FilterAuthorLeftSepToolStrip.Padding = new System.Windows.Forms.Padding(0);
+            this.FilterAuthorLeftSepToolStrip.PaddingDrawNudge = 1;
+            this.FilterAuthorLeftSepToolStrip.Size = new System.Drawing.Size(6, 26);
+            this.FilterAuthorLeftSepToolStrip.TabIndex = 45;
+            this.FilterAuthorLeftSepToolStrip.Text = "toolStripCustom2";
             // 
-            // toolStripSeparatorCustom2
+            // FilterAuthorLeftSep
             // 
-            this.toolStripSeparatorCustom2.AutoSize = false;
-            this.toolStripSeparatorCustom2.Margin = new System.Windows.Forms.Padding(0, 0, -2, 0);
-            this.toolStripSeparatorCustom2.Name = "toolStripSeparatorCustom2";
-            this.toolStripSeparatorCustom2.Size = new System.Drawing.Size(6, 26);
+            this.FilterAuthorLeftSep.AutoSize = false;
+            this.FilterAuthorLeftSep.Margin = new System.Windows.Forms.Padding(0, 0, -2, 0);
+            this.FilterAuthorLeftSep.Name = "FilterAuthorLeftSep";
+            this.FilterAuthorLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterAuthorLabel
             // 
@@ -930,46 +930,46 @@
             this.FilterAuthorTextBox.TabIndex = 8;
             this.FilterAuthorTextBox.TextChanged += new System.EventHandler(this.FilterTextBoxes_TextChanged);
             // 
-            // FilterIconButtonsToolStripCustom
+            // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStripCustom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.FilterIconButtonsToolStripCustom.BackColor = System.Drawing.SystemColors.Control;
-            this.FilterIconButtonsToolStripCustom.CanOverflow = false;
-            this.FilterIconButtonsToolStripCustom.Dock = System.Windows.Forms.DockStyle.None;
-            this.FilterIconButtonsToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
-            this.FilterIconButtonsToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.FilterIconButtonsToolStripCustom.ImageScalingSize = new System.Drawing.Size(22, 22);
-            this.FilterIconButtonsToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSeparator5,
+            this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
+            this.FilterIconButtonsToolStrip.CanOverflow = false;
+            this.FilterIconButtonsToolStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.FilterIconButtonsToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
+            this.FilterIconButtonsToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.FilterIconButtonsToolStrip.ImageScalingSize = new System.Drawing.Size(22, 22);
+            this.FilterIconButtonsToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FilterReleaseDateLeftSep,
             this.FilterByReleaseDateButton,
             this.FilterByReleaseDateLabel,
-            this.toolStripSeparatorCustom1,
+            this.FilterLastPlayedLeftSep,
             this.FilterByLastPlayedButton,
             this.FilterByLastPlayedLabel,
-            this.toolStripSeparator2,
+            this.FilterTagsLeftSep,
             this.FilterByTagsButton,
-            this.toolStripSeparator4,
+            this.FilterFinishedLeftSep,
             this.FilterByFinishedButton,
             this.FilterByUnfinishedButton,
-            this.toolStripSeparator1,
+            this.FilterRatingLeftSep,
             this.FilterByRatingButton,
             this.FilterByRatingLabel,
-            this.toolStripSeparator3,
+            this.FilterShowUnsupportedLeftSep,
             this.FilterShowUnsupportedButton});
-            this.FilterIconButtonsToolStripCustom.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.FilterIconButtonsToolStripCustom.Location = new System.Drawing.Point(471, 0);
-            this.FilterIconButtonsToolStripCustom.Name = "FilterIconButtonsToolStripCustom";
-            this.FilterIconButtonsToolStripCustom.PaddingDrawNudge = 0;
-            this.FilterIconButtonsToolStripCustom.Size = new System.Drawing.Size(297, 26);
-            this.FilterIconButtonsToolStripCustom.TabIndex = 3;
+            this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
+            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(471, 0);
+            this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
+            this.FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
+            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(328, 26);
+            this.FilterIconButtonsToolStrip.TabIndex = 3;
             // 
-            // toolStripSeparator5
+            // FilterReleaseDateLeftSep
             // 
-            this.toolStripSeparator5.AutoSize = false;
-            this.toolStripSeparator5.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 26);
+            this.FilterReleaseDateLeftSep.AutoSize = false;
+            this.FilterReleaseDateLeftSep.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.FilterReleaseDateLeftSep.Name = "FilterReleaseDateLeftSep";
+            this.FilterReleaseDateLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterByReleaseDateButton
             // 
@@ -993,11 +993,11 @@
             this.FilterByReleaseDateLabel.Text = "[rd]";
             this.FilterByReleaseDateLabel.ToolTipText = "Release date";
             // 
-            // toolStripSeparatorCustom1
+            // FilterLastPlayedLeftSep
             // 
-            this.toolStripSeparatorCustom1.AutoSize = false;
-            this.toolStripSeparatorCustom1.Name = "toolStripSeparatorCustom1";
-            this.toolStripSeparatorCustom1.Size = new System.Drawing.Size(6, 26);
+            this.FilterLastPlayedLeftSep.AutoSize = false;
+            this.FilterLastPlayedLeftSep.Name = "FilterLastPlayedLeftSep";
+            this.FilterLastPlayedLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterByLastPlayedButton
             // 
@@ -1021,11 +1021,11 @@
             this.FilterByLastPlayedLabel.Text = "[lp]";
             this.FilterByLastPlayedLabel.ToolTipText = "Release date";
             // 
-            // toolStripSeparator2
+            // FilterTagsLeftSep
             // 
-            this.toolStripSeparator2.AutoSize = false;
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 26);
+            this.FilterTagsLeftSep.AutoSize = false;
+            this.FilterTagsLeftSep.Name = "FilterTagsLeftSep";
+            this.FilterTagsLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterByTagsButton
             // 
@@ -1040,11 +1040,11 @@
             this.FilterByTagsButton.ToolTipText = "Tags";
             this.FilterByTagsButton.Click += new System.EventHandler(this.FilterByTagsButton_Click);
             // 
-            // toolStripSeparator4
+            // FilterFinishedLeftSep
             // 
-            this.toolStripSeparator4.AutoSize = false;
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 26);
+            this.FilterFinishedLeftSep.AutoSize = false;
+            this.FilterFinishedLeftSep.Name = "FilterFinishedLeftSep";
+            this.FilterFinishedLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterByFinishedButton
             // 
@@ -1074,11 +1074,11 @@
             this.FilterByUnfinishedButton.ToolTipText = "Unfinished";
             this.FilterByUnfinishedButton.Click += new System.EventHandler(this.FilterByUnfinishedButton_Click);
             // 
-            // toolStripSeparator1
+            // FilterRatingLeftSep
             // 
-            this.toolStripSeparator1.AutoSize = false;
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 26);
+            this.FilterRatingLeftSep.AutoSize = false;
+            this.FilterRatingLeftSep.Name = "FilterRatingLeftSep";
+            this.FilterRatingLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterByRatingButton
             // 
@@ -1102,11 +1102,11 @@
             this.FilterByRatingLabel.Text = "[r]";
             this.FilterByRatingLabel.ToolTipText = "Rating";
             // 
-            // toolStripSeparator3
+            // FilterShowUnsupportedLeftSep
             // 
-            this.toolStripSeparator3.AutoSize = false;
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 26);
+            this.FilterShowUnsupportedLeftSep.AutoSize = false;
+            this.FilterShowUnsupportedLeftSep.Name = "FilterShowUnsupportedLeftSep";
+            this.FilterShowUnsupportedLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // FilterShowUnsupportedButton
             // 
@@ -1122,31 +1122,31 @@
             this.FilterShowUnsupportedButton.ToolTipText = "Unfinished";
             this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.FilterShowJunkButton_Click);
             // 
-            // RefreshClearToolStripCustom
+            // RefreshAreaToolStrip
             // 
-            this.RefreshClearToolStripCustom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.RefreshClearToolStripCustom.BackColor = System.Drawing.SystemColors.Control;
-            this.RefreshClearToolStripCustom.CanOverflow = false;
-            this.RefreshClearToolStripCustom.Dock = System.Windows.Forms.DockStyle.None;
-            this.RefreshClearToolStripCustom.GripMargin = new System.Windows.Forms.Padding(0);
-            this.RefreshClearToolStripCustom.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.RefreshClearToolStripCustom.ImageScalingSize = new System.Drawing.Size(22, 22);
-            this.RefreshClearToolStripCustom.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RefreshAreaToolStrip.BackColor = System.Drawing.SystemColors.Control;
+            this.RefreshAreaToolStrip.CanOverflow = false;
+            this.RefreshAreaToolStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.RefreshAreaToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
+            this.RefreshAreaToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.RefreshAreaToolStrip.ImageScalingSize = new System.Drawing.Size(22, 22);
+            this.RefreshAreaToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FMsListZoomInButton,
             this.FMsListZoomOutButton,
             this.FMsListResetZoomButton,
-            this.toolStripSeparatorCustom4,
+            this.RefreshAreaLeftSep,
             this.RefreshFromDiskButton,
             this.RefreshFiltersButton,
             this.ClearFiltersButton,
-            this.toolStripSeparatorCustom3});
-            this.RefreshClearToolStripCustom.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.RefreshClearToolStripCustom.Location = new System.Drawing.Point(916, 0);
-            this.RefreshClearToolStripCustom.Name = "RefreshClearToolStripCustom";
-            this.RefreshClearToolStripCustom.PaddingDrawNudge = 0;
-            this.RefreshClearToolStripCustom.Size = new System.Drawing.Size(169, 26);
-            this.RefreshClearToolStripCustom.TabIndex = 12;
+            this.ResetLayoutLeftSep});
+            this.RefreshAreaToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
+            this.RefreshAreaToolStrip.Location = new System.Drawing.Point(916, 0);
+            this.RefreshAreaToolStrip.Name = "RefreshAreaToolStrip";
+            this.RefreshAreaToolStrip.PaddingDrawNudge = 0;
+            this.RefreshAreaToolStrip.Size = new System.Drawing.Size(169, 26);
+            this.RefreshAreaToolStrip.TabIndex = 12;
             // 
             // FMsListZoomInButton
             // 
@@ -1184,12 +1184,12 @@
             this.FMsListResetZoomButton.Size = new System.Drawing.Size(25, 25);
             this.FMsListResetZoomButton.Click += new System.EventHandler(this.FMsListResetZoomButton_Click);
             // 
-            // toolStripSeparatorCustom4
+            // RefreshAreaLeftSep
             // 
-            this.toolStripSeparatorCustom4.AutoSize = false;
-            this.toolStripSeparatorCustom4.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.toolStripSeparatorCustom4.Name = "toolStripSeparatorCustom4";
-            this.toolStripSeparatorCustom4.Size = new System.Drawing.Size(6, 26);
+            this.RefreshAreaLeftSep.AutoSize = false;
+            this.RefreshAreaLeftSep.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.RefreshAreaLeftSep.Name = "RefreshAreaLeftSep";
+            this.RefreshAreaLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // RefreshFromDiskButton
             // 
@@ -1230,12 +1230,12 @@
             this.ClearFiltersButton.ToolTipText = "Clear filters";
             this.ClearFiltersButton.Click += new System.EventHandler(this.ClearFiltersButton_Click);
             // 
-            // toolStripSeparatorCustom3
+            // ResetLayoutLeftSep
             // 
-            this.toolStripSeparatorCustom3.AutoSize = false;
-            this.toolStripSeparatorCustom3.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.toolStripSeparatorCustom3.Name = "toolStripSeparatorCustom3";
-            this.toolStripSeparatorCustom3.Size = new System.Drawing.Size(6, 26);
+            this.ResetLayoutLeftSep.AutoSize = false;
+            this.ResetLayoutLeftSep.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.ResetLayoutLeftSep.Name = "ResetLayoutLeftSep";
+            this.ResetLayoutLeftSep.Size = new System.Drawing.Size(6, 26);
             // 
             // ResetLayoutButton
             // 
@@ -1785,7 +1785,7 @@
             this.TagsTabPage.BackColor = System.Drawing.SystemColors.Control;
             this.TagsTabPage.Controls.Add(this.AddTagButton);
             this.TagsTabPage.Controls.Add(this.AddTagTextBox);
-            this.TagsTabPage.Controls.Add(this.AddRemoveTagFlowLayoutPanel);
+            this.TagsTabPage.Controls.Add(this.AddRemoveTagFLP);
             this.TagsTabPage.Controls.Add(this.TagsTreeView);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
@@ -1819,17 +1819,17 @@
             this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
             this.AddTagTextBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
             // 
-            // AddRemoveTagFlowLayoutPanel
+            // AddRemoveTagFLP
             // 
-            this.AddRemoveTagFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddRemoveTagFlowLayoutPanel.AutoSize = true;
-            this.AddRemoveTagFlowLayoutPanel.Controls.Add(this.RemoveTagButton);
-            this.AddRemoveTagFlowLayoutPanel.Controls.Add(this.AddTagFromListButton);
-            this.AddRemoveTagFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.AddRemoveTagFlowLayoutPanel.Location = new System.Drawing.Point(-11, 248);
-            this.AddRemoveTagFlowLayoutPanel.Name = "AddRemoveTagFlowLayoutPanel";
-            this.AddRemoveTagFlowLayoutPanel.Size = new System.Drawing.Size(536, 24);
-            this.AddRemoveTagFlowLayoutPanel.TabIndex = 3;
+            this.AddRemoveTagFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddRemoveTagFLP.AutoSize = true;
+            this.AddRemoveTagFLP.Controls.Add(this.RemoveTagButton);
+            this.AddRemoveTagFLP.Controls.Add(this.AddTagFromListButton);
+            this.AddRemoveTagFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.AddRemoveTagFLP.Location = new System.Drawing.Point(-11, 248);
+            this.AddRemoveTagFLP.Name = "AddRemoveTagFLP";
+            this.AddRemoveTagFLP.Size = new System.Drawing.Size(536, 24);
+            this.AddRemoveTagFLP.TabIndex = 3;
             // 
             // RemoveTagButton
             // 
@@ -2066,7 +2066,7 @@
             this.ChooseReadmePanel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.ChooseReadmePanel.AutoSize = true;
             this.ChooseReadmePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeOKFlowLayoutPanel);
+            this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeOKFLP);
             this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeListBox);
             this.ChooseReadmePanel.Location = new System.Drawing.Point(2, 2);
             this.ChooseReadmePanel.Name = "ChooseReadmePanel";
@@ -2074,14 +2074,14 @@
             this.ChooseReadmePanel.TabIndex = 46;
             this.ChooseReadmePanel.Visible = false;
             // 
-            // ChooseReadmeOKFlowLayoutPanel
+            // ChooseReadmeOKFLP
             // 
-            this.ChooseReadmeOKFlowLayoutPanel.Controls.Add(this.ChooseReadmeButton);
-            this.ChooseReadmeOKFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.ChooseReadmeOKFlowLayoutPanel.Location = new System.Drawing.Point(1, 134);
-            this.ChooseReadmeOKFlowLayoutPanel.Name = "ChooseReadmeOKFlowLayoutPanel";
-            this.ChooseReadmeOKFlowLayoutPanel.Size = new System.Drawing.Size(320, 24);
-            this.ChooseReadmeOKFlowLayoutPanel.TabIndex = 3;
+            this.ChooseReadmeOKFLP.Controls.Add(this.ChooseReadmeButton);
+            this.ChooseReadmeOKFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.ChooseReadmeOKFLP.Location = new System.Drawing.Point(1, 134);
+            this.ChooseReadmeOKFLP.Name = "ChooseReadmeOKFLP";
+            this.ChooseReadmeOKFLP.Size = new System.Drawing.Size(320, 24);
+            this.ChooseReadmeOKFLP.TabIndex = 3;
             // 
             // ChooseReadmeButton
             // 
@@ -2295,14 +2295,14 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();
-            this.BottomRightButtonsFlowLayoutPanel.ResumeLayout(false);
-            this.BottomRightButtonsFlowLayoutPanel.PerformLayout();
-            this.BottomLeftButtonsFlowLayoutPanel.ResumeLayout(false);
-            this.BottomLeftButtonsFlowLayoutPanel.PerformLayout();
-            this.BottomAreaToolStripCustom.ResumeLayout(false);
-            this.BottomAreaToolStripCustom.PerformLayout();
-            this.BottomAreaToolStripCustom2.ResumeLayout(false);
-            this.BottomAreaToolStripCustom2.PerformLayout();
+            this.BottomRightButtonsFLP.ResumeLayout(false);
+            this.BottomRightButtonsFLP.PerformLayout();
+            this.BottomLeftButtonsFLP.ResumeLayout(false);
+            this.BottomLeftButtonsFLP.PerformLayout();
+            this.BottomScanAllFMsSepToolStrip.ResumeLayout(false);
+            this.BottomScanAllFMsSepToolStrip.PerformLayout();
+            this.BottomWebSearchLeftSepToolStrip.ResumeLayout(false);
+            this.BottomWebSearchLeftSepToolStrip.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
@@ -2317,16 +2317,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.FMsDGV)).EndInit();
             this.FilterBarFLP.ResumeLayout(false);
             this.FilterBarFLP.PerformLayout();
-            this.FilterGamesLeftSepToolStripCustom.ResumeLayout(false);
-            this.FilterGamesLeftSepToolStripCustom.PerformLayout();
+            this.FilterGamesLeftSepToolStrip.ResumeLayout(false);
+            this.FilterGamesLeftSepToolStrip.PerformLayout();
             this.FilterGameButtonsToolStrip.ResumeLayout(false);
             this.FilterGameButtonsToolStrip.PerformLayout();
-            this.TitleAuthorSep.ResumeLayout(false);
-            this.TitleAuthorSep.PerformLayout();
-            this.FilterIconButtonsToolStripCustom.ResumeLayout(false);
-            this.FilterIconButtonsToolStripCustom.PerformLayout();
-            this.RefreshClearToolStripCustom.ResumeLayout(false);
-            this.RefreshClearToolStripCustom.PerformLayout();
+            this.FilterAuthorLeftSepToolStrip.ResumeLayout(false);
+            this.FilterAuthorLeftSepToolStrip.PerformLayout();
+            this.FilterIconButtonsToolStrip.ResumeLayout(false);
+            this.FilterIconButtonsToolStrip.PerformLayout();
+            this.RefreshAreaToolStrip.ResumeLayout(false);
+            this.RefreshAreaToolStrip.PerformLayout();
             this.GamesTabControl.ResumeLayout(false);
             this.TopRightTabControl.ResumeLayout(false);
             this.StatisticsTabPage.ResumeLayout(false);
@@ -2339,8 +2339,8 @@
             this.CommentTabPage.PerformLayout();
             this.TagsTabPage.ResumeLayout(false);
             this.TagsTabPage.PerformLayout();
-            this.AddRemoveTagFlowLayoutPanel.ResumeLayout(false);
-            this.AddRemoveTagFlowLayoutPanel.PerformLayout();
+            this.AddRemoveTagFLP.ResumeLayout(false);
+            this.AddRemoveTagFLP.PerformLayout();
             this.PatchTabPage.ResumeLayout(false);
             this.PatchTabPage.PerformLayout();
             this.PatchMainPanel.ResumeLayout(false);
@@ -2348,8 +2348,8 @@
             this.PatchDMLsPanel.ResumeLayout(false);
             this.PatchDMLsPanel.PerformLayout();
             this.ChooseReadmePanel.ResumeLayout(false);
-            this.ChooseReadmeOKFlowLayoutPanel.ResumeLayout(false);
-            this.ChooseReadmeOKFlowLayoutPanel.PerformLayout();
+            this.ChooseReadmeOKFLP.ResumeLayout(false);
+            this.ChooseReadmeOKFLP.PerformLayout();
             this.PlayOriginalGameMenu.ResumeLayout(false);
             this.ImportFromMenu.ResumeLayout(false);
             this.TopRightMenu.ResumeLayout(false);
@@ -2439,52 +2439,52 @@
         private System.Windows.Forms.Button WebSearchButton;
         private System.Windows.Forms.Button FilterBarScrollRightButton;
         private System.Windows.Forms.Button FilterBarScrollLeftButton;
-        private CustomControls.ToolStripCustom FilterGamesLeftSepToolStripCustom;
+        private CustomControls.ToolStripCustom FilterGamesLeftSepToolStrip;
         private CustomControls.ToolStripSeparatorCustom FilterGamesLeftSep;
         private System.Windows.Forms.TextBox EditFMTitleTextBox;
         private CustomControls.DropDownButton EditFMAltTitlesDropDownButton;
         private System.Windows.Forms.ContextMenuStrip AltTitlesMenu;
-        private CustomControls.ToolStripCustom FilterIconButtonsToolStripCustom;
+        private CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
         private CustomControls.ToolStripButtonCustom FilterByFinishedButton;
         private CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparator1;
+        private CustomControls.ToolStripSeparatorCustom FilterRatingLeftSep;
         private CustomControls.ToolStripButtonCustom FilterByRatingButton;
         private CustomControls.ToolStripButtonCustom FilterByTagsButton;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparator2;
+        private CustomControls.ToolStripSeparatorCustom FilterTagsLeftSep;
         private CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparator4;
+        private CustomControls.ToolStripSeparatorCustom FilterFinishedLeftSep;
         private System.Windows.Forms.ToolStripLabel FilterByReleaseDateLabel;
         private System.Windows.Forms.ToolStripLabel FilterByRatingLabel;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparator5;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparator6;
+        private CustomControls.ToolStripSeparatorCustom FilterReleaseDateLeftSep;
+        private CustomControls.ToolStripSeparatorCustom FilterTitleLeftSep;
         private System.Windows.Forms.Button ImportButton;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparator3;
-        private CustomControls.ToolStripCustom RefreshClearToolStripCustom;
+        private CustomControls.ToolStripSeparatorCustom FilterShowUnsupportedLeftSep;
+        private CustomControls.ToolStripCustom RefreshAreaToolStrip;
         private CustomControls.ToolStripButtonCustom ClearFiltersButton;
         private CustomControls.ToolStripButtonCustom FilterByThief3Button;
         private System.Windows.Forms.TabPage Thief3TabPage;
         private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief3MenuItem;
         private CustomControls.ToolStripButtonCustom RefreshFiltersButton;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom3;
-        private System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFlowLayoutPanel;
-        private System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFlowLayoutPanel;
+        private CustomControls.ToolStripSeparatorCustom ResetLayoutLeftSep;
+        private System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
+        private System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
         private System.Windows.Forms.Button ViewHTMLReadmeButton;
         private CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
         private System.Windows.Forms.ToolStripLabel FilterByLastPlayedLabel;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom1;
-        private CustomControls.ToolStripCustom TitleAuthorSep;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom2;
+        private CustomControls.ToolStripSeparatorCustom FilterLastPlayedLeftSep;
+        private CustomControls.ToolStripCustom FilterAuthorLeftSepToolStrip;
+        private CustomControls.ToolStripSeparatorCustom FilterAuthorLeftSep;
         private System.Windows.Forms.ContextMenuStrip ImportFromMenu;
         private System.Windows.Forms.ToolStripMenuItem ImportFromDarkLoaderMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportFromFMSelMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportFromNewDarkLoaderMenuItem;
         private System.Windows.Forms.Button ZoomInButton;
         private System.Windows.Forms.Button ZoomOutButton;
-        private System.Windows.Forms.FlowLayoutPanel AddRemoveTagFlowLayoutPanel;
+        private System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
         private System.Windows.Forms.Button EditFMScanReleaseDateButton;
         private System.Windows.Forms.Button EditFMScanAuthorButton;
         private System.Windows.Forms.Button EditFMScanTitleButton;
-        private System.Windows.Forms.FlowLayoutPanel ChooseReadmeOKFlowLayoutPanel;
+        private System.Windows.Forms.FlowLayoutPanel ChooseReadmeOKFLP;
         private System.Windows.Forms.Button EditFMScanForReadmesButton;
         private System.Windows.Forms.Button StatsScanCustomResourcesButton;
         private System.Windows.Forms.TabPage PatchTabPage;
@@ -2496,13 +2496,13 @@
         private System.Windows.Forms.Label PatchFMNotInstalledLabel;
         private System.Windows.Forms.Panel PatchMainPanel;
         private System.Windows.Forms.Button PatchOpenFMFolderButton;
-        private CustomControls.ToolStripCustom BottomAreaToolStripCustom;
-        private CustomControls.ToolStripSeparatorCustom BottomAreaSep1;
-        private CustomControls.ToolStripCustom BottomAreaToolStripCustom2;
-        private CustomControls.ToolStripSeparatorCustom BottomAreaSep2;
+        private CustomControls.ToolStripCustom BottomScanAllFMsSepToolStrip;
+        private CustomControls.ToolStripSeparatorCustom BottomScanAllFMsLeftSep;
+        private CustomControls.ToolStripCustom BottomWebSearchLeftSepToolStrip;
+        private CustomControls.ToolStripSeparatorCustom BottomWebSearchLeftSep;
         private System.Windows.Forms.Button TopRightCollapseButton;
         private CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom4;
+        private CustomControls.ToolStripSeparatorCustom RefreshAreaLeftSep;
         private CustomControls.ToolStripButtonCustom FMsListZoomInButton;
         private CustomControls.ToolStripButtonCustom FMsListZoomOutButton;
         private CustomControls.ToolStripButtonCustom FMsListResetZoomButton;
