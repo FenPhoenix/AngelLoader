@@ -143,7 +143,7 @@ namespace AngelLoader.CustomControls
 
         internal void SetContextMenuToColumnHeader()
         {
-            ColumnHeaderLLMenu.InitColumnHeaderContextMenu(Columns);
+            ColumnHeaderLLMenu.Init(Columns);
             ContextMenuStrip = ColumnHeaderLLMenu.GetContextMenu();
         }
 
@@ -216,7 +216,7 @@ namespace AngelLoader.CustomControls
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {
-            ColumnHeaderLLMenu.SetColumnHeaderMenuItemTextToLocalized();
+            ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
             SetFMMenuTextToLocalized();
         }
 

@@ -12,13 +12,13 @@ namespace AngelLoader.CustomControls
         {
             #region Control backing fields
 
-            private static bool _columnHeaderMenuCreated;
+            private static bool _menuCreated;
             // Internal only because of a Debug.Assert() for length and I don't wanna make a method just for that
             internal static readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
 
             #endregion
 
-            private static DataGridViewColumnCollection Columns;
+            private static DataGridViewColumnCollection _columns;
 
             private enum ColumnProperties { Visible, DisplayIndex, Width }
 
@@ -54,9 +54,9 @@ namespace AngelLoader.CustomControls
 
             private static void ResetPropertyOnAllColumns(ColumnProperties property)
             {
-                for (var i = 0; i < Columns.Count; i++)
+                for (var i = 0; i < _columns.Count; i++)
                 {
-                    DataGridViewColumn c = Columns[i];
+                    DataGridViewColumn c = _columns[i];
                     switch (property)
                     {
                         case ColumnProperties.Visible:
@@ -87,7 +87,7 @@ namespace AngelLoader.CustomControls
             private static void CheckBoxMenuItem_Click(object sender, EventArgs e)
             {
                 var s = (ToolStripMenuItem)sender;
-                MakeColumnVisible(Columns[(int)s.Tag], s.Checked);
+                MakeColumnVisible(_columns[(int)s.Tag], s.Checked);
             }
 
             #endregion
@@ -96,11 +96,11 @@ namespace AngelLoader.CustomControls
 
             internal static ContextMenuStrip GetContextMenu() => ColumnHeaderContextMenu;
 
-            internal static void InitColumnHeaderContextMenu(DataGridViewColumnCollection columns)
+            internal static void Init(DataGridViewColumnCollection columns)
             {
-                if (_columnHeaderMenuCreated) return;
+                if (_menuCreated) return;
 
-                Columns = columns;
+                _columns = columns;
 
                 #region Instantiation
 
@@ -259,14 +259,14 @@ namespace AngelLoader.CustomControls
 
                 #endregion
 
-                _columnHeaderMenuCreated = true;
+                _menuCreated = true;
 
-                SetColumnHeaderMenuItemTextToLocalized();
+                SetMenuItemTextToLocalized();
             }
 
-            internal static void SetColumnHeaderMenuItemTextToLocalized()
+            internal static void SetMenuItemTextToLocalized()
             {
-                if (!_columnHeaderMenuCreated) return;
+                if (!_menuCreated) return;
 
                 ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
                 ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
@@ -288,7 +288,7 @@ namespace AngelLoader.CustomControls
 
             internal static void SetColumnChecked(int index, bool enabled)
             {
-                if (_columnHeaderMenuCreated)
+                if (_menuCreated)
                 {
                     ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
                 }
