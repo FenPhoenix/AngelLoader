@@ -162,14 +162,14 @@ namespace AngelLoader
 
             #region Parallel load
 
-            var findFMsAndInitView = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true));
+            var findFMsTask = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true));
 
             // Construct and init the view both right here, because they're both heavy operations and we want
             // them both to run in parallel with Find() to the greatest extent possible.
             View = new MainForm();
             View.Init();
 
-            findFMsAndInitView.Wait();
+            findFMsTask.Wait();
 
             #endregion
 
@@ -180,7 +180,7 @@ namespace AngelLoader
         {
             using (var sf = new SettingsForm(View, Config, startup))
             {
-                // This needs to be separate so the below line can work
+                // This needs to be separate so the below "always-save" stuff can work
                 var result = sf.ShowDialog();
 
                 #region Save window state
