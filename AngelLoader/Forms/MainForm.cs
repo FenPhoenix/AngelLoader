@@ -487,11 +487,22 @@ namespace AngelLoader.Forms
         private void MainForm_Load(object sender, EventArgs e)
         {
             ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
+
+            #region Changes involving layout
+
+            // PERF: Manually calculate these layouts before _Load
+            // Because we're showing/hiding stuff here in a way that would change the size of other stuff, we
+            // have to put this after _Load in order to get the positions accurate. But because this triggers
+            // one or more live layouts, it's slow. We should manually calculate the correct positioning so we
+            // can put this before _Load and avoid the live layout change.
+
             // Not sure if this needs to go here, but it involves control sizes so...
             ChangeGameOrganization();
             // This has to go here because it depends on the width of a control and those don't get properly set
             // until the Load event fires
             ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
+
+            #endregion
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
@@ -504,6 +515,9 @@ namespace AngelLoader.Forms
             // Don't do Suspend/ResumeDrawing on startup because resume is slowish (having a refresh and all)
             // TODO: Put this before Show() again and just have the cacher show the form if needed
             await SetFilter(suppressSuspendResume: true);
+
+            // debug - end of startup - to make sure when we profile, we're measuring only startup time
+            //Environment.Exit(1);
         }
 
         private void SetWindowStateAndSize()
