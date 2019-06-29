@@ -15,6 +15,10 @@ namespace AngelLoader.CustomControls
 
         #region Fields etc.
 
+        // PERF_TODO: This bool prevents layout until show which is good, but...
+        // ...a better idea would be to make this whole thing lazy-loaded. It's the perfect candidate for it.
+        private bool _shownOnce;
+
         internal enum ProgressTasks
         {
             ScanAllFMs,
@@ -32,11 +36,7 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        public ProgressPanel()
-        {
-            InitializeComponent();
-            ProgressCancelButton.CenterH(this);
-        }
+        public ProgressPanel() => InitializeComponent();
 
         internal void Inject(MainForm owner) => Owner = owner;
 
@@ -139,14 +139,18 @@ namespace AngelLoader.CustomControls
                 ProgressBar.SetValueInstant(0);
             }
 
-            if (!suppressShow)
-            {
-                ShowThis();
-            }
+            if (!suppressShow) ShowThis();
         }
 
         internal void ShowThis()
         {
+            if (!_shownOnce)
+            {
+                _shownOnce = true;
+                SetUITextToLocalized();
+                ProgressCancelButton.CenterH(this);
+            }
+
             Log(nameof(ShowThis) + " called", methodName: false);
             Owner.EnableEverything(false);
             Enabled = true;
@@ -225,10 +229,10 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        // PERF_TODO: This isn't SuspendLayout/ResumeLayout'd
-        // ...but a better idea would be to make this lazy-loaded. It's the perfect candidate for it.
         public void SetUITextToLocalized(bool suspendResume = true)
         {
+            if (!_shownOnce) return;
+
             ProgressCancelButton.SetTextAutoSize(LText.Global.Cancel, ProgressCancelButton.Width);
             ProgressCancelButton.CenterH(this);
         }
