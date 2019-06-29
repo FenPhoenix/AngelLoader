@@ -225,6 +225,8 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
+        // PERF_TODO: This isn't SuspendLayout/ResumeLayout'd
+        // ...but a better idea would be to make this lazy-loaded. It's the perfect candidate for it.
         public void SetUITextToLocalized(bool suspendResume = true)
         {
             ProgressCancelButton.SetTextAutoSize(LText.Global.Cancel, ProgressCancelButton.Width);

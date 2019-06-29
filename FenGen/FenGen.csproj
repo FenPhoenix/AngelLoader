@@ -35,7 +35,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'RT_StartupOnly|AnyCPU'">
-    <OutputPath>bin\RT_StartupOnly\</OutputPath>
+    <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE;Release</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>

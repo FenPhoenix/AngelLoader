@@ -687,10 +687,13 @@ namespace AngelLoader.Forms
             {
                 BottomLeftButtonsFLP.SuspendLayout();
                 BottomRightButtonsFLP.SuspendLayout();
+                StatisticsTabPage.SuspendLayout();
                 StatsCheckBoxesPanel.SuspendLayout();
                 EditFMTabPage.SuspendLayout();
                 CommentTabPage.SuspendLayout();
                 TagsTabPage.SuspendLayout();
+                AddRemoveTagFLP.SuspendLayout();
+                PatchMainPanel.SuspendLayout();
                 MainSplitContainer.Panel2.SuspendLayout();
                 ChooseReadmePanel.SuspendLayout();
             }
@@ -937,10 +940,13 @@ namespace AngelLoader.Forms
                 {
                     BottomLeftButtonsFLP.ResumeLayout();
                     BottomRightButtonsFLP.ResumeLayout();
+                    StatisticsTabPage.ResumeLayout();
                     StatsCheckBoxesPanel.ResumeLayout();
                     EditFMTabPage.ResumeLayout();
                     CommentTabPage.ResumeLayout();
                     TagsTabPage.ResumeLayout();
+                    AddRemoveTagFLP.ResumeLayout();
+                    PatchMainPanel.ResumeLayout();
                     MainSplitContainer.Panel2.ResumeLayout();
                     ChooseReadmePanel.ResumeLayout();
                 }
