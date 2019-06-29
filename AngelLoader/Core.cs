@@ -76,102 +76,116 @@ namespace AngelLoader
 
         private static CancellationTokenSource ScanCts;
 
-        internal static async Task Init()
+        internal static async Task Init(Task configTask)
         {
             try
             {
-                Directory.CreateDirectory(Paths.Data);
-                Directory.CreateDirectory(Paths.Languages);
-            }
-            catch (Exception ex)
-            {
-                const string message = "Failed to create required application directories on startup.";
-                Log(message, ex);
-                MessageBox.Show(message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(1);
-            }
-
-            bool openSettings;
-            if (File.Exists(Paths.ConfigIni))
-            {
                 try
                 {
-                    ReadConfigIni(Paths.ConfigIni, Config);
-                    var checkPaths = CheckPaths();
-                    openSettings = checkPaths == Error.BackupPathNotSpecified;
+                    Directory.CreateDirectory(Paths.Data);
+                    Directory.CreateDirectory(Paths.Languages);
                 }
                 catch (Exception ex)
                 {
-                    var message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                    const string message = "Failed to create required application directories on startup.";
                     Log(message, ex);
-                    openSettings = true;
+                    MessageBox.Show(message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(1);
                 }
-            }
-            else
-            {
-                openSettings = true;
-            }
 
-            // Have to read langs here because which language to use will be stored in the config file.
-            // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
-            // name in its own language
-            var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
-            bool selFound = false;
-
-            // Do it ONCE here, not every loop!
-            Config.LanguageNames.Clear();
-
-            for (int i = 0; i < langFiles.Count; i++)
-            {
-                var f = langFiles[i];
-                var fn = f.GetFileNameFast().RemoveExtension();
-                if (!selFound && fn.EqualsI(Config.Language))
+                bool openSettings;
+                if (File.Exists(Paths.ConfigIni))
                 {
                     try
                     {
-                        ReadLocalizationIni(f);
-                        selFound = true;
+                        ReadConfigIni(Paths.ConfigIni, Config);
+                        var checkPaths = CheckPaths();
+                        openSettings = checkPaths == Error.BackupPathNotSpecified;
                     }
                     catch (Exception ex)
                     {
-                        Log("There was an error while reading " + f + ".", ex);
+                        var message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                        Log(message, ex);
+                        openSettings = true;
                     }
-                }
-                ReadTranslatedLanguageName(f);
-
-                // These need to be set after language read. Slightly awkward but oh well.
-                SetDefaultConfigVarNamesToLocalized();
-            }
-
-            if (openSettings)
-            {
-                if (await OpenSettings(startup: true))
-                {
-                    var checkPaths = CheckPaths();
-
-                    Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
-
-                    WriteConfigIni(Config, Paths.ConfigIni);
                 }
                 else
                 {
-                    // Since nothing of consequence has yet happened, it's okay to do the brutal quit
-                    Environment.Exit(0);
+                    openSettings = true;
                 }
+
+                // Have to read langs here because which language to use will be stored in the config file.
+                // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
+                // name in its own language
+                var langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
+                bool selFound = false;
+
+                // Do it ONCE here, not every loop!
+                Config.LanguageNames.Clear();
+
+                for (int i = 0; i < langFiles.Count; i++)
+                {
+                    var f = langFiles[i];
+                    var fn = f.GetFileNameFast().RemoveExtension();
+                    if (!selFound && fn.EqualsI(Config.Language))
+                    {
+                        try
+                        {
+                            ReadLocalizationIni(f);
+                            selFound = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("There was an error while reading " + f + ".", ex);
+                        }
+                    }
+                    ReadTranslatedLanguageName(f);
+
+                    // These need to be set after language read. Slightly awkward but oh well.
+                    SetDefaultConfigVarNamesToLocalized();
+                }
+
+                if (openSettings)
+                {
+                    // Form.ctor will want to access the configuration too, so wait first (dunno if it's thread-safe)
+                    configTask.Wait();
+
+                    if (await OpenSettings(startup: true))
+                    {
+                        var checkPaths = CheckPaths();
+
+                        Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
+
+                        WriteConfigIni(Config, Paths.ConfigIni);
+                    }
+                    else
+                    {
+                        // Since nothing of consequence has yet happened, it's okay to do the brutal quit
+                        Environment.Exit(0);
+                    }
+                }
+
+                #region Parallel load
+
+                using (var findFMsTask = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true)))
+                {
+                    // It's safe to overlap this with Find(), but not with MainForm.ctor()
+                    configTask.Wait();
+
+                    // Construct and init the view both right here, because they're both heavy operations and we
+                    // want them both to run in parallel with Find() to the greatest extent possible.
+                    View = new MainForm();
+                    View.Init();
+
+                    findFMsTask.Wait();
+                }
+
+                #endregion
             }
-
-            #region Parallel load
-
-            var findFMsTask = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true));
-
-            // Construct and init the view both right here, because they're both heavy operations and we want
-            // them both to run in parallel with Find() to the greatest extent possible.
-            View = new MainForm();
-            View.Init();
-
-            findFMsTask.Wait();
-
-            #endregion
+            finally
+            {
+                configTask.Dispose();
+            }
 
             View.Show();
         }

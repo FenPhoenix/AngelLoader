@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using static AngelLoader.Common.Logger;
@@ -19,6 +20,12 @@ namespace AngelLoader
             // Make this a single-instance application
             var mutex = new Mutex(true, "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader", out bool result);
             if (!result) return;
+
+            // Form.ctor initializes the config manager if it isn't already (specifically so it can get the DPI
+            // awareness value). The config manager, like a bloated-ass five-hundred-foot-tall blubber-laden pig,
+            // takes 32ms to initialize(!). Rather than letting Form.ctor do it serially, we're going to do it in
+            // the background while other stuff runs, thus chopping off even more startup time.
+            var configTask = Task.Run(() => System.Configuration.ConfigurationManager.AppSettings);
 
             AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
             {
@@ -57,7 +64,7 @@ namespace AngelLoader
 
             #endregion
 
-            Application.Run(new AppContext());
+            Application.Run(new AppContext(configTask));
 
             GC.KeepAlive(mutex);
         }
@@ -65,8 +72,8 @@ namespace AngelLoader
 
     internal sealed class AppContext : ApplicationContext
     {
-        internal AppContext() => Init();
+        internal AppContext(Task configTask) => Init(configTask);
 
-        private static async void Init() => await Core.Init();
+        private static async void Init(Task configTask) => await Core.Init(configTask);
     }
 }
