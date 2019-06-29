@@ -15,6 +15,11 @@ namespace AngelLoader.Ini
 {
     // TODO: Maybe make this file have sections, cause it's getting pretty giant-blob-like
 
+    // A note about floats:
+    // When storing and reading floats, it's imperative that we specify InvariantInfo. Otherwise the decimal
+    // separator is culture-dependent, and it could end up as ',' when we expect '.'. And then we could end up
+    // with "5.001" being "5,001", and now we're in for a bad time.
+
     internal static partial class Ini
     {
         // Not autogenerating these, because there's too many special cases, and adding stuff by hand is not that
@@ -773,7 +778,9 @@ namespace AngelLoader.Ini
 
             try
             {
-                _ = new DateTime(2000, 1, 1).ToString(formatString);
+                // PERF: Passing an explicit DateTimeFormatInfo avoids a 5ms(!) hit that you take otherwise.
+                // Man, DateTime and culture stuff is SLOW.
+                _ = new DateTime(2000, 1, 1).ToString(formatString, DateTimeFormatInfo.InvariantInfo);
                 config.DateCustomFormatString = formatString;
             }
             catch (FormatException)

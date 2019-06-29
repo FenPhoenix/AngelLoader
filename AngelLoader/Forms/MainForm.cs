@@ -490,7 +490,7 @@ namespace AngelLoader.Forms
 
             #region Changes involving layout
 
-            // PERF: Manually calculate these layouts before _Load
+            // PERF_TODO: Manually calculate these layouts before _Load
             // Because we're showing/hiding stuff here in a way that would change the size of other stuff, we
             // have to put this after _Load in order to get the positions accurate. But because this triggers
             // one or more live layouts, it's slow. We should manually calculate the correct positioning so we
@@ -1822,6 +1822,7 @@ namespace AngelLoader.Forms
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
             // PERF: ~0.14ms per FM for en-US Long Date format
+            // PERF_TODO: Test with custom - dt.ToString() might be slow?
             string FormattedDate(DateTime dt)
             {
                 return
