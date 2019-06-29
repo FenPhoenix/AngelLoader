@@ -284,8 +284,11 @@ namespace AngelLoader.Forms
 
         public void Block(bool block) => this.BlockWindow(block);
 
-        // Put anything that does anything in here, not in the constructor. Otherwise it's a world of pain and
-        // screwy behavior cascading outwards and messing with everything it touches. Don't do it.
+        // In early development, I had some problems with putting init stuff in the constructor, where all manner
+        // of nasty random behavior would happen. Not sure if that was because of something specific I was doing
+        // wrong or what, but I have this Init() method now that comfortably runs after the ctor. Shrug.
+        // MT: On startup only, this is run in parallel with FindFMs.Find()
+        // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
         public void Init()
         {
 #if ReleaseBeta
@@ -474,7 +477,12 @@ namespace AngelLoader.Forms
             // Set these here because they depend on the splitter positions
             SetUITextToLocalized(suspendResume: false);
             ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
+        }
 
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // Sort the list here because Init() is run in parallel to FindFMs.Find() but sorting needs Find() to
+            // have been run first.
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
             // Hook these up last so they don't cause anything to happen while we're initializing
@@ -482,10 +490,7 @@ namespace AngelLoader.Forms
             AppMouseHook.MouseDownExt += HookMouseDown;
             AppMouseHook.MouseMoveExt += HookMouseMove;
             Application.AddMessageFilter(this);
-        }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
             ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
 
             #region Changes involving layout

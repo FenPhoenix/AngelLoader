@@ -78,8 +78,6 @@ namespace AngelLoader
 
         internal static async Task Init()
         {
-            View = new MainForm();
-
             try
             {
                 Directory.CreateDirectory(Paths.Data);
@@ -162,8 +160,19 @@ namespace AngelLoader
                 }
             }
 
-            FindFMs.Find(FMDataIniList, startup: true);
+            #region Parallel load
+
+            var findFMsAndInitView = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true));
+
+            // Construct and init the view both right here, because they're both heavy operations and we want
+            // them both to run in parallel with Find() to the greatest extent possible.
+            View = new MainForm();
             View.Init();
+
+            findFMsAndInitView.Wait();
+
+            #endregion
+
             View.Show();
         }
 

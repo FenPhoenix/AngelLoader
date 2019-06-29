@@ -17,17 +17,24 @@ namespace AngelLoader
 {
     internal static class FindFMs
     {
+        // MT: On startup only, this is run in parallel with MainForm.ctor and .Init()
+        // So don't touch anything the other touches: anything affecting the view.
         internal static void Find(List<FanMission> fmDataIniList, bool startup = false)
         {
-            // Make sure we don't lose anything when we re-find!
-            if (!startup) Core.WriteFullFMDataIni();
+            if (!startup)
+            {
+                // Make sure we don't lose anything when we re-find!
+                Core.WriteFullFMDataIni();
 
-            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
-            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
-            // change of the list (not really bad but unprofessional looking))
-            Core.View.SetRowCount(0);
+                // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from
+                // the list when it's in an indeterminate state (which can cause a selection change (bad) and/or
+                // a visible change of the list (not really bad but unprofessional looking)).
+                // MT: Don't do this on startup because we're running in parallel with the form new/init in that case.
+                Core.View.SetRowCount(0);
+            }
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
+            // MT: This is thread-safe, the view ctor and Init() doesn't touch it.
             PresetTags.DeepCopyTo(GlobalTags);
 
             #region Back up lists and read FM data file
