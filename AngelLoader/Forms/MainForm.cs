@@ -517,7 +517,9 @@ namespace AngelLoader.Forms
             await SetFilter(suppressSuspendResume: true);
 
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
-            //Environment.Exit(1);
+#if RT_StartupOnly
+            Environment.Exit(1);
+#endif
         }
 
         private void SetWindowStateAndSize()
