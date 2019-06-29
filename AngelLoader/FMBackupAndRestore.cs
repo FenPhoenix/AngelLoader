@@ -233,6 +233,7 @@ namespace AngelLoader
 
                                 var fiDT = fi.LastWriteTime.ToUniversalTime();
                                 var eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
+                                // Zip format timestamps have a resolution of 2 seconds, so consider anything +/- 2s as the same
                                 if ((fiDT == eDT ||
                                      (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
                                      (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
