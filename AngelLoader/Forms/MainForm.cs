@@ -2270,8 +2270,21 @@ namespace AngelLoader.Forms
 
             Core.SortFMsViewList(column, sortDirection);
 
-            foreach (DataGridViewColumn c in FMsDGV.Columns) c.HeaderCell.SortGlyphDirection = SortOrder.None;
-            FMsDGV.Columns[(int)column].HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
+            // Perf: doing it this way is significantly faster than the old method of indiscriminately setting
+            // all columns to None and then setting the current one back to the CurrentSortDirection glyph again
+            var intCol = (int)column;
+            for (var i = 0; i < FMsDGV.Columns.Count; i++)
+            {
+                DataGridViewColumn c = FMsDGV.Columns[i];
+                if (i == intCol && c.HeaderCell.SortGlyphDirection != FMsDGV.CurrentSortDirection)
+                {
+                    c.HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
+                }
+                else if (i != intCol && c.HeaderCell.SortGlyphDirection != SortOrder.None)
+                {
+                    c.HeaderCell.SortGlyphDirection = SortOrder.None;
+                }
+            }
         }
 
         private void DisplayFMTags(FanMission fm)
