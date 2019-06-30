@@ -322,6 +322,9 @@ namespace AngelLoader
 
                     WriteConfigIni(Config, Paths.ConfigIni);
 
+                    // Have to do all three here, because we skipped them all before
+                    View = new MainForm();
+                    View.Init();
                     View.Show();
 
                     return true;
