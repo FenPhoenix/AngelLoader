@@ -327,7 +327,11 @@ namespace AngelLoader.CustomControls
                     // Awful, awful, awful - async method call without await because you can't have async methods
                     // with ref params! But needed to make sure the position-keep hack works (otherwise there could
                     // be too long a delay before the auto-top-scroll happens and then it won't be re-positioned)
+                    // Update 2019-06-30: No wonder this works, it's the last line before the return, and that
+                    // works as long as you don't involve exceptions, and there are none here. Fantastic!
+#pragma warning disable 4014
                     SetScrollPositionToCorrect();
+#pragma warning restore 4014
                     return;
             }
             m.Result = IntPtr.Zero;
