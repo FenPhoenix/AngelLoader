@@ -145,10 +145,17 @@ namespace FenGen
                 var block = (BlockSyntax)node;
                 foreach (var line in block.ToFullString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
                 {
-                    if (!Regex.Match(line, @"[^\.]+\.Text\s*=\s*"".*"";$").Success)
+                    #region Exclude rules
+
+                    if (Regex.Match(line, @"[^\.]+\.Text\s*=\s*"".*"";$").Success ||
+                        Regex.Match(line, @"(\bTestButton\b|\bTest2Button\b|\bDebugLabel\b|\bDebugLabel2\b)").Success)
                     {
-                        ret.Lines.Add(line);
+                        continue;
                     }
+
+                    #endregion
+
+                    ret.Lines.Add(line);
                 }
             }
 

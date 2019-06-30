@@ -11,8 +11,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
-            this.Test2Button = new System.Windows.Forms.Button();
-            this.TestButton = new System.Windows.Forms.Button();
             this.ScanAllFMsButton = new System.Windows.Forms.Button();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -27,8 +25,6 @@
             this.BottomWebSearchLeftSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.BottomWebSearchLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.WebSearchButton = new System.Windows.Forms.Button();
-            this.DebugLabel = new System.Windows.Forms.Label();
-            this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
@@ -224,23 +220,9 @@
             this.GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
             this.GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
             // 
-            // Test2Button
             // 
-            this.Test2Button.Location = new System.Drawing.Point(632, 21);
-            this.Test2Button.Name = "Test2Button";
-            this.Test2Button.Size = new System.Drawing.Size(75, 22);
-            this.Test2Button.TabIndex = 999;
-            this.Test2Button.UseVisualStyleBackColor = true;
-            this.Test2Button.Click += new System.EventHandler(this.Test2Button_Click);
             // 
-            // TestButton
             // 
-            this.TestButton.Location = new System.Drawing.Point(632, 0);
-            this.TestButton.Name = "TestButton";
-            this.TestButton.Size = new System.Drawing.Size(75, 22);
-            this.TestButton.TabIndex = 999;
-            this.TestButton.UseVisualStyleBackColor = true;
-            this.TestButton.Click += new System.EventHandler(this.TestButton_Click);
             // 
             // ScanAllFMsButton
             // 
@@ -260,10 +242,6 @@
             // 
             this.BottomPanel.Controls.Add(this.BottomRightButtonsFLP);
             this.BottomPanel.Controls.Add(this.BottomLeftButtonsFLP);
-            this.BottomPanel.Controls.Add(this.DebugLabel);
-            this.BottomPanel.Controls.Add(this.DebugLabel2);
-            this.BottomPanel.Controls.Add(this.Test2Button);
-            this.BottomPanel.Controls.Add(this.TestButton);
             this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BottomPanel.Location = new System.Drawing.Point(0, 672);
             this.BottomPanel.Name = "BottomPanel";
@@ -422,21 +400,9 @@
             this.WebSearchButton.UseVisualStyleBackColor = true;
             this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
             // 
-            // DebugLabel
             // 
-            this.DebugLabel.AutoSize = true;
-            this.DebugLabel.Location = new System.Drawing.Point(712, 8);
-            this.DebugLabel.Name = "DebugLabel";
-            this.DebugLabel.Size = new System.Drawing.Size(71, 13);
-            this.DebugLabel.TabIndex = 29;
             // 
-            // DebugLabel2
             // 
-            this.DebugLabel2.AutoSize = true;
-            this.DebugLabel2.Location = new System.Drawing.Point(712, 24);
-            this.DebugLabel2.Name = "DebugLabel2";
-            this.DebugLabel2.Size = new System.Drawing.Size(77, 13);
-            this.DebugLabel2.TabIndex = 32;
             // 
             // EverythingPanel
             // 

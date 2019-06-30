@@ -250,14 +250,59 @@ namespace AngelLoader.Forms
         public MainForm()
         {
 #if DEBUG
+            // The debug path - the standard designer-generated method with tons of bloat and redundant value
+            // setting, immediate initialization, etc.
+            // This path supports working with the designer.
             InitializeComponent();
 #else
+            // The fast path - a custom method where I generate the code by copying from the designer-generated
+            // method and tweaking as I see fit for speed and lazy-loading support.
+            // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
             InitComponentFast();
 #if Release_Testing && !RT_StartupOnly
-            TestButton.Text = @"Test";
-            Test2Button.Text = @"Test2";
-            DebugLabel.Text = @"[DebugLabel]";
-            DebugLabel2.Text = @"[DebugLabel2]";
+            #region Init debug-only controls
+
+            TestButton = new Button();
+            Test2Button = new Button();
+            DebugLabel = new Label();
+            DebugLabel2 = new Label();
+
+            BottomPanel.Controls.Add(TestButton);
+            BottomPanel.Controls.Add(Test2Button);
+            BottomPanel.Controls.Add(DebugLabel);
+            BottomPanel.Controls.Add(DebugLabel2);
+
+            TestButton.Location = new Point(632, 0);
+            TestButton.Name = "TestButton";
+            TestButton.Size = new Size(75, 22);
+            TestButton.TabIndex = 999;
+            TestButton.Text = "Test";
+            TestButton.UseVisualStyleBackColor = true;
+            TestButton.Click += TestButton_Click;
+
+            Test2Button.Location = new Point(632, 21);
+            Test2Button.Name = "Test2Button";
+            Test2Button.Size = new Size(75, 22);
+            Test2Button.TabIndex = 999;
+            Test2Button.Text = "Test2";
+            Test2Button.UseVisualStyleBackColor = true;
+            Test2Button.Click += Test2Button_Click;
+
+            DebugLabel.AutoSize = true;
+            DebugLabel.Location = new Point(712, 8);
+            DebugLabel.Name = "DebugLabel";
+            DebugLabel.Size = new Size(71, 13);
+            DebugLabel.TabIndex = 29;
+            DebugLabel.Text = "[DebugLabel]";
+
+            DebugLabel2.AutoSize = true;
+            DebugLabel2.Location = new Point(712, 24);
+            DebugLabel2.Name = "DebugLabel2";
+            DebugLabel2.Size = new Size(77, 13);
+            DebugLabel2.TabIndex = 32;
+            DebugLabel2.Text = "[DebugLabel2]";
+
+            #endregion
 #endif
 #endif
         }
@@ -311,13 +356,6 @@ namespace AngelLoader.Forms
             base.Text += " " + Application.ProductVersion;
 #else
             Text = @"AngelLoader " + Application.ProductVersion;
-#endif
-
-#if Release && !Release_Testing
-            DebugLabel.Hide();
-            DebugLabel2.Hide();
-            TestButton.Hide();
-            Test2Button.Hide();
 #endif
 
             // Aside from a possible OpenSettings() call in Model.Init() if it needs to throw up the Settings
@@ -1173,6 +1211,8 @@ namespace AngelLoader.Forms
 
         #region Test / debug
 
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+
         private void TestButton_Click(object sender, EventArgs e)
         {
         }
@@ -1183,12 +1223,7 @@ namespace AngelLoader.Forms
             Height = 750;
         }
 
-        internal void SetDebugMessageText(string text)
-        {
-#if !ReleasePublic
-            DebugLabel.Text = text;
 #endif
-        }
 
         #endregion
 
@@ -1343,7 +1378,7 @@ namespace AngelLoader.Forms
         private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
-#if !ReleasePublic
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
 #endif
 
@@ -2732,7 +2767,7 @@ namespace AngelLoader.Forms
 
                 // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
                 // due to performance concerns.
-#if !ReleasePublic
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
                 DebugLabel.Text = int.TryParse(DebugLabel.Text, out var result) ? (result + 1).ToString() : "1";
 #endif
 
