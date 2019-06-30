@@ -61,6 +61,7 @@ namespace FenGen
                             {
                                 src.Insert(k + 1, "#endif");
                             }
+                            break;
                         }
                         File.WriteAllLines(sourceFile, src, Encoding.UTF8);
                         goto breakout;
