@@ -15,6 +15,7 @@ using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.CustomControls.ProgressPanel;
 using static AngelLoader.FMBackupAndRestore;
 
 namespace AngelLoader
@@ -469,7 +470,7 @@ namespace AngelLoader
 
             ExtractCts = new CancellationTokenSource();
 
-            Core.ProgressBox.ShowInstallingFM();
+            Core.View.ShowProgressBox(ProgressTasks.InstallFM);
 
             // Framework zip extracting is much faster, so use it if possible
             bool canceled = fmArchivePath.ExtIsZip()
@@ -478,7 +479,7 @@ namespace AngelLoader
 
             if (canceled)
             {
-                Core.ProgressBox.SetCancelingFMInstall();
+                Core.View.SetCancelingFMInstall();
                 await Task.Run(() =>
                 {
                     try
@@ -490,7 +491,7 @@ namespace AngelLoader
                         Log("Unable to delete FM installed directory " + fmInstalledPath, ex);
                     }
                 });
-                Core.ProgressBox.HideThis();
+                Core.View.HideProgressBox();
                 return false;
             }
 
@@ -514,7 +515,7 @@ namespace AngelLoader
             var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
-                Core.ProgressBox.ShowConvertingFiles();
+                Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
                 await ac.ConvertMP3sToWAVs();
 
                 if (Config.ConvertOGGsToWAVsOnInstall)
@@ -541,7 +542,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.ProgressBox.HideThis();
+                Core.View.HideProgressBox();
             }
 
             // Not doing RefreshSelectedFMRowOnly() because that wouldn't update the install/uninstall buttons
@@ -585,7 +586,7 @@ namespace AngelLoader
 
                             int percent = (100 * (i + 1)) / filesCount;
 
-                            Core.ProgressBox.BeginInvoke(new Action(() => Core.ProgressBox.ReportFMExtractProgress(percent)));
+                            Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
@@ -627,11 +628,10 @@ namespace AngelLoader
                             }
                             if (canceled)
                             {
-                                Core.ProgressBox.BeginInvoke(new Action(Core.ProgressBox.SetCancelingFMInstall));
+                                Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
                                 return;
                             }
-                            Core.ProgressBox.BeginInvoke(new Action(() =>
-                                Core.ProgressBox.ReportFMExtractProgress(e.PercentDone)));
+                            Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(e.PercentDone)));
                         };
 
                         extractor.FileExtractionFinished += (sender, e) =>
@@ -641,7 +641,7 @@ namespace AngelLoader
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
-                                Core.ProgressBox.BeginInvoke(new Action(Core.ProgressBox.SetCancelingFMInstall));
+                                Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
                                 canceled = true;
                                 e.Cancel = true;
                             }
@@ -709,7 +709,7 @@ namespace AngelLoader
                 return;
             }
 
-            Core.ProgressBox.ShowUninstallingFM();
+            Core.View.ShowProgressBox(ProgressTasks.UninstallFM);
 
             try
             {
@@ -805,7 +805,7 @@ namespace AngelLoader
             }
             finally
             {
-                Core.ProgressBox.HideThis();
+                Core.View.HideProgressBox();
             }
         }
 

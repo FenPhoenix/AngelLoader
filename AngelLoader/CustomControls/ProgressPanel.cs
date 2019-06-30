@@ -19,7 +19,8 @@ namespace AngelLoader.CustomControls
         // ...a better idea would be to make this whole thing lazy-loaded. It's the perfect candidate for it.
         private bool _shownOnce;
 
-        internal enum ProgressTasks
+        // Public for param accessibility reasons or whatever
+        public enum ProgressTasks
         {
             ScanAllFMs,
             InstallFM,
@@ -32,7 +33,7 @@ namespace AngelLoader.CustomControls
         }
 
         private MainForm Owner;
-        internal ProgressTasks ProgressTask;
+        private ProgressTasks ProgressTask;
 
         #endregion
 
@@ -40,70 +41,12 @@ namespace AngelLoader.CustomControls
 
         internal void Inject(MainForm owner) => Owner = owner;
 
-        #region Show methods
-
-        internal void ShowImportDarkLoader()
-        {
-            Log("ProgressBox: " + nameof(ShowImportDarkLoader), methodName: false);
-            ProgressTask = ProgressTasks.ImportFromDarkLoader;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        internal void ShowImportNDL()
-        {
-            Log("ProgressBox: " + nameof(ShowImportNDL), methodName: false);
-            ProgressTask = ProgressTasks.ImportFromNDL;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        internal void ShowImportFMSel()
-        {
-            Log("ProgressBox: " + nameof(ShowImportFMSel), methodName: false);
-            ProgressTask = ProgressTasks.ImportFromFMSel;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        internal void ShowScanningAllFMs()
-        {
-            Log("ProgressBox: " + nameof(ShowScanningAllFMs), methodName: false);
-            ProgressTask = ProgressTasks.ScanAllFMs;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        internal void ShowInstallingFM()
-        {
-            Log("ProgressBox: " + nameof(ShowInstallingFM), methodName: false);
-            ProgressTask = ProgressTasks.InstallFM;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        internal void ShowUninstallingFM()
-        {
-            Log("ProgressBox: " + nameof(ShowUninstallingFM), methodName: false);
-            ProgressTask = ProgressTasks.UninstallFM;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        internal void ShowConvertingFiles()
-        {
-            Log("ProgressBox: " + nameof(ShowConvertingFiles), methodName: false);
-            ProgressTask = ProgressTasks.ConvertFiles;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        internal void ShowCachingFM()
-        {
-            Log("ProgressBox: " + nameof(ShowCachingFM), methodName: false);
-            ProgressTask = ProgressTasks.CacheFM;
-            ShowProgressWindow(ProgressTask);
-        }
-
-        #endregion
-
         #region Open/close
 
         internal void ShowProgressWindow(ProgressTasks progressTask, bool suppressShow = false)
         {
+            ProgressTask = progressTask;
+
             Center();
 
             ProgressMessageLabel.Text =
@@ -142,13 +85,12 @@ namespace AngelLoader.CustomControls
             if (!suppressShow) ShowThis();
         }
 
-        internal void ShowThis()
+        private void ShowThis()
         {
             if (!_shownOnce)
             {
                 _shownOnce = true;
                 SetUITextToLocalized();
-                ProgressCancelButton.CenterH(this);
             }
 
             Log(nameof(ShowThis) + " called", methodName: false);
@@ -241,15 +183,15 @@ namespace AngelLoader.CustomControls
 
         private void ProgressCancelButton_Click(object sender, EventArgs e) => Cancel();
 
-        internal void Cancel()
+        private void Cancel()
         {
             switch (ProgressTask)
             {
                 case ProgressTasks.ScanAllFMs:
-                    Owner.CancelScan();
+                    Core.CancelScan();
                     break;
                 case ProgressTasks.InstallFM:
-                    Owner.CancelInstallFM();
+                    InstallAndPlay.CancelInstallFM();
                     break;
             }
         }

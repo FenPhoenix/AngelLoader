@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Common;
 
 namespace AngelLoader
 {
@@ -25,7 +27,7 @@ namespace AngelLoader
             // awareness value). The config manager, like a bloated-ass five-hundred-foot-tall blubber-laden pig,
             // takes 32ms to initialize(!). Rather than letting Form.ctor do it serially, we're going to do it in
             // the background while other stuff runs, thus chopping off even more startup time.
-            var configTask = Task.Run(() => System.Configuration.ConfigurationManager.AppSettings);
+            Task configTask = Task.Run(() => System.Configuration.ConfigurationManager.AppSettings);
 
             AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
             {
@@ -35,9 +37,11 @@ namespace AngelLoader
                 }
             };
 
-            ClearLogFile();
-            ClearLogFile(Paths.ScannerLogFile);
-            Log(Application.ProductVersion + " Started session", stackTrace: false, methodName: false);
+            // We need to clear this because FMScanner doesn't have a startup version
+            ClearLogFileStartup(Paths.ScannerLogFile);
+
+            // We don't need to clear this log because LogStartup says append: false
+            LogStartup(Application.ProductVersion + " Started session");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

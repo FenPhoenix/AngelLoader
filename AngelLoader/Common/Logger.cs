@@ -42,6 +42,24 @@ namespace AngelLoader.Common
 
         #endregion
 
+        /// <summary>
+        /// A faster version without locking for running on startup.
+        /// </summary>
+        /// <param name="logFile"></param>
+        internal static void ClearLogFileStartup(string logFile = "")
+        {
+            if (logFile.IsEmpty()) logFile = Paths.LogFile;
+
+            try
+            {
+                File.Delete(logFile);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+        }
+
         internal static void ClearLogFile(string logFile = "")
         {
             if (logFile.IsEmpty()) logFile = Paths.LogFile;
@@ -65,6 +83,25 @@ namespace AngelLoader.Common
                 {
                     Debug.WriteLine(ex);
                 }
+            }
+        }
+
+        /// <summary>
+        /// A faster version without locking or unnecessary options for running on startup.
+        /// </summary>
+        /// <param name="message"></param>
+        internal static void LogStartup(string message)
+        {
+            try
+            {
+                using (var sw = new StreamWriter(Paths.LogFile, append: false))
+                {
+                    sw.WriteLine(GetDateTimeStringFast() + " " + message + "\r\n");
+                }
+            }
+            catch (Exception logEx)
+            {
+                Debug.WriteLine(logEx);
             }
         }
 

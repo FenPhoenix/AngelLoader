@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using AngelLoader.CustomControls;
+using AngelLoader.Forms;
 using AngelLoader.WinAPI;
 using SevenZip;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.CustomControls.ProgressPanel;
 
 namespace AngelLoader
 {
@@ -39,7 +40,7 @@ namespace AngelLoader
 
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
-        internal static async Task<CacheData> GetCacheableData(FanMission fm, ProgressPanel ProgressBox)
+        internal static async Task<CacheData> GetCacheableData(FanMission fm, IView view)
         {
             if (fm.Game == Game.Unsupported)
             {
@@ -54,7 +55,7 @@ namespace AngelLoader
             {
                 return FMIsReallyInstalled(fm)
                     ? GetCacheableDataInFMInstalledDir(fm)
-                    : await GetCacheableDataInFMCacheDir(fm, ProgressBox);
+                    : await GetCacheableDataInFMCacheDir(fm, view);
             }
             catch (Exception ex)
             {
@@ -125,7 +126,7 @@ namespace AngelLoader
             return new CacheData { Readmes = readmes };
         }
 
-        internal static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, ProgressPanel progressBox)
+        internal static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, IView view)
         {
             var readmes = new List<string>();
 
@@ -178,7 +179,7 @@ namespace AngelLoader
             }
             else
             {
-                await SevenZipExtract(fmArchivePath, fmCachePath, readmes, progressBox);
+                await SevenZipExtract(fmArchivePath, fmCachePath, readmes, view);
             }
 
             // TODO: Support .7z here too
@@ -343,7 +344,7 @@ namespace AngelLoader
         }
 
         private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes,
-            ProgressPanel progressBox)
+            IView view)
         {
             await Task.Run(() =>
             {
@@ -375,11 +376,11 @@ namespace AngelLoader
 
                         Log(nameof(SevenZipExtract) + ": about to show progress box and extract", methodName: false);
 
-                        progressBox.BeginInvoke(new Action(progressBox.ShowCachingFM));
+                        view.InvokeAsync(new Action(() => view.ShowProgressBox(ProgressTasks.CacheFM)));
 
                         extractor.Extracting += (sender, e) =>
                         {
-                            progressBox.BeginInvoke(new Action(() => progressBox.ReportCachingProgress(e.PercentDone)));
+                            view.InvokeAsync(new Action(() => view.ReportCachingProgress(e.PercentDone)));
                         };
 
                         extractor.FileExtractionFinished += (sender, e) =>
@@ -403,7 +404,7 @@ namespace AngelLoader
                 }
                 finally
                 {
-                    progressBox.BeginInvoke(new Action(progressBox.HideThis));
+                    view.InvokeAsync(new Action(view.HideProgressBox));
                 }
             });
         }

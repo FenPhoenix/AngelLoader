@@ -232,7 +232,7 @@ namespace AngelLoader.Importing
                     }
                     finally
                     {
-                        Core.View.InvokeSync(new Action(Core.ProgressBox.HideThis));
+                        Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
                     }
                 });
             }

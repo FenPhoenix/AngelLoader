@@ -21,6 +21,7 @@ using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.CustomControls.ProgressPanel;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader
@@ -28,7 +29,6 @@ namespace AngelLoader
     internal static class Core
     {
         internal static IView View;
-        internal static ProgressPanel ProgressBox;
 
         internal static List<FanMission> FMsViewList = new List<FanMission>();
         private static readonly List<FanMission> FMDataIniList = new List<FanMission>();
@@ -656,19 +656,19 @@ namespace AngelLoader
                 // as the timer method, but that can cause race conditions I don't know how to fix, so whatever.
                 if (fmsToScan[0].Archive.ExtIs7z())
                 {
-                    ProgressBox.ShowScanningAllFMs();
+                    View.ShowProgressBox(ProgressTasks.ScanAllFMs);
                 }
                 else
                 {
                     // Block user input to the form to mimic the UI thread being blocked, because we're async here
                     View.Block(true);
-                    ProgressBox.ProgressTask = ProgressPanel.ProgressTasks.ScanAllFMs;
-                    ProgressBox.ShowProgressWindow(ProgressBox.ProgressTask, suppressShow: true);
+                    // Doesn't actually show the box, but shows the meter on the taskbar I guess?
+                    View.ShowProgressBox(ProgressTasks.ScanAllFMs, suppressShow: true);
                 }
             }
             else
             {
-                ProgressBox.ShowScanningAllFMs();
+                View.ShowProgressBox(ProgressTasks.ScanAllFMs);
             }
 
             #endregion
@@ -677,7 +677,7 @@ namespace AngelLoader
             {
                 var fmIsZip = pr.FMName.ExtIsArchive();
                 var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
-                ProgressBox.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
+                View.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
             }
 
             try
@@ -891,7 +891,7 @@ namespace AngelLoader
             finally
             {
                 View.Block(false);
-                ProgressBox.HideThis();
+                View.HideProgressBox();
             }
 
             return true;
@@ -960,7 +960,7 @@ namespace AngelLoader
         internal static async Task<bool>
         ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves)
         {
-            ProgressBox.ShowImportDarkLoader();
+            View.ShowProgressBox(ProgressTasks.ImportFromDarkLoader);
             try
             {
                 var (error, fmsToScan) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList);
@@ -987,7 +987,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.HideThis();
+                View.HideProgressBox();
             }
 
             return true;
@@ -995,7 +995,7 @@ namespace AngelLoader
 
         internal static async Task<bool> ImportFromNDL(string iniFile)
         {
-            ProgressBox.ShowImportNDL();
+            View.ShowProgressBox(ProgressTasks.ImportFromNDL);
             try
             {
                 var (error, fmsToScan) = await ImportNDL.Import(iniFile, FMDataIniList);
@@ -1015,7 +1015,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.HideThis();
+                View.HideProgressBox();
             }
 
             return true;
@@ -1023,7 +1023,7 @@ namespace AngelLoader
 
         internal static async Task<bool> ImportFromFMSel(string iniFile)
         {
-            ProgressBox.ShowImportFMSel();
+            View.ShowProgressBox(ProgressTasks.ImportFromFMSel);
             try
             {
                 var (error, fmsToScan) = await ImportFMSel.Import(iniFile, FMDataIniList);
@@ -1043,7 +1043,7 @@ namespace AngelLoader
             }
             finally
             {
-                ProgressBox.HideThis();
+                View.HideProgressBox();
             }
 
             return true;
@@ -1104,12 +1104,12 @@ namespace AngelLoader
             var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
-                ProgressBox.ShowConvertingFiles();
+                View.ShowProgressBox(ProgressTasks.ConvertFiles);
                 await ac.ConvertOGGsToWAVs();
             }
             finally
             {
-                ProgressBox.HideThis();
+                View.HideProgressBox();
             }
         }
 
@@ -1147,12 +1147,12 @@ namespace AngelLoader
             var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
-                ProgressBox.ShowConvertingFiles();
+                View.ShowProgressBox(ProgressTasks.ConvertFiles);
                 await ac.ConvertWAVsTo16Bit();
             }
             finally
             {
-                ProgressBox.HideThis();
+                View.HideProgressBox();
             }
         }
 

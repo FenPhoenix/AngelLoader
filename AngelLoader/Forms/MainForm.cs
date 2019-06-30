@@ -324,8 +324,6 @@ namespace AngelLoader.Forms
             // window (which doesn't show the view, so the startup process is still left intact), this code is
             // now a nice straight line with no back-and-forth spaghetti method calls.
 
-            Core.ProgressBox = ProgressBox;
-
             FMsDGV.InjectOwner(this);
 
             #region Set up form and control state
@@ -422,8 +420,6 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.ZoomFactor = ReadmeRichTextBox.StoredZoomFactor;
 
             #endregion
-
-            ProgressBox.Inject(this);
 
             #region Filters
 
@@ -587,7 +583,6 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (ProgressBox.Visible) ProgressBox.Center();
             if (AddTagListBox.Visible) HideAddTagDropDown();
 
             SetFilterBarScrollButtons();
@@ -944,7 +939,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                ProgressBox.SetUITextToLocalized();
+                LocalizeProgressBox();
             }
             finally
             {
@@ -2644,7 +2639,7 @@ namespace AngelLoader.Forms
 
             if (!refreshReadme) return;
 
-            var cacheData = await FMCache.GetCacheableData(fm, ProgressBox);
+            var cacheData = await FMCache.GetCacheableData(fm, this);
 
             #region Readme
 
@@ -2769,32 +2764,6 @@ namespace AngelLoader.Forms
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
             }
         }
-
-        #region Progress window
-
-        internal void EnableEverything(bool enabled)
-        {
-            bool doFocus = !EverythingPanel.Enabled && enabled;
-
-            EverythingPanel.Enabled = enabled;
-
-            if (!doFocus) return;
-
-            // The "mouse wheel scroll without needing to focus" thing stops working when no control is focused
-            // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
-            // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
-            FMsDGV.Focus();
-        }
-
-        #region In
-
-        internal void CancelScan() => Core.CancelScan();
-
-        internal void CancelInstallFM() => InstallAndPlay.CancelInstallFM();
-
-        #endregion
-
-        #endregion
 
         #region Messageboxes
 

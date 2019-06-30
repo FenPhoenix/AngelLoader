@@ -171,7 +171,6 @@
             this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ProgressBox = new AngelLoader.CustomControls.ProgressPanel();
             this.TopRightMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
             this.TRM_StatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_EditFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -2115,15 +2114,6 @@
             this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
             this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
             // 
-            // ProgressBox
-            // 
-            this.ProgressBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ProgressBox.Location = new System.Drawing.Point(328, 320);
-            this.ProgressBox.Name = "ProgressBox";
-            this.ProgressBox.Size = new System.Drawing.Size(424, 128);
-            this.ProgressBox.TabIndex = 39;
-            this.ProgressBox.Visible = false;
-            // 
             // TopRightMenu
             // 
             this.TopRightMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -2185,7 +2175,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1671, 716);
-            this.Controls.Add(this.ProgressBox);
             this.Controls.Add(this.EverythingPanel);
             this.DoubleBuffered = true;
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
