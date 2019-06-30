@@ -473,7 +473,7 @@ namespace AngelLoader.Forms
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
 
-            ChangeRTFBoxFont(Config.ReadmeUseFixedWidthFont);
+            ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
             #endregion
 
@@ -1012,7 +1012,7 @@ namespace AngelLoader.Forms
 
         public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMButton.Visible = enabled;
 
-        public void ChangeRTFBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
+        public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
 
         private void PositionFilterBarAfterTabs()
         {

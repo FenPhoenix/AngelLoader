@@ -17,7 +17,6 @@ using AngelLoader.Forms;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
 using FMScanner;
-using Ookii.Dialogs.WinForms;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.Logger;
@@ -26,46 +25,6 @@ using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader
 {
-    internal interface IView : ILocalizable
-    {
-        int CurrentSortedColumnIndex { get; }
-        SortOrder CurrentSortDirection { get; }
-        void ShowFMsListZoomButtons(bool visible);
-        void ShowInstallUninstallButton(bool enabled);
-        Task ClearAllUIAndInternalFilters();
-        void ChangeGameOrganization();
-        void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
-        void RefreshFMsListKeepSelection();
-        Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
-            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false);
-        void Init();
-        void SortFMsDGV(Column column, SortOrder sortDirection);
-        int GetRowCount();
-        void SetRowCount(int count);
-        void Show();
-        void ShowAlert(string message, string title);
-        object InvokeSync(Delegate method);
-        object InvokeSync(Delegate method, params object[] args);
-        object InvokeAsync(Delegate method);
-        object InvokeAsync(Delegate method, params object[] args);
-        void Block(bool block);
-        Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
-            bool suppressSuspendResume = false);
-        Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false);
-        Task RefreshSelectedFMRowOnly();
-        bool AskToContinue(string message, string title, bool noIcon = false);
-
-        (bool Cancel, bool DontAskAgain)
-        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon,
-            bool showDontAskAgain, string yes, string no);
-
-        (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
-            bool showDontAskAgain, string yes, string no, string cancel);
-
-        void ChangeRTFBoxFont(bool useFixed);
-    }
-
     internal static class Core
     {
         internal static IView View;
@@ -180,8 +139,11 @@ namespace AngelLoader
                 // Eliding await so that we don't have to be async and run the state machine and lose time. This
                 // will be the last line run in this method, so it's safe. Don't put this inside a try block, or
                 // it won't be safe. It has to really be the last thing run in the method.
+#pragma warning disable 4014
                 OpenSettings(startup: true);
-                return;
+#pragma warning restore 4014
+                // ReSharper disable once RedundantJumpStatement
+                return; // return for clarity of intent
             }
             else
             {
@@ -413,7 +375,7 @@ namespace AngelLoader
                 }
                 if (useFixedFontChanged)
                 {
-                    View.ChangeRTFBoxFont(sf.OutConfig.ReadmeUseFixedWidthFont);
+                    View.ChangeReadmeBoxFont(sf.OutConfig.ReadmeUseFixedWidthFont);
                 }
 
                 #endregion

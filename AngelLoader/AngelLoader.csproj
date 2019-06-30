@@ -254,6 +254,7 @@
     </Compile>
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
+    <Compile Include="Forms\IView.cs" />
     <Compile Include="Forms\MainForm_InitFast.cs">
       <SubType>Form</SubType>
     </Compile>
