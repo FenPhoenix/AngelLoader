@@ -130,8 +130,8 @@ Global
 		{F8729702-3C79-44D3-97A0-836D30D452B4}.Release|x86.Build.0 = Release|Any CPU
 		{F8729702-3C79-44D3-97A0-836D30D452B4}.RT_StartupOnly|Any CPU.ActiveCfg = RT_StartupOnly|Any CPU
 		{F8729702-3C79-44D3-97A0-836D30D452B4}.RT_StartupOnly|Any CPU.Build.0 = RT_StartupOnly|Any CPU
-		{F8729702-3C79-44D3-97A0-836D30D452B4}.RT_StartupOnly|x86.ActiveCfg = RT_StartupOnly|Any CPU
-		{F8729702-3C79-44D3-97A0-836D30D452B4}.RT_StartupOnly|x86.Build.0 = RT_StartupOnly|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.RT_StartupOnly|x86.ActiveCfg = Release|Any CPU
+		{F8729702-3C79-44D3-97A0-836D30D452B4}.RT_StartupOnly|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

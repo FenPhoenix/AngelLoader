@@ -247,7 +247,20 @@ namespace AngelLoader.Forms
         #region Form (init, events, close)
 
         // InitializeComponent() only - for everything else use Init() below
-        public MainForm() => InitializeComponent();
+        public MainForm()
+        {
+#if DEBUG
+            InitializeComponent();
+#else
+            InitComponentFast();
+#if Release_Testing && !RT_StartupOnly
+            TestButton.Text = @"Test";
+            Test2Button.Text = @"Test2";
+            DebugLabel.Text = @"[DebugLabel]";
+            DebugLabel2.Text = @"[DebugLabel2]";
+#endif
+#endif
+        }
 
         #region Mouse hook
 

@@ -254,6 +254,9 @@
     </Compile>
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
+    <Compile Include="Forms\MainForm_InitFast.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\PlayWithOptions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -553,6 +556,7 @@ set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
 
 %25FenGen%25 -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
 %25FenGen%25 -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
+%25FenGen%25 -main_form_backing "$(ProjectDir)\Forms\MainForm.Designer.cs" "$(ProjectDir)\Forms\MainForm_InitFast.cs"
 
 if $(ConfigurationName) == Release_Beta (
 %25FenGen%25 -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"

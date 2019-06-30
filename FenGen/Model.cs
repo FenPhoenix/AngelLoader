@@ -34,7 +34,8 @@ namespace FenGen
         FMData,
         Config,
         Language,
-        Version
+        Version,
+        MainFormBacking
     }
 
     internal enum VersionType
@@ -213,7 +214,7 @@ namespace FenGen
         internal void ReadCommandLineArgs()
         {
 #if DEBUG
-            return;
+            //return;
 #endif
 
             // args[0] is always the application filename
@@ -266,6 +267,9 @@ namespace FenGen
                 case "-version":
                     GenType = GenType.Version;
                     break;
+                case"-main_form_backing":
+                    GenType = GenType.MainFormBacking;
+                    break;
                 default:
                     ExitIfRelease();
                     break;
@@ -288,6 +292,11 @@ namespace FenGen
             if (GenType == GenType.Version)
             {
                 VersionIncrement.Generate(SourceFile, VerType);
+                return;
+            }
+            if (GenType == GenType.MainFormBacking)
+            {
+                MainFormBacking.Generate(SourceFile, DestFile);
                 return;
             }
 

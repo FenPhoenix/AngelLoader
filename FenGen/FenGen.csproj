@@ -68,6 +68,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MainFormBacking.cs" />
     <Compile Include="Methods.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Program.cs" />
