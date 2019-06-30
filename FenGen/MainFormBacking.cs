@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,14 +14,70 @@ namespace FenGen
     {
         internal static void Generate(string sourceFile, string destFile)
         {
-            var src = ReadSource(sourceFile);
-            using (var sw = new StreamWriter(destFile, append: false))
+            var src = File.ReadAllLines(sourceFile).ToList();
+
+            for (int i = 0; i < src.Count; i++)
             {
-                sw.WriteLine("namespace " + src.Namespace + "\r\n{");
-                sw.WriteLine("    partial class " + src.ClassDeclaration + "\r\n    {");
+                if (src[i].Trim().StartsWith("#if") || src[i].Trim() == "#endif")
+                {
+                    src.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            // This must go here, so it can get at the ifdef-stripped code
+            var (ns, classDeclaration, lines) = ReadSource(src);
+
+            for (var i = 0; i < src.Count; i++)
+            {
+                var sl = src[i];
+                if (sl.Trim() != "private void InitializeComponent()") continue;
+
+                for (int j = i; j > 0; j--)
+                {
+                    if (!src[j].Trim().StartsWith("#region ")) continue;
+
+                    src.Insert(j, "#if DEBUG");
+                    i++;
+                    int stack = 0;
+                    bool stackStarted = false;
+                    for (int k = Math.Min(i + 1, src.Count); k < src.Count; k++)
+                    {
+                        if (src[k].Trim().StartsWith("//")) continue;
+
+                        if (src[k].CountChars('{') > 0) stackStarted = true;
+                        stack += src[k].CountChars('{');
+                        stack -= src[k].CountChars('}');
+                        if (!stackStarted || stack != 0) continue;
+
+                        for (; k < src.Count; k++)
+                        {
+                            if (src[k].Trim() != "#endregion") continue;
+                            if (k == src.Count - 1)
+                            {
+                                src.Add("#endif");
+                            }
+                            else
+                            {
+                                src.Insert(k + 1, "#endif");
+                            }
+                        }
+                        File.WriteAllLines(sourceFile, src, Encoding.UTF8);
+                        goto breakout;
+                    }
+
+                    break;
+                }
+            }
+
+            breakout:
+            using (var sw = new StreamWriter(destFile, append: false, Encoding.UTF8))
+            {
+                sw.WriteLine("namespace " + ns + "\r\n{");
+                sw.WriteLine("    partial class " + classDeclaration + "\r\n    {");
                 sw.WriteLine("        private void InitComponentFast()");
 
-                foreach (var line in src.Lines)
+                foreach (var line in lines)
                 {
                     if (!line.IsWhiteSpace()) sw.WriteLine(line);
                 }
@@ -29,12 +87,12 @@ namespace FenGen
         }
 
         private static (string Namespace, string ClassDeclaration, List<string> Lines)
-        ReadSource(string sourceFile)
+        ReadSource(List<string> sourceLines)
         {
             (string Namespace, string ClassDeclaration, List<string> Lines) ret =
                 (null, null, new List<string>());
 
-            var code = File.ReadAllText(sourceFile);
+            var code = string.Join("\r\n", sourceLines.ToArray());
             var tree = CSharpSyntaxTree.ParseText(code);
 
             foreach (var item in tree.GetCompilationUnitRoot().DescendantNodesAndSelf())
