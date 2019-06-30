@@ -43,8 +43,6 @@ namespace AngelLoader.Common.DataClasses
         internal string SelectedReadme = "";
 
         // [FenGen:DoNotSerialize]
-        internal string SizeString = "";
-        // [FenGen:DoNotSerialize]
         private ulong _sizeBytes = 0;
         // [FenGen:NumericEmpty=0]
         internal ulong SizeBytes { get => _sizeBytes; set => _sizeBytes = value.Clamp(ulong.MinValue, ulong.MaxValue); }

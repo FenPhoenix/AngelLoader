@@ -37,12 +37,6 @@ namespace AngelLoader.Common.Utility
             return File.Exists(t2MPExe) ? t2MPExe : "";
         }
 
-        internal static void SetFMSizesToLocalized()
-        {
-            // This will set "KB" / "MB" / "GB" to localized, and decimal separator to current culture
-            foreach (var fm in Core.FMsViewList) fm.SizeString = ((long?)fm.SizeBytes).ConvertSize();
-        }
-
         internal static ScanOptions GetDefaultScanOptions()
         {
             return ScanOptions.FalseDefault(

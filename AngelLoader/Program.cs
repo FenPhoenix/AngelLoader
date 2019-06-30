@@ -74,6 +74,6 @@ namespace AngelLoader
     {
         internal AppContext(Task configTask) => Init(configTask);
 
-        private static async void Init(Task configTask) => await Core.Init(configTask);
+        private static void Init(Task configTask) => Core.Init(configTask);
     }
 }

@@ -76,8 +76,9 @@ namespace AngelLoader
 
         private static CancellationTokenSource ScanCts;
 
-        internal static async Task Init(Task configTask)
+        internal static void Init(Task configTask)
         {
+            bool openSettings;
             try
             {
                 try
@@ -93,7 +94,6 @@ namespace AngelLoader
                     Environment.Exit(1);
                 }
 
-                bool openSettings;
                 if (File.Exists(Paths.ConfigIni))
                 {
                     try
@@ -145,49 +145,48 @@ namespace AngelLoader
                     SetDefaultConfigVarNamesToLocalized();
                 }
 
-                if (openSettings)
+                if (!openSettings)
                 {
-                    // Form.ctor will want to access the configuration too, so wait first (dunno if it's thread-safe)
-                    configTask.Wait();
+                    #region Parallel load
 
-                    if (await OpenSettings(startup: true))
+                    using (var findFMsTask = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true)))
                     {
-                        var checkPaths = CheckPaths();
+                        // It's safe to overlap this with Find(), but not with MainForm.ctor()
+                        configTask.Wait();
 
-                        Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
+                        // Construct and init the view both right here, because they're both heavy operations and we
+                        // want them both to run in parallel with Find() to the greatest extent possible.
+                        View = new MainForm();
+                        View.Init();
 
-                        WriteConfigIni(Config, Paths.ConfigIni);
+                        findFMsTask.Wait();
                     }
-                    else
-                    {
-                        // Since nothing of consequence has yet happened, it's okay to do the brutal quit
-                        Environment.Exit(0);
-                    }
+
+                    #endregion
                 }
-
-                #region Parallel load
-
-                using (var findFMsTask = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true)))
+                else
                 {
-                    // It's safe to overlap this with Find(), but not with MainForm.ctor()
+                    // Don't forget to wait in this case too
                     configTask.Wait();
-
-                    // Construct and init the view both right here, because they're both heavy operations and we
-                    // want them both to run in parallel with Find() to the greatest extent possible.
-                    View = new MainForm();
-                    View.Init();
-
-                    findFMsTask.Wait();
                 }
-
-                #endregion
             }
             finally
             {
                 configTask.Dispose();
             }
 
-            View.Show();
+            if (openSettings)
+            {
+                // Eliding await so that we don't have to be async and run the state machine and lose time. This
+                // will be the last line run in this method, so it's safe. Don't put this inside a try block, or
+                // it won't be safe. It has to really be the last thing run in the method.
+                OpenSettings(startup: true);
+                return;
+            }
+            else
+            {
+                View.Show();
+            }
         }
 
         public static async Task<bool> OpenSettings(bool startup = false)
@@ -210,7 +209,15 @@ namespace AngelLoader
 
                 #endregion
 
-                if (result != DialogResult.OK) return false;
+                if (result != DialogResult.OK)
+                {
+                    if (startup)
+                    {
+                        // Since nothing of consequence has yet happened, it's okay to do the brutal quit
+                        Environment.Exit(0);
+                    }
+                    return false;
+                }
 
                 #region Set changed bools
 
@@ -307,6 +314,16 @@ namespace AngelLoader
                 if (startup)
                 {
                     Config.Language = sf.OutConfig.Language;
+
+                    // This is here so that we can just call this method as the last line in Init() and not have to
+                    // await and take the perf hit
+                    var checkPaths = CheckPaths();
+                    Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
+
+                    WriteConfigIni(Config, Paths.ConfigIni);
+
+                    View.Show();
+
                     return true;
                 }
 
@@ -390,11 +407,6 @@ namespace AngelLoader
                 if (ratingDisplayStyleChanged)
                 {
                     View.UpdateRatingDisplayStyle(Config.RatingDisplayStyle, startup: false);
-                }
-                if ((archivePathsChanged || gamePathsChanged) && languageChanged)
-                {
-                    // Do this again if the FMs list might have changed
-                    SetFMSizesToLocalized();
                 }
                 if (useFixedFontChanged)
                 {
@@ -841,7 +853,6 @@ namespace AngelLoader
 
                     if (overwriteUnscannedFields || scanOptions.ScanSize)
                     {
-                        sel.SizeString = gameSup ? scannedFM.Size.ConvertSize() : "";
                         sel.SizeBytes = (ulong)(gameSup ? scannedFM.Size ?? 0 : 0);
                     }
                     if (overwriteUnscannedFields || scanOptions.ScanReleaseDate)

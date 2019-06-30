@@ -344,15 +344,15 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
-        internal static string ConvertSize(this long? size)
+        internal static string ConvertSize(this ulong size)
         {
-            if (size == null || size == 0) return "";
+            if (size == 0) return "";
 
             return size < ByteSize.MB
-                 ? Math.Round((double)(size / 1024f)).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
+                 ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
                  : size >= ByteSize.MB && size < ByteSize.GB
-                 ? Math.Round((double)(size / 1024f / 1024f)).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
-                 : Math.Round((double)(size / 1024f / 1024f / 1024f), 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
+                 ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
+                 : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
         }
 
         #region FM installed name conversion

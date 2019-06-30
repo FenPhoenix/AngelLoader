@@ -945,8 +945,6 @@ namespace AngelLoader.Forms
                 #endregion
 
                 ProgressBox.SetUITextToLocalized();
-
-                SetFMSizesToLocalized();
             }
             finally
             {
@@ -1905,8 +1903,8 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Size:
-                    // This one gets changed for every FM on language change, so it's good
-                    e.Value = fm.SizeString;
+                    // This conversion takes like 1ms over the entire 1545 set, so no problem
+                    e.Value = fm.SizeBytes.ConvertSize();
                     break;
 
                 case Column.Rating:
