@@ -581,7 +581,6 @@
             // 
             // GameTypeColumn
             // 
-            this.GameTypeColumn.HeaderText = "Game";
             this.GameTypeColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
             this.GameTypeColumn.MinimumWidth = 25;
             this.GameTypeColumn.Name = "GameTypeColumn";
@@ -591,7 +590,6 @@
             // 
             // InstalledColumn
             // 
-            this.InstalledColumn.HeaderText = "Installed";
             this.InstalledColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
             this.InstalledColumn.MinimumWidth = 25;
             this.InstalledColumn.Name = "InstalledColumn";
@@ -601,7 +599,6 @@
             // 
             // TitleColumn
             // 
-            this.TitleColumn.HeaderText = "Title";
             this.TitleColumn.MinimumWidth = 25;
             this.TitleColumn.Name = "TitleColumn";
             this.TitleColumn.ReadOnly = true;
@@ -609,7 +606,6 @@
             // 
             // ArchiveColumn
             // 
-            this.ArchiveColumn.HeaderText = "Archive";
             this.ArchiveColumn.MinimumWidth = 25;
             this.ArchiveColumn.Name = "ArchiveColumn";
             this.ArchiveColumn.ReadOnly = true;
@@ -617,7 +613,6 @@
             // 
             // AuthorColumn
             // 
-            this.AuthorColumn.HeaderText = "Author";
             this.AuthorColumn.MinimumWidth = 25;
             this.AuthorColumn.Name = "AuthorColumn";
             this.AuthorColumn.ReadOnly = true;
@@ -627,7 +622,6 @@
             // 
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
             this.SizeColumn.ReadOnly = true;
@@ -635,7 +629,6 @@
             // 
             // RatingTextColumn
             // 
-            this.RatingTextColumn.HeaderText = "Rating";
             this.RatingTextColumn.MinimumWidth = 25;
             this.RatingTextColumn.Name = "RatingTextColumn";
             this.RatingTextColumn.ReadOnly = true;
@@ -643,7 +636,6 @@
             // 
             // FinishedColumn
             // 
-            this.FinishedColumn.HeaderText = "Finished";
             this.FinishedColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
             this.FinishedColumn.Name = "FinishedColumn";
             this.FinishedColumn.ReadOnly = true;
@@ -653,7 +645,6 @@
             // 
             // ReleaseDateColumn
             // 
-            this.ReleaseDateColumn.HeaderText = "Release Date";
             this.ReleaseDateColumn.MinimumWidth = 25;
             this.ReleaseDateColumn.Name = "ReleaseDateColumn";
             this.ReleaseDateColumn.ReadOnly = true;
@@ -661,7 +652,6 @@
             // 
             // LastPlayedColumn
             // 
-            this.LastPlayedColumn.HeaderText = "Last Played";
             this.LastPlayedColumn.MinimumWidth = 25;
             this.LastPlayedColumn.Name = "LastPlayedColumn";
             this.LastPlayedColumn.ReadOnly = true;
@@ -669,7 +659,6 @@
             // 
             // DisabledModsColumn
             // 
-            this.DisabledModsColumn.HeaderText = "Disabled Mods";
             this.DisabledModsColumn.MinimumWidth = 25;
             this.DisabledModsColumn.Name = "DisabledModsColumn";
             this.DisabledModsColumn.ReadOnly = true;
@@ -677,7 +666,6 @@
             // 
             // CommentColumn
             // 
-            this.CommentColumn.HeaderText = "Comment";
             this.CommentColumn.MinimumWidth = 25;
             this.CommentColumn.Name = "CommentColumn";
             this.CommentColumn.ReadOnly = true;

@@ -183,6 +183,7 @@ namespace FenGen
             foreach (var line in lines)
             {
                 if (Regex.Match(line, @"[^\.]+\.Text\s*=\s*"".*"";$").Success ||
+                    Regex.Match(line, @"[^\.]+\.HeaderText\s*=\s*"".*"";$").Success||
                     Regex.Match(line, @"(\bTestButton\b|\bTest2Button\b|\bDebugLabel\b|\bDebugLabel2\b)").Success)
                 {
                     continue;
