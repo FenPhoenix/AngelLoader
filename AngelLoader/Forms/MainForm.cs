@@ -258,7 +258,15 @@ namespace AngelLoader.Forms
             // The fast path - a custom method where I generate the code by copying from the designer-generated
             // method and tweaking as I see fit for speed and lazy-loading support.
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
+
+            //var t = new Stopwatch();
+            //t.Start();
+
             InitComponentManual();
+
+            //t.Stop();
+            //Trace.WriteLine("InitComponentManual(): " + t.Elapsed);
+
 #if Release_Testing && !RT_StartupOnly
             #region Init debug-only controls
 
@@ -361,6 +369,10 @@ namespace AngelLoader.Forms
             FMsDGV.InjectOwner(this);
 
             #region Set up form and control state
+
+            // Set here in Init() so as to avoid the changes being visible.
+            // Set here specifically (before anything else) so that splitter positioning etc. works right.
+            SetWindowStateAndSize();
 
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
@@ -503,9 +515,6 @@ namespace AngelLoader.Forms
             ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
             #endregion
-
-            // Set here so as to avoid the changes being visible
-            SetWindowStateAndSize();
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
@@ -730,6 +739,9 @@ namespace AngelLoader.Forms
             }
             else
             {
+                // PERF: These will already have been suspended in InitComponentManual(), and we're going to
+                // resume them in the finally block
+#if DEBUG
                 BottomLeftButtonsFLP.SuspendLayout();
                 BottomRightButtonsFLP.SuspendLayout();
                 StatisticsTabPage.SuspendLayout();
@@ -741,6 +753,7 @@ namespace AngelLoader.Forms
                 PatchMainPanel.SuspendLayout();
                 MainSplitContainer.Panel2.SuspendLayout();
                 ChooseReadmePanel.SuspendLayout();
+#endif
             }
             try
             {

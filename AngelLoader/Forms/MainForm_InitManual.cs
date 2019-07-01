@@ -16,11 +16,9 @@ namespace AngelLoader.Forms
              they currently work and I'm not 100% certain which one I should keep. Lowest priority.
         */
 
-
         private void InitComponentManual()
         {
             components = new Container();
-            var resources = new ComponentResourceManager(typeof(MainForm));
 
             GameTabsImageList = new ImageList(components);
             ScanAllFMsButton = new Button();
@@ -1848,66 +1846,55 @@ namespace AngelLoader.Forms
             LocationChanged += MainForm_LocationChanged;
             SizeChanged += MainForm_SizeChanged;
             KeyDown += MainForm_KeyDown;
-            BottomPanel.ResumeLayout(false);
-            BottomPanel.PerformLayout();
-            BottomRightButtonsFLP.ResumeLayout(false);
-            BottomRightButtonsFLP.PerformLayout();
-            BottomLeftButtonsFLP.ResumeLayout(false);
-            BottomLeftButtonsFLP.PerformLayout();
-            BottomScanAllFMsSepToolStrip.ResumeLayout(false);
-            BottomScanAllFMsSepToolStrip.PerformLayout();
-            BottomWebSearchLeftSepToolStrip.ResumeLayout(false);
-            BottomWebSearchLeftSepToolStrip.PerformLayout();
-            EverythingPanel.ResumeLayout(false);
-            MainSplitContainer.Panel1.ResumeLayout(false);
-            MainSplitContainer.Panel2.ResumeLayout(false);
-            MainSplitContainer.Panel2.PerformLayout();
+            BottomPanel.ResumeLayout();
+            
+            // PERF: Some of these we resume in SetUITextToLocalized(), so we don't want to do duplicate work
+
+            //BottomRightButtonsFLP.ResumeLayout();
+            //BottomLeftButtonsFLP.ResumeLayout();
+            
+            BottomScanAllFMsSepToolStrip.ResumeLayout();
+            BottomWebSearchLeftSepToolStrip.ResumeLayout();
+            EverythingPanel.ResumeLayout();
+            MainSplitContainer.Panel1.ResumeLayout();
+            
+            //MainSplitContainer.Panel2.ResumeLayout();
+            
             MainSplitContainer.EndInit();
-            MainSplitContainer.ResumeLayout(false);
-            TopSplitContainer.Panel1.ResumeLayout(false);
-            TopSplitContainer.Panel1.PerformLayout();
-            TopSplitContainer.Panel2.ResumeLayout(false);
+            MainSplitContainer.ResumeLayout();
+            TopSplitContainer.Panel1.ResumeLayout();
+            TopSplitContainer.Panel2.ResumeLayout();
             TopSplitContainer.EndInit();
-            TopSplitContainer.ResumeLayout(false);
+            TopSplitContainer.ResumeLayout();
             ((ISupportInitialize)FMsDGV).EndInit();
-            FilterBarFLP.ResumeLayout(false);
-            FilterBarFLP.PerformLayout();
-            FilterGamesLeftSepToolStrip.ResumeLayout(false);
-            FilterGamesLeftSepToolStrip.PerformLayout();
-            FilterGameButtonsToolStrip.ResumeLayout(false);
-            FilterGameButtonsToolStrip.PerformLayout();
-            FilterAuthorLeftSepToolStrip.ResumeLayout(false);
-            FilterAuthorLeftSepToolStrip.PerformLayout();
-            FilterIconButtonsToolStrip.ResumeLayout(false);
-            FilterIconButtonsToolStrip.PerformLayout();
-            RefreshAreaToolStrip.ResumeLayout(false);
-            RefreshAreaToolStrip.PerformLayout();
-            GamesTabControl.ResumeLayout(false);
-            TopRightTabControl.ResumeLayout(false);
-            StatisticsTabPage.ResumeLayout(false);
-            StatisticsTabPage.PerformLayout();
-            StatsCheckBoxesPanel.ResumeLayout(false);
-            StatsCheckBoxesPanel.PerformLayout();
-            EditFMTabPage.ResumeLayout(false);
-            EditFMTabPage.PerformLayout();
-            CommentTabPage.ResumeLayout(false);
-            CommentTabPage.PerformLayout();
-            TagsTabPage.ResumeLayout(false);
-            TagsTabPage.PerformLayout();
-            AddRemoveTagFLP.ResumeLayout(false);
-            AddRemoveTagFLP.PerformLayout();
-            PatchTabPage.ResumeLayout(false);
-            PatchTabPage.PerformLayout();
-            PatchMainPanel.ResumeLayout(false);
-            PatchMainPanel.PerformLayout();
-            PatchDMLsPanel.ResumeLayout(false);
-            PatchDMLsPanel.PerformLayout();
-            ChooseReadmePanel.ResumeLayout(false);
-            ChooseReadmeOKFLP.ResumeLayout(false);
-            ChooseReadmeOKFLP.PerformLayout();
-            PlayOriginalGameMenu.ResumeLayout(false);
-            ImportFromMenu.ResumeLayout(false);
-            ResumeLayout(false);
+            FilterBarFLP.ResumeLayout();
+            FilterGamesLeftSepToolStrip.ResumeLayout();
+            FilterGameButtonsToolStrip.ResumeLayout();
+            FilterAuthorLeftSepToolStrip.ResumeLayout();
+            FilterIconButtonsToolStrip.ResumeLayout();
+            RefreshAreaToolStrip.ResumeLayout();
+            GamesTabControl.ResumeLayout();
+            TopRightTabControl.ResumeLayout();
+
+            //StatisticsTabPage.ResumeLayout();
+            //StatsCheckBoxesPanel.ResumeLayout();
+            //EditFMTabPage.ResumeLayout();
+            //CommentTabPage.ResumeLayout();
+            //TagsTabPage.ResumeLayout();
+            //AddRemoveTagFLP.ResumeLayout();
+
+            PatchTabPage.ResumeLayout();
+            
+            //PatchMainPanel.ResumeLayout();
+
+            PatchDMLsPanel.ResumeLayout();
+            
+            //ChooseReadmePanel.ResumeLayout();
+
+            ChooseReadmeOKFLP.ResumeLayout();
+            PlayOriginalGameMenu.ResumeLayout();
+            ImportFromMenu.ResumeLayout();
+            ResumeLayout();
         }
     }
 }
