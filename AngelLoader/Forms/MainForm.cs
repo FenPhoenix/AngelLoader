@@ -400,10 +400,8 @@ namespace AngelLoader.Forms
             for (int i = 0; i < TopRightTabsCount; i++)
             {
                 TopRightTabControl.ShowTab(TopRightTabsInEnumOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
-                ((ToolStripMenuItem)TopRightMenu.Items[i]).Checked = Config.TopRightTabsData.Tabs[i].Visible;
+                SetTopRightMenuItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
             }
-
-            TopRightMenu.SetPreventCloseOnClickItems(TopRightMenu.Items.Cast<ToolStripMenuItem>().ToArray());
 
             #endregion
 
@@ -487,7 +485,6 @@ namespace AngelLoader.Forms
             PlayOriginalGameMenu.Size = Size.Empty;
             AddTagMenu.Size = Size.Empty;
             ImportFromMenu.Size = Size.Empty;
-            TopRightMenu.Size = Size.Empty;
 
             #endregion
 
@@ -841,11 +838,7 @@ namespace AngelLoader.Forms
 
                 #region Show/hide tabs menu
 
-                TRM_StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
-                TRM_EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
-                TRM_CommentMenuItem.Text = LText.CommentTab.TabText.EscapeAmpersands();
-                TRM_TagsMenuItem.Text = LText.TagsTab.TabText.EscapeAmpersands();
-                TRM_PatchMenuItem.Text = LText.PatchTab.TabText.EscapeAmpersands();
+                LocalizeTopRightMenu();
 
                 #endregion
 
@@ -3847,6 +3840,10 @@ namespace AngelLoader.Forms
             TopRightTabControl.ShowTab(tab, s.Checked);
         }
 
-        private void TopRightMenuButton_Click(object sender, EventArgs e) => ShowMenu(TopRightMenu, TopRightMenuButton, MenuPos.BottomLeft);
+        private void TopRightMenuButton_Click(object sender, EventArgs e)
+        {
+            ConstructTopRightMenu();
+            ShowMenu(TopRightMenu, TopRightMenuButton, MenuPos.BottomLeft);
+        }
     }
 }

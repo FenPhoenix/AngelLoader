@@ -196,7 +196,6 @@
             this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.TopRightMenu = new AngelLoader.CustomControls.ContextMenuStripCustom(this.components);
             this.TRM_StatsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_EditFMMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TRM_CommentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -238,7 +237,6 @@
             this.ChooseReadmeOKFLP.SuspendLayout();
             this.PlayOriginalGameMenu.SuspendLayout();
             this.ImportFromMenu.SuspendLayout();
-            this.TopRightMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // GameTabsImageList
@@ -2202,67 +2200,6 @@
             this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
             this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
             // 
-            // TopRightMenu
-            // 
-            this.TopRightMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TRM_StatsMenuItem,
-            this.TRM_EditFMMenuItem,
-            this.TRM_CommentMenuItem,
-            this.TRM_TagsMenuItem,
-            this.TRM_PatchMenuItem});
-            this.TopRightMenu.Name = "TopRightMenu";
-            this.TopRightMenu.Size = new System.Drawing.Size(177, 114);
-            // 
-            // TRM_StatsMenuItem
-            // 
-            this.TRM_StatsMenuItem.Checked = true;
-            this.TRM_StatsMenuItem.CheckOnClick = true;
-            this.TRM_StatsMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TRM_StatsMenuItem.Name = "TRM_StatsMenuItem";
-            this.TRM_StatsMenuItem.Size = new System.Drawing.Size(176, 22);
-            this.TRM_StatsMenuItem.Text = "Statistics";
-            this.TRM_StatsMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
-            // 
-            // TRM_EditFMMenuItem
-            // 
-            this.TRM_EditFMMenuItem.Checked = true;
-            this.TRM_EditFMMenuItem.CheckOnClick = true;
-            this.TRM_EditFMMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TRM_EditFMMenuItem.Name = "TRM_EditFMMenuItem";
-            this.TRM_EditFMMenuItem.Size = new System.Drawing.Size(176, 22);
-            this.TRM_EditFMMenuItem.Text = "Edit FM";
-            this.TRM_EditFMMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
-            // 
-            // TRM_CommentMenuItem
-            // 
-            this.TRM_CommentMenuItem.Checked = true;
-            this.TRM_CommentMenuItem.CheckOnClick = true;
-            this.TRM_CommentMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TRM_CommentMenuItem.Name = "TRM_CommentMenuItem";
-            this.TRM_CommentMenuItem.Size = new System.Drawing.Size(176, 22);
-            this.TRM_CommentMenuItem.Text = "Comment";
-            this.TRM_CommentMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
-            // 
-            // TRM_TagsMenuItem
-            // 
-            this.TRM_TagsMenuItem.Checked = true;
-            this.TRM_TagsMenuItem.CheckOnClick = true;
-            this.TRM_TagsMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TRM_TagsMenuItem.Name = "TRM_TagsMenuItem";
-            this.TRM_TagsMenuItem.Size = new System.Drawing.Size(176, 22);
-            this.TRM_TagsMenuItem.Text = "Tags";
-            this.TRM_TagsMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
-            // 
-            // TRM_PatchMenuItem
-            // 
-            this.TRM_PatchMenuItem.Checked = true;
-            this.TRM_PatchMenuItem.CheckOnClick = true;
-            this.TRM_PatchMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.TRM_PatchMenuItem.Name = "TRM_PatchMenuItem";
-            this.TRM_PatchMenuItem.Size = new System.Drawing.Size(176, 22);
-            this.TRM_PatchMenuItem.Text = "Patch && Customize";
-            this.TRM_PatchMenuItem.Click += new System.EventHandler(this.TopRightMenu_MenuItems_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2342,7 +2279,6 @@
             this.ChooseReadmeOKFLP.PerformLayout();
             this.PlayOriginalGameMenu.ResumeLayout(false);
             this.ImportFromMenu.ResumeLayout(false);
-            this.TopRightMenu.ResumeLayout(false);
             this.ResumeLayout(false);
         }
 
@@ -2509,12 +2445,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         private CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
         private System.Windows.Forms.Button TopRightMenuButton;
-        private CustomControls.ContextMenuStripCustom TopRightMenu;
-        private System.Windows.Forms.ToolStripMenuItem TRM_StatsMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_EditFMMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_CommentMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_TagsMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_PatchMenuItem;
         private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief2MPMenuItem;
     }
 }

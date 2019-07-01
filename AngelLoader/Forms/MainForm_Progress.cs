@@ -7,8 +7,6 @@ namespace AngelLoader.Forms
 {
     public partial class MainForm
     {
-        #region Progress window
-
         // Not great code really, but works.
 
         private ProgressPanel ProgressBox;
@@ -78,7 +76,5 @@ namespace AngelLoader.Forms
             ConstructProgressBox();
             ProgressBox.HideThis();
         }
-
-        #endregion
     }
 }
