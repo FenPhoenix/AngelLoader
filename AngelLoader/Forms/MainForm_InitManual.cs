@@ -8,8 +8,14 @@ namespace AngelLoader.Forms
 {
     partial class MainForm
     {
-        // Note: All unused Name assignments have been removed, but those for the top-right tab pages have been
-        // kept because they're used for debug purposes.
+        /*
+         Notes:
+            -All unused Name assignments have been removed, except those for the top-right tab pages because
+             they're used for debug purposes.
+            -Some Anchor / Dock combos have been kept despite the docs saying they're mutually exclusive, because
+             they currently work and I'm not 100% certain which one I should keep. Lowest priority.
+        */
+
 
         private void InitComponentManual()
         {
@@ -218,8 +224,13 @@ namespace AngelLoader.Forms
             // 
             // GameTabsImageList
             // 
-            GameTabsImageList.ImageStream = ((ImageListStreamer)(resources.GetObject("GameTabsImageList.ImageStream")));
-            GameTabsImageList.TransparentColor = Color.Transparent;
+            // PERF: WinForms does this by default:
+            // GameTabsImageList.ImageStream = ((ImageListStreamer)(resources.GetObject("GameTabsImageList.ImageStream")));
+            // But it's way faster to do this (saves ~8ms):
+            GameTabsImageList.Images.Add(Resources.Thief1_16);
+            GameTabsImageList.Images.Add(Resources.Thief2_16);
+            GameTabsImageList.Images.Add(Resources.Thief3_16);
+            GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
             GameTabsImageList.Images.SetKeyName(0, "Thief1_16.png");
             GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
             GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
@@ -374,7 +385,6 @@ namespace AngelLoader.Forms
             // 
             // WebSearchButton
             // 
-            WebSearchButton.Anchor = AnchorStyles.None;
             WebSearchButton.AutoSize = true;
             WebSearchButton.Image = Resources.WebSearch_24;
             WebSearchButton.ImageAlign = ContentAlignment.MiddleLeft;
@@ -678,11 +688,9 @@ namespace AngelLoader.Forms
             // FilterByThief1Button
             // 
             FilterByThief1Button.AutoSize = false;
-            FilterByThief1Button.BackColor = SystemColors.Control;
             FilterByThief1Button.CheckOnClick = true;
             FilterByThief1Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByThief1Button.Image = Resources.Thief1_21;
-            FilterByThief1Button.ImageTransparentColor = Color.Magenta;
             FilterByThief1Button.Margin = new Padding(0);
             FilterByThief1Button.Size = new Size(25, 25);
             FilterByThief1Button.Click += FilterByGameCheckButtons_Click;
@@ -693,7 +701,6 @@ namespace AngelLoader.Forms
             FilterByThief2Button.CheckOnClick = true;
             FilterByThief2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByThief2Button.Image = Resources.Thief2_21;
-            FilterByThief2Button.ImageTransparentColor = Color.Magenta;
             FilterByThief2Button.Margin = new Padding(0);
             FilterByThief2Button.Size = new Size(25, 25);
             FilterByThief2Button.Click += FilterByGameCheckButtons_Click;
@@ -704,7 +711,6 @@ namespace AngelLoader.Forms
             FilterByThief3Button.CheckOnClick = true;
             FilterByThief3Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByThief3Button.Image = Resources.Thief3_21;
-            FilterByThief3Button.ImageTransparentColor = Color.Magenta;
             FilterByThief3Button.Margin = new Padding(0);
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += FilterByGameCheckButtons_Click;
@@ -768,6 +774,7 @@ namespace AngelLoader.Forms
             FilterIconButtonsToolStrip.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             FilterIconButtonsToolStrip.BackColor = SystemColors.Control;
             FilterIconButtonsToolStrip.CanOverflow = false;
+            FilterIconButtonsToolStrip.Dock = DockStyle.None;
             FilterIconButtonsToolStrip.GripMargin = new Padding(0);
             FilterIconButtonsToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             FilterIconButtonsToolStrip.ImageScalingSize = new Size(22, 22);
@@ -803,10 +810,8 @@ namespace AngelLoader.Forms
             // FilterByReleaseDateButton
             // 
             FilterByReleaseDateButton.AutoSize = false;
-            FilterByReleaseDateButton.BackColor = SystemColors.Control;
             FilterByReleaseDateButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByReleaseDateButton.Image = Resources.FilterByReleaseDate;
-            FilterByReleaseDateButton.ImageTransparentColor = Color.Magenta;
             FilterByReleaseDateButton.Margin = new Padding(0);
             FilterByReleaseDateButton.Size = new Size(25, 25);
             FilterByReleaseDateButton.Click += FilterByReleaseDateButton_Click;
@@ -825,10 +830,8 @@ namespace AngelLoader.Forms
             // FilterByLastPlayedButton
             // 
             FilterByLastPlayedButton.AutoSize = false;
-            FilterByLastPlayedButton.BackColor = SystemColors.Control;
             FilterByLastPlayedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByLastPlayedButton.Image = Resources.FilterByLastPlayed;
-            FilterByLastPlayedButton.ImageTransparentColor = Color.Magenta;
             FilterByLastPlayedButton.Margin = new Padding(0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
             FilterByLastPlayedButton.Click += FilterByLastPlayedButton_Click;
@@ -847,10 +850,8 @@ namespace AngelLoader.Forms
             // FilterByTagsButton
             // 
             FilterByTagsButton.AutoSize = false;
-            FilterByTagsButton.BackColor = SystemColors.Control;
             FilterByTagsButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByTagsButton.Image = Resources.FilterByTags;
-            FilterByTagsButton.ImageTransparentColor = Color.Magenta;
             FilterByTagsButton.Margin = new Padding(0);
             FilterByTagsButton.Size = new Size(25, 25);
             FilterByTagsButton.Click += FilterByTagsButton_Click;
@@ -863,11 +864,9 @@ namespace AngelLoader.Forms
             // FilterByFinishedButton
             // 
             FilterByFinishedButton.AutoSize = false;
-            FilterByFinishedButton.BackColor = SystemColors.Control;
             FilterByFinishedButton.CheckOnClick = true;
             FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByFinishedButton.Image = Resources.FilterByFinished;
-            FilterByFinishedButton.ImageTransparentColor = Color.Magenta;
             FilterByFinishedButton.Margin = new Padding(0);
             FilterByFinishedButton.Size = new Size(25, 25);
             FilterByFinishedButton.Click += FilterByFinishedButton_Click;
@@ -875,11 +874,9 @@ namespace AngelLoader.Forms
             // FilterByUnfinishedButton
             // 
             FilterByUnfinishedButton.AutoSize = false;
-            FilterByUnfinishedButton.BackColor = SystemColors.Control;
             FilterByUnfinishedButton.CheckOnClick = true;
             FilterByUnfinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByUnfinishedButton.Image = Resources.FilterByUnfinished;
-            FilterByUnfinishedButton.ImageTransparentColor = Color.Magenta;
             FilterByUnfinishedButton.Margin = new Padding(0);
             FilterByUnfinishedButton.Size = new Size(25, 25);
             FilterByUnfinishedButton.Click += FilterByUnfinishedButton_Click;
@@ -892,10 +889,8 @@ namespace AngelLoader.Forms
             // FilterByRatingButton
             // 
             FilterByRatingButton.AutoSize = false;
-            FilterByRatingButton.BackColor = SystemColors.Control;
             FilterByRatingButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByRatingButton.Image = Resources.FilterByRating;
-            FilterByRatingButton.ImageTransparentColor = Color.Magenta;
             FilterByRatingButton.Margin = new Padding(0);
             FilterByRatingButton.Size = new Size(25, 25);
             FilterByRatingButton.Click += FilterByRatingButton_Click;
@@ -914,19 +909,16 @@ namespace AngelLoader.Forms
             // FilterShowUnsupportedButton
             // 
             FilterShowUnsupportedButton.AutoSize = false;
-            FilterShowUnsupportedButton.BackColor = SystemColors.Control;
             FilterShowUnsupportedButton.CheckOnClick = true;
             FilterShowUnsupportedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterShowUnsupportedButton.Image = Resources.Show_Unsupported;
-            FilterShowUnsupportedButton.ImageTransparentColor = Color.Magenta;
             FilterShowUnsupportedButton.Margin = new Padding(0);
             FilterShowUnsupportedButton.Size = new Size(25, 25);
             FilterShowUnsupportedButton.Click += FilterShowJunkButton_Click;
             // 
             // RefreshAreaToolStrip
             // 
-            RefreshAreaToolStrip.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom)
-                                          | AnchorStyles.Right;
+            RefreshAreaToolStrip.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             RefreshAreaToolStrip.BackColor = SystemColors.Control;
             RefreshAreaToolStrip.CanOverflow = false;
             RefreshAreaToolStrip.Dock = DockStyle.None;
@@ -951,10 +943,8 @@ namespace AngelLoader.Forms
             // FMsListZoomInButton
             // 
             FMsListZoomInButton.AutoSize = false;
-            FMsListZoomInButton.BackColor = SystemColors.Control;
             FMsListZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FMsListZoomInButton.Image = Resources.ZoomIn;
-            FMsListZoomInButton.ImageTransparentColor = Color.Magenta;
             FMsListZoomInButton.Margin = new Padding(0);
             FMsListZoomInButton.Size = new Size(25, 25);
             FMsListZoomInButton.Click += FMsListZoomInButton_Click;
@@ -962,10 +952,8 @@ namespace AngelLoader.Forms
             // FMsListZoomOutButton
             // 
             FMsListZoomOutButton.AutoSize = false;
-            FMsListZoomOutButton.BackColor = SystemColors.Control;
             FMsListZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FMsListZoomOutButton.Image = Resources.ZoomOut;
-            FMsListZoomOutButton.ImageTransparentColor = Color.Magenta;
             FMsListZoomOutButton.Margin = new Padding(0);
             FMsListZoomOutButton.Size = new Size(25, 25);
             FMsListZoomOutButton.Click += FMsListZoomOutButton_Click;
@@ -973,10 +961,8 @@ namespace AngelLoader.Forms
             // FMsListResetZoomButton
             // 
             FMsListResetZoomButton.AutoSize = false;
-            FMsListResetZoomButton.BackColor = SystemColors.Control;
             FMsListResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FMsListResetZoomButton.Image = Resources.ZoomReset;
-            FMsListResetZoomButton.ImageTransparentColor = Color.Magenta;
             FMsListResetZoomButton.Margin = new Padding(0);
             FMsListResetZoomButton.Size = new Size(25, 25);
             FMsListResetZoomButton.Click += FMsListResetZoomButton_Click;
@@ -990,10 +976,8 @@ namespace AngelLoader.Forms
             // RefreshFromDiskButton
             // 
             RefreshFromDiskButton.AutoSize = false;
-            RefreshFromDiskButton.BackColor = SystemColors.Control;
             RefreshFromDiskButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             RefreshFromDiskButton.Image = Resources.FindNewFMs_21;
-            RefreshFromDiskButton.ImageTransparentColor = Color.Magenta;
             RefreshFromDiskButton.Margin = new Padding(0);
             RefreshFromDiskButton.Size = new Size(25, 25);
             RefreshFromDiskButton.Click += RefreshFromDiskButton_Click;
@@ -1001,10 +985,8 @@ namespace AngelLoader.Forms
             // RefreshFiltersButton
             // 
             RefreshFiltersButton.AutoSize = false;
-            RefreshFiltersButton.BackColor = SystemColors.Control;
             RefreshFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             RefreshFiltersButton.Image = Resources.Refresh;
-            RefreshFiltersButton.ImageTransparentColor = Color.Magenta;
             RefreshFiltersButton.Margin = new Padding(0);
             RefreshFiltersButton.Size = new Size(25, 25);
             RefreshFiltersButton.Click += RefreshFiltersButton_Click;
@@ -1012,10 +994,8 @@ namespace AngelLoader.Forms
             // ClearFiltersButton
             // 
             ClearFiltersButton.AutoSize = false;
-            ClearFiltersButton.BackColor = SystemColors.Control;
             ClearFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ClearFiltersButton.Image = Resources.ClearFilters;
-            ClearFiltersButton.ImageTransparentColor = Color.Magenta;
             ClearFiltersButton.Margin = new Padding(0);
             ClearFiltersButton.Size = new Size(25, 25);
             ClearFiltersButton.Click += ClearFiltersButton_Click;
@@ -1054,7 +1034,6 @@ namespace AngelLoader.Forms
             // 
             // Thief1TabPage
             // 
-            Thief1TabPage.BackColor = SystemColors.Control;
             Thief1TabPage.ImageIndex = 0;
             Thief1TabPage.Location = new Point(4, 23);
             Thief1TabPage.Padding = new Padding(3);
@@ -1068,7 +1047,6 @@ namespace AngelLoader.Forms
             Thief2TabPage.Padding = new Padding(3);
             Thief2TabPage.Size = new Size(1095, 0);
             Thief2TabPage.TabIndex = 1;
-            Thief2TabPage.UseVisualStyleBackColor = true;
             // 
             // Thief3TabPage
             // 
@@ -1077,7 +1055,6 @@ namespace AngelLoader.Forms
             Thief3TabPage.Padding = new Padding(3);
             Thief3TabPage.Size = new Size(1095, 0);
             Thief3TabPage.TabIndex = 2;
-            Thief3TabPage.UseVisualStyleBackColor = true;
             // 
             // TopRightMenuButton
             // 
@@ -1107,9 +1084,7 @@ namespace AngelLoader.Forms
             // 
             // TopRightTabControl
             // 
-            TopRightTabControl.Anchor = ((AnchorStyles.Top | AnchorStyles.Bottom)
-                                         | AnchorStyles.Left)
-                                        | AnchorStyles.Right;
+            TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             TopRightTabControl.Controls.Add(StatisticsTabPage);
             TopRightTabControl.Controls.Add(EditFMTabPage);
             TopRightTabControl.Controls.Add(CommentTabPage);
@@ -1343,8 +1318,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMTitleTextBox
             // 
-            EditFMTitleTextBox.Anchor = (AnchorStyles.Top | AnchorStyles.Left)
-                                        | AnchorStyles.Right;
+            EditFMTitleTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             EditFMTitleTextBox.Location = new Point(8, 24);
             EditFMTitleTextBox.Size = new Size(469, 20);
             EditFMTitleTextBox.TabIndex = 14;
@@ -1438,8 +1412,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMDisabledModsTextBox
             // 
-            EditFMDisabledModsTextBox.Anchor = (AnchorStyles.Top | AnchorStyles.Left)
-                                               | AnchorStyles.Right;
+            EditFMDisabledModsTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             EditFMDisabledModsTextBox.Location = new Point(8, 192);
             EditFMDisabledModsTextBox.Size = new Size(502, 20);
             EditFMDisabledModsTextBox.TabIndex = 29;
@@ -1455,8 +1428,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMAuthorTextBox
             // 
-            EditFMAuthorTextBox.Anchor = (AnchorStyles.Top | AnchorStyles.Left)
-                                         | AnchorStyles.Right;
+            EditFMAuthorTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             EditFMAuthorTextBox.Location = new Point(8, 64);
             EditFMAuthorTextBox.Size = new Size(485, 20);
             EditFMAuthorTextBox.TabIndex = 18;
@@ -1488,9 +1460,7 @@ namespace AngelLoader.Forms
             // 
             // CommentTextBox
             // 
-            CommentTextBox.Anchor = ((AnchorStyles.Top | AnchorStyles.Bottom)
-                                     | AnchorStyles.Left)
-                                    | AnchorStyles.Right;
+            CommentTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             CommentTextBox.Location = new Point(8, 8);
             CommentTextBox.Multiline = true;
             CommentTextBox.ScrollBars = ScrollBars.Vertical;
@@ -1524,8 +1494,7 @@ namespace AngelLoader.Forms
             // 
             // AddTagTextBox
             // 
-            AddTagTextBox.Anchor = (AnchorStyles.Top | AnchorStyles.Left)
-                                   | AnchorStyles.Right;
+            AddTagTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             AddTagTextBox.DisallowedCharacters = ",;";
             AddTagTextBox.Location = new Point(8, 8);
             AddTagTextBox.Size = new Size(445, 20);
@@ -1790,9 +1759,7 @@ namespace AngelLoader.Forms
             // 
             // ReadmeRichTextBox
             // 
-            ReadmeRichTextBox.Anchor = ((AnchorStyles.Top | AnchorStyles.Bottom)
-                                        | AnchorStyles.Left)
-                                       | AnchorStyles.Right;
+            ReadmeRichTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ReadmeRichTextBox.BackColor = SystemColors.Window;
             ReadmeRichTextBox.Location = new Point(0, 0);
             ReadmeRichTextBox.ReadOnly = true;
@@ -1869,14 +1836,11 @@ namespace AngelLoader.Forms
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            ClientSize = new Size(1671, 716);
             Controls.Add(EverythingPanel);
             DoubleBuffered = true;
             Icon = Resources.AngelLoader;
             KeyPreview = true;
             MinimumSize = new Size(894, 260);
-            Name = nameof(MainForm);
-            WindowState = FormWindowState.Maximized;
             Deactivate += MainForm_Deactivate;
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
