@@ -144,12 +144,12 @@ namespace AngelLoader.Common.DataClasses
             Author = "";
             if (clearGames) Games = Game.Null;
             Tags.Clear();
-            RatingFrom = -1;
-            RatingTo = 10;
-            ReleaseDateFrom = null;
-            ReleaseDateTo = null;
-            LastPlayedFrom = null;
-            LastPlayedTo = null;
+            _ratingFrom = -1;
+            _ratingTo = 10;
+            _releaseDateFrom = null;
+            _releaseDateTo = null;
+            _lastPlayedFrom = null;
+            _lastPlayedTo = null;
             Finished = FinishedState.Null;
             ShowJunk = false;
         }

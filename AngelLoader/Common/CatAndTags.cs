@@ -22,10 +22,10 @@ namespace AngelLoader.Common
 
             if (Count == 0) return;
 
-            foreach (var catAndTag in this)
+            for (var i = 0; i < Count; i++)
             {
-                var item = new CatAndTags { Category = catAndTag.Category };
-                foreach (var tag in catAndTag.Tags) item.Tags.Add(tag);
+                var item = new CatAndTags { Category = this[i].Category };
+                for (var j = 0; j < this[i].Tags.Count; j++) item.Tags.Add(this[i].Tags[j]);
                 dest.Add(item);
             }
         }
@@ -63,24 +63,24 @@ namespace AngelLoader.Common
 
             if (Count == 0) return;
 
-            foreach (var catAndTag in this)
+            for (var i = 0; i < Count; i++)
             {
                 var item = new GlobalCatAndTags
                 {
                     Category = new GlobalCatOrTag
                     {
-                        Name = catAndTag.Category.Name,
-                        IsPreset = catAndTag.Category.IsPreset,
-                        UsedCount = catAndTag.Category.UsedCount
+                        Name = this[i].Category.Name,
+                        IsPreset = this[i].Category.IsPreset,
+                        UsedCount = this[i].Category.UsedCount
                     }
                 };
-                foreach (var tag in catAndTag.Tags)
+                for (var j = 0; j < this[i].Tags.Count; j++)
                 {
                     item.Tags.Add(new GlobalCatOrTag
                     {
-                        Name = tag.Name,
-                        IsPreset = tag.IsPreset,
-                        UsedCount = tag.UsedCount
+                        Name = this[i].Tags[j].Name,
+                        IsPreset = this[i].Tags[j].IsPreset,
+                        UsedCount = this[i].Tags[j].UsedCount
                     });
                 }
 
