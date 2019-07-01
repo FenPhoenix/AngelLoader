@@ -110,6 +110,29 @@ namespace FenGen
             }
         }
 
+        private static List<string> FindCellStyles(List<string> lines, List<string> dgvNames, string type)
+        {
+            var ret = new List<string>();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                var line = lines[i];
+                if (!line.Contains('.' + type)) continue;
+
+                foreach (var name in dgvNames)
+                {
+                    var rx = Regex.Match(line, name + @"\." + type + @"\s*=\s*(?<CellStyle>.+);$");
+                    if (rx.Success)
+                    {
+                        ret.Add(rx.Groups["CellStyle"].Value);
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
         private static (string Namespace, string ClassDeclaration, List<string> Lines)
         ReadSource(List<string> sourceLines)
         {
@@ -198,45 +221,38 @@ namespace FenGen
 
             #endregion
 
-            #region DataGridView unused CellStyle removal
-
             var dgvNames = new List<string>();
+            var dgvNamesWithNoRowHeaders = new List<string>();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                var line = lines[i];
+
+                var nameRx = Regex.Match(line, @"\b(?<Name>\w+)\.(ColumnHeaders)?DefaultCellStyle\s*=\s*.+;$");
+                if (nameRx.Success) dgvNames.Add(nameRx.Groups["Name"].Value);
+            }
 
             for (int i = 0; i < lines.Count; i++)
             {
                 var line = lines[i];
 
                 var nameRx = Regex.Match(line, @"\b(?<Name>\w+)\.RowHeadersVisible\s*=\s*false;$");
-                if (nameRx.Success) dgvNames.Add(nameRx.Groups["Name"].Value);
+                if (nameRx.Success) dgvNamesWithNoRowHeaders.Add(nameRx.Groups["Name"].Value);
             }
 
-            if (dgvNames.Count > 0)
+            #region DataGridView RowHeadersDefaultCellStyle removal
+
+            if (dgvNamesWithNoRowHeaders.Count > 0)
             {
-                var cellStyles = new List<string>();
+                var rowHeaderCellStyles = FindCellStyles(lines, dgvNamesWithNoRowHeaders, "RowHeadersDefaultCellStyle");
 
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    var line = lines[i];
-                    if (!line.Contains(".RowHeadersDefaultCellStyle")) continue;
-
-                    foreach (var name in dgvNames)
-                    {
-                        var rx = Regex.Match(line, name + @"\.RowHeadersDefaultCellStyle\s*=\s*(?<CellStyle>.+);$");
-                        if (rx.Success)
-                        {
-                            cellStyles.Add(rx.Groups["CellStyle"].Value);
-                            break;
-                        }
-                    }
-                }
-
-                if (cellStyles.Count > 0)
+                if (rowHeaderCellStyles.Count > 0)
                 {
                     for (int i = 0; i < lines.Count; i++)
                     {
-                        foreach (var cs in cellStyles)
+                        foreach (var cs in rowHeaderCellStyles)
                         {
-                            if (Regex.Match(lines[i], @"(\b" + cs + @"\b)").Success)
+                            if (Regex.Match(lines[i], @"\b" + cs + @"\b").Success)
                             {
                                 lines.RemoveAt(i);
                                 i--;
@@ -244,6 +260,79 @@ namespace FenGen
                         }
                     }
                 }
+            }
+
+            if (dgvNames.Count > 0)
+            {
+                var colHeaderCellStyles = FindCellStyles(lines, dgvNames, "ColumnHeadersDefaultCellStyle");
+                if (colHeaderCellStyles.Count > 0)
+                {
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        foreach (var cs in colHeaderCellStyles)
+                        {
+                            // language=regexp
+                            var m = Regex.Match(lines[i], @"^\s*" + cs + @"\s*\.(?<Property>\w+)\s*=\s*(?<Value>.+);$");
+                            if (m.Success)
+                            {
+                                var prop = m.Groups["Property"].Value;
+                                var val = m.Groups["Value"].Value;
+                                if ((prop == "BackColor" &&
+                                    Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.Control").Success) ||
+                                    (prop == "ForeColor" &&
+                                    Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.WindowText").Success) ||
+                                    (prop == "SelectionBackColor" &&
+                                     Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.Highlight").Success) ||
+                                    (prop == "SelectionForeColor" &&
+                                     Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.HighlightText").Success))
+                                {
+                                    lines.RemoveAt(i);
+                                    i--;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var defaultCellStyles = FindCellStyles(lines, dgvNames, "DefaultCellStyle");
+                if (defaultCellStyles.Count > 0)
+                {
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        foreach (var cs in defaultCellStyles)
+                        {
+                            // language=regexp
+                            var m = Regex.Match(lines[i], @"^\s*" + cs + @"\s*\.(?<Property>\w+)\s*=\s*(?<Value>.+);$");
+                            if (m.Success)
+                            {
+                                var prop = m.Groups["Property"].Value;
+                                var val = m.Groups["Value"].Value;
+                                if ((prop == "BackColor" &&
+                                     Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.Window").Success) ||
+                                    (prop == "ForeColor" &&
+                                     Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.ControlText").Success) ||
+                                    (prop == "SelectionBackColor" &&
+                                     Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.Highlight").Success) ||
+                                    (prop == "SelectionForeColor" &&
+                                     Regex.Match(val, @"(System\.Drawing\.)?SystemColors\.HighlightText").Success))
+                                {
+                                    lines.RemoveAt(i);
+                                    i--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region DGV CellStyle cleanup
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                var line = lines[i];
+                //if()
             }
 
             #endregion
