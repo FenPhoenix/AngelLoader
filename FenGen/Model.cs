@@ -267,7 +267,7 @@ namespace FenGen
                 case "-version":
                     GenType = GenType.Version;
                     break;
-                case"-main_form_backing":
+                case "-main_form_backing":
                     GenType = GenType.MainFormBacking;
                     break;
                 default:
@@ -1056,18 +1056,7 @@ namespace FenGen
 
                 last.Name = line2.Substring(index + 1).Trim();
 
-                string temp = line2;
-                var prefixes = new[] { "private", "internal", "protected", "public", "static", "readonly", "dynamic" };
-                while (prefixes.Any(x => temp.StartsWithI(x + ' ')))
-                {
-                    foreach (var pre in prefixes)
-                    {
-                        if (temp.StartsWithI(pre + ' '))
-                        {
-                            temp = temp.Substring(pre.Length + 1).TrimStart();
-                        }
-                    }
-                }
+                var temp = StripPrefixes(line2);
 
                 last.Type = temp.Substring(0, temp.LastIndexOf(' '));
             }

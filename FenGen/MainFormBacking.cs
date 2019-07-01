@@ -28,6 +28,25 @@ namespace FenGen
             // This must go here, so it can get at the ifdef-stripped code
             var (ns, classDeclaration, lines) = ReadSource(src);
 
+            WriteIfDefsToSourceFile(src, sourceFile);
+
+            using (var sw = new StreamWriter(destFile, append: false, Encoding.UTF8))
+            {
+                sw.WriteLine("namespace " + ns + "\r\n{");
+                sw.WriteLine("    partial class " + classDeclaration + "\r\n    {");
+                sw.WriteLine("        private void InitComponentFast()");
+
+                foreach (var line in lines)
+                {
+                    if (!line.IsWhiteSpace()) sw.WriteLine(line);
+                }
+
+                sw.WriteLine("    }\r\n}");
+            }
+        }
+
+        private static void WriteIfDefsToSourceFile(List<string> src, string sourceFile)
+        {
             for (var i = 0; i < src.Count; i++)
             {
                 var sl = src[i];
@@ -64,26 +83,11 @@ namespace FenGen
                             break;
                         }
                         File.WriteAllLines(sourceFile, src, Encoding.UTF8);
-                        goto breakout;
+                        return;
                     }
 
                     break;
                 }
-            }
-
-            breakout:
-            using (var sw = new StreamWriter(destFile, append: false, Encoding.UTF8))
-            {
-                sw.WriteLine("namespace " + ns + "\r\n{");
-                sw.WriteLine("    partial class " + classDeclaration + "\r\n    {");
-                sw.WriteLine("        private void InitComponentFast()");
-
-                foreach (var line in lines)
-                {
-                    if (!line.IsWhiteSpace()) sw.WriteLine(line);
-                }
-
-                sw.WriteLine("    }\r\n}");
             }
         }
 
@@ -139,26 +143,90 @@ namespace FenGen
 
             var stuff = initComponent.DescendantNodes();
 
+
+            string[] lines = null;
+
             foreach (var node in stuff)
             {
                 if (!node.IsKind(SyntaxKind.Block)) continue;
 
                 var block = (BlockSyntax)node;
-                foreach (var line in block.ToFullString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
+                lines = block.ToFullString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                break;
+            }
+
+            if (lines == null || lines.Length == 0) return ret;
+
+            #region Modifications
+
+            #region General excludes
+
+            foreach (var line in lines)
+            {
+                if (Regex.Match(line, @"[^\.]+\.Text\s*=\s*"".*"";$").Success ||
+                    Regex.Match(line, @"(\bTestButton\b|\bTest2Button\b|\bDebugLabel\b|\bDebugLabel2\b)").Success)
                 {
-                    #region Exclude rules
+                    continue;
+                }
 
-                    if (Regex.Match(line, @"[^\.]+\.Text\s*=\s*"".*"";$").Success ||
-                        Regex.Match(line, @"(\bTestButton\b|\bTest2Button\b|\bDebugLabel\b|\bDebugLabel2\b)").Success)
+                ret.Lines.Add(line);
+            }
+
+            #endregion
+
+            #region DataGridView unused CellStyle removal
+
+            var dgvNames = new List<string>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+
+                // this.FMsDGV.RowHeadersVisible = false;
+
+                var nameRx = Regex.Match(line, @"\b(?<Name>\w+)\.RowHeadersVisible\s*=\s*false;$");
+                if (nameRx.Success) dgvNames.Add(nameRx.Groups["Name"].Value);
+            }
+
+            if (dgvNames.Count > 0)
+            {
+                var cellStyles = new List<string>();
+
+                for (int i = 0; i < ret.Lines.Count; i++)
+                {
+                    var line = ret.Lines[i];
+                    if (!line.Contains(".RowHeadersDefaultCellStyle")) continue;
+
+                    foreach (var name in dgvNames)
                     {
-                        continue;
+                        var rx = Regex.Match(line, name + @"\.RowHeadersDefaultCellStyle\s*=\s*(?<CellStyle>.+);$");
+                        if (rx.Success)
+                        {
+                            cellStyles.Add(rx.Groups["CellStyle"].Value);
+                            break;
+                        }
                     }
+                }
 
-                    #endregion
-
-                    ret.Lines.Add(line);
+                if (cellStyles.Count > 0)
+                {
+                    for (int i = 0; i < ret.Lines.Count; i++)
+                    {
+                        foreach (var cs in cellStyles)
+                        {
+                            if (Regex.Match(ret.Lines[i], @"(\b" + cs + @"\b)").Success)
+                            {
+                                ret.Lines.RemoveAt(i);
+                                i--;
+                            }
+                        }
+                    }
                 }
             }
+
+            #endregion
+
+            #endregion
 
             return ret;
         }
