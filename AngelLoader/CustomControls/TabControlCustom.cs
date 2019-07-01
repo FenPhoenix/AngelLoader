@@ -45,6 +45,7 @@ namespace AngelLoader.CustomControls
             if (!DesignMode)
             {
                 throw new Exception(nameof(FindBackingTab) + " couldn't find the specified tab page '" +
+                                    // DOTNAME
                                     tab.Name +
                                     "'. That's not supposed to happen. All tab pages should always exist in the backing list.");
             }

@@ -1687,9 +1687,7 @@ namespace AngelLoader.Forms
             // 
             // TagsTreeView
             // 
-            TagsTreeView.Anchor = ((AnchorStyles.Top | AnchorStyles.Bottom)
-                                   | AnchorStyles.Left)
-                                  | AnchorStyles.Right;
+            TagsTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             TagsTreeView.HideSelection = false;
             TagsTreeView.Location = new Point(8, 32);
             TagsTreeView.Name = nameof(TagsTreeView);
@@ -2047,14 +2045,14 @@ namespace AngelLoader.Forms
             MainSplitContainer.Panel1.ResumeLayout(false);
             MainSplitContainer.Panel2.ResumeLayout(false);
             MainSplitContainer.Panel2.PerformLayout();
-            ((ISupportInitialize)(MainSplitContainer)).EndInit();
+            MainSplitContainer.EndInit();
             MainSplitContainer.ResumeLayout(false);
             TopSplitContainer.Panel1.ResumeLayout(false);
             TopSplitContainer.Panel1.PerformLayout();
             TopSplitContainer.Panel2.ResumeLayout(false);
-            ((ISupportInitialize)(TopSplitContainer)).EndInit();
+            TopSplitContainer.EndInit();
             TopSplitContainer.ResumeLayout(false);
-            ((ISupportInitialize)(FMsDGV)).EndInit();
+            ((ISupportInitialize)FMsDGV).EndInit();
             FilterBarFLP.ResumeLayout(false);
             FilterBarFLP.PerformLayout();
             FilterGamesLeftSepToolStrip.ResumeLayout(false);
