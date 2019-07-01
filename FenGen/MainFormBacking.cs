@@ -163,33 +163,37 @@ namespace FenGen
             var stuff = initComponent.DescendantNodes();
 
 
-            string[] lines = null;
+            List<string> lines = null;
 
             foreach (var node in stuff)
             {
                 if (!node.IsKind(SyntaxKind.Block)) continue;
 
                 var block = (BlockSyntax)node;
-                lines = block.ToFullString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                lines = block.ToFullString().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
                 break;
             }
 
-            if (lines == null || lines.Length == 0) return ret;
+            if (lines == null || lines.Count == 0) return ret;
 
             #region Modifications
 
             #region General excludes
 
-            foreach (var line in lines)
+            for (var i = 0; i < lines.Count; i++)
             {
+                var line = lines[i];
                 if (Regex.Match(line, @"[^\.]+\.Text\s*=\s*"".*"";$").Success ||
-                    Regex.Match(line, @"[^\.]+\.HeaderText\s*=\s*"".*"";$").Success||
-                    Regex.Match(line, @"(\bTestButton\b|\bTest2Button\b|\bDebugLabel\b|\bDebugLabel2\b)").Success)
+                    Regex.Match(line, @"[^\.]+\.HeaderText\s*=\s*"".*"";$").Success ||
+                    Regex.Match(line, @"[^\.]+\.Font\s*=\s*.+;$").Success ||
+                    Regex.Match(line, @"[^\.]+\.Alignment\s*=\s*(System\.Windows\.Forms\.)?DataGridViewContentAlignment\.MiddleLeft;$").Success ||
+                    Regex.Match(line, @"[^\.]+\.WrapMode\s*=\s*(System\.Windows\.Forms\.)?DataGridViewTriState\.True;$").Success ||
+                    Regex.Match(line, @"(\bTestButton\b|\bTest2Button\b|\bDebugLabel\b|\bDebugLabel2\b)")
+                        .Success)
                 {
-                    continue;
+                    lines.RemoveAt(i);
+                    i--;
                 }
-
-                ret.Lines.Add(line);
             }
 
             #endregion
@@ -198,11 +202,9 @@ namespace FenGen
 
             var dgvNames = new List<string>();
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 var line = lines[i];
-
-                // this.FMsDGV.RowHeadersVisible = false;
 
                 var nameRx = Regex.Match(line, @"\b(?<Name>\w+)\.RowHeadersVisible\s*=\s*false;$");
                 if (nameRx.Success) dgvNames.Add(nameRx.Groups["Name"].Value);
@@ -212,9 +214,9 @@ namespace FenGen
             {
                 var cellStyles = new List<string>();
 
-                for (int i = 0; i < ret.Lines.Count; i++)
+                for (int i = 0; i < lines.Count; i++)
                 {
-                    var line = ret.Lines[i];
+                    var line = lines[i];
                     if (!line.Contains(".RowHeadersDefaultCellStyle")) continue;
 
                     foreach (var name in dgvNames)
@@ -230,13 +232,13 @@ namespace FenGen
 
                 if (cellStyles.Count > 0)
                 {
-                    for (int i = 0; i < ret.Lines.Count; i++)
+                    for (int i = 0; i < lines.Count; i++)
                     {
                         foreach (var cs in cellStyles)
                         {
-                            if (Regex.Match(ret.Lines[i], @"(\b" + cs + @"\b)").Success)
+                            if (Regex.Match(lines[i], @"(\b" + cs + @"\b)").Success)
                             {
-                                ret.Lines.RemoveAt(i);
+                                lines.RemoveAt(i);
                                 i--;
                             }
                         }
@@ -248,6 +250,7 @@ namespace FenGen
 
             #endregion
 
+            ret.Lines = lines;
             return ret;
         }
     }
