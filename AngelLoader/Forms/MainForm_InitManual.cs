@@ -1064,7 +1064,7 @@ namespace AngelLoader.Forms
             TopRightMenuButton.Location = new Point(534, 2);
             TopRightMenuButton.Size = new Size(16, 16);
             TopRightMenuButton.TabIndex = 13;
-            //TopRightMenuButton.UseVisualStyleBackColor = true;
+            TopRightMenuButton.UseVisualStyleBackColor = true;
             TopRightMenuButton.Click += TopRightMenuButton_Click;
             // 
             // TopRightCollapseButton
