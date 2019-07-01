@@ -45,6 +45,25 @@ namespace FenGen
             }
         }
 
+        //private static List<List<string>> GetKeepRegions(string destFile)
+        //{
+        //    var lines = File.ReadAllLines(destFile);
+        //    if (lines.Count(x => x.StartsWith("#region")) !=
+        //        lines.Count(x => x.StartsWith("#endregion")))
+        //    {
+        //        throw new Exception("destFile has some errors, aborting");
+        //    }
+
+        //    for (int i = 0; i < lines.Length; i++)
+        //    {
+        //        var line = lines[i];
+        //        if (line.Trim() == "#region [FenGen:Keep]")
+        //        {
+
+        //        }
+        //    }
+        //}
+
         private static void WriteIfDefsToSourceFile(List<string> src, string sourceFile)
         {
             for (var i = 0; i < src.Count; i++)
