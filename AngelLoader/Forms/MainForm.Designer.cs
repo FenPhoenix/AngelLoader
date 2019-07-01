@@ -550,7 +550,7 @@
             this.TopSplitContainer.Panel2.SizeChanged += new System.EventHandler(this.TopSplitContainer_Panel2_SizeChanged);
             this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
             this.TopSplitContainer.SplitterDistance = 1116;
-            this.TopSplitContainer.TabIndex = 32;
+            this.TopSplitContainer.TabIndex = 0;
             // 
             // FilterBarScrollRightButton
             // 

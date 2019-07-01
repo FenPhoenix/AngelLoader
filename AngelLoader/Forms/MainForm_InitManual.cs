@@ -473,7 +473,7 @@ namespace AngelLoader.Forms
             TopSplitContainer.Panel2.SizeChanged += TopSplitContainer_Panel2_SizeChanged;
             TopSplitContainer.Size = new Size(1671, 309);
             TopSplitContainer.SplitterDistance = 1116;
-            TopSplitContainer.TabIndex = 32;
+            TopSplitContainer.TabIndex = 0;
             // 
             // FilterBarScrollRightButton
             // 
@@ -1757,11 +1757,9 @@ namespace AngelLoader.Forms
             // 
             // ReadmeRichTextBox
             // 
-            ReadmeRichTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ReadmeRichTextBox.BackColor = SystemColors.Window;
-            ReadmeRichTextBox.Location = new Point(0, 0);
             ReadmeRichTextBox.ReadOnly = true;
-            ReadmeRichTextBox.Size = new Size(1669, 361);
+            ReadmeRichTextBox.Dock = DockStyle.Fill;
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             // 

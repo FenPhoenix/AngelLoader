@@ -144,7 +144,7 @@ namespace AngelLoader.CustomControls
 
         internal void SetContextMenuToColumnHeader()
         {
-            ColumnHeaderLLMenu.Init(Columns);
+            ColumnHeaderLLMenu.Init(this);
             ContextMenuStrip = ColumnHeaderLLMenu.GetContextMenu();
         }
 
@@ -214,6 +214,39 @@ namespace AngelLoader.CustomControls
         }
 
         #endregion
+
+        protected override void OnEnter(EventArgs e)
+        {
+            SelectProperly();
+
+            base.OnEnter(e);
+        }
+
+
+        /// <summary>
+        /// If you don't have an actual cell selected (indicated by its header being blue) and you try to move
+        /// with the keyboard, it pops back to the top item. This fixes that, and is called wherever appropriate.
+        /// </summary>
+        internal void SelectProperly()
+        {
+            if (Rows.Count <= 0 || SelectedRows.Count <= 0) return;
+            
+            for (int i = 0; i < SelectedRows[0].Cells.Count; i++)
+            {
+                if (SelectedRows[0].Cells[i].Visible)
+                {
+                    try
+                    {
+                        SelectedRows[0].Cells[i].Selected = true;
+                        break;
+                    }
+                    catch
+                    {
+                        // It can't be selected for whatever reason. Oh well.
+                    }
+                }
+            }
+        }
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {

@@ -574,6 +574,8 @@ namespace AngelLoader.Forms
 #if RT_StartupOnly
             Environment.Exit(1);
 #endif
+
+            FMsDGV.Focus();
         }
 
         private void SetWindowStateAndSize()
@@ -1297,7 +1299,11 @@ namespace AngelLoader.Forms
                     FMsDGV.RowCount = rowCount;
 
                     // Restore previous selection (no events will be fired, due to being in a DisableEvents block)
-                    if (selIndex > -1) FMsDGV.Rows[selIndex].Selected = true;
+                    if (selIndex > -1)
+                    {
+                        FMsDGV.Rows[selIndex].Selected = true;
+                        FMsDGV.SelectProperly();
+                    }
 
                     // Set column widths (keeping ratio to height)
                     for (var i = 0; i < FMsDGV.Columns.Count; i++)
@@ -2012,6 +2018,7 @@ namespace AngelLoader.Forms
             {
                 FMsDGV.SetContextMenuToFM();
                 FMsDGV.Rows[ht.RowIndex].Selected = true;
+                // We don't need to call SelectProperly() here because the mousedown will select it properly
             }
             else
             {
@@ -2045,6 +2052,7 @@ namespace AngelLoader.Forms
                 if (rowIndex > -1)
                 {
                     FMsDGV.Rows[rowIndex].Selected = true;
+                    FMsDGV.SelectProperly();
                     FMsDGV.FirstDisplayedScrollingRowIndex = FMsDGV.SelectedRows[0].Index;
                 }
             }
@@ -2288,6 +2296,7 @@ namespace AngelLoader.Forms
                     using (!InitialSelectedFMHasBeenSet ? new DisableEvents(this) : null)
                     {
                         FMsDGV.Rows[row].Selected = true;
+                        FMsDGV.SelectProperly();
                     }
 
                     // Resume drawing before loading the readme; that way the list will update instantly even
@@ -2313,6 +2322,7 @@ namespace AngelLoader.Forms
             {
                 FMsDGV.Refresh();
                 FMsDGV.Rows[selectedRow].Selected = true;
+                FMsDGV.SelectProperly();
             }
         }
 

@@ -18,7 +18,8 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            private static DataGridViewColumnCollection _columns;
+            // Ugh, there goes the tidiness...
+            private static DataGridViewCustom Owner;
 
             private enum ColumnProperties { Visible, DisplayIndex, Width }
 
@@ -54,9 +55,9 @@ namespace AngelLoader.CustomControls
 
             private static void ResetPropertyOnAllColumns(ColumnProperties property)
             {
-                for (var i = 0; i < _columns.Count; i++)
+                for (var i = 0; i < Owner.Columns.Count; i++)
                 {
-                    DataGridViewColumn c = _columns[i];
+                    DataGridViewColumn c = Owner.Columns[i];
                     switch (property)
                     {
                         case ColumnProperties.Visible:
@@ -69,6 +70,8 @@ namespace AngelLoader.CustomControls
                             if (c.Resizable == DataGridViewTriState.True) c.Width = Defaults.ColumnWidth;
                             break;
                     }
+
+                    Owner.SelectProperly();
 
                     SetColumnChecked(c.Index, c.Visible);
                 }
@@ -87,7 +90,8 @@ namespace AngelLoader.CustomControls
             private static void CheckBoxMenuItem_Click(object sender, EventArgs e)
             {
                 var s = (ToolStripMenuItem)sender;
-                MakeColumnVisible(_columns[(int)s.Tag], s.Checked);
+                MakeColumnVisible(Owner.Columns[(int)s.Tag], s.Checked);
+                Owner.SelectProperly();
             }
 
             #endregion
@@ -96,11 +100,11 @@ namespace AngelLoader.CustomControls
 
             internal static ContextMenuStrip GetContextMenu() => ColumnHeaderContextMenu;
 
-            internal static void Init(DataGridViewColumnCollection columns)
+            internal static void Init(DataGridViewCustom owner)
             {
                 if (_menuCreated) return;
 
-                _columns = columns;
+                Owner = owner;
 
                 #region Instantiation
 
