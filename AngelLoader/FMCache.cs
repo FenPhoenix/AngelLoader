@@ -346,10 +346,15 @@ namespace AngelLoader
         private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes,
             IView view)
         {
+            Log(nameof(SevenZipExtract) + ": about to show progress box and extract", methodName: false);
             await Task.Run(() =>
             {
                 try
                 {
+                    // Block the view immediately after starting another thread, because otherwise we could end
+                    // up allowing multiple of these to be called and all that insanity...
+                    view.InvokeAsync(new Action(() => view.ShowProgressBox(ProgressTasks.CacheFM)));
+
                     Directory.CreateDirectory(fmCachePath);
 
                     using (var extractor = new SevenZipExtractor(fmArchivePath))
@@ -374,9 +379,6 @@ namespace AngelLoader
 
                         if (indexesList.Count == 0) return;
 
-                        Log(nameof(SevenZipExtract) + ": about to show progress box and extract", methodName: false);
-
-                        view.InvokeAsync(new Action(() => view.ShowProgressBox(ProgressTasks.CacheFM)));
 
                         extractor.Extracting += (sender, e) =>
                         {

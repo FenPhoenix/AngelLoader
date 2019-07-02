@@ -605,7 +605,7 @@ namespace AngelLoader.CustomControls
             foreach (ToolStripMenuItem item in RatingMenuItem.DropDownItems) if (item != s) item.Checked = false;
         }
 
-        private async void FinishedOnMenuItems_Click(object sender, EventArgs e)
+        private void FinishedOnMenuItems_Click(object sender, EventArgs e)
         {
             var senderItem = (ToolStripMenuItem)sender;
 
@@ -635,7 +635,7 @@ namespace AngelLoader.CustomControls
                 }
             }
 
-            await Owner.RefreshSelectedFMRowOnly();
+            Owner.RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
 

@@ -563,6 +563,7 @@ namespace AngelLoader.Forms
             Application.AddMessageFilter(this);
         }
 
+        // PERF_TODO: Ideally this wouldn't have to be async as it runs every startup by definition
         private async void MainForm_Shown(object sender, EventArgs e)
         {
             // This must certainly need to come after Show() as well, right?!
@@ -2154,7 +2155,7 @@ namespace AngelLoader.Forms
             if (success) await SortAndSetFilter(forceRefreshReadme: true);
         }
 
-        private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
+        private static async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
         public void ShowFMsListZoomButtons(bool visible)
         {
@@ -2249,13 +2250,11 @@ namespace AngelLoader.Forms
 
         #region Refresh FMs list
 
-        public async Task RefreshSelectedFMRowOnly() => await RefreshSelectedFM(false, true);
+        public void RefreshSelectedFMRowOnly() => FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-        public async Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false)
+        public async Task RefreshSelectedFM(bool refreshReadme)
         {
             FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
-
-            if (refreshGridRowOnly) return;
 
             await DisplaySelectedFM(refreshReadme);
         }
@@ -2978,7 +2977,7 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
-        private async void CommentTextBox_TextChanged(object sender, EventArgs e)
+        private void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
 
@@ -2994,7 +2993,7 @@ namespace AngelLoader.Forms
             fm.Comment = CommentTextBox.Text.ToRNEscapes();
             fm.CommentSingleLine = CommentTextBox.Text.ToSingleLineComment(100);
 
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
         }
 
         private void CommentTextBox_Leave(object sender, EventArgs e)
@@ -3309,11 +3308,11 @@ namespace AngelLoader.Forms
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
+        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().Title = EditFMTitleTextBox.Text;
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
         }
 
         private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
@@ -3322,11 +3321,11 @@ namespace AngelLoader.Forms
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
+        private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().Author = EditFMAuthorTextBox.Text;
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
         }
 
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
@@ -3335,7 +3334,7 @@ namespace AngelLoader.Forms
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
@@ -3344,19 +3343,19 @@ namespace AngelLoader.Forms
                 ? EditFMReleaseDateDateTimePicker.Value
                 : (DateTime?)null;
 
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
+        private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
@@ -3365,23 +3364,23 @@ namespace AngelLoader.Forms
                 ? EditFMLastPlayedDateTimePicker.Value
                 : (DateTime?)null;
 
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
+        private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
         }
 
         private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
@@ -3390,21 +3389,21 @@ namespace AngelLoader.Forms
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
 
             FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
 
-        private async void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().Rating = EditFMRatingComboBox.SelectedIndex - 1;
-            await RefreshSelectedFMRowOnly();
+            RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
 
@@ -3830,7 +3829,7 @@ namespace AngelLoader.Forms
             await InstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
         }
 
-        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
+        private static async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
 
         // TODO: This isn't hooked up to anything, but things seem to work fine. Do I need this?!
         private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)

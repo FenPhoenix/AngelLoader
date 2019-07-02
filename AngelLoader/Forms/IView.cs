@@ -43,8 +43,8 @@ namespace AngelLoader.Forms
         void Block(bool block);
         Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false);
-        Task RefreshSelectedFM(bool refreshReadme, bool refreshGridRowOnly = false);
-        Task RefreshSelectedFMRowOnly();
+        Task RefreshSelectedFM(bool refreshReadme);
+        void RefreshSelectedFMRowOnly();
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)
