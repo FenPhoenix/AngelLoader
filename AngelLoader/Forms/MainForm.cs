@@ -534,13 +534,10 @@ namespace AngelLoader.Forms
             // have been run first.
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
-            // Hook these up last so they don't cause anything to happen while we're initializing
-            AppMouseHook = Hook.AppEvents();
-            AppMouseHook.MouseDownExt += HookMouseDown;
-            AppMouseHook.MouseMoveExt += HookMouseMove;
-            Application.AddMessageFilter(this);
-
-            ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
+            if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.DefaultCellStyle.Font.SizeInPoints) >= 0.001)
+            {
+                ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
+            }
 
             #region Changes involving layout
 
@@ -557,6 +554,12 @@ namespace AngelLoader.Forms
             ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
             #endregion
+
+            // Hook these up last so they don't cause anything to happen while we're initializing
+            AppMouseHook = Hook.AppEvents();
+            AppMouseHook.MouseDownExt += HookMouseDown;
+            AppMouseHook.MouseMoveExt += HookMouseMove;
+            Application.AddMessageFilter(this);
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
