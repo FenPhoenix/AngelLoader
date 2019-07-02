@@ -29,6 +29,14 @@ namespace AngelLoader
             // the background while other stuff runs, thus chopping off even more startup time.
             Task configTask = Task.Run(() => System.Configuration.ConfigurationManager.AppSettings);
 
+            // We need to clear this because FMScanner doesn't have a startup version
+            ClearLogFileStartup(Paths.ScannerLogFile);
+
+            // We don't need to clear this log because LogStartup says append: false
+            LogStartup(Application.ProductVersion + " Started session");
+
+            // Do this after the startup log so we don't try to log something at the same time as the un-lock-
+            // protected startup log
             AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
             {
                 if (e.Exception.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
@@ -36,12 +44,6 @@ namespace AngelLoader
                     Log("Exception thrown", e.Exception);
                 }
             };
-
-            // We need to clear this because FMScanner doesn't have a startup version
-            ClearLogFileStartup(Paths.ScannerLogFile);
-
-            // We don't need to clear this log because LogStartup says append: false
-            LogStartup(Application.ProductVersion + " Started session");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
