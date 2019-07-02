@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 
@@ -83,7 +82,7 @@ namespace AngelLoader.Common.DataClasses
     internal sealed class TopRightTabData
     {
         private int _position;
-        internal int Position { get => _position; set => _position = value.Clamp(0, TopRightTabsCount); }
+        internal int Position { get => _position; set => _position = value.Clamp(0, TopRightTabsCount - 1); }
 
         internal bool Visible = true;
     }
@@ -108,8 +107,30 @@ namespace AngelLoader.Common.DataClasses
 
         internal void EnsureValidity()
         {
-            // Fallback if multiple tabs have the same position
-            if (Tabs.Distinct(new TopRightTabPositionComparer()).Count() != TopRightTabsCount) ResetAllPositions();
+            #region Fallback if multiple tabs have the same position
+
+            int[] set = { -1, -1, -1, -1, -1 };
+
+            Debug.Assert(set.Length == TopRightTabsCount, nameof(set) + ".Length != " + nameof(TopRightTabsCount));
+
+            // PERF: Unmeasurable. LINQ Distinct().Count() was 6ms. Sheesh.
+            for (int i = 0; i < Tabs.Length; i++)
+            {
+                for (int j = 0; j < set.Length; j++)
+                {
+                    if (set[j] == Tabs[i].Position)
+                    {
+                        ResetAllPositions();
+                        goto breakout;
+                    }
+                }
+
+                set[i] = Tabs[i].Position;
+            }
+
+            breakout:
+
+            #endregion
 
             // Fallback if no tabs are visible
             if (NoneVisible()) SetAllVisible(true);
