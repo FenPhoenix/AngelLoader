@@ -16,9 +16,29 @@ namespace AngelLoader.Forms
              they currently work and I'm not 100% certain which one I should keep. Lowest priority.
         */
 
+#if DEBUG || Release_Testing
+        private readonly System.Diagnostics.Stopwatch t = new System.Diagnostics.Stopwatch();
+
+        private void StartTimer()
+        {
+            t.Restart();
+        }
+
+        private void StopTimer()
+        {
+            t.Stop();
+            System.Diagnostics.Trace.WriteLine(nameof(InitComponentManual) + "up to stop point: " + t.Elapsed);
+            System.Environment.Exit(1);
+        }
+#endif
+
         private void InitComponentManual()
         {
             components = new Container();
+
+            // PERF_NOTE: Instantiation: ~15ms (suspicion confirmed - worth it to lazy-load everything that can be!)
+
+            #region Instantiation
 
             GameTabsImageList = new ImageList(components);
             ScanAllFMsButton = new Button();
@@ -182,6 +202,13 @@ namespace AngelLoader.Forms
             TRM_CommentMenuItem = new ToolStripMenuItem();
             TRM_TagsMenuItem = new ToolStripMenuItem();
             TRM_PatchMenuItem = new ToolStripMenuItem();
+
+            #endregion
+
+            // PERF_NOTE: SuspendLayouts: <1ms
+
+            #region SuspendLayout()
+
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
@@ -219,6 +246,13 @@ namespace AngelLoader.Forms
             PlayOriginalGameMenu.SuspendLayout();
             ImportFromMenu.SuspendLayout();
             SuspendLayout();
+
+            #endregion
+
+            // PERF_NOTE: Property sets: 15~17ms
+
+            #region Property sets
+
             // 
             // GameTabsImageList
             // 
@@ -238,9 +272,8 @@ namespace AngelLoader.Forms
             ScanAllFMsButton.AutoSize = true;
             ScanAllFMsButton.Image = Resources.Scan;
             ScanAllFMsButton.ImageAlign = ContentAlignment.MiddleLeft;
-            ScanAllFMsButton.Location = new Point(365, 3);
             ScanAllFMsButton.Padding = new Padding(6, 0, 6, 0);
-            ScanAllFMsButton.Size = new Size(123, 36);
+            ScanAllFMsButton.Height = 36;
             ScanAllFMsButton.TabIndex = 59;
             ScanAllFMsButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             ScanAllFMsButton.UseVisualStyleBackColor = true;
@@ -251,7 +284,6 @@ namespace AngelLoader.Forms
             BottomPanel.Controls.Add(BottomRightButtonsFLP);
             BottomPanel.Controls.Add(BottomLeftButtonsFLP);
             BottomPanel.Dock = DockStyle.Bottom;
-            BottomPanel.Location = new Point(0, 672);
             BottomPanel.Size = new Size(1671, 44);
             BottomPanel.TabIndex = 1;
             // 
@@ -272,9 +304,8 @@ namespace AngelLoader.Forms
             SettingsButton.AutoSize = true;
             SettingsButton.Image = Resources.Settings_24;
             SettingsButton.ImageAlign = ContentAlignment.MiddleLeft;
-            SettingsButton.Location = new Point(123, 3);
             SettingsButton.Padding = new Padding(6, 0, 6, 0);
-            SettingsButton.Size = new Size(100, 36);
+            SettingsButton.Height = 36;
             SettingsButton.TabIndex = 62;
             SettingsButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             SettingsButton.UseVisualStyleBackColor = true;
@@ -285,9 +316,8 @@ namespace AngelLoader.Forms
             ImportButton.AutoSize = true;
             ImportButton.Image = Resources.Import_24;
             ImportButton.ImageAlign = ContentAlignment.MiddleLeft;
-            ImportButton.Location = new Point(3, 3);
             ImportButton.Padding = new Padding(6, 0, 6, 0);
-            ImportButton.Size = new Size(114, 36);
+            ImportButton.Height = 36;
             ImportButton.TabIndex = 61;
             ImportButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             ImportButton.UseVisualStyleBackColor = true;
@@ -313,9 +343,8 @@ namespace AngelLoader.Forms
             PlayFMButton.AutoSize = true;
             PlayFMButton.Image = Resources.PlayArrow_24;
             PlayFMButton.ImageAlign = ContentAlignment.MiddleLeft;
-            PlayFMButton.Location = new Point(3, 3);
             PlayFMButton.Padding = new Padding(6, 0, 6, 0);
-            PlayFMButton.Size = new Size(91, 36);
+            PlayFMButton.Height = 36;
             PlayFMButton.TabIndex = 56;
             PlayFMButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             PlayFMButton.UseVisualStyleBackColor = true;
@@ -326,9 +355,8 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton.AutoSize = true;
             PlayOriginalGameButton.Image = Resources.Play_original_24;
             PlayOriginalGameButton.ImageAlign = ContentAlignment.MiddleLeft;
-            PlayOriginalGameButton.Location = new Point(100, 3);
             PlayOriginalGameButton.Padding = new Padding(6, 0, 6, 0);
-            PlayOriginalGameButton.Size = new Size(147, 36);
+            PlayOriginalGameButton.Height = 36;
             PlayOriginalGameButton.TabIndex = 57;
             PlayOriginalGameButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             PlayOriginalGameButton.UseVisualStyleBackColor = true;
@@ -339,9 +367,8 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton.AutoSize = true;
             InstallUninstallFMButton.Image = Resources.Install_24;
             InstallUninstallFMButton.ImageAlign = ContentAlignment.MiddleLeft;
-            InstallUninstallFMButton.Location = new Point(253, 3);
             InstallUninstallFMButton.Padding = new Padding(6, 0, 6, 0);
-            InstallUninstallFMButton.Size = new Size(98, 36);
+            InstallUninstallFMButton.Height = 36;
             InstallUninstallFMButton.TabIndex = 58;
             InstallUninstallFMButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             InstallUninstallFMButton.UseVisualStyleBackColor = true;
@@ -353,9 +380,7 @@ namespace AngelLoader.Forms
             BottomScanAllFMsSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             BottomScanAllFMsSepToolStrip.Items.AddRange(new ToolStripItem[] {
             BottomScanAllFMsLeftSep});
-            BottomScanAllFMsSepToolStrip.Location = new Point(354, 0);
             BottomScanAllFMsSepToolStrip.Padding = new Padding(0);
-            BottomScanAllFMsSepToolStrip.PaddingDrawNudge = 0;
             BottomScanAllFMsSepToolStrip.Size = new Size(8, 42);
             BottomScanAllFMsSepToolStrip.TabIndex = 32;
             // 
@@ -370,9 +395,7 @@ namespace AngelLoader.Forms
             BottomWebSearchLeftSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             BottomWebSearchLeftSepToolStrip.Items.AddRange(new ToolStripItem[] {
             BottomWebSearchLeftSep});
-            BottomWebSearchLeftSepToolStrip.Location = new Point(491, 0);
             BottomWebSearchLeftSepToolStrip.Padding = new Padding(0);
-            BottomWebSearchLeftSepToolStrip.PaddingDrawNudge = 0;
             BottomWebSearchLeftSepToolStrip.Size = new Size(8, 42);
             BottomWebSearchLeftSepToolStrip.TabIndex = 35;
             // 
@@ -386,9 +409,8 @@ namespace AngelLoader.Forms
             WebSearchButton.AutoSize = true;
             WebSearchButton.Image = Resources.WebSearch_24;
             WebSearchButton.ImageAlign = ContentAlignment.MiddleLeft;
-            WebSearchButton.Location = new Point(502, 3);
             WebSearchButton.Padding = new Padding(6, 0, 6, 0);
-            WebSearchButton.Size = new Size(111, 36);
+            WebSearchButton.Height = 36;
             WebSearchButton.TabIndex = 60;
             WebSearchButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             WebSearchButton.UseVisualStyleBackColor = true;
@@ -400,15 +422,12 @@ namespace AngelLoader.Forms
             EverythingPanel.Controls.Add(MainSplitContainer);
             EverythingPanel.Controls.Add(BottomPanel);
             EverythingPanel.Dock = DockStyle.Fill;
-            EverythingPanel.Location = new Point(0, 0);
             EverythingPanel.Size = new Size(1671, 716);
             EverythingPanel.TabIndex = 4;
             // 
             // AddTagListBox
             // 
             AddTagListBox.FormattingEnabled = true;
-            AddTagListBox.Location = new Point(1632, 544);
-            AddTagListBox.Size = new Size(32, 30);
             AddTagListBox.TabIndex = 3;
             AddTagListBox.Visible = false;
             AddTagListBox.SelectedIndexChanged += AddTagListBox_SelectedIndexChanged;
@@ -420,8 +439,6 @@ namespace AngelLoader.Forms
             // 
             MainSplitContainer.BackColor = SystemColors.ActiveBorder;
             MainSplitContainer.Dock = DockStyle.Fill;
-            MainSplitContainer.Location = new Point(0, 0);
-            MainSplitContainer.MouseOverCrossSection = false;
             MainSplitContainer.Orientation = Orientation.Horizontal;
             // 
             // MainSplitContainer.Panel1
@@ -450,8 +467,6 @@ namespace AngelLoader.Forms
             // 
             TopSplitContainer.BackColor = SystemColors.ActiveBorder;
             TopSplitContainer.Dock = DockStyle.Fill;
-            TopSplitContainer.Location = new Point(0, 0);
-            TopSplitContainer.MouseOverCrossSection = false;
             // 
             // TopSplitContainer.Panel1
             // 
@@ -480,7 +495,6 @@ namespace AngelLoader.Forms
             FilterBarScrollRightButton.BackgroundImage = Resources.ArrowRightSmall;
             FilterBarScrollRightButton.BackgroundImageLayout = ImageLayout.Center;
             FilterBarScrollRightButton.FlatStyle = FlatStyle.Flat;
-            FilterBarScrollRightButton.Location = new Point(1088, 56);
             FilterBarScrollRightButton.Size = new Size(14, 24);
             FilterBarScrollRightButton.TabIndex = 10;
             FilterBarScrollRightButton.UseVisualStyleBackColor = true;
@@ -496,7 +510,6 @@ namespace AngelLoader.Forms
             FilterBarScrollLeftButton.BackgroundImage = Resources.ArrowLeftSmall;
             FilterBarScrollLeftButton.BackgroundImageLayout = ImageLayout.Center;
             FilterBarScrollLeftButton.FlatStyle = FlatStyle.Flat;
-            FilterBarScrollLeftButton.Location = new Point(1072, 56);
             FilterBarScrollLeftButton.Size = new Size(14, 24);
             FilterBarScrollLeftButton.TabIndex = 2;
             FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
@@ -638,8 +651,11 @@ namespace AngelLoader.Forms
             FilterBarFLP.Controls.Add(FilterAuthorLabel);
             FilterBarFLP.Controls.Add(FilterAuthorTextBox);
             FilterBarFLP.Controls.Add(FilterIconButtonsToolStrip);
+
+            // PERF_TODO: The filter bar gets its x-pos and width set in GameTypeChange(), so can we get rid of these?
             FilterBarFLP.Location = new Point(144, 0);
             FilterBarFLP.Size = new Size(768, 100);
+
             FilterBarFLP.TabIndex = 11;
             FilterBarFLP.WrapContents = false;
             FilterBarFLP.Scroll += FiltersFlowLayoutPanel_Scroll;
@@ -651,7 +667,6 @@ namespace AngelLoader.Forms
             FilterGamesLeftSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             FilterGamesLeftSepToolStrip.Items.AddRange(new ToolStripItem[] {
             FilterGamesLeftSep});
-            FilterGamesLeftSepToolStrip.Location = new Point(0, 0);
             FilterGamesLeftSepToolStrip.Padding = new Padding(0);
             FilterGamesLeftSepToolStrip.PaddingDrawNudge = 1;
             FilterGamesLeftSepToolStrip.Size = new Size(6, 26);
@@ -722,14 +737,11 @@ namespace AngelLoader.Forms
             // FilterTitleLabel
             // 
             FilterTitleLabel.AutoSize = true;
-            FilterTitleLabel.Location = new Point(91, 6);
             FilterTitleLabel.Margin = new Padding(0, 6, 0, 0);
-            FilterTitleLabel.Size = new Size(30, 13);
             FilterTitleLabel.TabIndex = 5;
             // 
             // FilterTitleTextBox
             // 
-            FilterTitleTextBox.Location = new Point(124, 3);
             FilterTitleTextBox.Size = new Size(144, 20);
             FilterTitleTextBox.TabIndex = 6;
             FilterTitleTextBox.TextChanged += FilterTextBoxes_TextChanged;
@@ -740,7 +752,6 @@ namespace AngelLoader.Forms
             FilterAuthorLeftSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             FilterAuthorLeftSepToolStrip.Items.AddRange(new ToolStripItem[] {
             FilterAuthorLeftSep});
-            FilterAuthorLeftSepToolStrip.Location = new Point(271, 0);
             FilterAuthorLeftSepToolStrip.Padding = new Padding(0);
             FilterAuthorLeftSepToolStrip.PaddingDrawNudge = 1;
             FilterAuthorLeftSepToolStrip.Size = new Size(6, 26);
@@ -755,14 +766,11 @@ namespace AngelLoader.Forms
             // FilterAuthorLabel
             // 
             FilterAuthorLabel.AutoSize = true;
-            FilterAuthorLabel.Location = new Point(280, 6);
             FilterAuthorLabel.Margin = new Padding(3, 6, 0, 0);
-            FilterAuthorLabel.Size = new Size(41, 13);
             FilterAuthorLabel.TabIndex = 7;
             // 
             // FilterAuthorTextBox
             // 
-            FilterAuthorTextBox.Location = new Point(324, 3);
             FilterAuthorTextBox.Size = new Size(144, 20);
             FilterAuthorTextBox.TabIndex = 8;
             FilterAuthorTextBox.TextChanged += FilterTextBoxes_TextChanged;
@@ -794,7 +802,6 @@ namespace AngelLoader.Forms
             FilterShowUnsupportedLeftSep,
             FilterShowUnsupportedButton});
             FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
-            FilterIconButtonsToolStrip.Location = new Point(471, 0);
             FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
             FilterIconButtonsToolStrip.Size = new Size(297, 26);
             FilterIconButtonsToolStrip.TabIndex = 3;
@@ -912,7 +919,7 @@ namespace AngelLoader.Forms
             FilterShowUnsupportedButton.Image = Resources.Show_Unsupported;
             FilterShowUnsupportedButton.Margin = new Padding(0);
             FilterShowUnsupportedButton.Size = new Size(25, 25);
-            FilterShowUnsupportedButton.Click += FilterShowJunkButton_Click;
+            FilterShowUnsupportedButton.Click += FilterShowUnsupportedButton_Click;
             // 
             // RefreshAreaToolStrip
             // 
@@ -934,7 +941,6 @@ namespace AngelLoader.Forms
             ResetLayoutLeftSep});
             RefreshAreaToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
             RefreshAreaToolStrip.Location = new Point(916, 0);
-            RefreshAreaToolStrip.PaddingDrawNudge = 0;
             RefreshAreaToolStrip.Size = new Size(169, 26);
             RefreshAreaToolStrip.TabIndex = 12;
             // 
@@ -1033,25 +1039,16 @@ namespace AngelLoader.Forms
             // Thief1TabPage
             // 
             Thief1TabPage.ImageIndex = 0;
-            Thief1TabPage.Location = new Point(4, 23);
-            Thief1TabPage.Padding = new Padding(3);
-            Thief1TabPage.Size = new Size(1095, 0);
             Thief1TabPage.TabIndex = 0;
             // 
             // Thief2TabPage
             // 
             Thief2TabPage.ImageIndex = 1;
-            Thief2TabPage.Location = new Point(4, 23);
-            Thief2TabPage.Padding = new Padding(3);
-            Thief2TabPage.Size = new Size(1095, 0);
             Thief2TabPage.TabIndex = 1;
             // 
             // Thief3TabPage
             // 
             Thief3TabPage.ImageIndex = 2;
-            Thief3TabPage.Location = new Point(4, 23);
-            Thief3TabPage.Padding = new Padding(3);
-            Thief3TabPage.Size = new Size(1095, 0);
             Thief3TabPage.TabIndex = 2;
             // 
             // TopRightMenuButton
@@ -1083,13 +1080,14 @@ namespace AngelLoader.Forms
             // TopRightTabControl
             // 
             TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            /* These tab pages get added as appropriate on startup
             TopRightTabControl.Controls.Add(StatisticsTabPage);
             TopRightTabControl.Controls.Add(EditFMTabPage);
             TopRightTabControl.Controls.Add(CommentTabPage);
             TopRightTabControl.Controls.Add(TagsTabPage);
             TopRightTabControl.Controls.Add(PatchTabPage);
+            */
             TopRightTabControl.Location = new Point(0, 0);
-            TopRightTabControl.SelectedIndex = 0;
             TopRightTabControl.Size = new Size(534, 310);
             TopRightTabControl.TabIndex = 15;
             // 
@@ -1100,7 +1098,6 @@ namespace AngelLoader.Forms
             StatisticsTabPage.Controls.Add(StatsScanCustomResourcesButton);
             StatisticsTabPage.Controls.Add(StatsCheckBoxesPanel);
             StatisticsTabPage.Controls.Add(CustomResourcesLabel);
-            StatisticsTabPage.Location = new Point(4, 22);
             StatisticsTabPage.Name = nameof(StatisticsTabPage);
             StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
@@ -1132,7 +1129,6 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Controls.Add(CR_SubtitlesCheckBox);
             StatsCheckBoxesPanel.Controls.Add(CR_ObjectsCheckBox);
             StatsCheckBoxesPanel.Location = new Point(8, 32);
-            StatsCheckBoxesPanel.Size = new Size(74, 164);
             StatsCheckBoxesPanel.TabIndex = 1;
             StatsCheckBoxesPanel.Visible = false;
             // 
@@ -1141,7 +1137,6 @@ namespace AngelLoader.Forms
             CR_MapCheckBox.AutoCheck = false;
             CR_MapCheckBox.AutoSize = true;
             CR_MapCheckBox.Location = new Point(0, 0);
-            CR_MapCheckBox.Size = new Size(47, 17);
             CR_MapCheckBox.TabIndex = 2;
             CR_MapCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1150,7 +1145,6 @@ namespace AngelLoader.Forms
             CR_MoviesCheckBox.AutoCheck = false;
             CR_MoviesCheckBox.AutoSize = true;
             CR_MoviesCheckBox.Location = new Point(0, 64);
-            CR_MoviesCheckBox.Size = new Size(60, 17);
             CR_MoviesCheckBox.TabIndex = 6;
             CR_MoviesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1159,7 +1153,6 @@ namespace AngelLoader.Forms
             CR_MotionsCheckBox.AutoCheck = false;
             CR_MotionsCheckBox.AutoSize = true;
             CR_MotionsCheckBox.Location = new Point(0, 112);
-            CR_MotionsCheckBox.Size = new Size(63, 17);
             CR_MotionsCheckBox.TabIndex = 9;
             CR_MotionsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1168,7 +1161,6 @@ namespace AngelLoader.Forms
             CR_SoundsCheckBox.AutoCheck = false;
             CR_SoundsCheckBox.AutoSize = true;
             CR_SoundsCheckBox.Location = new Point(0, 48);
-            CR_SoundsCheckBox.Size = new Size(62, 17);
             CR_SoundsCheckBox.TabIndex = 5;
             CR_SoundsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1177,7 +1169,6 @@ namespace AngelLoader.Forms
             CR_CreaturesCheckBox.AutoCheck = false;
             CR_CreaturesCheckBox.AutoSize = true;
             CR_CreaturesCheckBox.Location = new Point(0, 96);
-            CR_CreaturesCheckBox.Size = new Size(71, 17);
             CR_CreaturesCheckBox.TabIndex = 8;
             CR_CreaturesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1186,7 +1177,6 @@ namespace AngelLoader.Forms
             CR_TexturesCheckBox.AutoCheck = false;
             CR_TexturesCheckBox.AutoSize = true;
             CR_TexturesCheckBox.Location = new Point(0, 32);
-            CR_TexturesCheckBox.Size = new Size(67, 17);
             CR_TexturesCheckBox.TabIndex = 4;
             CR_TexturesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1195,7 +1185,6 @@ namespace AngelLoader.Forms
             CR_AutomapCheckBox.AutoCheck = false;
             CR_AutomapCheckBox.AutoSize = true;
             CR_AutomapCheckBox.Location = new Point(0, 16);
-            CR_AutomapCheckBox.Size = new Size(68, 17);
             CR_AutomapCheckBox.TabIndex = 3;
             CR_AutomapCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1204,7 +1193,6 @@ namespace AngelLoader.Forms
             CR_ScriptsCheckBox.AutoCheck = false;
             CR_ScriptsCheckBox.AutoSize = true;
             CR_ScriptsCheckBox.Location = new Point(0, 128);
-            CR_ScriptsCheckBox.Size = new Size(58, 17);
             CR_ScriptsCheckBox.TabIndex = 10;
             CR_ScriptsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1213,7 +1201,6 @@ namespace AngelLoader.Forms
             CR_SubtitlesCheckBox.AutoCheck = false;
             CR_SubtitlesCheckBox.AutoSize = true;
             CR_SubtitlesCheckBox.Location = new Point(0, 144);
-            CR_SubtitlesCheckBox.Size = new Size(66, 17);
             CR_SubtitlesCheckBox.TabIndex = 11;
             CR_SubtitlesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1222,7 +1209,6 @@ namespace AngelLoader.Forms
             CR_ObjectsCheckBox.AutoCheck = false;
             CR_ObjectsCheckBox.AutoSize = true;
             CR_ObjectsCheckBox.Location = new Point(0, 80);
-            CR_ObjectsCheckBox.Size = new Size(62, 17);
             CR_ObjectsCheckBox.TabIndex = 7;
             CR_ObjectsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1230,7 +1216,6 @@ namespace AngelLoader.Forms
             // 
             CustomResourcesLabel.AutoSize = true;
             CustomResourcesLabel.Location = new Point(4, 10);
-            CustomResourcesLabel.Size = new Size(156, 13);
             CustomResourcesLabel.TabIndex = 0;
             // 
             // EditFMTabPage
@@ -1256,7 +1241,6 @@ namespace AngelLoader.Forms
             EditFMTabPage.Controls.Add(EditFMAuthorTextBox);
             EditFMTabPage.Controls.Add(EditFMAuthorLabel);
             EditFMTabPage.Controls.Add(EditFMTitleLabel);
-            EditFMTabPage.Location = new Point(4, 22);
             EditFMTabPage.Name = nameof(EditFMTabPage);
             EditFMTabPage.Size = new Size(526, 284);
             EditFMTabPage.TabIndex = 2;
@@ -1267,7 +1251,7 @@ namespace AngelLoader.Forms
             EditFMScanForReadmesButton.Image = Resources.ScanSmall;
             EditFMScanForReadmesButton.ImageAlign = ContentAlignment.MiddleLeft;
             EditFMScanForReadmesButton.Location = new Point(8, 248);
-            EditFMScanForReadmesButton.Size = new Size(128, 23);
+            EditFMScanForReadmesButton.Height = 23;
             EditFMScanForReadmesButton.TabIndex = 31;
             EditFMScanForReadmesButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
@@ -1327,7 +1311,7 @@ namespace AngelLoader.Forms
             EditFMFinishedOnButton.AutoSize = true;
             EditFMFinishedOnButton.Location = new Point(184, 144);
             EditFMFinishedOnButton.Padding = new Padding(6, 0, 6, 0);
-            EditFMFinishedOnButton.Size = new Size(138, 23);
+            EditFMFinishedOnButton.Height = 23;
             EditFMFinishedOnButton.TabIndex = 27;
             EditFMFinishedOnButton.UseVisualStyleBackColor = true;
             EditFMFinishedOnButton.Click += EditFMFinishedOnButton_Click;
@@ -1358,7 +1342,6 @@ namespace AngelLoader.Forms
             // 
             EditFMRatingLabel.AutoSize = true;
             EditFMRatingLabel.Location = new Point(185, 87);
-            EditFMRatingLabel.Size = new Size(41, 13);
             EditFMRatingLabel.TabIndex = 25;
             // 
             // EditFMLastPlayedDateTimePicker
@@ -1384,7 +1367,6 @@ namespace AngelLoader.Forms
             EditFMLastPlayedCheckBox.AutoSize = true;
             EditFMLastPlayedCheckBox.CheckAlign = ContentAlignment.MiddleRight;
             EditFMLastPlayedCheckBox.Location = new Point(8, 130);
-            EditFMLastPlayedCheckBox.Size = new Size(83, 17);
             EditFMLastPlayedCheckBox.TabIndex = 23;
             EditFMLastPlayedCheckBox.UseVisualStyleBackColor = true;
             EditFMLastPlayedCheckBox.CheckedChanged += EditFMLastPlayedCheckBox_CheckedChanged;
@@ -1394,7 +1376,6 @@ namespace AngelLoader.Forms
             EditFMReleaseDateCheckBox.AutoSize = true;
             EditFMReleaseDateCheckBox.CheckAlign = ContentAlignment.MiddleRight;
             EditFMReleaseDateCheckBox.Location = new Point(8, 88);
-            EditFMReleaseDateCheckBox.Size = new Size(92, 17);
             EditFMReleaseDateCheckBox.TabIndex = 20;
             EditFMReleaseDateCheckBox.UseVisualStyleBackColor = true;
             EditFMReleaseDateCheckBox.CheckedChanged += EditFMReleaseDateCheckBox_CheckedChanged;
@@ -1403,7 +1384,6 @@ namespace AngelLoader.Forms
             // 
             EditFMDisableAllModsCheckBox.AutoSize = true;
             EditFMDisableAllModsCheckBox.Location = new Point(8, 216);
-            EditFMDisableAllModsCheckBox.Size = new Size(102, 17);
             EditFMDisableAllModsCheckBox.TabIndex = 30;
             EditFMDisableAllModsCheckBox.UseVisualStyleBackColor = true;
             EditFMDisableAllModsCheckBox.CheckedChanged += EditFMDisableAllModsCheckBox_CheckedChanged;
@@ -1421,7 +1401,6 @@ namespace AngelLoader.Forms
             // 
             EditFMDisabledModsLabel.AutoSize = true;
             EditFMDisabledModsLabel.Location = new Point(8, 176);
-            EditFMDisabledModsLabel.Size = new Size(79, 13);
             EditFMDisabledModsLabel.TabIndex = 28;
             // 
             // EditFMAuthorTextBox
@@ -1437,21 +1416,18 @@ namespace AngelLoader.Forms
             // 
             EditFMAuthorLabel.AutoSize = true;
             EditFMAuthorLabel.Location = new Point(8, 48);
-            EditFMAuthorLabel.Size = new Size(41, 13);
             EditFMAuthorLabel.TabIndex = 17;
             // 
             // EditFMTitleLabel
             // 
             EditFMTitleLabel.AutoSize = true;
             EditFMTitleLabel.Location = new Point(8, 8);
-            EditFMTitleLabel.Size = new Size(30, 13);
             EditFMTitleLabel.TabIndex = 13;
             // 
             // CommentTabPage
             // 
             CommentTabPage.BackColor = SystemColors.Control;
             CommentTabPage.Controls.Add(CommentTextBox);
-            CommentTabPage.Location = new Point(4, 22);
             CommentTabPage.Name = nameof(CommentTabPage);
             CommentTabPage.Size = new Size(526, 284);
             CommentTabPage.TabIndex = 0;
@@ -1474,7 +1450,6 @@ namespace AngelLoader.Forms
             TagsTabPage.Controls.Add(AddTagTextBox);
             TagsTabPage.Controls.Add(AddRemoveTagFLP);
             TagsTabPage.Controls.Add(TagsTreeView);
-            TagsTabPage.Location = new Point(4, 22);
             TagsTabPage.Name = nameof(TagsTabPage);
             TagsTabPage.Size = new Size(526, 284);
             TagsTabPage.TabIndex = 1;
@@ -1485,7 +1460,7 @@ namespace AngelLoader.Forms
             AddTagButton.AutoSize = true;
             AddTagButton.Location = new Point(453, 7);
             AddTagButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagButton.Size = new Size(72, 23);
+            AddTagButton.Height = 23;
             AddTagButton.TabIndex = 1;
             AddTagButton.UseVisualStyleBackColor = true;
             AddTagButton.Click += AddTagButton_Click;
@@ -1519,7 +1494,7 @@ namespace AngelLoader.Forms
             RemoveTagButton.Location = new Point(392, 0);
             RemoveTagButton.Margin = new Padding(0);
             RemoveTagButton.Padding = new Padding(6, 0, 6, 0);
-            RemoveTagButton.Size = new Size(144, 23);
+            RemoveTagButton.Height = 23;
             RemoveTagButton.TabIndex = 1;
             RemoveTagButton.UseVisualStyleBackColor = true;
             RemoveTagButton.Click += RemoveTagButton_Click;
@@ -1531,7 +1506,7 @@ namespace AngelLoader.Forms
             AddTagFromListButton.Location = new Point(248, 0);
             AddTagFromListButton.Margin = new Padding(0);
             AddTagFromListButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagFromListButton.Size = new Size(144, 23);
+            AddTagFromListButton.Height = 23;
             AddTagFromListButton.TabIndex = 0;
             AddTagFromListButton.UseVisualStyleBackColor = true;
             AddTagFromListButton.Click += TagPresetsButton_Click;
@@ -1550,7 +1525,6 @@ namespace AngelLoader.Forms
             PatchTabPage.BackColor = SystemColors.Control;
             PatchTabPage.Controls.Add(PatchMainPanel);
             PatchTabPage.Controls.Add(PatchFMNotInstalledLabel);
-            PatchTabPage.Location = new Point(4, 22);
             PatchTabPage.Name = nameof(PatchTabPage);
             PatchTabPage.Size = new Size(526, 284);
             PatchTabPage.TabIndex = 3;
@@ -1581,7 +1555,6 @@ namespace AngelLoader.Forms
             // 
             PatchDMLPatchesLabel.AutoSize = true;
             PatchDMLPatchesLabel.Location = new Point(8, 8);
-            PatchDMLPatchesLabel.Size = new Size(156, 13);
             PatchDMLPatchesLabel.TabIndex = 40;
             // 
             // PatchDMLsListBox
@@ -1615,7 +1588,7 @@ namespace AngelLoader.Forms
             // 
             PatchOpenFMFolderButton.AutoSize = true;
             PatchOpenFMFolderButton.Location = new Point(7, 128);
-            PatchOpenFMFolderButton.Size = new Size(162, 23);
+            PatchOpenFMFolderButton.Height = 23;
             PatchOpenFMFolderButton.TabIndex = 44;
             PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
             PatchOpenFMFolderButton.Click += PatchOpenFMFolderButton_Click;
@@ -1624,26 +1597,29 @@ namespace AngelLoader.Forms
             // 
             PatchFMNotInstalledLabel.Anchor = AnchorStyles.None;
             PatchFMNotInstalledLabel.AutoSize = true;
-            PatchFMNotInstalledLabel.Location = new Point(-9, 264);
-            PatchFMNotInstalledLabel.Size = new Size(232, 13);
+            // This thing gets centered later so no location is specified here
             PatchFMNotInstalledLabel.TabIndex = 45;
             // 
             // ViewHTMLReadmeButton
             // 
             ViewHTMLReadmeButton.Anchor = AnchorStyles.None;
             ViewHTMLReadmeButton.AutoSize = true;
-            ViewHTMLReadmeButton.Location = new Point(776, 144);
+            // This thing gets centered later so no location is specified here
             ViewHTMLReadmeButton.Padding = new Padding(6, 0, 6, 0);
-            ViewHTMLReadmeButton.Size = new Size(144, 23);
+            ViewHTMLReadmeButton.Height = 23;
             ViewHTMLReadmeButton.TabIndex = 49;
             ViewHTMLReadmeButton.UseVisualStyleBackColor = true;
             ViewHTMLReadmeButton.Visible = false;
             ViewHTMLReadmeButton.Click += ViewHTMLReadmeButton_Click;
+
+            #region Readme control buttons
+
+            // BackColor for these gets set in ShowReadme()
+
             // 
             // ReadmeFullScreenButton
             // 
             ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeFullScreenButton.BackColor = SystemColors.Window;
             ReadmeFullScreenButton.BackgroundImage = Resources.Fullscreen;
             ReadmeFullScreenButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
@@ -1651,7 +1627,6 @@ namespace AngelLoader.Forms
             ReadmeFullScreenButton.Location = new Point(1616, 8);
             ReadmeFullScreenButton.Size = new Size(20, 20);
             ReadmeFullScreenButton.TabIndex = 55;
-            MainToolTip.SetToolTip(ReadmeFullScreenButton, "Fullscreen");
             ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             ReadmeFullScreenButton.Visible = false;
             ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
@@ -1659,7 +1634,6 @@ namespace AngelLoader.Forms
             // ZoomInButton
             // 
             ZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ZoomInButton.BackColor = SystemColors.Window;
             ZoomInButton.BackgroundImage = Resources.ZoomIn;
             ZoomInButton.BackgroundImageLayout = ImageLayout.Zoom;
             ZoomInButton.FlatAppearance.BorderSize = 0;
@@ -1667,7 +1641,6 @@ namespace AngelLoader.Forms
             ZoomInButton.Location = new Point(1534, 8);
             ZoomInButton.Size = new Size(20, 20);
             ZoomInButton.TabIndex = 52;
-            MainToolTip.SetToolTip(ZoomInButton, "Zoom in");
             ZoomInButton.UseVisualStyleBackColor = false;
             ZoomInButton.Visible = false;
             ZoomInButton.Click += ZoomInButton_Click;
@@ -1683,7 +1656,6 @@ namespace AngelLoader.Forms
             ZoomOutButton.Location = new Point(1558, 8);
             ZoomOutButton.Size = new Size(20, 20);
             ZoomOutButton.TabIndex = 53;
-            MainToolTip.SetToolTip(ZoomOutButton, "Zoom out");
             ZoomOutButton.UseVisualStyleBackColor = false;
             ZoomOutButton.Visible = false;
             ZoomOutButton.Click += ZoomOutButton_Click;
@@ -1691,7 +1663,6 @@ namespace AngelLoader.Forms
             // ResetZoomButton
             // 
             ResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ResetZoomButton.BackColor = SystemColors.Window;
             ResetZoomButton.BackgroundImage = Resources.ZoomReset;
             ResetZoomButton.BackgroundImageLayout = ImageLayout.Zoom;
             ResetZoomButton.FlatAppearance.BorderSize = 0;
@@ -1699,10 +1670,11 @@ namespace AngelLoader.Forms
             ResetZoomButton.Location = new Point(1582, 8);
             ResetZoomButton.Size = new Size(20, 20);
             ResetZoomButton.TabIndex = 54;
-            MainToolTip.SetToolTip(ResetZoomButton, "Reset zoom");
             ResetZoomButton.UseVisualStyleBackColor = false;
             ResetZoomButton.Visible = false;
             ResetZoomButton.Click += ResetZoomButton_Click;
+
+            #endregion
             // 
             // ChooseReadmeComboBox
             // 
@@ -1718,12 +1690,14 @@ namespace AngelLoader.Forms
             // 
             // ChooseReadmePanel
             // 
+            // PERF_TODO: AutoSizeMode is GrowAndShrink, so can we get rid of the size set?
+            // Should it even be autosizing at all...? (I don't think so?!)
             ChooseReadmePanel.Anchor = AnchorStyles.None;
             ChooseReadmePanel.AutoSize = true;
             ChooseReadmePanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ChooseReadmePanel.Controls.Add(ChooseReadmeOKFLP);
             ChooseReadmePanel.Controls.Add(ChooseReadmeListBox);
-            ChooseReadmePanel.Location = new Point(2, 2);
+            // This gets centered later so no location is specified here
             ChooseReadmePanel.Size = new Size(324, 161);
             ChooseReadmePanel.TabIndex = 46;
             ChooseReadmePanel.Visible = false;
@@ -1743,7 +1717,7 @@ namespace AngelLoader.Forms
             ChooseReadmeButton.Location = new Point(245, 0);
             ChooseReadmeButton.Margin = new Padding(0);
             ChooseReadmeButton.Padding = new Padding(6, 0, 6, 0);
-            ChooseReadmeButton.Size = new Size(75, 23);
+            ChooseReadmeButton.Height = 23;
             ChooseReadmeButton.TabIndex = 48;
             ChooseReadmeButton.UseVisualStyleBackColor = true;
             ChooseReadmeButton.Click += ChooseReadmeButton_Click;
@@ -1770,40 +1744,34 @@ namespace AngelLoader.Forms
             PlayOriginalThief2MenuItem,
             PlayOriginalThief2MPMenuItem,
             PlayOriginalThief3MenuItem});
-            PlayOriginalGameMenu.Size = new Size(182, 92);
             // 
             // PlayOriginalThief1MenuItem
             // 
             PlayOriginalThief1MenuItem.Image = Resources.Thief1_16;
-            PlayOriginalThief1MenuItem.Size = new Size(181, 22);
             PlayOriginalThief1MenuItem.Click += PlayOriginalGameMenuItem_Click;
             // 
             // PlayOriginalThief2MenuItem
             // 
             PlayOriginalThief2MenuItem.Image = Resources.Thief2_16;
-            PlayOriginalThief2MenuItem.Size = new Size(181, 22);
             PlayOriginalThief2MenuItem.Click += PlayOriginalGameMenuItem_Click;
             // 
             // PlayOriginalThief2MPMenuItem
             // 
             PlayOriginalThief2MPMenuItem.Image = Resources.Thief2_16;
-            PlayOriginalThief2MPMenuItem.Size = new Size(181, 22);
             PlayOriginalThief2MPMenuItem.Click += PlayOriginalGameMenuItem_Click;
             // 
             // PlayOriginalThief3MenuItem
             // 
             PlayOriginalThief3MenuItem.Image = Resources.Thief3_16;
-            PlayOriginalThief3MenuItem.Size = new Size(181, 22);
             PlayOriginalThief3MenuItem.Click += PlayOriginalGameMenuItem_Click;
             // 
             // AddTagMenu
             // 
-            AddTagMenu.Size = new Size(61, 4);
             AddTagMenu.Closed += AddTagMenu_Closed;
             // 
             // AltTitlesMenu
             // 
-            AltTitlesMenu.Size = new Size(61, 4);
+
             // 
             // ImportFromMenu
             // 
@@ -1811,31 +1779,28 @@ namespace AngelLoader.Forms
             ImportFromDarkLoaderMenuItem,
             ImportFromFMSelMenuItem,
             ImportFromNewDarkLoaderMenuItem});
-            ImportFromMenu.Size = new Size(159, 70);
             // 
             // ImportFromDarkLoaderMenuItem
             // 
-            ImportFromDarkLoaderMenuItem.Size = new Size(158, 22);
             ImportFromDarkLoaderMenuItem.Click += ImportFromDarkLoaderMenuItem_Click;
             // 
             // ImportFromFMSelMenuItem
             // 
-            ImportFromFMSelMenuItem.Size = new Size(158, 22);
             ImportFromFMSelMenuItem.Click += ImportFromFMSelMenuItem_Click;
             // 
             // ImportFromNewDarkLoaderMenuItem
             // 
-            ImportFromNewDarkLoaderMenuItem.Size = new Size(158, 22);
             ImportFromNewDarkLoaderMenuItem.Click += ImportFromNewDarkLoaderMenuItem_Click;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
+            // NOTE: Keeping this in just in case... it takes <1ms to do anyway
+            ClientSize = new Size(1671, 716);
             AutoScaleMode = AutoScaleMode.Dpi;
             Controls.Add(EverythingPanel);
             DoubleBuffered = true;
             Icon = Resources.AngelLoader;
-            KeyPreview = true;
             MinimumSize = new Size(894, 260);
             Deactivate += MainForm_Deactivate;
             FormClosing += MainForm_FormClosing;
@@ -1844,20 +1809,28 @@ namespace AngelLoader.Forms
             LocationChanged += MainForm_LocationChanged;
             SizeChanged += MainForm_SizeChanged;
             KeyDown += MainForm_KeyDown;
-            BottomPanel.ResumeLayout();
-            
-            // PERF: Some of these we resume in SetUITextToLocalized(), so we don't want to do duplicate work
 
-            //BottomRightButtonsFLP.ResumeLayout();
-            //BottomLeftButtonsFLP.ResumeLayout();
-            
+            #endregion
+
+            // PERF: Some of these we resume in SetUITextToLocalized(), so we don't want to do duplicate work
+            // PERF_NOTE: ResumeLayouts: ~4ms
+
+            BottomPanel.ResumeLayout();
+
+            /* Deferred
+                BottomRightButtonsFLP.ResumeLayout();
+                BottomLeftButtonsFLP.ResumeLayout();
+            */
+
             BottomScanAllFMsSepToolStrip.ResumeLayout();
             BottomWebSearchLeftSepToolStrip.ResumeLayout();
             EverythingPanel.ResumeLayout();
             MainSplitContainer.Panel1.ResumeLayout();
-            
-            //MainSplitContainer.Panel2.ResumeLayout();
-            
+
+            /* Deferred
+                MainSplitContainer.Panel2.ResumeLayout();
+            */
+
             MainSplitContainer.EndInit();
             MainSplitContainer.ResumeLayout();
             TopSplitContainer.Panel1.ResumeLayout();
@@ -1874,20 +1847,26 @@ namespace AngelLoader.Forms
             GamesTabControl.ResumeLayout();
             TopRightTabControl.ResumeLayout();
 
-            //StatisticsTabPage.ResumeLayout();
-            //StatsCheckBoxesPanel.ResumeLayout();
-            //EditFMTabPage.ResumeLayout();
-            //CommentTabPage.ResumeLayout();
-            //TagsTabPage.ResumeLayout();
-            //AddRemoveTagFLP.ResumeLayout();
+            /* Deferred
+                StatisticsTabPage.ResumeLayout();
+                StatsCheckBoxesPanel.ResumeLayout();
+                EditFMTabPage.ResumeLayout();
+                CommentTabPage.ResumeLayout();
+                TagsTabPage.ResumeLayout();
+                AddRemoveTagFLP.ResumeLayout();
+            */
 
             PatchTabPage.ResumeLayout();
-            
-            //PatchMainPanel.ResumeLayout();
+
+            /* Deferred
+                PatchMainPanel.ResumeLayout();
+            */
 
             PatchDMLsPanel.ResumeLayout();
-            
-            //ChooseReadmePanel.ResumeLayout();
+
+            /* Deferred
+                ChooseReadmePanel.ResumeLayout();
+            */
 
             ChooseReadmeOKFLP.ResumeLayout();
             PlayOriginalGameMenu.ResumeLayout();

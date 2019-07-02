@@ -19,9 +19,11 @@ namespace AngelLoader.Common.DataClasses
         internal string T3Exe = "";
 
         // Session-only; don't write these out
-        internal string T1FMInstallPath = "";
-        internal string T2FMInstallPath = "";
-        internal string T3FMInstallPath = "";
+        internal FMInstallPaths FMInstallPaths = new FMInstallPaths("", "", "");
+        internal void SetT1FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(value, FMInstallPaths.T2, FMInstallPaths.T3);
+        internal void SetT2FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, value, FMInstallPaths.T3);
+        internal void SetT3FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, FMInstallPaths.T2, value);
+
         internal bool T1DromEdDetected;
         internal bool T2DromEdDetected;
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)

@@ -108,7 +108,7 @@ namespace AngelLoader
                 {
                     #region Parallel load
 
-                    using (var findFMsTask = Task.Run(() => FindFMs.Find(FMDataIniList, startup: true)))
+                    using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true)))
                     {
                         // It's safe to overlap this with Find(), but not with MainForm.ctor()
                         configTask.Wait();
@@ -237,14 +237,14 @@ namespace AngelLoader
                 // TODO: These should probably go in the Settings form along with the cam_mod.ini check
                 // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
                 //       being thrown here.
-                Config.T1FMInstallPath = !Config.T1Exe.IsWhiteSpace()
+                Config.SetT1FMInstPath(!Config.T1Exe.IsWhiteSpace()
                     ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
-                    : "";
+                    : "");
                 Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
 
-                Config.T2FMInstallPath = !Config.T2Exe.IsWhiteSpace()
+                Config.SetT2FMInstPath(!Config.T2Exe.IsWhiteSpace()
                     ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
-                    : "";
+                    : "");
                 Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
 
                 Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
@@ -254,13 +254,13 @@ namespace AngelLoader
                     var (error, useCentralSaves, t3FMInstPath) = GetInstFMsPathFromT3();
                     if (error == Error.None)
                     {
-                        Config.T3FMInstallPath = t3FMInstPath;
+                        Config.SetT3FMInstPath(t3FMInstPath);
                         Config.T3UseCentralSaves = useCentralSaves;
                     }
                 }
                 else
                 {
-                    Config.T3FMInstallPath = "";
+                    Config.SetT3FMInstPath("");
                 }
 
                 #endregion
@@ -357,7 +357,7 @@ namespace AngelLoader
 
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    FindFMs.Find(FMDataIniList);
+                    FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
                 }
                 if (gameOrganizationChanged)
                 {
@@ -446,7 +446,7 @@ namespace AngelLoader
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
                 Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
                 if (error == Error.CamModIniNotFound) return Error.T1CamModIniNotFound;
-                Config.T1FMInstallPath = gameFMsPath;
+                Config.SetT1FMInstPath(gameFMsPath);
             }
             if (t2Exists)
             {
@@ -455,13 +455,13 @@ namespace AngelLoader
                 Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
                 Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
                 if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
-                Config.T2FMInstallPath = gameFMsPath;
+                Config.SetT2FMInstPath(gameFMsPath);
             }
             if (t3Exists)
             {
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
                 if (error != Error.None) return error;
-                Config.T3FMInstallPath = path;
+                Config.SetT3FMInstPath(path);
                 Config.T3UseCentralSaves = useCentralSaves;
             }
 
@@ -1054,14 +1054,14 @@ namespace AngelLoader
             if (fms.Count == 0) return;
 
             await ScanFMs(fms, scanOptions);
-            FindFMs.Find(FMDataIniList);
+            FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
         }
 
         #endregion
 
         internal static async Task RefreshFromDisk()
         {
-            FindFMs.Find(FMDataIniList);
+            FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
             if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
             await View.SortAndSetFilter();

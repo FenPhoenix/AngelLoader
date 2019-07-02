@@ -220,14 +220,14 @@ namespace AngelLoader.CustomControls
         }
 
         #endregion
-        
+
         /// <summary>
         /// If you don't have an actual cell selected (indicated by its header being blue) and you try to move
         /// with the keyboard, it pops back to the top item. This fixes that, and is called wherever appropriate.
         /// </summary>
         internal void SelectProperly()
         {
-            if (Rows.Count <= 0 || SelectedRows.Count <= 0) return;
+            if (Rows.Count == 0 || SelectedRows.Count == 0 || Columns.Count == 0) return;
 
             for (int i = 0; i < SelectedRows[0].Cells.Count; i++)
             {

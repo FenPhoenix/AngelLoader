@@ -397,8 +397,10 @@ namespace AngelLoader.Forms
                 sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, TopRightTabsInEnumOrder[i]);
             }
 
+#if DEBUG
             // There will be a set of tabs for design purposes already, so we need to get rid of those first
             TopRightTabControl.TabPages.Clear();
+#endif
 
             var tabs = new List<TabPage>();
             foreach (var item in sortedTabPages) tabs.Add(item.Value);
@@ -497,8 +499,8 @@ namespace AngelLoader.Forms
             #endregion
 
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
-            EditFMFinishedOnButton.Tag = EditFMFinishedOnButton.Size;
-            ChooseReadmeButton.Tag = ChooseReadmeButton.Size;
+            EditFMFinishedOnButton.Tag = new Size(138, 23);
+            ChooseReadmeButton.Tag = new Size(75, 23);
 
             // EnsureValidity() guarantees selected tab will not be invisible
             for (int i = 0; i < TopRightTabsCount; i++)
@@ -511,8 +513,6 @@ namespace AngelLoader.Forms
             }
 
             InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
-
-            ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
             #endregion
 
@@ -3480,7 +3480,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FilterShowJunkButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
         private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 

@@ -56,6 +56,20 @@ namespace AngelLoader.Common.DataClasses
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
+    // Struct for immutability?!
+    internal struct FMInstallPaths
+    {
+        internal FMInstallPaths(string t1, string t2, string t3)
+        {
+            T1 = t1;
+            T2 = t2;
+            T3 = t3;
+        }
+        internal readonly string T1;
+        internal readonly string T2;
+        internal readonly string T3;
+    }
+
     #region Top-right tabs
 
     // Dopey, but for perf so we only have to get it once

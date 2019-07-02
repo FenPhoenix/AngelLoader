@@ -8,7 +8,6 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.Ini.Ini;
@@ -19,7 +18,7 @@ namespace AngelLoader
     {
         // MT: On startup only, this is run in parallel with MainForm.ctor and .Init()
         // So don't touch anything the other touches: anything affecting the view.
-        internal static void Find(List<FanMission> fmDataIniList, bool startup = false)
+        internal static void Find(FMInstallPaths fmInstPaths, List<FanMission> fmDataIniList, bool startup = false)
         {
             if (!startup)
             {
@@ -35,7 +34,7 @@ namespace AngelLoader
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
             // MT: This is thread-safe, the view ctor and Init() doesn't touch it.
-            PresetTags.DeepCopyTo(GlobalTags);
+            Common.Common.PresetTags.DeepCopyTo(Common.Common.GlobalTags);
 
             #region Back up lists and read FM data file
 
@@ -89,7 +88,7 @@ namespace AngelLoader
             for (int i = 0; i < 3; i++)
             {
                 var instFMDirs = i == 0 ? t1InstalledFMDirs : i == 1 ? t2InstalledFMDirs : t3InstalledFMDirs;
-                var instPath = i == 0 ? Config.T1FMInstallPath : i == 1 ? Config.T2FMInstallPath : Config.T3FMInstallPath;
+                var instPath = i == 0 ? fmInstPaths.T1 : i == 1 ? fmInstPaths.T2 : fmInstPaths.T3;
 
                 if (Directory.Exists(instPath))
                 {
@@ -162,14 +161,14 @@ namespace AngelLoader
             if (t2List.Count > 0) MergeNewInstalledFMs(t2List, fmDataIniList, instInitCount);
             if (t3List.Count > 0) MergeNewInstalledFMs(t3List, fmDataIniList, instInitCount);
 
-            SetArchiveNames(fmArchives, fmDataIniList);
+            SetArchiveNames(fmInstPaths, fmArchives, fmDataIniList);
 
             SetInstalledNames(fmDataIniList);
 
             BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs, startup);
         }
 
-        private static void SetArchiveNames(List<string> fmArchives, List<FanMission> fmDataIniList)
+        private static void SetArchiveNames(FMInstallPaths fmInstPaths, List<string> fmArchives, List<FanMission> fmDataIniList)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
             for (var i = 0; i < fmDataIniList.Count; i++)
@@ -185,7 +184,7 @@ namespace AngelLoader
                         continue;
                     }
 
-                    var archiveName = GetArchiveNameFromInstalledDir(fmDataIniList, fm, fmArchives);
+                    var archiveName = GetArchiveNameFromInstalledDir(fmInstPaths, fmDataIniList, fm, fmArchives);
                     if (archiveName.IsEmpty()) continue;
 
                     // Exponential (slow) stuff, but we only do it once to correct the list and then never again
@@ -349,7 +348,7 @@ namespace AngelLoader
             for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
         }
 
-        private static string GetArchiveNameFromInstalledDir(List<FanMission> fmDataIniList, FanMission fm, List<string> archives)
+        private static string GetArchiveNameFromInstalledDir(FMInstallPaths fmInstPaths, List<FanMission> fmDataIniList, FanMission fm, List<string> archives)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -362,10 +361,10 @@ namespace AngelLoader
             if (fm.Game == Game.Null) return null;
 
             var gamePath =
-                fm.Game == Game.Thief1 ? Config.T1FMInstallPath :
-                fm.Game == Game.Thief2 ? Config.T2FMInstallPath :
+                fm.Game == Game.Thief1 ? fmInstPaths.T1 :
+                fm.Game == Game.Thief2 ? fmInstPaths.T2 :
                 // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
-                fm.Game == Game.Thief3 ? Config.T3FMInstallPath :
+                fm.Game == Game.Thief3 ? fmInstPaths.T3 :
                 null;
 
             if (gamePath.IsEmpty()) return null;
