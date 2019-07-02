@@ -3751,6 +3751,7 @@ namespace AngelLoader.Forms
         {
             FMsDGV.GetSelectedFM().RefreshCache = true;
             await DisplaySelectedFM(refreshReadme: true);
+            Core.WriteFullFMDataIni();
         }
 
         // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...
