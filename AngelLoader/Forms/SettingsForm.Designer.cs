@@ -205,7 +205,6 @@
             this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(694, 656);
             this.Controls.Add(this.MainSplitContainer);
             this.Controls.Add(this.BottomFlowLayoutPanel);
@@ -220,6 +219,7 @@
             this.Text = "SettingsForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
             this.Load += new System.EventHandler(this.SettingsForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SettingsForm_KeyDown);
             this.BottomFlowLayoutPanel.ResumeLayout(false);
             this.BottomFlowLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();

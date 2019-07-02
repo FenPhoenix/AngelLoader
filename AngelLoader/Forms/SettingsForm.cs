@@ -66,6 +66,9 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
+            // Needed for Esc-to-cancel-drag and stuff
+            KeyPreview = true;
+
             Startup = startup;
             OwnerForm = ownerForm;
             InConfig = config;
@@ -1173,6 +1176,23 @@ namespace AngelLoader.Forms
 
                 ErrorLabel.Text = "";
                 ErrorLabel.Hide();
+            }
+        }
+
+        private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                if (MainSplitContainer.IsSplitterFixed)
+                {
+                    MainSplitContainer.CancelResize();
+                    e.SuppressKeyPress = true;
+                }
+                else
+                {
+                    DialogResult = DialogResult.Cancel;
+                    Close();
+                }
             }
         }
     }
