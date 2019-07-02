@@ -3316,6 +3316,12 @@ namespace AngelLoader.Forms
             await RefreshSelectedFMRowOnly();
         }
 
+        private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            Core.WriteFullFMDataIni();
+        }
+
         private async void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;

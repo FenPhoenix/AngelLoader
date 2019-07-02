@@ -1305,6 +1305,7 @@ namespace AngelLoader.Forms
             EditFMTitleTextBox.Size = new Size(469, 20);
             EditFMTitleTextBox.TabIndex = 14;
             EditFMTitleTextBox.TextChanged += EditFMTitleTextBox_TextChanged;
+            EditFMTitleTextBox.Leave += EditFMTitleTextBox_Leave;
             // 
             // EditFMFinishedOnButton
             // 

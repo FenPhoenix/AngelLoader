@@ -1600,6 +1600,7 @@
             this.EditFMTitleTextBox.Size = new System.Drawing.Size(469, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
+            this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
             // 
             // EditFMFinishedOnButton
             // 
