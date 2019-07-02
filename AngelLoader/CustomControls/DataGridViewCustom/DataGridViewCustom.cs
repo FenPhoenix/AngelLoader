@@ -82,6 +82,12 @@ namespace AngelLoader.CustomControls
 
         internal void InjectOwner(IView owner) => Owner = owner;
 
+        public void SetUITextToLocalized(bool suspendResume = true)
+        {
+            ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
+            SetFMMenuTextToLocalized();
+        }
+
         #endregion
 
         #region Get FM / FM data
@@ -214,15 +220,7 @@ namespace AngelLoader.CustomControls
         }
 
         #endregion
-
-        protected override void OnEnter(EventArgs e)
-        {
-            SelectProperly();
-
-            base.OnEnter(e);
-        }
-
-
+        
         /// <summary>
         /// If you don't have an actual cell selected (indicated by its header being blue) and you try to move
         /// with the keyboard, it pops back to the top item. This fixes that, and is called wherever appropriate.
@@ -230,7 +228,7 @@ namespace AngelLoader.CustomControls
         internal void SelectProperly()
         {
             if (Rows.Count <= 0 || SelectedRows.Count <= 0) return;
-            
+
             for (int i = 0; i < SelectedRows[0].Cells.Count; i++)
             {
                 if (SelectedRows[0].Cells[i].Visible)
@@ -248,15 +246,16 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
-        {
-            ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
-            SetFMMenuTextToLocalized();
-        }
-
         #endregion
 
         #region Event overrides
+
+        protected override void OnEnter(EventArgs e)
+        {
+            SelectProperly();
+
+            base.OnEnter(e);
+        }
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
