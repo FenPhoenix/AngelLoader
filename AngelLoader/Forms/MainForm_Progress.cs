@@ -44,7 +44,7 @@ namespace AngelLoader.Forms
             ConstructProgressBox();
 
             Log(nameof(ShowProgressBox) + ": " + progressTask, methodName: false);
-            ProgressBox.ShowProgressWindow(progressTask);
+            ProgressBox.ShowProgressWindow(progressTask, suppressShow);
         }
 
         public void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
