@@ -573,6 +573,7 @@ namespace AngelLoader.Forms
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
             Environment.Exit(1);
+            return;
 #endif
 
             FMsDGV.Focus();

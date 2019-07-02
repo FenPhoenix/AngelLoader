@@ -722,11 +722,7 @@ namespace AngelLoader
                         }
                     }
 
-                    if (ScanCts.IsCancellationRequested)
-                    {
-                        ScanCts?.Dispose();
-                        return false;
-                    }
+                    if (ScanCts.IsCancellationRequested) return false;
                 }
 
                 if (fmsToScanFiltered.Count == 0) return false;
@@ -753,10 +749,6 @@ namespace AngelLoader
                 catch (OperationCanceledException)
                 {
                     return false;
-                }
-                finally
-                {
-                    ScanCts?.Dispose();
                 }
 
                 #endregion
@@ -890,6 +882,7 @@ namespace AngelLoader
             }
             finally
             {
+                ScanCts?.Dispose();
                 View.Block(false);
                 View.HideProgressBox();
             }
