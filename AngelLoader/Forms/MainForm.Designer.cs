@@ -592,8 +592,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -757,7 +757,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGamesLeftSepToolStrip);
@@ -799,7 +799,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -925,7 +925,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -1117,7 +1117,7 @@
             // 
             // RefreshAreaToolStrip
             // 
-            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RefreshAreaToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshAreaToolStrip.CanOverflow = false;
@@ -1295,7 +1295,7 @@
             // TopRightMenuButton
             // 
             this.TopRightMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TopRightMenuButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("TopRightMenuButton.BackgroundImage")));
+            this.TopRightMenuButton.BackgroundImage = global::AngelLoader.Properties.Resources.Hamburger_16;
             this.TopRightMenuButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.TopRightMenuButton.FlatAppearance.BorderSize = 0;
             this.TopRightMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1308,7 +1308,7 @@
             // 
             // TopRightCollapseButton
             // 
-            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
@@ -1323,8 +1323,8 @@
             // 
             // TopRightTabControl
             // 
-            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
@@ -1593,7 +1593,7 @@
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
@@ -1702,7 +1702,7 @@
             // 
             // EditFMDisabledModsTextBox
             // 
-            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
@@ -1722,7 +1722,7 @@
             // 
             // EditFMAuthorTextBox
             // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
@@ -1761,8 +1761,8 @@
             // 
             // CommentTextBox
             // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
             this.CommentTextBox.Multiline = true;
@@ -1790,7 +1790,7 @@
             // 
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
-            this.AddTagButton.Location = new System.Drawing.Point(453, 7);
+            this.AddTagButton.Location = new System.Drawing.Point(447, 7);
             this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(72, 23);
@@ -1801,12 +1801,12 @@
             // 
             // AddTagTextBox
             // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
             this.AddTagTextBox.Name = "AddTagTextBox";
-            this.AddTagTextBox.Size = new System.Drawing.Size(445, 20);
+            this.AddTagTextBox.Size = new System.Drawing.Size(440, 20);
             this.AddTagTextBox.TabIndex = 0;
             this.AddTagTextBox.TextChanged += new System.EventHandler(this.AddTagTextBox_TextChanged);
             this.AddTagTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
@@ -1828,8 +1828,8 @@
             // 
             this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RemoveTagButton.AutoSize = true;
-            this.RemoveTagButton.Location = new System.Drawing.Point(392, 0);
-            this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0);
+            this.RemoveTagButton.Location = new System.Drawing.Point(386, 0);
+            this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
             this.RemoveTagButton.Name = "RemoveTagButton";
             this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.RemoveTagButton.Size = new System.Drawing.Size(144, 23);
@@ -1842,7 +1842,7 @@
             // 
             this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagFromListButton.AutoSize = true;
-            this.AddTagFromListButton.Location = new System.Drawing.Point(248, 0);
+            this.AddTagFromListButton.Location = new System.Drawing.Point(242, 0);
             this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
             this.AddTagFromListButton.Name = "AddTagFromListButton";
             this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -1854,13 +1854,13 @@
             // 
             // TagsTreeView
             // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
             this.TagsTreeView.Name = "TagsTreeView";
-            this.TagsTreeView.Size = new System.Drawing.Size(517, 216);
+            this.TagsTreeView.Size = new System.Drawing.Size(510, 216);
             this.TagsTreeView.TabIndex = 2;
             // 
             // PatchTabPage
@@ -2100,8 +2100,8 @@
             // 
             // ReadmeRichTextBox
             // 
-            this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeRichTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeRichTextBox.Location = new System.Drawing.Point(0, 0);

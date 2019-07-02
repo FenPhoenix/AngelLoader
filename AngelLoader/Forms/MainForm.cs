@@ -501,6 +501,7 @@ namespace AngelLoader.Forms
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
             EditFMFinishedOnButton.Tag = new Size(138, 23);
             ChooseReadmeButton.Tag = new Size(75, 23);
+            PatchOpenFMFolderButton.Tag = new Size(162, 23);
 
             // EnsureValidity() guarantees selected tab will not be invisible
             for (int i = 0; i < TopRightTabsCount; i++)
@@ -929,7 +930,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
                 PatchFMNotInstalledLabel.Text = LText.PatchTab.FMNotInstalled;
                 PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
-                PatchOpenFMFolderButton.SetTextAutoSize(LText.PatchTab.OpenFMFolder, PatchOpenFMFolderButton.Width);
+                PatchOpenFMFolderButton.SetTextAutoSize(LText.PatchTab.OpenFMFolder, ((Size)PatchOpenFMFolderButton.Tag).Width);
 
                 #endregion
 
@@ -3747,6 +3748,8 @@ namespace AngelLoader.Forms
         }
 
         // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...
+        // This only happens if the size is set while the top-right panel is squashed too far right or some other
+        // uncommon situation, but we have to account for it.
         private void TopSplitContainer_Panel2_SizeChanged(object sender, EventArgs e)
         {
             AddTagTextBox.Width = AddTagButton.Left > AddTagTextBox.Left

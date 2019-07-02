@@ -1458,7 +1458,7 @@ namespace AngelLoader.Forms
             // 
             AddTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             AddTagButton.AutoSize = true;
-            AddTagButton.Location = new Point(453, 7);
+            AddTagButton.Location = new Point(444, 7);
             AddTagButton.Padding = new Padding(6, 0, 6, 0);
             AddTagButton.Height = 23;
             AddTagButton.TabIndex = 1;
@@ -1470,7 +1470,7 @@ namespace AngelLoader.Forms
             AddTagTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             AddTagTextBox.DisallowedCharacters = ",;";
             AddTagTextBox.Location = new Point(8, 8);
-            AddTagTextBox.Size = new Size(445, 20);
+            AddTagTextBox.Size = new Size(440, 20);
             AddTagTextBox.TabIndex = 0;
             AddTagTextBox.TextChanged += AddTagTextBox_TextChanged;
             AddTagTextBox.KeyDown += AddTagTextBoxOrListBox_KeyDown;
@@ -1492,7 +1492,7 @@ namespace AngelLoader.Forms
             RemoveTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             RemoveTagButton.AutoSize = true;
             RemoveTagButton.Location = new Point(392, 0);
-            RemoveTagButton.Margin = new Padding(0);
+            RemoveTagButton.Margin = new Padding(0, 0, 6, 0);
             RemoveTagButton.Padding = new Padding(6, 0, 6, 0);
             RemoveTagButton.Height = 23;
             RemoveTagButton.TabIndex = 1;
@@ -1516,7 +1516,7 @@ namespace AngelLoader.Forms
             TagsTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             TagsTreeView.HideSelection = false;
             TagsTreeView.Location = new Point(8, 32);
-            TagsTreeView.Size = new Size(517, 216);
+            TagsTreeView.Size = new Size(510, 216);
             TagsTreeView.TabIndex = 2;
             // 
             // PatchTabPage

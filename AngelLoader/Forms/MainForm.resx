@@ -117,16 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="GameTabsImageList.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  <metadata name="GameTabsImageList.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 56</value>
-  </data>
+  </metadata>
   <data name="GameTabsImageList.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAABg
-        DQAAAk1TRnQBSQFMAgEBAwEAATwBFQFAARUBEAEAARABAAT/ASEBEAj/AUIBTQE2BwABNgMAASgDAAFA
+        DQAAAk1TRnQBSQFMAgEBAwEAAVABFQFQARUBEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
         AwABEAMAAQEBAAEgBgABEB4AAwQBBgNCAXQDTgGZA1UBsQNaAcoDVQG1A0wBkQNGAYADHAEnKAADDQER
         A0oBiwNQAZoDHgErGAADAwEEA1MBrQNXAb0DTQGWA18B4ANQAZ9wAAMjATMDVwHoAwAB/wMAAf8DAAH/
         AwAB/wMAAf8DAAH/AwAB/wMAAf8DPQFqGAADDAEQAwQBBgQAAyoBQQIAAZcB/wMAAf8DQAFwDAADAwQE
@@ -183,83 +182,82 @@
         BQABgBcAA/8BAAHgAQ8B/AE/AQMB/wIAAcABBwHkATkBAAEDAgABgAEDAYABAQGAAQMCAAGAAQEBgAEB
         AcABAwMAAQEBwAEBAcABAwQAAcABAQHAAQMDAAEQAgABwAEDBgABwAEDBgABwAEDAwABIAIAAcAFAAGA
         AQEFAAEBAcABAQQAAYABAQGAAQEBgAEBAgABgAEDAYABAQHAAQECAAHAAQcByAEDAf8BgQIAAfABDwH8
-        AX8B/wGRGAAL
+        AX8B/wGRAgAL
 </value>
   </data>
-  <data name="BottomScanAllFMsSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  <metadata name="BottomScanAllFMsSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
-  </data>
-  <data name="BottomWebSearchLeftSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="BottomWebSearchLeftSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1593, 17</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="GameTypeColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="GameTypeColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="InstalledColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="InstalledColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="TitleColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="TitleColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="ArchiveColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="ArchiveColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="AuthorColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="AuthorColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="SizeColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="SizeColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="RatingTextColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="RatingTextColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="FinishedColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="FinishedColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="ReleaseDateColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="ReleaseDateColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="LastPlayedColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="LastPlayedColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="DisabledModsColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="DisabledModsColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="CommentColumn.UserAddedColumn" type="System.Boolean, mscorlib">
+  </metadata>
+  <metadata name="CommentColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </data>
-  <data name="FilterGamesLeftSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="FilterGamesLeftSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1388, 17</value>
-  </data>
-  <data name="FilterGameButtonsToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="FilterGameButtonsToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>431, 56</value>
-  </data>
-  <data name="FilterAuthorLeftSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="FilterAuthorLeftSepToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1182, 17</value>
-  </data>
-  <data name="FilterIconButtonsToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="FilterIconButtonsToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>822, 17</value>
-  </data>
-  <data name="RefreshAreaToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="RefreshAreaToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1015, 17</value>
-  </data>
-  <data name="MainToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="MainToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>178, 56</value>
-  </data>
-  <data name="PlayOriginalGameMenu.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="PlayOriginalGameMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>368, 17</value>
-  </data>
-  <data name="AddTagMenu.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="AddTagMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>548, 17</value>
-  </data>
-  <data name="AltTitlesMenu.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="AltTitlesMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>241, 17</value>
-  </data>
-  <data name="ImportFromMenu.TrayLocation" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="ImportFromMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>674, 17</value>
-  </data>
-  <data name="$this.TrayHeight" type="System.Int32, mscorlib">
+  </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>59</value>
-  </data>
+  </metadata>
 </root>
