@@ -250,13 +250,6 @@ namespace AngelLoader.CustomControls
 
         #region Event overrides
 
-        protected override void OnEnter(EventArgs e)
-        {
-            SelectProperly();
-
-            base.OnEnter(e);
-        }
-
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (!StartColumnResize(e)) return;

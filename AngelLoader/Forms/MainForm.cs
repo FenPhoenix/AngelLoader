@@ -2400,6 +2400,8 @@ namespace AngelLoader.Forms
                 // DOING SHIT WHILE I'M TRYING TO SET FIRST VALUES. Argh.
                 if (!InitialSelectedFMHasBeenSet) return;
 
+                FMsDGV.SelectProperly();
+
                 await DisplaySelectedFM(refreshReadme: true);
             }
         }
