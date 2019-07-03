@@ -249,6 +249,9 @@
     <Compile Include="CustomControls\TextBoxCustom.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControls\TransparentPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\TreeViewCustom.cs">
       <SubType>Component</SubType>
     </Compile>

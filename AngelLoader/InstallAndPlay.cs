@@ -51,7 +51,7 @@ namespace AngelLoader
             if (PlayFM(fm, playMP))
             {
                 fm.LastPlayed = DateTime.Now;
-                await Core.View.RefreshSelectedFM(refreshReadme: false);
+                Core.View.RefreshSelectedFM(refreshReadme: false);
             }
         }
 
@@ -546,7 +546,7 @@ namespace AngelLoader
             }
 
             // Not doing RefreshSelectedFMRowOnly() because that wouldn't update the install/uninstall buttons
-            await Core.View.RefreshSelectedFM(refreshReadme: false);
+            Core.View.RefreshSelectedFM(refreshReadme: false);
 
             return true;
         }
@@ -723,7 +723,7 @@ namespace AngelLoader
                     if (yes)
                     {
                         fm.Installed = false;
-                        await Core.View.RefreshSelectedFM(refreshReadme: false);
+                        Core.View.RefreshSelectedFM(refreshReadme: false);
                     }
                     return;
                 }
@@ -796,7 +796,7 @@ namespace AngelLoader
                 }
 
                 Core.WriteFullFMDataIni();
-                await Core.View.RefreshSelectedFM(refreshReadme: false);
+                Core.View.RefreshSelectedFM(refreshReadme: false);
             }
             catch (Exception ex)
             {

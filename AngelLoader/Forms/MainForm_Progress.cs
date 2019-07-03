@@ -37,6 +37,7 @@ namespace AngelLoader.Forms
             // (this happens when we disable and enable EverythingPanel). Therefore, we need to give focus to a
             // control here. One is as good as the next, but FMsDGV seems like a sensible choice.
             FMsDGV.Focus();
+            FMsDGV.SelectProperly();
         }
 
         public void ShowProgressBox(ProgressTasks progressTask, bool suppressShow = false)

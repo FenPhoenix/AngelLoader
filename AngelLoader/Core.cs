@@ -365,7 +365,7 @@ namespace AngelLoader
                     Config.ClearAllSelectedFMs();
                     Config.ClearAllFilters();
                     Config.GameTab = Game.Thief1;
-                    await View.ClearAllUIAndInternalFilters();
+                    View.ClearAllUIAndInternalFilters();
                     if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                     View.ChangeGameOrganization();
                 }
@@ -391,7 +391,7 @@ namespace AngelLoader
                         if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
                     }
 
-                    await View.SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+                    View.SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
                 }
                 else if (dateFormatChanged || languageChanged)
                 {
@@ -629,11 +629,11 @@ namespace AngelLoader
         {
             if (scanOptions == null) scanOptions = GetDefaultScanOptions();
             bool success = await ScanFM(fm, scanOptions);
-            if (success) await View.RefreshSelectedFM(refreshReadme: true);
+            if (success) View.RefreshSelectedFM(refreshReadme: true);
             return success;
         }
 
-        internal static async Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions) => await ScanFMs(new List<FanMission> { fm }, scanOptions);
+        internal static Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions);
 
         internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions, bool markAsScanned = true)
         {
@@ -649,39 +649,39 @@ namespace AngelLoader
 
             #region Show progress box or block UI thread
 
-            if (scanningOne)
+            try
             {
-                Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
-                // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as nice
-                // as the timer method, but that can cause race conditions I don't know how to fix, so whatever.
-                if (fmsToScan[0].Archive.ExtIs7z())
+                if (scanningOne)
                 {
-                    View.ShowProgressBox(ProgressTasks.ScanAllFMs);
+                    Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
+                    // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as nice
+                    // as the timer method, but that can cause race conditions I don't know how to fix, so whatever.
+                    if (fmsToScan[0].Archive.ExtIs7z())
+                    {
+                        View.ShowProgressBox(ProgressTasks.ScanAllFMs);
+                    }
+                    else
+                    {
+                        // Block user input to the form to mimic the UI thread being blocked, because we're async here
+                        View.Block(true);
+                        // Doesn't actually show the box, but shows the meter on the taskbar I guess?
+                        View.ShowProgressBox(ProgressTasks.ScanAllFMs, suppressShow: true);
+                    }
                 }
                 else
                 {
-                    // Block user input to the form to mimic the UI thread being blocked, because we're async here
-                    View.Block(true);
-                    // Doesn't actually show the box, but shows the meter on the taskbar I guess?
-                    View.ShowProgressBox(ProgressTasks.ScanAllFMs, suppressShow: true);
+                    View.ShowProgressBox(ProgressTasks.ScanAllFMs);
                 }
-            }
-            else
-            {
-                View.ShowProgressBox(ProgressTasks.ScanAllFMs);
-            }
 
-            #endregion
+                #endregion
 
-            void ReportProgress(ProgressReport pr)
-            {
-                var fmIsZip = pr.FMName.ExtIsArchive();
-                var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
-                View.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
-            }
+                void ReportProgress(ProgressReport pr)
+                {
+                    var fmIsZip = pr.FMName.ExtIsArchive();
+                    var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
+                    View.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
+                }
 
-            try
-            {
                 #region Init
 
                 ScanCts = new CancellationTokenSource();
@@ -1057,7 +1057,7 @@ namespace AngelLoader
             FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
             if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
-            await View.SortAndSetFilter();
+            View.SortAndSetFilter();
         }
 
         #region Audio conversion (mainly for pre-checks)
@@ -1085,7 +1085,7 @@ namespace AngelLoader
                 if (yes)
                 {
                     fm.Installed = false;
-                    await View.RefreshSelectedFM(refreshReadme: false);
+                    View.RefreshSelectedFM(refreshReadme: false);
                 }
                 return;
             }
@@ -1128,7 +1128,7 @@ namespace AngelLoader
                 if (yes)
                 {
                     fm.Installed = false;
-                    await View.RefreshSelectedFM(refreshReadme: false);
+                    View.RefreshSelectedFM(refreshReadme: false);
                 }
                 return;
             }

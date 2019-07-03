@@ -526,6 +526,13 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
+        // NOTE: Blocking a window causes ding sounds if you interact with it (if you have Windows sounds enabled...)
+        // Currently using a transparent panel hack, along with suppressing keys/mouse.
+        // Reason we need the transparent panel hack is because mouse doesn't get suppressed enough when it comes
+        // to the RichTextBox (you can still scroll, ugh). Also mouse movement still makes highlights happen and
+        // stuff. Fine, but I want to make it clear the window is not responding to anything.
+        // If I ever put the RichTextBox in a separate app domain or whatever, the new method might not work.
+        // This method works in a pinch, dings notwithstanding.
         internal static void BlockWindow(this Control control, bool block)
         {
             if (!control.IsHandleCreated) return;

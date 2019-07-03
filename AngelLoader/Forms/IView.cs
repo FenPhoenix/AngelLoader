@@ -25,12 +25,9 @@ namespace AngelLoader.Forms
         SortOrder CurrentSortDirection { get; }
         void ShowFMsListZoomButtons(bool visible);
         void ShowInstallUninstallButton(bool enabled);
-        Task ClearAllUIAndInternalFilters();
+        void ClearAllUIAndInternalFilters();
         void ChangeGameOrganization();
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
-        void RefreshFMsListKeepSelection();
-        Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
-            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false);
         void Init();
         int GetRowCount();
         void SetRowCount(int count);
@@ -41,10 +38,13 @@ namespace AngelLoader.Forms
         object InvokeAsync(Delegate method);
         object InvokeAsync(Delegate method, params object[] args);
         void Block(bool block);
-        Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
-            bool suppressSuspendResume = false);
-        Task RefreshSelectedFM(bool refreshReadme);
+        void RefreshSelectedFM(bool refreshReadme);
         void RefreshSelectedFMRowOnly();
+        void RefreshFMsListKeepSelection();
+        void RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+            bool suppressSuspendResume = false);
+        void SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false);
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)

@@ -585,13 +585,13 @@ namespace AngelLoader.CustomControls
 
         private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(GetSelectedFM());
 
-        private async void RatingMenuItemsClick(object sender, EventArgs e)
+        private void RatingMenuItemsClick(object sender, EventArgs e)
         {
             for (int i = 0; i < RatingMenuItem.DropDownItems.Count; i++)
             {
                 if (RatingMenuItem.DropDownItems[i] != sender) continue;
                 GetSelectedFM().Rating = i - 1;
-                await Owner.RefreshSelectedFM(refreshReadme: false);
+                Owner.RefreshSelectedFM(refreshReadme: false);
                 Core.WriteFullFMDataIni();
                 break;
             }

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.CustomControls;
 using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
@@ -80,6 +81,7 @@ namespace AngelLoader.Forms
         private bool InitialSelectedFMHasBeenSet;
 
         public bool EventsDisabled { get; set; }
+        public bool KeyPressesDisabled { get; set; }
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
@@ -87,7 +89,8 @@ namespace AngelLoader.Forms
         // Needed for zooming to prevent Config column widths from being set in the zoom methods
         private bool ColumnWidthSaveDisabled;
 
-        public bool KeyPressesDisabled { get; set; }
+        private TransparentPanel ViewBlockingPanel;
+        private bool ViewBlocked;
 
         #endregion
 
@@ -194,7 +197,7 @@ namespace AngelLoader.Forms
             // needing to actually be focused. Vital for a good user experience.
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
-                if (CursorOutsideAddTagsDropDownArea()) return BlockMessage;
+                if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 int delta = wParam >> 16;
@@ -226,6 +229,8 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == InteropMisc.WM_MOUSEHWHEEL)
             {
+                if (ViewBlocked) return BlockMessage;
+
                 if (CanFocus && CursorOverControl(FMsDGV))
                 {
                     int delta = (int)m.WParam >> 16;
@@ -242,7 +247,7 @@ namespace AngelLoader.Forms
             return PassMessageOn;
         }
 
-        private IMouseEvents AppMouseHook;
+        private IKeyboardMouseEvents AppMouseKeyHook;
 
         #region Form (init, events, close)
 
@@ -328,7 +333,11 @@ namespace AngelLoader.Forms
             // CanFocus will be false if there are modal windows open
             if (!CanFocus) return;
 
-            if (CursorOutsideAddTagsDropDownArea())
+            if (ViewBlocked)
+            {
+                e.Handled = true;
+            }
+            else if (CursorOutsideAddTagsDropDownArea())
             {
                 HideAddTagDropDown();
                 e.Handled = true;
@@ -338,13 +347,30 @@ namespace AngelLoader.Forms
         private void HookMouseMove(object sender, MouseEventExtArgs e)
         {
             if (!CanFocus) return;
+            if (ViewBlocked)
+            {
+                e.Handled = true;
+                return;
+            }
 
             ShowReadmeControls(CursorOverReadmeArea());
         }
 
+        private void HookKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Alt && e.KeyCode == Keys.F4) return;
+            if (KeyPressesDisabled || ViewBlocked) e.SuppressKeyPress = true;
+        }
+
+        private void HookKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Alt && e.KeyCode == Keys.F4) return;
+            if (KeyPressesDisabled || ViewBlocked) e.SuppressKeyPress = true;
+        }
+
         #endregion
 
-        public void Block(bool block) => this.BlockWindow(block);
+        public void Block(bool block) => BlockView(block);
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
         // of nasty random behavior would happen. Not sure if that was because of something specific I was doing
@@ -557,9 +583,11 @@ namespace AngelLoader.Forms
             #endregion
 
             // Hook these up last so they don't cause anything to happen while we're initializing
-            AppMouseHook = Hook.AppEvents();
-            AppMouseHook.MouseDownExt += HookMouseDown;
-            AppMouseHook.MouseMoveExt += HookMouseMove;
+            AppMouseKeyHook = Hook.AppEvents();
+            AppMouseKeyHook.MouseDownExt += HookMouseDown;
+            AppMouseKeyHook.MouseMoveExt += HookMouseMove;
+            AppMouseKeyHook.KeyDown += HookKeyDown;
+            AppMouseKeyHook.KeyUp += HookKeyUp;
             Application.AddMessageFilter(this);
         }
 
@@ -573,7 +601,7 @@ namespace AngelLoader.Forms
             // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
             // Don't do Suspend/ResumeDrawing on startup because resume is slowish (having a refresh and all)
             // TODO: Put this before Show() again and just have the cacher show the form if needed
-            await SetFilter(suppressSuspendResume: true);
+            SetFilter(suppressSuspendResume: true);
 
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
@@ -644,12 +672,6 @@ namespace AngelLoader.Forms
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (KeyPressesDisabled)
-            {
-                e.SuppressKeyPress = true;
-                return;
-            }
-
             if (e.KeyCode == Keys.Enter)
             {
                 if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(FMsDGV.GetSelectedFM()))
@@ -713,7 +735,9 @@ namespace AngelLoader.Forms
         {
             // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
             // separate and detached thread to complete. Argh. Threading sucks.
-            if (!EverythingPanel.Enabled)
+            // TODO: I only block the view during zip extracts, which are pretty quick.
+            // Do I really want to put up the dialog during that situation?
+            if (!EverythingPanel.Enabled || ViewBlocked)
             {
                 MessageBox.Show(LText.AlertMessages.AppClosing_OperationInProgress, LText.AlertMessages.Alert,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -722,7 +746,7 @@ namespace AngelLoader.Forms
             }
 
             Application.RemoveMessageFilter(this);
-            // Mouse hook will dispose along with the form
+            // Mouse/keyboard hook will dispose along with the form
 
             // Argh, stupid hack to get this to not run TWICE on Application.Exit()
             // Application.Exit() is the worst thing ever. Before closing it just does whatever the hell it wants.
@@ -1219,6 +1243,29 @@ namespace AngelLoader.Forms
                    ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
         }
 
+        private void BlockView(bool block)
+        {
+            if (ViewBlockingPanel == null)
+            {
+                ViewBlockingPanel = new TransparentPanel { Visible = false };
+                Controls.Add(ViewBlockingPanel);
+                ViewBlockingPanel.Dock = DockStyle.Fill;
+            }
+
+            try
+            {
+                // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
+                this.SuspendDrawing();
+                ViewBlocked = block;
+                ViewBlockingPanel.Visible = block;
+                ViewBlockingPanel.BringToFront();
+            }
+            finally
+            {
+                this.ResumeDrawing();
+            }
+        }
+
         #region Test / debug
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -1377,11 +1424,11 @@ namespace AngelLoader.Forms
             // And that's how you do it
         }
 
-        public async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+        public void SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
             SortByCurrentColumn();
-            await SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
+            SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -1389,7 +1436,7 @@ namespace AngelLoader.Forms
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+        private void SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -1447,7 +1494,7 @@ namespace AngelLoader.Forms
 
                 if (!suppressRefresh)
                 {
-                    await RefreshFMsList(
+                    RefreshFMsList(
                         refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume);
@@ -1773,7 +1820,7 @@ namespace AngelLoader.Forms
 
             // NOTE: GetFMFromIndex(0) takes 0 because RefreshFMsList() sets the selection to 0.
             // Remember this if you ever change that.
-            await RefreshFMsList(
+            RefreshFMsList(
                 refreshReadme: forceRefreshReadme || FMsDGV.FilterShownIndexList.Count == 0 ||
                                (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
@@ -1992,7 +2039,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FMsDGV_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void FMsDGV_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
 
@@ -2003,9 +2050,15 @@ namespace AngelLoader.Forms
 
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
-            await (FMsDGV.Filtered
-                ? SetFilter(forceRefreshReadme: true) // SetFilter() calls a refresh on its own
-                : RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true));
+            if (FMsDGV.Filtered)
+            {
+                // SetFilter() calls a refresh on its own
+                SetFilter(forceRefreshReadme: true);
+            }
+            else
+            {
+                RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true);
+            }
         }
 
         private void FMsDGV_MouseDown(object sender, MouseEventArgs e)
@@ -2074,7 +2127,7 @@ namespace AngelLoader.Forms
                 }
                 else if (!e.Shift)
                 {
-                    await SortAndSetFilter();
+                    SortAndSetFilter();
                 }
             }
             else if (e.KeyCode == Keys.Apps)
@@ -2152,7 +2205,7 @@ namespace AngelLoader.Forms
             }
 
             var success = await Core.ScanFMs(Core.FMsViewList, scanOptions);
-            if (success) await SortAndSetFilter(forceRefreshReadme: true);
+            if (success) SortAndSetFilter(forceRefreshReadme: true);
         }
 
         private static async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
@@ -2235,7 +2288,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async Task OpenFilterTags()
+        private void OpenFilterTags()
         {
             using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
             {
@@ -2245,21 +2298,23 @@ namespace AngelLoader.Forms
                 FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
             }
 
-            await SortAndSetFilter();
+            SortAndSetFilter();
         }
 
         #region Refresh FMs list
 
         public void RefreshSelectedFMRowOnly() => FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-        public async Task RefreshSelectedFM(bool refreshReadme)
+        public void RefreshSelectedFM(bool refreshReadme)
         {
             FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-            await DisplaySelectedFM(refreshReadme);
+#pragma warning disable 4014
+            DisplaySelectedFM(refreshReadme);
+#pragma warning restore 4014
         }
 
-        public async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+        public void RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
@@ -2309,9 +2364,11 @@ namespace AngelLoader.Forms
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
                     if (!suppressSuspendResume) FMsDGV.ResumeDrawing();
 
-                    await DisplaySelectedFM(refreshReadme);
-
                     InitialSelectedFMHasBeenSet = true;
+
+#pragma warning disable 4014
+                    DisplaySelectedFM(refreshReadme);
+#pragma warning restore 4014
                 }
             }
         }
@@ -2386,7 +2443,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
+        private void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             if (FMsDGV.SelectedRows.Count == 0)
@@ -2402,7 +2459,9 @@ namespace AngelLoader.Forms
 
                 FMsDGV.SelectProperly();
 
-                await DisplaySelectedFM(refreshReadme: true);
+#pragma warning disable 4014
+                DisplaySelectedFM(refreshReadme: true);
+#pragma warning restore 4014
             }
         }
 
@@ -2509,8 +2568,8 @@ namespace AngelLoader.Forms
             {
                 using (new DisableKeyPresses(this))
                 {
-                    // If successful, this method will be called again, so exit to avoid running it twice
-                    if (await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM())) return;
+                    bool success = await Core.ScanFM(fm, GetDefaultScanOptions());
+                    if (success) RefreshSelectedFMRowOnly();
                 }
             }
 
@@ -2914,16 +2973,16 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
+        private void FilterTextBoxes_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SortAndSetFilter();
+            SortAndSetFilter();
         }
 
-        private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
+        private void FilterByGameCheckButtons_Click(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SortAndSetFilter();
+            SortAndSetFilter();
         }
 
         private (SelectedFM GameSelFM, Filter GameFilter) GetGameSelFMAndFilter(TabPage tabPage)
@@ -2960,7 +3019,7 @@ namespace AngelLoader.Forms
             if (GamesTabControl.Visible) SaveCurrentTabSelectedFM(e.TabPage);
         }
 
-        private async void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
 
@@ -2976,7 +3035,7 @@ namespace AngelLoader.Forms
             SetUIFilterValues(gameFilter);
 
             InitialSelectedFMHasBeenSet = false;
-            await SortAndSetFilter();
+            SortAndSetFilter();
         }
 
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
@@ -3492,21 +3551,21 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => SortAndSetFilter();
 
-        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private void FilterByFinishedButton_Click(object sender, EventArgs e) => SortAndSetFilter();
 
-        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private void FilterByUnfinishedButton_Click(object sender, EventArgs e) => SortAndSetFilter();
 
-        private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenRatingFilter();
+        private void FilterByRatingButton_Click(object sender, EventArgs e) => OpenRatingFilter();
 
-        private async void FilterByTagsButton_Click(object sender, EventArgs e) => await OpenFilterTags();
+        private void FilterByTagsButton_Click(object sender, EventArgs e) => OpenFilterTags();
 
-        private async void FilterByReleaseDateButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: false);
+        private void FilterByReleaseDateButton_Click(object sender, EventArgs e) => OpenDateFilter(lastPlayed: false);
 
-        private async void FilterByLastPlayedButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: true);
+        private void FilterByLastPlayedButton_Click(object sender, EventArgs e) => OpenDateFilter(lastPlayed: true);
 
-        private async Task OpenDateFilter(bool lastPlayed)
+        private void OpenDateFilter(bool lastPlayed)
         {
             var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
             var fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
@@ -3534,7 +3593,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateDateLabel(lastPlayed);
-            await SortAndSetFilter();
+            SortAndSetFilter();
         }
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
@@ -3567,7 +3626,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async Task OpenRatingFilter()
+        private void OpenRatingFilter()
         {
             var outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
             using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
@@ -3587,7 +3646,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateRatingLabel();
-            await SortAndSetFilter();
+            SortAndSetFilter();
         }
 
         private void UpdateRatingLabel(bool suspendResume = true)
@@ -3621,9 +3680,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void ClearFiltersButton_Click(object sender, EventArgs e) => await ClearAllUIAndInternalFilters();
+        private void ClearFiltersButton_Click(object sender, EventArgs e) => ClearAllUIAndInternalFilters();
 
-        public async Task ClearAllUIAndInternalFilters()
+        public void ClearAllUIAndInternalFilters()
         {
             using (new DisableEvents(this))
             {
@@ -3662,10 +3721,10 @@ namespace AngelLoader.Forms
                 }
             }
 
-            await SortAndSetFilter();
+            SortAndSetFilter();
         }
 
-        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private void RefreshFiltersButton_Click(object sender, EventArgs e) => SortAndSetFilter();
 
         private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
@@ -3698,7 +3757,7 @@ namespace AngelLoader.Forms
             bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
@@ -3737,7 +3796,7 @@ namespace AngelLoader.Forms
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
@@ -3748,11 +3807,13 @@ namespace AngelLoader.Forms
 
         private async void RescanCustomResourcesButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
 
-        private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
+        private void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
             FMsDGV.GetSelectedFM().RefreshCache = true;
-            await DisplaySelectedFM(refreshReadme: true);
             Core.WriteFullFMDataIni();
+#pragma warning disable 4014
+            DisplaySelectedFM(refreshReadme: true);
+#pragma warning restore 4014
         }
 
         // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...
