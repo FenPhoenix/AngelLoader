@@ -1783,14 +1783,20 @@ namespace AngelLoader.Forms
             // 
             // ImportFromDarkLoaderMenuItem
             // 
+            // Not localized because it consists solely of a proper name! Don't remove this!
+            ImportFromDarkLoaderMenuItem.Text = @"DarkLoader";
             ImportFromDarkLoaderMenuItem.Click += ImportFromDarkLoaderMenuItem_Click;
             // 
             // ImportFromFMSelMenuItem
             // 
+            // Not localized because it consists solely of a proper name! Don't remove this!
+            ImportFromFMSelMenuItem.Text = @"FMSel";
             ImportFromFMSelMenuItem.Click += ImportFromFMSelMenuItem_Click;
             // 
             // ImportFromNewDarkLoaderMenuItem
             // 
+            // Not localized because it consists solely of a proper name! Don't remove this!
+            ImportFromNewDarkLoaderMenuItem.Text = @"NewDarkLoader";
             ImportFromNewDarkLoaderMenuItem.Click += ImportFromNewDarkLoaderMenuItem_Click;
             // 
             // MainForm
