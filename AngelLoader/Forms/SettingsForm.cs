@@ -37,7 +37,7 @@ namespace AngelLoader.Forms
         private readonly bool Startup;
 
         private readonly ConfigData InConfig;
-        public readonly ConfigData OutConfig = new ConfigData();
+        public readonly ConfigData OutConfig;
 
         private readonly RadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
@@ -58,13 +58,19 @@ namespace AngelLoader.Forms
         private readonly ComboBoxCustom LangComboBox;
 
         private readonly GroupBox LangGroupBox;
-        private readonly PathsPage PathsPage = new PathsPage { Visible = false };
-        private readonly FMDisplayPage FMDisplayPage = new FMDisplayPage { Visible = false };
-        private readonly OtherPage OtherPage = new OtherPage { Visible = false };
+        private readonly PathsPage PathsPage;
+        private readonly FMDisplayPage FMDisplayPage;
+        private readonly OtherPage OtherPage;
 
         internal SettingsForm(ILocalizable ownerForm, ConfigData config, bool startup)
         {
             InitializeComponent();
+
+            OutConfig = new ConfigData();
+
+            PathsPage = new PathsPage { Visible = false };
+            FMDisplayPage = new FMDisplayPage { Visible = false };
+            OtherPage = new OtherPage { Visible = false };
 
             // Needed for Esc-to-cancel-drag and stuff
             KeyPreview = true;
