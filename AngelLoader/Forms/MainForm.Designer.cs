@@ -82,11 +82,11 @@
             this.FilterByThief3Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterTitleLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterTitleLabel = new System.Windows.Forms.Label();
-            this.FilterTitleTextBox = new System.Windows.Forms.TextBox();
+            this.FilterTitleTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.FilterAuthorLeftSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterAuthorLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterAuthorLabel = new System.Windows.Forms.Label();
-            this.FilterAuthorTextBox = new System.Windows.Forms.TextBox();
+            this.FilterAuthorTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.FilterIconButtonsToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterReleaseDateLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.FilterByReleaseDateButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
@@ -2301,7 +2301,7 @@
         private System.Windows.Forms.Button ResetZoomButton;
         private System.Windows.Forms.Button Test2Button;
         private System.Windows.Forms.Label FilterTitleLabel;
-        private System.Windows.Forms.TextBox FilterTitleTextBox;
+        private AngelLoader.CustomControls.TextBoxCustom FilterTitleTextBox;
         private System.Windows.Forms.Button PlayOriginalGameButton;
         private System.Windows.Forms.ContextMenuStrip PlayOriginalGameMenu;
         private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief1MenuItem;
@@ -2335,7 +2335,7 @@
         private AngelLoader.CustomControls.TextBoxCustom AddTagTextBox;
         private System.Windows.Forms.ListBox AddTagListBox;
         private System.Windows.Forms.ContextMenuStrip AddTagMenu;
-        private System.Windows.Forms.TextBox FilterAuthorTextBox;
+        private AngelLoader.CustomControls.TextBoxCustom FilterAuthorTextBox;
         private System.Windows.Forms.Label FilterAuthorLabel;
         private System.Windows.Forms.TabPage EditFMTabPage;
         private System.Windows.Forms.DateTimePicker EditFMLastPlayedDateTimePicker;

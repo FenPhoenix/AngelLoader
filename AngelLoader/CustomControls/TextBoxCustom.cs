@@ -10,6 +10,8 @@ namespace AngelLoader.CustomControls
     {
         [Browsable(true)] public string DisallowedCharacters { get; set; } = "";
 
+        private string _backingText;
+
         public void SetTextAndMoveCursorToEnd(string text)
         {
             Text = text;
@@ -29,6 +31,8 @@ namespace AngelLoader.CustomControls
 
         protected override void OnTextChanged(EventArgs e)
         {
+            var oldBackingText = _backingText;
+
             if (!DisallowedCharacters.IsEmpty())
             {
                 var newText = Text;
@@ -46,9 +50,15 @@ namespace AngelLoader.CustomControls
                     var newCaretPosition = oldCaretPosition - (oldTextLength - newText.Length);
                     Select(newCaretPosition < 0 ? 0 : newCaretPosition, 0);
                 }
+
             }
 
-            base.OnTextChanged(e);
+            _backingText = Text;
+
+            // Prevents non-text key combinations from firing the TextChanged event.
+            // How in the hell does "text changed" mean "key pressed but literally no text changed at all".
+            // Microsoft...
+            if (oldBackingText != Text) base.OnTextChanged(e);
         }
     }
 }
