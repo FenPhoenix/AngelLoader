@@ -359,7 +359,14 @@ namespace AngelLoader.Forms
         private void HookKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Alt && e.KeyCode == Keys.F4) return;
-            if (KeyPressesDisabled || ViewBlocked) e.SuppressKeyPress = true;
+            if (KeyPressesDisabled || ViewBlocked ||
+                ((e.KeyCode == Keys.PageUp || (e.Control && e.KeyCode == Keys.Home)) &&
+                 FMsDGV.SelectedRows.Count > 0 && FMsDGV.SelectedRows[0].Index == 0) ||
+                ((e.KeyCode == Keys.PageDown || (e.Control && e.KeyCode == Keys.End)) &&
+                 FMsDGV.SelectedRows.Count > 0 && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1))
+            {
+                e.SuppressKeyPress = true;
+            }
         }
 
         private void HookKeyUp(object sender, KeyEventArgs e)
