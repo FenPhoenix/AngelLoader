@@ -384,7 +384,7 @@ namespace AngelLoader.Forms
         // wrong or what, but I have this Init() method now that comfortably runs after the ctor. Shrug.
         // MT: On startup only, this is run in parallel with FindFMs.Find()
         // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
-        public void Init()
+        public void InitThreadable()
         {
 #if ReleaseBeta
             var ver = typeof(MainForm).Assembly.GetName().Version;

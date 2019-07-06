@@ -115,7 +115,7 @@ namespace AngelLoader
                         // Construct and init the view both right here, because they're both heavy operations and we
                         // want them both to run in parallel with Find() to the greatest extent possible.
                         View = new MainForm();
-                        View.Init();
+                        View.InitThreadable();
 
                         findFMsTask.Wait();
                     }
@@ -289,7 +289,7 @@ namespace AngelLoader
                     FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true);
                     // Have to do all three here, because we skipped them all before
                     View = new MainForm();
-                    View.Init();
+                    View.InitThreadable();
                     // Again, last line and nothing up the call stack, so call without await.
 #pragma warning disable 4014
                     View.FinishInitAndShow();

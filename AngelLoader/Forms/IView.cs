@@ -28,10 +28,17 @@ namespace AngelLoader.Forms
         Task ClearAllUIAndInternalFilters();
         void ChangeGameOrganization(bool startup = false);
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
-        void Init();
+        /// <summary>
+        /// This can be called while the FindFMs() thread is running; it doesn't interfere.
+        /// </summary>
+        void InitThreadable();
+        /// <summary>
+        /// Call this only after the FindFMs() thread has finished.
+        /// </summary>
+        /// <returns></returns>
+        Task FinishInitAndShow();
         int GetRowCount();
         void SetRowCount(int count);
-        Task FinishInitAndShow();
         void ShowOnly();
         void ShowAlert(string message, string title);
         object InvokeSync(Delegate method);
