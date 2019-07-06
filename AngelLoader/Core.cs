@@ -147,6 +147,7 @@ namespace AngelLoader
             }
             else
             {
+                // async, but same as above
                 View.FinishInitAndShow();
             }
         }
@@ -284,6 +285,8 @@ namespace AngelLoader
 
                     WriteConfigIni(Config, Paths.ConfigIni);
 
+                    // We have to do this here because we won't have before
+                    FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true);
                     // Have to do all three here, because we skipped them all before
                     View = new MainForm();
                     View.Init();
