@@ -2215,7 +2215,7 @@ namespace AngelLoader.Forms
             if (success) SortAndSetFilter(forceRefreshReadme: true);
         }
 
-        private static async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
+        private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
         public void ShowFMsListZoomButtons(bool visible)
         {
@@ -3899,7 +3899,7 @@ namespace AngelLoader.Forms
             await InstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
         }
 
-        private static async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
+        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
 
         // TODO: This isn't hooked up to anything, but things seem to work fine. Do I need this?!
         private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)

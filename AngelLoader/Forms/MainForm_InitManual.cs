@@ -83,11 +83,11 @@ namespace AngelLoader.Forms
             FilterByThief3Button = new ToolStripButtonCustom();
             FilterTitleLeftSep = new ToolStripSeparatorCustom();
             FilterTitleLabel = new Label();
-            FilterTitleTextBox = new TextBox();
+            FilterTitleTextBox = new TextBoxCustom();
             FilterAuthorLeftSepToolStrip = new ToolStripCustom();
             FilterAuthorLeftSep = new ToolStripSeparatorCustom();
             FilterAuthorLabel = new Label();
-            FilterAuthorTextBox = new TextBox();
+            FilterAuthorTextBox = new TextBoxCustom();
             FilterIconButtonsToolStrip = new ToolStripCustom();
             FilterReleaseDateLeftSep = new ToolStripSeparatorCustom();
             FilterByReleaseDateButton = new ToolStripButtonCustom();
