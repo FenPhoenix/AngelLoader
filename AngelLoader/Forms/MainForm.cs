@@ -560,34 +560,52 @@ namespace AngelLoader.Forms
             // Set these here because they depend on the splitter positions
             SetUITextToLocalized(suspendResume: false);
             ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            // Sort the list here because Init() is run in parallel to FindFMs.Find() but sorting needs Find() to
-            // have been run first.
-            SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
             if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.DefaultCellStyle.Font.SizeInPoints) >= 0.001)
             {
                 ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
             }
 
-            #region Changes involving layout
+            ChangeGameOrganization(startup: true);
+        }
 
-            // PERF_TODO: Manually calculate these layouts before _Load
-            // Because we're showing/hiding stuff here in a way that would change the size of other stuff, we
-            // have to put this after _Load in order to get the positions accurate. But because this triggers
-            // one or more live layouts, it's slow. We should manually calculate the correct positioning so we
-            // can put this before _Load and avoid the live layout change.
+        public async Task FinishInitAndShow()
+        {
+            if (!Visible) await PreShow();
+        }
 
-            // Not sure if this needs to go here, but it involves control sizes so...
-            ChangeGameOrganization();
-            // This has to go here because it depends on the width of a control and those don't get properly set
-            // until the Load event fires
+        public void ShowOnly()
+        {
+            if (!Visible) Show();
+        }
+
+        // This one can't be multithreaded because it depends on the FMs list
+        private async Task PreShow()
+        {
+            // Sort the list here because Init() is run in parallel to FindFMs.Find() but sorting needs Find() to
+            // have been run first.
+            SortFMsDGV(Config.SortedColumn, Config.SortDirection);
+
+            // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
+            if (Core.ViewListGamesNull.Count > 0)
+            {
+                Show();
+                await Core.ScanNewFMsForGameType(useViewListGamesNull: true);
+            }
+
+            await SetFilter(suppressSuspendResume: true);
+
+            FMsDGV.Focus();
+
+            if (!Visible) Show();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // These have to go here because they depend on and/or affect the width of other controls, and we
+            // need to be in a state where layout is happening
+            ChangeFilterControlsForGameType();
             ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
-
-            #endregion
 
             // Hook these up last so they don't cause anything to happen while we're initializing
             AppMouseKeyHook = Hook.AppEvents();
@@ -599,24 +617,13 @@ namespace AngelLoader.Forms
         }
 
         // PERF_TODO: Ideally this wouldn't have to be async as it runs every startup by definition
-        private async void MainForm_Shown(object sender, EventArgs e)
+        private void MainForm_Shown(object sender, EventArgs e)
         {
-            // This must certainly need to come after Show() as well, right?!
-            // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (Core.ViewListGamesNull.Count > 0) await Core.ScanNewFMsForGameType(useViewListGamesNull: true);
-
-            // This must come after Show() because of possible FM caching needing to put up ProgressBox... etc.
-            // Don't do Suspend/ResumeDrawing on startup because resume is slowish (having a refresh and all)
-            // TODO: Put this before Show() again and just have the cacher show the form if needed
-            SetFilter(suppressSuspendResume: true);
-
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
             Environment.Exit(1);
             return;
 #endif
-
-            FMsDGV.Focus();
         }
 
         private void SetWindowStateAndSize()
@@ -810,7 +817,11 @@ namespace AngelLoader.Forms
 
                 #region Filter bar
 
-                if (Config.GameOrganization == GameOrganization.ByTab) PositionFilterBarAfterTabs();
+                // Don't do this on startup, cause we're already going to do it afterward
+                if (suspendResume && Config.GameOrganization == GameOrganization.ByTab)
+                {
+                    PositionFilterBarAfterTabs();
+                }
 
                 FilterByThief1Button.ToolTipText = LText.FilterBar.Thief1ToolTip;
                 FilterByThief2Button.ToolTipText = LText.FilterBar.Thief2ToolTip;
@@ -1107,30 +1118,16 @@ namespace AngelLoader.Forms
             FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
         }
 
-        public void ChangeGameOrganization()
+        public void ChangeGameOrganization(bool startup = false)
         {
             if (Config.GameOrganization == GameOrganization.OneList)
             {
-                FilterGamesLeftSepToolStrip.Hide();
-                GamesTabControl.Hide();
-                // Don't inline this var - it stores the X value to persist it through a change
-                var plusWidth = FilterBarFLP.Location.X;
-                FilterBarFLP.Location = new Point(0, FilterBarFLP.Location.Y);
-                FilterBarFLP.Width += plusWidth;
-                FilterGameButtonsToolStrip.Show();
-
                 Config.SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
             }
             else // ByTab
             {
                 // In case they don't match
                 Config.Filter.Games = Config.GameTab;
-
-                PositionFilterBarAfterTabs();
-
-                FilterGameButtonsToolStrip.Hide();
-                FilterGamesLeftSepToolStrip.Show();
-                GamesTabControl.Show();
 
                 Config.GameTabsState.DeepCopyTo(FMsDGV.GameTabsState);
 
@@ -1163,6 +1160,32 @@ namespace AngelLoader.Forms
             FilterByThief1Button.Checked = (Config.Filter.Games & Game.Thief1) == Game.Thief1;
             FilterByThief2Button.Checked = (Config.Filter.Games & Game.Thief2) == Game.Thief2;
             FilterByThief3Button.Checked = (Config.Filter.Games & Game.Thief3) == Game.Thief3;
+
+            if (!startup) ChangeFilterControlsForGameType();
+        }
+
+        // Separate so we can call it from _Load on startup (because it needs the form to be loaded to layout the
+        // controls properly) but keep the rest of the work before load
+        private void ChangeFilterControlsForGameType()
+        {
+            if (Config.GameOrganization == GameOrganization.OneList)
+            {
+                FilterGamesLeftSepToolStrip.Hide();
+                GamesTabControl.Hide();
+                // Don't inline this var - it stores the X value to persist it through a change
+                var plusWidth = FilterBarFLP.Location.X;
+                FilterBarFLP.Location = new Point(0, FilterBarFLP.Location.Y);
+                FilterBarFLP.Width += plusWidth;
+                FilterGameButtonsToolStrip.Show();
+            }
+            else // ByTab
+            {
+                PositionFilterBarAfterTabs();
+
+                FilterGameButtonsToolStrip.Hide();
+                FilterGamesLeftSepToolStrip.Show();
+                GamesTabControl.Show();
+            }
         }
 
         private void UpdateConfig()
@@ -1431,11 +1454,11 @@ namespace AngelLoader.Forms
             // And that's how you do it
         }
 
-        public void SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+        public async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
             SortByCurrentColumn();
-            SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
+            await SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -1443,7 +1466,7 @@ namespace AngelLoader.Forms
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private void SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+        private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -1501,7 +1524,7 @@ namespace AngelLoader.Forms
 
                 if (!suppressRefresh)
                 {
-                    RefreshFMsList(
+                    await RefreshFMsList(
                         refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume);
@@ -1827,7 +1850,7 @@ namespace AngelLoader.Forms
 
             // NOTE: GetFMFromIndex(0) takes 0 because RefreshFMsList() sets the selection to 0.
             // Remember this if you ever change that.
-            RefreshFMsList(
+            await RefreshFMsList(
                 refreshReadme: forceRefreshReadme || FMsDGV.FilterShownIndexList.Count == 0 ||
                                (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
@@ -2046,7 +2069,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void FMsDGV_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void FMsDGV_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
 
@@ -2060,11 +2083,11 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered)
             {
                 // SetFilter() calls a refresh on its own
-                SetFilter(forceRefreshReadme: true);
+                await SetFilter(forceRefreshReadme: true);
             }
             else
             {
-                RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true);
+                await RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true);
             }
         }
 
@@ -2134,7 +2157,7 @@ namespace AngelLoader.Forms
                 }
                 else if (!e.Shift)
                 {
-                    SortAndSetFilter();
+                    await SortAndSetFilter();
                 }
             }
             else if (e.KeyCode == Keys.Apps)
@@ -2212,7 +2235,7 @@ namespace AngelLoader.Forms
             }
 
             var success = await Core.ScanFMs(Core.FMsViewList, scanOptions);
-            if (success) SortAndSetFilter(forceRefreshReadme: true);
+            if (success) await SortAndSetFilter(forceRefreshReadme: true);
         }
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
@@ -2295,7 +2318,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void OpenFilterTags()
+        private async Task OpenFilterTags()
         {
             using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
             {
@@ -2305,23 +2328,21 @@ namespace AngelLoader.Forms
                 FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
             }
 
-            SortAndSetFilter();
+            await SortAndSetFilter();
         }
 
         #region Refresh FMs list
 
         public void RefreshSelectedFMRowOnly() => FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-        public void RefreshSelectedFM(bool refreshReadme)
+        public async Task RefreshSelectedFM(bool refreshReadme)
         {
             FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-#pragma warning disable 4014
-            DisplaySelectedFM(refreshReadme);
-#pragma warning restore 4014
+            await DisplaySelectedFM(refreshReadme);
         }
 
-        public void RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+        public async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
@@ -2373,9 +2394,7 @@ namespace AngelLoader.Forms
 
                     InitialSelectedFMHasBeenSet = true;
 
-#pragma warning disable 4014
-                    DisplaySelectedFM(refreshReadme);
-#pragma warning restore 4014
+                    await DisplaySelectedFM(refreshReadme);
                 }
             }
         }
@@ -2450,7 +2469,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void FMsDGV_SelectionChanged(object sender, EventArgs e)
+        private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
             if (FMsDGV.SelectedRows.Count == 0)
@@ -2466,9 +2485,7 @@ namespace AngelLoader.Forms
 
                 FMsDGV.SelectProperly();
 
-#pragma warning disable 4014
-                DisplaySelectedFM(refreshReadme: true);
-#pragma warning restore 4014
+                await DisplaySelectedFM(refreshReadme: true);
             }
         }
 
@@ -2980,16 +2997,16 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void FilterTextBoxes_TextChanged(object sender, EventArgs e)
+        private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            SortAndSetFilter();
+            await SortAndSetFilter();
         }
 
-        private void FilterByGameCheckButtons_Click(object sender, EventArgs e)
+        private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            SortAndSetFilter();
+            await SortAndSetFilter();
         }
 
         private (SelectedFM GameSelFM, Filter GameFilter) GetGameSelFMAndFilter(TabPage tabPage)
@@ -3026,7 +3043,7 @@ namespace AngelLoader.Forms
             if (GamesTabControl.Visible) SaveCurrentTabSelectedFM(e.TabPage);
         }
 
-        private void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private async void GamesTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
 
@@ -3042,7 +3059,7 @@ namespace AngelLoader.Forms
             SetUIFilterValues(gameFilter);
 
             InitialSelectedFMHasBeenSet = false;
-            SortAndSetFilter();
+            await SortAndSetFilter();
         }
 
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
@@ -3558,21 +3575,21 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => SortAndSetFilter();
+        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private void FilterByFinishedButton_Click(object sender, EventArgs e) => SortAndSetFilter();
+        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private void FilterByUnfinishedButton_Click(object sender, EventArgs e) => SortAndSetFilter();
+        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private void FilterByRatingButton_Click(object sender, EventArgs e) => OpenRatingFilter();
+        private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenRatingFilter();
 
-        private void FilterByTagsButton_Click(object sender, EventArgs e) => OpenFilterTags();
+        private async void FilterByTagsButton_Click(object sender, EventArgs e) => await OpenFilterTags();
 
-        private void FilterByReleaseDateButton_Click(object sender, EventArgs e) => OpenDateFilter(lastPlayed: false);
+        private async void FilterByReleaseDateButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: false);
 
-        private void FilterByLastPlayedButton_Click(object sender, EventArgs e) => OpenDateFilter(lastPlayed: true);
+        private async void FilterByLastPlayedButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: true);
 
-        private void OpenDateFilter(bool lastPlayed)
+        private async Task OpenDateFilter(bool lastPlayed)
         {
             var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
             var fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
@@ -3600,7 +3617,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateDateLabel(lastPlayed);
-            SortAndSetFilter();
+            await SortAndSetFilter();
         }
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
@@ -3633,7 +3650,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void OpenRatingFilter()
+        private async Task OpenRatingFilter()
         {
             var outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
             using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
@@ -3653,7 +3670,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateRatingLabel();
-            SortAndSetFilter();
+            await SortAndSetFilter();
         }
 
         private void UpdateRatingLabel(bool suspendResume = true)
@@ -3687,9 +3704,9 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void ClearFiltersButton_Click(object sender, EventArgs e) => ClearAllUIAndInternalFilters();
+        private async void ClearFiltersButton_Click(object sender, EventArgs e) => await ClearAllUIAndInternalFilters();
 
-        public void ClearAllUIAndInternalFilters()
+        public async Task ClearAllUIAndInternalFilters()
         {
             using (new DisableEvents(this))
             {
@@ -3728,10 +3745,10 @@ namespace AngelLoader.Forms
                 }
             }
 
-            SortAndSetFilter();
+            await SortAndSetFilter();
         }
 
-        private void RefreshFiltersButton_Click(object sender, EventArgs e) => SortAndSetFilter();
+        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
         private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
@@ -3764,7 +3781,7 @@ namespace AngelLoader.Forms
             bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
@@ -3803,7 +3820,7 @@ namespace AngelLoader.Forms
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
@@ -3814,13 +3831,11 @@ namespace AngelLoader.Forms
 
         private async void RescanCustomResourcesButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
 
-        private void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
+        private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
             FMsDGV.GetSelectedFM().RefreshCache = true;
             Core.WriteFullFMDataIni();
-#pragma warning disable 4014
-            DisplaySelectedFM(refreshReadme: true);
-#pragma warning restore 4014
+            await DisplaySelectedFM(refreshReadme: true);
         }
 
         // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...

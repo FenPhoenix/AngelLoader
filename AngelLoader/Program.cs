@@ -78,8 +78,6 @@ namespace AngelLoader
 
     internal sealed class AppContext : ApplicationContext
     {
-        internal AppContext(Task configTask) => Init(configTask);
-
-        private static void Init(Task configTask) => Core.Init(configTask);
+        internal AppContext(Task configTask) => Core.Init(configTask);
     }
 }

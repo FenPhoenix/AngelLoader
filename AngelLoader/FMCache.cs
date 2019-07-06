@@ -347,6 +347,10 @@ namespace AngelLoader
             IView view)
         {
             Log(nameof(SevenZipExtract) + ": about to show progress box and extract", methodName: false);
+
+            // Critical
+            view.ShowOnly();
+
             await Task.Run(() =>
             {
                 try

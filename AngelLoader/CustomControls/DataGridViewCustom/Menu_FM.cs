@@ -180,7 +180,7 @@ namespace AngelLoader.CustomControls
                 Rating7MenuItem,
                 Rating8MenuItem,
                 Rating9MenuItem,
-                Rating10MenuItem,
+                Rating10MenuItem
             });
 
             FinishedOnMenu.Items.AddRange(new ToolStripItem[]

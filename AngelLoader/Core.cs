@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using AngelLoader.CustomControls;
 using AngelLoader.Forms;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
@@ -137,8 +136,9 @@ namespace AngelLoader
             if (openSettings)
             {
                 // Eliding await so that we don't have to be async and run the state machine and lose time. This
-                // will be the last line run in this method, so it's safe. Don't put this inside a try block, or
-                // it won't be safe. It has to really be the last thing run in the method.
+                // will be the last line run in this method and nothing does anything up the call stack, so it's
+                // safe. Don't put this inside a try block, or it won't be safe. It has to really be the last
+                // thing run in the method.
 #pragma warning disable 4014
                 OpenSettings(startup: true);
 #pragma warning restore 4014
@@ -147,7 +147,7 @@ namespace AngelLoader
             }
             else
             {
-                View.Show();
+                View.FinishInitAndShow();
             }
         }
 
@@ -287,7 +287,10 @@ namespace AngelLoader
                     // Have to do all three here, because we skipped them all before
                     View = new MainForm();
                     View.Init();
-                    View.Show();
+                    // Again, last line and nothing up the call stack, so call without await.
+#pragma warning disable 4014
+                    View.FinishInitAndShow();
+#pragma warning restore 4014
 
                     return true;
                 }
@@ -365,7 +368,7 @@ namespace AngelLoader
                     Config.ClearAllSelectedFMs();
                     Config.ClearAllFilters();
                     Config.GameTab = Game.Thief1;
-                    View.ClearAllUIAndInternalFilters();
+                    await View.ClearAllUIAndInternalFilters();
                     if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                     View.ChangeGameOrganization();
                 }
@@ -391,7 +394,7 @@ namespace AngelLoader
                         if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
                     }
 
-                    View.SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+                    await View.SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
                 }
                 else if (dateFormatChanged || languageChanged)
                 {
@@ -629,7 +632,7 @@ namespace AngelLoader
         {
             if (scanOptions == null) scanOptions = GetDefaultScanOptions();
             bool success = await ScanFM(fm, scanOptions);
-            if (success) View.RefreshSelectedFM(refreshReadme: true);
+            if (success) await View.RefreshSelectedFM(refreshReadme: true);
             return success;
         }
 
@@ -1057,7 +1060,7 @@ namespace AngelLoader
             FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
             if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
-            View.SortAndSetFilter();
+            await View.SortAndSetFilter();
         }
 
         #region Audio conversion (mainly for pre-checks)
@@ -1085,7 +1088,7 @@ namespace AngelLoader
                 if (yes)
                 {
                     fm.Installed = false;
-                    View.RefreshSelectedFM(refreshReadme: false);
+                    await View.RefreshSelectedFM(refreshReadme: false);
                 }
                 return;
             }
@@ -1128,7 +1131,7 @@ namespace AngelLoader
                 if (yes)
                 {
                     fm.Installed = false;
-                    View.RefreshSelectedFM(refreshReadme: false);
+                    await View.RefreshSelectedFM(refreshReadme: false);
                 }
                 return;
             }

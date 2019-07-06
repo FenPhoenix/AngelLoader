@@ -25,25 +25,26 @@ namespace AngelLoader.Forms
         SortOrder CurrentSortDirection { get; }
         void ShowFMsListZoomButtons(bool visible);
         void ShowInstallUninstallButton(bool enabled);
-        void ClearAllUIAndInternalFilters();
-        void ChangeGameOrganization();
+        Task ClearAllUIAndInternalFilters();
+        void ChangeGameOrganization(bool startup = false);
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
         void Init();
         int GetRowCount();
         void SetRowCount(int count);
-        void Show();
+        Task FinishInitAndShow();
+        void ShowOnly();
         void ShowAlert(string message, string title);
         object InvokeSync(Delegate method);
         object InvokeSync(Delegate method, params object[] args);
         object InvokeAsync(Delegate method);
         object InvokeAsync(Delegate method, params object[] args);
         void Block(bool block);
-        void RefreshSelectedFM(bool refreshReadme);
+        Task RefreshSelectedFM(bool refreshReadme);
         void RefreshSelectedFMRowOnly();
         void RefreshFMsListKeepSelection();
-        void RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+        Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false);
-        void SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+        Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false);
         bool AskToContinue(string message, string title, bool noIcon = false);
 
