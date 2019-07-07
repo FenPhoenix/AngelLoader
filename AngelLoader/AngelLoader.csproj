@@ -264,6 +264,9 @@
     <Compile Include="Forms\MainForm_Progress.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\PlayOriginalGameMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\PlayWithOptions.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -184,7 +184,6 @@
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.PlayOriginalGameMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayOriginalThief2MPMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -230,7 +229,6 @@
             this.PatchDMLsPanel.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.ChooseReadmeOKFLP.SuspendLayout();
-            this.PlayOriginalGameMenu.SuspendLayout();
             this.ImportFromMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -2113,47 +2111,6 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             // 
-            // PlayOriginalGameMenu
-            // 
-            this.PlayOriginalGameMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayOriginalThief1MenuItem,
-            this.PlayOriginalThief2MenuItem,
-            this.PlayOriginalThief2MPMenuItem,
-            this.PlayOriginalThief3MenuItem});
-            this.PlayOriginalGameMenu.Name = "PlayOriginalGameMenu";
-            this.PlayOriginalGameMenu.Size = new System.Drawing.Size(182, 92);
-            // 
-            // PlayOriginalThief1MenuItem
-            // 
-            this.PlayOriginalThief1MenuItem.Image = global::AngelLoader.Properties.Resources.Thief1_16;
-            this.PlayOriginalThief1MenuItem.Name = "PlayOriginalThief1MenuItem";
-            this.PlayOriginalThief1MenuItem.Size = new System.Drawing.Size(181, 22);
-            this.PlayOriginalThief1MenuItem.Text = "Thief 1";
-            this.PlayOriginalThief1MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief2MenuItem
-            // 
-            this.PlayOriginalThief2MenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
-            this.PlayOriginalThief2MenuItem.Name = "PlayOriginalThief2MenuItem";
-            this.PlayOriginalThief2MenuItem.Size = new System.Drawing.Size(181, 22);
-            this.PlayOriginalThief2MenuItem.Text = "Thief 2";
-            this.PlayOriginalThief2MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief2MPMenuItem
-            // 
-            this.PlayOriginalThief2MPMenuItem.Image = global::AngelLoader.Properties.Resources.Thief2_16;
-            this.PlayOriginalThief2MPMenuItem.Name = "PlayOriginalThief2MPMenuItem";
-            this.PlayOriginalThief2MPMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.PlayOriginalThief2MPMenuItem.Text = "Thief 2 (multiplayer)";
-            this.PlayOriginalThief2MPMenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
-            // 
-            // PlayOriginalThief3MenuItem
-            // 
-            this.PlayOriginalThief3MenuItem.Image = global::AngelLoader.Properties.Resources.Thief3_16;
-            this.PlayOriginalThief3MenuItem.Name = "PlayOriginalThief3MenuItem";
-            this.PlayOriginalThief3MenuItem.Size = new System.Drawing.Size(181, 22);
-            this.PlayOriginalThief3MenuItem.Text = "Thief 3";
-            this.PlayOriginalThief3MenuItem.Click += new System.EventHandler(this.PlayOriginalGameMenuItem_Click);
             // 
             // AddTagMenu
             // 
@@ -2273,7 +2230,6 @@
             this.ChooseReadmePanel.ResumeLayout(false);
             this.ChooseReadmeOKFLP.ResumeLayout(false);
             this.ChooseReadmeOKFLP.PerformLayout();
-            this.PlayOriginalGameMenu.ResumeLayout(false);
             this.ImportFromMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -2306,6 +2262,12 @@
         private System.Windows.Forms.ContextMenuStrip PlayOriginalGameMenu;
         private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief1MenuItem;
         private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief2MenuItem;
+        private AngelLoader.CustomControls.ContextMenuStripCustom TopRightMenu;
+        private System.Windows.Forms.ToolStripMenuItem TRM_StatsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_EditFMMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_CommentMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_TagsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TRM_PatchMenuItem;
         private System.Windows.Forms.TabControl GamesTabControl;
         private System.Windows.Forms.TabPage Thief1TabPage;
         private System.Windows.Forms.TabPage Thief2TabPage;

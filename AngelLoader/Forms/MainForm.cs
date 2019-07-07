@@ -519,7 +519,6 @@ namespace AngelLoader.Forms
             // menu's size to empty causes it to autosize back to its actual proper size. I swear, this stuff.
 
             AltTitlesMenu.Size = Size.Empty;
-            PlayOriginalGameMenu.Size = Size.Empty;
             AddTagMenu.Size = Size.Empty;
             ImportFromMenu.Size = Size.Empty;
 
@@ -877,14 +876,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                #region Play original games menu
-
-                PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
-                PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2.EscapeAmpersands();
-                PlayOriginalThief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer.EscapeAmpersands();
-                PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();
-
-                #endregion
+                LocalizePlayOriginalGameMenuItems();
 
                 #region Top-right tabs area
 
@@ -2173,9 +2165,12 @@ namespace AngelLoader.Forms
 
         private void PlayOriginalGameButton_Click(object sender, EventArgs e)
         {
+            ConstructPlayOriginalGameMenu();
+
             PlayOriginalThief1MenuItem.Enabled = !Config.T1Exe.IsEmpty();
             PlayOriginalThief2MenuItem.Enabled = !Config.T2Exe.IsEmpty();
             PlayOriginalThief3MenuItem.Enabled = !Config.T3Exe.IsEmpty();
+            PlayOriginalThief2MPMenuItem.Visible = Config.T2MPDetected;
 
             ShowMenu(PlayOriginalGameMenu, PlayOriginalGameButton, MenuPos.TopRight);
         }
@@ -2612,7 +2607,6 @@ namespace AngelLoader.Forms
                                           (fm.Game == Game.Thief2 && Config.T2DromEdDetected));
 
             FMsDGV.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
-            PlayOriginalThief2MPMenuItem.Visible = Config.T2MPDetected;
 
             InstallUninstallFMButton.Enabled = installable;
             // Special-cased; don't autosize this one

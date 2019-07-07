@@ -185,11 +185,6 @@ namespace AngelLoader.Forms
             ChooseReadmeButton = new Button();
             ChooseReadmeListBox = new ListBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
-            PlayOriginalGameMenu = new ContextMenuStrip(components);
-            PlayOriginalThief1MenuItem = new ToolStripMenuItem();
-            PlayOriginalThief2MenuItem = new ToolStripMenuItem();
-            PlayOriginalThief2MPMenuItem = new ToolStripMenuItem();
-            PlayOriginalThief3MenuItem = new ToolStripMenuItem();
             MainToolTip = new ToolTip(components);
             AddTagMenu = new ContextMenuStrip(components);
             AltTitlesMenu = new ContextMenuStrip(components);
@@ -243,7 +238,6 @@ namespace AngelLoader.Forms
             PatchDMLsPanel.SuspendLayout();
             ChooseReadmePanel.SuspendLayout();
             ChooseReadmeOKFLP.SuspendLayout();
-            PlayOriginalGameMenu.SuspendLayout();
             ImportFromMenu.SuspendLayout();
             SuspendLayout();
 
@@ -1739,34 +1733,6 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
             // 
-            // PlayOriginalGameMenu
-            // 
-            PlayOriginalGameMenu.Items.AddRange(new ToolStripItem[] {
-            PlayOriginalThief1MenuItem,
-            PlayOriginalThief2MenuItem,
-            PlayOriginalThief2MPMenuItem,
-            PlayOriginalThief3MenuItem});
-            // 
-            // PlayOriginalThief1MenuItem
-            // 
-            PlayOriginalThief1MenuItem.Image = Resources.Thief1_16;
-            PlayOriginalThief1MenuItem.Click += PlayOriginalGameMenuItem_Click;
-            // 
-            // PlayOriginalThief2MenuItem
-            // 
-            PlayOriginalThief2MenuItem.Image = Resources.Thief2_16;
-            PlayOriginalThief2MenuItem.Click += PlayOriginalGameMenuItem_Click;
-            // 
-            // PlayOriginalThief2MPMenuItem
-            // 
-            PlayOriginalThief2MPMenuItem.Image = Resources.Thief2_16;
-            PlayOriginalThief2MPMenuItem.Click += PlayOriginalGameMenuItem_Click;
-            // 
-            // PlayOriginalThief3MenuItem
-            // 
-            PlayOriginalThief3MenuItem.Image = Resources.Thief3_16;
-            PlayOriginalThief3MenuItem.Click += PlayOriginalGameMenuItem_Click;
-            // 
             // AddTagMenu
             // 
             AddTagMenu.Closed += AddTagMenu_Closed;
@@ -1877,7 +1843,6 @@ namespace AngelLoader.Forms
             */
 
             ChooseReadmeOKFLP.ResumeLayout();
-            PlayOriginalGameMenu.ResumeLayout();
             ImportFromMenu.ResumeLayout();
             ResumeLayout();
         }

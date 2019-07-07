@@ -9,23 +9,15 @@ namespace AngelLoader.Forms
 {
     public partial class MainForm
     {
-        #region Menu and items
-
-        private ContextMenuStripCustom TopRightMenu;
-        private ToolStripMenuItem TRM_StatsMenuItem;
-        private ToolStripMenuItem TRM_EditFMMenuItem;
-        private ToolStripMenuItem TRM_CommentMenuItem;
-        private ToolStripMenuItem TRM_TagsMenuItem;
-        private ToolStripMenuItem TRM_PatchMenuItem;
-
-        #endregion
-
-        private bool _constructed;
-        private readonly bool[] TopRightMenuCheckedStates = { true, true, true, true, true };
+        private static class TopRightMenuBacking
+        {
+            internal static bool Constructed;
+            internal static readonly bool[] CheckedStates = { true, true, true, true, true };
+        }
 
         private void ConstructTopRightMenu()
         {
-            if (_constructed) return;
+            if (TopRightMenuBacking.Constructed) return;
 
             #region Instantiation
 
@@ -35,31 +27,31 @@ namespace AngelLoader.Forms
                 (TRM_StatsMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(TRM_StatsMenuItem),
-                    Checked = TopRightMenuCheckedStates[(int)TopRightTab.Statistics],
+                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Statistics],
                     CheckOnClick = true
                 }),
                 (TRM_EditFMMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(TRM_EditFMMenuItem),
-                    Checked = TopRightMenuCheckedStates[(int)TopRightTab.EditFM],
+                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.EditFM],
                     CheckOnClick = true
                 }),
                 (TRM_CommentMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(TRM_CommentMenuItem),
-                    Checked = TopRightMenuCheckedStates[(int)TopRightTab.Comment],
+                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Comment],
                     CheckOnClick = true
                 }),
                 (TRM_TagsMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(TRM_TagsMenuItem),
-                    Checked = TopRightMenuCheckedStates[(int)TopRightTab.Tags],
+                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Tags],
                     CheckOnClick = true
                 }),
                 (TRM_PatchMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(TRM_PatchMenuItem),
-                    Checked = TopRightMenuCheckedStates[(int)TopRightTab.Patch],
+                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Patch],
                     CheckOnClick = true
                 })
             });
@@ -78,28 +70,28 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            _constructed = true;
+            TopRightMenuBacking.Constructed = true;
             LocalizeTopRightMenu();
         }
 
         private void SetTopRightMenuItemChecked(int index, bool value)
         {
-            if (_constructed)
+            if (TopRightMenuBacking.Constructed)
             {
                 ((ToolStripMenuItem)TopRightMenu.Items[index]).Checked = value;
             }
             else
             {
-                TopRightMenuCheckedStates[index] = value;
+                TopRightMenuBacking.CheckedStates[index] = value;
             }
         }
 
         internal void LocalizeTopRightMenu()
         {
-            Debug.Assert(TopRightMenuCheckedStates.Length == TopRightTabEnumStatic.TopRightTabsCount,
-                nameof(TopRightMenuCheckedStates) + ".Length != " + nameof(TopRightTabEnumStatic.TopRightTabsCount) + ".Length");
+            Debug.Assert(TopRightMenuBacking.CheckedStates.Length == TopRightTabEnumStatic.TopRightTabsCount,
+                nameof(TopRightMenuBacking.CheckedStates) + ".Length != " + nameof(TopRightTabEnumStatic.TopRightTabsCount) + ".Length");
 
-            if (!_constructed) return;
+            if (!TopRightMenuBacking.Constructed) return;
 
             TRM_StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
             TRM_EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
