@@ -15,10 +15,6 @@ namespace AngelLoader.CustomControls
 
         #region Fields etc.
 
-        // PERF_TODO: This bool prevents layout until show which is good, but...
-        // ...a better idea would be to make this whole thing lazy-loaded. It's the perfect candidate for it.
-        private bool _shownOnce;
-
         // Public for param accessibility reasons or whatever
         public enum ProgressTasks
         {
@@ -87,12 +83,6 @@ namespace AngelLoader.CustomControls
 
         private void ShowThis()
         {
-            if (!_shownOnce)
-            {
-                _shownOnce = true;
-                SetUITextToLocalized();
-            }
-
             Log(nameof(ShowThis) + " called", methodName: false);
             Owner.EnableEverything(false);
             Enabled = true;
@@ -173,8 +163,6 @@ namespace AngelLoader.CustomControls
 
         public void SetUITextToLocalized(bool suspendResume = true)
         {
-            if (!_shownOnce) return;
-
             ProgressCancelButton.SetTextAutoSize(LText.Global.Cancel, ProgressCancelButton.Width);
             ProgressCancelButton.CenterH(this);
         }

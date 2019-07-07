@@ -650,9 +650,6 @@ namespace AngelLoader
 
             var scanningOne = fmsToScan.Count == 1;
 
-            // Removed from general use, but just in case I want to add the option back...
-            const bool overwriteUnscannedFields = false;
-
             #region Show progress box or block UI thread
 
             try
@@ -742,7 +739,7 @@ namespace AngelLoader
                 {
                     var progress = new Progress<ProgressReport>(ReportProgress);
 
-                    Paths.PrepareTempPath(Paths.FMScannerTemp);
+                    await Task.Run(() => Paths.PrepareTempPath(Paths.FMScannerTemp));
 
                     using (var scanner = new Scanner())
                     {
@@ -796,7 +793,7 @@ namespace AngelLoader
 
                     var gameSup = scannedFM.Game != Games.Unsupported;
 
-                    if (overwriteUnscannedFields || scanOptions.ScanTitle)
+                    if (scanOptions.ScanTitle)
                     {
                         sel.Title =
                             !scannedFM.Title.IsEmpty() ? scannedFM.Title
@@ -814,15 +811,15 @@ namespace AngelLoader
                         }
                     }
 
-                    if (overwriteUnscannedFields || scanOptions.ScanSize)
+                    if (scanOptions.ScanSize)
                     {
                         sel.SizeBytes = (ulong)(gameSup ? scannedFM.Size ?? 0 : 0);
                     }
-                    if (overwriteUnscannedFields || scanOptions.ScanReleaseDate)
+                    if (scanOptions.ScanReleaseDate)
                     {
                         sel.ReleaseDate = gameSup ? scannedFM.LastUpdateDate : null;
                     }
-                    if (overwriteUnscannedFields || scanOptions.ScanCustomResources)
+                    if (scanOptions.ScanCustomResources)
                     {
                         sel.HasMap = gameSup ? scannedFM.HasMap : null;
                         sel.HasAutomap = gameSup ? scannedFM.HasAutomap : null;
@@ -836,12 +833,12 @@ namespace AngelLoader
                         sel.HasSubtitles = gameSup ? scannedFM.HasCustomSubtitles : null;
                     }
 
-                    if (overwriteUnscannedFields || scanOptions.ScanAuthor)
+                    if (scanOptions.ScanAuthor)
                     {
                         sel.Author = gameSup ? scannedFM.Author : "";
                     }
 
-                    if (overwriteUnscannedFields || scanOptions.ScanGameType)
+                    if (scanOptions.ScanGameType)
                     {
                         sel.Game =
                             scannedFM.Game == Games.Unsupported ? Game.Unsupported :
@@ -851,7 +848,7 @@ namespace AngelLoader
                             Game.Null;
                     }
 
-                    if (overwriteUnscannedFields || scanOptions.ScanLanguages)
+                    if (scanOptions.ScanLanguages)
                     {
                         sel.Languages = gameSup ? scannedFM.Languages : new string[0];
                         sel.LanguagesString = gameSup
@@ -859,7 +856,7 @@ namespace AngelLoader
                             : "";
                     }
 
-                    if (overwriteUnscannedFields || scanOptions.ScanTags)
+                    if (scanOptions.ScanTags)
                     {
                         sel.TagsString = gameSup ? scannedFM.TagsString : "";
 

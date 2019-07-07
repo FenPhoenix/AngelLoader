@@ -652,9 +652,10 @@ namespace AngelLoader.Forms
             FilterBarFLP.Controls.Add(FilterAuthorTextBox);
             FilterBarFLP.Controls.Add(FilterIconButtonsToolStrip);
 
-            // PERF_TODO: The filter bar gets its x-pos and width set in GameTypeChange(), so can we get rid of these?
-            FilterBarFLP.Location = new Point(144, 0);
-            FilterBarFLP.Size = new Size(768, 100);
+            // PERF: The filter bar gets its x-pos and width set in GameTypeChange() and its y-pos is always 0.
+            // Height is 100 so it goes behind the DataGridView and its actual scroll bars will be hidden but
+            // they'll still function, and you can use your mousewheel or the custom arrow buttons to scroll.
+            FilterBarFLP.Height = 100;
 
             FilterBarFLP.TabIndex = 11;
             FilterBarFLP.WrapContents = false;

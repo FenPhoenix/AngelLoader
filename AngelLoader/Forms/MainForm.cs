@@ -264,13 +264,7 @@ namespace AngelLoader.Forms
             // method and tweaking as I see fit for speed and lazy-loading support.
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
 
-            //var t = new Stopwatch();
-            //t.Start();
-
             InitComponentManual();
-
-            //t.Stop();
-            //Trace.WriteLine("InitComponentManual(): " + t.Elapsed);
 
 #if Release_Testing && !RT_StartupOnly
             #region Init debug-only controls
@@ -616,7 +610,6 @@ namespace AngelLoader.Forms
             Application.AddMessageFilter(this);
         }
 
-        // PERF_TODO: Ideally this wouldn't have to be async as it runs every startup by definition
         private void MainForm_Shown(object sender, EventArgs e)
         {
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
