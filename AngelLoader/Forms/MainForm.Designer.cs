@@ -191,10 +191,6 @@
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ImportFromDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromFMSelMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ImportFromNewDarkLoaderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -229,7 +225,6 @@
             this.PatchDMLsPanel.SuspendLayout();
             this.ChooseReadmePanel.SuspendLayout();
             this.ChooseReadmeOKFLP.SuspendLayout();
-            this.ImportFromMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // GameTabsImageList
@@ -2123,36 +2118,6 @@
             this.AltTitlesMenu.Name = "AltTitlesMenu";
             this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
             // 
-            // ImportFromMenu
-            // 
-            this.ImportFromMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ImportFromDarkLoaderMenuItem,
-            this.ImportFromFMSelMenuItem,
-            this.ImportFromNewDarkLoaderMenuItem});
-            this.ImportFromMenu.Name = "ImportFromMenu";
-            this.ImportFromMenu.Size = new System.Drawing.Size(159, 70);
-            // 
-            // ImportFromDarkLoaderMenuItem
-            // 
-            this.ImportFromDarkLoaderMenuItem.Name = "ImportFromDarkLoaderMenuItem";
-            this.ImportFromDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromDarkLoaderMenuItem.Text = "DarkLoader";
-            this.ImportFromDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromDarkLoaderMenuItem_Click);
-            // 
-            // ImportFromFMSelMenuItem
-            // 
-            this.ImportFromFMSelMenuItem.Name = "ImportFromFMSelMenuItem";
-            this.ImportFromFMSelMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromFMSelMenuItem.Text = "FMSel";
-            this.ImportFromFMSelMenuItem.Click += new System.EventHandler(this.ImportFromFMSelMenuItem_Click);
-            // 
-            // ImportFromNewDarkLoaderMenuItem
-            // 
-            this.ImportFromNewDarkLoaderMenuItem.Name = "ImportFromNewDarkLoaderMenuItem";
-            this.ImportFromNewDarkLoaderMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.ImportFromNewDarkLoaderMenuItem.Text = "NewDarkLoader";
-            this.ImportFromNewDarkLoaderMenuItem.Click += new System.EventHandler(this.ImportFromNewDarkLoaderMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2230,7 +2195,6 @@
             this.ChooseReadmePanel.ResumeLayout(false);
             this.ChooseReadmeOKFLP.ResumeLayout(false);
             this.ChooseReadmeOKFLP.PerformLayout();
-            this.ImportFromMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

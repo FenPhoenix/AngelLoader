@@ -520,7 +520,6 @@ namespace AngelLoader.Forms
 
             AltTitlesMenu.Size = Size.Empty;
             AddTagMenu.Size = Size.Empty;
-            ImportFromMenu.Size = Size.Empty;
 
             #endregion
 
@@ -3739,7 +3738,11 @@ namespace AngelLoader.Forms
 
         private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
-        private void ImportButton_Click(object sender, EventArgs e) => ShowMenu(ImportFromMenu, ImportButton, MenuPos.TopLeft);
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            ConstructImportFromMenu();
+            ShowMenu(ImportFromMenu, ImportButton, MenuPos.TopLeft);
+        }
 
         private async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
         {

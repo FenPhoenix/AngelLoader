@@ -257,6 +257,9 @@
     </Compile>
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
+    <Compile Include="Forms\ImportFromMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\IView.cs" />
     <Compile Include="Forms\MainForm_InitManual.cs">
       <SubType>Form</SubType>

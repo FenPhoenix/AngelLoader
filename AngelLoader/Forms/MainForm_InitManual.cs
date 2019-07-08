@@ -188,10 +188,6 @@ namespace AngelLoader.Forms
             MainToolTip = new ToolTip(components);
             AddTagMenu = new ContextMenuStrip(components);
             AltTitlesMenu = new ContextMenuStrip(components);
-            ImportFromMenu = new ContextMenuStrip(components);
-            ImportFromDarkLoaderMenuItem = new ToolStripMenuItem();
-            ImportFromFMSelMenuItem = new ToolStripMenuItem();
-            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItem();
             TRM_StatsMenuItem = new ToolStripMenuItem();
             TRM_EditFMMenuItem = new ToolStripMenuItem();
             TRM_CommentMenuItem = new ToolStripMenuItem();
@@ -238,7 +234,6 @@ namespace AngelLoader.Forms
             PatchDMLsPanel.SuspendLayout();
             ChooseReadmePanel.SuspendLayout();
             ChooseReadmeOKFLP.SuspendLayout();
-            ImportFromMenu.SuspendLayout();
             SuspendLayout();
 
             #endregion
@@ -1737,35 +1732,6 @@ namespace AngelLoader.Forms
             // 
             AddTagMenu.Closed += AddTagMenu_Closed;
             // 
-            // AltTitlesMenu
-            // 
-
-            // 
-            // ImportFromMenu
-            // 
-            ImportFromMenu.Items.AddRange(new ToolStripItem[] {
-            ImportFromDarkLoaderMenuItem,
-            ImportFromFMSelMenuItem,
-            ImportFromNewDarkLoaderMenuItem});
-            // 
-            // ImportFromDarkLoaderMenuItem
-            // 
-            // Not localized because it consists solely of a proper name! Don't remove this!
-            ImportFromDarkLoaderMenuItem.Text = @"DarkLoader";
-            ImportFromDarkLoaderMenuItem.Click += ImportFromDarkLoaderMenuItem_Click;
-            // 
-            // ImportFromFMSelMenuItem
-            // 
-            // Not localized because it consists solely of a proper name! Don't remove this!
-            ImportFromFMSelMenuItem.Text = @"FMSel";
-            ImportFromFMSelMenuItem.Click += ImportFromFMSelMenuItem_Click;
-            // 
-            // ImportFromNewDarkLoaderMenuItem
-            // 
-            // Not localized because it consists solely of a proper name! Don't remove this!
-            ImportFromNewDarkLoaderMenuItem.Text = @"NewDarkLoader";
-            ImportFromNewDarkLoaderMenuItem.Click += ImportFromNewDarkLoaderMenuItem_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
@@ -1843,7 +1809,6 @@ namespace AngelLoader.Forms
             */
 
             ChooseReadmeOKFLP.ResumeLayout();
-            ImportFromMenu.ResumeLayout();
             ResumeLayout();
         }
     }
