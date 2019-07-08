@@ -1674,11 +1674,7 @@ namespace AngelLoader.Forms
             // 
             // ChooseReadmePanel
             // 
-            // PERF_TODO: AutoSizeMode is GrowAndShrink, so can we get rid of the size set?
-            // Should it even be autosizing at all...? (I don't think so?!)
             ChooseReadmePanel.Anchor = AnchorStyles.None;
-            ChooseReadmePanel.AutoSize = true;
-            ChooseReadmePanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ChooseReadmePanel.Controls.Add(ChooseReadmeOKFLP);
             ChooseReadmePanel.Controls.Add(ChooseReadmeListBox);
             // This gets centered later so no location is specified here
@@ -1698,7 +1694,6 @@ namespace AngelLoader.Forms
             // 
             ChooseReadmeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ChooseReadmeButton.AutoSize = true;
-            ChooseReadmeButton.Location = new Point(245, 0);
             ChooseReadmeButton.Margin = new Padding(0);
             ChooseReadmeButton.Padding = new Padding(6, 0, 6, 0);
             ChooseReadmeButton.Height = 23;
@@ -1709,7 +1704,6 @@ namespace AngelLoader.Forms
             // ChooseReadmeListBox
             // 
             ChooseReadmeListBox.FormattingEnabled = true;
-            ChooseReadmeListBox.Location = new Point(0, 0);
             ChooseReadmeListBox.Size = new Size(320, 134);
             ChooseReadmeListBox.TabIndex = 47;
             // 

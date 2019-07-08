@@ -2777,6 +2777,9 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
 
+            // Debug
+            fm.SelectedReadme = "";
+
             if (!fm.SelectedReadme.IsEmpty())
             {
                 if (readmeFiles.Count > 1)
@@ -2804,6 +2807,9 @@ namespace AngelLoader.Forms
                 else if (readmeFiles.Count > 1)
                 {
                     var safeReadme = Core.DetectSafeReadme(readmeFiles, fm.Title);
+
+                    // Debug
+                    safeReadme = "";
 
                     if (!safeReadme.IsEmpty())
                     {

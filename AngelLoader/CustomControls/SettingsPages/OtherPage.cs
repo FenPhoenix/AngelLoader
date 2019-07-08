@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using AngelLoader.Common.Utility;
 
-namespace AngelLoader.CustomControls.SettingsForm
+namespace AngelLoader.CustomControls.SettingsPages
 {
     public partial class OtherPage : UserControl, Interfaces.ISettingsPage
     {

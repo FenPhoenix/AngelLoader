@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.CustomControls.SettingsForm
+﻿namespace AngelLoader.CustomControls.SettingsPages
 {
     internal class Interfaces
     {

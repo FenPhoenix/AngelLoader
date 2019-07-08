@@ -11,11 +11,11 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
-using AngelLoader.CustomControls.SettingsForm;
+using AngelLoader.CustomControls.SettingsPages;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI.Dialogs;
 using static AngelLoader.Common.Logger;
-using static AngelLoader.CustomControls.SettingsForm.Interfaces;
+using static AngelLoader.CustomControls.SettingsPages.Interfaces;
 
 namespace AngelLoader.Forms
 {
