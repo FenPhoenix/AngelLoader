@@ -179,10 +179,6 @@
             this.ZoomOutButton = new System.Windows.Forms.Button();
             this.ResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
-            this.ChooseReadmePanel = new System.Windows.Forms.Panel();
-            this.ChooseReadmeOKFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.ChooseReadmeButton = new System.Windows.Forms.Button();
-            this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
 
@@ -218,8 +214,6 @@
             this.PatchTabPage.SuspendLayout();
             this.PatchMainPanel.SuspendLayout();
             this.PatchDMLsPanel.SuspendLayout();
-            this.ChooseReadmePanel.SuspendLayout();
-            this.ChooseReadmeOKFLP.SuspendLayout();
             this.SuspendLayout();
             // 
             // GameTabsImageList
@@ -503,7 +497,6 @@
             this.MainSplitContainer.Panel2.Controls.Add(this.ZoomOutButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ResetZoomButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
-            this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmePanel);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
             this.MainSplitContainer.Panel2MinSize = 38;
             this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
@@ -2044,53 +2037,6 @@
             this.ChooseReadmeComboBox.Visible = false;
             this.ChooseReadmeComboBox.SelectedIndexChanged += new System.EventHandler(this.ChooseReadmeComboBox_SelectedIndexChanged);
             this.ChooseReadmeComboBox.DropDownClosed += new System.EventHandler(this.ChooseReadmeComboBox_DropDownClosed);
-            // 
-            // ChooseReadmePanel
-            // 
-            this.ChooseReadmePanel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ChooseReadmePanel.AutoSize = true;
-            this.ChooseReadmePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeOKFLP);
-            this.ChooseReadmePanel.Controls.Add(this.ChooseReadmeListBox);
-            this.ChooseReadmePanel.Location = new System.Drawing.Point(2, 2);
-            this.ChooseReadmePanel.Name = "ChooseReadmePanel";
-            this.ChooseReadmePanel.Size = new System.Drawing.Size(324, 161);
-            this.ChooseReadmePanel.TabIndex = 46;
-            this.ChooseReadmePanel.Visible = false;
-            // 
-            // ChooseReadmeOKFLP
-            // 
-            this.ChooseReadmeOKFLP.Controls.Add(this.ChooseReadmeButton);
-            this.ChooseReadmeOKFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.ChooseReadmeOKFLP.Location = new System.Drawing.Point(1, 134);
-            this.ChooseReadmeOKFLP.Name = "ChooseReadmeOKFLP";
-            this.ChooseReadmeOKFLP.Size = new System.Drawing.Size(320, 24);
-            this.ChooseReadmeOKFLP.TabIndex = 3;
-            // 
-            // ChooseReadmeButton
-            // 
-            this.ChooseReadmeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ChooseReadmeButton.AutoSize = true;
-            this.ChooseReadmeButton.Location = new System.Drawing.Point(245, 0);
-            this.ChooseReadmeButton.Margin = new System.Windows.Forms.Padding(0);
-            this.ChooseReadmeButton.Name = "ChooseReadmeButton";
-            this.ChooseReadmeButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.ChooseReadmeButton.Size = new System.Drawing.Size(75, 23);
-            this.ChooseReadmeButton.TabIndex = 48;
-            this.ChooseReadmeButton.Text = "OK";
-            this.ChooseReadmeButton.UseVisualStyleBackColor = true;
-            this.ChooseReadmeButton.Click += new System.EventHandler(this.ChooseReadmeButton_Click);
-            // 
-            // ChooseReadmeListBox
-            // 
-            this.ChooseReadmeListBox.FormattingEnabled = true;
-            this.ChooseReadmeListBox.Location = new System.Drawing.Point(0, 0);
-            this.ChooseReadmeListBox.Name = "ChooseReadmeListBox";
-            this.ChooseReadmeListBox.Size = new System.Drawing.Size(320, 134);
-            this.ChooseReadmeListBox.TabIndex = 47;
-            // 
-            // ReadmeRichTextBox
-            // 
             this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -2177,9 +2123,6 @@
             this.PatchMainPanel.PerformLayout();
             this.PatchDMLsPanel.ResumeLayout(false);
             this.PatchDMLsPanel.PerformLayout();
-            this.ChooseReadmePanel.ResumeLayout(false);
-            this.ChooseReadmeOKFLP.ResumeLayout(false);
-            this.ChooseReadmeOKFLP.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2195,9 +2138,6 @@
         private System.Windows.Forms.Button PlayFMButton;
         private AngelLoader.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
         private System.Windows.Forms.Button ScanAllFMsButton;
-        private System.Windows.Forms.Panel ChooseReadmePanel;
-        private System.Windows.Forms.Button ChooseReadmeButton;
-        private AngelLoader.CustomControls.ListBoxCustom ChooseReadmeListBox;
         private System.Windows.Forms.Label DebugLabel;
         private AngelLoader.CustomControls.SplitContainerCustom TopSplitContainer;
         private System.Windows.Forms.Panel EverythingPanel;
@@ -2301,7 +2241,6 @@
         private System.Windows.Forms.Button EditFMScanReleaseDateButton;
         private System.Windows.Forms.Button EditFMScanAuthorButton;
         private System.Windows.Forms.Button EditFMScanTitleButton;
-        private System.Windows.Forms.FlowLayoutPanel ChooseReadmeOKFLP;
         private System.Windows.Forms.Button EditFMScanForReadmesButton;
         private System.Windows.Forms.Button StatsScanCustomResourcesButton;
         private System.Windows.Forms.TabPage PatchTabPage;

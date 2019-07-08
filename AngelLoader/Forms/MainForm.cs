@@ -528,7 +528,6 @@ namespace AngelLoader.Forms
 
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
             EditFMFinishedOnButton.Tag = new Size(138, 23);
-            ChooseReadmeButton.Tag = new Size(75, 23);
             PatchOpenFMFolderButton.Tag = new Size(162, 23);
 
             // EnsureValidity() guarantees selected tab will not be invisible
@@ -554,7 +553,6 @@ namespace AngelLoader.Forms
 
             // Set these here because they depend on the splitter positions
             SetUITextToLocalized(suspendResume: false);
-            ChooseReadmePanel.CenterHV(MainSplitContainer.Panel2);
 
             if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.DefaultCellStyle.Font.SizeInPoints) >= 0.001)
             {
@@ -792,7 +790,7 @@ namespace AngelLoader.Forms
                 AddRemoveTagFLP.SuspendLayout();
                 PatchMainPanel.SuspendLayout();
                 MainSplitContainer.Panel2.SuspendLayout();
-                ChooseReadmePanel.SuspendLayout();
+                ChooseReadmeLLPanel.SuspendPanelLayout();
 #endif
             }
             try
@@ -975,7 +973,7 @@ namespace AngelLoader.Forms
 
                 ViewHTMLReadmeButton.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
 
-                ChooseReadmeButton.SetTextAutoSize(LText.Global.OK, ((Size)ChooseReadmeButton.Tag).Width);
+                ChooseReadmeLLPanel.Localize();
 
                 #endregion
 
@@ -1037,7 +1035,7 @@ namespace AngelLoader.Forms
                     AddRemoveTagFLP.ResumeLayout();
                     PatchMainPanel.ResumeLayout();
                     MainSplitContainer.Panel2.ResumeLayout();
-                    ChooseReadmePanel.ResumeLayout();
+                    ChooseReadmeLLPanel.ResumePanelLayout();
                 }
 
                 // We can't do this while the layout is suspended, because then it won't have the right dimensions
@@ -2507,7 +2505,7 @@ namespace AngelLoader.Forms
             // Hide instead of clear to avoid zoom factor pain
             ShowReadme(false);
 
-            ChooseReadmePanel.Hide();
+            ChooseReadmeLLPanel.ShowPanel(false);
             ViewHTMLReadmeButton.Hide();
             WebSearchButton.Enabled = false;
 
@@ -2777,9 +2775,6 @@ namespace AngelLoader.Forms
 
             using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
 
-            // Debug
-            fm.SelectedReadme = "";
-
             if (!fm.SelectedReadme.IsEmpty())
             {
                 if (readmeFiles.Count > 1)
@@ -2797,7 +2792,7 @@ namespace AngelLoader.Forms
                 {
                     ReadmeRichTextBox.SetText(LText.ReadmeArea.NoReadmeFound);
 
-                    ChooseReadmePanel.Hide();
+                    ChooseReadmeLLPanel.ShowPanel(false);
                     ChooseReadmeComboBox.Hide();
                     ViewHTMLReadmeButton.Hide();
                     ShowReadme(true);
@@ -2807,9 +2802,6 @@ namespace AngelLoader.Forms
                 else if (readmeFiles.Count > 1)
                 {
                     var safeReadme = Core.DetectSafeReadme(readmeFiles, fm.Title);
-
-                    // Debug
-                    safeReadme = "";
 
                     if (!safeReadme.IsEmpty())
                     {
@@ -2821,12 +2813,14 @@ namespace AngelLoader.Forms
                         ShowReadme(false);
                         ViewHTMLReadmeButton.Hide();
 
-                        ChooseReadmeListBox.ClearFullItems();
-                        foreach (var f in readmeFiles) ChooseReadmeListBox.AddFullItem(f, f.GetFileNameFastBothDSC());
+                        ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
+
+                        ChooseReadmeLLPanel.ListBox.ClearFullItems();
+                        foreach (var f in readmeFiles) ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFastBothDSC());
 
                         ShowReadmeControls(false);
 
-                        ChooseReadmePanel.Show();
+                        ChooseReadmeLLPanel.ShowPanel(true);
 
                         return;
                     }
@@ -2839,7 +2833,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            ChooseReadmePanel.Hide();
+            ChooseReadmeLLPanel.ShowPanel(false);
 
             LoadReadme(fm);
 
@@ -3305,13 +3299,18 @@ namespace AngelLoader.Forms
 
         #region Choose readme
 
-        private void ChooseReadmeButton_Click(object sender, EventArgs e)
+        internal void ChooseReadmeButton_Click(object sender, EventArgs e)
         {
-            if (ChooseReadmeListBox.Items.Count == 0 || ChooseReadmeListBox.SelectedIndex == -1) return;
+            // This is only hooked up after construction, so no Construct() call needed
+
+            if (ChooseReadmeLLPanel.ListBox.Items.Count == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
+            {
+                return;
+            }
 
             var fm = FMsDGV.GetSelectedFM();
-            fm.SelectedReadme = ChooseReadmeListBox.SelectedBackingItem();
-            ChooseReadmePanel.Hide();
+            fm.SelectedReadme = ChooseReadmeLLPanel.ListBox.SelectedBackingItem();
+            ChooseReadmeLLPanel.ShowPanel(false);
 
             if (fm.SelectedReadme.ExtIsHtml())
             {
@@ -3322,9 +3321,9 @@ namespace AngelLoader.Forms
                 ShowReadme(true);
             }
 
-            if (ChooseReadmeListBox.Items.Count > 1)
+            if (ChooseReadmeLLPanel.ListBox.Items.Count > 1)
             {
-                ReadmeCB_FillAndSelect(ChooseReadmeListBox.BackingItems, fm.SelectedReadme);
+                ReadmeCB_FillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
                 ShowReadmeControls(CursorOverReadmeArea());
             }
             else

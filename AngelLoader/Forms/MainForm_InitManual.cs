@@ -180,10 +180,6 @@ namespace AngelLoader.Forms
             ZoomOutButton = new Button();
             ResetZoomButton = new Button();
             ChooseReadmeComboBox = new ComboBoxCustom();
-            ChooseReadmePanel = new Panel();
-            ChooseReadmeOKFLP = new FlowLayoutPanel();
-            ChooseReadmeButton = new Button();
-            ChooseReadmeListBox = new ListBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
 
@@ -225,8 +221,6 @@ namespace AngelLoader.Forms
             PatchTabPage.SuspendLayout();
             PatchMainPanel.SuspendLayout();
             PatchDMLsPanel.SuspendLayout();
-            ChooseReadmePanel.SuspendLayout();
-            ChooseReadmeOKFLP.SuspendLayout();
             SuspendLayout();
 
             #endregion
@@ -437,8 +431,6 @@ namespace AngelLoader.Forms
             MainSplitContainer.Panel2.Controls.Add(ZoomInButton);
             MainSplitContainer.Panel2.Controls.Add(ZoomOutButton);
             MainSplitContainer.Panel2.Controls.Add(ResetZoomButton);
-            MainSplitContainer.Panel2.Controls.Add(ChooseReadmeComboBox);
-            MainSplitContainer.Panel2.Controls.Add(ChooseReadmePanel);
             MainSplitContainer.Panel2.Controls.Add(ReadmeRichTextBox);
             MainSplitContainer.Panel2MinSize = 38;
             MainSplitContainer.Size = new Size(1671, 672);
@@ -1672,41 +1664,6 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox.SelectedIndexChanged += ChooseReadmeComboBox_SelectedIndexChanged;
             ChooseReadmeComboBox.DropDownClosed += ChooseReadmeComboBox_DropDownClosed;
             // 
-            // ChooseReadmePanel
-            // 
-            ChooseReadmePanel.Anchor = AnchorStyles.None;
-            ChooseReadmePanel.Controls.Add(ChooseReadmeOKFLP);
-            ChooseReadmePanel.Controls.Add(ChooseReadmeListBox);
-            // This gets centered later so no location is specified here
-            ChooseReadmePanel.Size = new Size(324, 161);
-            ChooseReadmePanel.TabIndex = 46;
-            ChooseReadmePanel.Visible = false;
-            // 
-            // ChooseReadmeOKFLP
-            // 
-            ChooseReadmeOKFLP.Controls.Add(ChooseReadmeButton);
-            ChooseReadmeOKFLP.FlowDirection = FlowDirection.RightToLeft;
-            ChooseReadmeOKFLP.Location = new Point(1, 134);
-            ChooseReadmeOKFLP.Size = new Size(320, 24);
-            ChooseReadmeOKFLP.TabIndex = 3;
-            // 
-            // ChooseReadmeButton
-            // 
-            ChooseReadmeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ChooseReadmeButton.AutoSize = true;
-            ChooseReadmeButton.Margin = new Padding(0);
-            ChooseReadmeButton.Padding = new Padding(6, 0, 6, 0);
-            ChooseReadmeButton.Height = 23;
-            ChooseReadmeButton.TabIndex = 48;
-            ChooseReadmeButton.UseVisualStyleBackColor = true;
-            ChooseReadmeButton.Click += ChooseReadmeButton_Click;
-            // 
-            // ChooseReadmeListBox
-            // 
-            ChooseReadmeListBox.FormattingEnabled = true;
-            ChooseReadmeListBox.Size = new Size(320, 134);
-            ChooseReadmeListBox.TabIndex = 47;
-            // 
             // ReadmeRichTextBox
             // 
             ReadmeRichTextBox.BackColor = SystemColors.Window;
@@ -1787,11 +1744,6 @@ namespace AngelLoader.Forms
 
             PatchDMLsPanel.ResumeLayout();
 
-            /* Deferred
-                ChooseReadmePanel.ResumeLayout();
-            */
-
-            ChooseReadmeOKFLP.ResumeLayout();
             ResumeLayout();
         }
     }
