@@ -531,7 +531,7 @@ set destDir="C:\AngelLoader_Public_Package\"
 set destDir="C:\AngelLoader\"
 )
 
-if $(ConfigurationName) == Debug (
+if not $(ConfigurationName) == Debug (
 xcopy "$(ProjectDir)Forms\MainForm.resx.temp" "$(ProjectDir)Forms\MainForm.resx" /y
 )
 del "$(ProjectDir)Forms\MainForm.resx.temp" /F
@@ -574,7 +574,7 @@ set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
 %25FenGen%25 -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
 rem %25FenGen%25 -main_form_backing "$(ProjectDir)\Forms\MainForm.Designer.cs" "$(ProjectDir)\Forms\MainForm_InitFast.cs"
 
-if $(ConfigurationName) == Debug (
+if not $(ConfigurationName) == Debug (
 %25FenGen%25 -resx_machete "$(ProjectDir)Forms\MainForm.resx" "dummy"
 )
 
