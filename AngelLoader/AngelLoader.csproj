@@ -531,6 +531,9 @@ set destDir="C:\AngelLoader_Public_Package\"
 set destDir="C:\AngelLoader\"
 )
 
+xcopy "$(ProjectDir)Forms\MainForm.resx.temp" "$(ProjectDir)Forms\MainForm.resx" /y
+del "$(ProjectDir)Forms\MainForm.resx.temp" /F
+
 xcopy "$(TargetDir)AngelLoader.exe" %25destDir%25 /y
 xcopy "$(TargetDir)AngelLoader.exe.config" %25destDir%25 /y
 
@@ -568,6 +571,7 @@ set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
 %25FenGen%25 -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
 %25FenGen%25 -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
 rem %25FenGen%25 -main_form_backing "$(ProjectDir)\Forms\MainForm.Designer.cs" "$(ProjectDir)\Forms\MainForm_InitFast.cs"
+%25FenGen%25 -resx_machete "$(ProjectDir)Forms\MainForm.resx" "dummy"
 
 if $(ConfigurationName) == Release_Beta (
 %25FenGen%25 -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"

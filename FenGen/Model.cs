@@ -35,7 +35,8 @@ namespace FenGen
         Config,
         Language,
         Version,
-        MainFormBacking
+        MainFormBacking,
+        ResXMachete
     }
 
     internal enum VersionType
@@ -270,6 +271,9 @@ namespace FenGen
                 case "-main_form_backing":
                     GenType = GenType.MainFormBacking;
                     break;
+                case "-resx_machete":
+                    GenType = GenType.ResXMachete;
+                    break;
                 default:
                     ExitIfRelease();
                     break;
@@ -297,6 +301,11 @@ namespace FenGen
             if (GenType == GenType.MainFormBacking)
             {
                 MainFormBacking.Generate(SourceFile, DestFile);
+                return;
+            }
+            if (GenType == GenType.ResXMachete)
+            {
+                ResXMachete.Generate(SourceFile);
                 return;
             }
 

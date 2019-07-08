@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
@@ -1286,6 +1287,24 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
+            var xr = new XmlDocument();
+            xr.Load(@"C:\Users\Brian\Documents\Visual Studio 2017\Projects\AngelLoader\AngelLoader\Forms\MainForm.resx");
+            var root = xr.DocumentElement;
+            //var nodes = root.SelectNodes("descendant::data[ends-with(@name,'.ImageStream')]");
+            var nodes = root.SelectNodes("data[substring(@name, string-length(@name) - string-length('.ImageStream') + 1) = '.ImageStream']");
+            if (nodes != null && nodes.Count > 0)
+            {
+                foreach (XmlNode node in nodes)
+                {
+                    root.RemoveChild(node);
+                }
+            }
+            Trace.WriteLine(nodes[0].Attributes[0].Value);
+
+            xr.Save(@"C:\xml-resx-test.resx");
+
+            //object[ends-with(@name,'_1')
+            //object[substring(@name, string-length(@name) - string-length(@name) +1) = '_1']
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
