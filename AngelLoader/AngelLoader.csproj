@@ -234,6 +234,10 @@
     <Compile Include="CustomControls\SettingsForm\PathsPage.Designer.cs">
       <DependentUpon>PathsPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\Static_LazyLoaded\AltTitlesLLMenu.cs" />
+    <Compile Include="CustomControls\Static_LazyLoaded\ImportFromLLMenu.cs" />
+    <Compile Include="CustomControls\Static_LazyLoaded\PlayOriginalGameLLMenu.cs" />
+    <Compile Include="CustomControls\Static_LazyLoaded\TopRightLLMenu.cs" />
     <Compile Include="CustomControls\TabControlCustom.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -257,17 +261,11 @@
     </Compile>
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
-    <Compile Include="Forms\ImportFromMenu.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\IView.cs" />
     <Compile Include="Forms\MainForm_InitManual.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MainForm_Progress.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\PlayOriginalGameMenu.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\PlayWithOptions.cs">
@@ -281,9 +279,6 @@
     </Compile>
     <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\TopRightMenu.cs">
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="InstallAndPlay.cs" />
     <Compile Include="Forms\FilterRatingForm.cs">

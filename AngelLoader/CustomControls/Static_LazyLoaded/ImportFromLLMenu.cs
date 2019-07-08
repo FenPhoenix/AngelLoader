@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
+using AngelLoader.Forms;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.CustomControls.Static_LazyLoaded
 {
     internal static class ImportFromLLMenu
     {

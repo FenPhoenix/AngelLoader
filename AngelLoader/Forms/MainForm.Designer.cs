@@ -186,7 +186,6 @@
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -867,6 +866,7 @@
             // 
             // FilterTitleTextBox
             // 
+            this.FilterTitleTextBox.DisallowedCharacters = "";
             this.FilterTitleTextBox.Location = new System.Drawing.Point(124, 3);
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
@@ -906,6 +906,7 @@
             // 
             // FilterAuthorTextBox
             // 
+            this.FilterAuthorTextBox.DisallowedCharacters = "";
             this.FilterAuthorTextBox.Location = new System.Drawing.Point(324, 3);
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
@@ -2102,17 +2103,11 @@
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             // 
-            // 
             // AddTagMenu
             // 
             this.AddTagMenu.Name = "AddTagMenu";
             this.AddTagMenu.Size = new System.Drawing.Size(61, 4);
             this.AddTagMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.AddTagMenu_Closed);
-            // 
-            // AltTitlesMenu
-            // 
-            this.AltTitlesMenu.Name = "AltTitlesMenu";
-            this.AltTitlesMenu.Size = new System.Drawing.Size(61, 4);
             // 
             // MainForm
             // 
@@ -2278,7 +2273,6 @@
         private CustomControls.ToolStripSeparatorCustom FilterGamesLeftSep;
         private System.Windows.Forms.TextBox EditFMTitleTextBox;
         private CustomControls.DropDownButton EditFMAltTitlesDropDownButton;
-        private System.Windows.Forms.ContextMenuStrip AltTitlesMenu;
         private CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
         private CustomControls.ToolStripButtonCustom FilterByFinishedButton;
         private CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;

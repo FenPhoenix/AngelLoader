@@ -187,7 +187,6 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
             AddTagMenu = new ContextMenuStrip(components);
-            AltTitlesMenu = new ContextMenuStrip(components);
 
             #endregion
 

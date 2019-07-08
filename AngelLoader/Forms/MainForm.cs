@@ -12,6 +12,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
+using AngelLoader.CustomControls.Static_LazyLoaded;
 using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
@@ -518,7 +519,6 @@ namespace AngelLoader.Forms
             // to be shown in the wrong location when you call Show() with the height as a parameter. Setting a
             // menu's size to empty causes it to autosize back to its actual proper size. I swear, this stuff.
 
-            AltTitlesMenu.Size = Size.Empty;
             AddTagMenu.Size = Size.Empty;
 
             #endregion
@@ -2511,7 +2511,7 @@ namespace AngelLoader.Forms
             BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
             StatsScanCustomResourcesButton.Hide();
 
-            AltTitlesMenu.Items.Clear();
+            AltTitlesLLMenu.ClearItems();
 
             using (new DisableEvents(this))
             {
@@ -2699,7 +2699,7 @@ namespace AngelLoader.Forms
             {
                 EditFMTitleTextBox.Text = fm.Title;
 
-                AltTitlesMenu.Items.Clear();
+                AltTitlesLLMenu.ClearItems();
 
                 if (fm.AltTitles.Count == 0)
                 {
@@ -2714,7 +2714,8 @@ namespace AngelLoader.Forms
                         item.Click += EditFMAltTitlesMenuItems_Click;
                         altTitlesMenuItems.Add(item);
                     }
-                    AltTitlesMenu.Items.AddRange(altTitlesMenuItems.ToArray());
+                    AltTitlesLLMenu.AddRange(altTitlesMenuItems);
+
                     EditFMAltTitlesDropDownButton.Enabled = true;
                 }
 
@@ -3371,7 +3372,11 @@ namespace AngelLoader.Forms
 
         #region Edit FM tab
 
-        private void EditFMAltTitlesDropDownButton_Click(object sender, EventArgs e) => ShowMenu(AltTitlesMenu, EditFMAltTitlesDropDownButton, MenuPos.BottomLeft);
+        private void EditFMAltTitlesDropDownButton_Click(object sender, EventArgs e)
+        {
+            AltTitlesLLMenu.Construct(this, components);
+            ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesDropDownButton, MenuPos.BottomLeft);
+        }
 
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {

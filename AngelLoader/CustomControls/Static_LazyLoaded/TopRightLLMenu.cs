@@ -4,9 +4,9 @@ using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using AngelLoader.CustomControls;
+using AngelLoader.Forms;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.CustomControls.Static_LazyLoaded
 {
     internal static class TopRightLLMenu
     {
