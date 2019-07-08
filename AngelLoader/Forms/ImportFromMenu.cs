@@ -1,27 +1,28 @@
-﻿using System.Windows.Forms;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm
+    internal static class ImportFromLLMenu
     {
-        private static class ImportFromMenuBacking
-        {
-            internal static bool Constructed;
-        }
+        private static bool _constructed;
 
-        private void ConstructImportFromMenu()
+        internal static ContextMenuStrip ImportFromMenu;
+        private static ToolStripMenuItem ImportFromDarkLoaderMenuItem;
+        private static ToolStripMenuItem ImportFromFMSelMenuItem;
+        private static ToolStripMenuItem ImportFromNewDarkLoaderMenuItem;
+
+        internal static void Construct(MainForm form, IContainer components)
         {
-            if (ImportFromMenuBacking.Constructed) return;
+            if (_constructed) return;
+
+            ImportFromMenu = new ContextMenuStrip(components);
+
             // Not localized because they consist solely of proper names! Don't remove these!
             ImportFromDarkLoaderMenuItem = new ToolStripMenuItem { Text = @"DarkLoader" };
             ImportFromFMSelMenuItem = new ToolStripMenuItem { Text = @"FMSel" };
             ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItem { Text = @"NewDarkLoader" };
 
-            ImportFromDarkLoaderMenuItem.Click += ImportFromDarkLoaderMenuItem_Click;
-            ImportFromFMSelMenuItem.Click += ImportFromFMSelMenuItem_Click;
-            ImportFromNewDarkLoaderMenuItem.Click += ImportFromNewDarkLoaderMenuItem_Click;
-
-            ImportFromMenu = new ContextMenuStrip(components);
             ImportFromMenu.Items.AddRange(new ToolStripItem[]
             {
                 ImportFromDarkLoaderMenuItem,
@@ -29,7 +30,11 @@ namespace AngelLoader.Forms
                 ImportFromNewDarkLoaderMenuItem
             });
 
-            ImportFromMenuBacking.Constructed = true;
+            ImportFromDarkLoaderMenuItem.Click += form.ImportFromDarkLoaderMenuItem_Click;
+            ImportFromFMSelMenuItem.Click += form.ImportFromFMSelMenuItem_Click;
+            ImportFromNewDarkLoaderMenuItem.Click += form.ImportFromNewDarkLoaderMenuItem_Click;
+
+            _constructed = true;
         }
     }
 }

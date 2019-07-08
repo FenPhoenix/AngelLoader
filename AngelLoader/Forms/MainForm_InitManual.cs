@@ -188,11 +188,6 @@ namespace AngelLoader.Forms
             MainToolTip = new ToolTip(components);
             AddTagMenu = new ContextMenuStrip(components);
             AltTitlesMenu = new ContextMenuStrip(components);
-            TRM_StatsMenuItem = new ToolStripMenuItem();
-            TRM_EditFMMenuItem = new ToolStripMenuItem();
-            TRM_CommentMenuItem = new ToolStripMenuItem();
-            TRM_TagsMenuItem = new ToolStripMenuItem();
-            TRM_PatchMenuItem = new ToolStripMenuItem();
 
             #endregion
 

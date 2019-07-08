@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
@@ -7,97 +8,101 @@ using AngelLoader.CustomControls;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm
+    internal static class TopRightLLMenu
     {
-        private static class TopRightMenuBacking
-        {
-            internal static bool Constructed;
-            internal static readonly bool[] CheckedStates = { true, true, true, true, true };
-        }
+        private static bool _constructed;
+        private static readonly bool[] _checkedStates = { true, true, true, true, true };
 
-        private void ConstructTopRightMenu()
+        internal static ContextMenuStripCustom Menu;
+        private static ToolStripMenuItem StatsMenuItem;
+        private static ToolStripMenuItem EditFMMenuItem;
+        private static ToolStripMenuItem CommentMenuItem;
+        private static ToolStripMenuItem TagsMenuItem;
+        private static ToolStripMenuItem PatchMenuItem;
+
+        internal static void Construct(MainForm form, IContainer components)
         {
-            if (TopRightMenuBacking.Constructed) return;
+            if (_constructed) return;
 
             #region Instantiation
 
-            TopRightMenu = new ContextMenuStripCustom(components) { Name = nameof(TopRightMenu) };
-            TopRightMenu.Items.AddRange(new ToolStripItem[]
+            Menu = new ContextMenuStripCustom(components) { Name = nameof(Menu) };
+            Menu.Items.AddRange(new ToolStripItem[]
             {
-                (TRM_StatsMenuItem = new ToolStripMenuItem
+                (StatsMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(TRM_StatsMenuItem),
-                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Statistics],
+                    Name = nameof(StatsMenuItem),
+                    Checked = _checkedStates[(int)TopRightTab.Statistics],
                     CheckOnClick = true
                 }),
-                (TRM_EditFMMenuItem = new ToolStripMenuItem
+                (EditFMMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(TRM_EditFMMenuItem),
-                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.EditFM],
+                    Name = nameof(EditFMMenuItem),
+                    Checked = _checkedStates[(int)TopRightTab.EditFM],
                     CheckOnClick = true
                 }),
-                (TRM_CommentMenuItem = new ToolStripMenuItem
+                (CommentMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(TRM_CommentMenuItem),
-                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Comment],
+                    Name = nameof(CommentMenuItem),
+                    Checked = _checkedStates[(int)TopRightTab.Comment],
                     CheckOnClick = true
                 }),
-                (TRM_TagsMenuItem = new ToolStripMenuItem
+                (TagsMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(TRM_TagsMenuItem),
-                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Tags],
+                    Name = nameof(TagsMenuItem),
+                    Checked = _checkedStates[(int)TopRightTab.Tags],
                     CheckOnClick = true
                 }),
-                (TRM_PatchMenuItem = new ToolStripMenuItem
+                (PatchMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(TRM_PatchMenuItem),
-                    Checked = TopRightMenuBacking.CheckedStates[(int)TopRightTab.Patch],
+                    Name = nameof(PatchMenuItem),
+                    Checked = _checkedStates[(int)TopRightTab.Patch],
                     CheckOnClick = true
                 })
             });
 
             #endregion
 
-            TopRightMenu.SetPreventCloseOnClickItems(TopRightMenu.Items.Cast<ToolStripMenuItem>().ToArray());
+            Menu.SetPreventCloseOnClickItems(Menu.Items.Cast<ToolStripMenuItem>().ToArray());
 
             #region Event hookups
 
-            TRM_StatsMenuItem.Click += TopRightMenu_MenuItems_Click;
-            TRM_EditFMMenuItem.Click += TopRightMenu_MenuItems_Click;
-            TRM_CommentMenuItem.Click += TopRightMenu_MenuItems_Click;
-            TRM_TagsMenuItem.Click += TopRightMenu_MenuItems_Click;
-            TRM_PatchMenuItem.Click += TopRightMenu_MenuItems_Click;
+            StatsMenuItem.Click += form.TopRightMenu_MenuItems_Click;
+            EditFMMenuItem.Click += form.TopRightMenu_MenuItems_Click;
+            CommentMenuItem.Click += form.TopRightMenu_MenuItems_Click;
+            TagsMenuItem.Click += form.TopRightMenu_MenuItems_Click;
+            PatchMenuItem.Click += form.TopRightMenu_MenuItems_Click;
 
             #endregion
 
-            TopRightMenuBacking.Constructed = true;
-            LocalizeTopRightMenu();
+            _constructed = true;
+            Localize();
         }
 
-        private void SetTopRightMenuItemChecked(int index, bool value)
+        internal static void SetItemChecked(int index, bool value)
         {
-            if (TopRightMenuBacking.Constructed)
+            if (_constructed)
             {
-                ((ToolStripMenuItem)TopRightMenu.Items[index]).Checked = value;
+                ((ToolStripMenuItem)Menu.Items[index]).Checked = value;
             }
             else
             {
-                TopRightMenuBacking.CheckedStates[index] = value;
+                _checkedStates[index] = value;
             }
         }
 
-        internal void LocalizeTopRightMenu()
+        internal static void Localize()
         {
-            Debug.Assert(TopRightMenuBacking.CheckedStates.Length == TopRightTabEnumStatic.TopRightTabsCount,
-                nameof(TopRightMenuBacking.CheckedStates) + ".Length != " + nameof(TopRightTabEnumStatic.TopRightTabsCount) + ".Length");
+            Debug.Assert(_checkedStates.Length == TopRightTabEnumStatic.TopRightTabsCount,
+                nameof(_checkedStates) + ".Length != " + nameof(TopRightTabEnumStatic.TopRightTabsCount) + ".Length");
 
-            if (!TopRightMenuBacking.Constructed) return;
+            if (!_constructed) return;
 
-            TRM_StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
-            TRM_EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
-            TRM_CommentMenuItem.Text = LText.CommentTab.TabText.EscapeAmpersands();
-            TRM_TagsMenuItem.Text = LText.TagsTab.TabText.EscapeAmpersands();
-            TRM_PatchMenuItem.Text = LText.PatchTab.TabText.EscapeAmpersands();
+            StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
+            EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
+            CommentMenuItem.Text = LText.CommentTab.TabText.EscapeAmpersands();
+            TagsMenuItem.Text = LText.TagsTab.TabText.EscapeAmpersands();
+            PatchMenuItem.Text = LText.PatchTab.TabText.EscapeAmpersands();
         }
     }
 }

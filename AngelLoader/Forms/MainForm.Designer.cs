@@ -184,10 +184,6 @@
             this.ChooseReadmeButton = new System.Windows.Forms.Button();
             this.ChooseReadmeListBox = new AngelLoader.CustomControls.ListBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.PlayOriginalThief1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief2MPMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PlayOriginalThief3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.AddTagMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AltTitlesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -2223,15 +2219,6 @@
         private System.Windows.Forms.Label FilterTitleLabel;
         private AngelLoader.CustomControls.TextBoxCustom FilterTitleTextBox;
         private System.Windows.Forms.Button PlayOriginalGameButton;
-        private System.Windows.Forms.ContextMenuStrip PlayOriginalGameMenu;
-        private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief1MenuItem;
-        private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief2MenuItem;
-        private AngelLoader.CustomControls.ContextMenuStripCustom TopRightMenu;
-        private System.Windows.Forms.ToolStripMenuItem TRM_StatsMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_EditFMMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_CommentMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_TagsMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem TRM_PatchMenuItem;
         private System.Windows.Forms.TabControl GamesTabControl;
         private System.Windows.Forms.TabPage Thief1TabPage;
         private System.Windows.Forms.TabPage Thief2TabPage;
@@ -2311,7 +2298,6 @@
         private CustomControls.ToolStripButtonCustom ClearFiltersButton;
         private CustomControls.ToolStripButtonCustom FilterByThief3Button;
         private System.Windows.Forms.TabPage Thief3TabPage;
-        private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief3MenuItem;
         private CustomControls.ToolStripButtonCustom RefreshFiltersButton;
         private CustomControls.ToolStripSeparatorCustom ResetLayoutLeftSep;
         private System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
@@ -2322,10 +2308,6 @@
         private CustomControls.ToolStripSeparatorCustom FilterLastPlayedLeftSep;
         private CustomControls.ToolStripCustom FilterAuthorLeftSepToolStrip;
         private CustomControls.ToolStripSeparatorCustom FilterAuthorLeftSep;
-        private System.Windows.Forms.ContextMenuStrip ImportFromMenu;
-        private System.Windows.Forms.ToolStripMenuItem ImportFromDarkLoaderMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ImportFromFMSelMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ImportFromNewDarkLoaderMenuItem;
         private System.Windows.Forms.Button ZoomInButton;
         private System.Windows.Forms.Button ZoomOutButton;
         private System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
@@ -2368,7 +2350,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         private CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
         private System.Windows.Forms.Button TopRightMenuButton;
-        private System.Windows.Forms.ToolStripMenuItem PlayOriginalThief2MPMenuItem;
     }
 }
-

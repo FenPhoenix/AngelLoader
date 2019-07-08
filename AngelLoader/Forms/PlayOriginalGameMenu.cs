@@ -1,53 +1,58 @@
-﻿using System.Windows.Forms;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Properties;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm
+    internal static class PlayOriginalGameLLMenu
     {
-        private static class PlayOriginalGameMenuBacking
+        private static bool _constructed;
+
+        internal static ContextMenuStrip Menu;
+        internal static ToolStripMenuItem Thief1MenuItem;
+        internal static ToolStripMenuItem Thief2MenuItem;
+        internal static ToolStripMenuItem Thief2MPMenuItem;
+        internal static ToolStripMenuItem Thief3MenuItem;
+
+        internal static void Construct(MainForm form, IContainer components)
         {
-            internal static bool Constructed;
-        }
+            if (_constructed) return;
 
-        private void ConstructPlayOriginalGameMenu()
-        {
-            if (PlayOriginalGameMenuBacking.Constructed) return;
+            Menu = new ContextMenuStrip(components);
+            
+            Thief1MenuItem = new ToolStripMenuItem { Image = Resources.Thief1_16 };
+            Thief2MenuItem = new ToolStripMenuItem { Image = Resources.Thief2_16 };
+            Thief2MPMenuItem = new ToolStripMenuItem { Image = Resources.Thief2_16 };
+            Thief3MenuItem = new ToolStripMenuItem { Image = Resources.Thief3_16 };
 
-            PlayOriginalThief1MenuItem = new ToolStripMenuItem { Image = Resources.Thief1_16 };
-            PlayOriginalThief2MenuItem = new ToolStripMenuItem { Image = Resources.Thief2_16 };
-            PlayOriginalThief2MPMenuItem = new ToolStripMenuItem { Image = Resources.Thief2_16 };
-            PlayOriginalThief3MenuItem = new ToolStripMenuItem { Image = Resources.Thief3_16 };
-
-            PlayOriginalThief1MenuItem.Click += PlayOriginalGameMenuItem_Click;
-            PlayOriginalThief2MenuItem.Click += PlayOriginalGameMenuItem_Click;
-            PlayOriginalThief2MPMenuItem.Click += PlayOriginalGameMenuItem_Click;
-            PlayOriginalThief3MenuItem.Click += PlayOriginalGameMenuItem_Click;
-
-            PlayOriginalGameMenu = new ContextMenuStrip(components);
-            PlayOriginalGameMenu.Items.AddRange(new ToolStripItem[]
+            Menu.Items.AddRange(new ToolStripItem[]
             {
-                PlayOriginalThief1MenuItem,
-                PlayOriginalThief2MenuItem,
-                PlayOriginalThief2MPMenuItem,
-                PlayOriginalThief3MenuItem
+                Thief1MenuItem,
+                Thief2MenuItem,
+                Thief2MPMenuItem,
+                Thief3MenuItem
             });
+            
+            Thief1MenuItem.Click += form.PlayOriginalGameMenuItem_Click;
+            Thief2MenuItem.Click += form.PlayOriginalGameMenuItem_Click;
+            Thief2MPMenuItem.Click += form.PlayOriginalGameMenuItem_Click;
+            Thief3MenuItem.Click += form.PlayOriginalGameMenuItem_Click;
 
-            PlayOriginalGameMenuBacking.Constructed = true;
+            _constructed = true;
 
-            LocalizePlayOriginalGameMenuItems();
+            Localize();
         }
 
-        private void LocalizePlayOriginalGameMenuItems()
+        internal static void Localize()
         {
-            if (!PlayOriginalGameMenuBacking.Constructed) return;
+            if (!_constructed) return;
 
-            PlayOriginalThief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
-            PlayOriginalThief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2.EscapeAmpersands();
-            PlayOriginalThief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer.EscapeAmpersands();
-            PlayOriginalThief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();
+            Thief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
+            Thief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2.EscapeAmpersands();
+            Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer.EscapeAmpersands();
+            Thief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();
         }
     }
 }

@@ -437,7 +437,7 @@ namespace AngelLoader.Forms
             for (int i = 0; i < TopRightTabsCount; i++)
             {
                 TopRightTabControl.ShowTab(TopRightTabsInEnumOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
-                SetTopRightMenuItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
+                TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
             }
 
             #endregion
@@ -875,13 +875,13 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                LocalizePlayOriginalGameMenuItems();
+                PlayOriginalGameLLMenu.Localize();
 
                 #region Top-right tabs area
 
                 #region Show/hide tabs menu
 
-                LocalizeTopRightMenu();
+                TopRightLLMenu.Localize();
 
                 #endregion
 
@@ -2164,26 +2164,26 @@ namespace AngelLoader.Forms
 
         private void PlayOriginalGameButton_Click(object sender, EventArgs e)
         {
-            ConstructPlayOriginalGameMenu();
+            PlayOriginalGameLLMenu.Construct(this, components);
 
-            PlayOriginalThief1MenuItem.Enabled = !Config.T1Exe.IsEmpty();
-            PlayOriginalThief2MenuItem.Enabled = !Config.T2Exe.IsEmpty();
-            PlayOriginalThief3MenuItem.Enabled = !Config.T3Exe.IsEmpty();
-            PlayOriginalThief2MPMenuItem.Visible = Config.T2MPDetected;
+            PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.T1Exe.IsEmpty();
+            PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.T2Exe.IsEmpty();
+            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.T3Exe.IsEmpty();
+            PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
 
-            ShowMenu(PlayOriginalGameMenu, PlayOriginalGameButton, MenuPos.TopRight);
+            ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
 
-        private void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
+        internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
             var item = (ToolStripMenuItem)sender;
 
             var game =
-                item == PlayOriginalThief1MenuItem ? Game.Thief1 :
-                item == PlayOriginalThief2MenuItem || item == PlayOriginalThief2MPMenuItem ? Game.Thief2 :
+                item == PlayOriginalGameLLMenu.Thief1MenuItem ? Game.Thief1 :
+                item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Game.Thief2 :
                 Game.Thief3;
 
-            bool playMP = item == PlayOriginalThief2MPMenuItem;
+            bool playMP = item == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
             InstallAndPlay.PlayOriginalGame(game, playMP);
         }
@@ -3740,11 +3740,11 @@ namespace AngelLoader.Forms
 
         private void ImportButton_Click(object sender, EventArgs e)
         {
-            ConstructImportFromMenu();
-            ShowMenu(ImportFromMenu, ImportButton, MenuPos.TopLeft);
+            ImportFromLLMenu.Construct(this, components);
+            ShowMenu(ImportFromLLMenu.ImportFromMenu, ImportButton, MenuPos.TopLeft);
         }
 
-        private async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
+        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
         {
             string iniFile;
             bool importFMData;
@@ -3774,9 +3774,9 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
-        private async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
+        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
 
-        private async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
+        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
         private async Task ImportFromNDLOrFMSel(ImportType importType)
         {
@@ -3922,14 +3922,14 @@ namespace AngelLoader.Forms
 
         private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
 
-        private void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
+        internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
         {
             var s = (ToolStripMenuItem)sender;
 
             TabPage tab = null;
             for (int i = 0; i < TopRightTabsCount; i++)
             {
-                if (s == (ToolStripMenuItem)TopRightMenu.Items[i])
+                if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])
                 {
                     tab = TopRightTabsInEnumOrder[i];
                     break;
@@ -3949,8 +3949,8 @@ namespace AngelLoader.Forms
 
         private void TopRightMenuButton_Click(object sender, EventArgs e)
         {
-            ConstructTopRightMenu();
-            ShowMenu(TopRightMenu, TopRightMenuButton, MenuPos.BottomLeft);
+            TopRightLLMenu.Construct(this, components);
+            ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
         }
     }
 }
