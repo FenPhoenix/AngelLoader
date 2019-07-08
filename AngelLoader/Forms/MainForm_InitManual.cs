@@ -431,6 +431,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.Panel2.Controls.Add(ZoomInButton);
             MainSplitContainer.Panel2.Controls.Add(ZoomOutButton);
             MainSplitContainer.Panel2.Controls.Add(ResetZoomButton);
+            MainSplitContainer.Panel2.Controls.Add(ChooseReadmeComboBox);
             MainSplitContainer.Panel2.Controls.Add(ReadmeRichTextBox);
             MainSplitContainer.Panel2MinSize = 38;
             MainSplitContainer.Size = new Size(1671, 672);
