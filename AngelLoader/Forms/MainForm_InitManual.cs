@@ -186,7 +186,6 @@ namespace AngelLoader.Forms
             ChooseReadmeListBox = new ListBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            AddTagMenu = new ContextMenuStrip(components);
 
             #endregion
 
@@ -1494,7 +1493,7 @@ namespace AngelLoader.Forms
             AddTagFromListButton.Height = 23;
             AddTagFromListButton.TabIndex = 0;
             AddTagFromListButton.UseVisualStyleBackColor = true;
-            AddTagFromListButton.Click += TagPresetsButton_Click;
+            AddTagFromListButton.Click += AddTagFromListButton_Click;
             // 
             // TagsTreeView
             // 
@@ -1721,10 +1720,6 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.Dock = DockStyle.Fill;
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
-            // 
-            // AddTagMenu
-            // 
-            AddTagMenu.Closed += AddTagMenu_Closed;
             // 
             // MainForm
             // 

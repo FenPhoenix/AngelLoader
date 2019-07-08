@@ -513,13 +513,16 @@ namespace AngelLoader.Forms
 
             #region Autosize menus
 
+            // NOTE: This region is now empty cause all the menus are now programmatically defined and lazy-loaded,
+            // but for future reference, this is how you gotta do it if you want to keep them designer-generated:
+
+            // --- old notes ---
+
             // This is another hack to fix behavior caused by the UI designer. When you select a menu, it appears
             // and adds an extra "Type Here" item to the bottom. This item counts as part of the height, and so
             // the height ends up including an item that only actually appears in the designer, causing the menu
             // to be shown in the wrong location when you call Show() with the height as a parameter. Setting a
             // menu's size to empty causes it to autosize back to its actual proper size. I swear, this stuff.
-
-            AddTagMenu.Size = Size.Empty;
 
             #endregion
 
@@ -3203,10 +3206,12 @@ namespace AngelLoader.Forms
 
         private void AddTagButton_Click(object sender, EventArgs e) => AddTagOperation(FMsDGV.GetSelectedFM(), AddTagTextBox.Text);
 
-        private void TagPresetsButton_Click(object sender, EventArgs e)
+        private void AddTagFromListButton_Click(object sender, EventArgs e)
         {
             GlobalTags.SortAndMoveMiscToEnd();
-            AddTagMenu.Items.Clear();
+
+            AddTagLLMenu.Construct(this, components);
+            AddTagLLMenu.Menu.Items.Clear();
 
             var addTagMenuItems = new List<ToolStripItem>();
             foreach (var catAndTag in GlobalTags)
@@ -3250,9 +3255,9 @@ namespace AngelLoader.Forms
                 }
             }
 
-            AddTagMenu.Items.AddRange(addTagMenuItems.ToArray());
+            AddTagLLMenu.Menu.Items.AddRange(addTagMenuItems.ToArray());
 
-            ShowMenu(AddTagMenu, AddTagFromListButton, MenuPos.LeftDown);
+            ShowMenu(AddTagLLMenu.Menu, AddTagFromListButton, MenuPos.LeftDown);
         }
 
         private void AddTagMenuItem_Click(object sender, EventArgs e)
@@ -3282,7 +3287,11 @@ namespace AngelLoader.Forms
 
         // Just to keep things in a known state (clearing items also removes their event hookups, which is
         // convenient)
-        private void AddTagMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e) => AddTagMenu.Items.Clear();
+        internal void AddTagMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            // This handler will only be hooked up after construction, so we don't need to call Construct()
+            AddTagLLMenu.Menu.Items.Clear();
+        }
 
         #endregion
 
