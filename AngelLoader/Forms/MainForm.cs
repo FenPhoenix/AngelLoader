@@ -78,9 +78,6 @@ namespace AngelLoader.Forms
 
         private DataGridViewImageColumn RatingImageColumn;
 
-        // TODO: I suspect this can be removed entirely.
-        private bool InitialSelectedFMHasBeenSet;
-
         public bool EventsDisabled { get; set; }
         public bool KeyPressesDisabled { get; set; }
 
@@ -586,7 +583,8 @@ namespace AngelLoader.Forms
                 await Core.ScanNewFMsForGameType(useViewListGamesNull: true);
             }
 
-            await SetFilter(suppressSuspendResume: true);
+            // Suppress selection change so we don't have to use the old InitialSelectedFMHasBeenSet flag
+            await SetFilter(keepSelection: true, suppressSuspendResume: true, forceSuppressSelectionChangedEvent: true);
 
             FMsDGV.Focus();
 
@@ -1440,10 +1438,11 @@ namespace AngelLoader.Forms
         }
 
         public async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
-            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
+            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
+            bool keepSelection = false)
         {
             SortByCurrentColumn();
-            await SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
+            await SetFilter(keepSelection, suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -1451,7 +1450,7 @@ namespace AngelLoader.Forms
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private async Task SetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
+        private async Task SetFilter(bool keepSelection = false, bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -1511,6 +1510,7 @@ namespace AngelLoader.Forms
                 {
                     await RefreshFMsList(
                         refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
+                        keepSelection: keepSelection,
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume);
                 }
@@ -1838,6 +1838,7 @@ namespace AngelLoader.Forms
             await RefreshFMsList(
                 refreshReadme: forceRefreshReadme || FMsDGV.FilterShownIndexList.Count == 0 ||
                                (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
+                keepSelection: keepSelection,
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                 suppressSuspendResume);
         }
@@ -2330,8 +2331,8 @@ namespace AngelLoader.Forms
             await DisplaySelectedFM(refreshReadme);
         }
 
-        public async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
-            bool suppressSuspendResume = false)
+        public async Task RefreshFMsList(bool refreshReadme, bool keepSelection = false,
+            bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
@@ -2344,12 +2345,11 @@ namespace AngelLoader.Forms
                 {
                     if (!suppressSuspendResume) FMsDGV.ResumeDrawing();
                     ClearShownData();
-                    InitialSelectedFMHasBeenSet = true;
                 }
                 else
                 {
                     int row;
-                    if (InitialSelectedFMHasBeenSet)
+                    if (!keepSelection)
                     {
                         row = 0;
                         FMsDGV.FirstDisplayedScrollingRowIndex = 0;
@@ -2368,19 +2368,15 @@ namespace AngelLoader.Forms
                         refreshReadme = true;
                     }
 
-                    using (!InitialSelectedFMHasBeenSet ? new DisableEvents(this) : null)
-                    {
-                        FMsDGV.Rows[row].Selected = true;
-                        FMsDGV.SelectProperly();
-                    }
+                    if (keepSelection) EventsDisabled = true;
+                    FMsDGV.Rows[row].Selected = true;
+                    FMsDGV.SelectProperly();
 
                     // Resume drawing before loading the readme; that way the list will update instantly even
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
                     // and understand why it takes a sec. Otherwise, it looks like merely changing tabs brings
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
                     if (!suppressSuspendResume) FMsDGV.ResumeDrawing();
-
-                    InitialSelectedFMHasBeenSet = true;
 
                     await DisplaySelectedFM(refreshReadme);
                 }
@@ -2466,11 +2462,6 @@ namespace AngelLoader.Forms
             }
             else
             {
-                // Working with an event-driven GUI in general is okay, but initializing one is HELL. IN. A. CAN.
-                // Constantly babysitting the damn thing with global flags all over the place to tell it to STOP
-                // DOING SHIT WHILE I'M TRYING TO SET FIRST VALUES. Argh.
-                if (!InitialSelectedFMHasBeenSet) return;
-
                 FMsDGV.SelectProperly();
 
                 await DisplaySelectedFM(refreshReadme: true);
@@ -3048,8 +3039,7 @@ namespace AngelLoader.Forms
 
             SetUIFilterValues(gameFilter);
 
-            InitialSelectedFMHasBeenSet = false;
-            await SortAndSetFilter();
+            await SortAndSetFilter(keepSelection: true);
         }
 
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
