@@ -1451,7 +1451,7 @@ namespace AngelLoader.Forms
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
         private async Task SetFilter(bool keepSelection = false, bool suppressRefresh = false, bool forceRefreshReadme = false,
-            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
+            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false, string installedName = null)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
@@ -1512,7 +1512,8 @@ namespace AngelLoader.Forms
                         refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                         keepSelection: keepSelection,
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
-                        suppressSuspendResume);
+                        suppressSuspendResume: suppressSuspendResume,
+                        installedName: installedName);
                 }
                 return;
             }
@@ -1840,7 +1841,8 @@ namespace AngelLoader.Forms
                                (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
                 keepSelection: keepSelection,
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
-                suppressSuspendResume);
+                suppressSuspendResume: suppressSuspendResume,
+                installedName: installedName);
         }
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
@@ -2059,6 +2061,8 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Left) return;
 
+            string instName = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFM().InstalledDir : null;
+
             var newSortDirection =
                 e.ColumnIndex == FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
                     ? SortOrder.Descending
@@ -2069,11 +2073,12 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered)
             {
                 // SetFilter() calls a refresh on its own
-                await SetFilter(forceRefreshReadme: true);
+                await SetFilter(forceRefreshReadme: true, keepSelection: true, installedName: instName);
             }
             else
             {
-                await RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true);
+                await RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true, keepSelection: true,
+                    installedName: instName);
             }
         }
 
@@ -2332,7 +2337,8 @@ namespace AngelLoader.Forms
         }
 
         public async Task RefreshFMsList(bool refreshReadme, bool keepSelection = false,
-            bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false)
+            bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
+            string installedName = null)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
@@ -2356,7 +2362,8 @@ namespace AngelLoader.Forms
                     }
                     else
                     {
-                        row = FMsDGV.GetIndexFromInstalledName(FMsDGV.CurrentSelFM.InstalledName).ClampToZero();
+                        var instName = !installedName.IsEmpty() ? installedName : FMsDGV.CurrentSelFM.InstalledName;
+                        row = FMsDGV.GetIndexFromInstalledName(instName).ClampToZero();
                         try
                         {
                             FMsDGV.FirstDisplayedScrollingRowIndex = (row - FMsDGV.CurrentSelFM.IndexFromTop).ClampToZero();

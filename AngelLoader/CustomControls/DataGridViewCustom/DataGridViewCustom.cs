@@ -120,6 +120,28 @@ namespace AngelLoader.CustomControls
                 if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
             }
 
+            // If a refresh has caused our selected FM to be filtered out, find the next closest one
+            if (Filtered)
+            {
+                for (int i = 0; i < Core.FMsViewList.Count; i++)
+                {
+                    if (Core.FMsViewList[i].InstalledDir.EqualsI(installedName))
+                    {
+                        for (int j = i; j < Core.FMsViewList.Count; j++)
+                        {
+                            var index = FilterShownIndexList.IndexOf(j);
+                            if (index > -1) return index;
+                        }
+                        for (int j = i; j > 0; j--)
+                        {
+                            var index = FilterShownIndexList.IndexOf(j);
+                            if (index > -1) return index;
+                        }
+                        break;
+                    }
+                }
+            }
+
             return 0;
         }
 

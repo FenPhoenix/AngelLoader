@@ -50,7 +50,8 @@ namespace AngelLoader.Forms
         void RefreshSelectedFMRowOnly();
         void RefreshFMsListKeepSelection();
         Task RefreshFMsList(bool refreshReadme, bool keepSelection = false,
-            bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false);
+            bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
+            string installedName = null);
         Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
             bool keepSelection = false);
