@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using static FenGen.CommonStatic;
 using static FenGen.Methods;
 
@@ -81,25 +82,7 @@ namespace FenGen
             "decimal"
         };
 
-        private GenType GenType = GenType.FMData;
-
-        private VersionType VerType = VersionType.Beta;
-
-        //private string SourceFile { get; set; } =
-        //    @"C:\Users\Brian\Documents\Visual Studio 2017\Projects\AngelLoader_WinForms\AngelLoader\Common\ConfigData.cs";
-
-        //private string DestFile { get; set; } =
-        //    @"C:\Users\Brian\Documents\Visual Studio 2017\Projects\AngelLoader_WinForms\AngelLoader\Ini\ConfigIni.cs";
-
-        // These are just defaults for debug purposes; they get replaced with command-line-passed values in actual
-        // production use
-        private string SourceFile { get; set; } =
-            @"C:\Users\Brian\Documents\Visual Studio 2017\Projects\AngelLoader\AngelLoader\Common\DataClasses\FanMissionData.cs";
-
-        private string DestFile { get; set; } =
-            @"C:\Users\Brian\Documents\Visual Studio 2017\Projects\AngelLoader\AngelLoader\Ini\FMData.cs";
-
-        private string LangFile { get; set; } = "";
+        internal List<GenType> GenTasks = new List<GenType>();
 
         private string CodeBehindFile { get; set; } =
             @"C:\Users\Brian\Documents\Visual Studio 2017\Projects\AngelLoader\AngelLoader\MainForm.cs";
@@ -196,10 +179,11 @@ namespace FenGen
 
         internal void Init()
         {
-            ReadCommandLineArgs();
+            ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\AngelLoader"));
 
 #if Release
-            Generate();
+            ReadArgsAndDoTasks();
+
             Environment.Exit(0);
 #else
             View.Model = this;
@@ -207,12 +191,11 @@ namespace FenGen
 #endif
         }
 
-        private static void ExitIfRelease()
-        {
-            Environment.Exit(1);
-        }
+        private static void ExitIfRelease() => Environment.Exit(1);
 
-        internal void ReadCommandLineArgs()
+        internal string ALProjectPath;
+
+        internal void ReadArgsAndDoTasks()
         {
 #if DEBUG
             //return;
@@ -221,98 +204,100 @@ namespace FenGen
             // args[0] is always the application filename
             string[] args = Environment.GetCommandLineArgs();
 
-            if (args.Length < 4) ExitIfRelease();
+            if (args.Length < 2) ExitIfRelease();
 
-            var type = args[1];
-            SourceFile = args[2];
-            if (type == "-version")
+            for (int i = 1; i < args.Length; i++)
             {
-                if (args[3] == "beta")
+                switch (args[i])
                 {
-                    VerType = VersionType.Beta;
+                    case "-version=beta":
+                        if (!GenTasks.Contains(GenType.Version))
+                        {
+                            GenTasks.Add(GenType.Version);
+                            var sourceFile = Path.Combine(ALProjectPath, @"Properties\AssemblyInfo.cs");
+                            VersionIncrement.Generate(sourceFile, VersionType.Beta);
+                        }
+                        break;
+                    case "-version=public":
+                        if (!GenTasks.Contains(GenType.Version))
+                        {
+                            GenTasks.Add(GenType.Version);
+                            var sourceFile = Path.Combine(ALProjectPath, @"Properties\AssemblyInfo.cs");
+                            VersionIncrement.Generate(sourceFile, VersionType.PublicRelease);
+                        }
+                        break;
+                    case "-fmdata":
+                        if (!GenTasks.Contains(GenType.FMData))
+                        {
+                            GenTasks.Add(GenType.FMData);
+                            var sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
+                            var destFile = Path.Combine(ALProjectPath, @"Ini\FMData.cs");
+                            GenerateFMData(sourceFile, destFile);
+                        }
+                        break;
+                    //case "-config": // Not implemented
+                    //    if (!GenTasks.Contains(GenType.Config)) GenTasks.Add(GenType.Config);
+                    //    break;
+                    case "-language":
+                        if (!GenTasks.Contains(GenType.Language))
+                        {
+                            GenTasks.Add(GenType.Language);
+                            var sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\Localization.cs");
+                            var destFile = Path.Combine(ALProjectPath, @"Ini\LocalizationIni.cs");
+                            var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
+                            var langGen = new LanguageGen();
+                            langGen.Generate(sourceFile, destFile, langFile);
+                        }
+                        break;
+                    case "-language_t":
+                        if (!GenTasks.Contains(GenType.Language))
+                        {
+                            GenTasks.Add(GenType.Language);
+                            var sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\Localization.cs");
+                            var destFile = Path.Combine(ALProjectPath, @"Ini\LocalizationIni.cs");
+                            var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
+                            StateVars.WriteTestLangFile = true;
+                            StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
+                            var langGen = new LanguageGen();
+                            langGen.Generate(sourceFile, destFile, langFile);
+                        }
+                        break;
+                    case "-main_form_backing":
+                        if (!GenTasks.Contains(GenType.MainFormBacking))
+                        {
+                            GenTasks.Add(GenType.MainFormBacking);
+                            var sourceFile = Path.Combine(ALProjectPath, @"Forms\MainForm.Designer.cs");
+                            var destFile = Path.Combine(ALProjectPath, @"Forms\MainForm_InitFast.cs");
+                            MainFormBacking.Generate(sourceFile, destFile);
+                        }
+                        break;
+                    case "-resx_machete":
+                        if (!GenTasks.Contains(GenType.ResXMachete))
+                        {
+                            GenTasks.Add(GenType.ResXMachete);
+                            var sourceFile = Path.Combine(ALProjectPath, @"Forms\MainForm.resx");
+                            ResXMachete.Generate(sourceFile);
+                        }
+                        break;
+                    default:
+                        ExitIfRelease();
+                        break;
                 }
-                else if (args[3] == "public")
-                {
-                    VerType = VersionType.PublicRelease;
-                }
-            }
-            else
-            {
-                DestFile = args[3];
-            }
-            if (args.Length > 4 && (type == "-language" || type == "-language_t"))
-            {
-                LangFile = args[4];
-            }
-
-            if (type == "-language_t")
-            {
-                StateVars.TestFile = args[5];
-            }
-
-            switch (type)
-            {
-                case "-fmdata":
-                    GenType = GenType.FMData;
-                    break;
-                case "-config":
-                    GenType = GenType.Config;
-                    break;
-                case "-language":
-                    GenType = GenType.Language;
-                    break;
-                case "-language_t":
-                    GenType = GenType.Language;
-                    StateVars.WriteTestLangFile = true;
-                    break;
-                case "-version":
-                    GenType = GenType.Version;
-                    break;
-                case "-main_form_backing":
-                    GenType = GenType.MainFormBacking;
-                    break;
-                case "-resx_machete":
-                    GenType = GenType.ResXMachete;
-                    break;
-                default:
-                    ExitIfRelease();
-                    break;
             }
         }
 
-        internal void Generate()
+        internal void GenerateFMData(string sourceFile, string destFile)
         {
 #if DEBUG
             //GenType = GenType.FMData;
             //GenType = GenType.Language;
 #endif
 
-            if (GenType == GenType.Language)
-            {
-                var langGen = new LanguageGen();
-                langGen.Generate(SourceFile, DestFile, LangFile);
-                return;
-            }
-            if (GenType == GenType.Version)
-            {
-                VersionIncrement.Generate(SourceFile, VerType);
-                return;
-            }
-            if (GenType == GenType.MainFormBacking)
-            {
-                MainFormBacking.Generate(SourceFile, DestFile);
-                return;
-            }
-            if (GenType == GenType.ResXMachete)
-            {
-                ResXMachete.Generate(SourceFile);
-                return;
-            }
+            //var className = GenType == GenType.FMData ? "FanMission" : "ConfigData";
+            var className = "FanMission";
+            ReadSourceFields(className, sourceFile);
 
-            var className = GenType == GenType.FMData ? "FanMission" : "ConfigData";
-            ReadSourceFields(className);
-
-            using (var sr = new StreamReader(DestFile))
+            using (var sr = new StreamReader(destFile))
             {
                 int openBraces = 0;
                 bool inClass = false;
@@ -393,15 +378,12 @@ namespace FenGen
                 }
             }
 
-#if DEBUG
-            DestFile = @"C:\FenGen-test.cs";
-#endif
-
-            using (var sw = new StreamWriter(DestFile, append: false))
+            using (var sw = new StreamWriter(destFile, append: false))
             {
                 foreach (var l in DestTopLines) sw.WriteLine(l);
 
-                var obj = GenType == GenType.FMData ? "fm" : "config";
+                //var obj = GenType == GenType.FMData ? "fm" : "config";
+                var obj = "fm";
 
                 WriteReader(sw, obj);
 
@@ -427,9 +409,11 @@ namespace FenGen
 
             sw.WriteLine(Indent(2) + AutogeneratedMessage);
 
-            var topLines = (GenType == GenType.FMData
-                ? ReadFMDataIniTopLines
-                : ReadConfigIniTopLines).ToList();
+            //var topLines = (GenType == GenType.FMData
+            //    ? ReadFMDataIniTopLines
+            //    : ReadConfigIniTopLines).ToList();
+
+            var topLines = ReadFMDataIniTopLines;
 
             //if (topLines.SequenceEqual(ReadFMDataIniTopLines.ToList()))
             //{
@@ -875,9 +859,9 @@ namespace FenGen
             sw.WriteLine(Indent(2) + "}");
         }
 
-        private void ReadSourceFields(string className)
+        private void ReadSourceFields(string className, string sourceFile)
         {
-            var sourceLines = File.ReadAllLines(SourceFile);
+            var sourceLines = File.ReadAllLines(sourceFile);
 
             bool inClass = false;
 

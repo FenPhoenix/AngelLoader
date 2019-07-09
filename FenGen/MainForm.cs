@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace FenGen
@@ -14,7 +15,9 @@ namespace FenGen
 
         private void GenerateButton_Click(object sender, EventArgs e)
         {
-            Model.Generate();
+            var sourceFile = Path.Combine(Model.ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
+            var destFile = Path.Combine(Model.ALProjectPath, @"Ini\FMData.cs");
+            Model.GenerateFMData(sourceFile, destFile);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

@@ -572,19 +572,26 @@ xcopy "$(SolutionDir)doc" "%25destDir%25doc\" /y /i /e</PostBuildEvent>
 rem ---
 set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
 
-%25FenGen%25 -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
-%25FenGen%25 -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
-rem %25FenGen%25 -main_form_backing "$(ProjectDir)\Forms\MainForm.Designer.cs" "$(ProjectDir)\Forms\MainForm_InitFast.cs"
+set fenGenArgs=-fmdata -language_t
+
+rem %25FenGen%25 -fmdata "$(ProjectDir)Common\DataClasses\FanMissionData.cs" "$(ProjectDir)Ini\FMData.cs"
+rem %25FenGen%25 -language_t "$(ProjectDir)Common\DataClasses\Localization.cs" "$(ProjectDir)Ini\LocalizationIni.cs" "$(ProjectDir)Languages\English.ini" "C:\AngelLoader\Data\Languages\TestLang.ini"
+rem %25FenGen%25 -main_form_backing "$(ProjectDir)Forms\MainForm.Designer.cs" "$(ProjectDir)Forms\MainForm_InitFast.cs"
 
 if not $(ConfigurationName) == Debug (
-%25FenGen%25 -resx_machete "$(ProjectDir)Forms\MainForm.resx" "dummy"
+set rmArg= -resx_machete
+rem %25FenGen%25 -resx_machete "$(ProjectDir)Forms\MainForm.resx" "dummy"
 )
 
 if $(ConfigurationName) == Release_Beta (
-%25FenGen%25 -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"
+set vArg= -version=beta
+rem %25FenGen%25 -version "$(ProjectDir)Properties\AssemblyInfo.cs" "beta"
 ) else if $(ConfigurationName) == Release_Public (
+set vArg= -version=public
 rem %25FenGen%25 -version "$(ProjectDir)Properties\AssemblyInfo.cs" "public"
 )
+
+%25FenGen%25 %25fenGenArgs%25 %25rmArg%25 %25vArg%25
 rem ---
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
