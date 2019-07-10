@@ -1439,10 +1439,20 @@ namespace AngelLoader.Forms
 
         public async Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
-            bool keepSelection = false)
+            bool keepSelection = false, bool gameTabSwitch = false)
         {
+            string instName = null;
+            int indexFromTop = -1;
+            if (keepSelection && !gameTabSwitch && FMsDGV.SelectedRows.Count > 0)
+            {
+                var pi = FMsDGV.GetSelectedFMPosInfo();
+                instName = pi.InstalledName;
+                indexFromTop = pi.IndexFromTop;
+            }
+
             SortByCurrentColumn();
-            await SetFilter(keepSelection, suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume);
+            await SetFilter(keepSelection, suppressRefresh, forceRefreshReadme,
+                forceSuppressSelectionChangedEvent, suppressSuspendResume, instName, indexFromTop, gameTabSwitch);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -1450,8 +1460,10 @@ namespace AngelLoader.Forms
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private async Task SetFilter(bool keepSelection = false, bool suppressRefresh = false, bool forceRefreshReadme = false,
-            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false, string installedName = null)
+        private async Task SetFilter(bool keepSelection = false, bool suppressRefresh = false,
+            bool forceRefreshReadme = false, bool forceSuppressSelectionChangedEvent = false,
+            bool suppressSuspendResume = false, string installedName = null, int indexFromTop = -1,
+            bool gameTabSwitch = false)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
@@ -1513,7 +1525,9 @@ namespace AngelLoader.Forms
                         keepSelection: keepSelection,
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume: suppressSuspendResume,
-                        installedName: installedName);
+                        installedName: installedName,
+                        indexFromTop: indexFromTop,
+                        gameTabSwitch: gameTabSwitch);
                 }
                 return;
             }
@@ -1842,7 +1856,9 @@ namespace AngelLoader.Forms
                 keepSelection: keepSelection,
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                 suppressSuspendResume: suppressSuspendResume,
-                installedName: installedName);
+                installedName: installedName,
+                indexFromTop: indexFromTop,
+                gameTabSwitch: gameTabSwitch);
         }
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
@@ -2062,6 +2078,7 @@ namespace AngelLoader.Forms
             if (e.Button != MouseButtons.Left) return;
 
             string instName = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFM().InstalledDir : null;
+            int indexFromTop = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFMPosInfo().IndexFromTop : -1;
 
             var newSortDirection =
                 e.ColumnIndex == FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
@@ -2078,7 +2095,7 @@ namespace AngelLoader.Forms
             else
             {
                 await RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true, keepSelection: true,
-                    installedName: instName);
+                    installedName: instName, indexFromTop: indexFromTop);
             }
         }
 
@@ -2148,7 +2165,7 @@ namespace AngelLoader.Forms
                 }
                 else if (!e.Shift)
                 {
-                    await SortAndSetFilter();
+                    await SortAndSetFilter(keepSelection: true);
                 }
             }
             else if (e.KeyCode == Keys.Apps)
@@ -2229,7 +2246,7 @@ namespace AngelLoader.Forms
             }
 
             var success = await Core.ScanFMs(Core.FMsViewList, scanOptions);
-            if (success) await SortAndSetFilter(forceRefreshReadme: true);
+            if (success) await SortAndSetFilter(keepSelection: true, forceRefreshReadme: true);
         }
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
@@ -2322,7 +2339,7 @@ namespace AngelLoader.Forms
                 FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
             }
 
-            await SortAndSetFilter();
+            await SortAndSetFilter(keepSelection: true);
         }
 
         #region Refresh FMs list
@@ -2338,13 +2355,27 @@ namespace AngelLoader.Forms
 
         public async Task RefreshFMsList(bool refreshReadme, bool keepSelection = false,
             bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
-            string installedName = null)
+            string installedName = null, int indexFromTop = -1, bool gameTabSwitch = false)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
                 // A small but measurable perf increase from this. Also prevents flickering when switching game
                 // tabs.
-                if (!suppressSuspendResume) FMsDGV.SuspendDrawing();
+                if (!suppressSuspendResume)
+                {
+                    FMsDGV.SuspendDrawing();
+                    // So, I'm sorry, I thought the line directly above this one said to suspend drawing. I just
+                    // thought I saw a suspend drawing command, and since drawing cells constitutes drawing, I
+                    // just assumed you would understand that to suspend drawing means not to draw cells. I must
+                    // be mistaken. No no, please.
+                    CellValueNeededDisabled = true;
+                }
+
+                // Prevents:
+                // -a glitched row from being drawn at the end in certain situations
+                // -the subsequent row count set from being really slow
+                FMsDGV.Rows.Clear();
+
                 FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Core.FMsViewList.Count;
 
                 if (FMsDGV.RowCount == 0)
@@ -2363,10 +2394,11 @@ namespace AngelLoader.Forms
                     else
                     {
                         var instName = !installedName.IsEmpty() ? installedName : FMsDGV.CurrentSelFM.InstalledName;
-                        row = FMsDGV.GetIndexFromInstalledName(instName).ClampToZero();
+                        var ift = indexFromTop > -1 ? indexFromTop : FMsDGV.CurrentSelFM.IndexFromTop;
+                        row = FMsDGV.GetIndexFromInstalledName(instName, !gameTabSwitch).ClampToZero();
                         try
                         {
-                            FMsDGV.FirstDisplayedScrollingRowIndex = (row - FMsDGV.CurrentSelFM.IndexFromTop).ClampToZero();
+                            FMsDGV.FirstDisplayedScrollingRowIndex = (row - ift).ClampToZero();
                         }
                         catch (Exception)
                         {
@@ -2375,6 +2407,7 @@ namespace AngelLoader.Forms
                         refreshReadme = true;
                     }
 
+                    // Events will be re-enabled at the end of the enclosing using block
                     if (keepSelection) EventsDisabled = true;
                     FMsDGV.Rows[row].Selected = true;
                     FMsDGV.SelectProperly();
@@ -2383,9 +2416,17 @@ namespace AngelLoader.Forms
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
                     // and understand why it takes a sec. Otherwise, it looks like merely changing tabs brings
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
-                    if (!suppressSuspendResume) FMsDGV.ResumeDrawing();
+                    if (!suppressSuspendResume)
+                    {
+                        CellValueNeededDisabled = false;
+                        FMsDGV.ResumeDrawing();
+                    }
 
-                    await DisplaySelectedFM(refreshReadme);
+                    // Optimization in case we land on the same as FM as before, don't reload it
+                    if (!keepSelection || installedName.IsEmpty() || installedName != FMsDGV.GetSelectedFM().InstalledDir)
+                    {
+                        await DisplaySelectedFM(refreshReadme);
+                    }
                 }
             }
         }
@@ -2988,13 +3029,13 @@ namespace AngelLoader.Forms
         private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SortAndSetFilter();
+            await SortAndSetFilter(keepSelection: true);
         }
 
         private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SortAndSetFilter();
+            await SortAndSetFilter(keepSelection: true);
         }
 
         private (SelectedFM GameSelFM, Filter GameFilter) GetGameSelFMAndFilter(TabPage tabPage)
@@ -3046,7 +3087,7 @@ namespace AngelLoader.Forms
 
             SetUIFilterValues(gameFilter);
 
-            await SortAndSetFilter(keepSelection: true);
+            await SortAndSetFilter(keepSelection: true, gameTabSwitch: true);
         }
 
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
@@ -3577,11 +3618,11 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: true);
 
-        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: true);
 
-        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: true);
 
         private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenRatingFilter();
 
@@ -3619,7 +3660,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateDateLabel(lastPlayed);
-            await SortAndSetFilter();
+            await SortAndSetFilter(keepSelection: true);
         }
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
@@ -3672,7 +3713,7 @@ namespace AngelLoader.Forms
             }
 
             UpdateRatingLabel();
-            await SortAndSetFilter();
+            await SortAndSetFilter(keepSelection: true);
         }
 
         private void UpdateRatingLabel(bool suspendResume = true)
@@ -3706,9 +3747,13 @@ namespace AngelLoader.Forms
             }
         }
 
-        private async void ClearFiltersButton_Click(object sender, EventArgs e) => await ClearAllUIAndInternalFilters();
+        private async void ClearFiltersButton_Click(object sender, EventArgs e)
+        {
+            ClearAllUIAndInternalFilters();
+            await SortAndSetFilter(keepSelection: true);
+        }
 
-        public async Task ClearAllUIAndInternalFilters()
+        public void ClearAllUIAndInternalFilters()
         {
             using (new DisableEvents(this))
             {
@@ -3746,11 +3791,9 @@ namespace AngelLoader.Forms
                     FilterBarFLP.ResumeDrawing();
                 }
             }
-
-            await SortAndSetFilter();
         }
 
-        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: true);
 
         private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
@@ -3787,7 +3830,7 @@ namespace AngelLoader.Forms
             bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            await SortAndSetFilter(keepSelection: true, forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
@@ -3826,7 +3869,7 @@ namespace AngelLoader.Forms
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+            await SortAndSetFilter(keepSelection: true, forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
         }
 
         private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));

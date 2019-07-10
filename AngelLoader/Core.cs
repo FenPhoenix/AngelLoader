@@ -371,7 +371,7 @@ namespace AngelLoader
                     Config.ClearAllSelectedFMs();
                     Config.ClearAllFilters();
                     Config.GameTab = Game.Thief1;
-                    await View.ClearAllUIAndInternalFilters();
+                    View.ClearAllUIAndInternalFilters();
                     if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                     View.ChangeGameOrganization();
                 }
@@ -397,7 +397,8 @@ namespace AngelLoader
                         if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
                     }
 
-                    await View.SortAndSetFilter(forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+                    await View.SortAndSetFilter(keepSelection: !gameOrganizationChanged,
+                        forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
                 }
                 else if (dateFormatChanged || languageChanged)
                 {

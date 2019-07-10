@@ -25,7 +25,7 @@ namespace AngelLoader.Forms
         SortOrder CurrentSortDirection { get; }
         void ShowFMsListZoomButtons(bool visible);
         void ShowInstallUninstallButton(bool enabled);
-        Task ClearAllUIAndInternalFilters();
+        void ClearAllUIAndInternalFilters();
         void ChangeGameOrganization(bool startup = false);
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
         /// <summary>
@@ -51,10 +51,10 @@ namespace AngelLoader.Forms
         void RefreshFMsListKeepSelection();
         Task RefreshFMsList(bool refreshReadme, bool keepSelection = false,
             bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
-            string installedName = null);
+            string installedName = null, int indexFromTop = -1, bool gameTabSwitch = false);
         Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
-            bool keepSelection = false);
+            bool keepSelection = false, bool gameTabSwitch = false);
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)

@@ -389,6 +389,8 @@ namespace AngelLoader.Common.DataClasses
         internal readonly Filter T2Filter = new Filter();
         internal readonly Filter T3Filter = new Filter();
 
+        // TODO: Add sorted column / sort order as a per-tab thing
+
         internal void DeepCopyTo(GameTabsState dest)
         {
             T1Filter.DeepCopyTo(dest.T1Filter);
