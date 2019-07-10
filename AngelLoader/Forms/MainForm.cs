@@ -1,4 +1,7 @@
-﻿using System;
+﻿// TODO: The sort / filter / refresh etc. chain of calls is spaghetti supreme with the params.
+// Take a thorough look at the call chain and condense it all down to something much nicer.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
