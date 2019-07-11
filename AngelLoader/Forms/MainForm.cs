@@ -1000,9 +1000,6 @@ namespace AngelLoader.Forms
                 InstallUninstallFMButton.Text = sayInstall
                     ? LText.MainButtons.InstallFM
                     : LText.MainButtons.UninstallFM;
-                InstallUninstallFMButton.Image = sayInstall
-                    ? Resources.Install_24
-                    : Resources.Uninstall_24;
 
                 InstallUninstallFMButton.ResumeDrawing();
 
@@ -2793,8 +2790,7 @@ namespace AngelLoader.Forms
                     {
                         foreach (var f in dmlFiles)
                         {
-                            if (f.IsEmpty()) continue;
-                            PatchDMLsListBox.Items.Add(f);
+                            if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
                         }
                     }
                 }

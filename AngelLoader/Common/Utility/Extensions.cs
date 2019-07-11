@@ -109,11 +109,14 @@ namespace AngelLoader.Common.Utility
 
         internal static bool IsValidReadme(this string value)
         {
-            return value.ExtIsTxt() ||
-                   value.ExtIsRtf() ||
-                   value.ExtIsWri() ||
-                   value.ExtIsGlml() ||
-                   value.ExtIsHtml();
+            // Well, this is embarrassing... Apparently EndsWithI is faster than the baked-in ones.
+            // Dunno how that could be the case, but whatever...
+            return value.EndsWithI(".txt") ||
+                   value.EndsWithI(".rtf") ||
+                   value.EndsWithI(".wri") ||
+                   value.EndsWithI(".glml") ||
+                   value.EndsWithI(".html") ||
+                   value.EndsWithI(".htm");
         }
 
         #region Baked-in extension checks

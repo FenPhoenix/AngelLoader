@@ -17,17 +17,17 @@ namespace AngelLoader.Forms
         */
 
 #if DEBUG || Release_Testing
-        private readonly System.Diagnostics.Stopwatch t = new System.Diagnostics.Stopwatch();
+        private readonly System.Diagnostics.Stopwatch initT = new System.Diagnostics.Stopwatch();
 
         private void StartTimer()
         {
-            t.Restart();
+            initT.Restart();
         }
 
         private void StopTimer()
         {
-            t.Stop();
-            System.Diagnostics.Trace.WriteLine(nameof(InitComponentManual) + "up to stop point: " + t.Elapsed);
+            initT.Stop();
+            System.Diagnostics.Trace.WriteLine(nameof(InitComponentManual) + "up to stop point: " + initT.Elapsed);
             System.Environment.Exit(1);
         }
 #endif
@@ -320,7 +320,6 @@ namespace AngelLoader.Forms
             // InstallUninstallFMButton
             // 
             InstallUninstallFMButton.AutoSize = true;
-            InstallUninstallFMButton.Image = Resources.Install_24;
             InstallUninstallFMButton.ImageAlign = ContentAlignment.MiddleLeft;
             InstallUninstallFMButton.Padding = new Padding(6, 0, 6, 0);
             InstallUninstallFMButton.Height = 36;

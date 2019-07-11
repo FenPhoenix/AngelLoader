@@ -120,7 +120,16 @@ namespace AngelLoader
 
             foreach (var f in files)
             {
-                if (f.IsValidReadme()) readmes.Add(f.Substring(path.Length + 1));
+                // Calling them manually right from within this loop is like a billion times faster somehow. Meh?
+                if (f.EndsWithI(".txt") ||
+                    f.EndsWithI(".rtf") ||
+                    f.EndsWithI(".wri") ||
+                    f.EndsWithI(".glml") ||
+                    f.EndsWithI(".html") ||
+                    f.EndsWithI(".htm"))
+                {
+                    readmes.Add(f.Substring(path.Length + 1));
+                }
             }
 
             return new CacheData { Readmes = readmes };

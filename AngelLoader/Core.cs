@@ -1205,23 +1205,22 @@ namespace AngelLoader
             return true;
         }
 
-        internal static (bool Success, string[] DMLFiles)
+        internal static (bool Success, List<string> DMLFiles)
         GetDMLFiles(FanMission fm)
         {
             try
             {
-                var dmlFiles =
-                    FastIO.GetFilesTopOnly(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir), "*.dml");
+                var dmlFiles = FastIO.GetFilesTopOnly(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir), "*.dml");
                 for (int i = 0; i < dmlFiles.Count; i++)
                 {
-                    dmlFiles[i] = Path.GetFileName(dmlFiles[i]);
+                    dmlFiles[i] = dmlFiles[i].GetFileNameFast();
                 }
-                return (true, dmlFiles.ToArray());
+                return (true, dmlFiles);
             }
             catch (Exception ex)
             {
                 Log("Exception getting DML files for " + fm.InstalledDir + ", game: " + fm.Game, ex);
-                return (false, new string[] { });
+                return (false, new List<string>());
             }
         }
 
