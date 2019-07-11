@@ -2090,7 +2090,8 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered)
             {
                 // SetFilter() calls a refresh on its own
-                await SetFilter(forceRefreshReadme: true, keepSelection: true, installedName: instName);
+                await SetFilter(forceRefreshReadme: true, keepSelection: true, installedName: instName,
+                    indexFromTop: indexFromTop);
             }
             else
             {
