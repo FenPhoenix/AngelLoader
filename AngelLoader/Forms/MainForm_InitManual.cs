@@ -242,6 +242,7 @@ namespace AngelLoader.Forms
             ScanAllFMsButton.AutoSize = true;
             ScanAllFMsButton.Image = Resources.Scan;
             ScanAllFMsButton.ImageAlign = ContentAlignment.MiddleLeft;
+            ScanAllFMsButton.Margin = new Padding(11, 3, 3, 3);
             ScanAllFMsButton.Padding = new Padding(6, 0, 6, 0);
             ScanAllFMsButton.Height = 36;
             ScanAllFMsButton.TabIndex = 59;
@@ -349,6 +350,7 @@ namespace AngelLoader.Forms
             WebSearchButton.AutoSize = true;
             WebSearchButton.Image = Resources.WebSearch_24;
             WebSearchButton.ImageAlign = ContentAlignment.MiddleLeft;
+            WebSearchButton.Margin = new Padding(11, 3, 3, 3);
             WebSearchButton.Padding = new Padding(6, 0, 6, 0);
             WebSearchButton.Height = 36;
             WebSearchButton.TabIndex = 60;
