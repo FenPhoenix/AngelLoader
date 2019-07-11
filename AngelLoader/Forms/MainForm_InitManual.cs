@@ -50,10 +50,6 @@ namespace AngelLoader.Forms
             PlayFMButton = new Button();
             PlayOriginalGameButton = new Button();
             InstallUninstallFMButton = new Button();
-            BottomScanAllFMsSepToolStrip = new ToolStripCustom();
-            BottomScanAllFMsLeftSep = new ToolStripSeparatorCustom();
-            BottomWebSearchLeftSepToolStrip = new ToolStripCustom();
-            BottomWebSearchLeftSep = new ToolStripSeparatorCustom();
             WebSearchButton = new Button();
             EverythingPanel = new Panel();
             AddTagListBox = new ListBox();
@@ -192,8 +188,6 @@ namespace AngelLoader.Forms
             BottomPanel.SuspendLayout();
             BottomRightButtonsFLP.SuspendLayout();
             BottomLeftButtonsFLP.SuspendLayout();
-            BottomScanAllFMsSepToolStrip.SuspendLayout();
-            BottomWebSearchLeftSepToolStrip.SuspendLayout();
             EverythingPanel.SuspendLayout();
             MainSplitContainer.BeginInit();
             MainSplitContainer.Panel1.SuspendLayout();
@@ -306,9 +300,7 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP.Controls.Add(PlayFMButton);
             BottomLeftButtonsFLP.Controls.Add(PlayOriginalGameButton);
             BottomLeftButtonsFLP.Controls.Add(InstallUninstallFMButton);
-            BottomLeftButtonsFLP.Controls.Add(BottomScanAllFMsSepToolStrip);
             BottomLeftButtonsFLP.Controls.Add(ScanAllFMsButton);
-            BottomLeftButtonsFLP.Controls.Add(BottomWebSearchLeftSepToolStrip);
             BottomLeftButtonsFLP.Controls.Add(WebSearchButton);
             BottomLeftButtonsFLP.Location = new Point(2, 0);
             BottomLeftButtonsFLP.Size = new Size(616, 42);
@@ -350,35 +342,6 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton.UseVisualStyleBackColor = true;
             InstallUninstallFMButton.Click += InstallUninstallFMButton_Click;
             // 
-            // BottomScanAllFMsSepToolStrip
-            // 
-            BottomScanAllFMsSepToolStrip.GripMargin = new Padding(0);
-            BottomScanAllFMsSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
-            BottomScanAllFMsSepToolStrip.Items.AddRange(new ToolStripItem[] {
-            BottomScanAllFMsLeftSep});
-            BottomScanAllFMsSepToolStrip.Padding = new Padding(0);
-            BottomScanAllFMsSepToolStrip.Size = new Size(8, 42);
-            BottomScanAllFMsSepToolStrip.TabIndex = 32;
-            // 
-            // BottomScanAllFMsLeftSep
-            // 
-            BottomScanAllFMsLeftSep.AutoSize = false;
-            BottomScanAllFMsLeftSep.Size = new Size(6, 42);
-            // 
-            // BottomWebSearchLeftSepToolStrip
-            // 
-            BottomWebSearchLeftSepToolStrip.GripMargin = new Padding(0);
-            BottomWebSearchLeftSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
-            BottomWebSearchLeftSepToolStrip.Items.AddRange(new ToolStripItem[] {
-            BottomWebSearchLeftSep});
-            BottomWebSearchLeftSepToolStrip.Padding = new Padding(0);
-            BottomWebSearchLeftSepToolStrip.Size = new Size(8, 42);
-            BottomWebSearchLeftSepToolStrip.TabIndex = 35;
-            // 
-            // BottomWebSearchLeftSep
-            // 
-            BottomWebSearchLeftSep.AutoSize = false;
-            BottomWebSearchLeftSep.Size = new Size(6, 42);
             // 
             // WebSearchButton
             // 
@@ -1703,8 +1666,6 @@ namespace AngelLoader.Forms
                 BottomLeftButtonsFLP.ResumeLayout();
             */
 
-            BottomScanAllFMsSepToolStrip.ResumeLayout();
-            BottomWebSearchLeftSepToolStrip.ResumeLayout();
             EverythingPanel.ResumeLayout();
             MainSplitContainer.Panel1.ResumeLayout();
 

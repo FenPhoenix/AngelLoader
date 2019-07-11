@@ -47,15 +47,12 @@
             this.PlayFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
             this.InstallUninstallFMButton = new System.Windows.Forms.Button();
-            this.BottomScanAllFMsSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomScanAllFMsLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
-            this.BottomWebSearchLeftSepToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
-            this.BottomWebSearchLeftSep = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
             this.WebSearchButton = new System.Windows.Forms.Button();
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
@@ -180,13 +177,9 @@
             this.ResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
-            this.BottomScanAllFMsSepToolStrip.SuspendLayout();
-            this.BottomWebSearchLeftSepToolStrip.SuspendLayout();
             this.EverythingPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
@@ -250,6 +243,7 @@
             this.ScanAllFMsButton.Image = global::AngelLoader.Properties.Resources.Scan;
             this.ScanAllFMsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ScanAllFMsButton.Location = new System.Drawing.Point(365, 3);
+            this.ScanAllFMsButton.Margin = new System.Windows.Forms.Padding(11, 3, 3, 3);
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
             this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ScanAllFMsButton.Size = new System.Drawing.Size(123, 36);
@@ -323,14 +317,13 @@
             this.BottomLeftButtonsFLP.Controls.Add(this.PlayFMButton);
             this.BottomLeftButtonsFLP.Controls.Add(this.PlayOriginalGameButton);
             this.BottomLeftButtonsFLP.Controls.Add(this.InstallUninstallFMButton);
-            this.BottomLeftButtonsFLP.Controls.Add(this.BottomScanAllFMsSepToolStrip);
             this.BottomLeftButtonsFLP.Controls.Add(this.ScanAllFMsButton);
-            this.BottomLeftButtonsFLP.Controls.Add(this.BottomWebSearchLeftSepToolStrip);
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
             this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(616, 42);
             this.BottomLeftButtonsFLP.TabIndex = 36;
+            this.BottomLeftButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftButtonsFLP_Paint);
             // 
             // PlayFMButton
             // 
@@ -377,44 +370,6 @@
             this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
             this.InstallUninstallFMButton.Click += new System.EventHandler(this.InstallUninstallFMButton_Click);
             // 
-            // BottomScanAllFMsSepToolStrip
-            // 
-            this.BottomScanAllFMsSepToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomScanAllFMsSepToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomScanAllFMsSepToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomScanAllFMsLeftSep});
-            this.BottomScanAllFMsSepToolStrip.Location = new System.Drawing.Point(354, 0);
-            this.BottomScanAllFMsSepToolStrip.Name = "BottomScanAllFMsSepToolStrip";
-            this.BottomScanAllFMsSepToolStrip.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomScanAllFMsSepToolStrip.PaddingDrawNudge = 0;
-            this.BottomScanAllFMsSepToolStrip.Size = new System.Drawing.Size(8, 42);
-            this.BottomScanAllFMsSepToolStrip.TabIndex = 32;
-            // 
-            // BottomScanAllFMsLeftSep
-            // 
-            this.BottomScanAllFMsLeftSep.AutoSize = false;
-            this.BottomScanAllFMsLeftSep.Name = "BottomScanAllFMsLeftSep";
-            this.BottomScanAllFMsLeftSep.Size = new System.Drawing.Size(6, 42);
-            // 
-            // BottomWebSearchLeftSepToolStrip
-            // 
-            this.BottomWebSearchLeftSepToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
-            this.BottomWebSearchLeftSepToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.BottomWebSearchLeftSepToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.BottomWebSearchLeftSep});
-            this.BottomWebSearchLeftSepToolStrip.Location = new System.Drawing.Point(491, 0);
-            this.BottomWebSearchLeftSepToolStrip.Name = "BottomWebSearchLeftSepToolStrip";
-            this.BottomWebSearchLeftSepToolStrip.Padding = new System.Windows.Forms.Padding(0);
-            this.BottomWebSearchLeftSepToolStrip.PaddingDrawNudge = 0;
-            this.BottomWebSearchLeftSepToolStrip.Size = new System.Drawing.Size(8, 42);
-            this.BottomWebSearchLeftSepToolStrip.TabIndex = 35;
-            // 
-            // BottomWebSearchLeftSep
-            // 
-            this.BottomWebSearchLeftSep.AutoSize = false;
-            this.BottomWebSearchLeftSep.Name = "BottomWebSearchLeftSep";
-            this.BottomWebSearchLeftSep.Size = new System.Drawing.Size(6, 42);
-            // 
             // WebSearchButton
             // 
             this.WebSearchButton.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -422,6 +377,7 @@
             this.WebSearchButton.Image = global::AngelLoader.Properties.Resources.WebSearch_24;
             this.WebSearchButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.WebSearchButton.Location = new System.Drawing.Point(502, 3);
+            this.WebSearchButton.Margin = new System.Windows.Forms.Padding(11, 3, 3, 3);
             this.WebSearchButton.Name = "WebSearchButton";
             this.WebSearchButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.WebSearchButton.Size = new System.Drawing.Size(111, 36);
@@ -573,8 +529,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -738,7 +694,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGamesLeftSepToolStrip);
@@ -780,7 +736,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -908,7 +864,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -1100,7 +1056,7 @@
             // 
             // RefreshAreaToolStrip
             // 
-            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RefreshAreaToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshAreaToolStrip.CanOverflow = false;
@@ -1291,7 +1247,7 @@
             // 
             // TopRightCollapseButton
             // 
-            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
@@ -1306,8 +1262,8 @@
             // 
             // TopRightTabControl
             // 
-            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
@@ -1576,7 +1532,7 @@
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
@@ -1686,7 +1642,7 @@
             // 
             // EditFMDisabledModsTextBox
             // 
-            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
@@ -1706,7 +1662,7 @@
             // 
             // EditFMAuthorTextBox
             // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
@@ -1745,8 +1701,8 @@
             // 
             // CommentTextBox
             // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
             this.CommentTextBox.Multiline = true;
@@ -1785,7 +1741,7 @@
             // 
             // AddTagTextBox
             // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
@@ -1838,8 +1794,8 @@
             // 
             // TagsTreeView
             // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
@@ -2037,8 +1993,11 @@
             this.ChooseReadmeComboBox.Visible = false;
             this.ChooseReadmeComboBox.SelectedIndexChanged += new System.EventHandler(this.ChooseReadmeComboBox_SelectedIndexChanged);
             this.ChooseReadmeComboBox.DropDownClosed += new System.EventHandler(this.ChooseReadmeComboBox_DropDownClosed);
-            this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            // ReadmeRichTextBox
+            // 
+            this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeRichTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.ReadmeRichTextBox.Location = new System.Drawing.Point(0, 0);
@@ -2075,10 +2034,6 @@
             this.BottomRightButtonsFLP.PerformLayout();
             this.BottomLeftButtonsFLP.ResumeLayout(false);
             this.BottomLeftButtonsFLP.PerformLayout();
-            this.BottomScanAllFMsSepToolStrip.ResumeLayout(false);
-            this.BottomScanAllFMsSepToolStrip.PerformLayout();
-            this.BottomWebSearchLeftSepToolStrip.ResumeLayout(false);
-            this.BottomWebSearchLeftSepToolStrip.PerformLayout();
             this.EverythingPanel.ResumeLayout(false);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
@@ -2252,10 +2207,6 @@
         private System.Windows.Forms.Label PatchFMNotInstalledLabel;
         private System.Windows.Forms.Panel PatchMainPanel;
         private System.Windows.Forms.Button PatchOpenFMFolderButton;
-        private CustomControls.ToolStripCustom BottomScanAllFMsSepToolStrip;
-        private CustomControls.ToolStripSeparatorCustom BottomScanAllFMsLeftSep;
-        private CustomControls.ToolStripCustom BottomWebSearchLeftSepToolStrip;
-        private CustomControls.ToolStripSeparatorCustom BottomWebSearchLeftSep;
         private System.Windows.Forms.Button TopRightCollapseButton;
         private CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
         private CustomControls.ToolStripSeparatorCustom RefreshAreaLeftSep;
