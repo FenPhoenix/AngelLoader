@@ -1,6 +1,11 @@
 ﻿// TODO: The sort / filter / refresh etc. chain of calls is spaghetti supreme with the params.
 // Take a thorough look at the call chain and condense it all down to something much nicer.
 
+// PERF_TODO: Removing ALL asyncs and awaits saves 13ms on startup and 48k off the exe.
+// If it comes down to it, I can probably figure out how to do the old way of async programming that doesn't add
+// state machines a bazillion levels down, so as to only have the overhead right where it's actually used. But
+// the time savings isn't as much as I thought it might be, so meh.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
