@@ -1156,7 +1156,7 @@ namespace AngelLoader.Forms
         {
             if (Config.GameOrganization == GameOrganization.OneList)
             {
-                FilterGamesLeftSepToolStrip.Hide();
+                //FilterGamesLeftSep.Visible = false;
                 GamesTabControl.Hide();
                 // Don't inline this var - it stores the X value to persist it through a change
                 var plusWidth = FilterBarFLP.Location.X;
@@ -1169,7 +1169,7 @@ namespace AngelLoader.Forms
                 PositionFilterBarAfterTabs();
 
                 FilterGameButtonsToolStrip.Hide();
-                FilterGamesLeftSepToolStrip.Show();
+                //FilterGamesLeftSep.Visible = true;
                 GamesTabControl.Show();
             }
         }
@@ -4014,5 +4014,13 @@ namespace AngelLoader.Forms
             TopRightLLMenu.Construct(this, components);
             ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
         }
+
+        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => PaintBottomLeftButtonsFLP(e);
+
+        private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => PaintFilterIconButtonsToolStrip(e);
+
+        private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e) => PaintRefreshAreaToolStrip(e);
+
+        private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => PaintFilterBarFLP(e);
     }
 }

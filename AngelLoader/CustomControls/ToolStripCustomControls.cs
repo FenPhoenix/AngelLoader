@@ -19,13 +19,16 @@ namespace AngelLoader.CustomControls
             // Hack in order to be able to have ManagerRenderMode, but also get rid of any garbage around the
             // edges that may be drawn. In particular, there's an ugly visual-styled vertical line at the right
             // side if you don't do this.
-            var rect1 = new Rectangle(0, 0, Items[0].Bounds.X, Height);
+            // Take margin into account to allow drawing past the left side of the first item or the right of the
+            // last
+            var rect1 = new Rectangle(0, 0, Items[0].Bounds.X-Items[0].Margin.Left, Height);
             var last = Items[Items.Count - 1];
-            var rect2Start = last.Bounds.X + last.Bounds.Width;
+            var rect2Start = last.Bounds.X + last.Bounds.Width + last.Margin.Right;
             var rect2 = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
 
             e.Graphics.FillRectangle(SystemBrushes.Control, rect1);
             e.Graphics.FillRectangle(SystemBrushes.Control, rect2);
+
         }
     }
 

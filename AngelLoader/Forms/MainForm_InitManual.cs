@@ -71,45 +71,32 @@ namespace AngelLoader.Forms
             DisabledModsColumn = new DataGridViewTextBoxColumn();
             CommentColumn = new DataGridViewTextBoxColumn();
             FilterBarFLP = new FlowLayoutPanel();
-            FilterGamesLeftSepToolStrip = new ToolStripCustom();
-            FilterGamesLeftSep = new ToolStripSeparatorCustom();
             FilterGameButtonsToolStrip = new ToolStripCustom();
             FilterByThief1Button = new ToolStripButtonCustom();
             FilterByThief2Button = new ToolStripButtonCustom();
             FilterByThief3Button = new ToolStripButtonCustom();
-            FilterTitleLeftSep = new ToolStripSeparatorCustom();
             FilterTitleLabel = new Label();
             FilterTitleTextBox = new TextBoxCustom();
-            FilterAuthorLeftSepToolStrip = new ToolStripCustom();
-            FilterAuthorLeftSep = new ToolStripSeparatorCustom();
             FilterAuthorLabel = new Label();
             FilterAuthorTextBox = new TextBoxCustom();
             FilterIconButtonsToolStrip = new ToolStripCustom();
-            FilterReleaseDateLeftSep = new ToolStripSeparatorCustom();
             FilterByReleaseDateButton = new ToolStripButtonCustom();
             FilterByReleaseDateLabel = new ToolStripLabel();
-            FilterLastPlayedLeftSep = new ToolStripSeparatorCustom();
             FilterByLastPlayedButton = new ToolStripButtonCustom();
             FilterByLastPlayedLabel = new ToolStripLabel();
-            FilterTagsLeftSep = new ToolStripSeparatorCustom();
             FilterByTagsButton = new ToolStripButtonCustom();
-            FilterFinishedLeftSep = new ToolStripSeparatorCustom();
             FilterByFinishedButton = new ToolStripButtonCustom();
             FilterByUnfinishedButton = new ToolStripButtonCustom();
-            FilterRatingLeftSep = new ToolStripSeparatorCustom();
             FilterByRatingButton = new ToolStripButtonCustom();
             FilterByRatingLabel = new ToolStripLabel();
-            FilterShowUnsupportedLeftSep = new ToolStripSeparatorCustom();
             FilterShowUnsupportedButton = new ToolStripButtonCustom();
             RefreshAreaToolStrip = new ToolStripCustom();
             FMsListZoomInButton = new ToolStripButtonCustom();
             FMsListZoomOutButton = new ToolStripButtonCustom();
             FMsListResetZoomButton = new ToolStripButtonCustom();
-            RefreshAreaLeftSep = new ToolStripSeparatorCustom();
             RefreshFromDiskButton = new ToolStripButtonCustom();
             RefreshFiltersButton = new ToolStripButtonCustom();
             ClearFiltersButton = new ToolStripButtonCustom();
-            ResetLayoutLeftSep = new ToolStripSeparatorCustom();
             ResetLayoutButton = new Button();
             GamesTabControl = new TabControl();
             Thief1TabPage = new TabPage();
@@ -199,9 +186,7 @@ namespace AngelLoader.Forms
             TopSplitContainer.SuspendLayout();
             ((ISupportInitialize)FMsDGV).BeginInit();
             FilterBarFLP.SuspendLayout();
-            FilterGamesLeftSepToolStrip.SuspendLayout();
             FilterGameButtonsToolStrip.SuspendLayout();
-            FilterAuthorLeftSepToolStrip.SuspendLayout();
             FilterIconButtonsToolStrip.SuspendLayout();
             RefreshAreaToolStrip.SuspendLayout();
             GamesTabControl.SuspendLayout();
@@ -584,11 +569,9 @@ namespace AngelLoader.Forms
             // 
             FilterBarFLP.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             FilterBarFLP.AutoScroll = true;
-            FilterBarFLP.Controls.Add(FilterGamesLeftSepToolStrip);
             FilterBarFLP.Controls.Add(FilterGameButtonsToolStrip);
             FilterBarFLP.Controls.Add(FilterTitleLabel);
             FilterBarFLP.Controls.Add(FilterTitleTextBox);
-            FilterBarFLP.Controls.Add(FilterAuthorLeftSepToolStrip);
             FilterBarFLP.Controls.Add(FilterAuthorLabel);
             FilterBarFLP.Controls.Add(FilterAuthorTextBox);
             FilterBarFLP.Controls.Add(FilterIconButtonsToolStrip);
@@ -602,23 +585,7 @@ namespace AngelLoader.Forms
             FilterBarFLP.WrapContents = false;
             FilterBarFLP.Scroll += FiltersFlowLayoutPanel_Scroll;
             FilterBarFLP.SizeChanged += FiltersFlowLayoutPanel_SizeChanged;
-            // 
-            // FilterGamesLeftSepToolStrip
-            // 
-            FilterGamesLeftSepToolStrip.GripMargin = new Padding(0);
-            FilterGamesLeftSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
-            FilterGamesLeftSepToolStrip.Items.AddRange(new ToolStripItem[] {
-            FilterGamesLeftSep});
-            FilterGamesLeftSepToolStrip.Padding = new Padding(0);
-            FilterGamesLeftSepToolStrip.PaddingDrawNudge = 1;
-            FilterGamesLeftSepToolStrip.Size = new Size(6, 26);
-            FilterGamesLeftSepToolStrip.TabIndex = 2;
-            // 
-            // FilterGamesLeftSep
-            // 
-            FilterGamesLeftSep.AutoSize = false;
-            FilterGamesLeftSep.Margin = new Padding(0, 0, -2, 0);
-            FilterGamesLeftSep.Size = new Size(6, 26);
+            FilterBarFLP.Paint += FilterBarFLP_Paint;
             // 
             // FilterGameButtonsToolStrip
             // 
@@ -632,12 +599,8 @@ namespace AngelLoader.Forms
             FilterGameButtonsToolStrip.Items.AddRange(new ToolStripItem[] {
             FilterByThief1Button,
             FilterByThief2Button,
-            FilterByThief3Button,
-            FilterTitleLeftSep});
+            FilterByThief3Button});
             FilterGameButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
-            FilterGameButtonsToolStrip.Location = new Point(6, 0);
-            FilterGameButtonsToolStrip.PaddingDrawNudge = 0;
-            FilterGameButtonsToolStrip.Size = new Size(85, 26);
             FilterGameButtonsToolStrip.TabIndex = 3;
             // 
             // FilterByThief1Button
@@ -670,16 +633,10 @@ namespace AngelLoader.Forms
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += FilterByGameCheckButtons_Click;
             // 
-            // FilterTitleLeftSep
-            // 
-            FilterTitleLeftSep.AutoSize = false;
-            FilterTitleLeftSep.Margin = new Padding(3, 0, 0, 0);
-            FilterTitleLeftSep.Size = new Size(6, 26);
-            // 
             // FilterTitleLabel
             // 
             FilterTitleLabel.AutoSize = true;
-            FilterTitleLabel.Margin = new Padding(0, 6, 0, 0);
+            FilterTitleLabel.Margin = new Padding(10, 6, 0, 0);
             FilterTitleLabel.TabIndex = 5;
             // 
             // FilterTitleTextBox
@@ -688,27 +645,10 @@ namespace AngelLoader.Forms
             FilterTitleTextBox.TabIndex = 6;
             FilterTitleTextBox.TextChanged += FilterTextBoxes_TextChanged;
             // 
-            // FilterAuthorLeftSepToolStrip
-            // 
-            FilterAuthorLeftSepToolStrip.GripMargin = new Padding(0);
-            FilterAuthorLeftSepToolStrip.GripStyle = ToolStripGripStyle.Hidden;
-            FilterAuthorLeftSepToolStrip.Items.AddRange(new ToolStripItem[] {
-            FilterAuthorLeftSep});
-            FilterAuthorLeftSepToolStrip.Padding = new Padding(0);
-            FilterAuthorLeftSepToolStrip.PaddingDrawNudge = 1;
-            FilterAuthorLeftSepToolStrip.Size = new Size(6, 26);
-            FilterAuthorLeftSepToolStrip.TabIndex = 45;
-            // 
-            // FilterAuthorLeftSep
-            // 
-            FilterAuthorLeftSep.AutoSize = false;
-            FilterAuthorLeftSep.Margin = new Padding(0, 0, -2, 0);
-            FilterAuthorLeftSep.Size = new Size(6, 26);
-            // 
             // FilterAuthorLabel
             // 
             FilterAuthorLabel.AutoSize = true;
-            FilterAuthorLabel.Margin = new Padding(3, 6, 0, 0);
+            FilterAuthorLabel.Margin = new Padding(9, 6, 0, 0);
             FilterAuthorLabel.TabIndex = 7;
             // 
             // FilterAuthorTextBox
@@ -727,39 +667,28 @@ namespace AngelLoader.Forms
             FilterIconButtonsToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             FilterIconButtonsToolStrip.ImageScalingSize = new Size(22, 22);
             FilterIconButtonsToolStrip.Items.AddRange(new ToolStripItem[] {
-            FilterReleaseDateLeftSep,
             FilterByReleaseDateButton,
             FilterByReleaseDateLabel,
-            FilterLastPlayedLeftSep,
             FilterByLastPlayedButton,
             FilterByLastPlayedLabel,
-            FilterTagsLeftSep,
             FilterByTagsButton,
-            FilterFinishedLeftSep,
             FilterByFinishedButton,
             FilterByUnfinishedButton,
-            FilterRatingLeftSep,
             FilterByRatingButton,
             FilterByRatingLabel,
-            FilterShowUnsupportedLeftSep,
             FilterShowUnsupportedButton});
             FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
             FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
             FilterIconButtonsToolStrip.Size = new Size(297, 26);
             FilterIconButtonsToolStrip.TabIndex = 3;
-            // 
-            // FilterReleaseDateLeftSep
-            // 
-            FilterReleaseDateLeftSep.AutoSize = false;
-            FilterReleaseDateLeftSep.Margin = new Padding(0, 0, 3, 0);
-            FilterReleaseDateLeftSep.Size = new Size(6, 26);
+            FilterIconButtonsToolStrip.Paint += FilterIconButtonsToolStrip_Paint;
             // 
             // FilterByReleaseDateButton
             // 
             FilterByReleaseDateButton.AutoSize = false;
             FilterByReleaseDateButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByReleaseDateButton.Image = Resources.FilterByReleaseDate;
-            FilterByReleaseDateButton.Margin = new Padding(0);
+            FilterByReleaseDateButton.Margin = new Padding(6, 0, 0, 0);
             FilterByReleaseDateButton.Size = new Size(25, 25);
             FilterByReleaseDateButton.Click += FilterByReleaseDateButton_Click;
             // 
@@ -769,17 +698,12 @@ namespace AngelLoader.Forms
             FilterByReleaseDateLabel.Margin = new Padding(4, 5, 0, 2);
             FilterByReleaseDateLabel.Size = new Size(26, 15);
             // 
-            // FilterLastPlayedLeftSep
-            // 
-            FilterLastPlayedLeftSep.AutoSize = false;
-            FilterLastPlayedLeftSep.Size = new Size(6, 26);
-            // 
             // FilterByLastPlayedButton
             // 
             FilterByLastPlayedButton.AutoSize = false;
             FilterByLastPlayedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByLastPlayedButton.Image = Resources.FilterByLastPlayed;
-            FilterByLastPlayedButton.Margin = new Padding(0);
+            FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
             FilterByLastPlayedButton.Click += FilterByLastPlayedButton_Click;
             // 
@@ -789,24 +713,14 @@ namespace AngelLoader.Forms
             FilterByLastPlayedLabel.Margin = new Padding(4, 5, 0, 2);
             FilterByLastPlayedLabel.Size = new Size(25, 15);
             // 
-            // FilterTagsLeftSep
-            // 
-            FilterTagsLeftSep.AutoSize = false;
-            FilterTagsLeftSep.Size = new Size(6, 26);
-            // 
             // FilterByTagsButton
             // 
             FilterByTagsButton.AutoSize = false;
             FilterByTagsButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByTagsButton.Image = Resources.FilterByTags;
-            FilterByTagsButton.Margin = new Padding(0);
+            FilterByTagsButton.Margin = new Padding(6, 0, 0, 0);
             FilterByTagsButton.Size = new Size(25, 25);
             FilterByTagsButton.Click += FilterByTagsButton_Click;
-            // 
-            // FilterFinishedLeftSep
-            // 
-            FilterFinishedLeftSep.AutoSize = false;
-            FilterFinishedLeftSep.Size = new Size(6, 26);
             // 
             // FilterByFinishedButton
             // 
@@ -814,7 +728,7 @@ namespace AngelLoader.Forms
             FilterByFinishedButton.CheckOnClick = true;
             FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByFinishedButton.Image = Resources.FilterByFinished;
-            FilterByFinishedButton.Margin = new Padding(0);
+            FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByFinishedButton.Size = new Size(25, 25);
             FilterByFinishedButton.Click += FilterByFinishedButton_Click;
             // 
@@ -828,17 +742,12 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton.Size = new Size(25, 25);
             FilterByUnfinishedButton.Click += FilterByUnfinishedButton_Click;
             // 
-            // FilterRatingLeftSep
-            // 
-            FilterRatingLeftSep.AutoSize = false;
-            FilterRatingLeftSep.Size = new Size(6, 26);
-            // 
             // FilterByRatingButton
             // 
             FilterByRatingButton.AutoSize = false;
             FilterByRatingButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterByRatingButton.Image = Resources.FilterByRating;
-            FilterByRatingButton.Margin = new Padding(0);
+            FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
             FilterByRatingButton.Size = new Size(25, 25);
             FilterByRatingButton.Click += FilterByRatingButton_Click;
             // 
@@ -848,18 +757,13 @@ namespace AngelLoader.Forms
             FilterByRatingLabel.Margin = new Padding(4, 5, 0, 2);
             FilterByRatingLabel.Size = new Size(19, 15);
             // 
-            // FilterShowUnsupportedLeftSep
-            // 
-            FilterShowUnsupportedLeftSep.AutoSize = false;
-            FilterShowUnsupportedLeftSep.Size = new Size(6, 26);
-            // 
             // FilterShowUnsupportedButton
             // 
             FilterShowUnsupportedButton.AutoSize = false;
             FilterShowUnsupportedButton.CheckOnClick = true;
             FilterShowUnsupportedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterShowUnsupportedButton.Image = Resources.Show_Unsupported;
-            FilterShowUnsupportedButton.Margin = new Padding(0);
+            FilterShowUnsupportedButton.Margin = new Padding(6, 0, 0, 0);
             FilterShowUnsupportedButton.Size = new Size(25, 25);
             FilterShowUnsupportedButton.Click += FilterShowUnsupportedButton_Click;
             // 
@@ -876,15 +780,14 @@ namespace AngelLoader.Forms
             FMsListZoomInButton,
             FMsListZoomOutButton,
             FMsListResetZoomButton,
-            RefreshAreaLeftSep,
             RefreshFromDiskButton,
             RefreshFiltersButton,
-            ClearFiltersButton,
-            ResetLayoutLeftSep});
+            ClearFiltersButton});
             RefreshAreaToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
-            RefreshAreaToolStrip.Location = new Point(916, 0);
-            RefreshAreaToolStrip.Size = new Size(169, 26);
+            RefreshAreaToolStrip.Location = new Point(919, 0);
+            RefreshAreaToolStrip.Size = new Size(166, 26);
             RefreshAreaToolStrip.TabIndex = 12;
+            RefreshAreaToolStrip.Paint += this.RefreshAreaToolStrip_Paint;
             // 
             // FMsListZoomInButton
             // 
@@ -913,12 +816,6 @@ namespace AngelLoader.Forms
             FMsListResetZoomButton.Size = new Size(25, 25);
             FMsListResetZoomButton.Click += FMsListResetZoomButton_Click;
             // 
-            // RefreshAreaLeftSep
-            // 
-            RefreshAreaLeftSep.AutoSize = false;
-            RefreshAreaLeftSep.Margin = new Padding(3, 0, 0, 0);
-            RefreshAreaLeftSep.Size = new Size(6, 26);
-            // 
             // RefreshFromDiskButton
             // 
             RefreshFromDiskButton.AutoSize = false;
@@ -927,6 +824,7 @@ namespace AngelLoader.Forms
             RefreshFromDiskButton.Margin = new Padding(0);
             RefreshFromDiskButton.Size = new Size(25, 25);
             RefreshFromDiskButton.Click += RefreshFromDiskButton_Click;
+            RefreshFromDiskButton.Margin = new Padding(6, 0, 0, 0);
             // 
             // RefreshFiltersButton
             // 
@@ -942,15 +840,10 @@ namespace AngelLoader.Forms
             ClearFiltersButton.AutoSize = false;
             ClearFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             ClearFiltersButton.Image = Resources.ClearFilters;
-            ClearFiltersButton.Margin = new Padding(0);
+            // 1 pixel to the bottom margin to prevent the bottom from getting cut off for some reason
+            ClearFiltersButton.Margin = new Padding(0, 0, 9, 1);
             ClearFiltersButton.Size = new Size(25, 25);
             ClearFiltersButton.Click += ClearFiltersButton_Click;
-            // 
-            // ResetLayoutLeftSep
-            // 
-            ResetLayoutLeftSep.AutoSize = false;
-            ResetLayoutLeftSep.Margin = new Padding(3, 0, 0, 0);
-            ResetLayoutLeftSep.Size = new Size(6, 26);
             // 
             // ResetLayoutButton
             // 
@@ -1684,9 +1577,7 @@ namespace AngelLoader.Forms
             TopSplitContainer.ResumeLayout();
             ((ISupportInitialize)FMsDGV).EndInit();
             FilterBarFLP.ResumeLayout();
-            FilterGamesLeftSepToolStrip.ResumeLayout();
             FilterGameButtonsToolStrip.ResumeLayout();
-            FilterAuthorLeftSepToolStrip.ResumeLayout();
             FilterIconButtonsToolStrip.ResumeLayout();
             RefreshAreaToolStrip.ResumeLayout();
             GamesTabControl.ResumeLayout();
