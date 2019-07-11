@@ -20,6 +20,7 @@ namespace AngelLoader.CustomControls
         // No picture is used currently
         private PictureBox pbGlyph;
         private bool endOnMouseUp;
+        private int WheelAccum;
 
         #endregion
 
@@ -80,6 +81,7 @@ namespace AngelLoader.CustomControls
 
         protected override async void OnEnter(EventArgs e)
         {
+            WheelAccum = 0;
             await SetScrollPositionToCorrect();
 
             base.OnEnter(e);
@@ -144,8 +146,21 @@ namespace AngelLoader.CustomControls
                 return;
             }
 
-            int delta = (int)m.WParam;
-            if (delta != 0) BetterScroll(m.HWnd, delta < 0 ? 50 : -50);
+            int delta = 120;
+            WheelAccum += (int)m.WParam >> 16;
+            if (Math.Abs(WheelAccum) >= delta)
+            {
+                while (WheelAccum >= delta)
+                {
+                    BetterScroll(m.HWnd, -50);
+                    WheelAccum -= delta;
+                }
+                while (WheelAccum <= -delta)
+                {
+                    BetterScroll(m.HWnd, 50);
+                    WheelAccum += delta;
+                }
+            }
         }
 
         #endregion
