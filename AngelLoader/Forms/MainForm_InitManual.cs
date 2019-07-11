@@ -678,8 +678,6 @@ namespace AngelLoader.Forms
             FilterByRatingLabel,
             FilterShowUnsupportedButton});
             FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
-            FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
-            FilterIconButtonsToolStrip.Size = new Size(297, 26);
             FilterIconButtonsToolStrip.TabIndex = 3;
             FilterIconButtonsToolStrip.Paint += FilterIconButtonsToolStrip_Paint;
             // 
@@ -787,7 +785,7 @@ namespace AngelLoader.Forms
             RefreshAreaToolStrip.Location = new Point(919, 0);
             RefreshAreaToolStrip.Size = new Size(166, 26);
             RefreshAreaToolStrip.TabIndex = 12;
-            RefreshAreaToolStrip.Paint += this.RefreshAreaToolStrip_Paint;
+            RefreshAreaToolStrip.Paint += RefreshAreaToolStrip_Paint;
             // 
             // FMsListZoomInButton
             // 
