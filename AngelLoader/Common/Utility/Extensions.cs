@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using JetBrains.Annotations;
@@ -375,15 +376,24 @@ namespace AngelLoader.Common.Utility
         /// <returns></returns>
         internal static string ToInstDirNameFMSel(this string archiveName, bool truncate = true) => ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
 
+        private static readonly StringBuilder ToInstDirNameSB = new StringBuilder();
         private static string ToInstDirName(string archiveName, string illegalChars, bool truncate)
         {
-            archiveName = archiveName.RemoveExtension();
+            var count = archiveName.LastIndexOf('.');
+            if (truncate)
+            {
+                if (count == -1 || count > 30) count = Math.Min(archiveName.Length, 30);
+            }
+            else
+            {
+                if (count == -1) count = archiveName.Length;
+            }
 
-            if (truncate && archiveName.Length > 30) archiveName = archiveName.Substring(0, 30);
+            ToInstDirNameSB.Clear();
+            ToInstDirNameSB.Append(archiveName);
+            for (var i = 0; i < illegalChars.Length; i++) ToInstDirNameSB.Replace(illegalChars[i], '_', 0, count);
 
-            for (var i = 0; i < illegalChars.Length; i++) archiveName = archiveName.Replace(illegalChars[i], '_');
-
-            return archiveName;
+            return ToInstDirNameSB.ToString(0, count);
         }
 
         #endregion
