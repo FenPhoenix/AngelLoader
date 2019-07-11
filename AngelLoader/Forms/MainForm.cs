@@ -2745,25 +2745,7 @@ namespace AngelLoader.Forms
             {
                 EditFMTitleTextBox.Text = fm.Title;
 
-                AltTitlesLLMenu.ClearItems();
-
-                if (fm.AltTitles.Count == 0)
-                {
-                    EditFMAltTitlesDropDownButton.Enabled = false;
-                }
-                else
-                {
-                    List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>();
-                    foreach (var t in fm.AltTitles)
-                    {
-                        var item = new ToolStripMenuItem { Text = t };
-                        item.Click += EditFMAltTitlesMenuItems_Click;
-                        altTitlesMenuItems.Add(item);
-                    }
-                    AltTitlesLLMenu.AddRange(altTitlesMenuItems);
-
-                    EditFMAltTitlesDropDownButton.Enabled = true;
-                }
+                FillAltTitles(fm);
 
                 EditFMAuthorTextBox.Text = fm.Author;
 
@@ -2933,6 +2915,31 @@ namespace AngelLoader.Forms
                 ViewHTMLReadmeButton.Hide();
                 ShowReadme(true);
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
+            }
+        }
+
+        private void FillAltTitles(FanMission fm)
+        {
+            if (!AltTitlesLLMenu.Constructed) return;
+
+            AltTitlesLLMenu.ClearItems();
+
+            if (fm.AltTitles.Count == 0)
+            {
+                EditFMAltTitlesDropDownButton.Enabled = false;
+            }
+            else
+            {
+                List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>();
+                foreach (var t in fm.AltTitles)
+                {
+                    var item = new ToolStripMenuItem { Text = t };
+                    item.Click += EditFMAltTitlesMenuItems_Click;
+                    altTitlesMenuItems.Add(item);
+                }
+                AltTitlesLLMenu.AddRange(altTitlesMenuItems);
+
+                EditFMAltTitlesDropDownButton.Enabled = true;
             }
         }
 
@@ -3431,7 +3438,8 @@ namespace AngelLoader.Forms
 
         private void EditFMAltTitlesDropDownButton_Click(object sender, EventArgs e)
         {
-            AltTitlesLLMenu.Construct(this, components);
+            AltTitlesLLMenu.Construct(components);
+            FillAltTitles(FMsDGV.GetSelectedFM());
             ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesDropDownButton, MenuPos.BottomLeft);
         }
 
