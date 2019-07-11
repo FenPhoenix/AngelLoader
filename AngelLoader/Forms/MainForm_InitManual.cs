@@ -305,6 +305,7 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP.Location = new Point(2, 0);
             BottomLeftButtonsFLP.Size = new Size(616, 42);
             BottomLeftButtonsFLP.TabIndex = 36;
+            BottomLeftButtonsFLP.Paint += BottomLeftButtonsFLP_Paint;
             // 
             // PlayFMButton
             // 
