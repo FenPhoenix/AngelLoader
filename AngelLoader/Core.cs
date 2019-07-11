@@ -1638,6 +1638,7 @@ namespace AngelLoader
                     {
                         if (globalTag.UsedCount > 0) globalTag.UsedCount--;
                         if (globalTag.UsedCount == 0) globalCat.Tags.Remove(globalTag);
+                        if (globalCat.Tags.Count == 0) GlobalTags.Remove(globalCat);
                     }
                 }
             }
