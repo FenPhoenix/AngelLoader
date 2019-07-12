@@ -57,8 +57,7 @@ namespace AngelLoader
                     try
                     {
                         ReadConfigIni(Paths.ConfigIni, Config);
-                        var checkPaths = CheckPaths();
-                        openSettings = checkPaths == Error.BackupPathNotSpecified;
+                        openSettings = SetPaths() == Error.BackupPathNotSpecified;
                     }
                     catch (Exception ex)
                     {
@@ -278,10 +277,11 @@ namespace AngelLoader
                 {
                     Config.Language = sf.OutConfig.Language;
 
-                    // This is here so that we can just call this method as the last line in Init() and not have to
-                    // await and take the perf hit
-                    var checkPaths = CheckPaths();
+                    // We don't need to set the paths again, because we've already done so above
+#if DEBUG
+                    var checkPaths = SetPaths();
                     Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
+#endif
 
                     WriteConfigIni(Config, Paths.ConfigIni);
 
@@ -443,8 +443,11 @@ namespace AngelLoader
             FMsViewList.Sort(comparer);
         }
 
-        private static Error CheckPaths()
+        private static Error SetPaths()
         {
+            // PERF_TODO: 9ms. Could thread this, but catches:
+            // Would have to guard against both paths being the same, one path being a hard-link to the other,
+            // and possibly other exotic things.
             var t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
             var t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
             var t3Exists = !Config.T3Exe.IsEmpty() && File.Exists(Config.T3Exe);
