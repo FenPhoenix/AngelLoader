@@ -1546,9 +1546,10 @@ namespace AngelLoader.Forms
                 var fm = Core.FMsViewList[i];
 
                 if (titleIsWhitespace ||
-                    fm.Archive.ContainsI(FMsDGV.Filter.Title) ||
                     fm.Title.ContainsI(FMsDGV.Filter.Title) ||
-                    fm.InstalledDir.ContainsI(FMsDGV.Filter.Title))
+                    (fm.Archive.ExtIsArchive()
+                        ? fm.Archive.IndexOf(FMsDGV.Filter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
+                        : fm.Archive.ContainsI(FMsDGV.Filter.Title)))
                 {
                     FMsDGV.FilterShownIndexList.Add(i);
                 }
@@ -3041,7 +3042,8 @@ namespace AngelLoader.Forms
         private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            await SortAndSetFilter(keepSelection: true);
+            // Don't keep selection for this one, cause you want to end up on the FM you typed as soon as possible
+            await SortAndSetFilter();
         }
 
         private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)

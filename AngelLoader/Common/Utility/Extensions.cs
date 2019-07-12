@@ -121,98 +121,23 @@ namespace AngelLoader.Common.Utility
         }
 
         #region Baked-in extension checks
+        // TODO: Just passthroughs now because EndsWithI turned out to be faster(?!)
 
-        internal static bool ExtIsTxt(this string value)
-        {
-            if (value == null) return false;
+        internal static bool ExtIsTxt(this string value) => value.EndsWithI(".txt");
 
-            var len = value.Length;
-            return len > 4 &&
-                   value[len - 4] == '.' &&
-                   (value[len - 3] == 'T' || value[len - 3] == 't') &&
-                   (value[len - 2] == 'X' || value[len - 2] == 'x') &&
-                   (value[len - 1] == 'T' || value[len - 1] == 't');
-        }
+        internal static bool ExtIsRtf(this string value) => value.EndsWithI(".rtf");
 
-        internal static bool ExtIsRtf(this string value)
-        {
-            if (value == null) return false;
+        internal static bool ExtIsWri(this string value) => value.EndsWithI(".wri");
 
-            var len = value.Length;
-            return len > 4 &&
-                   value[len - 4] == '.' &&
-                   (value[len - 3] == 'R' || value[len - 3] == 'r') &&
-                   (value[len - 2] == 'T' || value[len - 2] == 't') &&
-                   (value[len - 1] == 'F' || value[len - 1] == 'f');
-        }
+        internal static bool ExtIsHtml(this string value) => value.EndsWithI(".html") || value.EndsWithI(".htm");
 
-        internal static bool ExtIsWri(this string value)
-        {
-            if (value == null) return false;
+        internal static bool ExtIsGlml(this string value) => value.EndsWithI(".glml");
 
-            var len = value.Length;
-            return len > 4 &&
-                   value[len - 4] == '.' &&
-                   (value[len - 3] == 'W' || value[len - 3] == 'w') &&
-                   (value[len - 2] == 'R' || value[len - 2] == 'r') &&
-                   (value[len - 1] == 'I' || value[len - 1] == 'i');
-        }
+        internal static bool ExtIsArchive(this string value) => value.EndsWithI(".zip") || value.EndsWithI(".7z");
 
-        internal static bool ExtIsHtml(this string value)
-        {
-            if (value == null) return false;
+        internal static bool ExtIsZip(this string value) => value.EndsWithI(".zip");
 
-            var len = value.Length;
-            return (len > 4 &&
-                    value[len - 4] == '.' &&
-                    (value[len - 3] == 'H' || value[len - 3] == 'h') &&
-                    (value[len - 2] == 'T' || value[len - 2] == 't') &&
-                    (value[len - 1] == 'M' || value[len - 1] == 'm')) ||
-                   (len > 5 &&
-                    value[len - 5] == '.' &&
-                    (value[len - 4] == 'H' || value[len - 4] == 'h') &&
-                    (value[len - 3] == 'T' || value[len - 3] == 't') &&
-                    (value[len - 2] == 'M' || value[len - 2] == 'm') &&
-                    (value[len - 1] == 'L' || value[len - 1] == 'l'));
-        }
-
-        internal static bool ExtIsGlml(this string value)
-        {
-            if (value == null) return false;
-
-            var len = value.Length;
-            return len > 5 &&
-                   value[len - 5] == '.' &&
-                   (value[len - 4] == 'G' || value[len - 4] == 'g') &&
-                   (value[len - 3] == 'L' || value[len - 3] == 'l') &&
-                   (value[len - 2] == 'M' || value[len - 2] == 'm') &&
-                   (value[len - 1] == 'L' || value[len - 1] == 'l');
-        }
-
-        internal static bool ExtIsArchive(this string value) => value.ExtIsZip() || value.ExtIs7z();
-
-        internal static bool ExtIsZip(this string value)
-        {
-            if (value == null) return false;
-
-            var len = value.Length;
-            return len > 4 &&
-                   value[len - 4] == '.' &&
-                   (value[len - 3] == 'Z' || value[len - 3] == 'z') &&
-                   (value[len - 2] == 'I' || value[len - 2] == 'i') &&
-                   (value[len - 1] == 'P' || value[len - 1] == 'p');
-        }
-
-        internal static bool ExtIs7z(this string value)
-        {
-            if (value == null) return false;
-
-            var len = value.Length;
-            return len > 3 &&
-                   value[len - 3] == '.' &&
-                   value[len - 2] == '7' &&
-                   (value[len - 1] == 'Z' || value[len - 1] == 'z');
-        }
+        internal static bool ExtIs7z(this string value) => value.EndsWithI(".7z");
 
         #endregion
 
