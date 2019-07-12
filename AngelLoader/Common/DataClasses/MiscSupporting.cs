@@ -355,7 +355,7 @@ namespace AngelLoader.Common.DataClasses
 
     internal enum SettingsTab { Paths, FMDisplay, Other }
 
-    internal sealed class SelectedFM
+    public sealed class SelectedFM
     {
         internal void DeepCopyTo(SelectedFM dest)
         {

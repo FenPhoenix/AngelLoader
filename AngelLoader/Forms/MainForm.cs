@@ -1446,18 +1446,17 @@ namespace AngelLoader.Forms
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
             bool keepSelection = false, bool gameTabSwitch = false)
         {
-            string instName = null;
-            int indexFromTop = -1;
+            //string instName = null;
+            //int indexFromTop = -1;
+            SelectedFM selectedFM = null;
             if (keepSelection && !gameTabSwitch && FMsDGV.SelectedRows.Count > 0)
             {
-                var pi = FMsDGV.GetSelectedFMPosInfo();
-                instName = pi.InstalledName;
-                indexFromTop = pi.IndexFromTop;
+                selectedFM = FMsDGV.GetSelectedFMPosInfo();
             }
 
             SortByCurrentColumn();
             await SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume,
-                keepSelection, instName, indexFromTop, gameTabSwitch);
+                keepSelection, selectedFM, gameTabSwitch);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -1468,7 +1467,7 @@ namespace AngelLoader.Forms
         private async Task SetFilter(bool suppressRefresh = false,
             bool forceRefreshReadme = false, bool forceSuppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false,
-            bool keepSelection = false, string installedName = null, int indexFromTop = -1, bool gameTabSwitch = false)
+            bool keepSelection = false, SelectedFM selectedFM = null, bool gameTabSwitch = false)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
@@ -1530,8 +1529,7 @@ namespace AngelLoader.Forms
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume: suppressSuspendResume,
                         keepSelection: keepSelection,
-                        installedName: installedName,
-                        indexFromTop: indexFromTop,
+                        selectedFM: selectedFM,
                         gameTabSwitch: gameTabSwitch);
                 }
                 return;
@@ -1862,8 +1860,7 @@ namespace AngelLoader.Forms
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                 suppressSuspendResume: suppressSuspendResume,
                 keepSelection: keepSelection,
-                installedName: installedName,
-                indexFromTop: indexFromTop,
+                selectedFM: selectedFM,
                 gameTabSwitch: gameTabSwitch);
         }
 
@@ -2083,8 +2080,7 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Left) return;
 
-            string instName = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFM().InstalledDir : null;
-            int indexFromTop = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFMPosInfo().IndexFromTop : -1;
+            var selFM = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFMPosInfo() : null;
 
             var newSortDirection =
                 e.ColumnIndex == FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
@@ -2096,13 +2092,12 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered)
             {
                 // SetFilter() calls a refresh on its own
-                await SetFilter(forceRefreshReadme: true, keepSelection: true, installedName: instName,
-                    indexFromTop: indexFromTop);
+                await SetFilter(forceRefreshReadme: true, keepSelection: true, selectedFM: selFM);
             }
             else
             {
                 await RefreshFMsList(refreshReadme: true, suppressSelectionChangedEvent: true, keepSelection: true,
-                    installedName: instName, indexFromTop: indexFromTop);
+                    selectedFM: selFM);
             }
         }
 
@@ -2362,7 +2357,7 @@ namespace AngelLoader.Forms
 
         public async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
             bool suppressSuspendResume = false,
-            bool keepSelection = false, string installedName = null, int indexFromTop = -1, bool gameTabSwitch = false)
+            bool keepSelection = false, SelectedFM selectedFM = null, bool gameTabSwitch = false)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
@@ -2400,12 +2395,15 @@ namespace AngelLoader.Forms
                     }
                     else
                     {
-                        var instName = !installedName.IsEmpty() ? installedName : FMsDGV.CurrentSelFM.InstalledName;
-                        var ift = indexFromTop > -1 ? indexFromTop : FMsDGV.CurrentSelFM.IndexFromTop;
-                        row = FMsDGV.GetIndexFromInstalledName(instName, !gameTabSwitch).ClampToZero();
+                        //var instName = !installedName.IsEmpty() ? installedName : FMsDGV.CurrentSelFM.InstalledName;
+                        //var ift = indexFromTop > -1 ? indexFromTop : FMsDGV.CurrentSelFM.IndexFromTop;
+
+                        var selFM = selectedFM ?? FMsDGV.CurrentSelFM;
+
+                        row = FMsDGV.GetIndexFromInstalledName(selFM.InstalledName, !gameTabSwitch).ClampToZero();
                         try
                         {
-                            FMsDGV.FirstDisplayedScrollingRowIndex = (row - ift).ClampToZero();
+                            FMsDGV.FirstDisplayedScrollingRowIndex = (row - selFM.IndexFromTop).ClampToZero();
                         }
                         catch (Exception)
                         {
@@ -2430,7 +2428,8 @@ namespace AngelLoader.Forms
                     }
 
                     // Optimization in case we land on the same as FM as before, don't reload it
-                    if (!keepSelection || installedName.IsEmpty() || installedName != FMsDGV.GetSelectedFM().InstalledDir)
+                    if (!keepSelection || selectedFM == null || selectedFM.InstalledName.IsEmpty() ||
+                        selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir)
                     {
                         await DisplaySelectedFM(refreshReadme);
                     }
