@@ -166,6 +166,12 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
+        /// <summary>
+        /// Returns true if any row is selected, false if no rows exist or none are selected.
+        /// </summary>
+        /// <returns></returns>
+        internal bool RowSelected() => SelectedRows.Count > 0;
+
         #region Set context menu
 
         internal void SetContextMenuToNone() => ContextMenuStrip = null;

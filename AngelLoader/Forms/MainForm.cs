@@ -368,9 +368,9 @@ namespace AngelLoader.Forms
             if (e.Alt && e.KeyCode == Keys.F4) return;
             if (KeyPressesDisabled || ViewBlocked ||
                 ((e.KeyCode == Keys.PageUp || (e.Control && e.KeyCode == Keys.Home)) &&
-                 FMsDGV.SelectedRows.Count > 0 && FMsDGV.SelectedRows[0].Index == 0) ||
+                 FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
                 ((e.KeyCode == Keys.PageDown || (e.Control && e.KeyCode == Keys.End)) &&
-                 FMsDGV.SelectedRows.Count > 0 && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1))
+                 FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1))
             {
                 e.SuppressKeyPress = true;
             }
@@ -599,7 +599,7 @@ namespace AngelLoader.Forms
             }
 
             SetFilter();
-            if (RefreshFMsList(FMsDGV.CurrentSelFM, suppressSuspendResume: true, KeepSel.TrueNearest))
+            if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, keepSelection: KeepSel.TrueNearest))
             {
                 await DisplaySelectedFM(true);
             }
@@ -696,7 +696,7 @@ namespace AngelLoader.Forms
         {
             if (e.KeyCode == Keys.Enter)
             {
-                if (FMsDGV.Focused && FMsDGV.SelectedRows.Count > 0 && GameIsKnownAndSupported(FMsDGV.GetSelectedFM()))
+                if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM()))
                 {
                     e.SuppressKeyPress = true;
                     await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), askConfIfRequired: true);
@@ -784,7 +784,7 @@ namespace AngelLoader.Forms
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
-            var selFM = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFM() : null;
+            var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
 
             if (suspendResume)
@@ -1326,7 +1326,7 @@ namespace AngelLoader.Forms
             {
                 // No goal escapes me, mate
 
-                SelectedFM selFM = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFMPosInfo() : null;
+                SelectedFM selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
                 var f = FMsDGV.DefaultCellStyle.Font;
 
@@ -1371,7 +1371,7 @@ namespace AngelLoader.Forms
                 FMsDGV.RowTemplate.Height = rowHeight;
 
                 // Save previous selection
-                int selIndex = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.SelectedRows[0].Index : -1;
+                int selIndex = FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
                 using (new DisableEvents(this))
                 {
                     // Force a regeneration of rows (height will take effect here)
@@ -1463,9 +1463,11 @@ namespace AngelLoader.Forms
         public async Task SortAndSetFilter(SelectedFM selectedFM = null, bool forceDisplayFM = false,
             bool keepSelection = true, bool gameTabSwitch = false)
         {
+            var oldSelectedFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+
             if (selectedFM == null)
             {
-                selectedFM = keepSelection && !gameTabSwitch && FMsDGV.SelectedRows.Count > 0
+                selectedFM = keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
                     ? FMsDGV.GetSelectedFMPosInfo()
                     : null;
             }
@@ -1487,10 +1489,18 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
+                    Trace.WriteLine(nameof(keepSelection) + ": " + keepSelection);
+                    Trace.WriteLine("selectedFM != null: " + (selectedFM != null));
+                    Trace.WriteLine("!selectedFM.InstalledName.IsEmpty(): " + (selectedFM != null && !selectedFM.InstalledName.IsEmpty()));
+                    Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir));
+
                     // Optimization in case we land on the same as FM as before, don't reload it
-                    if (!keepSelection ||
-                        (selectedFM != null && !selectedFM.InstalledName.IsEmpty() &&
-                         selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir))
+                    // And whaddaya know, I still ended up having to have this eyes-glazing-over stuff here.
+                    if ((keepSelection &&
+                         selectedFM != null && !selectedFM.InstalledName.IsEmpty() &&
+                         selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir) ||
+                        (!keepSelection &&
+                         (oldSelectedFM == null ||(FMsDGV.RowSelected() &&!oldSelectedFM.Equals(FMsDGV.GetSelectedFM())))))
                     {
                         await DisplaySelectedFM(true);
                     }
@@ -2083,7 +2093,7 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Left) return;
 
-            var selFM = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFMPosInfo() : null;
+            var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
             var newSortDirection =
                 e.ColumnIndex == FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
@@ -2095,7 +2105,7 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered) SetFilter();
             if (RefreshFMsList(selFM, keepSelection: KeepSel.TrueNearest))
             {
-                if (selFM != null && FMsDGV.SelectedRows.Count > 0 &&
+                if (selFM != null && FMsDGV.RowSelected() &&
                     selFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir)
                 {
                     await DisplaySelectedFM(true);
@@ -2182,7 +2192,7 @@ namespace AngelLoader.Forms
 
         internal async Task RefreshFromDisk()
         {
-            var selFM = FMsDGV.SelectedRows.Count > 0 ? FMsDGV.GetSelectedFMPosInfo() : null;
+            var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
             using (new DisableEvents(this)) await Core.FindNewFMsAndScanForGameType();
             await SortAndSetFilter(selectedFM: selFM, forceDisplayFM: true);
         }
@@ -2368,17 +2378,16 @@ namespace AngelLoader.Forms
         /// Returns false if the list is empty and ClearShownData() has been called, otherwise true
         /// </summary>
         /// <param name="selectedFM"></param>
-        /// <param name="suppressSuspendResume"></param>
+        /// <param name="startup"></param>
         /// <param name="keepSelection"></param>
         /// <returns></returns>
-        private bool RefreshFMsList(SelectedFM selectedFM, bool suppressSuspendResume = false,
-            KeepSel keepSelection = KeepSel.False)
+        private bool RefreshFMsList(SelectedFM selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False)
         {
             using (new DisableEvents(this))
             {
                 // A small but measurable perf increase from this. Also prevents flickering when switching game
                 // tabs.
-                if (!suppressSuspendResume)
+                if (!startup)
                 {
                     FMsDGV.SuspendDrawing();
                     // So, I'm sorry, I thought the line directly above this one said to suspend drawing. I just
@@ -2397,7 +2406,7 @@ namespace AngelLoader.Forms
 
                 if (FMsDGV.RowCount == 0)
                 {
-                    if (!suppressSuspendResume) FMsDGV.ResumeDrawing();
+                    if (!startup) FMsDGV.ResumeDrawing();
                     ClearShownData();
                     return false;
                 }
@@ -2433,7 +2442,7 @@ namespace AngelLoader.Forms
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
                     // and understand why it takes a sec. Otherwise, it looks like merely changing tabs brings
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
-                    if (!suppressSuspendResume)
+                    if (!startup)
                     {
                         CellValueNeededDisabled = false;
                         FMsDGV.ResumeDrawing();
@@ -2517,7 +2526,7 @@ namespace AngelLoader.Forms
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            if (FMsDGV.SelectedRows.Count == 0)
+            if (!FMsDGV.RowSelected())
             {
                 ClearShownData();
             }
@@ -3114,7 +3123,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            if (FMsDGV.SelectedRows.Count == 0) return;
+            if (!FMsDGV.RowSelected()) return;
 
             var fm = FMsDGV.GetSelectedFM();
 
@@ -3232,7 +3241,7 @@ namespace AngelLoader.Forms
 
         private void RemoveTagButton_Click(object sender, EventArgs e)
         {
-            if (FMsDGV.SelectedRows.Count == 0) return;
+            if (!FMsDGV.RowSelected()) return;
 
             var fm = FMsDGV.GetSelectedFM();
             var tv = TagsTreeView;
@@ -3976,7 +3985,7 @@ namespace AngelLoader.Forms
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             FanMission fm;
-            if (e.RowIndex < 0 || FMsDGV.SelectedRows.Count == 0 || !GameIsKnownAndSupported(fm = FMsDGV.GetSelectedFM()))
+            if (e.RowIndex < 0 || !FMsDGV.RowSelected() || !GameIsKnownAndSupported(fm = FMsDGV.GetSelectedFM()))
             {
                 return;
             }
