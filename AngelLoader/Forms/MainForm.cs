@@ -1446,8 +1446,6 @@ namespace AngelLoader.Forms
             bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
             bool keepSelection = false, bool gameTabSwitch = false)
         {
-            //string instName = null;
-            //int indexFromTop = -1;
             SelectedFM selectedFM = null;
             if (keepSelection && !gameTabSwitch && FMsDGV.SelectedRows.Count > 0)
             {
@@ -1456,7 +1454,7 @@ namespace AngelLoader.Forms
 
             SortByCurrentColumn();
             await SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume,
-                keepSelection, selectedFM, gameTabSwitch);
+                keepSelection, selectedFM);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -1466,8 +1464,7 @@ namespace AngelLoader.Forms
         //       given this is a reasonably naive implementation with no real attempt to be clever.
         private async Task SetFilter(bool suppressRefresh = false,
             bool forceRefreshReadme = false, bool forceSuppressSelectionChangedEvent = false,
-            bool suppressSuspendResume = false,
-            bool keepSelection = false, SelectedFM selectedFM = null, bool gameTabSwitch = false)
+            bool suppressSuspendResume = false, bool keepSelection = false, SelectedFM selectedFM = null)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
@@ -1529,8 +1526,7 @@ namespace AngelLoader.Forms
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume: suppressSuspendResume,
                         keepSelection: keepSelection,
-                        selectedFM: selectedFM,
-                        gameTabSwitch: gameTabSwitch);
+                        selectedFM: selectedFM);
                 }
                 return;
             }
@@ -1860,8 +1856,7 @@ namespace AngelLoader.Forms
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                 suppressSuspendResume: suppressSuspendResume,
                 keepSelection: keepSelection,
-                selectedFM: selectedFM,
-                gameTabSwitch: gameTabSwitch);
+                selectedFM: selectedFM);
         }
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
@@ -2356,8 +2351,7 @@ namespace AngelLoader.Forms
         }
 
         public async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
-            bool suppressSuspendResume = false,
-            bool keepSelection = false, SelectedFM selectedFM = null, bool gameTabSwitch = false)
+            bool suppressSuspendResume = false, bool keepSelection = false, SelectedFM selectedFM = null)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
@@ -2395,12 +2389,8 @@ namespace AngelLoader.Forms
                     }
                     else
                     {
-                        //var instName = !installedName.IsEmpty() ? installedName : FMsDGV.CurrentSelFM.InstalledName;
-                        //var ift = indexFromTop > -1 ? indexFromTop : FMsDGV.CurrentSelFM.IndexFromTop;
-
                         var selFM = selectedFM ?? FMsDGV.CurrentSelFM;
-
-                        row = FMsDGV.GetIndexFromInstalledName(selFM.InstalledName, !gameTabSwitch).ClampToZero();
+                        row = FMsDGV.GetIndexFromInstalledName(selFM.InstalledName, selectedFM != null).ClampToZero();
                         try
                         {
                             FMsDGV.FirstDisplayedScrollingRowIndex = (row - selFM.IndexFromTop).ClampToZero();
@@ -3041,7 +3031,7 @@ namespace AngelLoader.Forms
         private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            // Don't keep selection for this one, cause you want to end up on the FM you typed as soon as possible
+            // Don't keep selection for these ones, cause you want to end up on the FM you typed as soon as possible
             await SortAndSetFilter();
         }
 
