@@ -592,7 +592,7 @@ namespace AngelLoader.Forms
             }
 
             // Suppress selection change so we don't have to use the old InitialSelectedFMHasBeenSet flag
-            await SetFilter(keepSelection: true, suppressSuspendResume: true, forceSuppressSelectionChangedEvent: true);
+            await SetFilter(suppressSuspendResume: true, forceSuppressSelectionChangedEvent: true, keepSelection: true);
 
             FMsDGV.Focus();
 
@@ -1456,8 +1456,8 @@ namespace AngelLoader.Forms
             }
 
             SortByCurrentColumn();
-            await SetFilter(keepSelection, suppressRefresh, forceRefreshReadme,
-                forceSuppressSelectionChangedEvent, suppressSuspendResume, instName, indexFromTop, gameTabSwitch);
+            await SetFilter(suppressRefresh, forceRefreshReadme, forceSuppressSelectionChangedEvent, suppressSuspendResume,
+                keepSelection, instName, indexFromTop, gameTabSwitch);
         }
 
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
@@ -1465,10 +1465,10 @@ namespace AngelLoader.Forms
         //       This was tested with the Release_Testing (optimized) profile.
         //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
         //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private async Task SetFilter(bool keepSelection = false, bool suppressRefresh = false,
+        private async Task SetFilter(bool suppressRefresh = false,
             bool forceRefreshReadme = false, bool forceSuppressSelectionChangedEvent = false,
-            bool suppressSuspendResume = false, string installedName = null, int indexFromTop = -1,
-            bool gameTabSwitch = false)
+            bool suppressSuspendResume = false,
+            bool keepSelection = false, string installedName = null, int indexFromTop = -1, bool gameTabSwitch = false)
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
@@ -1527,9 +1527,9 @@ namespace AngelLoader.Forms
                 {
                     await RefreshFMsList(
                         refreshReadme: forceRefreshReadme || (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
-                        keepSelection: keepSelection,
                         suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                         suppressSuspendResume: suppressSuspendResume,
+                        keepSelection: keepSelection,
                         installedName: installedName,
                         indexFromTop: indexFromTop,
                         gameTabSwitch: gameTabSwitch);
@@ -1859,9 +1859,9 @@ namespace AngelLoader.Forms
             await RefreshFMsList(
                 refreshReadme: forceRefreshReadme || FMsDGV.FilterShownIndexList.Count == 0 ||
                                (oldSelectedFM != null && !oldSelectedFM.Equals(FMsDGV.GetFMFromIndex(0))),
-                keepSelection: keepSelection,
                 suppressSelectionChangedEvent: forceSuppressSelectionChangedEvent || oldSelectedFM != null,
                 suppressSuspendResume: suppressSuspendResume,
+                keepSelection: keepSelection,
                 installedName: installedName,
                 indexFromTop: indexFromTop,
                 gameTabSwitch: gameTabSwitch);
@@ -2360,9 +2360,9 @@ namespace AngelLoader.Forms
             await DisplaySelectedFM(refreshReadme);
         }
 
-        public async Task RefreshFMsList(bool refreshReadme, bool keepSelection = false,
-            bool suppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
-            string installedName = null, int indexFromTop = -1, bool gameTabSwitch = false)
+        public async Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
+            bool suppressSuspendResume = false,
+            bool keepSelection = false, string installedName = null, int indexFromTop = -1, bool gameTabSwitch = false)
         {
             using (suppressSelectionChangedEvent ? new DisableEvents(this) : null)
             {
