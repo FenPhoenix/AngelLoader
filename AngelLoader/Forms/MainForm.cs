@@ -1500,7 +1500,7 @@ namespace AngelLoader.Forms
                          selectedFM != null && !selectedFM.InstalledName.IsEmpty() &&
                          selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir) ||
                         (!keepSelection &&
-                         (oldSelectedFM == null ||(FMsDGV.RowSelected() &&!oldSelectedFM.Equals(FMsDGV.GetSelectedFM())))))
+                         (oldSelectedFM == null || (FMsDGV.RowSelected() && !oldSelectedFM.Equals(FMsDGV.GetSelectedFM())))))
                     {
                         await DisplaySelectedFM(true);
                     }
@@ -2633,7 +2633,7 @@ namespace AngelLoader.Forms
         }
 
         // It's really hard to come up with a succinct name that makes it clear what this does and doesn't do
-        private async Task DisplaySelectedFM(bool refreshReadme = false)
+        private async Task DisplaySelectedFM(bool refreshReadme, bool refreshCache = false)
         {
             var fm = FMsDGV.GetSelectedFM();
 
@@ -2806,7 +2806,7 @@ namespace AngelLoader.Forms
 
             if (!refreshReadme) return;
 
-            var cacheData = await FMCache.GetCacheableData(fm, this);
+            var cacheData = await FMCache.GetCacheableData(fm, this, refreshCache);
 
             #region Readme
 
@@ -3902,19 +3902,30 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(forceDisplayFM: true);
         }
 
-        private async void EditFMScanTitleButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
+        private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
+        }
 
-        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
+        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
+        }
 
-        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
+        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
+        }
 
-        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
+        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
+        }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
-            FMsDGV.GetSelectedFM().RefreshCache = true;
             Core.WriteFullFMDataIni();
-            await DisplaySelectedFM(refreshReadme: true);
+            await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
         }
 
         // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...

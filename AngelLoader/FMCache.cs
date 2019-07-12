@@ -40,7 +40,7 @@ namespace AngelLoader
 
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
-        internal static async Task<CacheData> GetCacheableData(FanMission fm, IView view)
+        internal static async Task<CacheData> GetCacheableData(FanMission fm, IView view, bool refreshCache)
         {
             if (fm.Game == Game.Unsupported)
             {
@@ -55,7 +55,7 @@ namespace AngelLoader
             {
                 return FMIsReallyInstalled(fm)
                     ? GetCacheableDataInFMInstalledDir(fm)
-                    : await GetCacheableDataInFMCacheDir(fm, view);
+                    : await GetCacheableDataInFMCacheDir(fm, view, refreshCache);
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace AngelLoader
             return new CacheData { Readmes = readmes };
         }
 
-        internal static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, IView view)
+        internal static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, IView view, bool refreshCache)
         {
             var readmes = new List<string>();
 
@@ -169,7 +169,7 @@ namespace AngelLoader
                     }
                 }
 
-                bool checkArchive = fm.RefreshCache || (readmes.Count == 0 && !fm.NoReadmes);
+                bool checkArchive = refreshCache || (readmes.Count == 0 && !fm.NoReadmes);
 
                 if (!checkArchive) return new CacheData { Readmes = readmes };
             }
@@ -205,8 +205,6 @@ namespace AngelLoader
             }
 
             fm.NoReadmes = readmes.Count == 0;
-
-            fm.RefreshCache = false;
 
             return new CacheData { Readmes = readmes };
         }

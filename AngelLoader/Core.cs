@@ -638,7 +638,7 @@ namespace AngelLoader
         {
             if (scanOptions == null) scanOptions = GetDefaultScanOptions();
             bool success = await ScanFM(fm, scanOptions);
-            if (success) await View.RefreshSelectedFM(refreshReadme: true);
+            if (success) await View.RefreshSelectedFM(refreshReadme: false);
             return success;
         }
 

@@ -40,12 +40,7 @@ namespace AngelLoader.Ini
 
                 var fm = fmsList[fmsList.Count - 1];
 
-                if (lineT.StartsWithFast_NoNullChecks("RefreshCache="))
-                {
-                    var val = lineT.Substring(13);
-                    fm.RefreshCache = val.EqualsTrue();
-                }
-                else if (lineT.StartsWithFast_NoNullChecks("MarkedScanned="))
+                if (lineT.StartsWithFast_NoNullChecks("MarkedScanned="))
                 {
                     var val = lineT.Substring(14);
                     fm.MarkedScanned = val.EqualsTrue();
@@ -298,10 +293,6 @@ namespace AngelLoader.Ini
                 {
                     sw.WriteLine("[FM]");
 
-                    if (fm.RefreshCache)
-                    {
-                        sw.WriteLine("RefreshCache=" + fm.RefreshCache.ToString());
-                    }
                     if (fm.MarkedScanned)
                     {
                         sw.WriteLine("MarkedScanned=" + fm.MarkedScanned.ToString());
