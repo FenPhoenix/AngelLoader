@@ -110,7 +110,7 @@ namespace AngelLoader.CustomControls
             return GetFMFromIndex(SelectedRows[0].Index);
         }
 
-        internal int GetIndexFromInstalledName(string installedName, bool findClosest)
+        internal int GetIndexFromInstalledName(string installedName, bool findNearest)
         {
             // Graceful default if a value is missing
             if (installedName.IsEmpty()) return 0;
@@ -121,7 +121,7 @@ namespace AngelLoader.CustomControls
             }
 
             // If a refresh has caused our selected FM to be filtered out, find the next closest one
-            if (Filtered && findClosest)
+            if (Filtered && findNearest)
             {
                 for (int i = 0; i < Core.FMsViewList.Count; i++)
                 {

@@ -49,11 +49,9 @@ namespace AngelLoader.Forms
         Task RefreshSelectedFM(bool refreshReadme);
         void RefreshSelectedFMRowOnly();
         void RefreshFMsListKeepSelection();
-        Task RefreshFMsList(bool refreshReadme, bool suppressSelectionChangedEvent = false,
-            bool suppressSuspendResume = false, bool keepSelection = false, SelectedFM selectedFM = null);
-        Task SortAndSetFilter(bool suppressRefresh = false, bool forceRefreshReadme = false,
-            bool forceSuppressSelectionChangedEvent = false, bool suppressSuspendResume = false,
-            bool keepSelection = false, bool gameTabSwitch = false);
+
+        Task SortAndSetFilter(SelectedFM selFM = null, bool forceDisplayFM = false, bool keepSelection = false,
+            bool gameTabSwitch = false);
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)

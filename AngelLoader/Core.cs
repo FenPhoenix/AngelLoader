@@ -397,8 +397,10 @@ namespace AngelLoader
                         if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
                     }
 
-                    await View.SortAndSetFilter(keepSelection: !gameOrganizationChanged,
-                        forceRefreshReadme: true, forceSuppressSelectionChangedEvent: true);
+                    // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
+                    // If I store the selected FM up above the Find(), I can make the FM not have to reload if
+                    // it's still selected
+                    await View.SortAndSetFilter(keepSelection: !gameOrganizationChanged, forceDisplayFM: true);
                 }
                 else if (dateFormatChanged || languageChanged)
                 {
@@ -1051,17 +1053,17 @@ namespace AngelLoader
             if (fms.Count == 0) return;
 
             await ScanFMs(fms, scanOptions);
+            // TODO: Why am I doing a find after a scan?!?!?! WTF use is this?
             FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
         }
 
         #endregion
 
-        internal static async Task RefreshFromDisk()
+        internal static async Task FindNewFMsAndScanForGameType()
         {
             FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
             if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
-            await View.SortAndSetFilter();
         }
 
         #region Audio conversion (mainly for pre-checks)
