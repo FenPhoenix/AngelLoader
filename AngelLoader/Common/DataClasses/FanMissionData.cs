@@ -18,7 +18,12 @@ namespace AngelLoader.Common.DataClasses
     {
         // Used as a performance optimization for merging
         // [FenGen:DoNotSerialize]
-        internal bool Checked = false;
+        internal bool Checked;
+
+        // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the
+        // normal archive list combine, this will be set to false again. Results in a nice perf gain if there are
+        // archive-less FMs in the list.
+        internal bool NoArchive;
 
         // Since our scanned values are very complex due to having the option to choose what to scan for as well
         // as being able to import from three other loaders, we need a simple way to say "scan on select or not".

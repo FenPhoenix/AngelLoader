@@ -165,7 +165,7 @@ namespace AngelLoader
 
             SetInstalledNames(fmDataIniList);
 
-            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs, startup);
+            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs);
         }
 
         private static void SetArchiveNames(FMInstallPaths fmInstPaths, List<string> fmArchives, List<FanMission> fmDataIniList)
@@ -184,7 +184,12 @@ namespace AngelLoader
                         continue;
                     }
 
-                    var archiveName = GetArchiveNameFromInstalledDir(fmInstPaths, fmDataIniList, fm, fmArchives);
+                    string archiveName = null;
+                    // Skip the expensive archive name search if we're marked as having no archive
+                    if (!fm.NoArchive)
+                    {
+                        archiveName = GetArchiveNameFromInstalledDir(fmInstPaths, fmDataIniList, fm, fmArchives);
+                    }
                     if (archiveName.IsEmpty()) continue;
 
                     // Exponential (slow) stuff, but we only do it once to correct the list and then never again
@@ -201,6 +206,7 @@ namespace AngelLoader
                     else
                     {
                         fm.Archive = archiveName;
+                        fm.NoArchive = false;
                     }
                 }
             }
@@ -275,6 +281,7 @@ namespace AngelLoader
                          fm.InstalledDir.EqualsI(aNDL ?? (aNDL = archive.ToInstDirNameNDL()))))
                     {
                         fm.Archive = archive;
+                        fm.NoArchive = false;
 
                         fm.Checked = true;
                         checkedList.Add(fm);
@@ -292,7 +299,7 @@ namespace AngelLoader
                 }
                 if (!existingFound)
                 {
-                    fmDataIniList.Add(new FanMission { Archive = archive });
+                    fmDataIniList.Add(new FanMission { Archive = archive, NoArchive = false });
                 }
             }
 
@@ -372,13 +379,18 @@ namespace AngelLoader
             var fmDir = Path.Combine(gamePath, fm.InstalledDir);
             var fmselInf = Path.Combine(fmDir, Paths.FMSelInf);
 
-            string FixUp(bool createFmselInf)
+            string FixUp()
             {
                 // Make a best-effort attempt to find what this FM's archive name should be
                 // PERF: 5ms to run it once on the ~1500 set with no hits, but the time taken is all in the
                 // ToInstDirName* calls. So, it doesn't really scale if the user has a bunch of installed FMs
                 // with no matching archives, but... whatcha gonna do? We need this automatic linkup thing.
-                // PERF_TODO: If you come up with any brilliant ideas for the archive-linkup search...
+                // PERF: NoArchive property caches this value so this only gets run once per archive-less FM and
+                // then never again, rather than once per startup always.
+                // PERF_TODO: Does this actually even need to be run?
+                // Now that I know the NoArchive value can be set back in MergeNewArchiveFMs, I wonder if this is
+                // wholly or at least partially unnecessary. If we don't have an archive name by this point, do
+                // we therefore already know this is not going to find anything?
                 bool truncate = fm.Game != Game.Thief3;
                 var tryArchive =
                     archives.FirstOrDefault(x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
@@ -388,9 +400,13 @@ namespace AngelLoader
                     fmDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
                     fmDataIniList.FirstOrDefault(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
 
-                if (tryArchive.IsEmpty()) return null;
+                if (tryArchive.IsEmpty())
+                {
+                    fm.NoArchive = true;
+                    return null;
+                }
 
-                if (!createFmselInf) return tryArchive;
+                fm.NoArchive = false;
 
                 try
                 {
@@ -408,7 +424,7 @@ namespace AngelLoader
                 return tryArchive;
             }
 
-            if (!File.Exists(fmselInf)) return FixUp(true);
+            if (!File.Exists(fmselInf)) return FixUp();
 
             string[] lines;
             try
@@ -423,27 +439,26 @@ namespace AngelLoader
 
             if (lines.Length < 2 || !lines[0].StartsWithI("Name=") || !lines[1].StartsWithI("Archive="))
             {
-                return FixUp(true);
+                return FixUp();
             }
 
             var installedName = lines[0].Substring(lines[0].IndexOf('=') + 1).Trim();
             if (!installedName.EqualsI(fm.InstalledDir))
             {
-                return FixUp(true);
+                return FixUp();
             }
 
             var archiveName = lines[1].Substring(lines[1].IndexOf('=') + 1).Trim();
             if (archiveName.IsEmpty())
             {
-                return FixUp(true);
+                return FixUp();
             }
 
             return archiveName;
         }
 
         private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList,
-            List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs,
-            bool startup)
+            List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs)
         {
             Core.ViewListGamesNull.Clear();
             for (var i = 0; i < fmDataIniList.Count; i++)

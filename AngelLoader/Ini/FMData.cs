@@ -40,7 +40,12 @@ namespace AngelLoader.Ini
 
                 var fm = fmsList[fmsList.Count - 1];
 
-                if (lineT.StartsWithFast_NoNullChecks("MarkedScanned="))
+                if (lineT.StartsWithFast_NoNullChecks("NoArchive="))
+                {
+                    var val = lineT.Substring(10);
+                    fm.NoArchive = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("MarkedScanned="))
                 {
                     var val = lineT.Substring(14);
                     fm.MarkedScanned = val.EqualsTrue();
@@ -293,6 +298,10 @@ namespace AngelLoader.Ini
                 {
                     sw.WriteLine("[FM]");
 
+                    if (fm.NoArchive)
+                    {
+                        sw.WriteLine("NoArchive=" + fm.NoArchive.ToString());
+                    }
                     if (fm.MarkedScanned)
                     {
                         sw.WriteLine("MarkedScanned=" + fm.MarkedScanned.ToString());
