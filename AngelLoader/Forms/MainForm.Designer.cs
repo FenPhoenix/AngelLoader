@@ -328,7 +328,7 @@
             // PlayOriginalGameButton
             // 
             this.PlayOriginalGameButton.AutoSize = true;
-            this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_original_24;
+            this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_Original_24;
             this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
