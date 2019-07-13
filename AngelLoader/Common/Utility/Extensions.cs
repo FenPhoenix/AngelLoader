@@ -290,8 +290,9 @@ namespace AngelLoader.Common.Utility
         /// Format an FM archive name to conform to NewDarkLoader's FM install directory name requirements.
         /// </summary>
         /// <param name="archiveName">Filename without path or extension.</param>
+        /// <param name="truncate"></param>
         /// <returns></returns>
-        internal static string ToInstDirNameNDL(this string archiveName) => ToInstDirName(archiveName, "+.~ ", truncate: true);
+        internal static string ToInstDirNameNDL(this string archiveName, bool truncate = true) => ToInstDirName(archiveName, "+.~ ", truncate);
 
         /// <summary>
         /// Format an FM archive name to conform to FMSel's FM install directory name requirements.

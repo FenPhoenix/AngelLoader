@@ -154,7 +154,7 @@ namespace AngelLoader
 
             #endregion
 
-            MergeNewArchiveFMs(fmArchives, fmDataIniList);
+            MergeNewArchiveFMs(fmArchives, fmDataIniList, fmInstPaths);
 
             int instInitCount = fmDataIniList.Count;
             if (t1List.Count > 0) MergeNewInstalledFMs(t1List, fmDataIniList, instInitCount);
@@ -206,6 +206,11 @@ namespace AngelLoader
                     else
                     {
                         fm.Archive = archiveName;
+                        if (fm.NoArchive)
+                        {
+                            var fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+                            if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archiveName);
+                        }
                         fm.NoArchive = false;
                     }
                 }
@@ -246,7 +251,8 @@ namespace AngelLoader
             }
         }
 
-        private static void MergeNewArchiveFMs(List<string> fmArchives, List<FanMission> fmDataIniList)
+        private static void MergeNewArchiveFMs(List<string> fmArchives, List<FanMission> fmDataIniList,
+            FMInstallPaths fmInstPaths)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = fmDataIniList.Count;
@@ -281,6 +287,11 @@ namespace AngelLoader
                          fm.InstalledDir.EqualsI(aNDL ?? (aNDL = archive.ToInstDirNameNDL()))))
                     {
                         fm.Archive = archive;
+                        if (fm.NoArchive)
+                        {
+                            var fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+                            if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archive);
+                        }
                         fm.NoArchive = false;
 
                         fm.Checked = true;
@@ -365,19 +376,8 @@ namespace AngelLoader
             // and just returning null here.
             // Note: It looks like this is handled below with a return on empty anyway, so in release mode there's
             // no bug. But we're more explicit now.
-            if (fm.Game == Game.Null) return null;
 
-            var gamePath =
-                fm.Game == Game.Thief1 ? fmInstPaths.T1 :
-                fm.Game == Game.Thief2 ? fmInstPaths.T2 :
-                // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
-                fm.Game == Game.Thief3 ? fmInstPaths.T3 :
-                null;
-
-            if (gamePath.IsEmpty()) return null;
-
-            var fmDir = Path.Combine(gamePath, fm.InstalledDir);
-            var fmselInf = Path.Combine(fmDir, Paths.FMSelInf);
+            var fmselInf = GetFMSelInfPath(fm, fmInstPaths);
 
             string FixUp()
             {
@@ -408,18 +408,7 @@ namespace AngelLoader
 
                 fm.NoArchive = false;
 
-                try
-                {
-                    using (var sw = new StreamWriter(fmselInf, append: false))
-                    {
-                        sw.WriteLine("Name=" + fm.InstalledDir);
-                        sw.WriteLine("Archive=" + tryArchive);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception in creating or overwriting" + fmselInf, ex);
-                }
+                WriteFMSelInf(fm, fmselInf, tryArchive);
 
                 return tryArchive;
             }
@@ -455,6 +444,39 @@ namespace AngelLoader
             }
 
             return archiveName;
+        }
+
+        private static string GetFMSelInfPath(FanMission fm, FMInstallPaths fmInstPaths)
+        {
+            if (fm.Game == Game.Null) return null;
+
+            var gamePath =
+                fm.Game == Game.Thief1 ? fmInstPaths.T1 :
+                fm.Game == Game.Thief2 ? fmInstPaths.T2 :
+                // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
+                fm.Game == Game.Thief3 ? fmInstPaths.T3 :
+                null;
+
+            if (gamePath.IsEmpty()) return null;
+
+            var fmDir = Path.Combine(gamePath, fm.InstalledDir);
+            return Path.Combine(fmDir, Paths.FMSelInf);
+        }
+
+        private static void WriteFMSelInf(FanMission fm, string path, string archiveName)
+        {
+            try
+            {
+                using (var sw = new StreamWriter(path, append: false))
+                {
+                    sw.WriteLine("Name=" + fm.InstalledDir);
+                    sw.WriteLine("Archive=" + archiveName);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in creating or overwriting" + path, ex);
+            }
         }
 
         private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList,
