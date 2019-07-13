@@ -1882,6 +1882,9 @@ namespace AngelLoader.Forms
             if (CellValueNeededDisabled) return;
 
             // Lazy-load these in an attempt to save some kind of startup time
+            // TODO: Try lazy-loading these at a more granular level
+            // The array and dictionary are obstacles to lazy-loading, but see if we still get good scrolling
+            // perf when we look them up and load the individual images as needed, rather than all at once here
             Thief1Icon = Images.Thief1_21;
             Thief2Icon = Images.Thief2_21;
             Thief3Icon = Images.Thief3_21;

@@ -386,7 +386,7 @@ namespace AngelLoader.Forms
                 else
                 {
                     c_Play_Original_24 = true;
-                    return _Play_Original_24 = Resources.Play_original_24;
+                    return _Play_Original_24 = Resources.Play_Original_24;
                 }
             }
         }

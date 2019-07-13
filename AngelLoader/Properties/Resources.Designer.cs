@@ -423,9 +423,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Play_original_24 {
+        internal static System.Drawing.Bitmap Play_Original_24 {
             get {
-                object obj = ResourceManager.GetObject("Play_original_24", resourceCulture);
+                object obj = ResourceManager.GetObject("Play_Original_24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
