@@ -166,6 +166,19 @@ namespace AngelLoader
             SetInstalledNames(fmDataIniList);
 
             BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs);
+
+            /*
+             TODO: There's an extreme corner case where duplicate FMs can appear in the list
+             It's so unlikely it's almost not worth worrying about, but here's the scenario:
+             -The FM is installed by hand and not truncated
+             -The FM is not in the list
+             -A matching archive exists for the FM
+             In this scenario, the FM is added twice to the list, once with the full installed folder name and
+             NoArchive set to true, and once with a truncated installed dir name, the correct archive name, and
+             NoArchive not present (false).
+             The code in here is so crazy-go-nuts I can't even find where this is happening. But putting this
+             note down for the future.
+            */
         }
 
         private static void SetArchiveNames(FMInstallPaths fmInstPaths, List<string> fmArchives, List<FanMission> fmDataIniList)
