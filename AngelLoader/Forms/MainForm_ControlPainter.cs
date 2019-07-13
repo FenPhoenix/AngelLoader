@@ -1,10 +1,13 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace AngelLoader.Forms
 {
     public partial class MainForm
     {
+        #region Separators
+
         // It's ridiculous to instantiate two controls (a ToolStrip and a ToolStripSeparator contained within it)
         // just to draw two one-pixel-wide lines. Especially when there's a ton of them on the UI. For startup
         // perf and lightness of weight, we just draw them ourselves.
@@ -142,6 +145,23 @@ namespace AngelLoader.Forms
                 int sep2x = bx + bw + 7;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
                 e.Graphics.DrawLine(sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+            }
+        }
+
+        #endregion
+
+        private static class ControlPainter
+        {
+            private static readonly SolidBrush playArrowBrush = new SolidBrush(Color.FromArgb(255, 45, 154, 47));
+            private static readonly Point[] playArrowPoints = { new Point(15, 5), new Point(29, 17), new Point(15, 29) };
+
+            internal static void PaintPlayFMButton(PaintEventArgs e)
+            {
+                if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
+                {
+                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                }
+                e.Graphics.FillPolygon(playArrowBrush, playArrowPoints);
             }
         }
     }

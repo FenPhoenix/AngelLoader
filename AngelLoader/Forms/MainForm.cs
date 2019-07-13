@@ -541,6 +541,7 @@ namespace AngelLoader.Forms
             // Cheap 'n cheesy storage of initial size for minimum-width setting later
             EditFMFinishedOnButton.Tag = new Size(138, 23);
             PatchOpenFMFolderButton.Tag = new Size(162, 23);
+            PlayFMButton.Tag = new Size(91, 36);
 
             // EnsureValidity() guarantees selected tab will not be invisible
             for (int i = 0; i < TopRightTabsCount; i++)
@@ -995,7 +996,7 @@ namespace AngelLoader.Forms
 
                 #region Bottom area
 
-                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, preserveHeight: true);
+                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, ((Size)PlayFMButton.Tag).Width, preserveHeight: true);
 
                 #region Install / Uninstall FM button
 
@@ -4063,5 +4064,7 @@ namespace AngelLoader.Forms
         private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e) => PaintRefreshAreaToolStrip(e);
 
         private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => PaintFilterBarFLP(e);
+
+        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlayFMButton(e);
     }
 }

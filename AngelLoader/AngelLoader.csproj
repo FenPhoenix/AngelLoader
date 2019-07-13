@@ -274,7 +274,7 @@
     <Compile Include="Forms\MainForm_Progress.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MainForm_ToolStripPainter.cs">
+    <Compile Include="Forms\MainForm_ControlPainter.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\PlayWithOptions.cs">
@@ -461,7 +461,6 @@
     <Content Include="Resources\Install_24.png" />
     <Content Include="Resources\Layout.png" />
     <Content Include="Resources\Minus.png" />
-    <Content Include="Resources\PlayArrow_24.png" />
     <Content Include="Resources\Play_Original_24.png" />
     <Content Include="Resources\RatingExample_FMSel_Number.png" />
     <Content Include="Resources\RatingExample_FMSel_Stars.png" />

@@ -19,29 +19,11 @@ namespace AngelLoader.Forms
         private static Bitmap _Remove;
         private static Bitmap _Install_24;
         private static Bitmap _Uninstall_24;
-        private static Bitmap _Scan;
-        private static Bitmap _Settings_24;
-        private static Bitmap _Import_24;
-        private static Bitmap _PlayArrow_24;
-        private static Bitmap _Play_Original_24;
-        private static Bitmap _WebSearch_24;
-        private static Bitmap _FilterByReleaseDate;
-        private static Bitmap _FilterByLastPlayed;
-        private static Bitmap _FilterByTags;
-        private static Bitmap _FilterByFinished;
-        private static Bitmap _FilterByUnfinished;
-        private static Bitmap _FilterByRating;
-        private static Bitmap _Show_Unsupported;
         private static Bitmap _ZoomIn;
         private static Bitmap _ZoomOut;
         private static Bitmap _ZoomReset;
-        private static Bitmap _FindNewFMs_21;
         private static Bitmap _Refresh;
-        private static Bitmap _ClearFilters;
-        private static Bitmap _ResetLayout;
-        private static Bitmap _Hamburger_16;
         private static Bitmap _ScanSmall;
-        private static Bitmap _Fullscreen;
         private static Bitmap _RatingExample_NDL;
         private static Bitmap _RatingExample_FMSel_Stars;
         private static Bitmap _RatingExample_FMSel_Number;
@@ -60,29 +42,11 @@ namespace AngelLoader.Forms
         private static bool c_Remove;
         private static bool c_Install_24;
         private static bool c_Uninstall_24;
-        private static bool c_Scan;
-        private static bool c_Settings_24;
-        private static bool c_Import_24;
-        private static bool c_PlayArrow_24;
-        private static bool c_Play_Original_24;
-        private static bool c_WebSearch_24;
-        private static bool c_FilterByReleaseDate;
-        private static bool c_FilterByLastPlayed;
-        private static bool c_FilterByTags;
-        private static bool c_FilterByFinished;
-        private static bool c_FilterByUnfinished;
-        private static bool c_FilterByRating;
-        private static bool c_Show_Unsupported;
         private static bool c_ZoomIn;
         private static bool c_ZoomOut;
         private static bool c_ZoomReset;
-        private static bool c_FindNewFMs_21;
         private static bool c_Refresh;
-        private static bool c_ClearFilters;
-        private static bool c_ResetLayout;
-        private static bool c_Hamburger_16;
         private static bool c_ScanSmall;
-        private static bool c_Fullscreen;
         private static bool c_RatingExample_NDL;
         private static bool c_RatingExample_FMSel_Stars;
         private static bool c_RatingExample_FMSel_Number;
@@ -311,214 +275,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Scan
-        {
-            get
-            {
-                if (c_Scan)
-                {
-                    return _Scan;
-                }
-                else
-                {
-                    c_Scan = true;
-                    return _Scan = Resources.Scan;
-                }
-            }
-        }
-
-        internal static Bitmap Settings_24
-        {
-            get
-            {
-                if (c_Settings_24)
-                {
-                    return _Settings_24;
-                }
-                else
-                {
-                    c_Settings_24 = true;
-                    return _Settings_24 = Resources.Settings_24;
-                }
-            }
-        }
-
-        internal static Bitmap Import_24
-        {
-            get
-            {
-                if (c_Import_24)
-                {
-                    return _Import_24;
-                }
-                else
-                {
-                    c_Import_24 = true;
-                    return _Import_24 = Resources.Import_24;
-                }
-            }
-        }
-
-        internal static Bitmap PlayArrow_24
-        {
-            get
-            {
-                if (c_PlayArrow_24)
-                {
-                    return _PlayArrow_24;
-                }
-                else
-                {
-                    c_PlayArrow_24 = true;
-                    return _PlayArrow_24 = Resources.PlayArrow_24;
-                }
-            }
-        }
-
-        internal static Bitmap Play_Original_24
-        {
-            get
-            {
-                if (c_Play_Original_24)
-                {
-                    return _Play_Original_24;
-                }
-                else
-                {
-                    c_Play_Original_24 = true;
-                    return _Play_Original_24 = Resources.Play_Original_24;
-                }
-            }
-        }
-
-        internal static Bitmap WebSearch_24
-        {
-            get
-            {
-                if (c_WebSearch_24)
-                {
-                    return _WebSearch_24;
-                }
-                else
-                {
-                    c_WebSearch_24 = true;
-                    return _WebSearch_24 = Resources.WebSearch_24;
-                }
-            }
-        }
-
-        internal static Bitmap FilterByReleaseDate
-        {
-            get
-            {
-                if (c_FilterByReleaseDate)
-                {
-                    return _FilterByReleaseDate;
-                }
-                else
-                {
-                    c_FilterByReleaseDate = true;
-                    return _FilterByReleaseDate = Resources.FilterByReleaseDate;
-                }
-            }
-        }
-
-        internal static Bitmap FilterByLastPlayed
-        {
-            get
-            {
-                if (c_FilterByLastPlayed)
-                {
-                    return _FilterByLastPlayed;
-                }
-                else
-                {
-                    c_FilterByLastPlayed = true;
-                    return _FilterByLastPlayed = Resources.FilterByLastPlayed;
-                }
-            }
-        }
-
-        internal static Bitmap FilterByTags
-        {
-            get
-            {
-                if (c_FilterByTags)
-                {
-                    return _FilterByTags;
-                }
-                else
-                {
-                    c_FilterByTags = true;
-                    return _FilterByTags = Resources.FilterByTags;
-                }
-            }
-        }
-
-        internal static Bitmap FilterByFinished
-        {
-            get
-            {
-                if (c_FilterByFinished)
-                {
-                    return _FilterByFinished;
-                }
-                else
-                {
-                    c_FilterByFinished = true;
-                    return _FilterByFinished = Resources.FilterByFinished;
-                }
-            }
-        }
-
-        internal static Bitmap FilterByUnfinished
-        {
-            get
-            {
-                if (c_FilterByUnfinished)
-                {
-                    return _FilterByUnfinished;
-                }
-                else
-                {
-                    c_FilterByUnfinished = true;
-                    return _FilterByUnfinished = Resources.FilterByUnfinished;
-                }
-            }
-        }
-
-        internal static Bitmap FilterByRating
-        {
-            get
-            {
-                if (c_FilterByRating)
-                {
-                    return _FilterByRating;
-                }
-                else
-                {
-                    c_FilterByRating = true;
-                    return _FilterByRating = Resources.FilterByRating;
-                }
-            }
-        }
-
-        internal static Bitmap Show_Unsupported
-        {
-            get
-            {
-                if (c_Show_Unsupported)
-                {
-                    return _Show_Unsupported;
-                }
-                else
-                {
-                    c_Show_Unsupported = true;
-                    return _Show_Unsupported = Resources.Show_Unsupported;
-                }
-            }
-        }
-
         internal static Bitmap ZoomIn
         {
             get
@@ -567,22 +323,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap FindNewFMs_21
-        {
-            get
-            {
-                if (c_FindNewFMs_21)
-                {
-                    return _FindNewFMs_21;
-                }
-                else
-                {
-                    c_FindNewFMs_21 = true;
-                    return _FindNewFMs_21 = Resources.FindNewFMs_21;
-                }
-            }
-        }
-
         internal static Bitmap Refresh
         {
             get
@@ -599,54 +339,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap ClearFilters
-        {
-            get
-            {
-                if (c_ClearFilters)
-                {
-                    return _ClearFilters;
-                }
-                else
-                {
-                    c_ClearFilters = true;
-                    return _ClearFilters = Resources.ClearFilters;
-                }
-            }
-        }
-
-        internal static Bitmap ResetLayout
-        {
-            get
-            {
-                if (c_ResetLayout)
-                {
-                    return _ResetLayout;
-                }
-                else
-                {
-                    c_ResetLayout = true;
-                    return _ResetLayout = Resources.ResetLayout;
-                }
-            }
-        }
-
-        internal static Bitmap Hamburger_16
-        {
-            get
-            {
-                if (c_Hamburger_16)
-                {
-                    return _Hamburger_16;
-                }
-                else
-                {
-                    c_Hamburger_16 = true;
-                    return _Hamburger_16 = Resources.Hamburger_16;
-                }
-            }
-        }
-
         internal static Bitmap ScanSmall
         {
             get
@@ -659,22 +351,6 @@ namespace AngelLoader.Forms
                 {
                     c_ScanSmall = true;
                     return _ScanSmall = Resources.ScanSmall;
-                }
-            }
-        }
-
-        internal static Bitmap Fullscreen
-        {
-            get
-            {
-                if (c_Fullscreen)
-                {
-                    return _Fullscreen;
-                }
-                else
-                {
-                    c_Fullscreen = true;
-                    return _Fullscreen = Resources.Fullscreen;
                 }
             }
         }

@@ -52,6 +52,7 @@
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.AddTagListBox = new System.Windows.Forms.ListBox();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.FilterBarScrollRightButton = new System.Windows.Forms.Button();
@@ -163,7 +164,6 @@
             this.ResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -313,17 +313,17 @@
             // PlayFMButton
             // 
             this.PlayFMButton.AutoSize = true;
-            this.PlayFMButton.Image = global::AngelLoader.Properties.Resources.PlayArrow_24;
             this.PlayFMButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.PlayFMButton.Location = new System.Drawing.Point(3, 3);
             this.PlayFMButton.Name = "PlayFMButton";
-            this.PlayFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.PlayFMButton.Padding = new System.Windows.Forms.Padding(28, 0, 6, 0);
             this.PlayFMButton.Size = new System.Drawing.Size(91, 36);
             this.PlayFMButton.TabIndex = 56;
             this.PlayFMButton.Text = "Play FM";
             this.PlayFMButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.PlayFMButton.UseVisualStyleBackColor = true;
             this.PlayFMButton.Click += new System.EventHandler(this.PlayFMButton_Click);
+            this.PlayFMButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
             // 
             // PlayOriginalGameButton
             // 
