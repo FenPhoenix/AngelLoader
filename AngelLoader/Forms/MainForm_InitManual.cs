@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.CustomControls;
-using AngelLoader.Properties;
 
 namespace AngelLoader.Forms
 {
@@ -214,9 +213,9 @@ namespace AngelLoader.Forms
             // PERF: WinForms does this by default:
             // GameTabsImageList.ImageStream = ((ImageListStreamer)(resources.GetObject("GameTabsImageList.ImageStream")));
             // But it's way faster to do this (saves ~8ms):
-            GameTabsImageList.Images.Add(Resources.Thief1_16);
-            GameTabsImageList.Images.Add(Resources.Thief2_16);
-            GameTabsImageList.Images.Add(Resources.Thief3_16);
+            GameTabsImageList.Images.Add(Images.Thief1_16);
+            GameTabsImageList.Images.Add(Images.Thief2_16);
+            GameTabsImageList.Images.Add(Images.Thief3_16);
             GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
             GameTabsImageList.Images.SetKeyName(0, "Thief1_16.png");
             GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
@@ -225,7 +224,7 @@ namespace AngelLoader.Forms
             // ScanAllFMsButton
             // 
             ScanAllFMsButton.AutoSize = true;
-            ScanAllFMsButton.Image = Resources.Scan;
+            ScanAllFMsButton.Image = Images.Scan;
             ScanAllFMsButton.ImageAlign = ContentAlignment.MiddleLeft;
             ScanAllFMsButton.Margin = new Padding(11, 3, 3, 3);
             ScanAllFMsButton.Padding = new Padding(6, 0, 6, 0);
@@ -258,7 +257,7 @@ namespace AngelLoader.Forms
             // SettingsButton
             // 
             SettingsButton.AutoSize = true;
-            SettingsButton.Image = Resources.Settings_24;
+            SettingsButton.Image = Images.Settings_24;
             SettingsButton.ImageAlign = ContentAlignment.MiddleLeft;
             SettingsButton.Padding = new Padding(6, 0, 6, 0);
             SettingsButton.Height = 36;
@@ -270,7 +269,7 @@ namespace AngelLoader.Forms
             // ImportButton
             // 
             ImportButton.AutoSize = true;
-            ImportButton.Image = Resources.Import_24;
+            ImportButton.Image = Images.Import_24;
             ImportButton.ImageAlign = ContentAlignment.MiddleLeft;
             ImportButton.Padding = new Padding(6, 0, 6, 0);
             ImportButton.Height = 36;
@@ -296,7 +295,7 @@ namespace AngelLoader.Forms
             // PlayFMButton
             // 
             PlayFMButton.AutoSize = true;
-            PlayFMButton.Image = Resources.PlayArrow_24;
+            PlayFMButton.Image = Images.PlayArrow_24;
             PlayFMButton.ImageAlign = ContentAlignment.MiddleLeft;
             PlayFMButton.Padding = new Padding(6, 0, 6, 0);
             PlayFMButton.Height = 36;
@@ -308,7 +307,7 @@ namespace AngelLoader.Forms
             // PlayOriginalGameButton
             // 
             PlayOriginalGameButton.AutoSize = true;
-            PlayOriginalGameButton.Image = Resources.Play_original_24;
+            PlayOriginalGameButton.Image = Images.Play_Original_24;
             PlayOriginalGameButton.ImageAlign = ContentAlignment.MiddleLeft;
             PlayOriginalGameButton.Padding = new Padding(6, 0, 6, 0);
             PlayOriginalGameButton.Height = 36;
@@ -332,7 +331,7 @@ namespace AngelLoader.Forms
             // WebSearchButton
             // 
             WebSearchButton.AutoSize = true;
-            WebSearchButton.Image = Resources.WebSearch_24;
+            WebSearchButton.Image = Images.WebSearch_24;
             WebSearchButton.ImageAlign = ContentAlignment.MiddleLeft;
             WebSearchButton.Margin = new Padding(11, 3, 3, 3);
             WebSearchButton.Padding = new Padding(6, 0, 6, 0);
@@ -417,7 +416,7 @@ namespace AngelLoader.Forms
             // 
             // FilterBarScrollRightButton
             // 
-            FilterBarScrollRightButton.BackgroundImage = Resources.ArrowRightSmall;
+            FilterBarScrollRightButton.BackgroundImage = Images.ArrowRightSmall;
             FilterBarScrollRightButton.BackgroundImageLayout = ImageLayout.Center;
             FilterBarScrollRightButton.FlatStyle = FlatStyle.Flat;
             FilterBarScrollRightButton.Size = new Size(14, 24);
@@ -432,7 +431,7 @@ namespace AngelLoader.Forms
             // 
             // FilterBarScrollLeftButton
             // 
-            FilterBarScrollLeftButton.BackgroundImage = Resources.ArrowLeftSmall;
+            FilterBarScrollLeftButton.BackgroundImage = Images.ArrowLeftSmall;
             FilterBarScrollLeftButton.BackgroundImageLayout = ImageLayout.Center;
             FilterBarScrollLeftButton.FlatStyle = FlatStyle.Flat;
             FilterBarScrollLeftButton.Size = new Size(14, 24);
@@ -607,7 +606,7 @@ namespace AngelLoader.Forms
             FilterByThief1Button.AutoSize = false;
             FilterByThief1Button.CheckOnClick = true;
             FilterByThief1Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief1Button.Image = Resources.Thief1_21;
+            FilterByThief1Button.Image = Images.Thief1_21;
             FilterByThief1Button.Margin = new Padding(0);
             FilterByThief1Button.Size = new Size(25, 25);
             FilterByThief1Button.Click += FilterByGameCheckButtons_Click;
@@ -617,7 +616,7 @@ namespace AngelLoader.Forms
             FilterByThief2Button.AutoSize = false;
             FilterByThief2Button.CheckOnClick = true;
             FilterByThief2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief2Button.Image = Resources.Thief2_21;
+            FilterByThief2Button.Image = Images.Thief2_21;
             FilterByThief2Button.Margin = new Padding(0);
             FilterByThief2Button.Size = new Size(25, 25);
             FilterByThief2Button.Click += FilterByGameCheckButtons_Click;
@@ -627,7 +626,7 @@ namespace AngelLoader.Forms
             FilterByThief3Button.AutoSize = false;
             FilterByThief3Button.CheckOnClick = true;
             FilterByThief3Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByThief3Button.Image = Resources.Thief3_21;
+            FilterByThief3Button.Image = Images.Thief3_21;
             FilterByThief3Button.Margin = new Padding(0);
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += FilterByGameCheckButtons_Click;
@@ -684,7 +683,7 @@ namespace AngelLoader.Forms
             // 
             FilterByReleaseDateButton.AutoSize = false;
             FilterByReleaseDateButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByReleaseDateButton.Image = Resources.FilterByReleaseDate;
+            FilterByReleaseDateButton.Image = Images.FilterByReleaseDate;
             FilterByReleaseDateButton.Margin = new Padding(6, 0, 0, 0);
             FilterByReleaseDateButton.Size = new Size(25, 25);
             FilterByReleaseDateButton.Click += FilterByReleaseDateButton_Click;
@@ -699,7 +698,7 @@ namespace AngelLoader.Forms
             // 
             FilterByLastPlayedButton.AutoSize = false;
             FilterByLastPlayedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByLastPlayedButton.Image = Resources.FilterByLastPlayed;
+            FilterByLastPlayedButton.Image = Images.FilterByLastPlayed;
             FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
             FilterByLastPlayedButton.Click += FilterByLastPlayedButton_Click;
@@ -714,7 +713,7 @@ namespace AngelLoader.Forms
             // 
             FilterByTagsButton.AutoSize = false;
             FilterByTagsButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByTagsButton.Image = Resources.FilterByTags;
+            FilterByTagsButton.Image = Images.FilterByTags;
             FilterByTagsButton.Margin = new Padding(6, 0, 0, 0);
             FilterByTagsButton.Size = new Size(25, 25);
             FilterByTagsButton.Click += FilterByTagsButton_Click;
@@ -724,7 +723,7 @@ namespace AngelLoader.Forms
             FilterByFinishedButton.AutoSize = false;
             FilterByFinishedButton.CheckOnClick = true;
             FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByFinishedButton.Image = Resources.FilterByFinished;
+            FilterByFinishedButton.Image = Images.FilterByFinished;
             FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByFinishedButton.Size = new Size(25, 25);
             FilterByFinishedButton.Click += FilterByFinishedButton_Click;
@@ -734,7 +733,7 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton.AutoSize = false;
             FilterByUnfinishedButton.CheckOnClick = true;
             FilterByUnfinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByUnfinishedButton.Image = Resources.FilterByUnfinished;
+            FilterByUnfinishedButton.Image = Images.FilterByUnfinished;
             FilterByUnfinishedButton.Margin = new Padding(0);
             FilterByUnfinishedButton.Size = new Size(25, 25);
             FilterByUnfinishedButton.Click += FilterByUnfinishedButton_Click;
@@ -743,7 +742,7 @@ namespace AngelLoader.Forms
             // 
             FilterByRatingButton.AutoSize = false;
             FilterByRatingButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByRatingButton.Image = Resources.FilterByRating;
+            FilterByRatingButton.Image = Images.FilterByRating;
             FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
             FilterByRatingButton.Size = new Size(25, 25);
             FilterByRatingButton.Click += FilterByRatingButton_Click;
@@ -759,7 +758,7 @@ namespace AngelLoader.Forms
             FilterShowUnsupportedButton.AutoSize = false;
             FilterShowUnsupportedButton.CheckOnClick = true;
             FilterShowUnsupportedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterShowUnsupportedButton.Image = Resources.Show_Unsupported;
+            FilterShowUnsupportedButton.Image = Images.Show_Unsupported;
             FilterShowUnsupportedButton.Margin = new Padding(6, 0, 0, 0);
             FilterShowUnsupportedButton.Size = new Size(25, 25);
             FilterShowUnsupportedButton.Click += FilterShowUnsupportedButton_Click;
@@ -790,7 +789,7 @@ namespace AngelLoader.Forms
             // 
             FMsListZoomInButton.AutoSize = false;
             FMsListZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FMsListZoomInButton.Image = Resources.ZoomIn;
+            FMsListZoomInButton.Image = Images.ZoomIn;
             FMsListZoomInButton.Margin = new Padding(0);
             FMsListZoomInButton.Size = new Size(25, 25);
             FMsListZoomInButton.Click += FMsListZoomInButton_Click;
@@ -799,7 +798,7 @@ namespace AngelLoader.Forms
             // 
             FMsListZoomOutButton.AutoSize = false;
             FMsListZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FMsListZoomOutButton.Image = Resources.ZoomOut;
+            FMsListZoomOutButton.Image = Images.ZoomOut;
             FMsListZoomOutButton.Margin = new Padding(0);
             FMsListZoomOutButton.Size = new Size(25, 25);
             FMsListZoomOutButton.Click += FMsListZoomOutButton_Click;
@@ -808,7 +807,7 @@ namespace AngelLoader.Forms
             // 
             FMsListResetZoomButton.AutoSize = false;
             FMsListResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FMsListResetZoomButton.Image = Resources.ZoomReset;
+            FMsListResetZoomButton.Image = Images.ZoomReset;
             FMsListResetZoomButton.Margin = new Padding(0);
             FMsListResetZoomButton.Size = new Size(25, 25);
             FMsListResetZoomButton.Click += FMsListResetZoomButton_Click;
@@ -817,7 +816,7 @@ namespace AngelLoader.Forms
             // 
             RefreshFromDiskButton.AutoSize = false;
             RefreshFromDiskButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            RefreshFromDiskButton.Image = Resources.FindNewFMs_21;
+            RefreshFromDiskButton.Image = Images.FindNewFMs_21;
             RefreshFromDiskButton.Margin = new Padding(0);
             RefreshFromDiskButton.Size = new Size(25, 25);
             RefreshFromDiskButton.Click += RefreshFromDiskButton_Click;
@@ -827,7 +826,7 @@ namespace AngelLoader.Forms
             // 
             RefreshFiltersButton.AutoSize = false;
             RefreshFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            RefreshFiltersButton.Image = Resources.Refresh;
+            RefreshFiltersButton.Image = Images.Refresh;
             RefreshFiltersButton.Margin = new Padding(0);
             RefreshFiltersButton.Size = new Size(25, 25);
             RefreshFiltersButton.Click += RefreshFiltersButton_Click;
@@ -836,7 +835,7 @@ namespace AngelLoader.Forms
             // 
             ClearFiltersButton.AutoSize = false;
             ClearFiltersButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ClearFiltersButton.Image = Resources.ClearFilters;
+            ClearFiltersButton.Image = Images.ClearFilters;
             // 1 pixel to the bottom margin to prevent the bottom from getting cut off for some reason
             ClearFiltersButton.Margin = new Padding(0, 0, 9, 1);
             ClearFiltersButton.Size = new Size(25, 25);
@@ -845,7 +844,7 @@ namespace AngelLoader.Forms
             // ResetLayoutButton
             // 
             ResetLayoutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ResetLayoutButton.BackgroundImage = Resources.ResetLayout;
+            ResetLayoutButton.BackgroundImage = Images.ResetLayout;
             ResetLayoutButton.BackgroundImageLayout = ImageLayout.Zoom;
             ResetLayoutButton.FlatAppearance.BorderSize = 0;
             ResetLayoutButton.FlatStyle = FlatStyle.Flat;
@@ -886,7 +885,7 @@ namespace AngelLoader.Forms
             // TopRightMenuButton
             // 
             TopRightMenuButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            TopRightMenuButton.BackgroundImage = Resources.Hamburger_16;
+            TopRightMenuButton.BackgroundImage = Images.Hamburger_16;
             TopRightMenuButton.BackgroundImageLayout = ImageLayout.Zoom;
             TopRightMenuButton.FlatAppearance.BorderSize = 0;
             TopRightMenuButton.FlatStyle = FlatStyle.Flat;
@@ -902,7 +901,7 @@ namespace AngelLoader.Forms
             TopRightCollapseButton.BackgroundImageLayout = ImageLayout.None;
             TopRightCollapseButton.FlatAppearance.BorderSize = 0;
             TopRightCollapseButton.FlatStyle = FlatStyle.Flat;
-            TopRightCollapseButton.Image = Resources.ArrowRightSmall;
+            TopRightCollapseButton.Image = Images.ArrowRightSmall;
             TopRightCollapseButton.Location = new Point(533, 20);
             TopRightCollapseButton.Size = new Size(18, 287);
             TopRightCollapseButton.TabIndex = 14;
@@ -937,7 +936,7 @@ namespace AngelLoader.Forms
             // StatsScanCustomResourcesButton
             // 
             StatsScanCustomResourcesButton.AutoSize = true;
-            StatsScanCustomResourcesButton.Image = Resources.ScanSmall;
+            StatsScanCustomResourcesButton.Image = Images.ScanSmall;
             StatsScanCustomResourcesButton.ImageAlign = ContentAlignment.MiddleLeft;
             StatsScanCustomResourcesButton.Location = new Point(6, 200);
             StatsScanCustomResourcesButton.Size = new Size(154, 23);
@@ -1080,7 +1079,7 @@ namespace AngelLoader.Forms
             // EditFMScanForReadmesButton
             // 
             EditFMScanForReadmesButton.AutoSize = true;
-            EditFMScanForReadmesButton.Image = Resources.ScanSmall;
+            EditFMScanForReadmesButton.Image = Images.ScanSmall;
             EditFMScanForReadmesButton.ImageAlign = ContentAlignment.MiddleLeft;
             EditFMScanForReadmesButton.Location = new Point(8, 248);
             EditFMScanForReadmesButton.Height = 23;
@@ -1091,7 +1090,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMScanReleaseDateButton
             // 
-            EditFMScanReleaseDateButton.BackgroundImage = Resources.ScanSmall;
+            EditFMScanReleaseDateButton.BackgroundImage = Images.ScanSmall;
             EditFMScanReleaseDateButton.BackgroundImageLayout = ImageLayout.Zoom;
             EditFMScanReleaseDateButton.Location = new Point(136, 105);
             EditFMScanReleaseDateButton.Size = new Size(22, 22);
@@ -1102,7 +1101,7 @@ namespace AngelLoader.Forms
             // EditFMScanAuthorButton
             // 
             EditFMScanAuthorButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMScanAuthorButton.BackgroundImage = Resources.ScanSmall;
+            EditFMScanAuthorButton.BackgroundImage = Images.ScanSmall;
             EditFMScanAuthorButton.BackgroundImageLayout = ImageLayout.Zoom;
             EditFMScanAuthorButton.Location = new Point(493, 63);
             EditFMScanAuthorButton.Size = new Size(22, 22);
@@ -1113,7 +1112,7 @@ namespace AngelLoader.Forms
             // EditFMScanTitleButton
             // 
             EditFMScanTitleButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMScanTitleButton.BackgroundImage = Resources.ScanSmall;
+            EditFMScanTitleButton.BackgroundImage = Images.ScanSmall;
             EditFMScanTitleButton.BackgroundImageLayout = ImageLayout.Zoom;
             EditFMScanTitleButton.Location = new Point(493, 23);
             EditFMScanTitleButton.Size = new Size(22, 22);
@@ -1399,7 +1398,7 @@ namespace AngelLoader.Forms
             // 
             // PatchRemoveDMLButton
             // 
-            PatchRemoveDMLButton.BackgroundImage = Resources.Minus;
+            PatchRemoveDMLButton.BackgroundImage = Images.Minus;
             PatchRemoveDMLButton.BackgroundImageLayout = ImageLayout.Zoom;
             PatchRemoveDMLButton.Location = new Point(122, 94);
             PatchRemoveDMLButton.Size = new Size(23, 23);
@@ -1409,7 +1408,7 @@ namespace AngelLoader.Forms
             // 
             // PatchAddDMLButton
             // 
-            PatchAddDMLButton.BackgroundImage = Resources.Add;
+            PatchAddDMLButton.BackgroundImage = Images.Add;
             PatchAddDMLButton.BackgroundImageLayout = ImageLayout.Zoom;
             PatchAddDMLButton.Location = new Point(146, 94);
             PatchAddDMLButton.Size = new Size(23, 23);
@@ -1453,7 +1452,7 @@ namespace AngelLoader.Forms
             // ReadmeFullScreenButton
             // 
             ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeFullScreenButton.BackgroundImage = Resources.Fullscreen;
+            ReadmeFullScreenButton.BackgroundImage = Images.Fullscreen;
             ReadmeFullScreenButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
             ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
@@ -1467,7 +1466,7 @@ namespace AngelLoader.Forms
             // ZoomInButton
             // 
             ZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ZoomInButton.BackgroundImage = Resources.ZoomIn;
+            ZoomInButton.BackgroundImage = Images.ZoomIn;
             ZoomInButton.BackgroundImageLayout = ImageLayout.Zoom;
             ZoomInButton.FlatAppearance.BorderSize = 0;
             ZoomInButton.FlatStyle = FlatStyle.Flat;
@@ -1482,7 +1481,7 @@ namespace AngelLoader.Forms
             // 
             ZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ZoomOutButton.BackColor = SystemColors.Window;
-            ZoomOutButton.BackgroundImage = Resources.ZoomOut;
+            ZoomOutButton.BackgroundImage = Images.ZoomOut;
             ZoomOutButton.BackgroundImageLayout = ImageLayout.Zoom;
             ZoomOutButton.FlatAppearance.BorderSize = 0;
             ZoomOutButton.FlatStyle = FlatStyle.Flat;
@@ -1496,7 +1495,7 @@ namespace AngelLoader.Forms
             // ResetZoomButton
             // 
             ResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ResetZoomButton.BackgroundImage = Resources.ZoomReset;
+            ResetZoomButton.BackgroundImage = Images.ZoomReset;
             ResetZoomButton.BackgroundImageLayout = ImageLayout.Zoom;
             ResetZoomButton.FlatAppearance.BorderSize = 0;
             ResetZoomButton.FlatStyle = FlatStyle.Flat;
@@ -1537,7 +1536,7 @@ namespace AngelLoader.Forms
             AutoScaleMode = AutoScaleMode.Dpi;
             Controls.Add(EverythingPanel);
             DoubleBuffered = true;
-            Icon = Resources.AngelLoader;
+            Icon = Images.AngelLoader;
             MinimumSize = new Size(894, 260);
             Deactivate += MainForm_Deactivate;
             FormClosing += MainForm_FormClosing;

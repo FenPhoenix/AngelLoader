@@ -266,6 +266,7 @@
     </Compile>
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
+    <Compile Include="Forms\Images.cs" />
     <Compile Include="Forms\IView.cs" />
     <Compile Include="Forms\MainForm_InitManual.cs">
       <SubType>Form</SubType>
@@ -367,6 +368,7 @@
     <Compile Include="Common\Utility\Methods.cs" />
     <EmbeddedResource Include="CustomControls\ProgressPanel.resx">
       <DependentUpon>ProgressPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\SettingsPages\FMDisplayPage.resx">
       <DependentUpon>FMDisplayPage.cs</DependentUpon>

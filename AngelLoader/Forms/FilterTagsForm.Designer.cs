@@ -106,7 +106,7 @@
             // AndButton
             // 
             this.AndButton.AutoSize = true;
-            this.AndButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.AndButton.Image = global::AngelLoader.Forms.Images.ArrowRightSmall;
             this.AndButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.Location = new System.Drawing.Point(16, 0);
             this.AndButton.Name = "AndButton";
@@ -121,7 +121,7 @@
             // OrButton
             // 
             this.OrButton.AutoSize = true;
-            this.OrButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.OrButton.Image = global::AngelLoader.Forms.Images.ArrowRightSmall;
             this.OrButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.OrButton.Location = new System.Drawing.Point(16, 23);
             this.OrButton.Name = "OrButton";
@@ -136,7 +136,7 @@
             // NotButton
             // 
             this.NotButton.AutoSize = true;
-            this.NotButton.Image = global::AngelLoader.Properties.Resources.ArrowRightSmall;
+            this.NotButton.Image = global::AngelLoader.Forms.Images.ArrowRightSmall;
             this.NotButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.Location = new System.Drawing.Point(16, 46);
             this.NotButton.Name = "NotButton";
@@ -193,7 +193,7 @@
             // 
             // RemoveAllNotButton
             // 
-            this.RemoveAllNotButton.BackgroundImage = global::AngelLoader.Properties.Resources.Remove;
+            this.RemoveAllNotButton.BackgroundImage = global::AngelLoader.Forms.Images.Remove;
             this.RemoveAllNotButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveAllNotButton.Location = new System.Drawing.Point(666, 0);
             this.RemoveAllNotButton.Name = "RemoveAllNotButton";
@@ -204,7 +204,7 @@
             // 
             // RemoveAllOrButton
             // 
-            this.RemoveAllOrButton.BackgroundImage = global::AngelLoader.Properties.Resources.Remove;
+            this.RemoveAllOrButton.BackgroundImage = global::AngelLoader.Forms.Images.Remove;
             this.RemoveAllOrButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveAllOrButton.Location = new System.Drawing.Point(434, 0);
             this.RemoveAllOrButton.Name = "RemoveAllOrButton";
@@ -215,7 +215,7 @@
             // 
             // RemoveAllAndButton
             // 
-            this.RemoveAllAndButton.BackgroundImage = global::AngelLoader.Properties.Resources.Remove;
+            this.RemoveAllAndButton.BackgroundImage = global::AngelLoader.Forms.Images.Remove;
             this.RemoveAllAndButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveAllAndButton.Location = new System.Drawing.Point(202, 0);
             this.RemoveAllAndButton.Name = "RemoveAllAndButton";
@@ -226,7 +226,7 @@
             // 
             // RemoveSelectedNotButton
             // 
-            this.RemoveSelectedNotButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveSelectedNotButton.BackgroundImage = global::AngelLoader.Forms.Images.Minus;
             this.RemoveSelectedNotButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveSelectedNotButton.Location = new System.Drawing.Point(643, 0);
             this.RemoveSelectedNotButton.Name = "RemoveSelectedNotButton";
@@ -237,7 +237,7 @@
             // 
             // RemoveSelectedOrButton
             // 
-            this.RemoveSelectedOrButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveSelectedOrButton.BackgroundImage = global::AngelLoader.Forms.Images.Minus;
             this.RemoveSelectedOrButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveSelectedOrButton.Location = new System.Drawing.Point(411, 0);
             this.RemoveSelectedOrButton.Name = "RemoveSelectedOrButton";
@@ -248,7 +248,7 @@
             // 
             // RemoveSelectedAndButton
             // 
-            this.RemoveSelectedAndButton.BackgroundImage = global::AngelLoader.Properties.Resources.Minus;
+            this.RemoveSelectedAndButton.BackgroundImage = global::AngelLoader.Forms.Images.Minus;
             this.RemoveSelectedAndButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveSelectedAndButton.Location = new System.Drawing.Point(179, 0);
             this.RemoveSelectedAndButton.Name = "RemoveSelectedAndButton";
@@ -362,7 +362,7 @@
             this.Controls.Add(this.AndTreeView);
             this.Controls.Add(this.OriginTreeView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.Icon = global::AngelLoader.Forms.Images.AngelLoader;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1056, 32767);
             this.MinimizeBox = false;

@@ -225,7 +225,7 @@
             this.Controls.Add(this.AuthorCheckBox);
             this.Controls.Add(this.TitleCheckBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.Icon = global::AngelLoader.Forms.Images.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ScanAllFMsForm";

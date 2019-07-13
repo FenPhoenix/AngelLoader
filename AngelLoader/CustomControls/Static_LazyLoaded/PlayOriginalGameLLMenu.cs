@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
-using AngelLoader.Properties;
 
 namespace AngelLoader.CustomControls.Static_LazyLoaded
 {
@@ -23,10 +22,10 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
 
             Menu = new ContextMenuStrip(components);
             
-            Thief1MenuItem = new ToolStripMenuItem { Image = Resources.Thief1_16 };
-            Thief2MenuItem = new ToolStripMenuItem { Image = Resources.Thief2_16 };
-            Thief2MPMenuItem = new ToolStripMenuItem { Image = Resources.Thief2_16 };
-            Thief3MenuItem = new ToolStripMenuItem { Image = Resources.Thief3_16 };
+            Thief1MenuItem = new ToolStripMenuItem { Image = Images.Thief1_16 };
+            Thief2MenuItem = new ToolStripMenuItem { Image = Images.Thief2_16 };
+            Thief2MPMenuItem = new ToolStripMenuItem { Image = Images.Thief2_16 };
+            Thief3MenuItem = new ToolStripMenuItem { Image = Images.Thief3_16 };
 
             Menu.Items.AddRange(new ToolStripItem[]
             {

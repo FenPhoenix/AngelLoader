@@ -1882,9 +1882,9 @@ namespace AngelLoader.Forms
             if (CellValueNeededDisabled) return;
 
             // Lazy-load these in an attempt to save some kind of startup time
-            Thief1Icon = Resources.Thief1_21;
-            Thief2Icon = Resources.Thief2_21;
-            Thief3Icon = Resources.Thief3_21;
+            Thief1Icon = Images.Thief1_21;
+            Thief2Icon = Images.Thief2_21;
+            Thief3Icon = Images.Thief3_21;
             BlankIcon = Resources.Blank;
             CheckIcon = Resources.CheckCircle;
             RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
@@ -2549,7 +2549,7 @@ namespace AngelLoader.Forms
             // Special-cased; don't autosize this one
             InstallUninstallFMButton.Text = LText.MainButtons.InstallFM;
 
-            InstallUninstallFMButton.Image = Resources.Install_24;
+            InstallUninstallFMButton.Image = Images.Install_24;
             InstallUninstallFMButton.Enabled = false;
 
             FMsDGV.SetPlayFMMenuItemEnabled(false);
@@ -2675,8 +2675,8 @@ namespace AngelLoader.Forms
                 ? LText.MainButtons.UninstallFM
                 : LText.MainButtons.InstallFM;
             InstallUninstallFMButton.Image = fm.Installed
-                ? Resources.Uninstall_24
-                : Resources.Install_24;
+                ? Images.Uninstall_24
+                : Images.Install_24;
 
             FMsDGV.SetPlayFMMenuItemEnabled(installable);
             PlayFMButton.Enabled = installable;
@@ -3990,7 +3990,7 @@ namespace AngelLoader.Forms
         {
             var collapsed = TopSplitContainer.FullScreen;
             TopRightTabControl.Enabled = !collapsed;
-            TopRightCollapseButton.Image = collapsed ? Resources.ArrowLeftSmall : Resources.ArrowRightSmall;
+            TopRightCollapseButton.Image = collapsed ? Images.ArrowLeftSmall : Images.ArrowRightSmall;
         }
 
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

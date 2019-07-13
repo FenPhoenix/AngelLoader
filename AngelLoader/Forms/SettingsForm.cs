@@ -324,10 +324,10 @@ namespace AngelLoader.Forms
                     FMDisplayPage.RatingUseStarsCheckBox.Checked = InConfig.RatingUseStars;
 
                     FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
-                        ? Resources.RatingExample_NDL
+                        ? Images.RatingExample_NDL
                         : FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked && FMDisplayPage.RatingUseStarsCheckBox.Checked
-                        ? Resources.RatingExample_FMSel_Stars
-                        : Resources.RatingExample_FMSel_Number;
+                        ? Images.RatingExample_FMSel_Stars
+                        : Images.RatingExample_FMSel_Number;
 
                     FMDisplayPage.RatingUseStarsCheckBox.Enabled = FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked;
                 }
@@ -1093,7 +1093,7 @@ namespace AngelLoader.Forms
             if (FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked)
             {
                 FMDisplayPage.RatingUseStarsCheckBox.Enabled = false;
-                FMDisplayPage.RatingExamplePictureBox.Image = Resources.RatingExample_NDL;
+                FMDisplayPage.RatingExamplePictureBox.Image = Images.RatingExample_NDL;
             }
         }
 
@@ -1104,8 +1104,8 @@ namespace AngelLoader.Forms
             {
                 FMDisplayPage.RatingUseStarsCheckBox.Enabled = true;
                 FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingUseStarsCheckBox.Checked
-                    ? Resources.RatingExample_FMSel_Stars
-                    : Resources.RatingExample_FMSel_Number;
+                    ? Images.RatingExample_FMSel_Stars
+                    : Images.RatingExample_FMSel_Number;
             }
         }
 
@@ -1113,8 +1113,8 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingUseStarsCheckBox.Checked
-                ? Resources.RatingExample_FMSel_Stars
-                : Resources.RatingExample_FMSel_Number;
+                ? Images.RatingExample_FMSel_Stars
+                : Images.RatingExample_FMSel_Number;
         }
 
         #endregion

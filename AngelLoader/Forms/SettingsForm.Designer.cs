@@ -209,7 +209,7 @@
             this.Controls.Add(this.MainSplitContainer);
             this.Controls.Add(this.BottomFlowLayoutPanel);
             this.DoubleBuffered = true;
-            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
+            this.Icon = global::AngelLoader.Forms.Images.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(540, 320);

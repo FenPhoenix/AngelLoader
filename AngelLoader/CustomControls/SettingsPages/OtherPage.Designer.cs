@@ -205,7 +205,7 @@
             // WebSearchUrlResetButton
             // 
             this.WebSearchUrlResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.WebSearchUrlResetButton.BackgroundImage = global::AngelLoader.Properties.Resources.Refresh;
+            this.WebSearchUrlResetButton.BackgroundImage = global::AngelLoader.Forms.Images.Refresh;
             this.WebSearchUrlResetButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.WebSearchUrlResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.WebSearchUrlResetButton.Location = new System.Drawing.Point(394, 48);
