@@ -9,6 +9,7 @@
  -Reset layout
  -Arrow left/right
  -Fullscreen
+ -Web search (use DrawEllipse and FillRectangles)
 */
 
 using System;
