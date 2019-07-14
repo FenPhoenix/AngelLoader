@@ -886,8 +886,6 @@ namespace AngelLoader.Forms
             // TopRightMenuButton
             // 
             TopRightMenuButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            TopRightMenuButton.BackgroundImage = Resources.Hamburger_16;
-            TopRightMenuButton.BackgroundImageLayout = ImageLayout.Zoom;
             TopRightMenuButton.FlatAppearance.BorderSize = 0;
             TopRightMenuButton.FlatStyle = FlatStyle.Flat;
             TopRightMenuButton.Location = new Point(534, 2);
@@ -895,6 +893,7 @@ namespace AngelLoader.Forms
             TopRightMenuButton.TabIndex = 13;
             TopRightMenuButton.UseVisualStyleBackColor = true;
             TopRightMenuButton.Click += TopRightMenuButton_Click;
+            TopRightMenuButton.Paint += TopRightMenuButton_Paint;
             // 
             // TopRightCollapseButton
             // 

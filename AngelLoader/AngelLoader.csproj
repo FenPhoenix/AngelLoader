@@ -456,7 +456,6 @@
     <Content Include="Resources\FinishedOn\Finished_Unknown.png" />
     <Content Include="Resources\Fullscreen.png" />
     <Content Include="Resources\GreenCheckCircle.png" />
-    <Content Include="Resources\hamburger_16_spaced.png" />
     <Content Include="Resources\Import_24.png" />
     <Content Include="Resources\Install_24.png" />
     <Content Include="Resources\Layout.png" />

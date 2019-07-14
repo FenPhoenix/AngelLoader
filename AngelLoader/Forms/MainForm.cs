@@ -5,7 +5,6 @@
 
 /*
  TODO: Images to switch to drawing:
- -Hamburger
  -Reset layout
  -Arrow left/right
  -Fullscreen
@@ -4075,5 +4074,7 @@ namespace AngelLoader.Forms
         private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(e);
 
         private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(e);
+
+        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintTopRightMenuButton(e);
     }
 }

@@ -64,5 +64,14 @@ namespace AngelLoader.CustomControls
             }
             e.Graphics.FillPolygon(Brushes.Black, ps);
         }
+
+        private static readonly Rectangle ham1 = new Rectangle(1, 1, 14, 2);
+        private static readonly Rectangle ham2 = new Rectangle(1, 7, 14, 2);
+        private static readonly Rectangle ham3 = new Rectangle(1, 13, 14, 2);
+
+        internal static void PaintTopRightMenuButton(PaintEventArgs e)
+        {
+            e.Graphics.FillRectangles(Brushes.Black, new[] { ham1, ham2, ham3 });
+        }
     }
 }

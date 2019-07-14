@@ -353,16 +353,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Hamburger_16 {
-            get {
-                object obj = ResourceManager.GetObject("Hamburger_16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Import_24 {
             get {
                 object obj = ResourceManager.GetObject("Import_24", resourceCulture);
