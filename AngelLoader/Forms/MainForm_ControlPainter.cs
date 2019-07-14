@@ -149,20 +149,5 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        private static class ControlPainter
-        {
-            private static readonly SolidBrush playArrowBrush = new SolidBrush(Color.FromArgb(255, 45, 154, 47));
-            private static readonly Point[] playArrowPoints = { new Point(15, 5), new Point(29, 17), new Point(15, 29) };
-
-            internal static void PaintPlayFMButton(PaintEventArgs e)
-            {
-                if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-                {
-                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                }
-                e.Graphics.FillPolygon(playArrowBrush, playArrowPoints);
-            }
-        }
     }
 }

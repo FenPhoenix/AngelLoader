@@ -63,7 +63,7 @@
             // 
             // OriginTreeView
             // 
-            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.OriginTreeView.HideSelection = false;
@@ -75,7 +75,7 @@
             // 
             // AndTreeView
             // 
-            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.AndTreeView.HideSelection = false;
             this.AndTreeView.Location = new System.Drawing.Point(344, 24);
@@ -85,7 +85,7 @@
             // 
             // OrTreeView
             // 
-            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OrTreeView.HideSelection = false;
             this.OrTreeView.Location = new System.Drawing.Point(576, 24);
@@ -95,7 +95,7 @@
             // 
             // NotTreeView
             // 
-            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.NotTreeView.HideSelection = false;
             this.NotTreeView.Location = new System.Drawing.Point(808, 24);
@@ -193,69 +193,63 @@
             // 
             // RemoveAllNotButton
             // 
-            this.RemoveAllNotButton.BackgroundImage = global::AngelLoader.Forms.Images.Remove;
-            this.RemoveAllNotButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveAllNotButton.Location = new System.Drawing.Point(666, 0);
             this.RemoveAllNotButton.Name = "RemoveAllNotButton";
             this.RemoveAllNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllNotButton.TabIndex = 8;
             this.RemoveAllNotButton.UseVisualStyleBackColor = true;
             this.RemoveAllNotButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
+            this.RemoveAllNotButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
             // 
             // RemoveAllOrButton
             // 
-            this.RemoveAllOrButton.BackgroundImage = global::AngelLoader.Forms.Images.Remove;
-            this.RemoveAllOrButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveAllOrButton.Location = new System.Drawing.Point(434, 0);
             this.RemoveAllOrButton.Name = "RemoveAllOrButton";
             this.RemoveAllOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllOrButton.TabIndex = 5;
             this.RemoveAllOrButton.UseVisualStyleBackColor = true;
             this.RemoveAllOrButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
+            this.RemoveAllOrButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
             // 
             // RemoveAllAndButton
             // 
-            this.RemoveAllAndButton.BackgroundImage = global::AngelLoader.Forms.Images.Remove;
-            this.RemoveAllAndButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveAllAndButton.Location = new System.Drawing.Point(202, 0);
             this.RemoveAllAndButton.Name = "RemoveAllAndButton";
             this.RemoveAllAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveAllAndButton.TabIndex = 2;
             this.RemoveAllAndButton.UseVisualStyleBackColor = true;
             this.RemoveAllAndButton.Click += new System.EventHandler(this.RemoveAllButtons_Click);
+            this.RemoveAllAndButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveAllButtons_Paint);
             // 
             // RemoveSelectedNotButton
             // 
-            this.RemoveSelectedNotButton.BackgroundImage = global::AngelLoader.Forms.Images.Minus;
-            this.RemoveSelectedNotButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveSelectedNotButton.Location = new System.Drawing.Point(643, 0);
             this.RemoveSelectedNotButton.Name = "RemoveSelectedNotButton";
             this.RemoveSelectedNotButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedNotButton.TabIndex = 7;
             this.RemoveSelectedNotButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedNotButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
+            this.RemoveSelectedNotButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
             // 
             // RemoveSelectedOrButton
             // 
-            this.RemoveSelectedOrButton.BackgroundImage = global::AngelLoader.Forms.Images.Minus;
-            this.RemoveSelectedOrButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveSelectedOrButton.Location = new System.Drawing.Point(411, 0);
             this.RemoveSelectedOrButton.Name = "RemoveSelectedOrButton";
             this.RemoveSelectedOrButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedOrButton.TabIndex = 4;
             this.RemoveSelectedOrButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedOrButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
+            this.RemoveSelectedOrButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
             // 
             // RemoveSelectedAndButton
             // 
-            this.RemoveSelectedAndButton.BackgroundImage = global::AngelLoader.Forms.Images.Minus;
-            this.RemoveSelectedAndButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveSelectedAndButton.Location = new System.Drawing.Point(179, 0);
             this.RemoveSelectedAndButton.Name = "RemoveSelectedAndButton";
             this.RemoveSelectedAndButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveSelectedAndButton.TabIndex = 1;
             this.RemoveSelectedAndButton.UseVisualStyleBackColor = true;
             this.RemoveSelectedAndButton.Click += new System.EventHandler(this.RemoveSelectedButtons_Click);
+            this.RemoveSelectedAndButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveButtons_Paint);
             // 
             // OKButton
             // 
@@ -313,7 +307,7 @@
             this.toolStripCustom1.GripMargin = new System.Windows.Forms.Padding(0);
             this.toolStripCustom1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStripCustom1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSeparatorCustom1});
+                this.toolStripSeparatorCustom1});
             this.toolStripCustom1.Location = new System.Drawing.Point(870, 0);
             this.toolStripCustom1.Name = "toolStripCustom1";
             this.toolStripCustom1.Padding = new System.Windows.Forms.Padding(0);

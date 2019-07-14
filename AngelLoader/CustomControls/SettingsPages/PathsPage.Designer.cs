@@ -247,24 +247,22 @@
             // AddFMArchivePathButton
             // 
             this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddFMArchivePathButton.BackgroundImage = global::AngelLoader.Forms.Images.Add;
-            this.AddFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
             this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
             this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
             this.AddFMArchivePathButton.TabIndex = 3;
             this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
+            this.AddFMArchivePathButton.Paint += new System.Windows.Forms.PaintEventHandler(this.AddFMArchivePathButton_Paint);
             // 
             // RemoveFMArchivePathButton
             // 
             this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveFMArchivePathButton.BackgroundImage = global::AngelLoader.Forms.Images.Minus;
-            this.RemoveFMArchivePathButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
             this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
             this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveFMArchivePathButton.TabIndex = 2;
             this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
+            this.RemoveFMArchivePathButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveFMArchivePathButton_Paint);
             // 
             // FMArchivePathsListBox
             // 

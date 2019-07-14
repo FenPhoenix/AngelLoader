@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.CustomControls;
 
 namespace AngelLoader.Forms
 {
@@ -307,5 +308,9 @@ namespace AngelLoader.Forms
             OrButton.Enabled = !tagInAny;
             NotButton.Enabled = !tagInAny;
         }
+
+        private void RemoveButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(e);
+
+        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintExButton(e);
     }
 }

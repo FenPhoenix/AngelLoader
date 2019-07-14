@@ -1399,23 +1399,21 @@ namespace AngelLoader.Forms
             // 
             // PatchRemoveDMLButton
             // 
-            PatchRemoveDMLButton.BackgroundImage = Images.Minus;
-            PatchRemoveDMLButton.BackgroundImageLayout = ImageLayout.Zoom;
             PatchRemoveDMLButton.Location = new Point(122, 94);
             PatchRemoveDMLButton.Size = new Size(23, 23);
             PatchRemoveDMLButton.TabIndex = 42;
             PatchRemoveDMLButton.UseVisualStyleBackColor = true;
             PatchRemoveDMLButton.Click += PatchRemoveDMLButton_Click;
+            PatchRemoveDMLButton.Paint += PatchRemoveDMLButton_Paint;
             // 
             // PatchAddDMLButton
             // 
-            PatchAddDMLButton.BackgroundImage = Images.Add;
-            PatchAddDMLButton.BackgroundImageLayout = ImageLayout.Zoom;
             PatchAddDMLButton.Location = new Point(146, 94);
             PatchAddDMLButton.Size = new Size(23, 23);
             PatchAddDMLButton.TabIndex = 43;
             PatchAddDMLButton.UseVisualStyleBackColor = true;
             PatchAddDMLButton.Click += PatchAddDMLButton_Click;
+            PatchAddDMLButton.Paint += PatchAddDMLButton_Paint;
             // 
             // PatchOpenFMFolderButton
             // 

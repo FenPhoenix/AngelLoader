@@ -187,6 +187,7 @@
     <Compile Include="Common\DataClasses\ConfigData.cs" />
     <Compile Include="Common\Errors.cs" />
     <Compile Include="Common\DataClasses\FanMissionData.cs" />
+    <Compile Include="CustomControls\ButtonPainter.cs" />
     <Compile Include="CustomControls\DataGridViewCustom\ColumnResize.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -387,6 +388,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilterTagsForm.resx">
       <DependentUpon>FilterTagsForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
@@ -426,7 +428,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Add.png" />
     <Content Include="Resources\AngelLoader.ico" />
     <Content Include="Resources\Arrow-left.png" />
     <Content Include="Resources\Arrow-right.png" />
@@ -460,14 +461,12 @@
     <Content Include="Resources\Import_24.png" />
     <Content Include="Resources\Install_24.png" />
     <Content Include="Resources\Layout.png" />
-    <Content Include="Resources\Minus.png" />
     <Content Include="Resources\Play_Original_24.png" />
     <Content Include="Resources\RatingExample_FMSel_Number.png" />
     <Content Include="Resources\RatingExample_FMSel_Stars.png" />
     <Content Include="Resources\RatingExample_NDL.png" />
     <Content Include="Resources\QuestionMarkCircleRed.png" />
     <Content Include="Resources\Refresh.png" />
-    <Content Include="Resources\Remove.png" />
     <Content Include="Resources\Scan_14.png" />
     <Content Include="Resources\Scan_24.png" />
     <Content Include="Resources\Settings_24.png" />

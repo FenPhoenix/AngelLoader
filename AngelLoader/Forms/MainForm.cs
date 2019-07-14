@@ -4065,6 +4065,10 @@ namespace AngelLoader.Forms
 
         private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => PaintFilterBarFLP(e);
 
-        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlayFMButton(e);
+        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlayFMButton(e);
+
+        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(e);
+
+        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(e);
     }
 }

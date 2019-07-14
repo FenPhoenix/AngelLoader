@@ -16,5 +16,9 @@ namespace AngelLoader.CustomControls.SettingsPages
         public void ShowPage() => Show();
 
         public void HidePage() => Hide();
+
+        private void AddFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(e);
+
+        private void RemoveFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(e);
     }
 }

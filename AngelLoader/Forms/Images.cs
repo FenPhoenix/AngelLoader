@@ -3,10 +3,9 @@ using AngelLoader.Properties;
 
 namespace AngelLoader.Forms
 {
-    internal static class Images
+    // This class and everything accessible inside it needs to be public for the designers to recognize it
+    public static class Images
     {
-        private static Bitmap _Add;
-        private static Bitmap _Minus;
         private static Bitmap _Thief1_16;
         private static Bitmap _Thief2_16;
         private static Bitmap _Thief3_16;
@@ -16,7 +15,6 @@ namespace AngelLoader.Forms
         private static Icon _AngelLoader;
         private static Bitmap _ArrowLeftSmall;
         private static Bitmap _ArrowRightSmall;
-        private static Bitmap _Remove;
         private static Bitmap _Install_24;
         private static Bitmap _Uninstall_24;
         private static Bitmap _ZoomIn;
@@ -28,8 +26,6 @@ namespace AngelLoader.Forms
         private static Bitmap _RatingExample_FMSel_Stars;
         private static Bitmap _RatingExample_FMSel_Number;
 
-        private static bool c_Add;
-        private static bool c_Minus;
         private static bool c_Thief1_16;
         private static bool c_Thief2_16;
         private static bool c_Thief3_16;
@@ -39,7 +35,6 @@ namespace AngelLoader.Forms
         private static bool c_AngelLoader;
         private static bool c_ArrowLeftSmall;
         private static bool c_ArrowRightSmall;
-        private static bool c_Remove;
         private static bool c_Install_24;
         private static bool c_Uninstall_24;
         private static bool c_ZoomIn;
@@ -51,39 +46,7 @@ namespace AngelLoader.Forms
         private static bool c_RatingExample_FMSel_Stars;
         private static bool c_RatingExample_FMSel_Number;
 
-        internal static Bitmap Add
-        {
-            get
-            {
-                if (c_Add)
-                {
-                    return _Add;
-                }
-                else
-                {
-                    c_Add = true;
-                    return _Add = Resources.Add;
-                }
-            }
-        }
-
-        internal static Bitmap Minus
-        {
-            get
-            {
-                if (c_Minus)
-                {
-                    return _Minus;
-                }
-                else
-                {
-                    c_Minus = true;
-                    return _Minus = Resources.Minus;
-                }
-            }
-        }
-
-        internal static Bitmap Thief1_16
+        public static Bitmap Thief1_16
         {
             get
             {
@@ -99,7 +62,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Thief2_16
+        public static Bitmap Thief2_16
         {
             get
             {
@@ -115,7 +78,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Thief3_16
+        public static Bitmap Thief3_16
         {
             get
             {
@@ -131,7 +94,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Thief1_21
+        public static Bitmap Thief1_21
         {
             get
             {
@@ -147,7 +110,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Thief2_21
+        public static Bitmap Thief2_21
         {
             get
             {
@@ -163,7 +126,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Thief3_21
+        public static Bitmap Thief3_21
         {
             get
             {
@@ -179,7 +142,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Icon AngelLoader
+        public static Icon AngelLoader
         {
             get
             {
@@ -195,7 +158,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap ArrowLeftSmall
+        public static Bitmap ArrowLeftSmall
         {
             get
             {
@@ -211,7 +174,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap ArrowRightSmall
+        public static Bitmap ArrowRightSmall
         {
             get
             {
@@ -227,23 +190,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Remove
-        {
-            get
-            {
-                if (c_Remove)
-                {
-                    return _Remove;
-                }
-                else
-                {
-                    c_Remove = true;
-                    return _Remove = Resources.Remove;
-                }
-            }
-        }
-
-        internal static Bitmap Install_24
+        public static Bitmap Install_24
         {
             get
             {
@@ -259,7 +206,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Uninstall_24
+        public static Bitmap Uninstall_24
         {
             get
             {
@@ -275,7 +222,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap ZoomIn
+        public static Bitmap ZoomIn
         {
             get
             {
@@ -291,7 +238,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap ZoomOut
+        public static Bitmap ZoomOut
         {
             get
             {
@@ -307,7 +254,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap ZoomReset
+        public static Bitmap ZoomReset
         {
             get
             {
@@ -323,7 +270,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap Refresh
+        public static Bitmap Refresh
         {
             get
             {
@@ -339,7 +286,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap ScanSmall
+        public static Bitmap ScanSmall
         {
             get
             {
@@ -355,7 +302,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap RatingExample_NDL
+        public static Bitmap RatingExample_NDL
         {
             get
             {
@@ -371,7 +318,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap RatingExample_FMSel_Stars
+        public static Bitmap RatingExample_FMSel_Stars
         {
             get
             {
@@ -387,7 +334,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal static Bitmap RatingExample_FMSel_Number
+        public static Bitmap RatingExample_FMSel_Number
         {
             get
             {
