@@ -6,14 +6,6 @@ namespace AngelLoader.CustomControls
 {
     internal static class ButtonPainter
     {
-        /*
-         TODO: Images to switch to drawing:
-         -Hamburger
-         -Reset layout
-         -Arrow left/right
-         -Fullscreen
-         -Blank
-        */
         private static readonly SolidBrush playArrowBrush = new SolidBrush(Color.FromArgb(255, 45, 154, 47));
         private static readonly Point[] playArrowPoints = { new Point(15, 5), new Point(29, 17), new Point(15, 29) };
 
