@@ -174,6 +174,11 @@ namespace AngelLoader
                 if (!checkArchive) return new CacheData { Readmes = readmes };
             }
 
+            // If cache dir DOESN'T exist, the above checkArchive decision won't be run, so run it here (prevents
+            // FMs with no readmes from being reloaded from their archive all the time, which is the whole purpose
+            // of NoReadmes in the first place).
+            if (!refreshCache && fm.NoReadmes) return new CacheData();
+
             readmes.Clear();
             ClearCacheDir(fm);
 
