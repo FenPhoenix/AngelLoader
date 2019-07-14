@@ -63,7 +63,7 @@
             // 
             // OriginTreeView
             // 
-            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.OriginTreeView.HideSelection = false;
@@ -75,7 +75,7 @@
             // 
             // AndTreeView
             // 
-            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.AndTreeView.HideSelection = false;
             this.AndTreeView.Location = new System.Drawing.Point(344, 24);
@@ -85,7 +85,7 @@
             // 
             // OrTreeView
             // 
-            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OrTreeView.HideSelection = false;
             this.OrTreeView.Location = new System.Drawing.Point(576, 24);
@@ -95,7 +95,7 @@
             // 
             // NotTreeView
             // 
-            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.NotTreeView.HideSelection = false;
             this.NotTreeView.Location = new System.Drawing.Point(808, 24);
@@ -279,8 +279,9 @@
             // 
             // ResetButton
             // 
+            this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ResetButton.AutoSize = true;
-            this.ResetButton.Location = new System.Drawing.Point(792, 3);
+            this.ResetButton.Location = new System.Drawing.Point(792, 4);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(75, 23);
