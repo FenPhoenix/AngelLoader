@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -1889,7 +1890,7 @@ namespace AngelLoader.Forms
             Thief1Icon = Images.Thief1_21;
             Thief2Icon = Images.Thief2_21;
             Thief3Icon = Images.Thief3_21;
-            BlankIcon = Resources.Blank;
+            BlankIcon = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
             CheckIcon = Resources.CheckCircle;
             RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
             StarIcons = new[]

@@ -498,7 +498,6 @@
     <Content Include="Resources\ZoomIn_24.png" />
     <Content Include="Resources\ZoomOut_24.png" />
     <Content Include="Resources\ZoomReset_24.png" />
-    <None Include="Resources\Blank.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\FMScanner\FMScanner\FMScanner.csproj">
