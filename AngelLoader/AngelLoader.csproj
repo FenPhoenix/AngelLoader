@@ -445,7 +445,6 @@
     <Content Include="Resources\FinishedOn\Finished_Hard_Expert.png" />
     <Content Include="Resources\FinishedOn\Finished_Hard_Expert_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Hard_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_None.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Expert.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Expert_Extreme.png" />

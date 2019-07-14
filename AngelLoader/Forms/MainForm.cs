@@ -480,8 +480,6 @@ namespace AngelLoader.Forms
             {
                 HeaderText = LText.FMsList.RatingColumn,
                 ImageLayout = DataGridViewImageCellLayout.Zoom,
-                MinimumWidth = Defaults.MinColumnWidth,
-                Name = "RatingImageColumn",
                 ReadOnly = true,
                 Width = RatingImageColumnWidth,
                 Resizable = DataGridViewTriState.False,
@@ -1912,7 +1910,7 @@ namespace AngelLoader.Forms
             {
                 {
                     FinishedOn.None,
-                    Resources.Finished_None
+                    BlankIcon
                 },
                 {
                     FinishedOn.Normal,

@@ -253,16 +253,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Finished_None {
-            get {
-                object obj = ResourceManager.GetObject("Finished_None", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Finished_Normal {
             get {
                 object obj = ResourceManager.GetObject("Finished_Normal", resourceCulture);
