@@ -246,7 +246,7 @@
             this.Controls.Add(this.Thief1GroupBox);
             this.Controls.Add(this.ChooseIniFilesLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = global::AngelLoader.Forms.Images.AngelLoader;
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ImportFromMultipleInisForm";

@@ -357,7 +357,7 @@
             this.Controls.Add(this.AndTreeView);
             this.Controls.Add(this.OriginTreeView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Icon = global::AngelLoader.Forms.Images.AngelLoader;
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1056, 32767);
             this.MinimizeBox = false;

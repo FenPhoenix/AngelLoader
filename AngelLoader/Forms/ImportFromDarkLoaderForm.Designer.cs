@@ -159,7 +159,7 @@
             this.Controls.Add(this.DarkLoaderIniTextBox);
             this.Controls.Add(this.DarkLoaderIniBrowseButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = global::AngelLoader.Forms.Images.AngelLoader;
+            this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ImportFromDarkLoaderForm";
