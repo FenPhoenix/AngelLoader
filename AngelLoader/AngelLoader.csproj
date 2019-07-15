@@ -396,7 +396,7 @@
     <EmbeddedResource Include="Forms\ImportFromMultipleInisForm.resx">
       <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MainForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx" Condition=" '$(Configuration)' == 'Debug' ">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -530,11 +530,6 @@ set destDir="C:\AngelLoader_Public_Package\"
 set destDir="C:\AngelLoader\"
 )
 
-if not $(ConfigurationName) == Debug (
-xcopy "$(ProjectDir)Forms\MainForm.resx.temp" "$(ProjectDir)Forms\MainForm.resx" /y
-)
-del "$(ProjectDir)Forms\MainForm.resx.temp" /F
-
 xcopy "$(TargetDir)AngelLoader.exe" %25destDir%25 /y
 xcopy "$(TargetDir)AngelLoader.exe.config" %25destDir%25 /y
 
@@ -570,10 +565,6 @@ rem ---
 set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
 
 set fenGenArgs=-fmdata -language_t
-
-if not $(ConfigurationName) == Debug (
-set rmArg= -resx_machete
-)
 
 if $(ConfigurationName) == Release_Beta (
 set vArg= -version=beta

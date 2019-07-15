@@ -36,8 +36,7 @@ namespace FenGen
         Config,
         Language,
         Version,
-        MainFormBacking,
-        ResXMachete
+        MainFormBacking
     }
 
     internal enum VersionType
@@ -269,14 +268,6 @@ namespace FenGen
                             var sourceFile = Path.Combine(ALProjectPath, @"Forms\MainForm.Designer.cs");
                             var destFile = Path.Combine(ALProjectPath, @"Forms\MainForm_InitFast.cs");
                             MainFormBacking.Generate(sourceFile, destFile);
-                        }
-                        break;
-                    case "-resx_machete":
-                        if (!GenTasks.Contains(GenType.ResXMachete))
-                        {
-                            GenTasks.Add(GenType.ResXMachete);
-                            var sourceFile = Path.Combine(ALProjectPath, @"Forms\MainForm.resx");
-                            ResXMachete.Generate(sourceFile);
                         }
                         break;
                     default:
