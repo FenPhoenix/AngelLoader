@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.Common;
@@ -12,12 +13,35 @@ namespace AngelLoader.Forms
 {
     public partial class FilterTagsForm : Form, ILocalizable
     {
+        private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
+
         private readonly GlobalCatAndTagsList SourceTags = new GlobalCatAndTagsList();
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
         internal FilterTagsForm(GlobalCatAndTagsList sourceTags, TagsFilter tagsFilter)
         {
             InitializeComponent();
+
+            #region Arrow buttons setup
+
+            // Because this form isn't loading on startup, I'm being lazy here and just creating a bitmap
+            using (var g = Graphics.FromImage(_arrowRightBmp))
+            {
+                var arrowPolygon = new[]
+                {
+                    // -1 works?! (and for some reason is needed?!)
+                    new Point(2, -1),
+                    new Point(2, 7),
+                    new Point(6, 3)
+                };
+                g.FillPolygon(Brushes.Black, arrowPolygon);
+            }
+
+            AndButton.Image = _arrowRightBmp;
+            OrButton.Image = _arrowRightBmp;
+            NotButton.Image = _arrowRightBmp;
+
+            #endregion
 
             sourceTags.DeepCopyTo(SourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);

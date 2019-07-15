@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.CustomControls;
 using AngelLoader.Properties;
 
@@ -55,8 +56,8 @@ namespace AngelLoader.Forms
             AddTagListBox = new ListBox();
             MainSplitContainer = new SplitContainerCustom();
             TopSplitContainer = new SplitContainerCustom();
-            FilterBarScrollRightButton = new Button();
-            FilterBarScrollLeftButton = new Button();
+            FilterBarScrollRightButton = new ArrowButton();
+            FilterBarScrollLeftButton = new ArrowButton();
             FMsDGV = new DataGridViewCustom();
             GameTypeColumn = new DataGridViewImageColumn();
             InstalledColumn = new DataGridViewImageColumn();
@@ -103,7 +104,7 @@ namespace AngelLoader.Forms
             Thief2TabPage = new TabPage();
             Thief3TabPage = new TabPage();
             TopRightMenuButton = new Button();
-            TopRightCollapseButton = new Button();
+            TopRightCollapseButton = new ArrowButton();
             TopRightTabControl = new TabControlCustom();
             StatisticsTabPage = new TabPage();
             StatsScanCustomResourcesButton = new Button();
@@ -124,7 +125,7 @@ namespace AngelLoader.Forms
             EditFMScanReleaseDateButton = new Button();
             EditFMScanAuthorButton = new Button();
             EditFMScanTitleButton = new Button();
-            EditFMAltTitlesDropDownButton = new DropDownButton();
+            EditFMAltTitlesArrowButton = new ArrowButton();
             EditFMTitleTextBox = new TextBox();
             EditFMFinishedOnButton = new Button();
             EditFMRatingComboBox = new ComboBox();
@@ -413,9 +414,8 @@ namespace AngelLoader.Forms
             // 
             // FilterBarScrollRightButton
             // 
-            FilterBarScrollRightButton.BackgroundImage = Images.ArrowRightSmall;
-            FilterBarScrollRightButton.BackgroundImageLayout = ImageLayout.Center;
             FilterBarScrollRightButton.FlatStyle = FlatStyle.Flat;
+            FilterBarScrollRightButton.ArrowDirection = Direction.Right;
             FilterBarScrollRightButton.Size = new Size(14, 24);
             FilterBarScrollRightButton.TabIndex = 10;
             FilterBarScrollRightButton.UseVisualStyleBackColor = true;
@@ -428,9 +428,8 @@ namespace AngelLoader.Forms
             // 
             // FilterBarScrollLeftButton
             // 
-            FilterBarScrollLeftButton.BackgroundImage = Images.ArrowLeftSmall;
-            FilterBarScrollLeftButton.BackgroundImageLayout = ImageLayout.Center;
             FilterBarScrollLeftButton.FlatStyle = FlatStyle.Flat;
+            FilterBarScrollLeftButton.ArrowDirection = Direction.Left;
             FilterBarScrollLeftButton.Size = new Size(14, 24);
             FilterBarScrollLeftButton.TabIndex = 2;
             FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
@@ -570,11 +569,12 @@ namespace AngelLoader.Forms
             FilterBarFLP.Controls.Add(FilterAuthorLabel);
             FilterBarFLP.Controls.Add(FilterAuthorTextBox);
             FilterBarFLP.Controls.Add(FilterIconButtonsToolStrip);
-
             // PERF: The filter bar gets its x-pos and width set in GameTypeChange() and its y-pos is always 0.
             // Height is 100 so it goes behind the DataGridView and its actual scroll bars will be hidden but
             // they'll still function, and you can use your mousewheel or the custom arrow buttons to scroll.
-            FilterBarFLP.Height = 100;
+            // 2019-07-15: It has to have its designer-generated width set here or else the left scroll button
+            // doesn't appear. Meh?
+            FilterBarFLP.Size = new Size(768, 100);
 
             FilterBarFLP.TabIndex = 11;
             FilterBarFLP.WrapContents = false;
@@ -894,10 +894,10 @@ namespace AngelLoader.Forms
             // TopRightCollapseButton
             // 
             TopRightCollapseButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            TopRightCollapseButton.ArrowDirection = Common.Direction.Right;
             TopRightCollapseButton.BackgroundImageLayout = ImageLayout.None;
             TopRightCollapseButton.FlatAppearance.BorderSize = 0;
             TopRightCollapseButton.FlatStyle = FlatStyle.Flat;
-            TopRightCollapseButton.Image = Images.ArrowRightSmall;
             TopRightCollapseButton.Location = new Point(533, 20);
             TopRightCollapseButton.Size = new Size(18, 287);
             TopRightCollapseButton.TabIndex = 14;
@@ -1053,7 +1053,7 @@ namespace AngelLoader.Forms
             EditFMTabPage.Controls.Add(EditFMScanReleaseDateButton);
             EditFMTabPage.Controls.Add(EditFMScanAuthorButton);
             EditFMTabPage.Controls.Add(EditFMScanTitleButton);
-            EditFMTabPage.Controls.Add(EditFMAltTitlesDropDownButton);
+            EditFMTabPage.Controls.Add(EditFMAltTitlesArrowButton);
             EditFMTabPage.Controls.Add(EditFMTitleTextBox);
             EditFMTabPage.Controls.Add(EditFMFinishedOnButton);
             EditFMTabPage.Controls.Add(EditFMRatingComboBox);
@@ -1118,12 +1118,13 @@ namespace AngelLoader.Forms
             // 
             // EditFMAltTitlesDropDownButton
             // 
-            EditFMAltTitlesDropDownButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMAltTitlesDropDownButton.Location = new Point(477, 23);
-            EditFMAltTitlesDropDownButton.Size = new Size(17, 22);
-            EditFMAltTitlesDropDownButton.TabIndex = 15;
-            EditFMAltTitlesDropDownButton.UseVisualStyleBackColor = true;
-            EditFMAltTitlesDropDownButton.Click += EditFMAltTitlesDropDownButton_Click;
+            EditFMAltTitlesArrowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            EditFMAltTitlesArrowButton.ArrowDirection = Common.Direction.Down;
+            EditFMAltTitlesArrowButton.Location = new Point(477, 23);
+            EditFMAltTitlesArrowButton.Size = new Size(17, 22);
+            EditFMAltTitlesArrowButton.TabIndex = 15;
+            EditFMAltTitlesArrowButton.UseVisualStyleBackColor = true;
+            EditFMAltTitlesArrowButton.Click += EditFMAltTitlesArrowButtonClick;
             // 
             // EditFMTitleTextBox
             // 

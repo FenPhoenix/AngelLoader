@@ -206,7 +206,7 @@
     <Compile Include="CustomControls\ContextMenuStripCustom.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CustomControls\DropDownButton.cs">
+    <Compile Include="CustomControls\ArrowButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CustomControls\ListBoxCustom.cs">
@@ -429,8 +429,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AngelLoader.ico" />
-    <Content Include="Resources\Arrow-left.png" />
-    <Content Include="Resources\Arrow-right.png" />
     <Content Include="Resources\FilterIcons\FilterByLastPlayed.png" />
     <Content Include="Resources\FilterIcons\FilterByReleaseDate.png" />
     <Content Include="Resources\FilterIcons\ClearFilters.png" />

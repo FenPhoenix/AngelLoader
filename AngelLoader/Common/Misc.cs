@@ -12,6 +12,8 @@ namespace AngelLoader.Common
         internal const int GB = MB * 1024;
     }
 
+    public enum Direction { Left, Right, Up, Down }
+
     internal static class Defaults
     {
         internal const int MainWindowX = 50;

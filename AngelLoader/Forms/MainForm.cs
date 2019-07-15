@@ -2949,7 +2949,7 @@ namespace AngelLoader.Forms
 
             if (fm.AltTitles.Count == 0)
             {
-                EditFMAltTitlesDropDownButton.Enabled = false;
+                EditFMAltTitlesArrowButton.Enabled = false;
             }
             else
             {
@@ -2962,7 +2962,7 @@ namespace AngelLoader.Forms
                 }
                 AltTitlesLLMenu.AddRange(altTitlesMenuItems);
 
-                EditFMAltTitlesDropDownButton.Enabled = true;
+                EditFMAltTitlesArrowButton.Enabled = true;
             }
         }
 
@@ -3460,11 +3460,11 @@ namespace AngelLoader.Forms
 
         #region Edit FM tab
 
-        private void EditFMAltTitlesDropDownButton_Click(object sender, EventArgs e)
+        private void EditFMAltTitlesArrowButtonClick(object sender, EventArgs e)
         {
             AltTitlesLLMenu.Construct(components);
             FillAltTitles(FMsDGV.GetSelectedFM());
-            ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesDropDownButton, MenuPos.BottomLeft);
+            ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
         }
 
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
@@ -3997,7 +3997,7 @@ namespace AngelLoader.Forms
         {
             var collapsed = TopSplitContainer.FullScreen;
             TopRightTabControl.Enabled = !collapsed;
-            TopRightCollapseButton.Image = collapsed ? Images.ArrowLeftSmall : Images.ArrowRightSmall;
+            TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
         }
 
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

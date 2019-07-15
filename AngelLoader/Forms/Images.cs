@@ -158,38 +158,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        public static Bitmap ArrowLeftSmall
-        {
-            get
-            {
-                if (c_ArrowLeftSmall)
-                {
-                    return _ArrowLeftSmall;
-                }
-                else
-                {
-                    c_ArrowLeftSmall = true;
-                    return _ArrowLeftSmall = Resources.ArrowLeftSmall;
-                }
-            }
-        }
-
-        public static Bitmap ArrowRightSmall
-        {
-            get
-            {
-                if (c_ArrowRightSmall)
-                {
-                    return _ArrowRightSmall;
-                }
-                else
-                {
-                    c_ArrowRightSmall = true;
-                    return _ArrowRightSmall = Resources.ArrowRightSmall;
-                }
-            }
-        }
-
         public static Bitmap Install_24
         {
             get

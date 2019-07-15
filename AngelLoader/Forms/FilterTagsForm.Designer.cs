@@ -106,7 +106,6 @@
             // AndButton
             // 
             this.AndButton.AutoSize = true;
-            this.AndButton.Image = global::AngelLoader.Forms.Images.ArrowRightSmall;
             this.AndButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.Location = new System.Drawing.Point(16, 0);
             this.AndButton.Name = "AndButton";
@@ -121,7 +120,6 @@
             // OrButton
             // 
             this.OrButton.AutoSize = true;
-            this.OrButton.Image = global::AngelLoader.Forms.Images.ArrowRightSmall;
             this.OrButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.OrButton.Location = new System.Drawing.Point(16, 23);
             this.OrButton.Name = "OrButton";
@@ -136,7 +134,6 @@
             // NotButton
             // 
             this.NotButton.AutoSize = true;
-            this.NotButton.Image = global::AngelLoader.Forms.Images.ArrowRightSmall;
             this.NotButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.Location = new System.Drawing.Point(16, 46);
             this.NotButton.Name = "NotButton";

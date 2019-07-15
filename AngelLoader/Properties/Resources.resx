@@ -199,12 +199,6 @@
   <data name="Finished_Normal_Hard_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\finishedon\finished_normal_hard_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ArrowLeftSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\arrow-left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ArrowRightSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\arrow-right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="RatingExample_FMSel_Number" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ratingexample_fmsel_number.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
