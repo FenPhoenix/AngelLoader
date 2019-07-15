@@ -7,7 +7,6 @@
  TODO: Images to switch to drawing:
  -Reset layout
  -Arrow left/right
- -Fullscreen
 */
 
 using System;
