@@ -455,7 +455,6 @@
     <Content Include="Resources\GreenCheckCircle.png" />
     <Content Include="Resources\Import_24.png" />
     <Content Include="Resources\Install_24.png" />
-    <Content Include="Resources\Layout.png" />
     <Content Include="Resources\Play_Original_24.png" />
     <Content Include="Resources\RatingExample_FMSel_Number.png" />
     <Content Include="Resources\RatingExample_FMSel_Stars.png" />

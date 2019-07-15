@@ -13,8 +13,6 @@ namespace AngelLoader.Forms
         private static Bitmap _Thief2_21;
         private static Bitmap _Thief3_21;
         private static Icon _AngelLoader;
-        private static Bitmap _ArrowLeftSmall;
-        private static Bitmap _ArrowRightSmall;
         private static Bitmap _Install_24;
         private static Bitmap _Uninstall_24;
         private static Bitmap _ZoomIn;
@@ -33,8 +31,6 @@ namespace AngelLoader.Forms
         private static bool c_Thief2_21;
         private static bool c_Thief3_21;
         private static bool c_AngelLoader;
-        private static bool c_ArrowLeftSmall;
-        private static bool c_ArrowRightSmall;
         private static bool c_Install_24;
         private static bool c_Uninstall_24;
         private static bool c_ZoomIn;

@@ -841,8 +841,6 @@ namespace AngelLoader.Forms
             // ResetLayoutButton
             // 
             ResetLayoutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ResetLayoutButton.BackgroundImage = Resources.ResetLayout;
-            ResetLayoutButton.BackgroundImageLayout = ImageLayout.Zoom;
             ResetLayoutButton.FlatAppearance.BorderSize = 0;
             ResetLayoutButton.FlatStyle = FlatStyle.Flat;
             ResetLayoutButton.Location = new Point(1090, 2);
@@ -850,6 +848,7 @@ namespace AngelLoader.Forms
             ResetLayoutButton.TabIndex = 13;
             ResetLayoutButton.UseVisualStyleBackColor = true;
             ResetLayoutButton.Click += ResetLayoutButton_Click;
+            ResetLayoutButton.Paint += ResetLayoutButton_Paint;
             // 
             // GamesTabControl
             // 

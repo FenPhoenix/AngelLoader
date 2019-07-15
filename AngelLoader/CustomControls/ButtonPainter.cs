@@ -136,5 +136,15 @@ namespace AngelLoader.CustomControls
             e.Graphics.FillPolygon(brush, readmeFullScreenBottomLeft);
             e.Graphics.FillPolygon(brush, readmeFullScreenBottomRight);
         }
+
+        private static readonly Pen resetLayoutPen = new Pen(Color.FromArgb(123, 123, 123), 2);
+        private static readonly Pen resetLayoutPenDisabled = new Pen(SystemColors.ControlDark, 2);
+        internal static void PaintResetLayoutButton(bool enabled, PaintEventArgs e)
+        {
+            var pen = enabled ? resetLayoutPen : resetLayoutPenDisabled;
+            e.Graphics.DrawRectangle(pen, 3, 3, 16, 16);
+            e.Graphics.DrawLine(pen, 13, 2, 13, 10);
+            e.Graphics.DrawLine(pen, 2, 11, 18, 11);
+        }
     }
 }

@@ -5,8 +5,34 @@
 
 /*
  TODO: Images to switch to drawing:
- -Reset layout
- -Arrow left/right
+ -See if Scan_14 and Scan_24 are feasible to draw (with their rounded handles)
+ -If so, then draw the zoom images
+ -Install / uninstall
+ -Green CheckCircle
+ -See if we can draw and/or just make these more efficient:
+  -Rating and finished images (they're a bunch of the same pic just pasted together differently, we should maybe
+   have just one of each unique pic and copy them into bitmaps as needed. That also ties into lazy loading below)
+ -Settings (can we do gradients and curved paths?)
+ -Import
+ -Calendars (can we get detailed enough? The play arrow icon cutting the lines at a diagonal might be an obstacle)
+ -Anything else not listed in "definitely won't draw" is at least a possibility
+
+ TODO: Images we definitely won't draw (iow that really need to be rasters):
+ -Thief logos
+ -Zip logo (Show_Unsupported)
+ -Rating examples (two of them have text)
+
+ TODO: Things to lazy load:
+ -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
+  controls on each tab page (in case the tabs are visible but not selected on startup)
+ -View HTML Readme button
+ -FMs list zoom buttons
+ -Game buttons and game tabs (one or the other will be invisible on startup)
+ -Install / uninstall button
+ -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
+ -Filter bar labels for dates and rating (normally hidden unless one of those filters is set)
+ -Add tag dropdown listbox
+ -Filter bar scroll buttons
 */
 
 using System;
@@ -4079,5 +4105,7 @@ namespace AngelLoader.Forms
         private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintWebSearchButton(WebSearchButton.Enabled, e);
 
         private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintReadmeFullScreenButton(ReadmeFullScreenButton.Enabled, e);
+
+        private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintResetLayoutButton(ResetLayoutButton.Enabled, e);
     }
 }
