@@ -4068,16 +4068,16 @@ namespace AngelLoader.Forms
 
         private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => PaintFilterBarFLP(e);
 
-        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlayFMButton(e);
+        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlayFMButton(PlayFMButton.Enabled, e);
 
-        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(e);
+        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(PatchAddDMLButton.Enabled, e);
 
-        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(e);
+        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(PatchRemoveDMLButton.Enabled, e);
 
-        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintTopRightMenuButton(e);
+        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintTopRightMenuButton(TopRightMenuButton.Enabled, e);
 
-        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintWebSearchButton(e);
+        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintWebSearchButton(WebSearchButton.Enabled, e);
 
-        private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintReadmeFullScreenButton(e);
+        private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintReadmeFullScreenButton(ReadmeFullScreenButton.Enabled, e);
     }
 }
