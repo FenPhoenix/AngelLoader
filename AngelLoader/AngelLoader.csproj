@@ -454,7 +454,6 @@
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Extreme.png" />
     <Content Include="Resources\FinishedOn\Finished_Unknown.png" />
-    <Content Include="Resources\Fullscreen.png" />
     <Content Include="Resources\GreenCheckCircle.png" />
     <Content Include="Resources\Import_24.png" />
     <Content Include="Resources\Install_24.png" />

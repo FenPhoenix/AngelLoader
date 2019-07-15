@@ -87,5 +87,49 @@ namespace AngelLoader.CustomControls
             e.Graphics.DrawEllipse(webSearchCirclePen, 17, 6, 9, 23);
             e.Graphics.FillRectangles(webSearchCirclePen.Brush, new[] { webSearchRect1, webSearchRect2, webSearchRect3 });
         }
+
+        private static readonly Point[] readmeFullScreenTopLeft =
+        {
+            new Point(0, 0),
+            new Point(7, 0),
+            new Point(7, 3),
+            new Point(3, 3),
+            new Point(3, 7),
+            new Point(0, 7)
+        };
+        private static readonly Point[] readmeFullScreenTopRight =
+        {
+            new Point(13, 0),
+            new Point(20, 0),
+            new Point(20, 7),
+            new Point(17, 7),
+            new Point(17, 3),
+            new Point(13, 3)
+        };
+        private static readonly Point[] readmeFullScreenBottomLeft =
+        {
+            new Point(0, 13),
+            new Point(3, 13),
+            new Point(3, 17),
+            new Point(7, 17),
+            new Point(7, 20),
+            new Point(0, 20)
+        };
+        private static readonly Point[] readmeFullScreenBottomRight =
+        {
+            new Point(17, 13),
+            new Point(20, 13),
+            new Point(20, 20),
+            new Point(13, 20),
+            new Point(13, 17),
+            new Point(17, 17)
+        };
+        internal static void PaintReadmeFullScreenButton(PaintEventArgs e)
+        {
+            e.Graphics.FillPolygon(Brushes.Black, readmeFullScreenTopLeft);
+            e.Graphics.FillPolygon(Brushes.Black, readmeFullScreenTopRight);
+            e.Graphics.FillPolygon(Brushes.Black, readmeFullScreenBottomLeft);
+            e.Graphics.FillPolygon(Brushes.Black, readmeFullScreenBottomRight);
+        }
     }
 }

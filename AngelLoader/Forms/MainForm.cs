@@ -8,7 +8,6 @@
  -Reset layout
  -Arrow left/right
  -Fullscreen
- -Web search (use DrawEllipse and FillRectangles)
 */
 
 using System;
@@ -4079,5 +4078,7 @@ namespace AngelLoader.Forms
         private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintTopRightMenuButton(e);
 
         private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintWebSearchButton(e);
+
+        private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintReadmeFullScreenButton(e);
     }
 }

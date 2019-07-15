@@ -1446,8 +1446,6 @@ namespace AngelLoader.Forms
             // ReadmeFullScreenButton
             // 
             ReadmeFullScreenButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeFullScreenButton.BackgroundImage = Resources.Fullscreen;
-            ReadmeFullScreenButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
             ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
             ReadmeFullScreenButton.Location = new Point(1616, 8);
@@ -1456,6 +1454,7 @@ namespace AngelLoader.Forms
             ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             ReadmeFullScreenButton.Visible = false;
             ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
+            ReadmeFullScreenButton.Paint += ReadmeFullScreenButton_Paint;
             // 
             // ZoomInButton
             // 
