@@ -296,11 +296,9 @@ namespace AngelLoader.Forms
             // PlayFMButton
             // 
             PlayFMButton.AutoSize = true;
-            PlayFMButton.ImageAlign = ContentAlignment.MiddleLeft;
             PlayFMButton.Padding = new Padding(28, 0, 6, 0);
             PlayFMButton.Height = 36;
             PlayFMButton.TabIndex = 56;
-            PlayFMButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             PlayFMButton.UseVisualStyleBackColor = true;
             PlayFMButton.Click += PlayFMButton_Click;
             PlayFMButton.Paint += PlayFMButton_Paint;
@@ -332,15 +330,13 @@ namespace AngelLoader.Forms
             // WebSearchButton
             // 
             WebSearchButton.AutoSize = true;
-            WebSearchButton.Image = Resources.WebSearch_24;
-            WebSearchButton.ImageAlign = ContentAlignment.MiddleLeft;
             WebSearchButton.Margin = new Padding(11, 3, 3, 3);
-            WebSearchButton.Padding = new Padding(6, 0, 6, 0);
+            WebSearchButton.Padding = new Padding(33, 0, 6, 0);
             WebSearchButton.Height = 36;
             WebSearchButton.TabIndex = 60;
-            WebSearchButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             WebSearchButton.UseVisualStyleBackColor = true;
             WebSearchButton.Click += WebSearchButton_Click;
+            WebSearchButton.Paint += WebSearchButton_Paint;
             // 
             // EverythingPanel
             // 

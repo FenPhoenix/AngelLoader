@@ -6,9 +6,8 @@ namespace AngelLoader.CustomControls
 {
     internal static class ButtonPainter
     {
-        private static readonly SolidBrush playArrowBrush = new SolidBrush(Color.FromArgb(255, 45, 154, 47));
+        private static readonly SolidBrush playArrowBrush = new SolidBrush(Color.FromArgb(45, 154, 47));
         private static readonly Point[] playArrowPoints = { new Point(15, 5), new Point(29, 17), new Point(15, 29) };
-
         internal static void PaintPlayFMButton(PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
@@ -68,10 +67,25 @@ namespace AngelLoader.CustomControls
         private static readonly Rectangle ham1 = new Rectangle(1, 1, 14, 2);
         private static readonly Rectangle ham2 = new Rectangle(1, 7, 14, 2);
         private static readonly Rectangle ham3 = new Rectangle(1, 13, 14, 2);
-
         internal static void PaintTopRightMenuButton(PaintEventArgs e)
         {
             e.Graphics.FillRectangles(Brushes.Black, new[] { ham1, ham2, ham3 });
+        }
+
+        private static readonly Pen webSearchCirclePen = new Pen(Color.FromArgb(4, 125, 202), 2);
+        private static readonly Rectangle webSearchRect1 = new Rectangle(12, 11, 19, 2);
+        private static readonly RectangleF webSearchRect2 = new RectangleF(10, 16.5f, 23, 2);
+        private static readonly Rectangle webSearchRect3 = new Rectangle(12, 22, 19, 2);
+        internal static void PaintWebSearchButton(PaintEventArgs e)
+        {
+            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            }
+
+            e.Graphics.DrawEllipse(webSearchCirclePen, 10, 6, 23, 23);
+            e.Graphics.DrawEllipse(webSearchCirclePen, 17, 6, 9, 23);
+            e.Graphics.FillRectangles(webSearchCirclePen.Brush, new[] { webSearchRect1, webSearchRect2, webSearchRect3 });
         }
     }
 }

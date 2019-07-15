@@ -491,8 +491,6 @@
     <Content Include="Resources\Thief3_21.png" />
     <Content Include="Resources\Thief3_large.png" />
     <Content Include="Resources\Uninstall_24.png" />
-    <Content Include="Resources\WebSearch_24.png" />
-    <Content Include="Resources\WebSearch_32.png" />
     <Content Include="Resources\ZoomIn_24.png" />
     <Content Include="Resources\ZoomOut_24.png" />
     <Content Include="Resources\ZoomReset_24.png" />

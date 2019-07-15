@@ -546,6 +546,7 @@ namespace AngelLoader.Forms
             EditFMFinishedOnButton.Tag = new Size(138, 23);
             PatchOpenFMFolderButton.Tag = new Size(162, 23);
             PlayFMButton.Tag = new Size(91, 36);
+            WebSearchButton.Tag = new Size(116, 36);
 
             // EnsureValidity() guarantees selected tab will not be invisible
             for (int i = 0; i < TopRightTabsCount; i++)
@@ -1026,7 +1027,7 @@ namespace AngelLoader.Forms
                 #endregion
 
                 PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame, preserveHeight: true);
-                WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, preserveHeight: true);
+                WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, ((Size)WebSearchButton.Tag).Width, preserveHeight: true);
                 ScanAllFMsButton.SetTextAutoSize(LText.MainButtons.ScanAllFMs, preserveHeight: true);
                 ImportButton.SetTextAutoSize(LText.MainButtons.Import, preserveHeight: true);
                 SettingsButton.SetTextAutoSize(LText.MainButtons.Settings, preserveHeight: true);
@@ -4076,5 +4077,7 @@ namespace AngelLoader.Forms
         private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(e);
 
         private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintTopRightMenuButton(e);
+
+        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintWebSearchButton(e);
     }
 }

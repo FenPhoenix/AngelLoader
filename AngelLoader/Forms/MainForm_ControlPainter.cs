@@ -12,9 +12,9 @@ namespace AngelLoader.Forms
         // just to draw two one-pixel-wide lines. Especially when there's a ton of them on the UI. For startup
         // perf and lightness of weight, we just draw them ourselves.
 
-        private readonly Pen sep1Pen = new Pen(Color.FromArgb(255, 189, 189, 189));
-        private readonly Pen sep1PenC = new Pen(Color.FromArgb(255, 166, 166, 166));
-        private readonly Pen sep2Pen = new Pen(Color.FromArgb(255, 255, 255, 255));
+        private readonly Pen sep1Pen = new Pen(Color.FromArgb(189, 189, 189));
+        private readonly Pen sep1PenC = new Pen(Color.FromArgb(166, 166, 166));
+        private readonly Pen sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
         private void PaintBottomLeftButtonsFLP(PaintEventArgs e)
         {
