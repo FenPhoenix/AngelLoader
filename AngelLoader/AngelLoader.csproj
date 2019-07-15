@@ -367,46 +367,46 @@
     <Compile Include="WinAPI\Taskbar\TaskBarProgress.cs" />
     <Compile Include="Common\Utility\Extensions.cs" />
     <Compile Include="Common\Utility\Methods.cs" />
-    <EmbeddedResource Include="CustomControls\ProgressPanel.resx">
+    <EmbeddedResource Include="CustomControls\ProgressPanel.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ProgressPanel.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SettingsPages\FMDisplayPage.resx">
+    <EmbeddedResource Include="CustomControls\SettingsPages\FMDisplayPage.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>FMDisplayPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SettingsPages\OtherPage.resx">
+    <EmbeddedResource Include="CustomControls\SettingsPages\OtherPage.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>OtherPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SettingsPages\PathsPage.resx">
+    <EmbeddedResource Include="CustomControls\SettingsPages\PathsPage.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>PathsPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterRatingForm.resx">
+    <EmbeddedResource Include="Forms\FilterRatingForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>FilterRatingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterDateForm.resx">
+    <EmbeddedResource Include="Forms\FilterDateForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>FilterDateForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterTagsForm.resx">
+    <EmbeddedResource Include="Forms\FilterTagsForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>FilterTagsForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx">
+    <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFromMultipleInisForm.resx">
+    <EmbeddedResource Include="Forms\ImportFromMultipleInisForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MainForm.resx" Condition=" '$(Configuration)' == 'Debug' ">
+    <EmbeddedResource Include="Forms\MainForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PlayWithOptions.resx">
+    <EmbeddedResource Include="Forms\PlayWithOptions.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>PlayWithOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ScanAllFMsForm.resx">
+    <EmbeddedResource Include="Forms\ScanAllFMsForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ScanAllFMsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingsForm.resx">
+    <EmbeddedResource Include="Forms\SettingsForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
