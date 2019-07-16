@@ -5,7 +5,7 @@ using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class FilterDateForm : Form, IEventDisabler, ILocalizable
+    public sealed partial class FilterDateForm : Form, IEventDisabler
     {
         internal DateTime? DateFrom;
         internal DateTime? DateTo;
@@ -18,7 +18,7 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
-            SetUITextToLocalized();
+            Localize();
 
             Text = title;
 
@@ -35,7 +35,7 @@ namespace AngelLoader.Forms
             if (to != null) ToDateTimePicker.Value = (DateTime)to;
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             FromLabel.Text = LText.DateFilterBox.From;
             ToLabel.Text = LText.DateFilterBox.To;

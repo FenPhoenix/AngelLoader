@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
@@ -9,7 +8,7 @@ using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.CustomControls
 {
-    public partial class ProgressPanel : UserControl, ILocalizable
+    public partial class ProgressPanel : UserControl
     {
         // TODO: The way this works is no longer really tenable - rework it to be cleaner
 
@@ -161,7 +160,7 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             ProgressCancelButton.SetTextAutoSize(LText.Global.Cancel, ProgressCancelButton.Width);
             ProgressCancelButton.CenterH(this);

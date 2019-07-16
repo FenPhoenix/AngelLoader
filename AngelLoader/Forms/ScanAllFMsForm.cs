@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using FMScanner;
 
 namespace AngelLoader.Forms
 {
-    public partial class ScanAllFMsForm : Form, ILocalizable
+    public partial class ScanAllFMsForm : Form
     {
         private readonly CheckBox[] CheckBoxes;
 
@@ -30,10 +29,10 @@ namespace AngelLoader.Forms
                 TagsCheckBox
             };
 
-            SetUITextToLocalized();
+            Localize();
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             Text = LText.ScanAllFMsBox.TitleText;
 

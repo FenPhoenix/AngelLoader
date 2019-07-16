@@ -103,8 +103,7 @@ namespace AngelLoader.Common
 
     internal interface ILocalizable
     {
-        // Ugly optional bool... but needs must...
-        void SetUITextToLocalized(bool suspendResume = true);
+        void Localize();
     }
 
     internal static class Regexes

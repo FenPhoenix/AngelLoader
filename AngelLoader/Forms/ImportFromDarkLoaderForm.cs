@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Forms
 {
-    public partial class ImportFromDarkLoaderForm : Form, ILocalizable
+    public partial class ImportFromDarkLoaderForm : Form
     {
         private const string DarkLoaderIni = "DarkLoader.ini";
         internal string DarkLoaderIniFile = "";
@@ -19,11 +18,11 @@ namespace AngelLoader.Forms
 
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e)
         {
-            SetUITextToLocalized();
+            Localize();
             AutodetectDarkLoaderIni();
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             Text = LText.Importing.ImportFromDarkLoader_TitleText;
             ChooseDarkLoaderIniLabel.Text = LText.Importing.DarkLoader_ChooseIni;

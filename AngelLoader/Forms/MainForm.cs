@@ -592,7 +592,7 @@ namespace AngelLoader.Forms
             }
 
             // Set these here because they depend on the splitter positions
-            SetUITextToLocalized(suspendResume: false);
+            Localize(startup: true);
 
             if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.DefaultCellStyle.Font.SizeInPoints) >= 0.001)
             {
@@ -808,13 +808,15 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        public void Localize() => Localize(startup: false);
+
+        public void Localize(bool startup)
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
             var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
-            if (suspendResume)
+            if (!startup)
             {
                 this.SuspendDrawing();
             }
@@ -853,7 +855,7 @@ namespace AngelLoader.Forms
                 #region Filter bar
 
                 // Don't do this on startup, cause we're already going to do it afterward
-                if (suspendResume && Config.GameOrganization == GameOrganization.ByTab)
+                if (!startup && Config.GameOrganization == GameOrganization.ByTab)
                 {
                     PositionFilterBarAfterTabs();
                 }
@@ -893,7 +895,7 @@ namespace AngelLoader.Forms
 
                 #region FMs list
 
-                FMsDGV.SetUITextToLocalized();
+                FMsDGV.Localize();
 
                 FMsListZoomInButton.ToolTipText = LText.FMsList.ZoomInToolTip;
                 FMsListZoomOutButton.ToolTipText = LText.FMsList.ZoomOutToolTip;
@@ -1025,9 +1027,9 @@ namespace AngelLoader.Forms
                 PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, ((Size)PlayFMButton.Tag).Width, preserveHeight: true);
 
                 // Allow button to do its max-string-length layout thing
-                if (!suspendResume && !Config.HideUninstallButton) BottomLeftButtonsFLP.ResumeLayout();
-                InstallUninstallFMLLButton.Localize(!suspendResume);
-                if (!suspendResume && !Config.HideUninstallButton) BottomLeftButtonsFLP.SuspendLayout();
+                if (startup && !Config.HideUninstallButton) BottomLeftButtonsFLP.ResumeLayout();
+                InstallUninstallFMLLButton.Localize(startup);
+                if (startup && !Config.HideUninstallButton) BottomLeftButtonsFLP.SuspendLayout();
 
                 PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame, preserveHeight: true);
                 WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, ((Size)WebSearchButton.Tag).Width, preserveHeight: true);
@@ -1041,7 +1043,7 @@ namespace AngelLoader.Forms
             }
             finally
             {
-                if (suspendResume)
+                if (!startup)
                 {
                     this.ResumeDrawing();
                 }
@@ -1066,9 +1068,8 @@ namespace AngelLoader.Forms
             }
 
             // To refresh the FM size column strings to localized
-            // Quick hack: the only time we pass suspendResume = false is on startup, and we don't need to refresh
-            // then because we already will later
-            if (suspendResume) RefreshFMsListKeepSelection();
+            // We don't need to refresh on startup because we already will later
+            if (!startup) RefreshFMsListKeepSelection();
         }
 
         private void SetUIFilterValues(Filter filter)

@@ -18,12 +18,12 @@ namespace AngelLoader.Forms
                 ProgressBox = new ProgressPanel();
                 Controls.Add(ProgressBox);
                 ProgressBox.Inject(this);
-                ProgressBox.SetUITextToLocalized();
+                ProgressBox.Localize();
                 ProgressBox.Anchor = AnchorStyles.None;
             }
         }
 
-        private void LocalizeProgressBox() => ProgressBox?.SetUITextToLocalized();
+        private void LocalizeProgressBox() => ProgressBox?.Localize();
 
         internal void EnableEverything(bool enabled)
         {

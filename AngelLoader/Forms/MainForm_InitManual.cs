@@ -1502,7 +1502,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // PERF: Some of these we resume in SetUITextToLocalized(), so we don't want to do duplicate work
+            // PERF: Some of these we resume in Localize(), so we don't want to do duplicate work
             // PERF_NOTE: ResumeLayouts: ~4ms
 
             BottomPanel.ResumeLayout();

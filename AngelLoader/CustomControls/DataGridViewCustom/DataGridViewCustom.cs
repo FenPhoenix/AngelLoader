@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
 
 namespace AngelLoader.CustomControls
 {
-    public sealed partial class DataGridViewCustom : DataGridView, ILocalizable
+    public sealed partial class DataGridViewCustom : DataGridView
     {
         #region Private fields
 
@@ -82,7 +81,7 @@ namespace AngelLoader.CustomControls
 
         internal void InjectOwner(IView owner) => Owner = owner;
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             ColumnHeaderLLMenu.SetMenuItemTextToLocalized();
             SetFMMenuTextToLocalized();

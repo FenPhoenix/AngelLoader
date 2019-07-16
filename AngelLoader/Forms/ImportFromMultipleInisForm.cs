@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Importing;
@@ -10,7 +9,7 @@ using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Forms
 {
-    public partial class ImportFromMultipleInisForm : Form, ILocalizable
+    public partial class ImportFromMultipleInisForm : Form
     {
         internal List<string> IniFiles;
         private readonly ImportType ImportType;
@@ -19,14 +18,14 @@ namespace AngelLoader.Forms
         {
             ImportType = importType;
             InitializeComponent();
-            SetUITextToLocalized();
+            Localize();
 
             AutodetectGameIni(Game.Thief1, Thief1IniTextBox);
             AutodetectGameIni(Game.Thief2, Thief2IniTextBox);
             AutodetectGameIni(Game.Thief3, Thief3IniTextBox);
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             Text = ImportType == ImportType.NewDarkLoader
                 ? LText.Importing.ImportFromNewDarkLoader_TitleText

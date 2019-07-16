@@ -12,7 +12,6 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.CustomControls.SettingsPages;
-using AngelLoader.Properties;
 using AngelLoader.WinAPI.Dialogs;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.CustomControls.SettingsPages.Interfaces;
@@ -25,12 +24,12 @@ namespace AngelLoader.Forms
     ctor: ~17ms
     
     Major bottlenecks are:
-    -SetUITextToLocalized - SetTextAutoSize() calls being the main contributors
+    -Localize() - SetTextAutoSize() calls being the main contributors
     -ShowPage() (for Other page) - nothing we can do about this
     -Page ctors - lazy-loading these would be a giant headache - not really worth it
     */
 
-    internal sealed partial class SettingsForm : Form, IEventDisabler, ILocalizable
+    internal sealed partial class SettingsForm : Form, IEventDisabler
     {
         private readonly ILocalizable OwnerForm;
 
@@ -397,7 +396,7 @@ namespace AngelLoader.Forms
                 ShowPage(Array.IndexOf(PageRadioButtons, OtherRadioButton), initialCall: true);
             }
 
-            SetUITextToLocalized(suspendResume: false);
+            Localize(suspendResume: false);
         }
 
         private void LoadLanguages()
@@ -424,7 +423,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        public void Localize(bool suspendResume = true)
         {
             if (suspendResume) this.SuspendDrawing();
             try
@@ -582,7 +581,7 @@ namespace AngelLoader.Forms
 
                     try
                     {
-                        OwnerForm.SetUITextToLocalized();
+                        OwnerForm.Localize();
                     }
                     catch (Exception ex)
                     {
@@ -1132,12 +1131,12 @@ namespace AngelLoader.Forms
             try
             {
                 Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
-                SetUITextToLocalized();
+                Localize();
                 if (!Startup)
                 {
                     try
                     {
-                        OwnerForm.SetUITextToLocalized();
+                        OwnerForm.Localize();
                     }
                     catch (Exception ex)
                     {

@@ -6,7 +6,7 @@ using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Forms
 {
-    public partial class FilterRatingForm : Form, IEventDisabler, ILocalizable
+    public partial class FilterRatingForm : Form, IEventDisabler
     {
         internal int RatingFrom;
         internal int RatingTo;
@@ -17,7 +17,7 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
-            SetUITextToLocalized();
+            Localize();
 
             FromComboBox.Items.Add(LText.Global.Unrated);
             for (int i = 0; i <= 10; i++) FromComboBox.Items.Add((outOfFive ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture));
@@ -30,7 +30,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             Text = LText.RatingFilterBox.TitleText;
             FromLabel.Text = LText.RatingFilterBox.From;

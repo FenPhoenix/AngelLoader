@@ -11,7 +11,7 @@ using AngelLoader.CustomControls;
 
 namespace AngelLoader.Forms
 {
-    public partial class FilterTagsForm : Form, ILocalizable
+    public partial class FilterTagsForm : Form
     {
         private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
 
@@ -46,10 +46,10 @@ namespace AngelLoader.Forms
             sourceTags.DeepCopyTo(SourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
 
-            SetUITextToLocalized();
+            Localize();
         }
 
-        public void SetUITextToLocalized(bool suspendResume = true)
+        internal void Localize()
         {
             Text = LText.TagsFilterBox.TitleText;
 
