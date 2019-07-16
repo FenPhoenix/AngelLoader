@@ -53,7 +53,6 @@ namespace AngelLoader.Forms
             InstallUninstallFMButton = new Button();
             WebSearchButton = new Button();
             EverythingPanel = new Panel();
-            AddTagListBox = new ListBox();
             MainSplitContainer = new SplitContainerCustom();
             TopSplitContainer = new SplitContainerCustom();
             FilterBarScrollRightButton = new ArrowButton();
@@ -341,22 +340,11 @@ namespace AngelLoader.Forms
             // 
             // EverythingPanel
             // 
-            EverythingPanel.Controls.Add(AddTagListBox);
             EverythingPanel.Controls.Add(MainSplitContainer);
             EverythingPanel.Controls.Add(BottomPanel);
             EverythingPanel.Dock = DockStyle.Fill;
             EverythingPanel.Size = new Size(1671, 716);
             EverythingPanel.TabIndex = 4;
-            // 
-            // AddTagListBox
-            // 
-            AddTagListBox.FormattingEnabled = true;
-            AddTagListBox.TabIndex = 3;
-            AddTagListBox.Visible = false;
-            AddTagListBox.SelectedIndexChanged += AddTagListBox_SelectedIndexChanged;
-            AddTagListBox.KeyDown += AddTagTextBoxOrListBox_KeyDown;
-            AddTagListBox.Leave += AddTagTextBoxOrListBox_Leave;
-            AddTagListBox.MouseUp += AddTagListBox_MouseUp;
             // 
             // MainSplitContainer
             // 

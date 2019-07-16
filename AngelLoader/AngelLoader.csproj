@@ -235,6 +235,7 @@
     <Compile Include="CustomControls\SettingsPages\PathsPage.Designer.cs">
       <DependentUpon>PathsPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\Static_LazyLoaded\AddTagLLDropDown.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\AddTagLLMenu.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\AltTitlesLLMenu.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\ChooseReadmeLLPanel.cs" />

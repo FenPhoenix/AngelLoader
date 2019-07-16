@@ -31,7 +31,6 @@
  -Install / uninstall button
  -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
  -Filter bar labels for dates and rating (normally hidden unless one of those filters is set)
- -Add tag dropdown listbox
  -Filter bar scroll buttons
 */
 
@@ -358,9 +357,10 @@ namespace AngelLoader.Forms
         // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
         private bool CursorOutsideAddTagsDropDownArea()
         {
-            return AddTagListBox.Visible &&
+            // Check Visible first, otherwise we might be passing a null ref!
+            return AddTagLLDropDown.Visible &&
                    // Check Size instead of ClientSize in order to support clicking the scroll bar
-                   !CursorOverControl(AddTagListBox, fullArea: true) &&
+                   !CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true) &&
                    !CursorOverControl(AddTagTextBox) &&
                    !CursorOverControl(AddTagButton);
         }
@@ -712,7 +712,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (AddTagListBox.Visible) HideAddTagDropDown();
+            if (AddTagLLDropDown.Visible) HideAddTagDropDown();
 
             SetFilterBarScrollButtons();
         }
@@ -3189,24 +3189,27 @@ namespace AngelLoader.Forms
         private void ShowAddTagDropDown()
         {
             var p = PointToClient(AddTagTextBox.PointToScreen(new Point(0, 0)));
-            AddTagListBox.Location = new Point(p.X, p.Y + AddTagTextBox.Height);
-            AddTagListBox.Size = new Size(Math.Max(AddTagTextBox.Width, 256), 225);
+            AddTagLLDropDown.Construct(this, EverythingPanel);
+            AddTagLLDropDown.ListBox.Location = new Point(p.X, p.Y + AddTagTextBox.Height);
+            AddTagLLDropDown.ListBox.Size = new Size(Math.Max(AddTagTextBox.Width, 256), 225);
 
-            AddTagListBox.BringToFront();
-            AddTagListBox.Show();
+            AddTagLLDropDown.ListBox.BringToFront();
+            AddTagLLDropDown.ListBox.Show();
         }
 
         private void HideAddTagDropDown()
         {
-            AddTagListBox.Hide();
-            AddTagListBox.Items.Clear();
+            AddTagLLDropDown.Construct(this, EverythingPanel);
+            AddTagLLDropDown.ListBox.Hide();
+            AddTagLLDropDown.ListBox.Items.Clear();
         }
 
         // Robustness for if the user presses tab to get away, rather than clicking
-        private void AddTagTextBoxOrListBox_Leave(object sender, EventArgs e)
+        internal void AddTagTextBoxOrListBox_Leave(object sender, EventArgs e)
         {
-            if ((sender == AddTagTextBox && !AddTagListBox.Focused) ||
-                (sender == AddTagListBox && !AddTagTextBox.Focused))
+            if ((sender == AddTagTextBox && !AddTagLLDropDown.Focused) ||
+                (AddTagLLDropDown.Constructed &&
+                 sender == AddTagLLDropDown.ListBox && !AddTagTextBox.Focused))
             {
                 HideAddTagDropDown();
             }
@@ -3223,16 +3226,18 @@ namespace AngelLoader.Forms
             }
             else
             {
-                AddTagListBox.Items.Clear();
-                foreach (var item in list) AddTagListBox.Items.Add(item);
+                AddTagLLDropDown.Construct(this, EverythingPanel);
+                AddTagLLDropDown.ListBox.Items.Clear();
+                foreach (var item in list) AddTagLLDropDown.ListBox.Items.Add(item);
 
                 ShowAddTagDropDown();
             }
         }
 
-        private void AddTagTextBoxOrListBox_KeyDown(object sender, KeyEventArgs e)
+        internal void AddTagTextBoxOrListBox_KeyDown(object sender, KeyEventArgs e)
         {
-            var box = AddTagListBox;
+            AddTagLLDropDown.Construct(this, EverythingPanel);
+            var box = AddTagLLDropDown.ListBox;
 
             switch (e.KeyCode)
             {
@@ -3255,14 +3260,14 @@ namespace AngelLoader.Forms
                     AddTagOperation(FMsDGV.GetSelectedFM(), catAndTag);
                     break;
                 default:
-                    if (sender == AddTagListBox) AddTagTextBox.Focus();
+                    if (sender == AddTagLLDropDown.ListBox) AddTagTextBox.Focus();
                     break;
             }
         }
 
-        private void AddTagListBox_SelectedIndexChanged(object sender, EventArgs e)
+        internal void AddTagListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var lb = AddTagListBox;
+            var lb = AddTagLLDropDown.ListBox;
             if (lb.SelectedIndex == -1) return;
 
             var tb = AddTagTextBox;
@@ -3285,11 +3290,14 @@ namespace AngelLoader.Forms
             DisplayFMTags(fm);
         }
 
-        private void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
+        internal void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
 
-            if (AddTagListBox.SelectedIndex > -1) AddTagOperation(FMsDGV.GetSelectedFM(), AddTagListBox.SelectedItem.ToString());
+            if (AddTagLLDropDown.ListBox.SelectedIndex > -1)
+            {
+                AddTagOperation(FMsDGV.GetSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem.ToString());
+            }
         }
 
         private void AddTagOperation(FanMission fm, string catAndTag)

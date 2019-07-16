@@ -387,7 +387,6 @@
             // 
             // EverythingPanel
             // 
-            this.EverythingPanel.Controls.Add(this.AddTagListBox);
             this.EverythingPanel.Controls.Add(this.MainSplitContainer);
             this.EverythingPanel.Controls.Add(this.BottomPanel);
             this.EverythingPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -395,19 +394,6 @@
             this.EverythingPanel.Name = "EverythingPanel";
             this.EverythingPanel.Size = new System.Drawing.Size(1671, 716);
             this.EverythingPanel.TabIndex = 4;
-            // 
-            // AddTagListBox
-            // 
-            this.AddTagListBox.FormattingEnabled = true;
-            this.AddTagListBox.Location = new System.Drawing.Point(1632, 544);
-            this.AddTagListBox.Name = "AddTagListBox";
-            this.AddTagListBox.Size = new System.Drawing.Size(32, 30);
-            this.AddTagListBox.TabIndex = 3;
-            this.AddTagListBox.Visible = false;
-            this.AddTagListBox.SelectedIndexChanged += new System.EventHandler(this.AddTagListBox_SelectedIndexChanged);
-            this.AddTagListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AddTagTextBoxOrListBox_KeyDown);
-            this.AddTagListBox.Leave += new System.EventHandler(this.AddTagTextBoxOrListBox_Leave);
-            this.AddTagListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AddTagListBox_MouseUp);
             // 
             // MainSplitContainer
             // 
@@ -1992,7 +1978,6 @@
         private System.Windows.Forms.Button AddTagButton;
         private System.Windows.Forms.Button AddTagFromListButton;
         private AngelLoader.CustomControls.TextBoxCustom AddTagTextBox;
-        private System.Windows.Forms.ListBox AddTagListBox;
         private AngelLoader.CustomControls.TextBoxCustom FilterAuthorTextBox;
         private System.Windows.Forms.Label FilterAuthorLabel;
         private System.Windows.Forms.TabPage EditFMTabPage;
