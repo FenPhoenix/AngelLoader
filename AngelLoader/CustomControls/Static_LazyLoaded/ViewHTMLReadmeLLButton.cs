@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
@@ -13,7 +8,6 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     internal static class ViewHTMLReadmeLLButton
     {
         private static bool _constructed;
-
         private static Button Button;
 
         internal static void Construct(MainForm form, Control container)

@@ -581,7 +581,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            InstallUninstallFMButton.Visible = !Config.HideUninstallButton;
+            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this, BottomLeftButtonsFLP);
 
             #endregion
 
@@ -814,7 +814,6 @@ namespace AngelLoader.Forms
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
             var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
-            bool sayInstall = selFM == null || !selFM.Installed;
 
             if (suspendResume)
             {
@@ -1026,28 +1025,10 @@ namespace AngelLoader.Forms
 
                 PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, ((Size)PlayFMButton.Tag).Width, preserveHeight: true);
 
-                #region Install / Uninstall FM button
-
-                // Special-case this button to always be the width of the longer of the two localized strings for
-                // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
-                InstallUninstallFMButton.SuspendDrawing();
-
-                var instString = LText.MainButtons.InstallFM;
-                var uninstString = LText.MainButtons.UninstallFM;
-                var instButtonFont = InstallUninstallFMButton.Font;
-                var instStringWidth = TextRenderer.MeasureText(instString, instButtonFont).Width;
-                var uninstStringWidth = TextRenderer.MeasureText(uninstString, instButtonFont).Width;
-                var longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
-
-                InstallUninstallFMButton.SetTextAutoSize(longestString, preserveHeight: true);
-
-                InstallUninstallFMButton.Text = sayInstall
-                    ? LText.MainButtons.InstallFM
-                    : LText.MainButtons.UninstallFM;
-
-                InstallUninstallFMButton.ResumeDrawing();
-
-                #endregion
+                // Allow button to do its max-string-length layout thing
+                if (!suspendResume && !Config.HideUninstallButton) BottomLeftButtonsFLP.ResumeLayout();
+                InstallUninstallFMLLButton.Localize(!suspendResume);
+                if (!suspendResume && !Config.HideUninstallButton) BottomLeftButtonsFLP.SuspendLayout();
 
                 PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame, preserveHeight: true);
                 WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, ((Size)WebSearchButton.Tag).Width, preserveHeight: true);
@@ -1123,7 +1104,22 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMButton.Visible = enabled;
+        public void ShowInstallUninstallButton(bool enabled)
+        {
+            if (enabled)
+            {
+                if (!InstallUninstallFMLLButton.Constructed)
+                {
+                    InstallUninstallFMLLButton.Construct(this, BottomLeftButtonsFLP);
+                    InstallUninstallFMLLButton.Localize(false);
+                }
+                InstallUninstallFMLLButton.Show();
+            }
+            else
+            {
+                InstallUninstallFMLLButton.Hide();
+            }
+        }
 
         public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
 
@@ -2233,7 +2229,7 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        private async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
+        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
 
         private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 
@@ -2579,10 +2575,8 @@ namespace AngelLoader.Forms
             FMsDGV.SetInstallUninstallMenuItemEnabled(false);
 
             // Special-cased; don't autosize this one
-            InstallUninstallFMButton.Text = LText.MainButtons.InstallFM;
-
-            InstallUninstallFMButton.Image = Images.Install_24;
-            InstallUninstallFMButton.Enabled = false;
+            InstallUninstallFMLLButton.SetSayInstall(true);
+            InstallUninstallFMLLButton.SetEnabled(false);
 
             FMsDGV.SetPlayFMMenuItemEnabled(false);
             PlayFMButton.Enabled = false;
@@ -2701,14 +2695,9 @@ namespace AngelLoader.Forms
 
             FMsDGV.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
 
-            InstallUninstallFMButton.Enabled = installable;
+            InstallUninstallFMLLButton.SetEnabled(installable);
             // Special-cased; don't autosize this one
-            InstallUninstallFMButton.Text = fm.Installed
-                ? LText.MainButtons.UninstallFM
-                : LText.MainButtons.InstallFM;
-            InstallUninstallFMButton.Image = fm.Installed
-                ? Images.Uninstall_24
-                : Images.Install_24;
+            InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
             FMsDGV.SetPlayFMMenuItemEnabled(installable);
             PlayFMButton.Enabled = installable;

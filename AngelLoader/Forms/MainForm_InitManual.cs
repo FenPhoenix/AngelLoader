@@ -50,7 +50,6 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP = new FlowLayoutPanel();
             PlayFMButton = new Button();
             PlayOriginalGameButton = new Button();
-            InstallUninstallFMButton = new Button();
             WebSearchButton = new Button();
             EverythingPanel = new Panel();
             MainSplitContainer = new SplitContainerCustom();
@@ -284,7 +283,6 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             BottomLeftButtonsFLP.Controls.Add(PlayFMButton);
             BottomLeftButtonsFLP.Controls.Add(PlayOriginalGameButton);
-            BottomLeftButtonsFLP.Controls.Add(InstallUninstallFMButton);
             BottomLeftButtonsFLP.Controls.Add(ScanAllFMsButton);
             BottomLeftButtonsFLP.Controls.Add(WebSearchButton);
             BottomLeftButtonsFLP.Location = new Point(2, 0);
@@ -313,17 +311,6 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             PlayOriginalGameButton.UseVisualStyleBackColor = true;
             PlayOriginalGameButton.Click += PlayOriginalGameButton_Click;
-            // 
-            // InstallUninstallFMButton
-            // 
-            InstallUninstallFMButton.AutoSize = true;
-            InstallUninstallFMButton.ImageAlign = ContentAlignment.MiddleLeft;
-            InstallUninstallFMButton.Padding = new Padding(6, 0, 6, 0);
-            InstallUninstallFMButton.Height = 36;
-            InstallUninstallFMButton.TabIndex = 58;
-            InstallUninstallFMButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-            InstallUninstallFMButton.UseVisualStyleBackColor = true;
-            InstallUninstallFMButton.Click += InstallUninstallFMButton_Click;
             // 
             // 
             // WebSearchButton

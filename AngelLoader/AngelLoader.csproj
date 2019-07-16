@@ -240,6 +240,7 @@
     <Compile Include="CustomControls\Static_LazyLoaded\AltTitlesLLMenu.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\ChooseReadmeLLPanel.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\ImportFromLLMenu.cs" />
+    <Compile Include="CustomControls\Static_LazyLoaded\InstallUninstallFMLLButton.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\PlayOriginalGameLLMenu.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\TopRightLLMenu.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\ViewHTMLReadmeLLButton.cs" />

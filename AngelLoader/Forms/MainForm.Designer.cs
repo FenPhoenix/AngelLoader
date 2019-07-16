@@ -46,7 +46,6 @@
             this.BottomLeftButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.PlayFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
-            this.InstallUninstallFMButton = new System.Windows.Forms.Button();
             this.WebSearchButton = new System.Windows.Forms.Button();
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
@@ -299,7 +298,6 @@
             this.BottomLeftButtonsFLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BottomLeftButtonsFLP.Controls.Add(this.PlayFMButton);
             this.BottomLeftButtonsFLP.Controls.Add(this.PlayOriginalGameButton);
-            this.BottomLeftButtonsFLP.Controls.Add(this.InstallUninstallFMButton);
             this.BottomLeftButtonsFLP.Controls.Add(this.ScanAllFMsButton);
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
@@ -335,21 +333,6 @@
             this.PlayOriginalGameButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.PlayOriginalGameButton.UseVisualStyleBackColor = true;
             this.PlayOriginalGameButton.Click += new System.EventHandler(this.PlayOriginalGameButton_Click);
-            // 
-            // InstallUninstallFMButton
-            // 
-            this.InstallUninstallFMButton.AutoSize = true;
-            this.InstallUninstallFMButton.Image = global::AngelLoader.Properties.Resources.Install_24;
-            this.InstallUninstallFMButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.InstallUninstallFMButton.Location = new System.Drawing.Point(253, 3);
-            this.InstallUninstallFMButton.Name = "InstallUninstallFMButton";
-            this.InstallUninstallFMButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.InstallUninstallFMButton.Size = new System.Drawing.Size(98, 36);
-            this.InstallUninstallFMButton.TabIndex = 58;
-            this.InstallUninstallFMButton.Text = "Install FM";
-            this.InstallUninstallFMButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.InstallUninstallFMButton.UseVisualStyleBackColor = true;
-            this.InstallUninstallFMButton.Click += new System.EventHandler(this.InstallUninstallFMButton_Click);
             // 
             // WebSearchButton
             // 
@@ -1920,7 +1903,6 @@
         private System.Windows.Forms.Panel BottomPanel;
         private System.Windows.Forms.Button TestButton;
         private AngelLoader.CustomControls.DataGridViewCustom FMsDGV;
-        private System.Windows.Forms.Button InstallUninstallFMButton;
         private System.Windows.Forms.Button PlayFMButton;
         private AngelLoader.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
         private System.Windows.Forms.Button ScanAllFMsButton;
