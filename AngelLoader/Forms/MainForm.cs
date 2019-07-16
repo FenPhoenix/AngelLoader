@@ -3198,11 +3198,10 @@ namespace AngelLoader.Forms
             AddTagLLDropDown.ListBox.Show();
         }
 
-        private void HideAddTagDropDown()
+        private static void HideAddTagDropDown()
         {
-            AddTagLLDropDown.Construct(this, EverythingPanel);
-            AddTagLLDropDown.ListBox.Hide();
-            AddTagLLDropDown.ListBox.Items.Clear();
+            AddTagLLDropDown.Hide();
+            AddTagLLDropDown.Clear();
         }
 
         // Robustness for if the user presses tab to get away, rather than clicking
@@ -3228,7 +3227,7 @@ namespace AngelLoader.Forms
             else
             {
                 AddTagLLDropDown.Construct(this, EverythingPanel);
-                AddTagLLDropDown.ListBox.Items.Clear();
+                AddTagLLDropDown.Clear();
                 foreach (var item in list) AddTagLLDropDown.ListBox.Items.Add(item);
 
                 ShowAddTagDropDown();

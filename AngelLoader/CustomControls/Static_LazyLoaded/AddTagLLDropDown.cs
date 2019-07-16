@@ -28,5 +28,15 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
 
         internal static bool Visible => Constructed && ListBox.Visible;
         internal static bool Focused => Constructed && ListBox.Focused;
+
+        internal static void Hide()
+        {
+            if (Constructed) ListBox.Hide();
+        }
+
+        internal static void Clear()
+        {
+            if (Constructed) ListBox.Items.Clear();
+        }
     }
 }
