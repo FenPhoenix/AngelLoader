@@ -27,7 +27,6 @@
   controls on each tab page (in case the tabs are visible but not selected on startup)
  -FMs list zoom buttons
  -Game buttons and game tabs (one or the other will be invisible on startup)
- -Install / uninstall button
  -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
  -Filter bar labels for dates and rating (normally hidden unless one of those filters is set)
  -Filter bar scroll buttons
