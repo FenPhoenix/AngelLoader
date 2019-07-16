@@ -1017,7 +1017,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(ResetZoomButton, LText.ReadmeArea.ResetZoomToolTip);
                 MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
 
-                ViewHTMLReadmeButton.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
+                ViewHTMLReadmeLLButton.Localize();
 
                 ChooseReadmeLLPanel.Localize();
 
@@ -1083,7 +1083,7 @@ namespace AngelLoader.Forms
 
                 // We can't do this while the layout is suspended, because then it won't have the right dimensions
                 // for centering
-                ViewHTMLReadmeButton.CenterHV(MainSplitContainer.Panel2);
+                ViewHTMLReadmeLLButton.Center(MainSplitContainer.Panel2);
             }
 
             // To refresh the FM size column strings to localized
@@ -1286,7 +1286,7 @@ namespace AngelLoader.Forms
         private bool CursorOverReadmeArea()
         {
             return ReadmeRichTextBox.Visible ? CursorOverControl(ReadmeRichTextBox) :
-                ViewHTMLReadmeButton.Visible && CursorOverControl(MainSplitContainer.Panel2);
+                ViewHTMLReadmeLLButton.Visible && CursorOverControl(MainSplitContainer.Panel2);
         }
 
         private bool CursorOverControl(Control control, bool fullArea = false)
@@ -2600,7 +2600,7 @@ namespace AngelLoader.Forms
             ShowReadme(false);
 
             ChooseReadmeLLPanel.ShowPanel(false);
-            ViewHTMLReadmeButton.Hide();
+            ViewHTMLReadmeLLButton.Hide();
             WebSearchButton.Enabled = false;
 
             BlankStatsPanelWithMessage(LText.StatisticsTab.NoFMSelected);
@@ -2869,7 +2869,7 @@ namespace AngelLoader.Forms
 
                     ChooseReadmeLLPanel.ShowPanel(false);
                     ChooseReadmeComboBox.Hide();
-                    ViewHTMLReadmeButton.Hide();
+                    ViewHTMLReadmeLLButton.Hide();
                     ShowReadme(true);
 
                     return;
@@ -2886,7 +2886,7 @@ namespace AngelLoader.Forms
                     else
                     {
                         ShowReadme(false);
-                        ViewHTMLReadmeButton.Hide();
+                        ViewHTMLReadmeLLButton.Hide();
 
                         ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
 
@@ -2941,7 +2941,8 @@ namespace AngelLoader.Forms
 
                 if (type == ReadmeType.HTML)
                 {
-                    ViewHTMLReadmeButton.Show();
+                    ViewHTMLReadmeLLButton.Construct(this, MainSplitContainer.Panel2);
+                    ViewHTMLReadmeLLButton.Show();
                     ShowReadme(false);
                     // In case the cursor is over the scroll bar area
                     if (CursorOverReadmeArea()) ShowReadmeControls(true);
@@ -2949,7 +2950,7 @@ namespace AngelLoader.Forms
                 else
                 {
                     ShowReadme(true);
-                    ViewHTMLReadmeButton.Hide();
+                    ViewHTMLReadmeLLButton.Hide();
                     var fileType = type == ReadmeType.PlainText
                         ? RichTextBoxStreamType.PlainText
                         : RichTextBoxStreamType.RichText;
@@ -2961,7 +2962,7 @@ namespace AngelLoader.Forms
             {
                 Log(nameof(LoadReadme) + " failed.", ex);
 
-                ViewHTMLReadmeButton.Hide();
+                ViewHTMLReadmeLLButton.Hide();
                 ShowReadme(true);
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
             }
@@ -3422,7 +3423,8 @@ namespace AngelLoader.Forms
 
             if (fm.SelectedReadme.ExtIsHtml())
             {
-                ViewHTMLReadmeButton.Show();
+                ViewHTMLReadmeLLButton.Construct(this, MainSplitContainer.Panel2);
+                ViewHTMLReadmeLLButton.Show();
             }
             else
             {
@@ -3866,7 +3868,7 @@ namespace AngelLoader.Forms
 
         private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
+        internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
         private void ImportButton_Click(object sender, EventArgs e)
         {

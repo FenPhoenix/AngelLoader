@@ -51,7 +51,6 @@
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
-            this.AddTagListBox = new System.Windows.Forms.ListBox();
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.FilterBarScrollRightButton = new AngelLoader.CustomControls.ArrowButton();
@@ -156,7 +155,6 @@
             this.PatchAddDMLButton = new System.Windows.Forms.Button();
             this.PatchOpenFMFolderButton = new System.Windows.Forms.Button();
             this.PatchFMNotInstalledLabel = new System.Windows.Forms.Label();
-            this.ViewHTMLReadmeButton = new System.Windows.Forms.Button();
             this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
             this.ZoomInButton = new System.Windows.Forms.Button();
             this.ZoomOutButton = new System.Windows.Forms.Button();
@@ -413,7 +411,6 @@
             // MainSplitContainer.Panel2
             // 
             this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.MainSplitContainer.Panel2.Controls.Add(this.ViewHTMLReadmeButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeFullScreenButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ZoomInButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ZoomOutButton);
@@ -1754,20 +1751,6 @@
             this.PatchFMNotInstalledLabel.TabIndex = 45;
             this.PatchFMNotInstalledLabel.Text = "FM must be installed in order to use this section.";
             // 
-            // ViewHTMLReadmeButton
-            // 
-            this.ViewHTMLReadmeButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ViewHTMLReadmeButton.AutoSize = true;
-            this.ViewHTMLReadmeButton.Location = new System.Drawing.Point(776, 144);
-            this.ViewHTMLReadmeButton.Name = "ViewHTMLReadmeButton";
-            this.ViewHTMLReadmeButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.ViewHTMLReadmeButton.Size = new System.Drawing.Size(144, 23);
-            this.ViewHTMLReadmeButton.TabIndex = 49;
-            this.ViewHTMLReadmeButton.Text = "View HTML Readme";
-            this.ViewHTMLReadmeButton.UseVisualStyleBackColor = true;
-            this.ViewHTMLReadmeButton.Visible = false;
-            this.ViewHTMLReadmeButton.Click += new System.EventHandler(this.ViewHTMLReadmeButton_Click);
-            // 
             // ReadmeFullScreenButton
             // 
             this.ReadmeFullScreenButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -2022,7 +2005,6 @@
         private CustomControls.ToolStripButtonCustom RefreshFiltersButton;
         private System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
         private System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
-        private System.Windows.Forms.Button ViewHTMLReadmeButton;
         private CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
         private System.Windows.Forms.ToolStripLabel FilterByLastPlayedLabel;
         private System.Windows.Forms.Button ZoomInButton;

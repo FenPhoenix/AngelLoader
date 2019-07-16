@@ -157,7 +157,6 @@ namespace AngelLoader.Forms
             PatchAddDMLButton = new Button();
             PatchOpenFMFolderButton = new Button();
             PatchFMNotInstalledLabel = new Label();
-            ViewHTMLReadmeButton = new Button();
             ReadmeFullScreenButton = new Button();
             ZoomInButton = new Button();
             ZoomOutButton = new Button();
@@ -361,7 +360,6 @@ namespace AngelLoader.Forms
             // MainSplitContainer.Panel2
             // 
             MainSplitContainer.Panel2.BackColor = SystemColors.Control;
-            MainSplitContainer.Panel2.Controls.Add(ViewHTMLReadmeButton);
             MainSplitContainer.Panel2.Controls.Add(ReadmeFullScreenButton);
             MainSplitContainer.Panel2.Controls.Add(ZoomInButton);
             MainSplitContainer.Panel2.Controls.Add(ZoomOutButton);
@@ -1413,18 +1411,6 @@ namespace AngelLoader.Forms
             PatchFMNotInstalledLabel.AutoSize = true;
             // This thing gets centered later so no location is specified here
             PatchFMNotInstalledLabel.TabIndex = 45;
-            // 
-            // ViewHTMLReadmeButton
-            // 
-            ViewHTMLReadmeButton.Anchor = AnchorStyles.None;
-            ViewHTMLReadmeButton.AutoSize = true;
-            // This thing gets centered later so no location is specified here
-            ViewHTMLReadmeButton.Padding = new Padding(6, 0, 6, 0);
-            ViewHTMLReadmeButton.Height = 23;
-            ViewHTMLReadmeButton.TabIndex = 49;
-            ViewHTMLReadmeButton.UseVisualStyleBackColor = true;
-            ViewHTMLReadmeButton.Visible = false;
-            ViewHTMLReadmeButton.Click += ViewHTMLReadmeButton_Click;
 
             #region Readme control buttons
 

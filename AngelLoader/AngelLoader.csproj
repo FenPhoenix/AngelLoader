@@ -242,6 +242,7 @@
     <Compile Include="CustomControls\Static_LazyLoaded\ImportFromLLMenu.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\PlayOriginalGameLLMenu.cs" />
     <Compile Include="CustomControls\Static_LazyLoaded\TopRightLLMenu.cs" />
+    <Compile Include="CustomControls\Static_LazyLoaded\ViewHTMLReadmeLLButton.cs" />
     <Compile Include="CustomControls\TabControlCustom.cs">
       <SubType>Component</SubType>
     </Compile>
