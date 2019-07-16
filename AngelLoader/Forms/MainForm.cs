@@ -25,7 +25,6 @@
  TODO: Things to lazy load:
  -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
   controls on each tab page (in case the tabs are visible but not selected on startup)
- -View HTML Readme button
  -FMs list zoom buttons
  -Game buttons and game tabs (one or the other will be invisible on startup)
  -Install / uninstall button
