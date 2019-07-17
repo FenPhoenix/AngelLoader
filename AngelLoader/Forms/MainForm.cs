@@ -3,6 +3,9 @@
 // state machines a bazillion levels down, so as to only have the overhead right where it's actually used. But
 // the time savings isn't as much as I thought it might be, so meh.
 
+// NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
+// in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
+
 /*
  TODO: Images to switch to drawing:
  -Zoom images
@@ -28,7 +31,6 @@
  -Game buttons and game tabs (one or the other will be invisible on startup)
  -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
  -Filter bar labels for dates and rating (normally hidden unless one of those filters is set)
- -Filter bar scroll buttons
 */
 
 using System;
@@ -710,8 +712,6 @@ namespace AngelLoader.Forms
             }
 
             if (AddTagLLDropDown.Visible) HideAddTagDropDown();
-
-            SetFilterBarScrollButtons();
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
@@ -3615,7 +3615,8 @@ namespace AngelLoader.Forms
 
         private void SetFilterBarScrollButtons()
         {
-            if (EventsDisabled) return;
+            // Don't run this a zillion gatrillion times during init
+            if (EventsDisabled || !Visible) return;
 
             var flp = FilterBarFLP;
             void ShowLeft()
