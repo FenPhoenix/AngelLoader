@@ -352,7 +352,7 @@ namespace AngelLoader.Forms
 #endif
 #endif
 
-            _fmsDGVContainerWidthDiff = (FMsDGV.Parent.Width - FMsDGV.Width) - FMsDGV.Location.X;
+            _fmsDGVContainerWidthDiff = FMsDGV.Parent.Width - FMsDGV.Width;
         }
 
         #region Mouse hook
@@ -4125,7 +4125,6 @@ namespace AngelLoader.Forms
         private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons(((Button)sender).Enabled, e);
 
         // Dumb hack to stop FMsDGV from screwing up when you resize it, even though it's supposed to be anchored.
-        // Height doesn't seem to have this problem. Meh.
         private void TopSplitContainer_Panel1_SizeChanged(object sender, EventArgs e) => FMsDGV.Width = FMsDGV.Parent.Width - _fmsDGVContainerWidthDiff;
     }
 }
