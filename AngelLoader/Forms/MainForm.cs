@@ -3616,6 +3616,11 @@ namespace AngelLoader.Forms
         // PERF_TODO: This is still called too many times on startup.
         // Even though it has checks to prevent any real work from being done if not needed, I should still take
         // a look at this and see if I can't make it be called only once max on startup.
+        // TODO: Something about the Construct() calls in this method causes the anchoring issue (when we lazy-load).
+        // If we just construct once at the top, it works fine. But we can't do that because then it would always
+        // load right away, defeating the purpose of lazy loading. Look into this. If we can solve it, that's a
+        // bit more time shaved off of startup.
+        // 2019-07-17: Lazy loading these is disabled for the moment.
         private void SetFilterBarScrollButtons()
         {
             // Don't run this a zillion gatrillion times during init
