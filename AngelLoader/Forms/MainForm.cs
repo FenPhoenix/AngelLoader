@@ -1192,7 +1192,6 @@ namespace AngelLoader.Forms
         {
             if (Config.GameOrganization == GameOrganization.OneList)
             {
-                //FilterGamesLeftSep.Visible = false;
                 GamesTabControl.Hide();
                 // Don't inline this var - it stores the X value to persist it through a change
                 var plusWidth = FilterBarFLP.Location.X;
@@ -1205,9 +1204,10 @@ namespace AngelLoader.Forms
                 PositionFilterBarAfterTabs();
 
                 FilterGameButtonsToolStrip.Hide();
-                //FilterGamesLeftSep.Visible = true;
                 GamesTabControl.Show();
             }
+
+            SetFilterBarScrollButtons();
         }
 
         private void UpdateConfig()
@@ -3613,15 +3613,17 @@ namespace AngelLoader.Forms
 
         private void FiltersFlowLayoutPanel_Scroll(object sender, ScrollEventArgs e) => SetFilterBarScrollButtons();
 
+        // PERF_TODO: This is still called too many times on startup.
+        // Even though it has checks to prevent any real work from being done if not needed, I should still take
+        // a look at this and see if I can't make it be called only once max on startup.
         private void SetFilterBarScrollButtons()
         {
             // Don't run this a zillion gatrillion times during init
             if (EventsDisabled || !Visible) return;
 
-            var flp = FilterBarFLP;
             void ShowLeft()
             {
-                FilterBarScrollLeftButton.Location = new Point(flp.Location.X, flp.Location.Y + 1);
+                FilterBarScrollLeftButton.Location = new Point(FilterBarFLP.Location.X, FilterBarFLP.Location.Y + 1);
                 FilterBarScrollLeftButton.Show();
             }
 
@@ -3631,15 +3633,18 @@ namespace AngelLoader.Forms
                 // the first time
                 FilterBarScrollRightButton.Location = new Point(
                     RefreshAreaToolStrip.Location.X - FilterBarScrollRightButton.Width - 4,
-                    flp.Location.Y + 1);
+                    FilterBarFLP.Location.Y + 1);
                 FilterBarScrollRightButton.Show();
             }
 
             var hs = FilterBarFLP.HorizontalScroll;
             if (!hs.Visible)
             {
-                FilterBarScrollLeftButton.Hide();
-                FilterBarScrollRightButton.Hide();
+                if (FilterBarScrollLeftButton.Visible || FilterBarScrollRightButton.Visible)
+                {
+                    FilterBarScrollLeftButton.Hide();
+                    FilterBarScrollRightButton.Hide();
+                }
             }
             // Keep order: Show, Hide
             // Otherwise there's a small hiccup with the buttons
