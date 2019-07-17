@@ -172,15 +172,11 @@ namespace AngelLoader.CustomControls
             e.Graphics.FillEllipse(pen.Brush, new RectangleF(29, 25, 4.5f, 4.5f));
         }
 
-        private static readonly Pen scanSmallPen = new Pen(AL_LightBlue, 1);
-        private static readonly Pen scanSmallDisabledPen = new Pen(SystemColors.ControlDark, 1);
-        private static readonly Point[] scanSmallPoints =
-        {
-            new Point(26, 25),
-            new Point(29, 28),
-            new Point(32, 25),
-            new Point(28, 21)
-        };
+        private static readonly Pen scanSmallCirclePen = new Pen(AL_LightBlue, 1.8f);
+        private static readonly Pen scanSmallCircleDisabledPen = new Pen(SystemColors.ControlDark, 1.8f);
+        private static readonly Pen scanSmallHandlePen = new Pen(AL_LightBlue, 2.6f);
+        private static readonly Pen scanSmallHandleDisabledPen = new Pen(SystemColors.ControlDark, 2.6f);
+        private static readonly RectangleF scanSmallHandleRect = new RectangleF(15, 15, 2.4f, 2.4f);
         internal static void PaintScanSmallButtons(bool enabled, PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
@@ -188,11 +184,13 @@ namespace AngelLoader.CustomControls
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
-            var pen = enabled ? scanPen : scanDisabledPen;
+            var pen = enabled ? scanSmallCirclePen : scanSmallCircleDisabledPen;
+            var hPen = enabled ? scanSmallHandlePen : scanSmallHandleDisabledPen;
 
-            e.Graphics.DrawEllipse(pen, 3, 3, 6, 6);
-            //e.Graphics.FillPolygon(pen.Brush, scanPoints);
-            //e.Graphics.FillEllipse(pen.Brush, new RectangleF(29, 25, 4.5f, 4.5f));
+            e.Graphics.DrawEllipse(pen, 4.25f, 4.25f, 10.6f, 10.6f);
+
+            e.Graphics.DrawLine(hPen, 13, 13, 16.5f, 16.5f);
+            e.Graphics.FillEllipse(pen.Brush, scanSmallHandleRect);
         }
     }
 }

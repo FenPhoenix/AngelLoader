@@ -19,7 +19,6 @@ namespace AngelLoader.Forms
         private static Bitmap _ZoomOut;
         private static Bitmap _ZoomReset;
         private static Bitmap _Refresh;
-        private static Bitmap _ScanSmall;
         private static Bitmap _RatingExample_NDL;
         private static Bitmap _RatingExample_FMSel_Stars;
         private static Bitmap _RatingExample_FMSel_Number;
@@ -37,7 +36,6 @@ namespace AngelLoader.Forms
         private static bool c_ZoomOut;
         private static bool c_ZoomReset;
         private static bool c_Refresh;
-        private static bool c_ScanSmall;
         private static bool c_RatingExample_NDL;
         private static bool c_RatingExample_FMSel_Stars;
         private static bool c_RatingExample_FMSel_Number;
@@ -246,22 +244,6 @@ namespace AngelLoader.Forms
                 {
                     c_Refresh = true;
                     return _Refresh = Resources.Refresh;
-                }
-            }
-        }
-
-        public static Bitmap ScanSmall
-        {
-            get
-            {
-                if (c_ScanSmall)
-                {
-                    return _ScanSmall;
-                }
-                else
-                {
-                    c_ScanSmall = true;
-                    return _ScanSmall = Resources.ScanSmall;
                 }
             }
         }

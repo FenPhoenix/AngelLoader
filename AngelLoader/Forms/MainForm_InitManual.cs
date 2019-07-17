@@ -248,7 +248,6 @@ namespace AngelLoader.Forms
             BottomRightButtonsFLP.Controls.Add(ImportButton);
             BottomRightButtonsFLP.FlowDirection = FlowDirection.RightToLeft;
             BottomRightButtonsFLP.Location = new Point(1443, 0);
-            BottomRightButtonsFLP.Size = new Size(226, 42);
             BottomRightButtonsFLP.TabIndex = 37;
             // 
             // SettingsButton
@@ -284,7 +283,6 @@ namespace AngelLoader.Forms
             BottomLeftButtonsFLP.Controls.Add(ScanAllFMsButton);
             BottomLeftButtonsFLP.Controls.Add(WebSearchButton);
             BottomLeftButtonsFLP.Location = new Point(2, 0);
-            BottomLeftButtonsFLP.Size = new Size(616, 42);
             BottomLeftButtonsFLP.TabIndex = 36;
             BottomLeftButtonsFLP.Paint += BottomLeftButtonsFLP_Paint;
             // 
@@ -902,14 +900,13 @@ namespace AngelLoader.Forms
             // StatsScanCustomResourcesButton
             // 
             StatsScanCustomResourcesButton.AutoSize = true;
-            StatsScanCustomResourcesButton.Image = Images.ScanSmall;
-            StatsScanCustomResourcesButton.ImageAlign = ContentAlignment.MiddleLeft;
             StatsScanCustomResourcesButton.Location = new Point(6, 200);
-            StatsScanCustomResourcesButton.Size = new Size(154, 23);
+            StatsScanCustomResourcesButton.Padding = new Padding(13, 0, 0, 0);
+            StatsScanCustomResourcesButton.Height = 23;
             StatsScanCustomResourcesButton.TabIndex = 12;
-            StatsScanCustomResourcesButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             StatsScanCustomResourcesButton.Click += RescanCustomResourcesButton_Click;
+            StatsScanCustomResourcesButton.Paint += ScanIconButtons_Paint;
             // 
             // StatsCheckBoxesPanel
             // 
@@ -1045,46 +1042,42 @@ namespace AngelLoader.Forms
             // EditFMScanForReadmesButton
             // 
             EditFMScanForReadmesButton.AutoSize = true;
-            EditFMScanForReadmesButton.Image = Images.ScanSmall;
-            EditFMScanForReadmesButton.ImageAlign = ContentAlignment.MiddleLeft;
             EditFMScanForReadmesButton.Location = new Point(8, 248);
+            EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
             EditFMScanForReadmesButton.Height = 23;
             EditFMScanForReadmesButton.TabIndex = 31;
-            EditFMScanForReadmesButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             EditFMScanForReadmesButton.Click += EditFMScanForReadmesButton_Click;
+            EditFMScanForReadmesButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMScanReleaseDateButton
             // 
-            EditFMScanReleaseDateButton.BackgroundImage = Images.ScanSmall;
-            EditFMScanReleaseDateButton.BackgroundImageLayout = ImageLayout.Zoom;
             EditFMScanReleaseDateButton.Location = new Point(136, 105);
             EditFMScanReleaseDateButton.Size = new Size(22, 22);
             EditFMScanReleaseDateButton.TabIndex = 22;
             EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             EditFMScanReleaseDateButton.Click += EditFMScanReleaseDateButton_Click;
+            EditFMScanReleaseDateButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMScanAuthorButton
             // 
             EditFMScanAuthorButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMScanAuthorButton.BackgroundImage = Images.ScanSmall;
-            EditFMScanAuthorButton.BackgroundImageLayout = ImageLayout.Zoom;
             EditFMScanAuthorButton.Location = new Point(493, 63);
             EditFMScanAuthorButton.Size = new Size(22, 22);
             EditFMScanAuthorButton.TabIndex = 19;
             EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             EditFMScanAuthorButton.Click += EditFMScanAuthorButton_Click;
+            EditFMScanAuthorButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMScanTitleButton
             // 
             EditFMScanTitleButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMScanTitleButton.BackgroundImage = Images.ScanSmall;
-            EditFMScanTitleButton.BackgroundImageLayout = ImageLayout.Zoom;
             EditFMScanTitleButton.Location = new Point(493, 23);
             EditFMScanTitleButton.Size = new Size(22, 22);
             EditFMScanTitleButton.TabIndex = 16;
             EditFMScanTitleButton.UseVisualStyleBackColor = true;
             EditFMScanTitleButton.Click += EditFMScanTitleButton_Click;
+            EditFMScanTitleButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMAltTitlesDropDownButton
             // 
@@ -1282,7 +1275,7 @@ namespace AngelLoader.Forms
             AddRemoveTagFLP.Controls.Add(RemoveTagButton);
             AddRemoveTagFLP.Controls.Add(AddTagFromListButton);
             AddRemoveTagFLP.FlowDirection = FlowDirection.RightToLeft;
-            AddRemoveTagFLP.Location = new Point(-11, 248);
+            AddRemoveTagFLP.Location = new Point(0, 248);
             AddRemoveTagFLP.Size = new Size(536, 24);
             AddRemoveTagFLP.TabIndex = 3;
             // 

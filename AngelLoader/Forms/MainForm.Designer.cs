@@ -31,10 +31,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
             this.Test2Button = new System.Windows.Forms.Button();
             this.TestButton = new System.Windows.Forms.Button();
@@ -50,7 +50,6 @@
             this.DebugLabel = new System.Windows.Forms.Label();
             this.DebugLabel2 = new System.Windows.Forms.Label();
             this.EverythingPanel = new System.Windows.Forms.Panel();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
             this.FilterBarScrollRightButton = new AngelLoader.CustomControls.ArrowButton();
@@ -161,6 +160,7 @@
             this.ResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -226,7 +226,7 @@
             this.ScanAllFMsButton.Margin = new System.Windows.Forms.Padding(11, 3, 3, 3);
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
             this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
-            this.ScanAllFMsButton.Size = new System.Drawing.Size(123, 36);
+            this.ScanAllFMsButton.Size = new System.Drawing.Size(126, 36);
             this.ScanAllFMsButton.TabIndex = 59;
             this.ScanAllFMsButton.Text = "Scan all FMs...";
             this.ScanAllFMsButton.UseVisualStyleBackColor = true;
@@ -300,7 +300,7 @@
             this.BottomLeftButtonsFLP.Controls.Add(this.WebSearchButton);
             this.BottomLeftButtonsFLP.Location = new System.Drawing.Point(2, 0);
             this.BottomLeftButtonsFLP.Name = "BottomLeftButtonsFLP";
-            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(517, 42);
+            this.BottomLeftButtonsFLP.Size = new System.Drawing.Size(520, 42);
             this.BottomLeftButtonsFLP.TabIndex = 36;
             this.BottomLeftButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomLeftButtonsFLP_Paint);
             // 
@@ -335,7 +335,7 @@
             // WebSearchButton
             // 
             this.WebSearchButton.AutoSize = true;
-            this.WebSearchButton.Location = new System.Drawing.Point(398, 3);
+            this.WebSearchButton.Location = new System.Drawing.Point(401, 3);
             this.WebSearchButton.Margin = new System.Windows.Forms.Padding(11, 3, 3, 3);
             this.WebSearchButton.Name = "WebSearchButton";
             this.WebSearchButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
@@ -476,14 +476,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -498,26 +498,26 @@
             this.LastPlayedColumn,
             this.DisabledModsColumn,
             this.CommentColumn});
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle16.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle16.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle16.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -578,8 +578,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -1126,16 +1126,15 @@
             // StatsScanCustomResourcesButton
             // 
             this.StatsScanCustomResourcesButton.AutoSize = true;
-            this.StatsScanCustomResourcesButton.Image = global::AngelLoader.Properties.Resources.ScanSmall;
-            this.StatsScanCustomResourcesButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 200);
             this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
+            this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(154, 23);
             this.StatsScanCustomResourcesButton.TabIndex = 12;
             this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
-            this.StatsScanCustomResourcesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             this.StatsScanCustomResourcesButton.Click += new System.EventHandler(this.RescanCustomResourcesButton_Click);
+            this.StatsScanCustomResourcesButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // StatsCheckBoxesPanel
             // 
@@ -1308,51 +1307,47 @@
             // EditFMScanForReadmesButton
             // 
             this.EditFMScanForReadmesButton.AutoSize = true;
-            this.EditFMScanForReadmesButton.Image = global::AngelLoader.Properties.Resources.ScanSmall;
-            this.EditFMScanForReadmesButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 248);
             this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
+            this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(128, 23);
             this.EditFMScanForReadmesButton.TabIndex = 31;
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
-            this.EditFMScanForReadmesButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.EditFMScanForReadmesButton_Click);
+            this.EditFMScanForReadmesButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMScanReleaseDateButton
             // 
-            this.EditFMScanReleaseDateButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
-            this.EditFMScanReleaseDateButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.EditFMScanReleaseDateButton.Location = new System.Drawing.Point(136, 105);
             this.EditFMScanReleaseDateButton.Name = "EditFMScanReleaseDateButton";
             this.EditFMScanReleaseDateButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanReleaseDateButton.TabIndex = 22;
             this.EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
             this.EditFMScanReleaseDateButton.Click += new System.EventHandler(this.EditFMScanReleaseDateButton_Click);
+            this.EditFMScanReleaseDateButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
-            this.EditFMScanAuthorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.EditFMScanAuthorButton.Location = new System.Drawing.Point(493, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
             this.EditFMScanAuthorButton.UseVisualStyleBackColor = true;
             this.EditFMScanAuthorButton.Click += new System.EventHandler(this.EditFMScanAuthorButton_Click);
+            this.EditFMScanAuthorButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.BackgroundImage = global::AngelLoader.Properties.Resources.ScanSmall;
-            this.EditFMScanTitleButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.EditFMScanTitleButton.Location = new System.Drawing.Point(493, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
             this.EditFMScanTitleButton.UseVisualStyleBackColor = true;
             this.EditFMScanTitleButton.Click += new System.EventHandler(this.EditFMScanTitleButton_Click);
+            this.EditFMScanTitleButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
             // 
             // EditFMAltTitlesArrowButton
             // 
@@ -1594,16 +1589,16 @@
             this.AddRemoveTagFLP.Controls.Add(this.RemoveTagButton);
             this.AddRemoveTagFLP.Controls.Add(this.AddTagFromListButton);
             this.AddRemoveTagFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.AddRemoveTagFLP.Location = new System.Drawing.Point(-11, 248);
+            this.AddRemoveTagFLP.Location = new System.Drawing.Point(0, 248);
             this.AddRemoveTagFLP.Name = "AddRemoveTagFLP";
-            this.AddRemoveTagFLP.Size = new System.Drawing.Size(536, 24);
+            this.AddRemoveTagFLP.Size = new System.Drawing.Size(525, 24);
             this.AddRemoveTagFLP.TabIndex = 3;
             // 
             // RemoveTagButton
             // 
             this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RemoveTagButton.AutoSize = true;
-            this.RemoveTagButton.Location = new System.Drawing.Point(386, 0);
+            this.RemoveTagButton.Location = new System.Drawing.Point(375, 0);
             this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
             this.RemoveTagButton.Name = "RemoveTagButton";
             this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -1617,7 +1612,7 @@
             // 
             this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagFromListButton.AutoSize = true;
-            this.AddTagFromListButton.Location = new System.Drawing.Point(242, 0);
+            this.AddTagFromListButton.Location = new System.Drawing.Point(231, 0);
             this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
             this.AddTagFromListButton.Name = "AddTagFromListButton";
             this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
