@@ -176,17 +176,17 @@ namespace AngelLoader.Forms
         // Single-threading it would also allow it to be packed away in a custom control.
         private bool _repeatButtonRunning;
 
-        private void FilterBarScrollButtons_Click(object sender, EventArgs e)
+        internal void FilterBarScrollButtons_Click(object sender, EventArgs e)
         {
             if (_repeatButtonRunning) return;
-            int direction = sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
+            int direction = sender == FilterBarLLScrollButtons.LeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
             InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
         }
 
-        private void FilterBarScrollButtons_MouseDown(object sender, MouseEventArgs e)
+        internal void FilterBarScrollButtons_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
-            RunRepeatButton(sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT);
+            RunRepeatButton(sender == FilterBarLLScrollButtons.LeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT);
         }
 
         private void RunRepeatButton(int direction)
@@ -206,14 +206,16 @@ namespace AngelLoader.Forms
             });
         }
 
-        private void FilterBarScrollButtons_EnabledChanged(object sender, EventArgs e) => _repeatButtonRunning = false;
+        internal void FilterBarScrollButtons_EnabledChanged(object sender, EventArgs e) => _repeatButtonRunning = false;
 
-        private void FilterBarScrollLeftButton_MouseUp(object sender, MouseEventArgs e) => _repeatButtonRunning = false;
+        internal void FilterBarScrollButtons_MouseUp(object sender, MouseEventArgs e) => _repeatButtonRunning = false;
 
-        private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
+        internal void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
         {
             var senderButton = (Button)sender;
-            var otherButton = senderButton == FilterBarScrollLeftButton ? FilterBarScrollRightButton : FilterBarScrollLeftButton;
+            var otherButton = senderButton == FilterBarLLScrollButtons.LeftButton
+                ? FilterBarLLScrollButtons.RightButton
+                : FilterBarLLScrollButtons.LeftButton;
             if (!senderButton.Visible && otherButton.Visible) _repeatButtonRunning = false;
         }
 
@@ -288,6 +290,8 @@ namespace AngelLoader.Forms
 
         private IKeyboardMouseEvents AppMouseKeyHook;
 
+        private readonly int _fmsDGVContainerWidthDiff;
+
         #region Form (init, events, close)
 
         // InitializeComponent() only - for everything else use Init() below
@@ -347,6 +351,8 @@ namespace AngelLoader.Forms
             #endregion
 #endif
 #endif
+
+            _fmsDGVContainerWidthDiff = FMsDGV.Parent.Width - FMsDGV.Width;
         }
 
         #region Mouse hook
@@ -3169,7 +3175,12 @@ namespace AngelLoader.Forms
         {
             MainSplitContainer.ResetSplitterPercent();
             TopSplitContainer.ResetSplitterPercent();
-            if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
+
+            if (FilterBarLLScrollButtons.Constructed &&
+                (FilterBarLLScrollButtons.LeftButton.Visible || FilterBarLLScrollButtons.RightButton.Visible))
+            {
+                SetFilterBarScrollButtons();
+            }
         }
 
         #region Tags tab
@@ -3620,32 +3631,37 @@ namespace AngelLoader.Forms
             var flp = FilterBarFLP;
             void ShowLeft()
             {
-                FilterBarScrollLeftButton.Location = new Point(flp.Location.X, flp.Location.Y + 1);
-                FilterBarScrollLeftButton.Show();
+                FilterBarLLScrollButtons.Construct(this, TopSplitContainer.Panel1);
+                FilterBarLLScrollButtons.LeftButton.Location = new Point(flp.Location.X, flp.Location.Y + 1);
+                FilterBarLLScrollButtons.LeftButton.Show();
             }
 
             void ShowRight()
             {
+                FilterBarLLScrollButtons.Construct(this, TopSplitContainer.Panel1);
                 // Don't set it based on the filter bar width and location, otherwise it gets it slightly wrong
                 // the first time
-                FilterBarScrollRightButton.Location = new Point(
-                    RefreshAreaToolStrip.Location.X - FilterBarScrollRightButton.Width - 4,
+                FilterBarLLScrollButtons.RightButton.Location = new Point(
+                    RefreshAreaToolStrip.Location.X - FilterBarLLScrollButtons.RightButton.Width - 4,
                     flp.Location.Y + 1);
-                FilterBarScrollRightButton.Show();
+                FilterBarLLScrollButtons.RightButton.Show();
             }
 
             var hs = FilterBarFLP.HorizontalScroll;
             if (!hs.Visible)
             {
-                FilterBarScrollLeftButton.Hide();
-                FilterBarScrollRightButton.Hide();
+                if (FilterBarLLScrollButtons.Constructed)
+                {
+                    FilterBarLLScrollButtons.LeftButton.Hide();
+                    FilterBarLLScrollButtons.RightButton.Hide();
+                }
             }
             // Keep order: Show, Hide
             // Otherwise there's a small hiccup with the buttons
             else if (hs.Value == 0)
             {
                 ShowRight();
-                FilterBarScrollLeftButton.Hide();
+                if (FilterBarLLScrollButtons.Constructed) FilterBarLLScrollButtons.LeftButton.Hide();
                 using (new DisableEvents(this))
                 {
                     // Disgusting! But necessary to patch up heisenbuggy behavior with this crap. This is really
@@ -3660,7 +3676,7 @@ namespace AngelLoader.Forms
             else if (hs.Value >= (hs.Maximum + 1) - hs.LargeChange)
             {
                 ShowLeft();
-                FilterBarScrollRightButton.Hide();
+                if (FilterBarLLScrollButtons.Constructed) FilterBarLLScrollButtons.RightButton.Hide();
                 using (new DisableEvents(this))
                 {
                     // Ditto the above
@@ -4107,5 +4123,8 @@ namespace AngelLoader.Forms
         private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton.Enabled, e);
 
         private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons(((Button)sender).Enabled, e);
+
+        // Dumb hack to stop FMsDGV from screwing up when you resize it, even though it's supposed to be anchored.
+        private void TopSplitContainer_Panel1_SizeChanged(object sender, EventArgs e) => FMsDGV.Width = FMsDGV.Parent.Width - _fmsDGVContainerWidthDiff;
     }
 }

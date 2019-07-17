@@ -54,8 +54,6 @@ namespace AngelLoader.Forms
             EverythingPanel = new Panel();
             MainSplitContainer = new SplitContainerCustom();
             TopSplitContainer = new SplitContainerCustom();
-            FilterBarScrollRightButton = new ArrowButton();
-            FilterBarScrollLeftButton = new ArrowButton();
             FMsDGV = new DataGridViewCustom();
             GameTypeColumn = new DataGridViewImageColumn();
             InstalledColumn = new DataGridViewImageColumn();
@@ -364,13 +362,12 @@ namespace AngelLoader.Forms
             // TopSplitContainer.Panel1
             // 
             TopSplitContainer.Panel1.BackColor = SystemColors.Control;
-            TopSplitContainer.Panel1.Controls.Add(FilterBarScrollRightButton);
-            TopSplitContainer.Panel1.Controls.Add(FilterBarScrollLeftButton);
             TopSplitContainer.Panel1.Controls.Add(FMsDGV);
             TopSplitContainer.Panel1.Controls.Add(FilterBarFLP);
             TopSplitContainer.Panel1.Controls.Add(RefreshAreaToolStrip);
             TopSplitContainer.Panel1.Controls.Add(ResetLayoutButton);
             TopSplitContainer.Panel1.Controls.Add(GamesTabControl);
+            TopSplitContainer.Panel1.SizeChanged += TopSplitContainer_Panel1_SizeChanged;
             // 
             // TopSplitContainer.Panel2
             // 
@@ -382,34 +379,6 @@ namespace AngelLoader.Forms
             TopSplitContainer.Size = new Size(1671, 309);
             TopSplitContainer.SplitterDistance = 1116;
             TopSplitContainer.TabIndex = 0;
-            // 
-            // FilterBarScrollRightButton
-            // 
-            FilterBarScrollRightButton.FlatStyle = FlatStyle.Flat;
-            FilterBarScrollRightButton.ArrowDirection = Direction.Right;
-            FilterBarScrollRightButton.Size = new Size(14, 24);
-            FilterBarScrollRightButton.TabIndex = 10;
-            FilterBarScrollRightButton.UseVisualStyleBackColor = true;
-            FilterBarScrollRightButton.Visible = false;
-            FilterBarScrollRightButton.EnabledChanged += FilterBarScrollButtons_EnabledChanged;
-            FilterBarScrollRightButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
-            FilterBarScrollRightButton.Click += FilterBarScrollButtons_Click;
-            FilterBarScrollRightButton.MouseDown += FilterBarScrollButtons_MouseDown;
-            FilterBarScrollRightButton.MouseUp += FilterBarScrollLeftButton_MouseUp;
-            // 
-            // FilterBarScrollLeftButton
-            // 
-            FilterBarScrollLeftButton.FlatStyle = FlatStyle.Flat;
-            FilterBarScrollLeftButton.ArrowDirection = Direction.Left;
-            FilterBarScrollLeftButton.Size = new Size(14, 24);
-            FilterBarScrollLeftButton.TabIndex = 2;
-            FilterBarScrollLeftButton.UseVisualStyleBackColor = true;
-            FilterBarScrollLeftButton.Visible = false;
-            FilterBarScrollLeftButton.EnabledChanged += FilterBarScrollButtons_EnabledChanged;
-            FilterBarScrollLeftButton.VisibleChanged += FilterBarScrollButtons_VisibleChanged;
-            FilterBarScrollLeftButton.Click += FilterBarScrollButtons_Click;
-            FilterBarScrollLeftButton.MouseDown += FilterBarScrollButtons_MouseDown;
-            FilterBarScrollLeftButton.MouseUp += FilterBarScrollLeftButton_MouseUp;
             // 
             // FMsDGV
             // 
