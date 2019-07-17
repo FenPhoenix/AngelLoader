@@ -5,8 +5,7 @@
 
 /*
  TODO: Images to switch to drawing:
- -See if Scan_14 and Scan_24 are feasible to draw (with their rounded handles)
- -If so, then draw the zoom images
+ -Zoom images
  -Install / uninstall
  -Green CheckCircle
  -See if we can draw and/or just make these more efficient:
