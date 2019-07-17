@@ -248,6 +248,8 @@ namespace AngelLoader.Forms
             BottomRightButtonsFLP.Controls.Add(ImportButton);
             BottomRightButtonsFLP.FlowDirection = FlowDirection.RightToLeft;
             BottomRightButtonsFLP.Location = new Point(1443, 0);
+            // Needs width to be anchored correctly
+            BottomRightButtonsFLP.Width = 226;
             BottomRightButtonsFLP.TabIndex = 37;
             // 
             // SettingsButton
