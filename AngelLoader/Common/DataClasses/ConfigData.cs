@@ -12,6 +12,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal readonly List<string> FMArchivePaths = new List<string>();
         internal bool FMArchivePathsIncludeSubfolders = false;
+        // TODO: Check all code to make sure it's safe for these to be null, then make them null by default
         internal string FMsBackupPath = "";
 
         internal string T1Exe = "";
@@ -138,12 +139,11 @@ namespace AngelLoader.Common.DataClasses
 
         internal TopRightTabsData TopRightTabsData = new TopRightTabsData();
 
-        internal float _readmeZoomFactor = 1;
-
         #endregion
 
         #region Readme box
 
+        internal float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f); }
         internal bool ReadmeUseFixedWidthFont = false;
 
