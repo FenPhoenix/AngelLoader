@@ -462,7 +462,6 @@
     <Content Include="Resources\QuestionMarkCircleRed.png" />
     <Content Include="Resources\Refresh.png" />
     <Content Include="Resources\Scan_14.png" />
-    <Content Include="Resources\Scan_24.png" />
     <Content Include="Resources\Settings_24.png" />
     <Content Include="Resources\Show_Unsupported.png" />
     <Content Include="Resources\StarRating\Stars0.png" />

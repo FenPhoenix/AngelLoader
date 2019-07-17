@@ -4104,5 +4104,7 @@ namespace AngelLoader.Forms
         private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintReadmeFullScreenButton(ReadmeFullScreenButton.Enabled, e);
 
         private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintResetLayoutButton(ResetLayoutButton.Enabled, e);
+
+        private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton.Enabled, e);
     }
 }

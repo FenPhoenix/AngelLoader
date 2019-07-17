@@ -223,15 +223,13 @@ namespace AngelLoader.Forms
             // ScanAllFMsButton
             // 
             ScanAllFMsButton.AutoSize = true;
-            ScanAllFMsButton.Image = Resources.Scan;
-            ScanAllFMsButton.ImageAlign = ContentAlignment.MiddleLeft;
             ScanAllFMsButton.Margin = new Padding(11, 3, 3, 3);
-            ScanAllFMsButton.Padding = new Padding(6, 0, 6, 0);
+            ScanAllFMsButton.Padding = new Padding(33, 0, 6, 0);
             ScanAllFMsButton.Height = 36;
             ScanAllFMsButton.TabIndex = 59;
-            ScanAllFMsButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             ScanAllFMsButton.UseVisualStyleBackColor = true;
             ScanAllFMsButton.Click += ScanAllFMsButton_Click;
+            ScanAllFMsButton.Paint += ScanAllFMsButton_Paint;
             // 
             // BottomPanel
             // 

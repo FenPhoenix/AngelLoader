@@ -72,7 +72,9 @@ namespace AngelLoader.CustomControls
             e.Graphics.FillRectangles(enabled ? Brushes.Black : SystemBrushes.ControlDark, new[] { ham1, ham2, ham3 });
         }
 
-        private static readonly Pen webSearchCirclePen = new Pen(Color.FromArgb(4, 125, 202), 2);
+        private static readonly Color AL_LightBlue = Color.FromArgb(4, 125, 202);
+
+        private static readonly Pen webSearchCirclePen = new Pen(AL_LightBlue, 2);
         private static readonly Pen webSearchCircleDisabledPen = new Pen(SystemColors.ControlDark, 2);
         private static readonly Rectangle webSearchRect1 = new Rectangle(12, 11, 19, 2);
         private static readonly RectangleF webSearchRect2 = new RectangleF(10, 16.5f, 23, 2);
@@ -145,6 +147,52 @@ namespace AngelLoader.CustomControls
             e.Graphics.DrawRectangle(pen, 3, 3, 16, 16);
             e.Graphics.DrawLine(pen, 13, 2, 13, 10);
             e.Graphics.DrawLine(pen, 2, 11, 18, 11);
+        }
+
+        private static readonly Pen scanPen = new Pen(AL_LightBlue, 3);
+        private static readonly Pen scanDisabledPen = new Pen(SystemColors.ControlDark, 3);
+        private static readonly Point[] scanPoints =
+        {
+            new Point(26, 25),
+            new Point(29, 28),
+            new Point(32, 25),
+            new Point(28, 21)
+        };
+        internal static void PaintScanAllFMsButton(bool enabled, PaintEventArgs e)
+        {
+            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            }
+
+            var pen = enabled ? scanPen : scanDisabledPen;
+
+            e.Graphics.DrawEllipse(pen, 11, 7, 18, 18);
+            e.Graphics.FillPolygon(pen.Brush, scanPoints);
+            e.Graphics.FillEllipse(pen.Brush, new RectangleF(29, 25, 4.5f, 4.5f));
+        }
+
+        private static readonly Pen scanSmallPen = new Pen(AL_LightBlue, 1);
+        private static readonly Pen scanSmallDisabledPen = new Pen(SystemColors.ControlDark, 1);
+        private static readonly Point[] scanSmallPoints =
+        {
+            new Point(26, 25),
+            new Point(29, 28),
+            new Point(32, 25),
+            new Point(28, 21)
+        };
+        internal static void PaintScanSmallButtons(bool enabled, PaintEventArgs e)
+        {
+            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            }
+
+            var pen = enabled ? scanPen : scanDisabledPen;
+
+            e.Graphics.DrawEllipse(pen, 3, 3, 6, 6);
+            //e.Graphics.FillPolygon(pen.Brush, scanPoints);
+            //e.Graphics.FillEllipse(pen.Brush, new RectangleF(29, 25, 4.5f, 4.5f));
         }
     }
 }
