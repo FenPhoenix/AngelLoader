@@ -1278,7 +1278,7 @@ namespace AngelLoader.Forms
             AddRemoveTagFLP.Controls.Add(AddTagFromListButton);
             AddRemoveTagFLP.FlowDirection = FlowDirection.RightToLeft;
             AddRemoveTagFLP.Location = new Point(0, 248);
-            AddRemoveTagFLP.Size = new Size(536, 24);
+            AddRemoveTagFLP.Size = new Size(525, 24);
             AddRemoveTagFLP.TabIndex = 3;
             // 
             // RemoveTagButton
