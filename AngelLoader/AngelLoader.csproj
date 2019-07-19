@@ -561,13 +561,7 @@ set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
 
 set fenGenArgs=-fmdata -language_t
 
-if $(ConfigurationName) == Release_Beta (
-set vArg= -version=beta
-) else if $(ConfigurationName) == Release_Public (
-set vArg= -version=public
-)
-
-%25FenGen%25 %25fenGenArgs%25 %25rmArg%25 %25vArg%25
+%25FenGen%25 %25fenGenArgs%25
 rem ---
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i</PreBuildEvent>
