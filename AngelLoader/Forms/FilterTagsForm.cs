@@ -98,9 +98,9 @@ namespace AngelLoader.Forms
             tv.ExpandAll();
             tv.SelectedNode = tv.Nodes[0];
 
-            FillTreeView(TagsFilter.AndTags);
-            FillTreeView(TagsFilter.OrTags);
-            FillTreeView(TagsFilter.NotTags);
+            if (TagsFilter.AndTags.Count > 0) FillTreeView(TagsFilter.AndTags);
+            if (TagsFilter.OrTags.Count > 0) FillTreeView(TagsFilter.OrTags);
+            if (TagsFilter.NotTags.Count > 0) FillTreeView(TagsFilter.NotTags);
         }
 
         #region Find box
