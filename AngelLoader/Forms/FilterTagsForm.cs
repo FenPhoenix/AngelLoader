@@ -65,6 +65,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(cab, LText.TagsFilterBox.ClearAllToolTip);
             }
 
+            // PERF_TODO: Lots of wasted time and duplicate sizing here
             AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll, AndButton.Width);
             OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny, OrButton.Width);
             NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude, NotButton.Width);
