@@ -286,6 +286,7 @@ namespace AngelLoader
                     WriteConfigIni(Config, Paths.ConfigIni);
 
                     // We have to do this here because we won't have before
+                    // PERF_TODO: I guess thread these the same as on regular startup?
                     FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true);
                     // Have to do all three here, because we skipped them all before
                     View = new MainForm();
@@ -445,9 +446,7 @@ namespace AngelLoader
 
         private static Error SetPaths()
         {
-            // PERF_TODO: 9ms. Could thread this, but catches:
-            // Would have to guard against both paths being the same, one path being a hard-link to the other,
-            // and possibly other exotic things.
+            // PERF: 9ms, but it's mostly IO. Darn.
             var t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
             var t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
             var t3Exists = !Config.T3Exe.IsEmpty() && File.Exists(Config.T3Exe);
