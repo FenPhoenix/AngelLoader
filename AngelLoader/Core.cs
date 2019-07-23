@@ -1237,23 +1237,6 @@ namespace AngelLoader
         {
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var instBasePath = GetFMInstallsBasePath(fm.Game);
-            if (fm.Installed)
-            {
-                if (instBasePath.IsWhiteSpace())
-                {
-                    var ex = new ArgumentException(@"FM installs base path is empty", nameof(instBasePath));
-                    Log(ex.Message, ex);
-                    throw ex;
-                }
-                else if (!Directory.Exists(instBasePath))
-                {
-                    var ex = new DirectoryNotFoundException("FM installs base path doesn't exist");
-                    Log(ex.Message, ex);
-                    throw ex;
-                }
-            }
-
             var readmeOnDisk = FMIsReallyInstalled(fm)
                 ? Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
