@@ -4122,5 +4122,7 @@ namespace AngelLoader.Forms
         private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton.Enabled, e);
 
         private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons(((Button)sender).Enabled, e);
+
+#pragma warning restore IDE0069 // Disposable fields should be disposed
     }
 }
