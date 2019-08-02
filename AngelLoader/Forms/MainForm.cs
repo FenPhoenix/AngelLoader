@@ -64,6 +64,10 @@ namespace AngelLoader.Forms
 {
     public partial class MainForm : Form, IView, IEventDisabler, IKeyPressDisabler, IMessageFilter
     {
+        // We don't need to dispose anything on here really, because the app closes when the form closes, so
+        // Windows will dispose it all anyway
+#pragma warning disable IDE0069 // Disposable fields should be disposed
+
         public object InvokeSync(Delegate method) => Invoke(method);
         public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
         public object InvokeAsync(Delegate method) => BeginInvoke(method);
