@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -7,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Common;
 
 namespace AngelLoader
 {
@@ -20,8 +18,15 @@ namespace AngelLoader
         private static void Main()
         {
             // Make this a single-instance application
-            var mutex = new Mutex(true, "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader", out bool result);
-            if (!result) return;
+            var mutex = new Mutex(true, "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader", out bool firstInstance);
+            if (!firstInstance)
+            {
+                // TODO: Command line args check for multi-instance start
+                // Send value to previous instance, where it will do something to handle the request
+                // For FM download / play request test
+
+                return;
+            }
 
             // Form.ctor initializes the config manager if it isn't already (specifically so it can get the DPI
             // awareness value). The config manager, like a bloated-ass five-hundred-foot-tall blubber-laden pig,
