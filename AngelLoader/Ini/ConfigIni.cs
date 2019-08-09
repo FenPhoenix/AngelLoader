@@ -351,19 +351,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterShowJunk="))
                 {
-                    config.Filter.ShowJunk = val.EqualsTrue();
+                    config.Filter.ShowUnsupported = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterShowJunk="))
                 {
-                    config.GameTabsState.T1Filter.ShowJunk = val.EqualsTrue();
+                    config.GameTabsState.T1Filter.ShowUnsupported = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterShowJunk="))
                 {
-                    config.GameTabsState.T2Filter.ShowJunk = val.EqualsTrue();
+                    config.GameTabsState.T2Filter.ShowUnsupported = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterShowJunk="))
                 {
-                    config.GameTabsState.T3Filter.ShowJunk = val.EqualsTrue();
+                    config.GameTabsState.T3Filter.ShowUnsupported = val.EqualsTrue();
                 }
 
                 #endregion
@@ -953,7 +953,7 @@ namespace AngelLoader.Ini
                     sw.WriteLine(p + "FilterRatingFrom=" + filter.RatingFrom);
                     sw.WriteLine(p + "FilterRatingTo=" + filter.RatingTo);
 
-                    sw.WriteLine(p + "FilterShowJunk=" + filter.ShowJunk);
+                    sw.WriteLine(p + "FilterShowJunk=" + filter.ShowUnsupported);
 
                     #region Tags
 

@@ -186,7 +186,7 @@ namespace AngelLoader.Common.DataClasses
             _lastPlayedFrom = null;
             _lastPlayedTo = null;
             Finished = FinishedState.Null;
-            ShowJunk = false;
+            ShowUnsupported = false;
         }
 
         internal bool IsEmpty()
@@ -202,7 +202,7 @@ namespace AngelLoader.Common.DataClasses
                    RatingFrom == -1 &&
                    RatingTo == 10 &&
                    Finished == FinishedState.Null &&
-                   ShowJunk;
+                   ShowUnsupported;
         }
 
         internal string Title = "";
@@ -288,7 +288,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal FinishedState Finished = FinishedState.Null;
 
-        internal bool ShowJunk;
+        internal bool ShowUnsupported;
 
         internal void DeepCopyTo(Filter dest)
         {
@@ -296,7 +296,7 @@ namespace AngelLoader.Common.DataClasses
             dest.Title = Title;
             dest.Author = Author;
             dest.SetRatingFromAndTo(RatingFrom, RatingTo);
-            dest.ShowJunk = ShowJunk;
+            dest.ShowUnsupported = ShowUnsupported;
 
             var relFrom = ReleaseDateFrom == null
                 ? (DateTime?)null

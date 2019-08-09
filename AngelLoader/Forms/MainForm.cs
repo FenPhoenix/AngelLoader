@@ -1336,7 +1336,7 @@ namespace AngelLoader.Forms
                 {
                     FilterTitleTextBox.Text = filter.Title;
                     FilterAuthorTextBox.Text = filter.Author;
-                    FilterShowUnsupportedButton.Checked = filter.ShowJunk;
+                    FilterShowUnsupportedButton.Checked = filter.ShowUnsupported;
 
                     FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
 
@@ -1711,7 +1711,7 @@ namespace AngelLoader.Forms
             if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Finished;
             if (FilterByUnfinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Unfinished;
 
-            FMsDGV.Filter.ShowJunk = FilterShowUnsupportedButton.Checked;
+            FMsDGV.Filter.ShowUnsupported = FilterShowUnsupportedButton.Checked;
 
             #endregion
 
@@ -1736,7 +1736,7 @@ namespace AngelLoader.Forms
                 (FMsDGV.Filter.Finished == FinishedState.Null ||
                  ((FMsDGV.Filter.Finished & FinishedState.Finished) == FinishedState.Finished &&
                  (FMsDGV.Filter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished)) &&
-                FMsDGV.Filter.ShowJunk)
+                FMsDGV.Filter.ShowUnsupported)
             {
                 FMsDGV.Filtered = false;
 
@@ -1783,7 +1783,7 @@ namespace AngelLoader.Forms
 
             #region Show junk
 
-            if (!FMsDGV.Filter.ShowJunk)
+            if (!FMsDGV.Filter.ShowUnsupported)
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
@@ -2396,16 +2396,6 @@ namespace AngelLoader.Forms
             }
 
             await InstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
-        }
-
-        // TODO: This isn't hooked up to anything, but things seem to work fine. Do I need this?!
-        private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
-        {
-            if (ColumnWidthSaveDisabled) return;
-
-            if (Config.Columns.Count == 0) return;
-            //Trace.WriteLine(e.Column.Index.ToString());
-            Config.Columns[e.Column.Index].Width = e.Column.Width;
         }
 
         #endregion
