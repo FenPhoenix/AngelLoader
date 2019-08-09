@@ -32,6 +32,7 @@ namespace AngelLoader
             // awareness value). The config manager, like a bloated-ass five-hundred-foot-tall blubber-laden pig,
             // takes 32ms to initialize(!). Rather than letting Form.ctor do it serially, we're going to do it in
             // the background while other stuff runs, thus chopping off even more startup time.
+            // AppSettings is just a dummy value whose retrieval will cause the config manager to initialize.
             Task configTask = Task.Run(() => System.Configuration.ConfigurationManager.AppSettings);
 
             // We need to clear this because FMScanner doesn't have a startup version
@@ -40,7 +41,7 @@ namespace AngelLoader
             // We don't need to clear this log because LogStartup says append: false
             LogStartup(Application.ProductVersion + " Started session");
 
-            // Do this after the startup log so we don't try to log something at the same time as the un-lock-
+            // Do this after the startup log so we don't try to log something at the same time as the non-lock-
             // protected startup log
             AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
             {
