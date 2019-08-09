@@ -51,16 +51,16 @@ namespace AngelLoader.Forms
         void RefreshFMsListKeepSelection();
 
         Task SortAndSetFilter(SelectedFM selFM = null, bool forceDisplayFM = false, bool keepSelection = false,
-            bool gameTabSwitch = false);
+                              bool gameTabSwitch = false);
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)
-            AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon,
-                bool showDontAskAgain, string yes, string no);
+        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
+                                        string yes, string no);
 
         (bool Cancel, bool Continue, bool DontAskAgain)
-            AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
-                bool showDontAskAgain, string yes, string no, string cancel);
+        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
+                                             string yes, string no, string cancel);
 
         void ChangeReadmeBoxFont(bool useFixed);
     }

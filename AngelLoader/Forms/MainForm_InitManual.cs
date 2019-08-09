@@ -157,9 +157,9 @@ namespace AngelLoader.Forms
             PatchOpenFMFolderButton = new Button();
             PatchFMNotInstalledLabel = new Label();
             ReadmeFullScreenButton = new Button();
-            ZoomInButton = new Button();
-            ZoomOutButton = new Button();
-            ResetZoomButton = new Button();
+            ReadmeZoomInButton = new Button();
+            ReadmeZoomOutButton = new Button();
+            ReadmeResetZoomButton = new Button();
             ChooseReadmeComboBox = new ComboBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
@@ -346,9 +346,9 @@ namespace AngelLoader.Forms
             // 
             MainSplitContainer.Panel2.BackColor = SystemColors.Control;
             MainSplitContainer.Panel2.Controls.Add(ReadmeFullScreenButton);
-            MainSplitContainer.Panel2.Controls.Add(ZoomInButton);
-            MainSplitContainer.Panel2.Controls.Add(ZoomOutButton);
-            MainSplitContainer.Panel2.Controls.Add(ResetZoomButton);
+            MainSplitContainer.Panel2.Controls.Add(ReadmeZoomInButton);
+            MainSplitContainer.Panel2.Controls.Add(ReadmeZoomOutButton);
+            MainSplitContainer.Panel2.Controls.Add(ReadmeResetZoomButton);
             MainSplitContainer.Panel2.Controls.Add(ChooseReadmeComboBox);
             MainSplitContainer.Panel2.Controls.Add(ReadmeRichTextBox);
             MainSplitContainer.Panel2MinSize = 38;
@@ -1412,46 +1412,46 @@ namespace AngelLoader.Forms
             // 
             // ZoomInButton
             // 
-            ZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ZoomInButton.BackgroundImage = Images.ZoomIn;
-            ZoomInButton.BackgroundImageLayout = ImageLayout.Zoom;
-            ZoomInButton.FlatAppearance.BorderSize = 0;
-            ZoomInButton.FlatStyle = FlatStyle.Flat;
-            ZoomInButton.Location = new Point(1534, 8);
-            ZoomInButton.Size = new Size(20, 20);
-            ZoomInButton.TabIndex = 52;
-            ZoomInButton.UseVisualStyleBackColor = false;
-            ZoomInButton.Visible = false;
-            ZoomInButton.Click += ZoomInButton_Click;
+            ReadmeZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ReadmeZoomInButton.BackgroundImage = Images.ZoomIn;
+            ReadmeZoomInButton.BackgroundImageLayout = ImageLayout.Zoom;
+            ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
+            ReadmeZoomInButton.FlatStyle = FlatStyle.Flat;
+            ReadmeZoomInButton.Location = new Point(1534, 8);
+            ReadmeZoomInButton.Size = new Size(20, 20);
+            ReadmeZoomInButton.TabIndex = 52;
+            ReadmeZoomInButton.UseVisualStyleBackColor = false;
+            ReadmeZoomInButton.Visible = false;
+            ReadmeZoomInButton.Click += ReadmeZoomInButton_Click;
             // 
             // ZoomOutButton
             // 
-            ZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ZoomOutButton.BackColor = SystemColors.Window;
-            ZoomOutButton.BackgroundImage = Images.ZoomOut;
-            ZoomOutButton.BackgroundImageLayout = ImageLayout.Zoom;
-            ZoomOutButton.FlatAppearance.BorderSize = 0;
-            ZoomOutButton.FlatStyle = FlatStyle.Flat;
-            ZoomOutButton.Location = new Point(1558, 8);
-            ZoomOutButton.Size = new Size(20, 20);
-            ZoomOutButton.TabIndex = 53;
-            ZoomOutButton.UseVisualStyleBackColor = false;
-            ZoomOutButton.Visible = false;
-            ZoomOutButton.Click += ZoomOutButton_Click;
+            ReadmeZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ReadmeZoomOutButton.BackColor = SystemColors.Window;
+            ReadmeZoomOutButton.BackgroundImage = Images.ZoomOut;
+            ReadmeZoomOutButton.BackgroundImageLayout = ImageLayout.Zoom;
+            ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
+            ReadmeZoomOutButton.FlatStyle = FlatStyle.Flat;
+            ReadmeZoomOutButton.Location = new Point(1558, 8);
+            ReadmeZoomOutButton.Size = new Size(20, 20);
+            ReadmeZoomOutButton.TabIndex = 53;
+            ReadmeZoomOutButton.UseVisualStyleBackColor = false;
+            ReadmeZoomOutButton.Visible = false;
+            ReadmeZoomOutButton.Click += ReadmeZoomOutButton_Click;
             // 
             // ResetZoomButton
             // 
-            ResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ResetZoomButton.BackgroundImage = Images.ZoomReset;
-            ResetZoomButton.BackgroundImageLayout = ImageLayout.Zoom;
-            ResetZoomButton.FlatAppearance.BorderSize = 0;
-            ResetZoomButton.FlatStyle = FlatStyle.Flat;
-            ResetZoomButton.Location = new Point(1582, 8);
-            ResetZoomButton.Size = new Size(20, 20);
-            ResetZoomButton.TabIndex = 54;
-            ResetZoomButton.UseVisualStyleBackColor = false;
-            ResetZoomButton.Visible = false;
-            ResetZoomButton.Click += ResetZoomButton_Click;
+            ReadmeResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ReadmeResetZoomButton.BackgroundImage = Images.ZoomReset;
+            ReadmeResetZoomButton.BackgroundImageLayout = ImageLayout.Zoom;
+            ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
+            ReadmeResetZoomButton.FlatStyle = FlatStyle.Flat;
+            ReadmeResetZoomButton.Location = new Point(1582, 8);
+            ReadmeResetZoomButton.Size = new Size(20, 20);
+            ReadmeResetZoomButton.TabIndex = 54;
+            ReadmeResetZoomButton.UseVisualStyleBackColor = false;
+            ReadmeResetZoomButton.Visible = false;
+            ReadmeResetZoomButton.Click += ReadmeResetZoomButton_Click;
 
             #endregion
             // 

@@ -68,10 +68,265 @@ namespace AngelLoader.Forms
         // Windows will dispose it all anyway
 #pragma warning disable IDE0069 // Disposable fields should be disposed
 
+        #region Test / debug
+
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+
+        private void TestButton_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void Test2Button_Click(object sender, EventArgs e)
+        {
+            Width = 1305;
+            Height = 750;
+        }
+
+#endif
+
+        #endregion
+
+        #region IView implementations
+
         public object InvokeSync(Delegate method) => Invoke(method);
         public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
         public object InvokeAsync(Delegate method) => BeginInvoke(method);
         public object InvokeAsync(Delegate method, params object[] args) => BeginInvoke(method, args);
+
+        public int CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
+        public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
+
+        public void Block(bool block)
+        {
+            if (ViewBlockingPanel == null)
+            {
+                ViewBlockingPanel = new TransparentPanel { Visible = false };
+                Controls.Add(ViewBlockingPanel);
+                ViewBlockingPanel.Dock = DockStyle.Fill;
+            }
+
+            try
+            {
+                // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
+                this.SuspendDrawing();
+                ViewBlocked = block;
+                ViewBlockingPanel.Visible = block;
+                ViewBlockingPanel.BringToFront();
+            }
+            finally
+            {
+                this.ResumeDrawing();
+            }
+        }
+
+        public void Localize() => Localize(startup: false);
+
+        public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
+
+        public void ShowInstallUninstallButton(bool enabled)
+        {
+            if (enabled)
+            {
+                if (!InstallUninstallFMLLButton.Constructed)
+                {
+                    InstallUninstallFMLLButton.Construct(this, BottomLeftButtonsFLP);
+                    InstallUninstallFMLLButton.Localize(false);
+                }
+                InstallUninstallFMLLButton.Show();
+            }
+            else
+            {
+                InstallUninstallFMLLButton.Hide();
+            }
+        }
+
+        public void ChangeGameOrganization(bool startup = false)
+        {
+            if (Config.GameOrganization == GameOrganization.OneList)
+            {
+                Config.SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+            }
+            else // ByTab
+            {
+                // In case they don't match
+                Config.Filter.Games = Config.GameTab;
+
+                Config.GameTabsState.DeepCopyTo(FMsDGV.GameTabsState);
+
+                switch (Config.GameTab)
+                {
+                    case Game.Thief1:
+                        FMsDGV.GameTabsState.T1SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.T1Filter.DeepCopyTo(FMsDGV.Filter);
+                        break;
+                    case Game.Thief2:
+                        FMsDGV.GameTabsState.T2SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.T2Filter.DeepCopyTo(FMsDGV.Filter);
+                        break;
+                    case Game.Thief3:
+                        FMsDGV.GameTabsState.T3SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.T3Filter.DeepCopyTo(FMsDGV.Filter);
+                        break;
+                }
+
+                using (new DisableEvents(this))
+                {
+                    GamesTabControl.SelectedTab =
+                        Config.GameTab == Game.Thief2 ? Thief2TabPage :
+                        Config.GameTab == Game.Thief3 ? Thief3TabPage :
+                        Thief1TabPage;
+                }
+            }
+
+            // Do these even if we're not in startup, because we may have changed the game organization mode
+            FilterByThief1Button.Checked = (Config.Filter.Games & Game.Thief1) == Game.Thief1;
+            FilterByThief2Button.Checked = (Config.Filter.Games & Game.Thief2) == Game.Thief2;
+            FilterByThief3Button.Checked = (Config.Filter.Games & Game.Thief3) == Game.Thief3;
+
+            if (!startup) ChangeFilterControlsForGameType();
+        }
+
+        public void ShowFMsListZoomButtons(bool visible)
+        {
+            FMsListZoomInButton.Visible = visible;
+            FMsListZoomOutButton.Visible = visible;
+            FMsListResetZoomButton.Visible = visible;
+            FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
+        }
+
+        public void ClearAllUIAndInternalFilters()
+        {
+            using (new DisableEvents(this))
+            {
+                FilterBarFLP.SuspendDrawing();
+                try
+                {
+                    bool oneList = Config.GameOrganization == GameOrganization.OneList;
+                    if (oneList)
+                    {
+                        FilterByThief1Button.Checked = false;
+                        FilterByThief2Button.Checked = false;
+                        FilterByThief3Button.Checked = false;
+                    }
+                    FilterTitleTextBox.Text = "";
+                    FilterAuthorTextBox.Text = "";
+
+                    FilterByReleaseDateButton.Checked = false;
+                    FilterByReleaseDateLabel.Visible = false;
+
+                    FilterByLastPlayedButton.Checked = false;
+                    FilterByLastPlayedLabel.Visible = false;
+
+                    FilterByTagsButton.Checked = false;
+                    FilterByFinishedButton.Checked = false;
+                    FilterByUnfinishedButton.Checked = false;
+
+                    FilterByRatingButton.Checked = false;
+                    FilterByRatingLabel.Visible = false;
+
+                    FilterShowUnsupportedButton.Checked = false;
+                    FMsDGV.Filter.Clear(oneList);
+                }
+                finally
+                {
+                    FilterBarFLP.ResumeDrawing();
+                }
+            }
+        }
+
+        #region Messageboxes
+
+        public bool AskToContinue(string message, string title, bool noIcon = false)
+        {
+            var result = MessageBox.Show(message, title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            return result == DialogResult.Yes;
+        }
+
+        public (bool Cancel, bool Continue)
+        AskToContinueWithCancel(string message, string title)
+        {
+            var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            return result == DialogResult.Cancel ? (true, false) : (false, result == DialogResult.Yes);
+        }
+
+        public (bool Cancel, bool Continue, bool DontAskAgain)
+        AskToContinueWithCancel_TD(string message, string title)
+        {
+            using (var d = new TaskDialog())
+            using (var yesButton = new TaskDialogButton(ButtonType.Yes))
+            using (var noButton = new TaskDialogButton(ButtonType.No))
+            using (var cancelButton = new TaskDialogButton(ButtonType.Cancel))
+            {
+                d.AllowDialogCancellation = true;
+                d.ButtonStyle = TaskDialogButtonStyle.Standard;
+                d.WindowTitle = title;
+                d.Content = message;
+                d.VerificationText = LText.AlertMessages.DontAskAgain;
+                d.Buttons.Add(yesButton);
+                d.Buttons.Add(noButton);
+                d.Buttons.Add(cancelButton);
+                var buttonClicked = d.ShowDialog();
+                var cancel = buttonClicked == null || buttonClicked == cancelButton;
+                var cont = buttonClicked == yesButton;
+                var dontAskAgain = d.IsVerificationChecked;
+                return (cancel, cont, dontAskAgain);
+            }
+        }
+
+        public (bool Cancel, bool Continue, bool DontAskAgain)
+        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
+            bool showDontAskAgain, string yes, string no, string cancel)
+        {
+            using (var d = new TaskDialog())
+            using (var yesButton = new TaskDialogButton(yes))
+            using (var noButton = new TaskDialogButton(no))
+            using (var cancelButton = new TaskDialogButton(cancel))
+            {
+                d.AllowDialogCancellation = true;
+                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
+                d.ButtonStyle = TaskDialogButtonStyle.Standard;
+                d.WindowTitle = title;
+                d.Content = message;
+                if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
+                d.Buttons.Add(yesButton);
+                d.Buttons.Add(noButton);
+                d.Buttons.Add(cancelButton);
+                var buttonClicked = d.ShowDialog();
+                var canceled = buttonClicked == null || buttonClicked == cancelButton;
+                var cont = buttonClicked == yesButton;
+                var dontAskAgain = d.IsVerificationChecked;
+                return (canceled, cont, dontAskAgain);
+            }
+        }
+
+        public (bool Cancel, bool DontAskAgain)
+        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
+            string yes, string no)
+        {
+            using (var d = new TaskDialog())
+            using (var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes))
+            using (var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No))
+            {
+                d.AllowDialogCancellation = true;
+                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
+                d.ButtonStyle = TaskDialogButtonStyle.Standard;
+                d.WindowTitle = title;
+                d.Content = message;
+                d.VerificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
+                d.Buttons.Add(yesButton);
+                d.Buttons.Add(noButton);
+                var buttonClicked = d.ShowDialog();
+                var cancel = buttonClicked != yesButton;
+                var dontAskAgain = d.IsVerificationChecked;
+                return (cancel, dontAskAgain);
+            }
+        }
+
+        public void ShowAlert(string message, string title) => MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+        #endregion
+
+        #endregion
 
         #region Private fields
 
@@ -172,9 +427,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        public int CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
-        public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
-
         #region Filter bar scroll RepeatButtons
 
         // TODO: Make this use a timer or something?
@@ -224,6 +476,8 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        #region Message filters and hooks
 
         // Keeping this for the mousewheel functionality because it passes on the message directly and so allows
         // any pressed keys to also be passed along to the control (allows Ctrl+Mousewheel for rtfbox zoom f.ex.)
@@ -294,67 +548,6 @@ namespace AngelLoader.Forms
 
         private IKeyboardMouseEvents AppMouseKeyHook;
 
-        #region Form (init, events, close)
-
-        // InitializeComponent() only - for everything else use Init() below
-        public MainForm()
-        {
-#if DEBUG
-            // The debug path - the standard designer-generated method with tons of bloat and redundant value
-            // setting, immediate initialization, etc.
-            // This path supports working with the designer.
-            InitializeComponent();
-#else
-            // The fast path - a custom method where I generate the code by copying from the designer-generated
-            // method and tweaking as I see fit for speed and lazy-loading support.
-            // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
-
-            InitComponentManual();
-
-#if Release_Testing && !RT_StartupOnly
-            #region Init debug-only controls
-
-            TestButton = new Button();
-            Test2Button = new Button();
-            DebugLabel = new Label();
-            DebugLabel2 = new Label();
-
-            BottomPanel.Controls.Add(TestButton);
-            BottomPanel.Controls.Add(Test2Button);
-            BottomPanel.Controls.Add(DebugLabel);
-            BottomPanel.Controls.Add(DebugLabel2);
-
-            TestButton.Location = new Point(632, 0);
-            TestButton.Size = new Size(75, 22);
-            TestButton.TabIndex = 999;
-            TestButton.Text = "Test";
-            TestButton.UseVisualStyleBackColor = true;
-            TestButton.Click += TestButton_Click;
-
-            Test2Button.Location = new Point(632, 21);
-            Test2Button.Size = new Size(75, 22);
-            Test2Button.TabIndex = 999;
-            Test2Button.Text = "Test2";
-            Test2Button.UseVisualStyleBackColor = true;
-            Test2Button.Click += Test2Button_Click;
-
-            DebugLabel.AutoSize = true;
-            DebugLabel.Location = new Point(712, 8);
-            DebugLabel.Size = new Size(71, 13);
-            DebugLabel.TabIndex = 29;
-            DebugLabel.Text = "[DebugLabel]";
-
-            DebugLabel2.AutoSize = true;
-            DebugLabel2.Location = new Point(712, 24);
-            DebugLabel2.Size = new Size(77, 13);
-            DebugLabel2.TabIndex = 32;
-            DebugLabel2.Text = "[DebugLabel2]";
-
-            #endregion
-#endif
-#endif
-        }
-
         #region Mouse hook
 
         // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
@@ -417,7 +610,68 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        public void Block(bool block) => BlockView(block);
+        #endregion
+
+        #region Init / load / show
+
+        // InitializeComponent() only - for everything else use Init() below
+        public MainForm()
+        {
+#if DEBUG
+            // The debug path - the standard designer-generated method with tons of bloat and redundant value
+            // setting, immediate initialization, etc.
+            // This path supports working with the designer.
+            InitializeComponent();
+#else
+            // The fast path - a custom method where I generate the code by copying from the designer-generated
+            // method and tweaking as I see fit for speed and lazy-loading support.
+            // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
+
+            InitComponentManual();
+
+#if Release_Testing && !RT_StartupOnly
+            #region Init debug-only controls
+
+            TestButton = new Button();
+            Test2Button = new Button();
+            DebugLabel = new Label();
+            DebugLabel2 = new Label();
+
+            BottomPanel.Controls.Add(TestButton);
+            BottomPanel.Controls.Add(Test2Button);
+            BottomPanel.Controls.Add(DebugLabel);
+            BottomPanel.Controls.Add(DebugLabel2);
+
+            TestButton.Location = new Point(632, 0);
+            TestButton.Size = new Size(75, 22);
+            TestButton.TabIndex = 999;
+            TestButton.Text = "Test";
+            TestButton.UseVisualStyleBackColor = true;
+            TestButton.Click += TestButton_Click;
+
+            Test2Button.Location = new Point(632, 21);
+            Test2Button.Size = new Size(75, 22);
+            Test2Button.TabIndex = 999;
+            Test2Button.Text = "Test2";
+            Test2Button.UseVisualStyleBackColor = true;
+            Test2Button.Click += Test2Button_Click;
+
+            DebugLabel.AutoSize = true;
+            DebugLabel.Location = new Point(712, 8);
+            DebugLabel.Size = new Size(71, 13);
+            DebugLabel.TabIndex = 29;
+            DebugLabel.Text = "[DebugLabel]";
+
+            DebugLabel2.AutoSize = true;
+            DebugLabel2.Location = new Point(712, 24);
+            DebugLabel2.Size = new Size(77, 13);
+            DebugLabel2.TabIndex = 32;
+            DebugLabel2.Text = "[DebugLabel2]";
+
+            #endregion
+#endif
+#endif
+        }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
         // of nasty random behavior would happen. Not sure if that was because of something specific I was doing
@@ -518,8 +772,7 @@ namespace AngelLoader.Forms
                 SortMode = DataGridViewColumnSortMode.Programmatic
             };
 
-            UpdateRatingLists(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
-            UpdateRatingColumn(startup: true);
+            UpdateRatingListsAndColumn(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel, startup: true);
 
             FMsDGV.SetColumnData(Config.Columns);
 
@@ -587,14 +840,14 @@ namespace AngelLoader.Forms
 
             if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this, BottomLeftButtonsFLP);
 
-            #endregion
-
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
             {
                 TopSplitContainer.SetFullScreen(true, suspendResume: false);
                 SetTopRightCollapsedState();
             }
+
+            #endregion
 
             // Set these here because they depend on the splitter positions
             Localize(startup: true);
@@ -607,19 +860,11 @@ namespace AngelLoader.Forms
             ChangeGameOrganization(startup: true);
         }
 
+        // This one can't be multithreaded because it depends on the FMs list
         public async Task FinishInitAndShow()
         {
-            if (!Visible) await PreShow();
-        }
+            if (Visible) return;
 
-        public void ShowOnly()
-        {
-            if (!Visible) Show();
-        }
-
-        // This one can't be multithreaded because it depends on the FMs list
-        private async Task PreShow()
-        {
             // Sort the list here because Init() is run in parallel to FindFMs.Find() but sorting needs Find() to
             // have been run first.
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
@@ -640,31 +885,6 @@ namespace AngelLoader.Forms
             FMsDGV.Focus();
 
             if (!Visible) Show();
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            // These have to go here because they depend on and/or affect the width of other controls, and we
-            // need to be in a state where layout is happening
-            ChangeFilterControlsForGameType();
-            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
-
-            // Hook these up last so they don't cause anything to happen while we're initializing
-            AppMouseKeyHook = Hook.AppEvents();
-            AppMouseKeyHook.MouseDownExt += HookMouseDown;
-            AppMouseKeyHook.MouseMoveExt += HookMouseMove;
-            AppMouseKeyHook.KeyDown += HookKeyDown;
-            AppMouseKeyHook.KeyUp += HookKeyUp;
-            Application.AddMessageFilter(this);
-        }
-
-        private void MainForm_Shown(object sender, EventArgs e)
-        {
-            // debug - end of startup - to make sure when we profile, we're measuring only startup time
-#if RT_StartupOnly
-            Environment.Exit(1);
-            return;
-#endif
         }
 
         private void SetWindowStateAndSize()
@@ -693,6 +913,40 @@ namespace AngelLoader.Forms
             NominalWindowState = Config.MainWindowState;
             NominalWindowSize = Config.MainWindowSize;
             NominalWindowLocation = new Point(loc.X, loc.Y);
+        }
+
+        public void ShowOnly()
+        {
+            if (!Visible) Show();
+        }
+
+        #endregion
+
+        #region Form events
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // These have to go here because they depend on and/or affect the width of other controls, and we
+            // need to be in a state where layout is happening
+            ChangeFilterControlsForGameType();
+            ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
+
+            // Hook these up last so they don't cause anything to happen while we're initializing
+            AppMouseKeyHook = Hook.AppEvents();
+            AppMouseKeyHook.MouseDownExt += HookMouseDown;
+            AppMouseKeyHook.MouseMoveExt += HookMouseMove;
+            AppMouseKeyHook.KeyDown += HookKeyDown;
+            AppMouseKeyHook.KeyUp += HookKeyUp;
+            Application.AddMessageFilter(this);
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            // debug - end of startup - to make sure when we profile, we're measuring only startup time
+#if RT_StartupOnly
+            Environment.Exit(1);
+            return;
+#endif
         }
 
         private void MainForm_Deactivate(object sender, EventArgs e)
@@ -811,9 +1065,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        public void Localize() => Localize(startup: false);
-
-        public void Localize(bool startup)
+        private void Localize(bool startup)
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
@@ -1014,9 +1266,9 @@ namespace AngelLoader.Forms
 
                 #region Readme area
 
-                MainToolTip.SetToolTip(ZoomInButton, LText.ReadmeArea.ZoomInToolTip);
-                MainToolTip.SetToolTip(ZoomOutButton, LText.ReadmeArea.ZoomOutToolTip);
-                MainToolTip.SetToolTip(ResetZoomButton, LText.ReadmeArea.ResetZoomToolTip);
+                MainToolTip.SetToolTip(ReadmeZoomInButton, LText.ReadmeArea.ZoomInToolTip);
+                MainToolTip.SetToolTip(ReadmeZoomOutButton, LText.ReadmeArea.ZoomOutToolTip);
+                MainToolTip.SetToolTip(ReadmeResetZoomButton, LText.ReadmeArea.ResetZoomToolTip);
                 MainToolTip.SetToolTip(ReadmeFullScreenButton, LText.ReadmeArea.FullScreenToolTip);
 
                 ViewHTMLReadmeLLButton.Localize();
@@ -1107,25 +1359,6 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void ShowInstallUninstallButton(bool enabled)
-        {
-            if (enabled)
-            {
-                if (!InstallUninstallFMLLButton.Constructed)
-                {
-                    InstallUninstallFMLLButton.Construct(this, BottomLeftButtonsFLP);
-                    InstallUninstallFMLLButton.Localize(false);
-                }
-                InstallUninstallFMLLButton.Show();
-            }
-            else
-            {
-                InstallUninstallFMLLButton.Hide();
-            }
-        }
-
-        public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
-
         private void PositionFilterBarAfterTabs()
         {
             int FilterBarAfterTabsX;
@@ -1142,52 +1375,6 @@ namespace AngelLoader.Forms
 
             FilterBarFLP.Location = new Point(FilterBarAfterTabsX, FilterBarFLP.Location.Y);
             FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
-        }
-
-        public void ChangeGameOrganization(bool startup = false)
-        {
-            if (Config.GameOrganization == GameOrganization.OneList)
-            {
-                Config.SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
-            }
-            else // ByTab
-            {
-                // In case they don't match
-                Config.Filter.Games = Config.GameTab;
-
-                Config.GameTabsState.DeepCopyTo(FMsDGV.GameTabsState);
-
-                switch (Config.GameTab)
-                {
-                    case Game.Thief1:
-                        FMsDGV.GameTabsState.T1SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
-                        FMsDGV.GameTabsState.T1Filter.DeepCopyTo(FMsDGV.Filter);
-                        break;
-                    case Game.Thief2:
-                        FMsDGV.GameTabsState.T2SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
-                        FMsDGV.GameTabsState.T2Filter.DeepCopyTo(FMsDGV.Filter);
-                        break;
-                    case Game.Thief3:
-                        FMsDGV.GameTabsState.T3SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
-                        FMsDGV.GameTabsState.T3Filter.DeepCopyTo(FMsDGV.Filter);
-                        break;
-                }
-
-                using (new DisableEvents(this))
-                {
-                    GamesTabControl.SelectedTab =
-                        Config.GameTab == Game.Thief2 ? Thief2TabPage :
-                        Config.GameTab == Game.Thief3 ? Thief3TabPage :
-                        Thief1TabPage;
-                }
-            }
-
-            // Do these even if we're not in startup, because we may have changed the game organization mode
-            FilterByThief1Button.Checked = (Config.Filter.Games & Game.Thief1) == Game.Thief1;
-            FilterByThief2Button.Checked = (Config.Filter.Games & Game.Thief2) == Game.Thief2;
-            FilterByThief3Button.Checked = (Config.Filter.Games & Game.Thief3) == Game.Thief3;
-
-            if (!startup) ChangeFilterControlsForGameType();
         }
 
         // Separate so we can call it from _Load on startup (because it needs the form to be loaded to layout the
@@ -1281,6 +1468,8 @@ namespace AngelLoader.Forms
                 ReadmeRichTextBox.ZoomFactor);
         }
 
+        #region Cursor over area detection
+
         private bool CursorOverReadmeArea()
         {
             return ReadmeRichTextBox.Visible ? CursorOverControl(ReadmeRichTextBox) :
@@ -1298,45 +1487,6 @@ namespace AngelLoader.Forms
             return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width &&
                    ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
         }
-
-        private void BlockView(bool block)
-        {
-            if (ViewBlockingPanel == null)
-            {
-                ViewBlockingPanel = new TransparentPanel { Visible = false };
-                Controls.Add(ViewBlockingPanel);
-                ViewBlockingPanel.Dock = DockStyle.Fill;
-            }
-
-            try
-            {
-                // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
-                this.SuspendDrawing();
-                ViewBlocked = block;
-                ViewBlockingPanel.Visible = block;
-                ViewBlockingPanel.BringToFront();
-            }
-            finally
-            {
-                this.ResumeDrawing();
-            }
-        }
-
-        #region Test / debug
-
-#if DEBUG || (Release_Testing && !RT_StartupOnly)
-
-        private void TestButton_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void Test2Button_Click(object sender, EventArgs e)
-        {
-            Width = 1305;
-            Height = 750;
-        }
-
-#endif
 
         #endregion
 
@@ -1506,7 +1656,7 @@ namespace AngelLoader.Forms
 
             if (gameTabSwitch) forceDisplayFM = true;
 
-            SortByCurrentColumn();
+            SortFMsDGV((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
             SetFilter();
             if (RefreshFMsList(selectedFM, keepSelection: keepSel))
@@ -1905,6 +2055,8 @@ namespace AngelLoader.Forms
             FMsDGV.Filtered = true;
         }
 
+        #region FMsDGV event handlers
+
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
         {
             if (CellValueNeededDisabled) return;
@@ -2170,26 +2322,40 @@ namespace AngelLoader.Forms
             #endregion
         }
 
+        private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            if (!FMsDGV.RowSelected())
+            {
+                ClearShownData();
+            }
+            else
+            {
+                FMsDGV.SelectProperly();
+
+                await DisplaySelectedFM(refreshReadme: true);
+            }
+        }
+
         #region Crappy hack for basic go-to-first-typed-letter
 
-        private int FindRowIndex(char firstChar)
-        {
-            for (int i = 0; i < FMsDGV.RowCount; i++)
-            {
-                if (FMsDGV.Rows[i].Cells[(int)Column.Title].Value.ToString().StartsWithI(firstChar.ToString()))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
+        // TODO: Make this into a working, polished, documented feature
 
         private void FMsDGV_KeyPress(object sender, KeyPressEventArgs e)
         {
             if ((e.KeyChar >= 65 && e.KeyChar <= 90) || (e.KeyChar >= 97 && e.KeyChar <= 122))
             {
-                var rowIndex = FindRowIndex(e.KeyChar);
+                int rowIndex = -1;
+
+                for (int i = 0; i < FMsDGV.RowCount; i++)
+                {
+                    if (FMsDGV.Rows[i].Cells[(int)Column.Title].Value.ToString().StartsWithI(e.KeyChar.ToString()))
+                    {
+                        rowIndex = i;
+                        break;
+                    }
+                }
 
                 if (rowIndex > -1)
                 {
@@ -2199,6 +2365,8 @@ namespace AngelLoader.Forms
                 }
             }
         }
+
+        #endregion
 
         private async void FMsDGV_KeyDown(object sender, KeyEventArgs e)
         {
@@ -2219,6 +2387,27 @@ namespace AngelLoader.Forms
             }
         }
 
+        private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            FanMission fm;
+            if (e.RowIndex < 0 || !FMsDGV.RowSelected() || !GameIsKnownAndSupported(fm = FMsDGV.GetSelectedFM()))
+            {
+                return;
+            }
+
+            await InstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
+        }
+
+        // TODO: This isn't hooked up to anything, but things seem to work fine. Do I need this?!
+        private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (ColumnWidthSaveDisabled) return;
+
+            if (Config.Columns.Count == 0) return;
+            //Trace.WriteLine(e.Column.Index.ToString());
+            Config.Columns[e.Column.Index].Width = e.Column.Width;
+        }
+
         #endregion
 
         internal async Task RefreshFromDisk()
@@ -2229,6 +2418,8 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        #region Bottom bar (left side)
 
         #region Install/Play buttons
 
@@ -2301,25 +2492,68 @@ namespace AngelLoader.Forms
             if (success) await SortAndSetFilter(forceDisplayFM: true);
         }
 
+        private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
+
+        #region Bottom bar (right side)
+
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            ImportFromLLMenu.Construct(this, components);
+            ShowMenu(ImportFromLLMenu.ImportFromMenu, ImportButton, MenuPos.TopLeft);
+        }
+
+        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
+        {
+            string iniFile;
+            bool importFMData;
+            bool importSaves;
+            using (var f = new ImportFromDarkLoaderForm())
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+                iniFile = f.DarkLoaderIniFile;
+                importFMData = f.ImportFMData;
+                importSaves = f.ImportSaves;
+            }
+
+            if (!importFMData && !importSaves)
+            {
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                return;
+            }
+
+            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
+            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking))
+            SetRowCount(0);
+
+            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
+
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+            await SortAndSetFilter(forceDisplayFM: true);
+        }
+
+        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
+
+        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
+
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
-        public void ShowFMsListZoomButtons(bool visible)
-        {
-            FMsListZoomInButton.Visible = visible;
-            FMsListZoomOutButton.Visible = visible;
-            FMsListResetZoomButton.Visible = visible;
-            FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
-        }
+        #endregion
+
+        #endregion
+
+        #region Update displayed rating
 
         public void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup)
         {
-            UpdateRatingLists(style == RatingDisplayStyle.FMSel);
-            UpdateRatingColumn(startup);
+            UpdateRatingListsAndColumn(style == RatingDisplayStyle.FMSel, startup);
             UpdateRatingLabel();
         }
 
-        private void UpdateRatingLists(bool fmSelStyle)
+        private void UpdateRatingListsAndColumn(bool fmSelStyle, bool startup)
         {
+            #region Update rating lists
+
             // Just in case, since changing a ComboBox item's text counts as a selected index change maybe? Argh!
             using (new DisableEvents(this))
             {
@@ -2331,10 +2565,11 @@ namespace AngelLoader.Forms
             }
 
             FMsDGV.UpdateRatingList(fmSelStyle);
-        }
 
-        private void UpdateRatingColumn(bool startup)
-        {
+            #endregion
+
+            #region Update rating column
+
             var newRatingColumn =
                 Config.RatingDisplayStyle == RatingDisplayStyle.FMSel && Config.RatingUseStars
                     ? (DataGridViewColumn)RatingImageColumn
@@ -2347,8 +2582,8 @@ namespace AngelLoader.Forms
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
                     : FMsDGV.RowTemplate.Height == 22
-                    ? RatingImageColumnWidth
-                    : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (RatingImageColumnWidth / 22);
+                        ? RatingImageColumnWidth
+                        : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (RatingImageColumnWidth / 22);
                 newRatingColumn.Visible = oldRatingColumn.Visible;
                 newRatingColumn.DisplayIndex = oldRatingColumn.DisplayIndex;
             }
@@ -2379,7 +2614,42 @@ namespace AngelLoader.Forms
                 FMsDGV.SetColumnData(FMsDGV.GetColumnData());
                 RefreshFMsListKeepSelection();
             }
+
+            #endregion
         }
+
+        private void UpdateRatingLabel(bool suspendResume = true)
+        {
+            // For snappy visual layout performance
+            if (suspendResume) FilterBarFLP.SuspendDrawing();
+            try
+            {
+                if (FilterByRatingButton.Checked)
+                {
+                    var ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
+                    var rFrom = FMsDGV.Filter.RatingFrom;
+                    var rTo = FMsDGV.Filter.RatingTo;
+                    var curCulture = CultureInfo.CurrentCulture;
+
+                    var from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
+                    var to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
+
+                    FilterByRatingLabel.Text = from + @" - " + to;
+
+                    FilterByRatingLabel.Visible = true;
+                }
+                else
+                {
+                    FilterByRatingLabel.Visible = false;
+                }
+            }
+            finally
+            {
+                if (suspendResume) FilterBarFLP.ResumeDrawing();
+            }
+        }
+
+        #endregion
 
         private async Task OpenFilterTags()
         {
@@ -2500,9 +2770,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private void SortByCurrentColumn() => SortFMsDGV((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
-
-        public void SortFMsDGV(Column column, SortOrder sortDirection)
+        private void SortFMsDGV(Column column, SortOrder sortDirection)
         {
             FMsDGV.CurrentSortedColumn = (int)column;
             FMsDGV.CurrentSortDirection = sortDirection;
@@ -2526,48 +2794,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void DisplayFMTags(FanMission fm)
-        {
-            var tv = TagsTreeView;
-
-            try
-            {
-                tv.SuspendDrawing();
-                tv.Nodes.Clear();
-
-                if (fm.Tags.Count == 0) return;
-
-                fm.Tags.SortAndMoveMiscToEnd();
-
-                foreach (var item in fm.Tags)
-                {
-                    tv.Nodes.Add(item.Category);
-                    var last = tv.Nodes[tv.Nodes.Count - 1];
-                    foreach (var tag in item.Tags) last.Nodes.Add(tag);
-                }
-
-                tv.ExpandAll();
-            }
-            finally
-            {
-                tv.ResumeDrawing();
-            }
-        }
-
-        private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            if (!FMsDGV.RowSelected())
-            {
-                ClearShownData();
-            }
-            else
-            {
-                FMsDGV.SelectProperly();
-
-                await DisplaySelectedFM(refreshReadme: true);
-            }
-        }
+        #region FM display
 
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
@@ -2593,7 +2820,7 @@ namespace AngelLoader.Forms
             FMsDGV.SetConvertAudioRCSubMenuEnabled(false);
 
             // Hide instead of clear to avoid zoom factor pain
-            ShowReadme(false);
+            SetReadmeVisible(false);
 
             ChooseReadmeLLPanel.ShowPanel(false);
             ViewHTMLReadmeLLButton.Hide();
@@ -2661,7 +2888,6 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Hide();
         }
 
-        // It's really hard to come up with a succinct name that makes it clear what this does and doesn't do
         private async Task DisplaySelectedFM(bool refreshReadme, bool refreshCache = false)
         {
             var fm = FMsDGV.GetSelectedFM();
@@ -2845,7 +3071,7 @@ namespace AngelLoader.Forms
             {
                 if (readmeFiles.Count > 1)
                 {
-                    ReadmeCB_FillAndSelect(readmeFiles, fm.SelectedReadme);
+                    ReadmeComboBoxFillAndSelect(readmeFiles, fm.SelectedReadme);
                 }
                 else
                 {
@@ -2861,7 +3087,7 @@ namespace AngelLoader.Forms
                     ChooseReadmeLLPanel.ShowPanel(false);
                     ChooseReadmeComboBox.Hide();
                     ViewHTMLReadmeLLButton.Hide();
-                    ShowReadme(true);
+                    SetReadmeVisible(true);
 
                     return;
                 }
@@ -2872,11 +3098,11 @@ namespace AngelLoader.Forms
                     if (!safeReadme.IsEmpty())
                     {
                         fm.SelectedReadme = safeReadme;
-                        ReadmeCB_FillAndSelect(readmeFiles, safeReadme);
+                        ReadmeComboBoxFillAndSelect(readmeFiles, safeReadme);
                     }
                     else
                     {
-                        ShowReadme(false);
+                        SetReadmeVisible(false);
                         ViewHTMLReadmeLLButton.Hide();
 
                         ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
@@ -2906,7 +3132,7 @@ namespace AngelLoader.Forms
             #endregion
         }
 
-        private void ReadmeCB_FillAndSelect(List<string> readmeFiles, string readme)
+        private void ReadmeComboBoxFillAndSelect(List<string> readmeFiles, string readme)
         {
             using (new DisableEvents(this))
             {
@@ -2934,13 +3160,13 @@ namespace AngelLoader.Forms
                 {
                     ViewHTMLReadmeLLButton.Construct(this, MainSplitContainer.Panel2);
                     ViewHTMLReadmeLLButton.Show();
-                    ShowReadme(false);
+                    SetReadmeVisible(false);
                     // In case the cursor is over the scroll bar area
                     if (CursorOverReadmeArea()) ShowReadmeControls(true);
                 }
                 else
                 {
-                    ShowReadme(true);
+                    SetReadmeVisible(true);
                     ViewHTMLReadmeLLButton.Hide();
                     var fileType = type == ReadmeType.PlainText
                         ? RichTextBoxStreamType.PlainText
@@ -2954,7 +3180,7 @@ namespace AngelLoader.Forms
                 Log(nameof(LoadReadme) + " failed.", ex);
 
                 ViewHTMLReadmeLLButton.Hide();
-                ShowReadme(true);
+                SetReadmeVisible(true);
                 ReadmeRichTextBox.SetText(LText.ReadmeArea.UnableToLoadReadme);
             }
         }
@@ -2984,97 +3210,32 @@ namespace AngelLoader.Forms
             }
         }
 
-        #region Messageboxes
-
-        public bool AskToContinue(string message, string title, bool noIcon = false)
+        private void DisplayFMTags(FanMission fm)
         {
-            var result = MessageBox.Show(message, title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            return result == DialogResult.Yes;
-        }
+            var tv = TagsTreeView;
 
-        public (bool Cancel, bool Continue)
-        AskToContinueWithCancel(string message, string title)
-        {
-            var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-            return result == DialogResult.Cancel ? (true, false) : (false, result == DialogResult.Yes);
-        }
-
-        public (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancel_TD(string message, string title)
-        {
-            using (var d = new TaskDialog())
-            using (var yesButton = new TaskDialogButton(ButtonType.Yes))
-            using (var noButton = new TaskDialogButton(ButtonType.No))
-            using (var cancelButton = new TaskDialogButton(ButtonType.Cancel))
+            try
             {
-                d.AllowDialogCancellation = true;
-                d.ButtonStyle = TaskDialogButtonStyle.Standard;
-                d.WindowTitle = title;
-                d.Content = message;
-                d.VerificationText = LText.AlertMessages.DontAskAgain;
-                d.Buttons.Add(yesButton);
-                d.Buttons.Add(noButton);
-                d.Buttons.Add(cancelButton);
-                var buttonClicked = d.ShowDialog();
-                var cancel = buttonClicked == null || buttonClicked == cancelButton;
-                var cont = buttonClicked == yesButton;
-                var dontAskAgain = d.IsVerificationChecked;
-                return (cancel, cont, dontAskAgain);
-            }
-        }
+                tv.SuspendDrawing();
+                tv.Nodes.Clear();
 
-        public (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
-            bool showDontAskAgain, string yes, string no, string cancel)
-        {
-            using (var d = new TaskDialog())
-            using (var yesButton = new TaskDialogButton(yes))
-            using (var noButton = new TaskDialogButton(no))
-            using (var cancelButton = new TaskDialogButton(cancel))
+                if (fm.Tags.Count == 0) return;
+
+                fm.Tags.SortAndMoveMiscToEnd();
+
+                foreach (var item in fm.Tags)
+                {
+                    tv.Nodes.Add(item.Category);
+                    var last = tv.Nodes[tv.Nodes.Count - 1];
+                    foreach (var tag in item.Tags) last.Nodes.Add(tag);
+                }
+
+                tv.ExpandAll();
+            }
+            finally
             {
-                d.AllowDialogCancellation = true;
-                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
-                d.ButtonStyle = TaskDialogButtonStyle.Standard;
-                d.WindowTitle = title;
-                d.Content = message;
-                if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
-                d.Buttons.Add(yesButton);
-                d.Buttons.Add(noButton);
-                d.Buttons.Add(cancelButton);
-                var buttonClicked = d.ShowDialog();
-                var canceled = buttonClicked == null || buttonClicked == cancelButton;
-                var cont = buttonClicked == yesButton;
-                var dontAskAgain = d.IsVerificationChecked;
-                return (canceled, cont, dontAskAgain);
+                tv.ResumeDrawing();
             }
-        }
-
-        public (bool Cancel, bool DontAskAgain)
-        AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-            string yes, string no)
-        {
-            using (var d = new TaskDialog())
-            using (var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes))
-            using (var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No))
-            {
-                d.AllowDialogCancellation = true;
-                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
-                d.ButtonStyle = TaskDialogButtonStyle.Standard;
-                d.WindowTitle = title;
-                d.Content = message;
-                d.VerificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
-                d.Buttons.Add(yesButton);
-                d.Buttons.Add(noButton);
-                var buttonClicked = d.ShowDialog();
-                var cancel = buttonClicked != yesButton;
-                var dontAskAgain = d.IsVerificationChecked;
-                return (cancel, dontAskAgain);
-            }
-        }
-
-        public void ShowAlert(string message, string title)
-        {
-            MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         #endregion
@@ -3092,7 +3253,10 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
-        private (SelectedFM GameSelFM, Filter GameFilter) GetGameSelFMAndFilter(TabPage tabPage)
+        #region Game tabs
+
+        private (SelectedFM GameSelFM, Filter GameFilter)
+        GetGameSelFMAndFilter(TabPage tabPage)
         {
             var gameSelFM =
                 tabPage == Thief1TabPage ? FMsDGV.GameTabsState.T1SelFM :
@@ -3144,6 +3308,170 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(gameTabSwitch: true);
         }
 
+        #endregion
+
+        private void ResetLayoutButton_Click(object sender, EventArgs e)
+        {
+            MainSplitContainer.ResetSplitterPercent();
+            TopSplitContainer.ResetSplitterPercent();
+            if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
+        }
+
+        #region Top-right area
+
+        #region Statistics tab
+
+        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
+        }
+
+        #endregion
+
+        #region Edit FM tab
+
+        private void EditFMAltTitlesArrowButtonClick(object sender, EventArgs e)
+        {
+            AltTitlesLLMenu.Construct(components);
+            FillAltTitles(FMsDGV.GetSelectedFM());
+            ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
+        }
+
+        private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
+        {
+            EditFMTitleTextBox.Text = ((ToolStripMenuItem)sender).Text;
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().Title = EditFMTitleTextBox.Text;
+            RefreshSelectedFMRowOnly();
+        }
+
+        private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().Author = EditFMAuthorTextBox.Text;
+            RefreshSelectedFMRowOnly();
+        }
+
+        private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
+
+            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateCheckBox.Checked
+                ? EditFMReleaseDateDateTimePicker.Value
+                : (DateTime?)null;
+
+            RefreshSelectedFMRowOnly();
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
+            RefreshSelectedFMRowOnly();
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
+
+            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedCheckBox.Checked
+                ? EditFMLastPlayedDateTimePicker.Value
+                : (DateTime?)null;
+
+            RefreshSelectedFMRowOnly();
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
+            RefreshSelectedFMRowOnly();
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
+            RefreshSelectedFMRowOnly();
+        }
+
+        private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
+
+            FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
+            RefreshSelectedFMRowOnly();
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            FMsDGV.GetSelectedFM().Rating = EditFMRatingComboBox.SelectedIndex - 1;
+            RefreshSelectedFMRowOnly();
+            Core.WriteFullFMDataIni();
+        }
+
+        private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
+        {
+            ShowMenu(FMsDGV.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
+        }
+
+        private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
+        }
+
+        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
+        }
+
+        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
+        {
+            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
+        }
+
+        private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
+        {
+            Core.WriteFullFMDataIni();
+            await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
+        }
+
+        #endregion
+
+        #region Comment tab
+
         private void CommentTextBox_TextChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
@@ -3169,12 +3497,7 @@ namespace AngelLoader.Forms
             Core.WriteFullFMDataIni();
         }
 
-        private void ResetLayoutButton_Click(object sender, EventArgs e)
-        {
-            MainSplitContainer.ResetSplitterPercent();
-            TopSplitContainer.ResetSplitterPercent();
-            if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
-        }
+        #endregion
 
         #region Tags tab
 
@@ -3394,6 +3717,98 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Patch tab
+
+        private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
+        {
+            var lb = PatchDMLsListBox;
+            if (lb.SelectedIndex == -1) return;
+
+            bool success = Core.RemoveDML(FMsDGV.GetSelectedFM(), lb.SelectedItem.ToString());
+            if (!success) return;
+
+            lb.RemoveAndSelectNearest();
+        }
+
+        private void PatchAddDMLButton_Click(object sender, EventArgs e)
+        {
+            var lb = PatchDMLsListBox;
+
+            var dmlFiles = new List<string>();
+
+            using (var d = new OpenFileDialog())
+            {
+                d.Multiselect = true;
+                d.Filter = LText.BrowseDialogs.DMLFiles + @"|*.dml";
+                if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
+                dmlFiles.AddRange(d.FileNames);
+            }
+
+            foreach (var f in dmlFiles)
+            {
+                if (f.IsEmpty()) continue;
+
+                bool success = Core.AddDML(FMsDGV.GetSelectedFM(), f);
+                if (!success) return;
+
+                var dml = Path.GetFileName(f);
+                if (!lb.Items.Cast<string>().ToArray().ContainsI(dml))
+                {
+                    lb.Items.Add(Path.GetFileName(f));
+                }
+            }
+        }
+
+        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
+
+        #endregion
+
+        private void TopRightCollapseButton_Click(object sender, EventArgs e)
+        {
+            TopSplitContainer.ToggleFullScreen();
+            SetTopRightCollapsedState();
+        }
+
+        private void SetTopRightCollapsedState()
+        {
+            var collapsed = TopSplitContainer.FullScreen;
+            TopRightTabControl.Enabled = !collapsed;
+            TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
+        }
+
+        private void TopRightMenuButton_Click(object sender, EventArgs e)
+        {
+            TopRightLLMenu.Construct(this, components);
+            ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
+        }
+
+        internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
+        {
+            var s = (ToolStripMenuItem)sender;
+
+            TabPage tab = null;
+            for (int i = 0; i < TopRightTabsCount; i++)
+            {
+                if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])
+                {
+                    tab = TopRightTabsInEnumOrder[i];
+                    break;
+                }
+            }
+
+            Debug.Assert(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
+
+            if (!s.Checked && TopRightTabControl.TabPages.Count == 1)
+            {
+                s.Checked = true;
+                return;
+            }
+
+            TopRightTabControl.ShowTab(tab, s.Checked);
+        }
+
+        #endregion
+
         #region Readme
 
         #region Choose readme
@@ -3418,12 +3833,12 @@ namespace AngelLoader.Forms
             }
             else
             {
-                ShowReadme(true);
+                SetReadmeVisible(true);
             }
 
             if (ChooseReadmeLLPanel.ListBox.Items.Count > 1)
             {
-                ReadmeCB_FillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
+                ReadmeComboBoxFillAndSelect(ChooseReadmeLLPanel.ListBox.BackingItems, fm.SelectedReadme);
                 ShowReadmeControls(CursorOverReadmeArea());
             }
             else
@@ -3438,6 +3853,7 @@ namespace AngelLoader.Forms
         private void ChooseReadmeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
+
             var fm = FMsDGV.GetSelectedFM();
             fm.SelectedReadme = ChooseReadmeComboBox.SelectedBackingItem();
             // Just load the readme; don't call DisplaySelectedFM() because that will re-get readmes and screw
@@ -3454,18 +3870,24 @@ namespace AngelLoader.Forms
 
         private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
 
-        private void ZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
+        private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
-        private void ZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();
+        private void ReadmeZoomOutButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomOut();
 
-        private void ResetZoomButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ResetZoomFactor();
+        private void ReadmeResetZoomButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ResetZoomFactor();
 
-        private void ShowReadme(bool enabled)
+        private void ReadmeFullScreenButton_Click(object sender, EventArgs e)
+        {
+            MainSplitContainer.ToggleFullScreen();
+            ShowReadmeControls(CursorOverReadmeArea());
+        }
+
+        private void SetReadmeVisible(bool enabled)
         {
             ReadmeRichTextBox.Visible = enabled;
-            ZoomInButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
-            ZoomOutButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
-            ResetZoomButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
+            ReadmeZoomInButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
+            ReadmeZoomOutButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
+            ReadmeResetZoomButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
             ReadmeFullScreenButton.BackColor = enabled ? SystemColors.Window : SystemColors.Control;
 
             // In case the cursor is already over the readme when we do this
@@ -3475,143 +3897,14 @@ namespace AngelLoader.Forms
 
         private void ShowReadmeControls(bool enabled)
         {
-            ZoomInButton.Visible = enabled;
-            ZoomOutButton.Visible = enabled;
-            ResetZoomButton.Visible = enabled;
+            ReadmeZoomInButton.Visible = enabled;
+            ReadmeZoomOutButton.Visible = enabled;
+            ReadmeResetZoomButton.Visible = enabled;
             ReadmeFullScreenButton.Visible = enabled;
             ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
         }
 
         #endregion
-
-        #region Edit FM tab
-
-        private void EditFMAltTitlesArrowButtonClick(object sender, EventArgs e)
-        {
-            AltTitlesLLMenu.Construct(components);
-            FillAltTitles(FMsDGV.GetSelectedFM());
-            ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
-        }
-
-        private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
-        {
-            EditFMTitleTextBox.Text = ((ToolStripMenuItem)sender).Text;
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().Title = EditFMTitleTextBox.Text;
-            RefreshSelectedFMRowOnly();
-        }
-
-        private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().Author = EditFMAuthorTextBox.Text;
-            RefreshSelectedFMRowOnly();
-        }
-
-        private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
-
-            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateCheckBox.Checked
-                ? EditFMReleaseDateDateTimePicker.Value
-                : (DateTime?)null;
-
-            RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
-            RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
-
-            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedCheckBox.Checked
-                ? EditFMLastPlayedDateTimePicker.Value
-                : (DateTime?)null;
-
-            RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
-            RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
-            RefreshSelectedFMRowOnly();
-        }
-
-        private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
-
-            FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
-            RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
-        }
-
-        private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().Rating = EditFMRatingComboBox.SelectedIndex - 1;
-            RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
-        }
-
-        #endregion
-
-        private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
-        {
-            ShowMenu(FMsDGV.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
-        }
-
-        private void ReadmeFullScreenButton_Click(object sender, EventArgs e)
-        {
-            MainSplitContainer.ToggleFullScreen();
-            ShowReadmeControls(CursorOverReadmeArea());
-        }
-
-        private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
 
         private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
 
@@ -3691,6 +3984,8 @@ namespace AngelLoader.Forms
                 ShowRight();
             }
         }
+
+        #region Filter bar controls
 
         private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
@@ -3790,36 +4085,19 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
-        private void UpdateRatingLabel(bool suspendResume = true)
-        {
-            // For snappy visual layout performance
-            if (suspendResume) FilterBarFLP.SuspendDrawing();
-            try
-            {
-                if (FilterByRatingButton.Checked)
-                {
-                    var ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
-                    var rFrom = FMsDGV.Filter.RatingFrom;
-                    var rTo = FMsDGV.Filter.RatingTo;
-                    var curCulture = CultureInfo.CurrentCulture;
+        #endregion
 
-                    var from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
-                    var to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
+        #region Filter bar right-hand controls
 
-                    FilterByRatingLabel.Text = from + @" - " + to;
+        private void FMsListZoomInButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
 
-                    FilterByRatingLabel.Visible = true;
-                }
-                else
-                {
-                    FilterByRatingLabel.Visible = false;
-                }
-            }
-            finally
-            {
-                if (suspendResume) FilterBarFLP.ResumeDrawing();
-            }
-        }
+        private void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+
+        private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+
+        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await RefreshFromDisk();
+
+        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
         private async void ClearFiltersButton_Click(object sender, EventArgs e)
         {
@@ -3827,89 +4105,9 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
-        public void ClearAllUIAndInternalFilters()
-        {
-            using (new DisableEvents(this))
-            {
-                FilterBarFLP.SuspendDrawing();
-                try
-                {
-                    bool oneList = Config.GameOrganization == GameOrganization.OneList;
-                    if (oneList)
-                    {
-                        FilterByThief1Button.Checked = false;
-                        FilterByThief2Button.Checked = false;
-                        FilterByThief3Button.Checked = false;
-                    }
-                    FilterTitleTextBox.Text = "";
-                    FilterAuthorTextBox.Text = "";
-
-                    FilterByReleaseDateButton.Checked = false;
-                    FilterByReleaseDateLabel.Visible = false;
-
-                    FilterByLastPlayedButton.Checked = false;
-                    FilterByLastPlayedLabel.Visible = false;
-
-                    FilterByTagsButton.Checked = false;
-                    FilterByFinishedButton.Checked = false;
-                    FilterByUnfinishedButton.Checked = false;
-
-                    FilterByRatingButton.Checked = false;
-                    FilterByRatingLabel.Visible = false;
-
-                    FilterShowUnsupportedButton.Checked = false;
-                    FMsDGV.Filter.Clear(oneList);
-                }
-                finally
-                {
-                    FilterBarFLP.ResumeDrawing();
-                }
-            }
-        }
-
-        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        #endregion
 
         internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
-
-        private void ImportButton_Click(object sender, EventArgs e)
-        {
-            ImportFromLLMenu.Construct(this, components);
-            ShowMenu(ImportFromLLMenu.ImportFromMenu, ImportButton, MenuPos.TopLeft);
-        }
-
-        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
-        {
-            string iniFile;
-            bool importFMData;
-            bool importSaves;
-            using (var f = new ImportFromDarkLoaderForm())
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
-                iniFile = f.DarkLoaderIniFile;
-                importFMData = f.ImportFMData;
-                importSaves = f.ImportSaves;
-            }
-
-            if (!importFMData && !importSaves)
-            {
-                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
-            }
-
-            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
-            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
-            // change of the list (not really bad but unprofessional looking))
-            SetRowCount(0);
-
-            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
-
-            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await SortAndSetFilter(forceDisplayFM: true);
-        }
-
-        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
-
-        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
         private async Task ImportFromNDLOrFMSel(ImportType importType)
         {
@@ -3946,32 +4144,6 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(forceDisplayFM: true);
         }
 
-        private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
-        {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
-        }
-
-        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
-        {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
-        }
-
-        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
-        {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
-        }
-
-        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
-        {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
-        }
-
-        private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
-        {
-            Core.WriteFullFMDataIni();
-            await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
-        }
-
         // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...
         // This only happens if the size is set while the top-right panel is squashed too far right or some other
         // uncommon situation, but we have to account for it.
@@ -3982,120 +4154,7 @@ namespace AngelLoader.Forms
                 : 0;
         }
 
-        private void PatchRemoveDMLButton_Click(object sender, EventArgs e)
-        {
-            var lb = PatchDMLsListBox;
-            if (lb.SelectedIndex == -1) return;
-
-            bool success = Core.RemoveDML(FMsDGV.GetSelectedFM(), lb.SelectedItem.ToString());
-            if (!success) return;
-
-            lb.RemoveAndSelectNearest();
-        }
-
-        private void PatchAddDMLButton_Click(object sender, EventArgs e)
-        {
-            var lb = PatchDMLsListBox;
-
-            var dmlFiles = new List<string>();
-
-            using (var d = new OpenFileDialog())
-            {
-                d.Multiselect = true;
-                d.Filter = LText.BrowseDialogs.DMLFiles + @"|*.dml";
-                if (d.ShowDialog() != DialogResult.OK || d.FileNames.Length == 0) return;
-                dmlFiles.AddRange(d.FileNames);
-            }
-
-            foreach (var f in dmlFiles)
-            {
-                if (f.IsEmpty()) continue;
-
-                bool success = Core.AddDML(FMsDGV.GetSelectedFM(), f);
-                if (!success) return;
-
-                var dml = Path.GetFileName(f);
-                if (!lb.Items.Cast<string>().ToArray().ContainsI(dml))
-                {
-                    lb.Items.Add(Path.GetFileName(f));
-                }
-            }
-        }
-
-        private void PatchOpenFMFolderButton_Click(object sender, EventArgs e) => Core.OpenFMFolder(FMsDGV.GetSelectedFM());
-
-        private void TopRightCollapseButton_Click(object sender, EventArgs e)
-        {
-            TopSplitContainer.ToggleFullScreen();
-            SetTopRightCollapsedState();
-        }
-
-        private void SetTopRightCollapsedState()
-        {
-            var collapsed = TopSplitContainer.FullScreen;
-            TopRightTabControl.Enabled = !collapsed;
-            TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
-        }
-
-        private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            FanMission fm;
-            if (e.RowIndex < 0 || !FMsDGV.RowSelected() || !GameIsKnownAndSupported(fm = FMsDGV.GetSelectedFM()))
-            {
-                return;
-            }
-
-            await InstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
-        }
-
-        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await RefreshFromDisk();
-
-        // TODO: This isn't hooked up to anything, but things seem to work fine. Do I need this?!
-        private void FMsDGV_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
-        {
-            if (ColumnWidthSaveDisabled) return;
-
-            if (Config.Columns.Count == 0) return;
-            //Trace.WriteLine(e.Column.Index.ToString());
-            Config.Columns[e.Column.Index].Width = e.Column.Width;
-        }
-
-        private void FMsListZoomInButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
-
-        private void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
-
-        private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
-
-        internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
-        {
-            var s = (ToolStripMenuItem)sender;
-
-            TabPage tab = null;
-            for (int i = 0; i < TopRightTabsCount; i++)
-            {
-                if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])
-                {
-                    tab = TopRightTabsInEnumOrder[i];
-                    break;
-                }
-            }
-
-            Debug.Assert(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
-
-            if (!s.Checked && TopRightTabControl.TabPages.Count == 1)
-            {
-                s.Checked = true;
-                return;
-            }
-
-            TopRightTabControl.ShowTab(tab, s.Checked);
-        }
-
-        private void TopRightMenuButton_Click(object sender, EventArgs e)
-        {
-            TopRightLLMenu.Construct(this, components);
-            ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
-        }
+        #region Control painting
 
         private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => PaintBottomLeftButtonsFLP(e);
 
@@ -4122,6 +4181,8 @@ namespace AngelLoader.Forms
         private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton.Enabled, e);
 
         private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons(((Button)sender).Enabled, e);
+
+        #endregion
 
 #pragma warning restore IDE0069 // Disposable fields should be disposed
     }

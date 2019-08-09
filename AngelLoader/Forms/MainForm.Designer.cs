@@ -155,9 +155,9 @@
             this.PatchOpenFMFolderButton = new System.Windows.Forms.Button();
             this.PatchFMNotInstalledLabel = new System.Windows.Forms.Label();
             this.ReadmeFullScreenButton = new System.Windows.Forms.Button();
-            this.ZoomInButton = new System.Windows.Forms.Button();
-            this.ZoomOutButton = new System.Windows.Forms.Button();
-            this.ResetZoomButton = new System.Windows.Forms.Button();
+            this.ReadmeZoomInButton = new System.Windows.Forms.Button();
+            this.ReadmeZoomOutButton = new System.Windows.Forms.Button();
+            this.ReadmeResetZoomButton = new System.Windows.Forms.Button();
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -393,9 +393,9 @@
             // 
             this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeFullScreenButton);
-            this.MainSplitContainer.Panel2.Controls.Add(this.ZoomInButton);
-            this.MainSplitContainer.Panel2.Controls.Add(this.ZoomOutButton);
-            this.MainSplitContainer.Panel2.Controls.Add(this.ResetZoomButton);
+            this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomInButton);
+            this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomOutButton);
+            this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeResetZoomButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
             this.MainSplitContainer.Panel2MinSize = 38;
@@ -1745,54 +1745,54 @@
             // 
             // ZoomInButton
             // 
-            this.ZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ZoomInButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ZoomInButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomIn;
-            this.ZoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ZoomInButton.FlatAppearance.BorderSize = 0;
-            this.ZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ZoomInButton.Location = new System.Drawing.Point(1534, 8);
-            this.ZoomInButton.Name = "ZoomInButton";
-            this.ZoomInButton.Size = new System.Drawing.Size(20, 20);
-            this.ZoomInButton.TabIndex = 52;
-            this.MainToolTip.SetToolTip(this.ZoomInButton, "Zoom in");
-            this.ZoomInButton.UseVisualStyleBackColor = false;
-            this.ZoomInButton.Visible = false;
-            this.ZoomInButton.Click += new System.EventHandler(this.ZoomInButton_Click);
+            this.ReadmeZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReadmeZoomInButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ReadmeZoomInButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomIn;
+            this.ReadmeZoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
+            this.ReadmeZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ReadmeZoomInButton.Location = new System.Drawing.Point(1534, 8);
+            this.ReadmeZoomInButton.Name = "ReadmeZoomInButton";
+            this.ReadmeZoomInButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeZoomInButton.TabIndex = 52;
+            this.MainToolTip.SetToolTip(this.ReadmeZoomInButton, "Zoom in");
+            this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
+            this.ReadmeZoomInButton.Visible = false;
+            this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
             // 
             // ZoomOutButton
             // 
-            this.ZoomOutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ZoomOutButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ZoomOutButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomOut;
-            this.ZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ZoomOutButton.FlatAppearance.BorderSize = 0;
-            this.ZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ZoomOutButton.Location = new System.Drawing.Point(1558, 8);
-            this.ZoomOutButton.Name = "ZoomOutButton";
-            this.ZoomOutButton.Size = new System.Drawing.Size(20, 20);
-            this.ZoomOutButton.TabIndex = 53;
-            this.MainToolTip.SetToolTip(this.ZoomOutButton, "Zoom out");
-            this.ZoomOutButton.UseVisualStyleBackColor = false;
-            this.ZoomOutButton.Visible = false;
-            this.ZoomOutButton.Click += new System.EventHandler(this.ZoomOutButton_Click);
+            this.ReadmeZoomOutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReadmeZoomOutButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ReadmeZoomOutButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomOut;
+            this.ReadmeZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
+            this.ReadmeZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1558, 8);
+            this.ReadmeZoomOutButton.Name = "ReadmeZoomOutButton";
+            this.ReadmeZoomOutButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeZoomOutButton.TabIndex = 53;
+            this.MainToolTip.SetToolTip(this.ReadmeZoomOutButton, "Zoom out");
+            this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
+            this.ReadmeZoomOutButton.Visible = false;
+            this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
             // 
             // ResetZoomButton
             // 
-            this.ResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ResetZoomButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomReset;
-            this.ResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ResetZoomButton.FlatAppearance.BorderSize = 0;
-            this.ResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ResetZoomButton.Location = new System.Drawing.Point(1582, 8);
-            this.ResetZoomButton.Name = "ResetZoomButton";
-            this.ResetZoomButton.Size = new System.Drawing.Size(20, 20);
-            this.ResetZoomButton.TabIndex = 54;
-            this.MainToolTip.SetToolTip(this.ResetZoomButton, "Reset zoom");
-            this.ResetZoomButton.UseVisualStyleBackColor = false;
-            this.ResetZoomButton.Visible = false;
-            this.ResetZoomButton.Click += new System.EventHandler(this.ResetZoomButton_Click);
+            this.ReadmeResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReadmeResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
+            this.ReadmeResetZoomButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomReset;
+            this.ReadmeResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
+            this.ReadmeResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1582, 8);
+            this.ReadmeResetZoomButton.Name = "ReadmeResetZoomButton";
+            this.ReadmeResetZoomButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeResetZoomButton.TabIndex = 54;
+            this.MainToolTip.SetToolTip(this.ReadmeResetZoomButton, "Reset zoom");
+            this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
+            this.ReadmeResetZoomButton.Visible = false;
+            this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
             // 
             // ChooseReadmeComboBox
             // 
@@ -1903,7 +1903,7 @@
         private System.Windows.Forms.Panel EverythingPanel;
         private System.Windows.Forms.Button SettingsButton;
         private AngelLoader.CustomControls.ComboBoxCustom ChooseReadmeComboBox;
-        private System.Windows.Forms.Button ResetZoomButton;
+        private System.Windows.Forms.Button ReadmeResetZoomButton;
         private System.Windows.Forms.Button Test2Button;
         private System.Windows.Forms.Label FilterTitleLabel;
         private AngelLoader.CustomControls.TextBoxCustom FilterTitleTextBox;
@@ -1981,8 +1981,8 @@
         private System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
         private CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
         private System.Windows.Forms.ToolStripLabel FilterByLastPlayedLabel;
-        private System.Windows.Forms.Button ZoomInButton;
-        private System.Windows.Forms.Button ZoomOutButton;
+        private System.Windows.Forms.Button ReadmeZoomInButton;
+        private System.Windows.Forms.Button ReadmeZoomOutButton;
         private System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
         private System.Windows.Forms.Button EditFMScanReleaseDateButton;
         private System.Windows.Forms.Button EditFMScanAuthorButton;
