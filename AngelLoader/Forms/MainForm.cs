@@ -1664,30 +1664,25 @@ namespace AngelLoader.Forms
             SetFilter();
             if (RefreshFMsList(selectedFM, keepSelection: keepSel))
             {
-                if (forceDisplayFM)
+                // DEBUG: Keep this in for testing this because the whole thing is irrepressibly finicky
+                //Trace.WriteLine(nameof(keepSelection) + ": " + keepSelection);
+                //Trace.WriteLine("selectedFM != null: " + (selectedFM != null));
+                //Trace.WriteLine("!selectedFM.InstalledName.IsEmpty(): " + (selectedFM != null && !selectedFM.InstalledName.IsEmpty()));
+                //Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir));
+
+                // Optimization in case we land on the same as FM as before, don't reload it
+                // And whaddaya know, I still ended up having to have this eyes-glazing-over stuff here.
+                if (forceDisplayFM ||
+                    (keepSelection &&
+                     selectedFM != null && !selectedFM.InstalledName.IsEmpty() &&
+                     selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir) ||
+                    (!keepSelection &&
+                     (oldSelectedFM == null ||
+                      (FMsDGV.RowSelected() && !oldSelectedFM.Equals(FMsDGV.GetSelectedFM())))) ||
+                    // Fix: when resetting release date filter the readme wouldn't load for the selected FM
+                    oldSelectedFM == null)
                 {
                     await DisplaySelectedFM(true);
-                }
-                else
-                {
-                    // DEBUG: Keep this in for testing this because the whole thing is irrepressibly finicky
-                    //Trace.WriteLine(nameof(keepSelection) + ": " + keepSelection);
-                    //Trace.WriteLine("selectedFM != null: " + (selectedFM != null));
-                    //Trace.WriteLine("!selectedFM.InstalledName.IsEmpty(): " + (selectedFM != null && !selectedFM.InstalledName.IsEmpty()));
-                    //Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir));
-
-                    // Optimization in case we land on the same as FM as before, don't reload it
-                    // And whaddaya know, I still ended up having to have this eyes-glazing-over stuff here.
-                    if ((keepSelection &&
-                         selectedFM != null && !selectedFM.InstalledName.IsEmpty() &&
-                         selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir) ||
-                        (!keepSelection &&
-                         (oldSelectedFM == null || (FMsDGV.RowSelected() && !oldSelectedFM.Equals(FMsDGV.GetSelectedFM())))) ||
-                        // Fix: when resetting release date filter the readme wouldn't load for the selected FM
-                        oldSelectedFM == null)
-                    {
-                        await DisplaySelectedFM(true);
-                    }
                 }
             }
         }
