@@ -21,10 +21,14 @@ namespace AngelLoader.CustomControls
 
         #region Workaround to fix black transparent regions in images
 
+        // ReSharper disable IdentifierTypo
+        // ReSharper disable StringLiteralTypo
         private static readonly byte[] shppict = Encoding.ASCII.GetBytes(@"\shppict");
         private static readonly byte[] shppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxx");
         private static readonly byte[] nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
         private static readonly byte[] nonshppictBlanked = Encoding.ASCII.GetBytes(@"\xxxxxxxxxx");
+        // ReSharper restore StringLiteralTypo
+        // ReSharper restore IdentifierTypo
 
         #endregion
 
@@ -232,8 +236,7 @@ namespace AngelLoader.CustomControls
         /// Sets the text without resetting the zoom factor.
         /// </summary>
         /// <param name="text"></param>
-        /// <param name="suppressContentTypeChange"></param>
-        internal void SetText(string text, bool suppressContentTypeChange = false)
+        internal void SetText(string text)
         {
             SaveZoom();
 
@@ -348,6 +351,7 @@ namespace AngelLoader.CustomControls
             {
                 tmrAutoScroll?.Dispose();
                 pbGlyph?.Dispose();
+                _monospaceFont?.Dispose();
             }
             base.Dispose(disposing);
         }

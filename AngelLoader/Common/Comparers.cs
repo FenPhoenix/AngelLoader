@@ -390,12 +390,6 @@ namespace AngelLoader.Common
         }
     }
 
-    internal sealed class TopRightTabPositionComparer : IEqualityComparer<TopRightTabData>
-    {
-        public bool Equals(TopRightTabData x, TopRightTabData y) => x?.Position == y?.Position;
-        public int GetHashCode(TopRightTabData obj) => obj.Position.GetHashCode();
-    }
-
     #region Category and tags
 
     internal sealed class CategoryComparer : IComparer<CatAndTags>

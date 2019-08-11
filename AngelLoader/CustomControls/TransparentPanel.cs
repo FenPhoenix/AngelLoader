@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace AngelLoader.CustomControls
@@ -8,15 +6,6 @@ namespace AngelLoader.CustomControls
     public class TransparentPanel : Panel
     {
         private const int WS_EX_TRANSPARENT = 0x20;
-
-        #region For future use
-
-        [DllImport("user32.dll")]
-        private static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
-        [DllImport("gdi32.dll")]
-        private static extern IntPtr CreateRectRgn(int x1, int y1, int x2, int y2);
-
-        #endregion
 
         public TransparentPanel() => SetStyle(ControlStyles.Opaque, true);
 

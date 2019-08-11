@@ -30,7 +30,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        internal void Localize()
+        private void Localize()
         {
             Text = LText.RatingFilterBox.TitleText;
             FromLabel.Text = LText.RatingFilterBox.From;

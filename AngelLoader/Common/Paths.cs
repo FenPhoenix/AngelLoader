@@ -12,11 +12,11 @@ namespace AngelLoader.Common
     internal static class Paths
     {
 #if Release_Testing
-        internal static readonly string Startup = @"C:\AngelLoader";
+        internal const string Startup = @"C:\AngelLoader";
 #elif Release
         internal static readonly string Startup = System.Windows.Forms.Application.StartupPath;
 #else
-        internal static readonly string Startup = @"C:\AngelLoader";
+        internal const string Startup = @"C:\AngelLoader";
 #endif
 
         internal static readonly string LogFile = Path.Combine(Startup, "AngelLoader_log.txt");
@@ -24,13 +24,13 @@ namespace AngelLoader.Common
 
         #region Temp
 
-        internal static readonly string BaseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
+        private static readonly string _baseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
 
-        internal static readonly string CompressorTemp = Path.Combine(BaseTemp, "Zip");
+        internal static readonly string CompressorTemp = Path.Combine(_baseTemp, "Zip");
 
-        internal static readonly string FMScannerTemp = Path.Combine(BaseTemp, "FMScan");
+        internal static readonly string FMScannerTemp = Path.Combine(_baseTemp, "FMScan");
 
-        internal static readonly string StubCommTemp = Path.Combine(BaseTemp, "Stub");
+        internal static readonly string StubCommTemp = Path.Combine(_baseTemp, "Stub");
 
         /// <summary>
         /// Tells the stub dll what to do.
@@ -121,7 +121,7 @@ namespace AngelLoader.Common
             #region Safety check
 
             // Make sure we never delete any paths that are not safely tucked in our temp folder
-            var baseTemp = BaseTemp.TrimEnd('\\', '/', ' ');
+            var baseTemp = _baseTemp.TrimEnd('\\', '/', ' ');
 
             if (!path.StartsWithI(baseTemp + '\\') && !path.StartsWithI(baseTemp + '/')) return;
 

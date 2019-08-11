@@ -89,7 +89,7 @@ namespace AngelLoader.Common.DataClasses
 
     internal sealed class TopRightTabsData
     {
-        internal TopRightTabData[] Tabs = new TopRightTabData[TopRightTabsCount];
+        internal readonly TopRightTabData[] Tabs = new TopRightTabData[TopRightTabsCount];
 
         internal TopRightTab SelectedTab = TopRightTab.Statistics;
 
@@ -189,26 +189,10 @@ namespace AngelLoader.Common.DataClasses
             ShowUnsupported = false;
         }
 
-        internal bool IsEmpty()
-        {
-            return Title.IsWhiteSpace() &&
-                   Author.IsWhiteSpace() &&
-                   Games == Game.Null &&
-                   Tags.IsEmpty() &&
-                   ReleaseDateFrom == null &&
-                   ReleaseDateTo == null &&
-                   LastPlayedFrom == null &&
-                   LastPlayedTo == null &&
-                   RatingFrom == -1 &&
-                   RatingTo == 10 &&
-                   Finished == FinishedState.Null &&
-                   ShowUnsupported;
-        }
-
         internal string Title = "";
         internal string Author = "";
         internal Game Games = Game.Null;
-        internal TagsFilter Tags = new TagsFilter();
+        internal readonly TagsFilter Tags = new TagsFilter();
 
         #region Rating
 
@@ -328,9 +312,9 @@ namespace AngelLoader.Common.DataClasses
 
     internal sealed class TagsFilter
     {
-        internal CatAndTagsList AndTags = new CatAndTagsList();
-        internal CatAndTagsList OrTags = new CatAndTagsList();
-        internal CatAndTagsList NotTags = new CatAndTagsList();
+        internal readonly CatAndTagsList AndTags = new CatAndTagsList();
+        internal readonly CatAndTagsList OrTags = new CatAndTagsList();
+        internal readonly CatAndTagsList NotTags = new CatAndTagsList();
 
         internal void Clear()
         {

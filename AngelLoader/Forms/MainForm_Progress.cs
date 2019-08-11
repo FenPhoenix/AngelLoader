@@ -13,14 +13,13 @@ namespace AngelLoader.Forms
 
         private void ConstructProgressBox()
         {
-            if (ProgressBox == null)
-            {
-                ProgressBox = new ProgressPanel();
-                Controls.Add(ProgressBox);
-                ProgressBox.Inject(this);
-                ProgressBox.Localize();
-                ProgressBox.Anchor = AnchorStyles.None;
-            }
+            if (ProgressBox != null) return;
+
+            ProgressBox = new ProgressPanel();
+            Controls.Add(ProgressBox);
+            ProgressBox.Inject(this);
+            ProgressBox.Localize();
+            ProgressBox.Anchor = AnchorStyles.None;
         }
 
         private void LocalizeProgressBox() => ProgressBox?.Localize();

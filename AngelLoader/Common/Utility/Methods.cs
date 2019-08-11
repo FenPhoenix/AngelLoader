@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using AngelLoader.Common.DataClasses;
 using FMScanner;
+using JetBrains.Annotations;
 using SevenZip;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
@@ -156,6 +157,7 @@ namespace AngelLoader.Common.Utility
                 null;
         }
 
+        [PublicAPI]
         internal static string GetProcessPath(int procId)
         {
             using (var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId))

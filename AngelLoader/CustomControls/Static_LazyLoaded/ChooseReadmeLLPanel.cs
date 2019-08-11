@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.CustomControls.Static_LazyLoaded
 {
@@ -10,10 +11,10 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        internal static Panel Panel;
-        internal static Button OKButton;
+        private static Panel Panel;
         internal static ListBoxCustom ListBox;
-        internal static FlowLayoutPanel OKButtonFLP;
+        private static FlowLayoutPanel OKButtonFLP;
+        private static Button OKButton;
 
         internal static void Construct(MainForm form, Control container)
         {
@@ -70,6 +71,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             if (_constructed) OKButton.SetTextAutoSize(LText.Global.OK, 75);
         }
 
+        [UsedImplicitly] // Actually used in an ifdef block
         internal static void SuspendPanelLayout()
         {
             if (_constructed) Panel.SuspendLayout();

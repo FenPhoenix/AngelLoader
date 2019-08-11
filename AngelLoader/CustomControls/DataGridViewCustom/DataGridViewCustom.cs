@@ -29,11 +29,11 @@ namespace AngelLoader.CustomControls
         internal readonly SelectedFM CurrentSelFM = new SelectedFM();
 
         // Only used if game tabs are enabled. It's used to save and restore per-tab selected FM, filters etc.
-        internal GameTabsState GameTabsState = new GameTabsState();
+        internal readonly GameTabsState GameTabsState = new GameTabsState();
 
         #region Filter
 
-        internal Filter Filter = new Filter();
+        internal readonly Filter Filter = new Filter();
 
         // Slightly janky separate value here, but we need it because:
         // -We can't check the filtered index list for length > 0 because it could be empty when ALL FMs are being
@@ -42,7 +42,7 @@ namespace AngelLoader.CustomControls
         //  in a loop)
         internal bool Filtered = false;
 
-        internal List<int> FilterShownIndexList = new List<int>();
+        internal readonly List<int> FilterShownIndexList = new List<int>();
 
         #endregion
 

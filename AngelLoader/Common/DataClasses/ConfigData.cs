@@ -53,15 +53,15 @@ namespace AngelLoader.Common.DataClasses
         internal GameOrganization GameOrganization = GameOrganization.OneList;
         internal Game GameTab = Game.Thief1;
 
-        internal SelectedFM SelFM = new SelectedFM();
+        internal readonly SelectedFM SelFM = new SelectedFM();
 
-        internal GameTabsState GameTabsState = new GameTabsState();
+        internal readonly GameTabsState GameTabsState = new GameTabsState();
 
         #endregion
 
         #region Filtering
 
-        internal Filter Filter = new Filter();
+        internal readonly Filter Filter = new Filter();
 
         #endregion
 
@@ -137,13 +137,13 @@ namespace AngelLoader.Common.DataClasses
 
         internal bool TopRightPanelCollapsed = false;
 
-        internal TopRightTabsData TopRightTabsData = new TopRightTabsData();
+        internal readonly TopRightTabsData TopRightTabsData = new TopRightTabsData();
 
         #endregion
 
         #region Readme box
 
-        internal float _readmeZoomFactor = 1;
+        private float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f); }
         internal bool ReadmeUseFixedWidthFont = false;
 

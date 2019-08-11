@@ -42,7 +42,7 @@ namespace AngelLoader.CustomControls
         {
             ProgressTask = progressTask;
 
-            Center();
+            this.CenterHV(Owner, clientSize: true);
 
             ProgressMessageLabel.Text =
                 progressTask == ProgressTasks.ScanAllFMs ? LText.ProgressBox.Scanning :
@@ -165,8 +165,6 @@ namespace AngelLoader.CustomControls
             ProgressCancelButton.SetTextAutoSize(LText.Global.Cancel, ProgressCancelButton.Width);
             ProgressCancelButton.CenterH(this);
         }
-
-        internal void Center() => this.CenterHV(Owner, clientSize: true);
 
         private void ProgressCancelButton_Click(object sender, EventArgs e) => Cancel();
 

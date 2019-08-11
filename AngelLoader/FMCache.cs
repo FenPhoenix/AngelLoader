@@ -32,7 +32,7 @@ namespace AngelLoader
             ".str", ".nut", ".db", ".obj"
         };
 
-        internal sealed class NameAndIndex
+        private sealed class NameAndIndex
         {
             internal string Name;
             internal int Index = -1;
@@ -101,7 +101,7 @@ namespace AngelLoader
             }
         }
 
-        internal static CacheData GetCacheableDataInFMInstalledDir(FanMission fm)
+        private static CacheData GetCacheableDataInFMInstalledDir(FanMission fm)
         {
             Debug.Assert(fm.Installed, "fm.Installed is false when it should be true");
 
@@ -135,7 +135,7 @@ namespace AngelLoader
             return new CacheData { Readmes = readmes };
         }
 
-        internal static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, IView view, bool refreshCache)
+        private static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, IView view, bool refreshCache)
         {
             var readmes = new List<string>();
 

@@ -1,10 +1,10 @@
 ﻿namespace AngelLoader.CustomControls.SettingsPages
 {
-    internal class Interfaces
+    internal static class Interfaces
     {
         internal interface ISettingsPage
         {
-            bool IsVisible { get; set; }
+            bool IsVisible { get; }
             void SetVScrollPos(int value);
             int GetVScrollPos();
             void ShowPage();

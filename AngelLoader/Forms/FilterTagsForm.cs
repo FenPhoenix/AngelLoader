@@ -49,7 +49,7 @@ namespace AngelLoader.Forms
             Localize();
         }
 
-        internal void Localize()
+        private void Localize()
         {
             Text = LText.TagsFilterBox.TitleText;
 

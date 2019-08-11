@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using AngelLoader.Common.DataClasses;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Common
 {
     // Class instead of enum so we don't have to keep casting its fields
+    [PublicAPI]
     internal static class ByteSize
     {
         internal const int KB = 1024;

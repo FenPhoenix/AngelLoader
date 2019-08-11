@@ -5,7 +5,7 @@ namespace AngelLoader.Common
     internal sealed class CatAndTags
     {
         internal string Category;
-        internal List<string> Tags = new List<string>();
+        internal readonly List<string> Tags = new List<string>();
     }
 
     internal sealed class GlobalCatAndTags

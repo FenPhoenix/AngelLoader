@@ -290,7 +290,7 @@ namespace AngelLoader.CustomControls
 
         #region API methods
 
-        internal void SetFMMenuTextToLocalized()
+        private void SetFMMenuTextToLocalized()
         {
             if (!_fmMenuCreated) return;
 

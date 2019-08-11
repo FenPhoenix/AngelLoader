@@ -25,7 +25,7 @@ namespace AngelLoader.Forms
             AutodetectGameIni(Game.Thief3, Thief3IniTextBox);
         }
 
-        internal void Localize()
+        private void Localize()
         {
             Text = ImportType == ImportType.NewDarkLoader
                 ? LText.Importing.ImportFromNewDarkLoader_TitleText

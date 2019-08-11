@@ -386,8 +386,6 @@ namespace AngelLoader.Forms
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
         private bool CellValueNeededDisabled;
-        // Needed for zooming to prevent Config column widths from being set in the zoom methods
-        private bool ColumnWidthSaveDisabled;
 
         private TransparentPanel ViewBlockingPanel;
         private bool ViewBlocked;
@@ -1498,133 +1496,124 @@ namespace AngelLoader.Forms
 
         private void ZoomFMsDGV(ZoomFMsDGVType type, float? zoomFontSize = null)
         {
-            // We'll be changing widths all over the place here, so don't save them out while we do this
-            ColumnWidthSaveDisabled = true;
-            try
+            // No goal escapes me, mate
+
+            SelectedFM selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+
+            var f = FMsDGV.DefaultCellStyle.Font;
+
+            // Set zoom level
+            var fontSize =
+                type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
+                type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
+                type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
+                type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
+                FMsListDefaultFontSizeInPoints;
+
+            // Clamp zoom level
+            if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
+            if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
+            fontSize = (float)Math.Round(fontSize, 2);
+
+            // Set new font size
+            var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+
+            // Set row height based on font plus some padding
+            var rowHeight = type == ZoomFMsDGVType.ResetZoom ? FMsListDefaultRowHeight : newF.Height + 9;
+
+            // If we're on startup, then the widths will already have been restored (to zoomed size) from the
+            // config
+            var heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
+
+            // Must be done first, else we get wrong values
+            List<double> widthMul = new List<double>();
+            foreach (DataGridViewColumn c in FMsDGV.Columns)
             {
-                // No goal escapes me, mate
+                var size = c.HeaderCell.Size;
+                widthMul.Add((double)size.Width / size.Height);
+            }
 
-                SelectedFM selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+            // Set font on cells
+            FMsDGV.DefaultCellStyle.Font = newF;
 
-                var f = FMsDGV.DefaultCellStyle.Font;
+            // Set font on headers
+            FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
 
-                // Set zoom level
-                var fontSize =
-                    type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
-                    type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
-                    type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
-                    type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
-                    FMsListDefaultFontSizeInPoints;
+            // Set height on all rows (but it won't take effect yet)
+            FMsDGV.RowTemplate.Height = rowHeight;
 
-                // Clamp zoom level
-                if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
-                if (fontSize > Math.Round(41.25f, 2)) fontSize = 41.25f;
-                fontSize = (float)Math.Round(fontSize, 2);
+            // Save previous selection
+            int selIndex = FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
+            using (new DisableEvents(this))
+            {
+                // Force a regeneration of rows (height will take effect here)
+                int rowCount = FMsDGV.RowCount;
+                FMsDGV.RowCount = 0;
+                FMsDGV.RowCount = rowCount;
 
-                // Set new font size
-                var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
-
-                // Set row height based on font plus some padding
-                var rowHeight = type == ZoomFMsDGVType.ResetZoom ? FMsListDefaultRowHeight : newF.Height + 9;
-
-                // If we're on startup, then the widths will already have been restored (to zoomed size) from the
-                // config
-                var heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
-
-                // Must be done first, else we get wrong values
-                List<double> widthMul = new List<double>();
-                foreach (DataGridViewColumn c in FMsDGV.Columns)
+                // Restore previous selection (no events will be fired, due to being in a DisableEvents block)
+                if (selIndex > -1)
                 {
-                    var size = c.HeaderCell.Size;
-                    widthMul.Add((double)size.Width / size.Height);
+                    FMsDGV.Rows[selIndex].Selected = true;
+                    FMsDGV.SelectProperly();
                 }
 
-                // Set font on cells
-                FMsDGV.DefaultCellStyle.Font = newF;
-
-                // Set font on headers
-                FMsDGV.ColumnHeadersDefaultCellStyle.Font = newF;
-
-                // Set height on all rows (but it won't take effect yet)
-                FMsDGV.RowTemplate.Height = rowHeight;
-
-                // Save previous selection
-                int selIndex = FMsDGV.RowSelected() ? FMsDGV.SelectedRows[0].Index : -1;
-                using (new DisableEvents(this))
+                // Set column widths (keeping ratio to height)
+                for (var i = 0; i < FMsDGV.Columns.Count; i++)
                 {
-                    // Force a regeneration of rows (height will take effect here)
-                    int rowCount = FMsDGV.RowCount;
-                    FMsDGV.RowCount = 0;
-                    FMsDGV.RowCount = rowCount;
+                    DataGridViewColumn c = FMsDGV.Columns[i];
 
-                    // Restore previous selection (no events will be fired, due to being in a DisableEvents block)
-                    if (selIndex > -1)
+                    // Complicated gobbledegook for handling different options and also special-casing the
+                    // non-resizable columns
+                    var reset = type == ZoomFMsDGVType.ResetZoom;
+                    if (c != RatingImageColumn && c != FinishedColumn)
                     {
-                        FMsDGV.Rows[selIndex].Selected = true;
-                        FMsDGV.SelectProperly();
+                        c.MinimumWidth = reset ? Defaults.MinColumnWidth : rowHeight + 3;
                     }
 
-                    // Set column widths (keeping ratio to height)
-                    for (var i = 0; i < FMsDGV.Columns.Count; i++)
+                    if (heightOnly)
                     {
-                        DataGridViewColumn c = FMsDGV.Columns[i];
-
-                        // Complicated gobbledegook for handling different options and also special-casing the
-                        // non-resizable columns
-                        var reset = type == ZoomFMsDGVType.ResetZoom;
-                        if (c != RatingImageColumn && c != FinishedColumn)
+                        if (c == RatingImageColumn || c == FinishedColumn)
                         {
-                            c.MinimumWidth = reset ? Defaults.MinColumnWidth : rowHeight + 3;
+                            c.Width = (int)Math.Round(c.HeaderCell.Size.Height * widthMul[i]);
                         }
-
-                        if (heightOnly)
+                    }
+                    else
+                    {
+                        if (reset && c == RatingImageColumn)
                         {
-                            if (c == RatingImageColumn || c == FinishedColumn)
-                            {
-                                c.Width = (int)Math.Round(c.HeaderCell.Size.Height * widthMul[i]);
-                            }
+                            c.Width = RatingImageColumnWidth;
+                        }
+                        else if (reset && c == FinishedColumn)
+                        {
+                            c.Width = FinishedColumnWidth;
                         }
                         else
                         {
-                            if (reset && c == RatingImageColumn)
-                            {
-                                c.Width = RatingImageColumnWidth;
-                            }
-                            else if (reset && c == FinishedColumn)
-                            {
-                                c.Width = FinishedColumnWidth;
-                            }
-                            else
-                            {
-                                // The ever-present rounding errors creep in here, but meh. I should figure out
-                                // how to not have those - ensure scaling always happens in integral pixel counts
-                                // somehow?
-                                c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - FMsListDefaultFontSizeInPoints) < 0.1
-                                    ? Config.Columns[i].Width
-                                    : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
-                            }
+                            // The ever-present rounding errors creep in here, but meh. I should figure out
+                            // how to not have those - ensure scaling always happens in integral pixel counts
+                            // somehow?
+                            c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - FMsListDefaultFontSizeInPoints) < 0.1
+                                ? Config.Columns[i].Width
+                                : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
                         }
                     }
                 }
-
-                // Keep selected FM in the center of the list vertically where possible (UX nicety)
-                if (selIndex > -1 && selFM != null)
-                {
-                    try
-                    {
-                        FMsDGV.FirstDisplayedScrollingRowIndex =
-                            (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
-                            .Clamp(0, FMsDGV.RowCount - 1);
-                    }
-                    catch (Exception)
-                    {
-                        // no room is available to display rows
-                    }
-                }
             }
-            finally
+
+            // Keep selected FM in the center of the list vertically where possible (UX nicety)
+            if (selIndex > -1 && selFM != null)
             {
-                ColumnWidthSaveDisabled = false;
+                try
+                {
+                    FMsDGV.FirstDisplayedScrollingRowIndex =
+                        (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
+                        .Clamp(0, FMsDGV.RowCount - 1);
+                }
+                catch (Exception)
+                {
+                    // no room is available to display rows
+                }
             }
 
             // And that's how you do it
@@ -2401,7 +2390,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        internal async Task RefreshFromDisk()
+        private async Task RefreshFromDisk()
         {
             var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
             using (new DisableEvents(this)) await Core.FindNewFMsAndScanForGameType();

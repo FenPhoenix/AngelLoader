@@ -27,12 +27,12 @@ namespace AngelLoader.Common
         }
 
         [DllImport("kernel32.dll")]
-        internal static extern void GetLocalTime(ref SYSTEMTIME systemTime);
+        private static extern void GetLocalTime(ref SYSTEMTIME systemTime);
 
         // For logging purposes: It takes an entire 5ms to get one DateTime.Now, but I don't really need hardcore
         // accuracy in logging dates, they're really just there for vague temporality. Because we log on startup,
         // this claws back some startup time.
-        internal static string GetDateTimeStringFast()
+        private static string GetDateTimeStringFast()
         {
             var dt = new SYSTEMTIME();
             GetLocalTime(ref dt);
@@ -60,7 +60,7 @@ namespace AngelLoader.Common
             }
         }
 
-        internal static void ClearLogFile(string logFile = "")
+        private static void ClearLogFile(string logFile = "")
         {
             if (logFile.IsEmpty()) logFile = Paths.LogFile;
 

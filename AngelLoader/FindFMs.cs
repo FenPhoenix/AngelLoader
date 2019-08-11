@@ -62,8 +62,9 @@ namespace AngelLoader
                     Log("Exception reading FM data ini", ex);
                     if (startup)
                     {
-                        MessageBox.Show("Exception reading FM data ini. Exiting. Please check " + Paths.LogFile,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // Language will be loaded by this point
+                        MessageBox.Show(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni,
+                            LText.AlertMessages.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Environment.Exit(1);
                     }
                     else

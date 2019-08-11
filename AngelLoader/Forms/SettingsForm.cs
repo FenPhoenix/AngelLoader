@@ -83,11 +83,12 @@ namespace AngelLoader.Forms
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
 
-            PageVScrollValues = new[]
+            // TODO: This is ALWAYS initialized with non-nullable ints, yet it's doing checks for null and all?!
+            PageVScrollValues = new int?[]
             {
-                (int?)InConfig.SettingsPathsVScrollPos,
-                (int?)InConfig.SettingsFMDisplayVScrollPos,
-                (int?)InConfig.SettingsOtherVScrollPos
+                InConfig.SettingsPathsVScrollPos,
+                InConfig.SettingsFMDisplayVScrollPos,
+                InConfig.SettingsOtherVScrollPos
             };
 
             #region Add pages
@@ -423,7 +424,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void Localize(bool suspendResume = true)
+        private void Localize(bool suspendResume = true)
         {
             if (suspendResume) this.SuspendDrawing();
             try

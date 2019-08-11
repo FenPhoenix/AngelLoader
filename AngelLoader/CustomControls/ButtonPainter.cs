@@ -54,7 +54,7 @@ namespace AngelLoader.CustomControls
                 // left
                 new Point(wh - 4, hh + 3),
                 new Point(wh - 1, hh),
-                new Point(wh - 4, hh - 3),
+                new Point(wh - 4, hh - 3)
             };
 
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)

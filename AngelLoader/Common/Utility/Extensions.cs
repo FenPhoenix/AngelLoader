@@ -32,6 +32,7 @@ namespace AngelLoader.Common.Utility
 
         #region Contains
 
+        [PublicAPI]
         internal static bool Contains(this string value, string substring, StringComparison comparison)
         {
             return !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
@@ -65,6 +66,7 @@ namespace AngelLoader.Common.Utility
         /// <returns></returns>
         internal static bool ContainsI(this string[] array, string str) => array.Contains(str, StringComparison.OrdinalIgnoreCase);
 
+        [PublicAPI]
         internal static bool ContainsRemoveFirstHit(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
         {
             for (int i = 0; i < value.Count; i++)
@@ -78,6 +80,7 @@ namespace AngelLoader.Common.Utility
             return false;
         }
 
+        [PublicAPI]
         internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
         {
             for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, stringComparison)) return true;
@@ -472,11 +475,11 @@ namespace AngelLoader.Common.Utility
         // stuff. Fine, but I want to make it clear the window is not responding to anything.
         // If I ever put the RichTextBox in a separate app domain or whatever, the new method might not work.
         // This method works in a pinch, dings notwithstanding.
-        internal static void BlockWindow(this Control control, bool block)
-        {
-            if (!control.IsHandleCreated) return;
-            EnableWindow(control.Handle, bEnable: !block);
-        }
+        //internal static void BlockWindow(this Control control, bool block)
+        //{
+        //    if (!control.IsHandleCreated) return;
+        //    EnableWindow(control.Handle, bEnable: !block);
+        //}
 
         /// <summary>
         /// Sets the progress bar's value instantly. Avoids the la-dee-dah catch-up-when-I-feel-like-it nature of

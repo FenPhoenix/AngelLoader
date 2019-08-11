@@ -22,7 +22,7 @@ namespace AngelLoader.Forms
             AutodetectDarkLoaderIni();
         }
 
-        internal void Localize()
+        private void Localize()
         {
             Text = LText.Importing.ImportFromDarkLoader_TitleText;
             ChooseDarkLoaderIniLabel.Text = LText.Importing.DarkLoader_ChooseIni;

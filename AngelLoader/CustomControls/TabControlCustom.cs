@@ -14,7 +14,7 @@ namespace AngelLoader.CustomControls
         }
 
         private TabPage DragTab;
-        internal readonly List<BackingTab> BackingTabList = new List<BackingTab>();
+        private readonly List<BackingTab> BackingTabList = new List<BackingTab>();
 
         public TabControlCustom()
         {

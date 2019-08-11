@@ -10,7 +10,7 @@ namespace AngelLoader.CustomControls
         /// <summary>
         /// Fiddle this around to get the right-side garbage line to disappear again when Padding is set to something.
         /// </summary>
-        [Browsable(true)] public int PaddingDrawNudge { get; set; } = 0;
+        [Browsable(true)] public int PaddingDrawNudge { get; set; }
 
         protected override void OnPaint(PaintEventArgs e)
         {

@@ -35,7 +35,7 @@ namespace AngelLoader.Forms
             if (to != null) ToDateTimePicker.Value = (DateTime)to;
         }
 
-        internal void Localize()
+        private void Localize()
         {
             FromLabel.Text = LText.DateFilterBox.From;
             ToLabel.Text = LText.DateFilterBox.To;

@@ -25,14 +25,15 @@ namespace AngelLoader.Importing
             "[SShock 2]"
         };
 
-        private enum DLGame
-        {
-            darkGameUnknown = 0, // <- if it hasn't been scanned, it will be this
-            darkGameThief = 1,
-            darkGameThief2 = 2,
-            darkGameT2x = 3,
-            darkGameSS2 = 4
-        }
+        // Not used - we scan for game types ourselves currently
+        //private enum DLGame
+        //{
+        //    darkGameUnknown = 0, // <- if it hasn't been scanned, it will be this
+        //    darkGameThief = 1,
+        //    darkGameThief2 = 2,
+        //    darkGameT2x = 3,
+        //    darkGameSS2 = 4
+        //}
 
         private static readonly Regex DarkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
 

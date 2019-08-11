@@ -25,14 +25,14 @@ namespace AngelLoader.CustomControls
 
         internal void ToggleFullScreen() => SetFullScreen(!FullScreen);
 
-        internal float SplitterPercent
+        private float SplitterPercent
         {
             get => SplitterDistance / (float)(IsMain() ? Height : Width);
             set => SplitterDistance = (int)Math.Round(value * (IsMain() ? Height : Width));
         }
 
         // This realtime-draw resize stuff still flickers a bit, but it's better than no redraw at all.
-        public int OriginalDistance;
+        private int OriginalDistance;
 
         private bool _mouseOverCrossSection;
         public bool MouseOverCrossSection

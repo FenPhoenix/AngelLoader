@@ -864,7 +864,7 @@ namespace AngelLoader.Forms
             // TopRightCollapseButton
             // 
             TopRightCollapseButton.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            TopRightCollapseButton.ArrowDirection = Common.Direction.Right;
+            TopRightCollapseButton.ArrowDirection = Direction.Right;
             TopRightCollapseButton.BackgroundImageLayout = ImageLayout.None;
             TopRightCollapseButton.FlatAppearance.BorderSize = 0;
             TopRightCollapseButton.FlatStyle = FlatStyle.Flat;
@@ -1084,7 +1084,7 @@ namespace AngelLoader.Forms
             // EditFMAltTitlesDropDownButton
             // 
             EditFMAltTitlesArrowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            EditFMAltTitlesArrowButton.ArrowDirection = Common.Direction.Down;
+            EditFMAltTitlesArrowButton.ArrowDirection = Direction.Down;
             EditFMAltTitlesArrowButton.Location = new Point(477, 23);
             EditFMAltTitlesArrowButton.Size = new Size(17, 22);
             EditFMAltTitlesArrowButton.TabIndex = 15;

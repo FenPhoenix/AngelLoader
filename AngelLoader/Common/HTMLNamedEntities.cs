@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AngelLoader.Common
 {
     internal static class HTMLNamedEntities
     {
         // Copied direct from the HTML 5.2 spec. Overkill? :T
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        [SuppressMessage("ReSharper", "CommentTypo")]
         internal static readonly Dictionary<string, string>
         Entities = new Dictionary<string, string>
         {

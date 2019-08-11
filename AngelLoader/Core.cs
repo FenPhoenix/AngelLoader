@@ -29,7 +29,7 @@ namespace AngelLoader
     {
         internal static IView View;
 
-        internal static List<FanMission> FMsViewList = new List<FanMission>();
+        internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
         private static readonly List<FanMission> FMDataIniList = new List<FanMission>();
 
         private static CancellationTokenSource ScanCts;
@@ -99,7 +99,7 @@ namespace AngelLoader
                     ReadTranslatedLanguageName(f);
 
                     // These need to be set after language read. Slightly awkward but oh well.
-                    SetDefaultConfigVarNamesToLocalized();
+                    //SetDefaultConfigVarNamesToLocalized();
                 }
 
                 if (!openSettings)
@@ -151,7 +151,7 @@ namespace AngelLoader
             }
         }
 
-        public static async Task<bool> OpenSettings(bool startup = false)
+        public static async Task OpenSettings(bool startup = false)
         {
             using (var sf = new SettingsForm(View, Config, startup))
             {
@@ -178,7 +178,7 @@ namespace AngelLoader
                         // Since nothing of consequence has yet happened, it's okay to do the brutal quit
                         Environment.Exit(0);
                     }
-                    return false;
+                    return;
                 }
 
                 #region Set changed bools
@@ -296,7 +296,7 @@ namespace AngelLoader
                     View.FinishInitAndShow();
 #pragma warning restore 4014
 
-                    return true;
+                    return;
                 }
 
                 // From this point on, we're not in startup mode.
@@ -410,17 +410,16 @@ namespace AngelLoader
 
                 #endregion
             }
-
-            return true;
         }
 
-        internal static void SetDefaultConfigVarNamesToLocalized()
-        {
-            //Defaults.CV_ForceFullScreen.Name = LText.ConfigVars.ForceFullScreen;
-            //Defaults.CV_ForceWindowed.Name = LText.ConfigVars.ForceWindowed;
-            //Defaults.CV_ForceNewMantle.Name = LText.ConfigVars.ForceNewMantle;
-            //Defaults.CV_ForceOldMantle.Name = LText.ConfigVars.ForceOldMantle;
-        }
+        // Future use
+        //internal static void SetDefaultConfigVarNamesToLocalized()
+        //{
+        //    Defaults.CV_ForceFullScreen.Name = LText.ConfigVars.ForceFullScreen;
+        //    Defaults.CV_ForceWindowed.Name = LText.ConfigVars.ForceWindowed;
+        //    Defaults.CV_ForceNewMantle.Name = LText.ConfigVars.ForceNewMantle;
+        //    Defaults.CV_ForceOldMantle.Name = LText.ConfigVars.ForceOldMantle;
+        //}
 
         internal static void SortFMsViewList(Column column, SortOrder sortDirection)
         {
@@ -484,7 +483,7 @@ namespace AngelLoader
 
         #region Get FM install paths
 
-        internal static string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
+        private static string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
         {
             string CreateAndReturn(string fmsPath)
             {
@@ -558,7 +557,7 @@ namespace AngelLoader
             return Directory.Exists(path) ? path : CreateAndReturn(Path.Combine(gamePath, "FMs"));
         }
 
-        internal static (Error Error, bool UseCentralSaves, string Path)
+        private static (Error Error, bool UseCentralSaves, string Path)
         GetInstFMsPathFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();
@@ -634,14 +633,13 @@ namespace AngelLoader
         #region Scan
 
         // Super quick-n-cheap hack for perf
-        internal static List<int> ViewListGamesNull = new List<int>();
+        internal static readonly List<int> ViewListGamesNull = new List<int>();
 
-        internal static async Task<bool> ScanFMAndRefresh(FanMission fm, ScanOptions scanOptions = null)
+        internal static async Task ScanFMAndRefresh(FanMission fm, ScanOptions scanOptions = null)
         {
             if (scanOptions == null) scanOptions = GetDefaultScanOptions();
             bool success = await ScanFM(fm, scanOptions);
             if (success) await View.RefreshSelectedFM(refreshReadme: false);
-            return success;
         }
 
         internal static Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions);

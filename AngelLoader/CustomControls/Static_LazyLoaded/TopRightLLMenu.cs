@@ -29,36 +29,36 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             Menu = new ContextMenuStripCustom(components) { Name = nameof(Menu) };
             Menu.Items.AddRange(new ToolStripItem[]
             {
-                (StatsMenuItem = new ToolStripMenuItem
+                StatsMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(StatsMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Statistics],
                     CheckOnClick = true
-                }),
-                (EditFMMenuItem = new ToolStripMenuItem
+                },
+                EditFMMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(EditFMMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.EditFM],
                     CheckOnClick = true
-                }),
-                (CommentMenuItem = new ToolStripMenuItem
+                },
+                CommentMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(CommentMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Comment],
                     CheckOnClick = true
-                }),
-                (TagsMenuItem = new ToolStripMenuItem
+                },
+                TagsMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(TagsMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Tags],
                     CheckOnClick = true
-                }),
-                (PatchMenuItem = new ToolStripMenuItem
+                },
+                PatchMenuItem = new ToolStripMenuItem
                 {
                     Name = nameof(PatchMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Patch],
                     CheckOnClick = true
-                })
+                }
             });
 
             #endregion

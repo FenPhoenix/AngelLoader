@@ -19,9 +19,7 @@ namespace FenGen
         internal static int CountChars(this string value, char character)
         {
             int count = 0;
-            for (int i = 0; i < value.Length; i++)
-                if (value[i] == character)
-                    count++;
+            for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
 
             return count;
         }

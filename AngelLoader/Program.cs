@@ -9,7 +9,7 @@ using static AngelLoader.Common.Logger;
 
 namespace AngelLoader
 {
-    internal class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.

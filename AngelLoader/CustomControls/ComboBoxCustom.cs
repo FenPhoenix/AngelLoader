@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.CustomControls
 {
@@ -30,6 +31,7 @@ namespace AngelLoader.CustomControls
             Items.Clear();
         }
 
+        [PublicAPI]
         internal int BackingIndexOf(string item) => BackingItems.IndexOf(item);
 
         internal string SelectedBackingItem() => BackingItems[SelectedIndex];

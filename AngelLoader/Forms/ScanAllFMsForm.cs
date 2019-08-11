@@ -11,7 +11,7 @@ namespace AngelLoader.Forms
     {
         private readonly CheckBox[] CheckBoxes;
 
-        internal ScanOptions ScanOptions = ScanOptions.FalseDefault();
+        internal readonly ScanOptions ScanOptions = ScanOptions.FalseDefault();
         internal bool NoneSelected;
 
         public ScanAllFMsForm()
@@ -32,7 +32,7 @@ namespace AngelLoader.Forms
             Localize();
         }
 
-        internal void Localize()
+        private void Localize()
         {
             Text = LText.ScanAllFMsBox.TitleText;
 

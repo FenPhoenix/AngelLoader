@@ -4,6 +4,8 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
 /*
  We have NewDark executables call out to this stub program, which provides the NewDark game with data that has
@@ -57,6 +59,9 @@ namespace AngelLoader_Stub
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Ansi)]
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel's naming")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
     internal struct sFMSelectorData
     {
         // sizeof(sFMSelectorData)
@@ -98,12 +103,16 @@ namespace AngelLoader_Stub
 
     #endregion
 
+    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+    [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
     internal sealed class ArgsFileData
     {
-        internal string SelectedFMName { get; set; } = "";
-        internal string DisabledMods { get; set; } = "";
+        // These need to be non-null
+        internal string SelectedFMName = "";
+        internal string DisabledMods = "";
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     internal enum StubResponseError
     {
         RootTooLong,
@@ -112,6 +121,7 @@ namespace AngelLoader_Stub
         LanguageTooLong
     }
 
+    [UsedImplicitly]
     internal static class Program
     {
         private static readonly string BaseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
@@ -131,7 +141,8 @@ namespace AngelLoader_Stub
                     var key = line.Substring(0, line.IndexOf('='));
                     var value = line.Substring(line.IndexOf('=') + 1);
 
-                    var p = argsFileData.GetType().GetProperty(key, BindingFlags.IgnoreCase |
+                    // Reflection cause who cares, it's not a bottleneck
+                    var p = argsFileData.GetType().GetField(key, BindingFlags.IgnoreCase |
                                                                     BindingFlags.NonPublic |
                                                                     BindingFlags.Instance);
                     if (p != null) p.SetValue(argsFileData, value);
@@ -154,6 +165,7 @@ namespace AngelLoader_Stub
 
         [DllExport(CallingConvention = CallingConvention.Cdecl, ExportName = "SelectFM")]
         [STAThread]
+        [UsedImplicitly]
         // This doesn't need to be public. It can even be private and still work. But, since I have incomplete
         // knowledge of what goes on with this semi-undocumented exporting stuff, and no knowledge at all of what
         // NewDark's calling code looks like, I'm being abundantly cautious...

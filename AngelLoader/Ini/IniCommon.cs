@@ -26,16 +26,6 @@ namespace AngelLoader.Ini
 
         #region BindingFlags
 
-        private const BindingFlags BFlagsInstance = BindingFlags.IgnoreCase |
-                                                    BindingFlags.Public |
-                                                    BindingFlags.NonPublic |
-                                                    BindingFlags.Instance;
-
-        private const BindingFlags BFlagsStatic = BindingFlags.IgnoreCase |
-                                                  BindingFlags.Public |
-                                                  BindingFlags.NonPublic |
-                                                  BindingFlags.Static;
-
         private const BindingFlags BFlagsEnum = BindingFlags.Instance |
                                                 BindingFlags.Static |
                                                 BindingFlags.Public |
