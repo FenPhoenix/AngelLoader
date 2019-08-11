@@ -46,6 +46,7 @@ namespace AngelLoader_Stub
 
     // All comments are as they appear in fm_selector_api.txt in the NewDark package.
 
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel API naming")]
     internal enum eFMSelReturn
     {
         // run selected FM 'data->sName' (0-len string to run without an FM)
@@ -59,7 +60,7 @@ namespace AngelLoader_Stub
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Ansi)]
-    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel's naming")]
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel API naming")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
     internal struct sFMSelectorData

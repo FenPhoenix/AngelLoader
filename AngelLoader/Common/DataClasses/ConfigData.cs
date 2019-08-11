@@ -183,6 +183,6 @@ namespace AngelLoader.Common.DataClasses
 
         #endregion
 
-        internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
+        //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
     }
 }
