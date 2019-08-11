@@ -1654,6 +1654,9 @@ namespace AngelLoader.Forms
                 selectedFM != null ? KeepSel.TrueNearest :
                 keepSelection || gameTabSwitch ? KeepSel.True : KeepSel.False;
 
+            // Fix: in RefreshFMsList, CurrentSelFM was being used when coming from no FMs listed to some FMs listed
+            if (!gameTabSwitch && oldSelectedFM == null) keepSel = KeepSel.False;
+
             if (gameTabSwitch) forceDisplayFM = true;
 
             SortFMsDGV((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
@@ -1667,10 +1670,11 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    Trace.WriteLine(nameof(keepSelection) + ": " + keepSelection);
-                    Trace.WriteLine("selectedFM != null: " + (selectedFM != null));
-                    Trace.WriteLine("!selectedFM.InstalledName.IsEmpty(): " + (selectedFM != null && !selectedFM.InstalledName.IsEmpty()));
-                    Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir));
+                    // DEBUG: Keep this in for testing this because the whole thing is irrepressibly finicky
+                    //Trace.WriteLine(nameof(keepSelection) + ": " + keepSelection);
+                    //Trace.WriteLine("selectedFM != null: " + (selectedFM != null));
+                    //Trace.WriteLine("!selectedFM.InstalledName.IsEmpty(): " + (selectedFM != null && !selectedFM.InstalledName.IsEmpty()));
+                    //Trace.WriteLine("selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir: " + (selectedFM != null && selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir));
 
                     // Optimization in case we land on the same as FM as before, don't reload it
                     // And whaddaya know, I still ended up having to have this eyes-glazing-over stuff here.
@@ -1678,7 +1682,9 @@ namespace AngelLoader.Forms
                          selectedFM != null && !selectedFM.InstalledName.IsEmpty() &&
                          selectedFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir) ||
                         (!keepSelection &&
-                         (oldSelectedFM == null || (FMsDGV.RowSelected() && !oldSelectedFM.Equals(FMsDGV.GetSelectedFM())))))
+                         (oldSelectedFM == null || (FMsDGV.RowSelected() && !oldSelectedFM.Equals(FMsDGV.GetSelectedFM())))) ||
+                        // Fix: when resetting release date filter the readme wouldn't load for the selected FM
+                        oldSelectedFM == null)
                     {
                         await DisplaySelectedFM(true);
                     }
