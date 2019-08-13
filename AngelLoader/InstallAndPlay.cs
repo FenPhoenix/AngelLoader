@@ -418,6 +418,8 @@ namespace AngelLoader
 
         internal static async Task<bool> InstallFM(FanMission fm)
         {
+            #region Checks
+
             Debug.Assert(!fm.Installed, "!fm.Installed");
 
             if (fm.Game == Game.Null)
@@ -465,6 +467,8 @@ namespace AngelLoader
                                LText.AlertMessages.Install_GameIsRunning, LText.AlertMessages.Alert);
                 return false;
             }
+
+            #endregion
 
             var fmInstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
 
@@ -518,14 +522,8 @@ namespace AngelLoader
                 Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
                 await ac.ConvertMP3sToWAVs();
 
-                if (Config.ConvertOGGsToWAVsOnInstall)
-                {
-                    await ac.ConvertOGGsToWAVs();
-                }
-                else if (Config.ConvertWAVsTo16BitOnInstall)
-                {
-                    await ac.ConvertWAVsTo16Bit();
-                }
+                if (Config.ConvertOGGsToWAVsOnInstall) await ac.ConvertOGGsToWAVs();
+                if (Config.ConvertWAVsTo16BitOnInstall) await ac.ConvertWAVsTo16Bit();
             }
             catch (Exception ex)
             {
@@ -636,8 +634,7 @@ namespace AngelLoader
 
                         extractor.FileExtractionFinished += (sender, e) =>
                         {
-                            SetFileAttributesFromSevenZipEntry(e.FileInfo,
-                                Path.Combine(fmInstalledPath, e.FileInfo.FileName));
+                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
@@ -654,8 +651,7 @@ namespace AngelLoader
                         catch (Exception ex)
                         {
                             // Throws a weird exception even if everything's fine
-                            Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)",
-                                ex);
+                            Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
                         }
                     }
                 }
