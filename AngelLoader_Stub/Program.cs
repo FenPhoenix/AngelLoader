@@ -46,7 +46,7 @@ namespace AngelLoader_Stub
 
     // All comments are as they appear in fm_selector_api.txt in the NewDark package.
 
-    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel API naming")]
+    [PublicAPI, SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel API naming")]
     internal enum eFMSelReturn
     {
         // run selected FM 'data->sName' (0-len string to run without an FM)
@@ -60,9 +60,7 @@ namespace AngelLoader_Stub
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4, CharSet = CharSet.Ansi)]
-    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel API naming")]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+    [PublicAPI, SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Matches FMSel API naming")]
     internal struct sFMSelectorData
     {
         // sizeof(sFMSelectorData)
@@ -104,8 +102,7 @@ namespace AngelLoader_Stub
 
     #endregion
 
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-    [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
+    [UsedImplicitly(ImplicitUseTargetFlags.Members)]
     internal sealed class ArgsFileData
     {
         // These need to be non-null
@@ -134,18 +131,18 @@ namespace AngelLoader_Stub
         {
             using (var sr = new StreamReader(path, Encoding.UTF8))
             {
-                while (!sr.EndOfStream)
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    var line = sr.ReadLine();
-                    if (line == null || !line.Contains("=")) continue;
+                    if (line.IndexOf('=') == -1) continue;
 
                     var key = line.Substring(0, line.IndexOf('='));
                     var value = line.Substring(line.IndexOf('=') + 1);
 
                     // Reflection cause who cares, it's not a bottleneck
                     var p = argsFileData.GetType().GetField(key, BindingFlags.IgnoreCase |
-                                                                    BindingFlags.NonPublic |
-                                                                    BindingFlags.Instance);
+                                                                 BindingFlags.NonPublic |
+                                                                 BindingFlags.Instance);
                     if (p != null) p.SetValue(argsFileData, value);
                 }
             }
@@ -157,16 +154,13 @@ namespace AngelLoader_Stub
 
             using (var sw = new StreamWriter(path, append: false))
             {
-                foreach (var error in errors)
-                {
-                    sw.WriteLine(error.ToString());
-                }
+                foreach (var error in errors) sw.WriteLine(error.ToString());
             }
         }
 
         [DllExport(CallingConvention = CallingConvention.Cdecl, ExportName = "SelectFM")]
         [STAThread]
-        [UsedImplicitly]
+        [PublicAPI("Called into by NewDark")]
         // This doesn't need to be public. It can even be private and still work. But, since I have incomplete
         // knowledge of what goes on with this semi-undocumented exporting stuff, and no knowledge at all of what
         // NewDark's calling code looks like, I'm being abundantly cautious...
