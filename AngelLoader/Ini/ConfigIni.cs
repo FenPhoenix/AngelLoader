@@ -439,7 +439,7 @@ namespace AngelLoader.Ini
                 {
                     if (!val.Contains(',')) continue;
 
-                    var values = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var values = val.Split(',').ToList();
                     var widthExists = int.TryParse(values[0].Trim(), out var width);
                     var heightExists = int.TryParse(values[1].Trim(), out var height);
 
@@ -630,7 +630,7 @@ namespace AngelLoader.Ini
                 {
                     if (!val.Contains(',')) continue;
 
-                    var values = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var values = val.Split(',').ToList();
                     var widthExists = int.TryParse(values[0].Trim(), out var width);
                     var heightExists = int.TryParse(values[1].Trim(), out var height);
 
@@ -643,7 +643,7 @@ namespace AngelLoader.Ini
                 {
                     if (!val.Contains(',')) continue;
 
-                    var values = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var values = val.Split(',').ToList();
                     var xExists = int.TryParse(values[0].Trim(), out var x);
                     var yExists = int.TryParse(values[1].Trim(), out var y);
 
