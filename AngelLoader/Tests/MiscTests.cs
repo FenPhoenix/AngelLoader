@@ -60,8 +60,6 @@ namespace AngelLoader.Tests
 
             Methods.UpdateFMTagsString(fm);
 
-            Trace.WriteLine(fm.TagsString);
-
             Assert.Equal(
                 "author:Tannar,author:Random_Taffer,contest:10 rooms,length:short,series,misc:campaign,misc:atmospheric,misc:other protagonist,misc:water,misc:thing_shaped",
                 fm.TagsString);
