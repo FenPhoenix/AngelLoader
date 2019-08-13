@@ -14,6 +14,12 @@ namespace AngelLoader.Tests
     public class MiscTests
     {
         [Fact]
+        public void ReadConfigIni_Test()
+        {
+            // TODO: Assert against all possible bad data that I can think of here
+        }
+
+        [Fact]
         public async void InstallFM_Test()
         {
             var fm = new FanMission();
