@@ -294,14 +294,14 @@ namespace AngelLoader.Common.Utility
                 }
             }
 
-            string finalValue = "";
+            var sb = new StringBuilder();
             for (int i = 0; i < intermediateList.Count; i++)
             {
-                if (i > 0) finalValue += ",";
-                finalValue += intermediateList[i];
+                if (i > 0) sb.Append(',');
+                sb.Append(intermediateList[i]);
             }
 
-            fm.TagsString = finalValue;
+            fm.TagsString = sb.ToString();
         }
 
         // Very awkward procedure that accesses global state in the name of only doing one iteration
