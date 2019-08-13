@@ -357,6 +357,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Tests\MiscTests.cs" />
     <Compile Include="WinAPI\Dialogs\Interop.cs" />
     <Compile Include="WinAPI\Dialogs\FolderBrowserDialog.cs" />
     <Compile Include="Program.cs" />
@@ -523,6 +524,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release_Beta (
@@ -538,17 +540,14 @@ xcopy "$(TargetDir)AngelLoader.exe.config" %25destDir%25 /y
 
 xcopy "$(TargetDir)*.dll" %25destDir%25 /y
 
-rem Dumb hack to get rid of the JetBrains.Annotations.dll because ludicrously
+rem Dumb hack to get rid of extraneous dll files because ludicrously
 rem xcopy requires you to make an entire file just to list excludes, rather than
 rem specifying them on the command line like someone who is not clinically insane
 del /F "%25destDir%25JetBrains.Annotations.dll"
+del /F "%25destDir%25*xunit*.dll"
 
 xcopy "$(TargetDir)x86\7z.dll" %25destDir%25 /y
 xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
-
-xcopy "$(TargetDir)ffmpeg.exe" %25destDir%25 /y
-xcopy "$(TargetDir)ffprobe.exe" %25destDir%25 /y
-xcopy "$(TargetDir)ffmpeg.txt" %25destDir%25 /y
 
 xcopy "$(TargetDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
 
