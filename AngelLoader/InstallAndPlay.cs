@@ -671,16 +671,7 @@ namespace AngelLoader
             return !canceled;
         }
 
-        internal static void CancelInstallFM()
-        {
-            try
-            {
-                ExtractCts?.Cancel();
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-        }
+        internal static void CancelInstallFM() => ExtractCts.CancelIfNotDisposed();
 
         private static async Task UninstallFM(FanMission fm)
         {

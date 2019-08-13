@@ -896,16 +896,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal static void CancelScan()
-        {
-            try
-            {
-                ScanCts?.Cancel();
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-        }
+        internal static void CancelScan() => ScanCts.CancelIfNotDisposed();
 
         internal static async Task ScanNewFMsForGameType(bool useViewListGamesNull = false)
         {

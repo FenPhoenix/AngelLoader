@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using JetBrains.Annotations;
@@ -603,5 +604,10 @@ namespace AngelLoader.Common.Utility
         }
 
         #endregion
+
+        internal static void CancelIfNotDisposed(this CancellationTokenSource value)
+        {
+            try { value?.Cancel(); } catch (ObjectDisposedException) { }
+        }
     }
 }
