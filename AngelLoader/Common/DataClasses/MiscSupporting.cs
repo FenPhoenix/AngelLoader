@@ -151,9 +151,8 @@ namespace AngelLoader.Common.DataClasses
 
         private bool NoneVisible()
         {
-            int count = 0;
-            for (int i = 0; i < TopRightTabsCount; i++) if (Tabs[i].Visible) count++;
-            return count == 0;
+            for (int i = 0; i < TopRightTabsCount; i++) if (Tabs[i].Visible) return false;
+            return true;
         }
 
         private void SetAllVisible(bool visible)
