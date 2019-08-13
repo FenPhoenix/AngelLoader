@@ -871,7 +871,7 @@ namespace AngelLoader.Forms
             if (Core.ViewListGamesNull.Count > 0)
             {
                 Show();
-                await Core.ScanNewFMsForGameType(useViewListGamesNull: true);
+                await Core.ScanNewFMsForGameType();
             }
 
             SetFilter();

@@ -395,7 +395,7 @@ namespace AngelLoader
                 {
                     if (archivePathsChanged || gamePathsChanged)
                     {
-                        if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
+                        if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
                     }
 
                     // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
@@ -898,43 +898,35 @@ namespace AngelLoader
 
         internal static void CancelScan() => ScanCts.CancelIfNotDisposed();
 
-        internal static async Task ScanNewFMsForGameType(bool useViewListGamesNull = false)
+        internal static async Task ScanNewFMsForGameType()
         {
             var fmsToScan = new List<FanMission>();
 
-            restart:
-
-            if (useViewListGamesNull)
+            try
             {
-                try
-                {
-                    // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
-                    foreach (var index in ViewListGamesNull) fmsToScan.Add(FMDataIniList[index]);
-                }
-                catch
-                {
-                    // Cheap fallback in case something goes wrong, because what we're doing is a little iffy
-                    useViewListGamesNull = false;
-                    goto restart;
-                }
-                finally
-                {
-                    // Critical that this gets cleared immediately after use!
-                    ViewListGamesNull.Clear();
-                }
+                // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
+                // (not FMsViewList)
+                foreach (var index in ViewListGamesNull) fmsToScan.Add(FMDataIniList[index]);
             }
-            else
+            catch
             {
+                // Cheap fallback in case something goes wrong, because what we're doing is a little iffy
+                fmsToScan.Clear();
+                // Since we're doing it manually here, we can pull from FMsViewList for perf (it'll be the same
+                // size or smaller than FMDataIniList)
                 foreach (var fm in FMsViewList) if (fm.Game == Game.Null) fmsToScan.Add(fm);
+            }
+            finally
+            {
+                // Critical that this gets cleared immediately after use!
+                ViewListGamesNull.Clear();
             }
 
             if (fmsToScan.Count > 0)
             {
-                var scanOptions = ScanOptions.FalseDefault(scanGameType: true);
-
                 try
                 {
-                    await ScanFMs(fmsToScan, scanOptions, markAsScanned: false);
+                    await ScanFMs(fmsToScan, ScanOptions.FalseDefault(scanGameType: true), markAsScanned: false);
                 }
                 catch (Exception ex)
                 {
@@ -1054,7 +1046,7 @@ namespace AngelLoader
         {
             FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType(useViewListGamesNull: true);
+            if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
         }
 
         #region Audio conversion (mainly for pre-checks)
