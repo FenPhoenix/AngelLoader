@@ -382,7 +382,7 @@ namespace AngelLoader
                 }
                 if (useFixedFontChanged)
                 {
-                    View.ChangeReadmeBoxFont(sf.OutConfig.ReadmeUseFixedWidthFont);
+                    View.ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
                 }
 
                 #endregion
