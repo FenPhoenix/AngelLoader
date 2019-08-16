@@ -166,13 +166,10 @@ namespace AngelLoader.Forms
                 PathsPage.Thief3ExePathTextBox
             };
 
-            Text = LText.SettingsWindow.TitleText;
-
             using (new DisableEvents(this))
             {
                 if (startup)
                 {
-                    Text = LText.SettingsWindow.StartupTitleText;
                     // _Load is too late for some of this stuff, so might as well put everything here
                     StartPosition = FormStartPosition.CenterScreen;
                     ShowInTaskbar = true;
@@ -432,6 +429,8 @@ namespace AngelLoader.Forms
             if (suspendResume) this.SuspendDrawing();
             try
             {
+                Text = Startup ? LText.SettingsWindow.StartupTitleText : LText.SettingsWindow.TitleText;
+
                 OKButton.SetTextAutoSize(LText.Global.OK, ((Size)OKButton.Tag).Width);
                 Cancel_Button.SetTextAutoSize(LText.Global.Cancel, ((Size)Cancel_Button.Tag).Width);
 

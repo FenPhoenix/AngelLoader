@@ -445,6 +445,8 @@ namespace AngelLoader
 
         private static Error SetPaths()
         {
+            // TODO: These single-error returns don't work, change to something else
+
             // PERF: 9ms, but it's mostly IO. Darn.
             var t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
             var t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
@@ -455,7 +457,7 @@ namespace AngelLoader
                 var gamePath = Path.GetDirectoryName(Config.T1Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
                 Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
-                if (error == Error.CamModIniNotFound) return Error.T1CamModIniNotFound;
+                //if (error == Error.CamModIniNotFound) return Error.T1CamModIniNotFound;
                 Config.SetT1FMInstPath(gameFMsPath);
             }
             if (t2Exists)
@@ -464,20 +466,21 @@ namespace AngelLoader
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
                 Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
                 Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
-                if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
+                //if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
                 Config.SetT2FMInstPath(gameFMsPath);
             }
             if (t3Exists)
             {
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
-                if (error != Error.None) return error;
+                //if (error != Error.None) return error;
                 Config.SetT3FMInstPath(path);
                 Config.T3UseCentralSaves = useCentralSaves;
             }
 
             return
-                !t1Exists && !t2Exists && !t3Exists ? Error.NoGamesSpecified :
+                // Must be first, otherwise other stuff overrides it and then we don't act on it
                 !Directory.Exists(Config.FMsBackupPath) ? Error.BackupPathNotSpecified :
+                !t1Exists && !t2Exists && !t3Exists ? Error.NoGamesSpecified :
                 Error.None;
         }
 
