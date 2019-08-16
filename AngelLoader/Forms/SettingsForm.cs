@@ -1184,34 +1184,19 @@ namespace AngelLoader.Forms
 
         private void ShowPathError(TextBox textBox, bool shown)
         {
-            if (shown)
-            {
-                if (textBox != null)
-                {
-                    textBox.BackColor = Color.MistyRose;
-                    textBox.Tag = PathError.True;
-                }
-                ErrorLabel.Text = LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid;
-                ErrorLabel.Show();
-            }
-            else
-            {
-                if (textBox != null)
-                {
-                    textBox.BackColor = SystemColors.Window;
-                    textBox.Tag = PathError.False;
-                }
+            textBox.BackColor = shown ? Color.MistyRose : SystemColors.Window;
+            textBox.Tag = shown ? PathError.True : PathError.False;
 
-                bool errorsRemaining = PathsPage.BackupPathTextBox.Tag is PathError bError && bError == PathError.True;
+            if (!shown)
+            {
                 foreach (var tb in GameExePathTextBoxes)
                 {
-                    if (tb.Tag is PathError gError && gError == PathError.True) errorsRemaining = true;
+                    if (tb.Tag is PathError gError && gError == PathError.True) return;
                 }
-                if (errorsRemaining) return;
-
-                ErrorLabel.Text = "";
-                ErrorLabel.Hide();
             }
+
+            ErrorLabel.Text = shown ? LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid : "";
+            ErrorLabel.Visible = shown;
         }
 
         private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
