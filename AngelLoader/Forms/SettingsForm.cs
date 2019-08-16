@@ -126,34 +126,43 @@ namespace AngelLoader.Forms
             #region Hook up page events
 
             PathsPage.Thief1ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
-            PathsPage.Thief1ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
-            PathsPage.Thief3ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
-            PathsPage.Thief2ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
-            PathsPage.Thief3ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
             PathsPage.Thief2ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
-            PathsPage.AddFMArchivePathButton.Click += AddFMArchivePathButton_Click;
-            PathsPage.RemoveFMArchivePathButton.Click += RemoveFMArchivePathButton_Click;
+            PathsPage.Thief3ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
+
+            PathsPage.Thief1ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+            PathsPage.Thief2ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+            PathsPage.Thief3ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+
             PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
             PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
+
+            PathsPage.AddFMArchivePathButton.Click += AddFMArchivePathButton_Click;
+            PathsPage.RemoveFMArchivePathButton.Click += RemoveFMArchivePathButton_Click;
 
             LangComboBox.SelectedIndexChanged += LanguageComboBox_SelectedIndexChanged;
 
             if (!startup)
             {
-                FMDisplayPage.RatingUseStarsCheckBox.CheckedChanged += RatingUseStarsCheckBox_CheckedChanged;
-                FMDisplayPage.RatingFMSelDisplayStyleRadioButton.CheckedChanged += RatingOutOfFiveRadioButton_CheckedChanged;
-                FMDisplayPage.RatingNDLDisplayStyleRadioButton.CheckedChanged += RatingOutOfTenRadioButton_CheckedChanged;
-                FMDisplayPage.DateSeparator2TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
-                FMDisplayPage.Date1ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
-                FMDisplayPage.DateSeparator1TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
-                FMDisplayPage.Date4ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
-                FMDisplayPage.Date2ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
-                FMDisplayPage.Date3ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
-                FMDisplayPage.DateCustomRadioButton.CheckedChanged += DateCustomRadioButton_CheckedChanged;
-                FMDisplayPage.DateCurrentCultureLongRadioButton.CheckedChanged += DateCurrentCultureLongRadioButton_CheckedChanged;
-                FMDisplayPage.DateCurrentCultureShortRadioButton.CheckedChanged += DateCurrentCultureShortRadioButton_CheckedChanged;
                 FMDisplayPage.EnableIgnoreArticlesCheckBox.CheckedChanged += ArticlesCheckBox_CheckedChanged;
                 FMDisplayPage.ArticlesTextBox.Leave += ArticlesTextBox_Leave;
+
+                FMDisplayPage.RatingNDLDisplayStyleRadioButton.CheckedChanged += RatingOutOfTenRadioButton_CheckedChanged;
+                FMDisplayPage.RatingFMSelDisplayStyleRadioButton.CheckedChanged += RatingOutOfFiveRadioButton_CheckedChanged;
+                FMDisplayPage.RatingUseStarsCheckBox.CheckedChanged += RatingUseStarsCheckBox_CheckedChanged;
+
+                FMDisplayPage.DateCurrentCultureShortRadioButton.CheckedChanged += DateRadioButtons_CheckedChanged;
+                FMDisplayPage.DateCurrentCultureLongRadioButton.CheckedChanged += DateRadioButtons_CheckedChanged;
+                FMDisplayPage.DateCustomRadioButton.CheckedChanged += DateCustomRadioButton_CheckedChanged;
+
+                FMDisplayPage.Date1ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+                FMDisplayPage.Date2ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+                FMDisplayPage.Date3ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+                FMDisplayPage.Date4ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+
+                FMDisplayPage.DateSeparator1TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
+                FMDisplayPage.DateSeparator2TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
+                FMDisplayPage.DateSeparator3TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
+
                 OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
             }
 
@@ -1017,7 +1026,7 @@ namespace AngelLoader.Forms
 
         #region Date display
 
-        private void UpdateExampleDate()
+        private void UpdateCustomExampleDate()
         {
 
             var formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
@@ -1045,6 +1054,14 @@ namespace AngelLoader.Forms
             }
         }
 
+        private void DateRadioButtons_CheckedChanged(object sender, EventArgs e)
+        {
+            FMDisplayPage.DateCustomFormatPanel.Enabled = false;
+            FMDisplayPage.PreviewDateLabel.Text = sender == FMDisplayPage.DateCurrentCultureShortRadioButton
+                    ? exampleDate.ToShortDateString()
+                    : exampleDate.ToLongDateString();
+        }
+
         private void DateCurrentCultureShortRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             FMDisplayPage.DateCustomFormatPanel.Enabled = false;
@@ -1062,17 +1079,17 @@ namespace AngelLoader.Forms
             var s = (RadioButton)sender;
             FMDisplayPage.DateCustomFormatPanel.Enabled = s.Checked;
 
-            if (s.Checked) UpdateExampleDate();
+            if (s.Checked) UpdateCustomExampleDate();
         }
 
         private void DateComboBoxes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateExampleDate();
+            if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
         }
 
         private void DateSeparatorTextBoxes_TextChanged(object sender, EventArgs e)
         {
-            if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateExampleDate();
+            if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
         }
 
         #endregion
