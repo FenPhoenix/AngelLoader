@@ -575,20 +575,11 @@ namespace AngelLoader.Forms
                     try
                     {
                         Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
+                        LocalizeOwnerForm();
                     }
                     catch (Exception ex)
                     {
                         Log("Exception in language reading", ex);
-                        return;
-                    }
-
-                    try
-                    {
-                        OwnerForm.Localize();
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
                     }
                 }
 
@@ -1039,8 +1030,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                var date = exampleDate.ToString(formatString);
-                FMDisplayPage.PreviewDateLabel.Text = date;
+                FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToString(formatString);
             }
             catch (FormatException)
             {
@@ -1135,17 +1125,7 @@ namespace AngelLoader.Forms
             {
                 Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
                 Localize();
-                if (!Startup)
-                {
-                    try
-                    {
-                        OwnerForm.Localize();
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
-                    }
-                }
+                if (!Startup) LocalizeOwnerForm();
             }
             catch (Exception ex)
             {
@@ -1201,6 +1181,18 @@ namespace AngelLoader.Forms
                     DialogResult = DialogResult.Cancel;
                     Close();
                 }
+            }
+        }
+
+        private void LocalizeOwnerForm()
+        {
+            try
+            {
+                OwnerForm.Localize();
+            }
+            catch (Exception ex)
+            {
+                Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
             }
         }
     }
