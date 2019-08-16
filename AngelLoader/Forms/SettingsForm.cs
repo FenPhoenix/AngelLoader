@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
@@ -35,7 +36,20 @@ namespace AngelLoader.Forms
 
         private readonly bool Startup;
 
+        #region Copies of passed-in data
+
+        // TODO: Remove once all references are out of _Load and into the ctor
         private readonly ConfigData InConfig;
+
+        private readonly string _inLanguage;
+        private readonly ReadOnlyDictionary<string, string> _inLanguageNames;
+
+        private readonly int _inPathsVScrollPos;
+        private readonly int _inFMDisplayVScrollPos;
+        private readonly int _inOtherVScrollPos;
+
+        #endregion
+
         public readonly ConfigData OutConfig;
 
         private readonly RadioButtonCustom[] PageRadioButtons;
@@ -79,19 +93,32 @@ namespace AngelLoader.Forms
 
             Startup = startup;
             OwnerForm = ownerForm;
+
+            #region Init copies of passed-in data
+
             InConfig = config;
+
+            _inLanguage = config.Language;
+            _inLanguageNames = new ReadOnlyDictionary<string, string>(config.LanguageNames);
+
+            _inPathsVScrollPos = config.SettingsPathsVScrollPos;
+            _inFMDisplayVScrollPos = config.SettingsFMDisplayVScrollPos;
+            _inOtherVScrollPos = config.SettingsOtherVScrollPos;
+
+            #endregion
 
             LangGroupBox = OtherPage.LanguageGroupBox;
             LangComboBox = OtherPage.LanguageComboBox;
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
 
-            // TODO: This is ALWAYS initialized with non-nullable ints, yet it's doing checks for null and all?!
+            // These are nullable because null values get put INTO them. So not a mistake to fill them with non-
+            // nullable ints right off the bat.
             PageVScrollValues = new int?[]
             {
-                InConfig.SettingsPathsVScrollPos,
-                InConfig.SettingsFMDisplayVScrollPos,
-                InConfig.SettingsOtherVScrollPos
+                _inPathsVScrollPos,
+                _inFMDisplayVScrollPos,
+                _inOtherVScrollPos
             };
 
             #region Add pages
@@ -188,7 +215,7 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    switch (InConfig.SettingsTab)
+                    switch (config.SettingsTab)
                     {
                         case SettingsTab.FMDisplay:
                             FMDisplayRadioButton.Checked = true;
@@ -207,17 +234,17 @@ namespace AngelLoader.Forms
             OKButton.Tag = OKButton.Size;
             Cancel_Button.Tag = Cancel_Button.Size;
 
-            Width = Math.Min(InConfig.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
-            Height = Math.Min(InConfig.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
-            MainSplitContainer.SplitterDistance = InConfig.SettingsWindowSplitterDistance;
+            Width = Math.Min(config.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
+            Height = Math.Min(config.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
+            MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
         }
 
         private void SetPageScrollPos(ISettingsPage page)
         {
             int? pos =
-                page == PathsPage ? InConfig.SettingsPathsVScrollPos :
-                page == FMDisplayPage ? InConfig.SettingsFMDisplayVScrollPos :
-                page == OtherPage ? InConfig.SettingsOtherVScrollPos :
+                page == PathsPage ? _inPathsVScrollPos :
+                page == FMDisplayPage ? _inFMDisplayVScrollPos :
+                page == OtherPage ? _inOtherVScrollPos :
                 (int?)null;
 
             Debug.Assert(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
@@ -275,9 +302,12 @@ namespace AngelLoader.Forms
 
                 #region Date format
 
-                // NOTE: This section actually depends on the events in order to work. Also it appears to depend on
-                // none of the date-related checkboxes being checked by default. Absolutely don't make any of them
-                // checked by default!
+                // NOTE: This section actually depends on the events in order to work. Also it appears to depend
+                // on none of the date-related checkboxes being checked by default. Absolutely don't make any of
+                // them checked by default!
+
+                // TODO: If these event dependencies can be removed, we can put all this in the ctor
+                // And be one step closer to not having to have InConfig as a mutable class-level var
 
                 switch (InConfig.DateFormat)
                 {
@@ -413,22 +443,22 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                var langDict = new OrderedDictionary();
+                var tempLangDict = new OrderedDictionary();
 
-                foreach (var item in InConfig.LanguageNames) langDict[item.Key] = item.Value;
+                foreach (var item in _inLanguageNames) tempLangDict[item.Key] = item.Value;
 
                 const string engLang = "English";
 
-                if (langDict.Contains(engLang)) langDict.Remove(engLang);
-                langDict.Insert(0, engLang, engLang);
+                if (tempLangDict.Contains(engLang)) tempLangDict.Remove(engLang);
+                tempLangDict.Insert(0, engLang, engLang);
 
-                foreach (DictionaryEntry item in langDict)
+                foreach (DictionaryEntry item in tempLangDict)
                 {
                     LangComboBox.AddFullItem(item.Key.ToString(), item.Value.ToString());
                 }
 
-                LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(InConfig.Language)
-                    ? InConfig.Language
+                LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(_inLanguage)
+                    ? _inLanguage
                     : engLang);
             }
         }
@@ -579,11 +609,11 @@ namespace AngelLoader.Forms
 
             if (DialogResult != DialogResult.OK)
             {
-                if (!Startup && !LangComboBox.SelectedBackingItem().EqualsI(InConfig.Language))
+                if (!Startup && !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
                 {
                     try
                     {
-                        Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, InConfig.Language + ".ini"));
+                        Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, _inLanguage + ".ini"));
                         LocalizeOwnerForm();
                     }
                     catch (Exception ex)
