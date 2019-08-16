@@ -54,12 +54,15 @@ namespace AngelLoader.Forms
 
         public bool EventsDisabled { get; set; }
 
+#pragma warning disable IDE0069 // Disposable fields should be disposed
+        // They'll be disposed automatically like any other control
         private readonly ComboBoxCustom LangComboBox;
 
         private readonly GroupBox LangGroupBox;
         private readonly PathsPage PathsPage;
         private readonly FMDisplayPage FMDisplayPage;
         private readonly OtherPage OtherPage;
+#pragma warning restore IDE0069 // Disposable fields should be disposed
 
         internal SettingsForm(ILocalizable ownerForm, ConfigData config, bool startup)
         {
