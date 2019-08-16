@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.Common.Utility;
 using static AngelLoader.WinAPI.InteropMisc;
 
@@ -264,8 +266,10 @@ namespace AngelLoader.CustomControls
         /// </summary>
         /// <param name="path"></param>
         /// <param name="fileType"></param>
-        internal void LoadContent(string path, RichTextBoxStreamType fileType)
+        internal void LoadContent(string path, ReadmeType fileType)
         {
+            Debug.Assert(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
+
             SaveZoom();
 
             try
@@ -281,29 +285,29 @@ namespace AngelLoader.CustomControls
                 Clear();
                 ResetScrollInfo();
 
-                if (path.ExtIsGlml())
+                switch (fileType)
                 {
-                    var text = File.ReadAllText(path);
-                    // This resets the font if false, so don't do it after the load or it messes up the RTF.
-                    ContentIsPlainText = false;
-                    Rtf = GLMLToRTF(text);
-                }
-                else if (fileType == RichTextBoxStreamType.RichText)
-                {
-                    // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower
-                    var bytes = File.ReadAllBytes(path);
+                    case ReadmeType.GLML:
+                        var text = File.ReadAllText(path);
+                        // This resets the font if false, so don't do it after the load or it messes up the RTF.
+                        ContentIsPlainText = false;
+                        Rtf = GLMLToRTF(text);
+                        break;
+                    case ReadmeType.RichText:
+                        // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower
+                        var bytes = File.ReadAllBytes(path);
 
-                    ReplaceByteSequence(bytes, shppict, shppictBlanked);
-                    ReplaceByteSequence(bytes, nonshppict, nonshppictBlanked);
+                        ReplaceByteSequence(bytes, shppict, shppictBlanked);
+                        ReplaceByteSequence(bytes, nonshppict, nonshppictBlanked);
 
-                    // Ditto the above
-                    ContentIsPlainText = false;
-                    using (var ms = new MemoryStream(bytes)) LoadFile(ms, RichTextBoxStreamType.RichText);
-                }
-                else // Plain text
-                {
-                    ContentIsPlainText = true;
-                    LoadFile(path, fileType);
+                        // Ditto the above
+                        ContentIsPlainText = false;
+                        using (var ms = new MemoryStream(bytes)) LoadFile(ms, RichTextBoxStreamType.RichText);
+                        break;
+                    case ReadmeType.PlainText:
+                        ContentIsPlainText = true;
+                        LoadFile(path, RichTextBoxStreamType.PlainText);
+                        break;
                 }
             }
             finally

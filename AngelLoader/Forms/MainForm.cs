@@ -3125,7 +3125,7 @@ namespace AngelLoader.Forms
         {
             try
             {
-                var (path, type) = Core.GetReadmeFileAndType(fm);
+                var (path, fileType) = Core.GetReadmeFileAndType(fm);
                 #region Debug
 
                 // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
@@ -3136,7 +3136,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                if (type == ReadmeType.HTML)
+                if (fileType == ReadmeType.HTML)
                 {
                     ViewHTMLReadmeLLButton.Construct(this, MainSplitContainer.Panel2);
                     ViewHTMLReadmeLLButton.Show();
@@ -3148,9 +3148,6 @@ namespace AngelLoader.Forms
                 {
                     SetReadmeVisible(true);
                     ViewHTMLReadmeLLButton.Hide();
-                    var fileType = type == ReadmeType.PlainText
-                        ? RichTextBoxStreamType.PlainText
-                        : RichTextBoxStreamType.RichText;
 
                     ReadmeRichTextBox.LoadContent(path, fileType);
                 }

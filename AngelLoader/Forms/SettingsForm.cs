@@ -112,8 +112,8 @@ namespace AngelLoader.Forms
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
 
-            // These are nullable because null values get put INTO them. So not a mistake to fill them with non-
-            // nullable ints right off the bat.
+            // These are nullable because null values get put INTO them later. So not a mistake to fill them with
+            // non-nullable ints right off the bat.
             PageVScrollValues = new int?[]
             {
                 _inPathsVScrollPos,
@@ -1090,18 +1090,6 @@ namespace AngelLoader.Forms
             FMDisplayPage.PreviewDateLabel.Text = sender == FMDisplayPage.DateCurrentCultureShortRadioButton
                     ? exampleDate.ToShortDateString()
                     : exampleDate.ToLongDateString();
-        }
-
-        private void DateCurrentCultureShortRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            FMDisplayPage.DateCustomFormatPanel.Enabled = false;
-            FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToShortDateString();
-        }
-
-        private void DateCurrentCultureLongRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            FMDisplayPage.DateCustomFormatPanel.Enabled = false;
-            FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToLongDateString();
         }
 
         private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)

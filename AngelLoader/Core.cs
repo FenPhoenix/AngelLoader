@@ -1226,6 +1226,7 @@ namespace AngelLoader
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
 
             if (fm.SelectedReadme.ExtIsHtml()) return (readmeOnDisk, ReadmeType.HTML);
+            if (fm.SelectedReadme.ExtIsGlml()) return (readmeOnDisk, ReadmeType.GLML);
 
             var rtfHeader = new char[6];
 
