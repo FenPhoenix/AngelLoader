@@ -39,6 +39,8 @@ namespace AngelLoader
             bool openSettings;
             try
             {
+                #region Create required directories
+
                 try
                 {
                     Directory.CreateDirectory(Paths.Data);
@@ -51,6 +53,10 @@ namespace AngelLoader
                     MessageBox.Show(message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Environment.Exit(1);
                 }
+
+                #endregion
+
+                #region Read config file if it exists
 
                 if (File.Exists(Paths.ConfigIni))
                 {
@@ -70,6 +76,10 @@ namespace AngelLoader
                 {
                     openSettings = true;
                 }
+
+                #endregion
+
+                #region Read languages
 
                 // Have to read langs here because which language to use will be stored in the config file.
                 // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
@@ -102,6 +112,8 @@ namespace AngelLoader
                     //SetDefaultConfigVarNamesToLocalized();
                 }
 
+                #endregion
+
                 if (!openSettings)
                 {
                     #region Parallel load
@@ -111,8 +123,8 @@ namespace AngelLoader
                         // It's safe to overlap this with Find(), but not with MainForm.ctor()
                         configTask.Wait();
 
-                        // Construct and init the view both right here, because they're both heavy operations and we
-                        // want them both to run in parallel with Find() to the greatest extent possible.
+                        // Construct and init the view both right here, because they're both heavy operations and
+                        // we want them both to run in parallel with Find() to the greatest extent possible.
                         View = new MainForm();
                         View.InitThreadable();
 
@@ -173,11 +185,8 @@ namespace AngelLoader
 
                 if (result != DialogResult.OK)
                 {
-                    if (startup)
-                    {
-                        // Since nothing of consequence has yet happened, it's okay to do the brutal quit
-                        Environment.Exit(0);
-                    }
+                    // Since nothing of consequence has yet happened, it's okay to do the brutal quit
+                    if (startup) Environment.Exit(0);
                     return;
                 }
 
@@ -564,17 +573,12 @@ namespace AngelLoader
         GetInstFMsPathFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();
-            var errorMessage = LText.AlertMessages.Misc_SneakyOptionsIniNotFound;
-            if (soIni.IsEmpty())
+            var soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
+            if (soError != Error.None)
             {
-                MessageBox.Show(errorMessage, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (Error.SneakyOptionsNoRegKey, false, null);
-            }
-
-            if (!File.Exists(soIni))
-            {
-                MessageBox.Show(errorMessage, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (Error.SneakyOptionsNotFound, false, null);
+                // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
+                MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return (soError, false, null);
             }
 
             bool ignoreSavesKeyFound = false;
