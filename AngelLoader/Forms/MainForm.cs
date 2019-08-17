@@ -935,7 +935,10 @@ namespace AngelLoader.Forms
             AppMouseKeyHook.MouseMoveExt += HookMouseMove;
             AppMouseKeyHook.KeyDown += HookKeyDown;
             AppMouseKeyHook.KeyUp += HookKeyUp;
-            Application.AddMessageFilter(this);
+            // This causes some oddities on MainForm, such as wrongly highlighting the control box when
+            // hovering over certain regions of the form
+            // Disable for now
+            //Application.AddMessageFilter(this);
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
