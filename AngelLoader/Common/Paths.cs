@@ -26,8 +26,6 @@ namespace AngelLoader.Common
 
         private static readonly string _baseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
 
-        internal static readonly string CompressorTemp = Path.Combine(_baseTemp, "Zip");
-
         internal static readonly string FMScannerTemp = Path.Combine(_baseTemp, "FMScan");
 
         internal static readonly string StubCommTemp = Path.Combine(_baseTemp, "Stub");
@@ -56,7 +54,20 @@ namespace AngelLoader.Common
                 else
                 {
                     var regKeyStr = regKey.ToString();
-                    var soIni = Path.Combine(regKeyStr, "Options", "SneakyOptions.ini");
+                    string soIni = null;
+                    try
+                    {
+                        soIni = Path.Combine(regKeyStr, "Options", "SneakyOptions.ini");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
+                            "Additionally, it seems the registry key's value contained invalid path characters " +
+                            "or was otherwise not a valid path (Path.Combine() failed).\r\n" +
+                            "Registry key path was: " + regKeyStr + "\r\n" +
+                            "Full path was: " + soIni, ex);
+                        return null;
+                    }
                     if (!File.Exists(soIni))
                     {
                         Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
@@ -64,6 +75,7 @@ namespace AngelLoader.Common
                             "Full path was: " + soIni);
                         return null;
                     }
+
                     return soIni;
                 }
             }
@@ -79,20 +91,21 @@ namespace AngelLoader.Common
             return null;
         }
 
-        internal static readonly string StubFileName = "AngelLoader_Stub.dll";
+        internal const string StubFileName = "AngelLoader_Stub.dll";
 
-        internal static readonly string FMBackupSuffix = ".FMSelBak.zip";
+        internal const string FMBackupSuffix = ".FMSelBak.zip";
+
         // This is used for excluding save/screenshot backup archives when scanning dirs. Just in case these ever
         // get different extensions, we want to just match the phrase. Probably a YAGNI violation. Meh.
-        internal static readonly string FMSelBak = ".FMSelBak.";
+        internal const string FMSelBak = ".FMSelBak.";
 
-        internal static readonly string FMSelInf = "fmsel.inf";
+        internal const string FMSelInf = "fmsel.inf";
 
-        internal static readonly string DromEdExe = "DromEd.exe";
+        internal const string DromEdExe = "DromEd.exe";
 
-        internal static readonly string T2MPExe = "Thief2MP.exe";
+        internal const string T2MPExe = "Thief2MP.exe";
 
-        internal static readonly string DarkLoaderSaveBakDir = "DarkLoader";
+        internal const string DarkLoaderSaveBakDir = "DarkLoader";
 
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");
 
@@ -111,8 +124,8 @@ namespace AngelLoader.Common
         internal static readonly string FFmpegExe = Path.Combine(Startup, "ffmpeg", "ffmpeg.exe");
         internal static readonly string FFprobeExe = Path.Combine(Startup, "ffmpeg", "ffprobe.exe");
 
-        internal static readonly string T3ReadmeDir1 = "Fan Mission Extras";
-        internal static readonly string T3ReadmeDir2 = "FanMissionExtras";
+        internal const string T3ReadmeDir1 = "Fan Mission Extras";
+        internal const string T3ReadmeDir2 = "FanMissionExtras";
 
         #region Methods
 
