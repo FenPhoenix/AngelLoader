@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
@@ -32,17 +31,15 @@ namespace AngelLoader.Forms
 
     internal sealed partial class SettingsForm : Form, IEventDisabler
     {
+        #region Private fields
+
         private readonly ILocalizable OwnerForm;
 
         private readonly bool Startup;
 
         #region Copies of passed-in data
 
-        // TODO: Remove once all references are out of _Load and into the ctor
-        private readonly ConfigData InConfig;
-
         private readonly string _inLanguage;
-        private readonly ReadOnlyDictionary<string, string> _inLanguageNames;
 
         private readonly int _inPathsVScrollPos;
         private readonly int _inFMDisplayVScrollPos;
@@ -50,13 +47,15 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        public readonly ConfigData OutConfig;
-
         private readonly RadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
         private readonly int?[] PageVScrollValues;
 
         private readonly TextBox[] GameExePathTextBoxes;
+
+        #endregion
+
+        public readonly ConfigData OutConfig;
 
         public new DialogResult ShowDialog() => ((Form)this).ShowDialog();
 
@@ -82,12 +81,6 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
-            OutConfig = new ConfigData();
-
-            PathsPage = new PathsPage { Visible = false };
-            FMDisplayPage = new FMDisplayPage { Visible = false };
-            OtherPage = new OtherPage { Visible = false };
-
             // Needed for Esc-to-cancel-drag and stuff
             KeyPreview = true;
 
@@ -96,10 +89,7 @@ namespace AngelLoader.Forms
 
             #region Init copies of passed-in data
 
-            InConfig = config;
-
             _inLanguage = config.Language;
-            _inLanguageNames = new ReadOnlyDictionary<string, string>(config.LanguageNames);
 
             _inPathsVScrollPos = config.SettingsPathsVScrollPos;
             _inFMDisplayVScrollPos = config.SettingsFMDisplayVScrollPos;
@@ -107,8 +97,22 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            OutConfig = new ConfigData();
+
+            PathsPage = new PathsPage { Visible = false };
+            FMDisplayPage = new FMDisplayPage { Visible = false };
+            OtherPage = new OtherPage { Visible = false };
+
             LangGroupBox = OtherPage.LanguageGroupBox;
             LangComboBox = OtherPage.LanguageComboBox;
+
+            GameExePathTextBoxes = new[]
+
+            {
+                PathsPage.Thief1ExePathTextBox,
+                PathsPage.Thief2ExePathTextBox,
+                PathsPage.Thief3ExePathTextBox
+            };
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
 
@@ -150,6 +154,237 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            #region Set non-page UI state
+
+            // This DisableEvents block is still required because it involves non-page events
+            using (new DisableEvents(this))
+            {
+                if (startup)
+                {
+                    // _Load is too late for some of this stuff, so might as well put everything here
+                    StartPosition = FormStartPosition.CenterScreen;
+                    ShowInTaskbar = true;
+                    PathsRadioButton.Checked = true;
+                    FMDisplayRadioButton.Hide();
+                    OtherRadioButton.Hide();
+                }
+                else
+                {
+                    switch (config.SettingsTab)
+                    {
+                        case SettingsTab.FMDisplay:
+                            FMDisplayRadioButton.Checked = true;
+                            break;
+                        case SettingsTab.Other:
+                            OtherRadioButton.Checked = true;
+                            break;
+                        default:
+                            PathsRadioButton.Checked = true;
+                            break;
+                    }
+                }
+            }
+
+            #endregion
+
+            // Language can change while the form is open, so store original sizes for later use as minimums
+            OKButton.Tag = OKButton.Size;
+            Cancel_Button.Tag = Cancel_Button.Size;
+
+            Width = Math.Min(config.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
+            Height = Math.Min(config.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
+            MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
+
+            #region Set page UI state
+
+            #region Load languages
+
+            var tempLangDict = new OrderedDictionary();
+
+            foreach (var item in config.LanguageNames) tempLangDict[item.Key] = item.Value;
+
+            const string engLang = "English";
+
+            if (tempLangDict.Contains(engLang)) tempLangDict.Remove(engLang);
+            tempLangDict.Insert(0, engLang, engLang);
+
+            foreach (DictionaryEntry item in tempLangDict)
+            {
+                LangComboBox.AddFullItem(item.Key.ToString(), item.Value.ToString());
+            }
+
+            LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language)
+                ? config.Language
+                : engLang);
+
+            #endregion
+
+            #region Paths page
+
+            PathsPage.Thief1ExePathTextBox.Text = config.T1Exe;
+            PathsPage.Thief2ExePathTextBox.Text = config.T2Exe;
+            PathsPage.Thief3ExePathTextBox.Text = config.T3Exe;
+
+            PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
+
+            PathsPage.FMArchivePathsListBox.Items.Clear();
+            foreach (var path in config.FMArchivePaths) PathsPage.FMArchivePathsListBox.Items.Add(path);
+
+            PathsPage.IncludeSubfoldersCheckBox.Checked = config.FMArchivePathsIncludeSubfolders;
+
+            #endregion
+
+            if (!startup)
+            {
+                #region FM Display page
+
+                #region Game organization
+
+                switch (config.GameOrganization)
+                {
+                    case GameOrganization.ByTab:
+                        FMDisplayPage.OrganizeGamesByTabRadioButton.Checked = true;
+                        break;
+                    case GameOrganization.OneList:
+                        FMDisplayPage.SortGamesInOneListRadioButton.Checked = true;
+                        break;
+                }
+
+                #region Articles
+
+                FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked = config.EnableArticles;
+
+                for (var i = 0; i < config.Articles.Count; i++)
+                {
+                    var article = config.Articles[i];
+                    if (i > 0) FMDisplayPage.ArticlesTextBox.Text += @", ";
+                    FMDisplayPage.ArticlesTextBox.Text += article;
+                }
+
+                FMDisplayPage.MoveArticlesToEndCheckBox.Checked = config.MoveArticlesToEnd;
+
+                #region Date format
+
+                object[] dateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
+                FMDisplayPage.Date1ComboBox.Items.AddRange(dateFormatList);
+                FMDisplayPage.Date2ComboBox.Items.AddRange(dateFormatList);
+                FMDisplayPage.Date3ComboBox.Items.AddRange(dateFormatList);
+                FMDisplayPage.Date4ComboBox.Items.AddRange(dateFormatList);
+
+                var d1 = config.DateCustomFormat1;
+                var s1 = config.DateCustomSeparator1;
+                var d2 = config.DateCustomFormat2;
+                var s2 = config.DateCustomSeparator2;
+                var d3 = config.DateCustomFormat3;
+                var s3 = config.DateCustomSeparator3;
+                var d4 = config.DateCustomFormat4;
+
+                FMDisplayPage.Date1ComboBox.SelectedItem = !d1.IsEmpty() && FMDisplayPage.Date1ComboBox.Items.Contains(d1) ? d1 : "dd";
+                FMDisplayPage.DateSeparator1TextBox.Text = !s1.IsEmpty() ? s1 : "/";
+                FMDisplayPage.Date2ComboBox.SelectedItem = !d2.IsEmpty() && FMDisplayPage.Date2ComboBox.Items.Contains(d2) ? d2 : "MM";
+                FMDisplayPage.DateSeparator2TextBox.Text = !s2.IsEmpty() ? s2 : "/";
+                FMDisplayPage.Date3ComboBox.SelectedItem = !d3.IsEmpty() && FMDisplayPage.Date3ComboBox.Items.Contains(d3) ? d3 : "yyyy";
+                FMDisplayPage.DateSeparator3TextBox.Text = !s3.IsEmpty() ? s3 : "";
+                FMDisplayPage.Date4ComboBox.SelectedItem = !d4.IsEmpty() && FMDisplayPage.Date4ComboBox.Items.Contains(d4) ? d4 : "";
+
+                // This comes last so that all the custom data is in place for the preview date to use
+                switch (config.DateFormat)
+                {
+                    case DateFormat.CurrentCultureShort:
+                        FMDisplayPage.DateCurrentCultureShortRadioButton.Checked = true;
+                        FMDisplayPage.DateCustomFormatPanel.Enabled = false;
+                        FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToShortDateString();
+                        break;
+                    case DateFormat.CurrentCultureLong:
+                        FMDisplayPage.DateCurrentCultureLongRadioButton.Checked = true;
+                        FMDisplayPage.DateCustomFormatPanel.Enabled = false;
+                        FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToLongDateString();
+                        break;
+                    case DateFormat.Custom:
+                        FMDisplayPage.DateCustomRadioButton.Checked = true;
+                        FMDisplayPage.DateCustomFormatPanel.Enabled = true;
+                        UpdateCustomExampleDate();
+                        break;
+                }
+
+                #endregion
+
+                #region Rating display style
+
+                switch (config.RatingDisplayStyle)
+                {
+                    case RatingDisplayStyle.NewDarkLoader:
+                        FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked = true;
+                        break;
+                    case RatingDisplayStyle.FMSel:
+                        FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked = true;
+                        break;
+                }
+
+                FMDisplayPage.RatingUseStarsCheckBox.Checked = config.RatingUseStars;
+
+                FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
+                    ? Images.RatingExample_NDL
+                    : FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked && FMDisplayPage.RatingUseStarsCheckBox.Checked
+                    ? Images.RatingExample_FMSel_Stars
+                    : Images.RatingExample_FMSel_Number;
+
+                FMDisplayPage.RatingUseStarsCheckBox.Enabled = FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked;
+
+                #endregion
+
+                #endregion
+
+                #endregion
+
+                #region File conversion
+
+                OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Checked = config.ConvertWAVsTo16BitOnInstall;
+                OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked = config.ConvertOGGsToWAVsOnInstall;
+
+                #endregion
+
+                #endregion
+
+                #region Other page
+
+                #region Uninstalling FMs
+
+                OtherPage.ConfirmUninstallCheckBox.Checked = config.ConfirmUninstall;
+
+                switch (config.BackupFMData)
+                {
+                    case BackupFMData.SavesAndScreensOnly:
+                        OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked = true;
+                        break;
+                    case BackupFMData.AllChangedFiles:
+                        OtherPage.BackupAllChangedDataRadioButton.Checked = true;
+                        break;
+                }
+
+                OtherPage.BackupAlwaysAskCheckBox.Checked = config.BackupAlwaysAsk;
+
+                #endregion
+
+                OtherPage.WebSearchUrlTextBox.Text = config.WebSearchUrl;
+
+                OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked = config.ConfirmPlayOnDCOrEnter;
+
+                #region Show/hide UI elements
+
+                OtherPage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
+                OtherPage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
+
+                #endregion
+
+                OtherPage.ReadmeFixedWidthFontCheckBox.Checked = config.ReadmeUseFixedWidthFont;
+
+                #endregion
+            }
+
+            #endregion
+
+            // Comes last so we don't have to use any DisableEvents blocks
             #region Hook up page events
 
             PathsPage.Thief1ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
@@ -194,234 +429,10 @@ namespace AngelLoader.Forms
             }
 
             #endregion
-
-            GameExePathTextBoxes = new[]
-            {
-                PathsPage.Thief1ExePathTextBox,
-                PathsPage.Thief2ExePathTextBox,
-                PathsPage.Thief3ExePathTextBox
-            };
-
-            using (new DisableEvents(this))
-            {
-                if (startup)
-                {
-                    // _Load is too late for some of this stuff, so might as well put everything here
-                    StartPosition = FormStartPosition.CenterScreen;
-                    ShowInTaskbar = true;
-                    PathsRadioButton.Checked = true;
-                    FMDisplayRadioButton.Hide();
-                    OtherRadioButton.Hide();
-                }
-                else
-                {
-                    switch (config.SettingsTab)
-                    {
-                        case SettingsTab.FMDisplay:
-                            FMDisplayRadioButton.Checked = true;
-                            break;
-                        case SettingsTab.Other:
-                            OtherRadioButton.Checked = true;
-                            break;
-                        default:
-                            PathsRadioButton.Checked = true;
-                            break;
-                    }
-                }
-            }
-
-            // Language can change while the form is open, so store original sizes for later use as minimums
-            OKButton.Tag = OKButton.Size;
-            Cancel_Button.Tag = Cancel_Button.Size;
-
-            Width = Math.Min(config.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
-            Height = Math.Min(config.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
-            MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
-        }
-
-        private void SetPageScrollPos(ISettingsPage page)
-        {
-            int? pos =
-                page == PathsPage ? _inPathsVScrollPos :
-                page == FMDisplayPage ? _inFMDisplayVScrollPos :
-                page == OtherPage ? _inOtherVScrollPos :
-                (int?)null;
-
-            Debug.Assert(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
-
-            page.SetVScrollPos((int)pos);
         }
 
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            LoadLanguages();
-
-            #region Paths page
-
-            PathsPage.Thief1ExePathTextBox.Text = InConfig.T1Exe;
-            PathsPage.Thief2ExePathTextBox.Text = InConfig.T2Exe;
-            PathsPage.Thief3ExePathTextBox.Text = InConfig.T3Exe;
-
-            PathsPage.BackupPathTextBox.Text = InConfig.FMsBackupPath;
-
-            PathsPage.FMArchivePathsListBox.Items.Clear();
-            foreach (var path in InConfig.FMArchivePaths) PathsPage.FMArchivePathsListBox.Items.Add(path);
-
-            PathsPage.IncludeSubfoldersCheckBox.Checked = InConfig.FMArchivePathsIncludeSubfolders;
-
-            #endregion
-
-            if (!Startup)
-            {
-                #region FM Display page
-
-                #region Game organization
-
-                switch (InConfig.GameOrganization)
-                {
-                    case GameOrganization.ByTab:
-                        FMDisplayPage.OrganizeGamesByTabRadioButton.Checked = true;
-                        break;
-                    case GameOrganization.OneList:
-                        FMDisplayPage.SortGamesInOneListRadioButton.Checked = true;
-                        break;
-                }
-
-                #region Articles
-
-                FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked = InConfig.EnableArticles;
-
-                for (var i = 0; i < InConfig.Articles.Count; i++)
-                {
-                    var article = InConfig.Articles[i];
-                    if (i > 0) FMDisplayPage.ArticlesTextBox.Text += @", ";
-                    FMDisplayPage.ArticlesTextBox.Text += article;
-                }
-
-                FMDisplayPage.MoveArticlesToEndCheckBox.Checked = InConfig.MoveArticlesToEnd;
-
-                #region Date format
-
-                // NOTE: This section actually depends on the events in order to work. Also it appears to depend
-                // on none of the date-related checkboxes being checked by default. Absolutely don't make any of
-                // them checked by default!
-
-                // TODO: If these event dependencies can be removed, we can put all this in the ctor
-                // And be one step closer to not having to have InConfig as a mutable class-level var
-
-                switch (InConfig.DateFormat)
-                {
-                    case DateFormat.CurrentCultureShort:
-                        FMDisplayPage.DateCurrentCultureShortRadioButton.Checked = true;
-                        break;
-                    case DateFormat.CurrentCultureLong:
-                        FMDisplayPage.DateCurrentCultureLongRadioButton.Checked = true;
-                        break;
-                    case DateFormat.Custom:
-                        FMDisplayPage.DateCustomRadioButton.Checked = true;
-                        break;
-                }
-
-                object[] dateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
-                FMDisplayPage.Date1ComboBox.Items.AddRange(dateFormatList);
-                FMDisplayPage.Date2ComboBox.Items.AddRange(dateFormatList);
-                FMDisplayPage.Date3ComboBox.Items.AddRange(dateFormatList);
-                FMDisplayPage.Date4ComboBox.Items.AddRange(dateFormatList);
-
-                var d1 = InConfig.DateCustomFormat1;
-                var s1 = InConfig.DateCustomSeparator1;
-                var d2 = InConfig.DateCustomFormat2;
-                var s2 = InConfig.DateCustomSeparator2;
-                var d3 = InConfig.DateCustomFormat3;
-                var s3 = InConfig.DateCustomSeparator3;
-                var d4 = InConfig.DateCustomFormat4;
-
-                FMDisplayPage.Date1ComboBox.SelectedItem = !d1.IsEmpty() && FMDisplayPage.Date1ComboBox.Items.Contains(d1) ? d1 : "dd";
-                FMDisplayPage.DateSeparator1TextBox.Text = !s1.IsEmpty() ? s1 : "/";
-                FMDisplayPage.Date2ComboBox.SelectedItem = !d2.IsEmpty() && FMDisplayPage.Date2ComboBox.Items.Contains(d2) ? d2 : "MM";
-                FMDisplayPage.DateSeparator2TextBox.Text = !s2.IsEmpty() ? s2 : "/";
-                FMDisplayPage.Date3ComboBox.SelectedItem = !d3.IsEmpty() && FMDisplayPage.Date3ComboBox.Items.Contains(d3) ? d3 : "yyyy";
-                FMDisplayPage.DateSeparator3TextBox.Text = !s3.IsEmpty() ? s3 : "";
-                FMDisplayPage.Date4ComboBox.SelectedItem = !d4.IsEmpty() && FMDisplayPage.Date4ComboBox.Items.Contains(d4) ? d4 : "";
-
-                #endregion
-
-                #region Rating display style
-
-                using (new DisableEvents(this))
-                {
-                    switch (InConfig.RatingDisplayStyle)
-                    {
-                        case RatingDisplayStyle.NewDarkLoader:
-                            FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked = true;
-                            break;
-                        case RatingDisplayStyle.FMSel:
-                            FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked = true;
-                            break;
-                    }
-
-                    FMDisplayPage.RatingUseStarsCheckBox.Checked = InConfig.RatingUseStars;
-
-                    FMDisplayPage.RatingExamplePictureBox.Image = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
-                        ? Images.RatingExample_NDL
-                        : FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked && FMDisplayPage.RatingUseStarsCheckBox.Checked
-                        ? Images.RatingExample_FMSel_Stars
-                        : Images.RatingExample_FMSel_Number;
-
-                    FMDisplayPage.RatingUseStarsCheckBox.Enabled = FMDisplayPage.RatingFMSelDisplayStyleRadioButton.Checked;
-                }
-
-                #endregion
-
-                #endregion
-
-                #endregion
-
-                #region File conversion
-
-                OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Checked = InConfig.ConvertWAVsTo16BitOnInstall;
-                OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked = InConfig.ConvertOGGsToWAVsOnInstall;
-
-                #endregion
-
-                #endregion
-
-                #region Other page
-
-                #region Uninstalling FMs
-
-                OtherPage.ConfirmUninstallCheckBox.Checked = InConfig.ConfirmUninstall;
-
-                switch (InConfig.BackupFMData)
-                {
-                    case BackupFMData.SavesAndScreensOnly:
-                        OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked = true;
-                        break;
-                    case BackupFMData.AllChangedFiles:
-                        OtherPage.BackupAllChangedDataRadioButton.Checked = true;
-                        break;
-                }
-
-                OtherPage.BackupAlwaysAskCheckBox.Checked = InConfig.BackupAlwaysAsk;
-
-                #endregion
-
-                OtherPage.WebSearchUrlTextBox.Text = InConfig.WebSearchUrl;
-
-                OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked = InConfig.ConfirmPlayOnDCOrEnter;
-
-                #region Show/hide UI elements
-
-                OtherPage.HideUninstallButtonCheckBox.Checked = InConfig.HideUninstallButton;
-                OtherPage.HideFMListZoomButtonsCheckBox.Checked = InConfig.HideFMListZoomButtons;
-
-                #endregion
-
-                OtherPage.ReadmeFixedWidthFontCheckBox.Checked = InConfig.ReadmeUseFixedWidthFont;
-
-                #endregion
-            }
-
             // Do this after everything else - now we're ready to show them with their proper scrolled position
             if (PathsRadioButton.Checked)
             {
@@ -437,30 +448,6 @@ namespace AngelLoader.Forms
             }
 
             Localize(suspendResume: false);
-        }
-
-        private void LoadLanguages()
-        {
-            using (new DisableEvents(this))
-            {
-                var tempLangDict = new OrderedDictionary();
-
-                foreach (var item in _inLanguageNames) tempLangDict[item.Key] = item.Value;
-
-                const string engLang = "English";
-
-                if (tempLangDict.Contains(engLang)) tempLangDict.Remove(engLang);
-                tempLangDict.Insert(0, engLang, engLang);
-
-                foreach (DictionaryEntry item in tempLangDict)
-                {
-                    LangComboBox.AddFullItem(item.Key.ToString(), item.Value.ToString());
-                }
-
-                LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(_inLanguage)
-                    ? _inLanguage
-                    : engLang);
-            }
         }
 
         private void Localize(bool suspendResume = true)
@@ -849,6 +836,20 @@ namespace AngelLoader.Forms
             ShowPage(Array.IndexOf(PageRadioButtons, s));
         }
 
+        private void SetPageScrollPos(ISettingsPage page)
+        {
+            // TODO: This is the only place these globals are used other than the ctor and I think they can be removed
+            int? pos =
+                page == PathsPage ? _inPathsVScrollPos :
+                page == FMDisplayPage ? _inFMDisplayVScrollPos :
+                page == OtherPage ? _inOtherVScrollPos :
+                (int?)null;
+
+            Debug.Assert(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
+
+            page.SetVScrollPos((int)pos);
+        }
+
         private void ShowPage(int index, bool initialCall = false)
         {
             if (Pages[index].IsVisible) return;
@@ -1088,8 +1089,8 @@ namespace AngelLoader.Forms
         {
             FMDisplayPage.DateCustomFormatPanel.Enabled = false;
             FMDisplayPage.PreviewDateLabel.Text = sender == FMDisplayPage.DateCurrentCultureShortRadioButton
-                    ? exampleDate.ToShortDateString()
-                    : exampleDate.ToLongDateString();
+                ? exampleDate.ToShortDateString()
+                : exampleDate.ToLongDateString();
         }
 
         private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)
