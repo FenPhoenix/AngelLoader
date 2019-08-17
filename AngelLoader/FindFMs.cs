@@ -182,6 +182,8 @@ namespace AngelLoader
             */
         }
 
+        #region Set names
+
         private static void SetArchiveNames(FMInstallPaths fmInstPaths, List<string> fmArchives, List<FanMission> fmDataIniList)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
@@ -264,6 +266,10 @@ namespace AngelLoader
                 }
             }
         }
+
+        #endregion
+
+        #region Merge
 
         private static void MergeNewArchiveFMs(List<string> fmArchives, List<FanMission> fmDataIniList,
             FMInstallPaths fmInstPaths)
@@ -379,6 +385,8 @@ namespace AngelLoader
             // Reset temp bool
             for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
         }
+
+        #endregion
 
         private static string GetArchiveNameFromInstalledDir(FMInstallPaths fmInstPaths, List<FanMission> fmDataIniList, FanMission fm, List<string> archives)
         {

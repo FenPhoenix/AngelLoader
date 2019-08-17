@@ -414,7 +414,7 @@ namespace AngelLoader
 
         #endregion
 
-        #region Install / uninstall
+        #region Install
 
         internal static async Task<bool> InstallFM(FanMission fm)
         {
@@ -669,6 +669,10 @@ namespace AngelLoader
 
         internal static void CancelInstallFM() => ExtractCts.CancelIfNotDisposed();
 
+        #endregion
+
+        #region Uninstall
+
         private static async Task UninstallFM(FanMission fm)
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm)) return;
@@ -842,5 +846,6 @@ namespace AngelLoader
         }
 
         #endregion
+
     }
 }

@@ -64,6 +64,8 @@ namespace AngelLoader
             }
         }
 
+        #region Helpers
+
         private static void ClearCacheDir(FanMission fm)
         {
             var fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
@@ -100,6 +102,10 @@ namespace AngelLoader
                 }
             }
         }
+
+        #endregion
+
+        #region Get cacheable data
 
         private static CacheData GetCacheableDataInFMInstalledDir(FanMission fm)
         {
@@ -213,6 +219,10 @@ namespace AngelLoader
 
             return new CacheData { Readmes = readmes };
         }
+
+        #endregion
+
+        #region Extract
 
         // An html file might have other files it references, so do a recursive search through the archive to find
         // them all, and extract only the required files to the cache. That way we keep the disk footprint way down.
@@ -426,5 +436,7 @@ namespace AngelLoader
                 }
             });
         }
+
+        #endregion
     }
 }
