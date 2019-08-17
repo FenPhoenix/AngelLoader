@@ -667,15 +667,17 @@ namespace AngelLoader
                 if (scanningOne)
                 {
                     Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
-                    // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as nice
-                    // as the timer method, but that can cause race conditions I don't know how to fix, so whatever.
+                    // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as
+                    // nice as the timer method, but that can cause race conditions I don't know how to fix, so
+                    // whatever.
                     if (fmsToScan[0].Archive.ExtIs7z())
                     {
                         View.ShowProgressBox(ProgressTasks.ScanAllFMs);
                     }
                     else
                     {
-                        // Block user input to the form to mimic the UI thread being blocked, because we're async here
+                        // Block user input to the form to mimic the UI thread being blocked, because we're async
+                        // here
                         View.Block(true);
                         // Doesn't actually show the box, but shows the meter on the taskbar I guess?
                         View.ShowProgressBox(ProgressTasks.ScanAllFMs, suppressShow: true);
@@ -776,8 +778,8 @@ namespace AngelLoader
 
                     if (scannedFM == null)
                     {
-                        // We need to return fail for scanning one, else we get into an infinite loop because
-                        // of a refresh that gets called in that case
+                        // We need to return fail for scanning one, else we get into an infinite loop because of
+                        // a refresh that gets called in that case
                         if (scanningOne)
                         {
                             Log(nameof(ScanFMs) + " (one) scanned FM was null. FM was:\r\n" +
@@ -1203,10 +1205,7 @@ namespace AngelLoader
             try
             {
                 var dmlFiles = FastIO.GetFilesTopOnly(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir), "*.dml");
-                for (int i = 0; i < dmlFiles.Count; i++)
-                {
-                    dmlFiles[i] = dmlFiles[i].GetFileNameFast();
-                }
+                for (int i = 0; i < dmlFiles.Count; i++) dmlFiles[i] = dmlFiles[i].GetFileNameFast();
                 return (true, dmlFiles);
             }
             catch (Exception ex)
@@ -1220,14 +1219,19 @@ namespace AngelLoader
 
         #region Readme
 
+        private static string GetReadmeFileFullPath(FanMission fm)
+        {
+            return FMIsReallyInstalled(fm)
+                ? Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir, fm.SelectedReadme)
+                : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
+        }
+
         internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var readmeOnDisk = FMIsReallyInstalled(fm)
-                ? Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir, fm.SelectedReadme)
-                : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
+            var readmeOnDisk = GetReadmeFileFullPath(fm);
 
             if (fm.SelectedReadme.ExtIsHtml()) return (readmeOnDisk, ReadmeType.HTML);
             if (fm.SelectedReadme.ExtIsGlml()) return (readmeOnDisk, ReadmeType.GLML);
@@ -1402,13 +1406,8 @@ namespace AngelLoader
         internal static void OpenFMFolder(FanMission fm)
         {
             var installsBasePath = GetFMInstallsBasePath(fm.Game);
-            if (installsBasePath.IsEmpty())
-            {
-                View.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
-                return;
-            }
-            var fmDir = Path.Combine(installsBasePath, fm.InstalledDir);
-            if (!Directory.Exists(fmDir))
+            string fmDir;
+            if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
                 View.ShowAlert(LText.AlertMessages.Patch_FMFolderNotFound, LText.AlertMessages.Alert);
                 return;
@@ -1455,11 +1454,11 @@ namespace AngelLoader
             string path;
             try
             {
-                (path, _) = GetReadmeFileAndType(fm);
+                path = GetReadmeFileFullPath(fm);
             }
             catch (Exception ex)
             {
-                Log("Exception in " + nameof(GetReadmeFileAndType), ex);
+                Log("Exception in " + nameof(GetReadmeFileFullPath), ex);
                 return;
             }
 
