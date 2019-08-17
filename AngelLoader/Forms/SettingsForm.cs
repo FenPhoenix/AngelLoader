@@ -410,18 +410,18 @@ namespace AngelLoader.Forms
                 FMDisplayPage.RatingFMSelDisplayStyleRadioButton.CheckedChanged += RatingOutOfFiveRadioButton_CheckedChanged;
                 FMDisplayPage.RatingUseStarsCheckBox.CheckedChanged += RatingUseStarsCheckBox_CheckedChanged;
 
-                FMDisplayPage.DateCurrentCultureShortRadioButton.CheckedChanged += DateRadioButtons_CheckedChanged;
-                FMDisplayPage.DateCurrentCultureLongRadioButton.CheckedChanged += DateRadioButtons_CheckedChanged;
+                FMDisplayPage.DateCurrentCultureShortRadioButton.CheckedChanged += DateShortAndLongRadioButtons_CheckedChanged;
+                FMDisplayPage.DateCurrentCultureLongRadioButton.CheckedChanged += DateShortAndLongRadioButtons_CheckedChanged;
                 FMDisplayPage.DateCustomRadioButton.CheckedChanged += DateCustomRadioButton_CheckedChanged;
 
-                FMDisplayPage.Date1ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
-                FMDisplayPage.Date2ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
-                FMDisplayPage.Date3ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
-                FMDisplayPage.Date4ComboBox.SelectedIndexChanged += DateComboBoxes_SelectedIndexChanged;
+                FMDisplayPage.Date1ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
+                FMDisplayPage.Date2ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
+                FMDisplayPage.Date3ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
+                FMDisplayPage.Date4ComboBox.SelectedIndexChanged += DateCustomValue_Changed;
 
-                FMDisplayPage.DateSeparator1TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
-                FMDisplayPage.DateSeparator2TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
-                FMDisplayPage.DateSeparator3TextBox.TextChanged += DateSeparatorTextBoxes_TextChanged;
+                FMDisplayPage.DateSeparator1TextBox.TextChanged += DateCustomValue_Changed;
+                FMDisplayPage.DateSeparator2TextBox.TextChanged += DateCustomValue_Changed;
+                FMDisplayPage.DateSeparator3TextBox.TextChanged += DateCustomValue_Changed;
 
                 OtherPage.WebSearchUrlResetButton.Click += WebSearchURLResetButton_Click;
             }
@@ -587,6 +587,8 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            #region Cancel
+
             if (DialogResult != DialogResult.OK)
             {
                 if (!Startup && !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
@@ -604,6 +606,8 @@ namespace AngelLoader.Forms
 
                 return;
             }
+
+            #endregion
 
             if (!Startup) FormatArticles();
 
@@ -1078,7 +1082,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void DateRadioButtons_CheckedChanged(object sender, EventArgs e)
+        private void DateShortAndLongRadioButtons_CheckedChanged(object sender, EventArgs e)
         {
             FMDisplayPage.DateCustomFormatPanel.Enabled = false;
             FMDisplayPage.PreviewDateLabel.Text = sender == FMDisplayPage.DateCurrentCultureShortRadioButton
@@ -1090,16 +1094,10 @@ namespace AngelLoader.Forms
         {
             var s = (RadioButton)sender;
             FMDisplayPage.DateCustomFormatPanel.Enabled = s.Checked;
-
             if (s.Checked) UpdateCustomExampleDate();
         }
 
-        private void DateComboBoxes_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
-        }
-
-        private void DateSeparatorTextBoxes_TextChanged(object sender, EventArgs e)
+        private void DateCustomValue_Changed(object sender, EventArgs e)
         {
             if (FMDisplayPage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
         }
@@ -1200,14 +1198,8 @@ namespace AngelLoader.Forms
 
         private void LocalizeOwnerForm()
         {
-            try
-            {
-                OwnerForm.Localize();
-            }
-            catch (Exception ex)
-            {
-                Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex);
-            }
+            try { OwnerForm.Localize(); }
+            catch (Exception ex) { Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex); }
         }
     }
 }
