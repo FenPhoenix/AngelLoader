@@ -3414,7 +3414,9 @@ namespace AngelLoader.Forms
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().Rating = EditFMRatingComboBox.SelectedIndex - 1;
+            int rating = EditFMRatingComboBox.SelectedIndex - 1;
+            FMsDGV.GetSelectedFM().Rating = rating;
+            FMsDGV.SetRatingMenuItemChecked(rating);
             RefreshSelectedFMRowOnly();
             Core.WriteFullFMDataIni();
         }
