@@ -57,13 +57,11 @@ namespace AngelLoader.Forms
 
         public readonly ConfigData OutConfig;
 
-        public new DialogResult ShowDialog() => ((Form)this).ShowDialog();
-
         private enum PathError { True, False }
 
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
-        private readonly DateTime exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
+        private readonly DateTime _exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
 
         public bool EventsDisabled { get; set; }
 
@@ -293,12 +291,12 @@ namespace AngelLoader.Forms
                     case DateFormat.CurrentCultureShort:
                         FMDisplayPage.DateCurrentCultureShortRadioButton.Checked = true;
                         FMDisplayPage.DateCustomFormatPanel.Enabled = false;
-                        FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToShortDateString();
+                        FMDisplayPage.PreviewDateLabel.Text = _exampleDate.ToShortDateString();
                         break;
                     case DateFormat.CurrentCultureLong:
                         FMDisplayPage.DateCurrentCultureLongRadioButton.Checked = true;
                         FMDisplayPage.DateCustomFormatPanel.Enabled = false;
-                        FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToLongDateString();
+                        FMDisplayPage.PreviewDateLabel.Text = _exampleDate.ToLongDateString();
                         break;
                     case DateFormat.Custom:
                         FMDisplayPage.DateCustomRadioButton.Checked = true;
@@ -433,18 +431,13 @@ namespace AngelLoader.Forms
 
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            // Do this after everything else - now we're ready to show them with their proper scrolled position
-            if (PathsRadioButton.Checked)
+            foreach (var button in PageRadioButtons)
             {
-                ShowPage(Array.IndexOf(PageRadioButtons, PathsRadioButton), initialCall: true);
-            }
-            else if (FMDisplayRadioButton.Checked)
-            {
-                ShowPage(Array.IndexOf(PageRadioButtons, FMDisplayRadioButton), initialCall: true);
-            }
-            else if (OtherRadioButton.Checked)
-            {
-                ShowPage(Array.IndexOf(PageRadioButtons, OtherRadioButton), initialCall: true);
+                if (button.Checked)
+                {
+                    ShowPage(Array.IndexOf(PageRadioButtons, button), initialCall: true);
+                    break;
+                }
             }
 
             Localize(suspendResume: false);
@@ -742,7 +735,7 @@ namespace AngelLoader.Forms
 
                 try
                 {
-                    _ = exampleDate.ToString(formatString);
+                    _ = _exampleDate.ToString(formatString);
                     OutConfig.DateCustomFormatString = formatString;
                 }
                 catch (FormatException)
@@ -1070,7 +1063,7 @@ namespace AngelLoader.Forms
 
             try
             {
-                FMDisplayPage.PreviewDateLabel.Text = exampleDate.ToString(formatString);
+                FMDisplayPage.PreviewDateLabel.Text = _exampleDate.ToString(formatString);
             }
             catch (FormatException)
             {
@@ -1089,8 +1082,8 @@ namespace AngelLoader.Forms
         {
             FMDisplayPage.DateCustomFormatPanel.Enabled = false;
             FMDisplayPage.PreviewDateLabel.Text = sender == FMDisplayPage.DateCurrentCultureShortRadioButton
-                ? exampleDate.ToShortDateString()
-                : exampleDate.ToLongDateString();
+                ? _exampleDate.ToShortDateString()
+                : _exampleDate.ToLongDateString();
         }
 
         private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)
