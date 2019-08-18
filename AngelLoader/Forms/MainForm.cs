@@ -485,15 +485,23 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
-            var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
-            var hWnd = InteropMisc.WindowFromPoint(pos);
-
-            if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
-
             // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
             // needing to actually be focused. Vital for a good user experience.
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
+                #region Temp hack
+
+                // IMPORTANT! Do this check inside each if block rather than above, because the message may not
+                // be a mousemove message, and in that case we'd be trying to get a window point from a random
+                // value, and that causes the min,max,close button flickering.
+                // I should eventually get rid of this filter and just use a custom mouse hook that can pass the
+                // keys-held value and all, but for now, this works
+                Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+                IntPtr hWnd = InteropMisc.WindowFromPoint(pos);
+                if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
+
+                #endregion
+
                 if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
                 int wParam = (int)m.WParam;
@@ -526,6 +534,14 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == InteropMisc.WM_MOUSEHWHEEL)
             {
+                #region Temp hack (see above)
+
+                var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+                var hWnd = InteropMisc.WindowFromPoint(pos);
+                if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
+
+                #endregion
+
                 if (ViewBlocked) return BlockMessage;
 
                 if (CanFocus && CursorOverControl(FMsDGV))
