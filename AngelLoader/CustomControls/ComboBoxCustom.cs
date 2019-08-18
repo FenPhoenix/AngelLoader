@@ -66,6 +66,11 @@ namespace AngelLoader.CustomControls
             {
                 OnMouseLeave(EventArgs.Empty);
                 m.Result = (IntPtr)1;
+                // NOTE:
+                // If we return here, the ComboBox remains highlighted even when the mouse leaves.
+                // If we don't return here, the OnMouseLeave event gets fired twice. That's irritating, but in
+                // this particular case it's fine, it just hides the readme controls twice. But remember in case
+                // you want to do anything more complicated...
             }
 
             base.WndProc(ref m);
