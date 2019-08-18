@@ -3866,31 +3866,6 @@ namespace AngelLoader.Forms
             ShowReadmeControls(CursorOverReadmeArea());
         }
 
-        private void ReadmeZoomInButton_MouseLeave(object sender, EventArgs e)
-        {
-            ShowReadmeControls(false);
-        }
-
-        private void ReadmeZoomOutButton_MouseLeave(object sender, EventArgs e)
-        {
-            ShowReadmeControls(false);
-        }
-
-        private void ReadmeResetZoomButton_MouseLeave(object sender, EventArgs e)
-        {
-            ShowReadmeControls(false);
-        }
-
-        private void ReadmeFullScreenButton_MouseLeave(object sender, EventArgs e)
-        {
-            ShowReadmeControls(false);
-        }
-
-        private void ChooseReadmeComboBox_MouseLeave(object sender, EventArgs e)
-        {
-            ShowReadmeControls(false);
-        }
-
         private void SetReadmeVisible(bool enabled)
         {
             ReadmeRichTextBox.Visible = enabled;
