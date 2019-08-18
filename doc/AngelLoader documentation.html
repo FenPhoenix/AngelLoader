@@ -405,7 +405,7 @@ If this is enabled, you will be prompted for confirmation when uninstalling an F
 When an FM is uninstalled, you will normally want to back up its saves and screenshots so they can be restored if you install it again. You can also choose to back up all changed files, in which case the backup will also include all files in the installed folder that have been added, removed, or modified as compared to the files in the archive. This is useful if you have added <a href="#dml_patches">.dml patches</a> to the FM, or made other modifications such as creating or modifying an fm.cfg file, fixing readables, etc. Because AngelLoader aims to be patch-friendly, this option is the default. You can also choose to always be asked if you want to back up data when uninstalling an FM.
 
 <h4><a name="settings_web_search" />Web search</h4>
-Here you can edit the URL that will be used when searching for FMs on the web. The string $TITLE$ can be placed anywhere in the URL to insert the fan mission's title into the final string. For instance, if the URL was
+Here you can edit the URL that will be used when searching for FMs on the web. The string <code>$TITLE$</code> can be placed anywhere in the URL to insert the fan mission's title into the final string. For instance, if the URL was
 
 <p><code>https://www.google.com/search?q="$TITLE$" site:ttlg.com</code></p>
 
@@ -433,7 +433,7 @@ Some readmes may look better when displayed in a fixed-width font. This option o
 
 <h3><a name="localization" />Localization</h3>
 
-AngelLoader supports the localization of its user interface. New languages may be defined in language files, which must be placed in the <code>Data\Languages</code> folder. An <code>English.ini</code> file is included in that folder as an example, and other language files may be present if translators have provided them and asked for them to be included. Language files use a simple <code>ini</code> format, and must be saved with UTF8 encoding in order to guarantee correct display of text.
+AngelLoader supports the localization of its user interface. New languages may be defined in language files, which must be placed in the <code>Data\Languages</code> folder. An <code>English.ini</code> file is included in that folder as an example, and other language files are available for separate download. Language files use a simple <code>ini</code> format, and must be saved with UTF8 encoding in order to guarantee correct display of text.
 
 <p>Most user interface elements will be automatically resized to accommodate translated strings, but a few will not. These include the date and rating filter windows and some of the buttons in the tags filter window. It's up to the translator to ensure everything looks correct.</p>
 
