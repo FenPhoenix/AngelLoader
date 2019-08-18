@@ -66,7 +66,6 @@ namespace AngelLoader.CustomControls
             {
                 OnMouseLeave(EventArgs.Empty);
                 m.Result = (IntPtr)1;
-                return;
             }
 
             base.WndProc(ref m);
