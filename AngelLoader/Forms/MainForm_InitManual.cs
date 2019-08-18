@@ -444,6 +444,14 @@ namespace AngelLoader.Forms
             FMsDGV.StandardTab = true;
             FMsDGV.TabIndex = 0;
             FMsDGV.VirtualMode = true;
+            // I may want to enable this in the future - less contrasty background color for DataGridView
+            /*
+            FMsDGV.BackgroundColor = SystemColors.Control;
+            FMsDGV.EnableHeadersVisualStyles = false;
+            FMsDGV.ColumnHeadersDefaultCellStyle.SelectionBackColor = SystemColors.Menu;
+            FMsDGV.ColumnHeadersDefaultCellStyle.SelectionForeColor = SystemColors.Menu;
+            FMsDGV.ColumnHeadersDefaultCellStyle.Padding = new Padding(1);
+            */
             FMsDGV.CellDoubleClick += FMsDGV_CellDoubleClick;
             FMsDGV.CellValueNeeded += FMsDGV_CellValueNeeded_Initial;
             FMsDGV.ColumnHeaderMouseClick += FMsDGV_ColumnHeaderMouseClick;
