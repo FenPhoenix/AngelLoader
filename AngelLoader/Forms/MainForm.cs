@@ -588,6 +588,18 @@ namespace AngelLoader.Forms
             }
         }
 
+        private void HookMouseMove(object sender, MouseEventExtArgs e)
+        {
+            if (!CanFocus) return;
+            if (ViewBlocked)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            ShowReadmeControls(CursorOverReadmeArea());
+        }
+
         private void HookKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Alt && e.KeyCode == Keys.F4) return;
@@ -920,6 +932,7 @@ namespace AngelLoader.Forms
             // Hook these up last so they don't cause anything to happen while we're initializing
             AppMouseKeyHook = Hook.AppEvents();
             AppMouseKeyHook.MouseDownExt += HookMouseDown;
+            AppMouseKeyHook.MouseMoveExt += HookMouseMove;
             AppMouseKeyHook.KeyDown += HookKeyDown;
             AppMouseKeyHook.KeyUp += HookKeyUp;
             // This causes some oddities on MainForm, such as wrongly highlighting the control box when
@@ -3839,12 +3852,17 @@ namespace AngelLoader.Forms
 
         private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
 
-        private void ReadmeRichTextBox_MouseEnter(object sender, EventArgs e)
+        private void ReadmeRichTextBox_MouseLeave(object sender, EventArgs e)
         {
-            ShowReadmeControls(true);
+            if (!CursorOverControl(ReadmeZoomInButton) && !CursorOverControl(ReadmeZoomOutButton) &&
+                !CursorOverControl(ReadmeResetZoomButton) && !CursorOverControl(ReadmeFullScreenButton) &&
+                !CursorOverControl(ChooseReadmeComboBox))
+            {
+                ShowReadmeControls(false);
+            }
         }
 
-        private void ReadmeRichTextBox_MouseLeave(object sender, EventArgs e)
+        private void Panel2_MouseLeave(object sender, EventArgs e)
         {
             if (!CursorOverControl(ReadmeZoomInButton) && !CursorOverControl(ReadmeZoomOutButton) &&
                 !CursorOverControl(ReadmeResetZoomButton) && !CursorOverControl(ReadmeFullScreenButton) &&

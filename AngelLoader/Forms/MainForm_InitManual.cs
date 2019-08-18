@@ -355,6 +355,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.Size = new Size(1671, 672);
             MainSplitContainer.SplitterDistance = 309;
             MainSplitContainer.TabIndex = 0;
+            MainSplitContainer.Panel2.MouseLeave += Panel2_MouseLeave;
             // 
             // TopSplitContainer
             // 
@@ -1479,7 +1480,6 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.Dock = DockStyle.Fill;
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
-            ReadmeRichTextBox.MouseEnter += ReadmeRichTextBox_MouseEnter;
             ReadmeRichTextBox.MouseLeave += ReadmeRichTextBox_MouseLeave;
             // 
             // MainForm
