@@ -25,6 +25,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             Button.UseVisualStyleBackColor = true;
             Button.Visible = false;
             Button.Click += form.ViewHTMLReadmeButton_Click;
+            Button.MouseLeave += form.ReadmeArea_MouseLeave;
 
             _constructed = true;
 

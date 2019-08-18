@@ -351,6 +351,7 @@ namespace AngelLoader.Forms
             MainSplitContainer.Panel2.Controls.Add(ReadmeResetZoomButton);
             MainSplitContainer.Panel2.Controls.Add(ChooseReadmeComboBox);
             MainSplitContainer.Panel2.Controls.Add(ReadmeRichTextBox);
+            MainSplitContainer.Panel2.MouseLeave += ReadmeArea_MouseLeave;
             MainSplitContainer.Panel2MinSize = 38;
             MainSplitContainer.Size = new Size(1671, 672);
             MainSplitContainer.SplitterDistance = 309;
@@ -1409,6 +1410,7 @@ namespace AngelLoader.Forms
             ReadmeFullScreenButton.Visible = false;
             ReadmeFullScreenButton.Click += ReadmeFullScreenButton_Click;
             ReadmeFullScreenButton.Paint += ReadmeFullScreenButton_Paint;
+            ReadmeFullScreenButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ZoomInButton
             // 
@@ -1423,6 +1425,7 @@ namespace AngelLoader.Forms
             ReadmeZoomInButton.UseVisualStyleBackColor = false;
             ReadmeZoomInButton.Visible = false;
             ReadmeZoomInButton.Click += ReadmeZoomInButton_Click;
+            ReadmeZoomInButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ZoomOutButton
             // 
@@ -1438,6 +1441,7 @@ namespace AngelLoader.Forms
             ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             ReadmeZoomOutButton.Visible = false;
             ReadmeZoomOutButton.Click += ReadmeZoomOutButton_Click;
+            ReadmeZoomOutButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ResetZoomButton
             // 
@@ -1452,6 +1456,7 @@ namespace AngelLoader.Forms
             ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             ReadmeResetZoomButton.Visible = false;
             ReadmeResetZoomButton.Click += ReadmeResetZoomButton_Click;
+            ReadmeResetZoomButton.MouseLeave += ReadmeArea_MouseLeave;
 
             #endregion
             // 
@@ -1466,6 +1471,7 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox.Visible = false;
             ChooseReadmeComboBox.SelectedIndexChanged += ChooseReadmeComboBox_SelectedIndexChanged;
             ChooseReadmeComboBox.DropDownClosed += ChooseReadmeComboBox_DropDownClosed;
+            ChooseReadmeComboBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ReadmeRichTextBox
             // 
@@ -1474,6 +1480,7 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox.Dock = DockStyle.Fill;
             ReadmeRichTextBox.TabIndex = 0;
             ReadmeRichTextBox.LinkClicked += ReadmeRichTextBox_LinkClicked;
+            ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // MainForm
             // 

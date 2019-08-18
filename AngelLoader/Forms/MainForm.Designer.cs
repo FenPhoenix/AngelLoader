@@ -398,6 +398,7 @@
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeResetZoomButton);
             this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
             this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
+            this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             this.MainSplitContainer.Panel2MinSize = 38;
             this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
             this.MainSplitContainer.SplitterDistance = 309;
@@ -1742,8 +1743,9 @@
             this.ReadmeFullScreenButton.Visible = false;
             this.ReadmeFullScreenButton.Click += new System.EventHandler(this.ReadmeFullScreenButton_Click);
             this.ReadmeFullScreenButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ReadmeFullScreenButton_Paint);
+            this.ReadmeFullScreenButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
-            // ZoomInButton
+            // ReadmeZoomInButton
             // 
             this.ReadmeZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomInButton.BackColor = System.Drawing.SystemColors.Window;
@@ -1759,8 +1761,9 @@
             this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomInButton.Visible = false;
             this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
+            this.ReadmeZoomInButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
-            // ZoomOutButton
+            // ReadmeZoomOutButton
             // 
             this.ReadmeZoomOutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomOutButton.BackColor = System.Drawing.SystemColors.Window;
@@ -1776,8 +1779,9 @@
             this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomOutButton.Visible = false;
             this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
+            this.ReadmeZoomOutButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
-            // ResetZoomButton
+            // ReadmeResetZoomButton
             // 
             this.ReadmeResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
@@ -1793,6 +1797,7 @@
             this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             this.ReadmeResetZoomButton.Visible = false;
             this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
+            this.ReadmeResetZoomButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ChooseReadmeComboBox
             // 
@@ -1806,6 +1811,7 @@
             this.ChooseReadmeComboBox.Visible = false;
             this.ChooseReadmeComboBox.SelectedIndexChanged += new System.EventHandler(this.ChooseReadmeComboBox_SelectedIndexChanged);
             this.ChooseReadmeComboBox.DropDownClosed += new System.EventHandler(this.ChooseReadmeComboBox_DropDownClosed);
+            this.ChooseReadmeComboBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeRichTextBox
             // 
@@ -1818,6 +1824,7 @@
             this.ReadmeRichTextBox.TabIndex = 0;
             this.ReadmeRichTextBox.Text = "";
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
+            this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // MainForm
             // 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 
 namespace AngelLoader.CustomControls
@@ -58,6 +59,14 @@ namespace AngelLoader.CustomControls
 
                 int x = alignRight ? p.X - (DropDownWidth - Math.Min(Width, screenWidth - p.X)) : p.X;
                 SetWindowPos(m.LParam, IntPtr.Zero, x, p.Y, 0, 0, SWP_NOSIZE);
+            }
+            // Needed to make the MouseLeave event fire when the mouse moves off the control directly onto another
+            // window (other controls work like that automatically, ComboBox doesn't)
+            else if (m.Msg == InteropMisc.WM_MOUSELEAVE) // 675 / 0x2A3
+            {
+                OnMouseLeave(EventArgs.Empty);
+                m.Result = (IntPtr)1;
+                return;
             }
 
             base.WndProc(ref m);

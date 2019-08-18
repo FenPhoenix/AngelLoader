@@ -3863,6 +3863,15 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        // Allows the readme controls to hide when the mouse moves directly from the readme area onto another
+        // window. General-case showing and hiding is still handled by the mouse hook for reliability.
+        // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
+        internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
+        {
+            var hWnd = InteropMisc.WindowFromPoint(Cursor.Position);
+            if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
+        }
+
         private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
 
         private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
