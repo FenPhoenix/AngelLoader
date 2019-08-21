@@ -11,7 +11,7 @@ namespace AngelLoader.Importing
     internal static class ImportFMSel
     {
         internal static async Task<(ImportError Error, List<FanMission> FMs)>
-        Import(string iniFile, List<FanMission> mainList)
+        Import(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
@@ -95,9 +95,11 @@ namespace AngelLoader.Importing
                 }
             });
 
-            var importedFMsInMainList = ImportCommon.MergeImportedFMData(ImportType.FMSel, fms, mainList);
+            var importedFMs = returnUnmergedFMsList
+                ? fms
+                : ImportCommon.MergeImportedFMData(ImportType.FMSel, fms, mainList);
 
-            return (ImportError.None, importedFMsInMainList);
+            return (ImportError.None, importedFMs);
         }
     }
 }

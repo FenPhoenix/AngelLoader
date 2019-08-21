@@ -14,8 +14,8 @@ namespace AngelLoader.Importing
 
     internal static class ImportCommon
     {
-        internal static List<FanMission> MergeImportedFMData(ImportType importType, List<FanMission> importedFMs,
-            List<FanMission> mainList)
+        internal static List<FanMission>
+        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList)
         {
             // Perf
             var checkedList = new List<FanMission>();
