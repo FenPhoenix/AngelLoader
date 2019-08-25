@@ -949,12 +949,12 @@ namespace AngelLoader
         #region Importing
 
         internal static async Task<bool>
-        ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves)
+        ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields = null)
         {
             View.ShowProgressBox(ProgressTasks.ImportFromDarkLoader);
             try
             {
-                var (error, fmsToScan) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList);
+                var (error, fmsToScan) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList, fields: fields);
                 if (error != ImportError.None)
                 {
                     Log("Import.Error: " + error, stackTrace: true);
@@ -984,12 +984,12 @@ namespace AngelLoader
             return true;
         }
 
-        internal static async Task<bool> ImportFromNDL(string iniFile)
+        internal static async Task<bool> ImportFromNDL(string iniFile, FieldsToImport fields = null)
         {
             View.ShowProgressBox(ProgressTasks.ImportFromNDL);
             try
             {
-                var (error, fmsToScan) = await ImportNDL.Import(iniFile, FMDataIniList);
+                var (error, fmsToScan) = await ImportNDL.Import(iniFile, FMDataIniList, fields: fields);
                 if (error != ImportError.None)
                 {
                     Log("Import error: " + error, stackTrace: true);
@@ -1012,12 +1012,12 @@ namespace AngelLoader
             return true;
         }
 
-        internal static async Task<bool> ImportFromFMSel(string iniFile)
+        internal static async Task<bool> ImportFromFMSel(string iniFile, FieldsToImport fields = null)
         {
             View.ShowProgressBox(ProgressTasks.ImportFromFMSel);
             try
             {
-                var (error, fmsToScan) = await ImportFMSel.Import(iniFile, FMDataIniList);
+                var (error, fmsToScan) = await ImportFMSel.Import(iniFile, FMDataIniList, fields: fields);
                 if (error != ImportError.None)
                 {
                     Log("Import error: " + error, stackTrace: true);

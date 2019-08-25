@@ -10,6 +10,13 @@ namespace AngelLoader.Forms.Import
     {
         internal string DarkLoaderIniFile = "";
         internal bool ImportFMData;
+        internal bool ImportTitle;
+        internal bool ImportSize;
+        internal bool ImportComment;
+        internal bool ImportReleaseDate;
+        internal bool ImportLastPlayed;
+        internal bool ImportFinishedOn;
+
         internal bool ImportSaves;
 
         internal ImportFromDarkLoaderForm() => InitializeComponent();
@@ -63,7 +70,17 @@ namespace AngelLoader.Forms.Import
             }
 
             DarkLoaderIniFile = file;
-            ImportFMData = ImportControls.ImportFMData;
+            ImportTitle = ImportControls.ImportTitle;
+            ImportSize = ImportControls.ImportSize;
+            ImportComment = ImportControls.ImportComment;
+            ImportReleaseDate = ImportControls.ImportReleaseDate;
+            ImportLastPlayed = ImportControls.ImportLastPlayed;
+            ImportFinishedOn = ImportControls.ImportFinishedOn;
+
+            ImportFMData = ImportControls.ImportFMData &&
+                           (ImportTitle || ImportSize || ImportComment || ImportReleaseDate ||
+                            ImportLastPlayed || ImportFinishedOn);
+
             ImportSaves = ImportControls.ImportSaves;
         }
 

@@ -13,7 +13,8 @@ namespace AngelLoader.Importing
     internal static class ImportNDL
     {
         internal static async Task<(ImportError Error, List<FanMission> FMs)>
-        Import(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false)
+            Import(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false,
+                FieldsToImport fields = null)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
@@ -170,7 +171,7 @@ namespace AngelLoader.Importing
 
             var importedFMs = returnUnmergedFMsList
                 ? fms
-                : ImportCommon.MergeImportedFMData(ImportType.NewDarkLoader, fms, mainList);
+                : ImportCommon.MergeImportedFMData(ImportType.NewDarkLoader, fms, mainList, fields);
 
             return (ImportError.None, importedFMs);
         }

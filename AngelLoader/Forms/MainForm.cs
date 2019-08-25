@@ -2504,11 +2504,23 @@ namespace AngelLoader.Forms
             string iniFile;
             bool importFMData;
             bool importSaves;
+            bool importTitle;
+            bool importSize;
+            bool importComment;
+            bool importReleaseDate;
+            bool importLastPlayed;
+            bool importFinishedOn;
             using (var f = new ImportFromDarkLoaderForm())
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
                 iniFile = f.DarkLoaderIniFile;
                 importFMData = f.ImportFMData;
+                importTitle = f.ImportTitle;
+                importSize = f.ImportSize;
+                importComment = f.ImportComment;
+                importReleaseDate = f.ImportReleaseDate;
+                importLastPlayed = f.ImportLastPlayed;
+                importFinishedOn = f.ImportFinishedOn;
                 importSaves = f.ImportSaves;
             }
 
@@ -2523,7 +2535,17 @@ namespace AngelLoader.Forms
             // change of the list (not really bad but unprofessional looking))
             SetRowCount(0);
 
-            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves);
+            var fields = new FieldsToImport
+            {
+                Title = importTitle,
+                ReleaseDate = importReleaseDate,
+                LastPlayed = importLastPlayed,
+                Size = importSize,
+                Comment = importComment,
+                FinishedOn = importFinishedOn
+            };
+
+            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves, fields);
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
             await SortAndSetFilter(forceDisplayFM: true);

@@ -23,7 +23,7 @@ namespace AngelLoader.Importing
         internal bool DisabledMods;
         internal bool Tags;
         internal bool SelectedReadme;
-        internal bool SizeBytes;
+        internal bool Size;
     }
 
     internal static class ImportCommon
@@ -44,7 +44,7 @@ namespace AngelLoader.Importing
                     DisabledMods = true,
                     Tags = true,
                     SelectedReadme = true,
-                    SizeBytes = true
+                    Size = true
                 };
             }
 
@@ -118,7 +118,7 @@ namespace AngelLoader.Importing
                         }
                         if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
                         {
-                            if (fields.SizeBytes && mainFM.SizeBytes == 0)
+                            if (fields.Size && mainFM.SizeBytes == 0)
                             {
                                 mainFM.SizeBytes = importedFM.SizeBytes;
                             }
@@ -193,7 +193,7 @@ namespace AngelLoader.Importing
                     }
                     if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
                     {
-                        if (fields.SizeBytes)
+                        if (fields.Size)
                         {
                             newFM.SizeBytes = importedFM.SizeBytes;
                         }
