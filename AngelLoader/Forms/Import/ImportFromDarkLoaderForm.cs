@@ -17,13 +17,13 @@ namespace AngelLoader.Forms.Import
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e)
         {
             Localize();
-            user_DL_ImportControls1.DarkLoaderIniText = ImportCommon.AutodetectDarkLoaderIni();
+            ImportControls.DarkLoaderIniText = ImportCommon.AutodetectDarkLoaderIni();
         }
 
         private void Localize()
         {
             Text = LText.Importing.ImportFromDarkLoader_TitleText;
-            user_DL_ImportControls1.Localize();
+            ImportControls.Localize();
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
@@ -32,7 +32,7 @@ namespace AngelLoader.Forms.Import
         {
             if (DialogResult != DialogResult.OK) return;
 
-            var file = user_DL_ImportControls1.DarkLoaderIniText;
+            var file = ImportControls.DarkLoaderIniText;
 
             bool fileNameIsDLIni;
             try
@@ -63,8 +63,8 @@ namespace AngelLoader.Forms.Import
             }
 
             DarkLoaderIniFile = file;
-            ImportFMData = user_DL_ImportControls1.ImportFMData;
-            ImportSaves = user_DL_ImportControls1.ImportSaves;
+            ImportFMData = ImportControls.ImportFMData;
+            ImportSaves = ImportControls.ImportSaves;
         }
 
         #region Research notes

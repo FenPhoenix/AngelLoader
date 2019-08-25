@@ -31,7 +31,7 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.user_DL_ImportControls1 = new AngelLoader.Forms.Import.User_DL_ImportControls();
+            this.ImportControls = new AngelLoader.Forms.Import.User_DL_ImportControls();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,17 +67,17 @@
             this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(384, 144);
+            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(384, 240);
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
             this.OKCancelFlowLayoutPanel.TabIndex = 9;
             // 
             // user_DL_ImportControls1
             // 
-            this.user_DL_ImportControls1.Location = new System.Drawing.Point(0, 0);
-            this.user_DL_ImportControls1.Name = "user_DL_ImportControls1";
-            this.user_DL_ImportControls1.Size = new System.Drawing.Size(545, 128);
-            this.user_DL_ImportControls1.TabIndex = 10;
+            this.ImportControls.Location = new System.Drawing.Point(0, 0);
+            this.ImportControls.Name = "ImportControls";
+            this.ImportControls.Size = new System.Drawing.Size(545, 240);
+            this.ImportControls.TabIndex = 10;
             // 
             // ImportFromDarkLoaderForm
             // 
@@ -85,8 +85,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(547, 175);
-            this.Controls.Add(this.user_DL_ImportControls1);
+            this.ClientSize = new System.Drawing.Size(547, 271);
+            this.Controls.Add(this.ImportControls);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
@@ -109,6 +109,6 @@
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Button Cancel_Button;
         private System.Windows.Forms.FlowLayoutPanel OKCancelFlowLayoutPanel;
-        private User_DL_ImportControls user_DL_ImportControls1;
+        private User_DL_ImportControls ImportControls;
     }
 }

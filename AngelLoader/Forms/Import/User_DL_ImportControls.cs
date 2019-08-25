@@ -16,6 +16,13 @@ namespace AngelLoader.Forms.Import
         }
 
         internal bool ImportFMData => ImportFMDataCheckBox.Checked;
+        internal bool ImportTitle => ImportTitleCheckBox.Checked;
+        internal bool ImportSize => ImportSizeCheckBox.Checked;
+        internal bool ImportComment => ImportCommentCheckBox.Checked;
+        internal bool ImportReleaseDate => ImportReleaseDateCheckBox.Checked;
+        internal bool ImportLastPlayed => ImportLastPlayedCheckBox.Checked;
+        internal bool ImportFinishedOn => ImportFinishedOnCheckBox.Checked;
+
         internal bool ImportSaves => ImportSavesCheckBox.Checked;
 
         private void DarkLoaderIniBrowseButton_Click(object sender, EventArgs e)
@@ -45,6 +52,17 @@ namespace AngelLoader.Forms.Import
             DarkLoaderIniBrowseButton.SetTextAutoSize(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
             ImportFMDataCheckBox.Text = LText.Importing.DarkLoader_ImportFMData;
             ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
+        }
+
+        private void ImportFMDataCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            bool value = ImportFMDataCheckBox.Checked;
+            ImportTitleCheckBox.Enabled = value;
+            ImportSizeCheckBox.Enabled = value;
+            ImportCommentCheckBox.Enabled = value;
+            ImportReleaseDateCheckBox.Enabled = value;
+            ImportLastPlayedCheckBox.Enabled = value;
+            ImportFinishedOnCheckBox.Enabled = value;
         }
     }
 }
