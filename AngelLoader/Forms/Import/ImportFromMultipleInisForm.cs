@@ -7,7 +7,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.Importing;
 using static AngelLoader.Common.Utility.Methods;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.Forms.Import
 {
     public partial class ImportFromMultipleInisForm : Form
     {

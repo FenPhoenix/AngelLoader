@@ -162,6 +162,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -271,6 +272,13 @@
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
     <Compile Include="Forms\Images.cs" />
+    <Compile Include="Forms\Import\ImportCommon.cs" />
+    <Compile Include="Forms\Import\User_DL_ImportControls.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Import\User_DL_ImportControls.Designer.cs">
+      <DependentUpon>User_DL_ImportControls.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IView.cs" />
     <Compile Include="Forms\MainForm_InitManual.cs">
       <SubType>Form</SubType>
@@ -307,16 +315,16 @@
       <DependentUpon>FilterDateForm.cs</DependentUpon>
     </Compile>
     <Compile Include="FMBackupAndRestore.cs" />
-    <Compile Include="Forms\ImportFromDarkLoaderForm.cs">
+    <Compile Include="Forms\Import\ImportFromDarkLoaderForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ImportFromDarkLoaderForm.Designer.cs">
+    <Compile Include="Forms\Import\ImportFromDarkLoaderForm.Designer.cs">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ImportFromMultipleInisForm.cs">
+    <Compile Include="Forms\Import\ImportFromMultipleInisForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ImportFromMultipleInisForm.Designer.cs">
+    <Compile Include="Forms\Import\ImportFromMultipleInisForm.Designer.cs">
       <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ScanAllFMsForm.cs">
@@ -394,11 +402,14 @@
       <DependentUpon>FilterTagsForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFromDarkLoaderForm.resx" Condition="'$(Configuration)' == 'Debug'">
+    <EmbeddedResource Include="Forms\Import\ImportFromDarkLoaderForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ImportFromMultipleInisForm.resx" Condition="'$(Configuration)' == 'Debug'">
+    <EmbeddedResource Include="Forms\Import\ImportFromMultipleInisForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Import\User_DL_ImportControls.resx">
+      <DependentUpon>User_DL_ImportControls.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>MainForm.cs</DependentUpon>

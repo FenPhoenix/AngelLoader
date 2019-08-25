@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.Forms
+﻿namespace AngelLoader.Forms.Import
 {
     partial class ImportFromMultipleInisForm
     {

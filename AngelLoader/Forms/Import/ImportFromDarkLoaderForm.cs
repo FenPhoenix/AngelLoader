@@ -3,13 +3,11 @@ using System.IO;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Logger;
 
-namespace AngelLoader.Forms
+namespace AngelLoader.Forms.Import
 {
     public partial class ImportFromDarkLoaderForm : Form
     {
-        private const string DarkLoaderIni = "DarkLoader.ini";
         internal string DarkLoaderIniFile = "";
         internal bool ImportFMData;
         internal bool ImportSaves;
@@ -19,17 +17,13 @@ namespace AngelLoader.Forms
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e)
         {
             Localize();
-            AutodetectDarkLoaderIni();
+            user_DL_ImportControls1.DarkLoaderIniText = ImportCommon.AutodetectDarkLoaderIni();
         }
 
         private void Localize()
         {
             Text = LText.Importing.ImportFromDarkLoader_TitleText;
-            ChooseDarkLoaderIniLabel.Text = LText.Importing.DarkLoader_ChooseIni;
-            AutodetectCheckBox.Text = LText.Global.Autodetect;
-            DarkLoaderIniBrowseButton.SetTextAutoSize(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
-            ImportFMDataCheckBox.Text = LText.Importing.DarkLoader_ImportFMData;
-            ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
+            user_DL_ImportControls1.Localize();
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
@@ -38,12 +32,12 @@ namespace AngelLoader.Forms
         {
             if (DialogResult != DialogResult.OK) return;
 
-            var file = DarkLoaderIniTextBox.Text;
+            var file = user_DL_ImportControls1.DarkLoaderIniText;
 
             bool fileNameIsDLIni;
             try
             {
-                fileNameIsDLIni = Path.GetFileName(file).EqualsI(DarkLoaderIni);
+                fileNameIsDLIni = Path.GetFileName(file).EqualsI(ImportCommon.DarkLoaderIni);
             }
             catch (ArgumentException)
             {
@@ -69,72 +63,8 @@ namespace AngelLoader.Forms
             }
 
             DarkLoaderIniFile = file;
-            ImportFMData = ImportFMDataCheckBox.Checked;
-            ImportSaves = ImportSavesCheckBox.Checked;
-        }
-
-        private void DarkLoaderIniBrowseButton_Click(object sender, EventArgs e)
-        {
-            using (var d = new OpenFileDialog())
-            {
-                d.Filter = LText.BrowseDialogs.IniFiles + @"|*.ini|" + LText.BrowseDialogs.AllFiles + @"|*.*";
-                if (d.ShowDialog() != DialogResult.OK) return;
-
-                DarkLoaderIniTextBox.Text = d.FileName;
-            }
-        }
-
-        private void AutodetectCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var s = AutodetectCheckBox;
-            DarkLoaderIniTextBox.ReadOnly = s.Checked;
-            DarkLoaderIniBrowseButton.Enabled = !s.Checked;
-
-            if (s.Checked) AutodetectDarkLoaderIni();
-        }
-
-        private void AutodetectDarkLoaderIni()
-        {
-            // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
-            var dlLocations = new[]
-            {
-                @"DarkLoader",
-                @"Games\DarkLoader"
-            };
-
-            DriveInfo[] drives;
-            try
-            {
-                drives = DriveInfo.GetDrives();
-            }
-            catch (Exception ex)
-            {
-                Log("Exception in GetDrives()", ex);
-                DarkLoaderIniTextBox.Text = "";
-                return;
-            }
-
-            foreach (var drive in drives)
-            {
-                if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
-
-                try
-                {
-                    foreach (var loc in dlLocations)
-                    {
-                        var dlIni = Path.Combine(drive.Name, loc, DarkLoaderIni);
-                        if (File.Exists(dlIni))
-                        {
-                            DarkLoaderIniTextBox.Text = dlIni;
-                            return;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception in DarkLoader multi-drive search", ex);
-                }
-            }
+            ImportFMData = user_DL_ImportControls1.ImportFMData;
+            ImportSaves = user_DL_ImportControls1.ImportSaves;
         }
 
         #region Research notes

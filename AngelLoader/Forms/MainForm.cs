@@ -49,6 +49,7 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.CustomControls.Static_LazyLoaded;
+using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
