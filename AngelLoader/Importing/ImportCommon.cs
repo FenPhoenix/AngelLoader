@@ -12,11 +12,42 @@ namespace AngelLoader.Importing
         FMSel
     }
 
+    internal sealed class FieldsToImport
+    {
+        internal bool Title;
+        internal bool ReleaseDate;
+        internal bool LastPlayed;
+        internal bool FinishedOn;
+        internal bool Comment;
+        internal bool Rating;
+        internal bool DisabledMods;
+        internal bool Tags;
+        internal bool SelectedReadme;
+        internal bool SizeBytes;
+    }
+
     internal static class ImportCommon
     {
         internal static List<FanMission>
-        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList)
+        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList, FieldsToImport fields = null)
         {
+            if (fields == null)
+            {
+                fields = new FieldsToImport
+                {
+                    Title = true,
+                    ReleaseDate = true,
+                    LastPlayed = true,
+                    FinishedOn = true,
+                    Comment = true,
+                    Rating = true,
+                    DisabledMods = true,
+                    Tags = true,
+                    SelectedReadme = true,
+                    SizeBytes = true
+                };
+            }
+
             // Perf
             var checkedList = new List<FanMission>();
             int initCount = mainList.Count;
@@ -42,29 +73,62 @@ namespace AngelLoader.Importing
                         (importType == ImportType.NewDarkLoader &&
                          mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
                     {
-                        if (!importedFM.Title.IsEmpty()) mainFM.Title = importedFM.Title;
-                        if (importedFM.ReleaseDate != null) mainFM.ReleaseDate = importedFM.ReleaseDate;
-                        mainFM.LastPlayed = importedFM.LastPlayed;
-                        mainFM.FinishedOn = importedFM.FinishedOn;
-                        if (importType != ImportType.FMSel) mainFM.FinishedOnUnknown = false;
-                        mainFM.Comment = importedFM.Comment;
+                        if (fields.Title && !importedFM.Title.IsEmpty())
+                        {
+                            mainFM.Title = importedFM.Title;
+                        }
+                        if (fields.ReleaseDate && importedFM.ReleaseDate != null)
+                        {
+                            mainFM.ReleaseDate = importedFM.ReleaseDate;
+                        }
+                        if (fields.LastPlayed)
+                        {
+                            mainFM.LastPlayed = importedFM.LastPlayed;
+                        }
+                        if (fields.FinishedOn)
+                        {
+                            mainFM.FinishedOn = importedFM.FinishedOn;
+                            if (importType != ImportType.FMSel) mainFM.FinishedOnUnknown = false;
+                        }
+                        if (fields.Comment)
+                        {
+                            mainFM.Comment = importedFM.Comment;
+                        }
 
                         if (importType == ImportType.NewDarkLoader ||
                             importType == ImportType.FMSel)
                         {
-                            mainFM.Rating = importedFM.Rating;
-                            mainFM.DisabledMods = importedFM.DisabledMods;
-                            mainFM.DisableAllMods = importedFM.DisableAllMods;
-                            mainFM.TagsString = importedFM.TagsString;
-                            mainFM.SelectedReadme = importedFM.SelectedReadme;
+                            if (fields.Rating)
+                            {
+                                mainFM.Rating = importedFM.Rating;
+                            }
+                            if (fields.DisabledMods)
+                            {
+                                mainFM.DisabledMods = importedFM.DisabledMods;
+                                mainFM.DisableAllMods = importedFM.DisableAllMods;
+                            }
+                            if (fields.Tags)
+                            {
+                                mainFM.TagsString = importedFM.TagsString;
+                            }
+                            if (fields.SelectedReadme)
+                            {
+                                mainFM.SelectedReadme = importedFM.SelectedReadme;
+                            }
                         }
                         if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
                         {
-                            if (mainFM.SizeBytes == 0) mainFM.SizeBytes = importedFM.SizeBytes;
+                            if (fields.SizeBytes && mainFM.SizeBytes == 0)
+                            {
+                                mainFM.SizeBytes = importedFM.SizeBytes;
+                            }
                         }
                         else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
                         {
-                            mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                            if (fields.FinishedOn)
+                            {
+                                mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                            }
                         }
 
                         mainFM.MarkedScanned = true;
@@ -85,33 +149,65 @@ namespace AngelLoader.Importing
                     var newFM = new FanMission
                     {
                         Archive = importedFM.Archive,
-                        InstalledDir = importedFM.InstalledDir,
-                        Title =
-                            !importedFM.Title.IsEmpty() ? importedFM.Title :
-                            !importedFM.Archive.IsEmpty() ? importedFM.Archive :
-                            importedFM.InstalledDir,
-                        ReleaseDate = importedFM.ReleaseDate,
-                        LastPlayed = importedFM.LastPlayed,
-                        Comment = importedFM.Comment
+                        InstalledDir = importedFM.InstalledDir
                     };
+                    if (fields.Title)
+                    {
+                        newFM.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
+                            !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
+                            importedFM.InstalledDir;
+                    }
+                    if (fields.ReleaseDate)
+                    {
+                        newFM.ReleaseDate = importedFM.ReleaseDate;
+                    }
+                    if (fields.LastPlayed)
+                    {
+                        newFM.LastPlayed = importedFM.LastPlayed;
+                    }
+                    if (fields.Comment)
+                    {
+                        newFM.Comment = importedFM.Comment;
+                    }
 
                     if (importType == ImportType.NewDarkLoader ||
                         importType == ImportType.FMSel)
                     {
-                        newFM.Rating = importedFM.Rating;
-                        newFM.DisabledMods = importedFM.DisabledMods;
-                        newFM.DisableAllMods = importedFM.DisableAllMods;
-                        newFM.TagsString = importedFM.TagsString;
-                        newFM.SelectedReadme = importedFM.SelectedReadme;
+                        if (fields.Rating)
+                        {
+                            newFM.Rating = importedFM.Rating;
+                        }
+                        if (fields.DisabledMods)
+                        {
+                            newFM.DisabledMods = importedFM.DisabledMods;
+                            newFM.DisableAllMods = importedFM.DisableAllMods;
+                        }
+                        if (fields.Tags)
+                        {
+                            newFM.TagsString = importedFM.TagsString;
+                        }
+                        if (fields.SelectedReadme)
+                        {
+                            newFM.SelectedReadme = importedFM.SelectedReadme;
+                        }
                     }
                     if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
                     {
-                        newFM.SizeBytes = importedFM.SizeBytes;
-                        newFM.FinishedOn = importedFM.FinishedOn;
+                        if (fields.SizeBytes)
+                        {
+                            newFM.SizeBytes = importedFM.SizeBytes;
+                        }
+                        if (fields.FinishedOn)
+                        {
+                            newFM.FinishedOn = importedFM.FinishedOn;
+                        }
                     }
                     else if (importType == ImportType.FMSel)
                     {
-                        newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                        if (fields.FinishedOn)
+                        {
+                            newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                        }
                     }
 
                     newFM.MarkedScanned = true;
