@@ -2499,61 +2499,11 @@ namespace AngelLoader.Forms
             ShowMenu(ImportFromLLMenu.ImportFromMenu, ImportButton, MenuPos.TopLeft);
         }
 
-        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e)
-        {
-            string iniFile;
-            bool importFMData;
-            bool importSaves;
-            bool importTitle;
-            bool importSize;
-            bool importComment;
-            bool importReleaseDate;
-            bool importLastPlayed;
-            bool importFinishedOn;
-            using (var f = new ImportFromDarkLoaderForm())
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
-                iniFile = f.DarkLoaderIniFile;
-                importFMData = f.ImportFMData;
-                importTitle = f.ImportTitle;
-                importSize = f.ImportSize;
-                importComment = f.ImportComment;
-                importReleaseDate = f.ImportReleaseDate;
-                importLastPlayed = f.ImportLastPlayed;
-                importFinishedOn = f.ImportFinishedOn;
-                importSaves = f.ImportSaves;
-            }
+        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromDarkLoader();
 
-            if (!importFMData && !importSaves)
-            {
-                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
-            }
+        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromNDLOrFMSel(ImportType.FMSel);
 
-            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
-            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
-            // change of the list (not really bad but unprofessional looking))
-            SetRowCount(0);
-
-            var fields = new FieldsToImport
-            {
-                Title = importTitle,
-                ReleaseDate = importReleaseDate,
-                LastPlayed = importLastPlayed,
-                Size = importSize,
-                Comment = importComment,
-                FinishedOn = importFinishedOn
-            };
-
-            bool success = await Core.ImportFromDarkLoader(iniFile, importFMData, importSaves, fields);
-
-            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await SortAndSetFilter(forceDisplayFM: true);
-        }
-
-        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.FMSel);
-
-        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
+        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
@@ -4135,41 +4085,6 @@ namespace AngelLoader.Forms
         #endregion
 
         internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
-
-        private async Task ImportFromNDLOrFMSel(ImportType importType)
-        {
-            List<string> iniFiles = new List<string>();
-            using (var f = new ImportFromMultipleInisForm(importType))
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
-                foreach (var file in f.IniFiles) iniFiles.Add(file);
-            }
-
-            if (iniFiles.All(x => x.IsWhiteSpace()))
-            {
-                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
-            }
-
-            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
-            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
-            // change of the list (not really bad but unprofessional looking))
-            // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
-            // selection changed event from firing while we do it, as that could be really bad potentially.
-            SetRowCount(0);
-
-            foreach (var file in iniFiles)
-            {
-                if (file.IsWhiteSpace()) continue;
-
-                bool success = await (importType == ImportType.FMSel
-                    ? Core.ImportFromFMSel(file)
-                    : Core.ImportFromNDL(file));
-            }
-
-            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await SortAndSetFilter(forceDisplayFM: true);
-        }
 
         // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...
         // This only happens if the size is set while the top-right panel is squashed too far right or some other

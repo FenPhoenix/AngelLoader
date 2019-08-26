@@ -13,6 +13,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
+using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
 using FMScanner;
@@ -948,9 +949,54 @@ namespace AngelLoader
 
         #region Importing
 
-        internal static async Task<bool>
-        ImportFromDarkLoader(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields = null)
+        // TODO: Get rid of the multiple levels of calls and just put each into one method
+
+        internal static async Task ImportFromDarkLoader()
         {
+            string iniFile;
+            bool importFMData,
+                importSaves,
+                importTitle,
+                importSize,
+                importComment,
+                importReleaseDate,
+                importLastPlayed,
+                importFinishedOn;
+            using (var f = new ImportFromDarkLoaderForm())
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+                iniFile = f.DarkLoaderIniFile;
+                importFMData = f.ImportFMData;
+                importTitle = f.ImportTitle;
+                importSize = f.ImportSize;
+                importComment = f.ImportComment;
+                importReleaseDate = f.ImportReleaseDate;
+                importLastPlayed = f.ImportLastPlayed;
+                importFinishedOn = f.ImportFinishedOn;
+                importSaves = f.ImportSaves;
+            }
+
+            if (!importFMData && !importSaves)
+            {
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                return;
+            }
+
+            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
+            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking))
+            View.SetRowCount(0);
+
+            var fields = new FieldsToImport
+            {
+                Title = importTitle,
+                ReleaseDate = importReleaseDate,
+                LastPlayed = importLastPlayed,
+                Size = importSize,
+                Comment = importComment,
+                FinishedOn = importFinishedOn
+            };
+
             View.ShowProgressBox(ProgressTasks.ImportFromDarkLoader);
             try
             {
@@ -962,10 +1008,10 @@ namespace AngelLoader
                     if (error == ImportError.NoArchiveDirsFound)
                     {
                         View.ShowAlert(LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert);
-                        return false;
+                        return;
                     }
 
-                    return false;
+                    return;
                 }
 
                 await ScanAndFind(fmsToScan,
@@ -974,17 +1020,55 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception in DarkLoader import", ex);
-                return false;
+                return;
             }
             finally
             {
                 View.HideProgressBox();
             }
 
-            return true;
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+            await View.SortAndSetFilter(forceDisplayFM: true);
         }
 
-        internal static async Task<bool> ImportFromNDL(string iniFile, FieldsToImport fields = null)
+        #region FMSel / NDL
+
+        internal static async Task ImportFromNDLOrFMSel(ImportType importType)
+        {
+            List<string> iniFiles = new List<string>();
+            using (var f = new ImportFromMultipleInisForm(importType))
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+                foreach (var file in f.IniFiles) iniFiles.Add(file);
+            }
+
+            if (iniFiles.All(x => x.IsWhiteSpace()))
+            {
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                return;
+            }
+
+            // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from the
+            // list when it's in an indeterminate state (which can cause a selection change (bad) and/or a visible
+            // change of the list (not really bad but unprofessional looking))
+            // We're modifying the data that FMsDGV pulls from when it redraws. This will at least prevent a
+            // selection changed event from firing while we do it, as that could be really bad potentially.
+            View.SetRowCount(0);
+
+            foreach (var file in iniFiles)
+            {
+                if (file.IsWhiteSpace()) continue;
+
+                bool success = await (importType == ImportType.FMSel
+                    ? Core.ImportFromFMSel(file)
+                    : Core.ImportFromNDL(file));
+            }
+
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+            await View.SortAndSetFilter(forceDisplayFM: true);
+        }
+
+        private static async Task<bool> ImportFromNDL(string iniFile, FieldsToImport fields = null)
         {
             View.ShowProgressBox(ProgressTasks.ImportFromNDL);
             try
@@ -1012,7 +1096,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal static async Task<bool> ImportFromFMSel(string iniFile, FieldsToImport fields = null)
+        private static async Task<bool> ImportFromFMSel(string iniFile, FieldsToImport fields = null)
         {
             View.ShowProgressBox(ProgressTasks.ImportFromFMSel);
             try
@@ -1039,6 +1123,8 @@ namespace AngelLoader
 
             return true;
         }
+
+        #endregion
 
         private static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions)
         {
