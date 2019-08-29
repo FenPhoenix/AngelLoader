@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 
@@ -21,11 +22,7 @@ namespace AngelLoader.Forms.Import
 
         internal ImportFromDarkLoaderForm() => InitializeComponent();
 
-        private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e)
-        {
-            Localize();
-            ImportControls.DarkLoaderIniText = ImportCommon.AutodetectDarkLoaderIni();
-        }
+        private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e) => Localize();
 
         private void Localize()
         {
@@ -44,7 +41,7 @@ namespace AngelLoader.Forms.Import
             bool fileNameIsDLIni;
             try
             {
-                fileNameIsDLIni = Path.GetFileName(file).EqualsI(ImportCommon.DarkLoaderIni);
+                fileNameIsDLIni = Path.GetFileName(file).EqualsI(Paths.DarkLoaderIni);
             }
             catch (ArgumentException)
             {

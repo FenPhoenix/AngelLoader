@@ -1,13 +1,20 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Forms.Import
 {
     public partial class User_DL_ImportControls : UserControl
     {
-        public User_DL_ImportControls() => InitializeComponent();
+        public User_DL_ImportControls()
+        {
+            InitializeComponent();
+            DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
+        }
 
         internal string DarkLoaderIniText
         {
@@ -42,7 +49,7 @@ namespace AngelLoader.Forms.Import
             DarkLoaderIniTextBox.ReadOnly = s.Checked;
             DarkLoaderIniBrowseButton.Enabled = !s.Checked;
 
-            if (s.Checked) DarkLoaderIniTextBox.Text = ImportCommon.AutodetectDarkLoaderIni();
+            if (s.Checked) DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
         }
 
         internal void Localize()
@@ -52,6 +59,47 @@ namespace AngelLoader.Forms.Import
             DarkLoaderIniBrowseButton.SetTextAutoSize(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
             ImportFMDataCheckBox.Text = LText.Importing.DarkLoader_ImportFMData;
             ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
+        }
+
+        private static string AutodetectDarkLoaderIni()
+        {
+            // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
+            var dlLocations = new[]
+            {
+                @"DarkLoader",
+                @"Games\DarkLoader"
+            };
+
+            DriveInfo[] drives;
+            try
+            {
+                drives = DriveInfo.GetDrives();
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in GetDrives()", ex);
+                return "";
+            }
+
+            foreach (var drive in drives)
+            {
+                if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
+
+                try
+                {
+                    foreach (var loc in dlLocations)
+                    {
+                        var dlIni = Path.Combine(drive.Name, loc, Paths.DarkLoaderIni);
+                        if (File.Exists(dlIni)) return dlIni;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in DarkLoader multi-drive search", ex);
+                }
+            }
+
+            return "";
         }
 
         private void ImportFMDataCheckBox_CheckedChanged(object sender, EventArgs e)

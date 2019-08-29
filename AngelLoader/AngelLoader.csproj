@@ -272,7 +272,6 @@
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
     <Compile Include="Forms\Images.cs" />
-    <Compile Include="Forms\Import\ImportCommon.cs" />
     <Compile Include="Forms\Import\User_DL_ImportControls.cs">
       <SubType>UserControl</SubType>
     </Compile>

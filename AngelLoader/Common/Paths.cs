@@ -107,6 +107,8 @@ namespace AngelLoader.Common
 
         internal const string DarkLoaderSaveBakDir = "DarkLoader";
 
+        internal const string DarkLoaderIni = "DarkLoader.ini";
+
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");
 
         internal static readonly string Data = Path.Combine(Startup, "Data");
