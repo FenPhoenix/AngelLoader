@@ -279,6 +279,12 @@
     <Compile Include="Forms\Import\User_DL_ImportControls.Designer.cs">
       <DependentUpon>User_DL_ImportControls.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Import\User_FMSel_NDL_ImportControls.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Import\User_FMSel_NDL_ImportControls.Designer.cs">
+      <DependentUpon>User_FMSel_NDL_ImportControls.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\IView.cs" />
     <Compile Include="Forms\MainForm_InitManual.cs">
       <SubType>Form</SubType>
@@ -410,6 +416,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Import\User_DL_ImportControls.resx">
       <DependentUpon>User_DL_ImportControls.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Import\User_FMSel_NDL_ImportControls.resx">
+      <DependentUpon>User_FMSel_NDL_ImportControls.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>MainForm.cs</DependentUpon>

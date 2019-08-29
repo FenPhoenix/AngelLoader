@@ -47,8 +47,8 @@ namespace AngelLoader.Importing
         private static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
 
         internal static async Task<(ImportError Error, List<FanMission> FMs)>
-            Import(string iniFile, bool importFMData, bool importSaves, List<FanMission> mainList,
-                bool returnUnmergedFMsList = false, FieldsToImport fields = null)
+        Import(string iniFile, bool importFMData, bool importSaves, List<FanMission> mainList,
+               bool returnUnmergedFMsList = false, FieldsToImport fields = null)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();

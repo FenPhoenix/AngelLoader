@@ -1036,10 +1036,30 @@ namespace AngelLoader
         internal static async Task ImportFromNDLOrFMSel(ImportType importType)
         {
             List<string> iniFiles = new List<string>();
+            bool importTitle,
+                importReleaseDate,
+                importLastPlayed,
+                importComment,
+                importRating,
+                importDisabledMods,
+                importTags,
+                importSelectedReadme,
+                importFinishedOn,
+                importSize;
             using (var f = new ImportFromMultipleInisForm(importType))
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
                 foreach (var file in f.IniFiles) iniFiles.Add(file);
+                importTitle = f.ImportTitle;
+                importReleaseDate = f.ImportReleaseDate;
+                importLastPlayed = f.ImportLastPlayed;
+                importComment = f.ImportComment;
+                importRating = f.ImportRating;
+                importDisabledMods = f.ImportDisabledMods;
+                importTags = f.ImportTags;
+                importSelectedReadme = f.ImportSelectedReadme;
+                importFinishedOn = f.ImportFinishedOn;
+                importSize = f.ImportSize;
             }
 
             if (iniFiles.All(x => x.IsWhiteSpace()))
@@ -1055,13 +1075,27 @@ namespace AngelLoader
             // selection changed event from firing while we do it, as that could be really bad potentially.
             View.SetRowCount(0);
 
+            var fields = new FieldsToImport
+            {
+                Title = importTitle,
+                ReleaseDate = importReleaseDate,
+                LastPlayed = importLastPlayed,
+                Comment = importComment,
+                Rating = importRating,
+                DisabledMods = importDisabledMods,
+                Tags = importTags,
+                SelectedReadme = importSelectedReadme,
+                FinishedOn = importFinishedOn,
+                Size = importSize
+            };
+
             foreach (var file in iniFiles)
             {
                 if (file.IsWhiteSpace()) continue;
 
                 bool success = await (importType == ImportType.FMSel
-                    ? Core.ImportFromFMSel(file)
-                    : Core.ImportFromNDL(file));
+                    ? Core.ImportFromFMSel(file, fields)
+                    : Core.ImportFromNDL(file, fields));
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
