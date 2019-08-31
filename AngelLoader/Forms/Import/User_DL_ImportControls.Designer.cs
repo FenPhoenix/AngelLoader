@@ -39,7 +39,7 @@
             this.AutodetectCheckBox.AutoSize = true;
             this.AutodetectCheckBox.Checked = true;
             this.AutodetectCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.AutodetectCheckBox.Location = new System.Drawing.Point(16, 40);
+            this.AutodetectCheckBox.Location = new System.Drawing.Point(8, 32);
             this.AutodetectCheckBox.Name = "AutodetectCheckBox";
             this.AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
             this.AutodetectCheckBox.TabIndex = 16;
@@ -50,7 +50,7 @@
             // ChooseDarkLoaderIniLabel
             // 
             this.ChooseDarkLoaderIniLabel.AutoSize = true;
-            this.ChooseDarkLoaderIniLabel.Location = new System.Drawing.Point(16, 16);
+            this.ChooseDarkLoaderIniLabel.Location = new System.Drawing.Point(8, 8);
             this.ChooseDarkLoaderIniLabel.Name = "ChooseDarkLoaderIniLabel";
             this.ChooseDarkLoaderIniLabel.Size = new System.Drawing.Size(118, 13);
             this.ChooseDarkLoaderIniLabel.TabIndex = 11;
@@ -58,7 +58,7 @@
             // 
             // DarkLoaderIniTextBox
             // 
-            this.DarkLoaderIniTextBox.Location = new System.Drawing.Point(16, 64);
+            this.DarkLoaderIniTextBox.Location = new System.Drawing.Point(8, 56);
             this.DarkLoaderIniTextBox.Name = "DarkLoaderIniTextBox";
             this.DarkLoaderIniTextBox.ReadOnly = true;
             this.DarkLoaderIniTextBox.Size = new System.Drawing.Size(440, 20);
@@ -68,7 +68,7 @@
             // 
             this.DarkLoaderIniBrowseButton.AutoSize = true;
             this.DarkLoaderIniBrowseButton.Enabled = false;
-            this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(456, 63);
+            this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(448, 55);
             this.DarkLoaderIniBrowseButton.Name = "DarkLoaderIniBrowseButton";
             this.DarkLoaderIniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.DarkLoaderIniBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -86,7 +86,7 @@
             this.Controls.Add(this.DarkLoaderIniTextBox);
             this.Controls.Add(this.DarkLoaderIniBrowseButton);
             this.Name = "User_DL_ImportControls";
-            this.Size = new System.Drawing.Size(540, 97);
+            this.Size = new System.Drawing.Size(531, 88);
             this.ResumeLayout(false);
             this.PerformLayout();
 

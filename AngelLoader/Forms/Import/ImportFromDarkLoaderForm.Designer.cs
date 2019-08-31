@@ -31,7 +31,6 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.ImportControls = new AngelLoader.Forms.Import.User_DL_ImportControls();
             this.ImportFinishedOnCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportLastPlayedCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportReleaseDateCheckBox = new System.Windows.Forms.CheckBox();
@@ -40,6 +39,7 @@
             this.ImportTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportFMDataCheckBox = new System.Windows.Forms.CheckBox();
             this.ImportSavesCheckBox = new System.Windows.Forms.CheckBox();
+            this.ImportControls = new AngelLoader.Forms.Import.User_DL_ImportControls();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,13 +79,6 @@
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
             this.OKCancelFlowLayoutPanel.TabIndex = 9;
-            // 
-            // ImportControls
-            // 
-            this.ImportControls.Location = new System.Drawing.Point(0, 0);
-            this.ImportControls.Name = "ImportControls";
-            this.ImportControls.Size = new System.Drawing.Size(545, 88);
-            this.ImportControls.TabIndex = 10;
             // 
             // ImportFinishedOnCheckBox
             // 
@@ -183,6 +176,13 @@
             this.ImportSavesCheckBox.TabIndex = 19;
             this.ImportSavesCheckBox.Text = "Import saves";
             this.ImportSavesCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ImportControls
+            // 
+            this.ImportControls.Location = new System.Drawing.Point(8, 8);
+            this.ImportControls.Name = "ImportControls";
+            this.ImportControls.Size = new System.Drawing.Size(545, 88);
+            this.ImportControls.TabIndex = 10;
             // 
             // ImportFromDarkLoaderForm
             // 

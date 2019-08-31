@@ -13,17 +13,17 @@ namespace AngelLoader.Forms.Import
 {
     public partial class ImportFromMultipleLoadersForm : Form
     {
-        private RadioButton[] TitleRBs;
-        private RadioButton[] ReleaseDateRBs;
-        private RadioButton[] LastPlayedRBs;
-        private RadioButton[] FinishedRBs;
-        private RadioButton[] CommentRBs;
-        private RadioButton[] RatingRBs;
-        private RadioButton[] DisabledModsRBs;
-        private RadioButton[] TagsRBs;
-        private RadioButton[] SelectedReadmeRBs;
-        private RadioButton[] SizeRBs;
-        private RadioButton[][] PriorityCheckSets;
+        private readonly RadioButton[] TitleRBs;
+        private readonly RadioButton[] ReleaseDateRBs;
+        private readonly RadioButton[] LastPlayedRBs;
+        private readonly RadioButton[] FinishedRBs;
+        private readonly RadioButton[] CommentRBs;
+        private readonly RadioButton[] RatingRBs;
+        private readonly RadioButton[] DisabledModsRBs;
+        private readonly RadioButton[] TagsRBs;
+        private readonly RadioButton[] SelectedReadmeRBs;
+        private readonly RadioButton[] SizeRBs;
+        private readonly RadioButton[][] PriorityCheckSets;
 
         public ImportFromMultipleLoadersForm()
         {
@@ -70,6 +70,24 @@ namespace AngelLoader.Forms.Import
                 sender == ImportTagsCheckBox ? TagsRBs :
                 sender == ImportSelectedReadmeCheckBox ? SelectedReadmeRBs :
                 SizeRBs);
+        }
+
+        // We want to have all radio buttons in a row be part of the same group but those in different columns be
+        // in different groups, but the default behavior is to have every one be part of the same group. So do
+        // this manual stuff to achieve what we want instead.
+        private void Priority_RadioButtons_CheckedChanged(object sender, EventArgs e)
+        {
+            var s = (RadioButton)sender;
+
+            if (!s.Checked) return;
+
+            foreach (var set in PriorityCheckSets)
+            {
+                if (set.Contains(s))
+                {
+                    foreach (var rb in set) if (rb != s) rb.Checked = false;
+                }
+            }
         }
     }
 }
