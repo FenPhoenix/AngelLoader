@@ -439,6 +439,9 @@ namespace AngelLoader.Common.DataClasses
 
         internal static class Importing
         {
+            [FenGenComment("This goes in the \"Import from...\" menu below the other loaders' names")]
+            internal static string ImportFromMultipleLoaders = "Multiple loaders...";
+            [FenGenBlankLine]
             internal static string NothingWasImported = "Nothing was imported.";
             internal static string SelectedFileIsNotAValidPath = "Selected file is not a valid path.";
             [FenGenBlankLine]

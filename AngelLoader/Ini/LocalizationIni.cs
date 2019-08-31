@@ -1368,7 +1368,11 @@ namespace AngelLoader.Ini
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("NothingWasImported="))
+                        if (lt.StartsWithFast_NoNullChecks("ImportFromMultipleLoaders="))
+                        {
+                            LText.Importing.ImportFromMultipleLoaders = lt.Substring(26);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("NothingWasImported="))
                         {
                             LText.Importing.NothingWasImported = lt.Substring(19);
                         }

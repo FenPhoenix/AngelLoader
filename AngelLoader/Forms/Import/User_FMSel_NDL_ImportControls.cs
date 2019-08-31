@@ -13,17 +13,6 @@ namespace AngelLoader.Forms.Import
         internal string Thief1IniFile => Thief1IniTextBox.Text;
         internal string Thief2IniFile => Thief2IniTextBox.Text;
         internal string Thief3IniFile => Thief3IniTextBox.Text;
-        internal bool ImportTitle => ImportTitleCheckBox.Checked;
-        internal bool ImportReleaseDate => ImportReleaseDateCheckBox.Checked;
-        internal bool ImportLastPlayed => ImportLastPlayedCheckBox.Checked;
-        internal bool ImportComment => ImportCommentCheckBox.Checked;
-        internal bool ImportRating => ImportRatingCheckBox.Checked;
-        internal bool ImportDisabledMods => ImportDisabledModsCheckBox.Checked;
-        internal bool ImportTags => ImportTagsCheckBox.Checked;
-        internal bool ImportSelectedReadme => ImportSelectedReadmeCheckBox.Checked;
-        internal bool ImportFinishedOn => ImportFinishedOnCheckBox.Checked;
-        internal bool ImportSize => ImportSizeCheckBox.Visible && ImportSizeCheckBox.Checked;
-
 
         private ImportType ImportType;
 
@@ -34,14 +23,11 @@ namespace AngelLoader.Forms.Import
         {
             ImportType = importType;
 
-            if (ImportType == ImportType.FMSel) ImportSizeCheckBox.Hide();
-
             Localize();
 
             AutodetectGameIni(Game.Thief1, Thief1IniTextBox);
             AutodetectGameIni(Game.Thief2, Thief2IniTextBox);
             AutodetectGameIni(Game.Thief3, Thief3IniTextBox);
-
         }
 
         internal void Localize()

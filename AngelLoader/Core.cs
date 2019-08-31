@@ -1160,6 +1160,15 @@ namespace AngelLoader
 
         #endregion
 
+        // TODO: Finish implementing
+        internal static async Task ImportFromMultipleLoaders()
+        {
+            using (var f = new ImportFromMultipleLoadersForm())
+            {
+                if (f.ShowDialog() != DialogResult.OK) return;
+            }
+        }
+
         private static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions)
         {
             if (fms.Count == 0) return;

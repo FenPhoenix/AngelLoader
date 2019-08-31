@@ -272,11 +272,11 @@
     <Compile Include="FindFMs.cs" />
     <Compile Include="FMCache.cs" />
     <Compile Include="Forms\Images.cs" />
-    <Compile Include="Forms\Import\ImportAllSelectiveForm.cs">
+    <Compile Include="Forms\Import\ImportFromMultipleLoadersForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Import\ImportAllSelectiveForm.Designer.cs">
-      <DependentUpon>ImportAllSelectiveForm.cs</DependentUpon>
+    <Compile Include="Forms\Import\ImportFromMultipleLoadersForm.Designer.cs">
+      <DependentUpon>ImportFromMultipleLoadersForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Import\User_DL_ImportControls.cs">
       <SubType>UserControl</SubType>
@@ -413,8 +413,8 @@
       <DependentUpon>FilterTagsForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Import\ImportAllSelectiveForm.resx">
-      <DependentUpon>ImportAllSelectiveForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\Import\ImportFromMultipleLoadersForm.resx">
+      <DependentUpon>ImportFromMultipleLoadersForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Import\ImportFromDarkLoaderForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>

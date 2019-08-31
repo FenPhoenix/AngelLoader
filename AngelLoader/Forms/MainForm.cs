@@ -1305,6 +1305,7 @@ namespace AngelLoader.Forms
                 WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, ((Size)WebSearchButton.Tag).Width, preserveHeight: true);
                 ScanAllFMsButton.SetTextAutoSize(LText.MainButtons.ScanAllFMs, preserveHeight: true);
                 ImportButton.SetTextAutoSize(LText.MainButtons.Import, preserveHeight: true);
+                ImportFromLLMenu.Localize();
                 SettingsButton.SetTextAutoSize(LText.MainButtons.Settings, preserveHeight: true);
 
                 #endregion
@@ -2504,6 +2505,8 @@ namespace AngelLoader.Forms
         internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromNDLOrFMSel(ImportType.FMSel);
 
         internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
+
+        internal async void ImportFromMultipleLoadersMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromMultipleLoaders();
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 

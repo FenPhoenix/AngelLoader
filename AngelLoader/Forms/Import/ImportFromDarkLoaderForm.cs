@@ -27,9 +27,25 @@ namespace AngelLoader.Forms.Import
         private void Localize()
         {
             Text = LText.Importing.ImportFromDarkLoader_TitleText;
+            
             ImportControls.Localize();
+            
+            ImportFMDataCheckBox.Text = LText.Importing.DarkLoader_ImportFMData;
+            ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
+            
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
+        }
+
+        private void ImportFMDataCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            bool value = ImportFMDataCheckBox.Checked;
+            ImportTitleCheckBox.Enabled = value;
+            ImportSizeCheckBox.Enabled = value;
+            ImportCommentCheckBox.Enabled = value;
+            ImportReleaseDateCheckBox.Enabled = value;
+            ImportLastPlayedCheckBox.Enabled = value;
+            ImportFinishedOnCheckBox.Enabled = value;
         }
 
         private void ImportFromDarkLoaderForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -67,18 +83,18 @@ namespace AngelLoader.Forms.Import
             }
 
             DarkLoaderIniFile = file;
-            ImportTitle = ImportControls.ImportTitle;
-            ImportSize = ImportControls.ImportSize;
-            ImportComment = ImportControls.ImportComment;
-            ImportReleaseDate = ImportControls.ImportReleaseDate;
-            ImportLastPlayed = ImportControls.ImportLastPlayed;
-            ImportFinishedOn = ImportControls.ImportFinishedOn;
+            ImportTitle = ImportTitleCheckBox.Checked;
+            ImportSize = ImportSizeCheckBox.Checked;
+            ImportComment = ImportCommentCheckBox.Checked;
+            ImportReleaseDate = ImportReleaseDateCheckBox.Checked;
+            ImportLastPlayed = ImportLastPlayedCheckBox.Checked;
+            ImportFinishedOn = ImportFinishedOnCheckBox.Checked;
 
-            ImportFMData = ImportControls.ImportFMData &&
+            ImportFMData = ImportFMDataCheckBox.Checked &&
                            (ImportTitle || ImportSize || ImportComment || ImportReleaseDate ||
                             ImportLastPlayed || ImportFinishedOn);
 
-            ImportSaves = ImportControls.ImportSaves;
+            ImportSaves = ImportSavesCheckBox.Checked;
         }
 
         #region Research notes

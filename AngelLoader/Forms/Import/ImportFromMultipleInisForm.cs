@@ -27,8 +27,9 @@ namespace AngelLoader.Forms.Import
             ImportType = importType;
             InitializeComponent();
 
-            // Do this before localize so the right strings will be set in the import controls
             ImportControls.Init(ImportType);
+
+            if (ImportType == ImportType.FMSel) ImportSizeCheckBox.Hide();
 
             Localize();
         }
@@ -38,8 +39,6 @@ namespace AngelLoader.Forms.Import
             Text = ImportType == ImportType.NewDarkLoader
                 ? LText.Importing.ImportFromNewDarkLoader_TitleText
                 : LText.Importing.ImportFromFMSel_TitleText;
-
-            ImportControls.Localize();
 
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
@@ -56,16 +55,16 @@ namespace AngelLoader.Forms.Import
                 ImportControls.Thief3IniFile.Trim()
             };
 
-            ImportTitle = ImportControls.ImportTitle;
-            ImportReleaseDate = ImportControls.ImportReleaseDate;
-            ImportLastPlayed = ImportControls.ImportLastPlayed;
-            ImportComment = ImportControls.ImportComment;
-            ImportRating = ImportControls.ImportRating;
-            ImportDisabledMods = ImportControls.ImportDisabledMods;
-            ImportTags = ImportControls.ImportTags;
-            ImportSelectedReadme = ImportControls.ImportSelectedReadme;
-            ImportFinishedOn = ImportControls.ImportFinishedOn;
-            ImportSize = ImportControls.ImportSize;
+            ImportTitle = ImportTitleCheckBox.Checked;
+            ImportReleaseDate = ImportReleaseDateCheckBox.Checked;
+            ImportLastPlayed = ImportLastPlayedCheckBox.Checked;
+            ImportComment = ImportCommentCheckBox.Checked;
+            ImportRating = ImportRatingCheckBox.Checked;
+            ImportDisabledMods = ImportDisabledModsCheckBox.Checked;
+            ImportTags = ImportTagsCheckBox.Checked;
+            ImportSelectedReadme = ImportSelectedReadmeCheckBox.Checked;
+            ImportFinishedOn = ImportFinishedOnCheckBox.Checked;
+            ImportSize = ImportSizeCheckBox.Visible && ImportSizeCheckBox.Checked;
         }
 
         #region NDL Research notes
