@@ -30,6 +30,7 @@
         {
             this.IniTabControl = new System.Windows.Forms.TabControl();
             this.DL_TabPage = new System.Windows.Forms.TabPage();
+            this.DL_ImportSavesCheckBox = new System.Windows.Forms.CheckBox();
             this.DL_ImportControls = new AngelLoader.Forms.Import.User_DL_ImportControls();
             this.FMSel_TabPage = new System.Windows.Forms.TabPage();
             this.FMSel_ImportControls = new AngelLoader.Forms.Import.User_FMSel_NDL_ImportControls();
@@ -51,7 +52,6 @@
             this.Prefer_FMSel_Label = new System.Windows.Forms.Label();
             this.NDL_Tags_Panel = new System.Windows.Forms.Panel();
             this.NDL_Tags_RadioButton = new System.Windows.Forms.RadioButton();
-            this.Prefer_NDL_Label = new System.Windows.Forms.Label();
             this.FMSel_Tags_Panel = new System.Windows.Forms.Panel();
             this.FMSel_Tags_RadioButton = new System.Windows.Forms.RadioButton();
             this.ImportTitleCheckBox = new System.Windows.Forms.CheckBox();
@@ -103,7 +103,8 @@
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
-            this.DL_ImportSavesCheckBox = new System.Windows.Forms.CheckBox();
+            this.AllPanel = new System.Windows.Forms.Panel();
+            this.Prefer_NDL_Label = new System.Windows.Forms.Label();
             this.IniTabControl.SuspendLayout();
             this.DL_TabPage.SuspendLayout();
             this.FMSel_TabPage.SuspendLayout();
@@ -135,6 +136,7 @@
             this.DL_ReleaseDate_Panel.SuspendLayout();
             this.FMSel_ReleaseDate_Panel.SuspendLayout();
             this.OKCancelFlowLayoutPanel.SuspendLayout();
+            this.AllPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // IniTabControl
@@ -159,6 +161,18 @@
             this.DL_TabPage.Size = new System.Drawing.Size(568, 326);
             this.DL_TabPage.TabIndex = 0;
             this.DL_TabPage.Text = "DarkLoader";
+            // 
+            // DL_ImportSavesCheckBox
+            // 
+            this.DL_ImportSavesCheckBox.AutoSize = true;
+            this.DL_ImportSavesCheckBox.Checked = true;
+            this.DL_ImportSavesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.DL_ImportSavesCheckBox.Location = new System.Drawing.Point(24, 112);
+            this.DL_ImportSavesCheckBox.Name = "DL_ImportSavesCheckBox";
+            this.DL_ImportSavesCheckBox.Size = new System.Drawing.Size(86, 17);
+            this.DL_ImportSavesCheckBox.TabIndex = 1;
+            this.DL_ImportSavesCheckBox.Text = "Import saves";
+            this.DL_ImportSavesCheckBox.UseVisualStyleBackColor = true;
             // 
             // DL_ImportControls
             // 
@@ -209,7 +223,7 @@
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 272F));
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
+            this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 106F));
             this.FieldSelectionTable.Controls.Add(this.NDL_Size_Panel, 3, 10);
             this.FieldSelectionTable.Controls.Add(this.NDL_ReleaseDate_Panel, 3, 2);
             this.FieldSelectionTable.Controls.Add(this.DL_Size_Panel, 1, 10);
@@ -426,17 +440,6 @@
             this.NDL_Tags_RadioButton.TabStop = true;
             this.NDL_Tags_RadioButton.UseVisualStyleBackColor = true;
             this.NDL_Tags_RadioButton.CheckedChanged += new System.EventHandler(this.Priority_RadioButtons_CheckedChanged);
-            // 
-            // Prefer_NDL_Label
-            // 
-            this.Prefer_NDL_Label.AutoSize = true;
-            this.Prefer_NDL_Label.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Prefer_NDL_Label.Location = new System.Drawing.Point(479, 1);
-            this.Prefer_NDL_Label.Name = "Prefer_NDL_Label";
-            this.Prefer_NDL_Label.Size = new System.Drawing.Size(98, 20);
-            this.Prefer_NDL_Label.TabIndex = 0;
-            this.Prefer_NDL_Label.Text = "NewDarkLoader";
-            this.Prefer_NDL_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FMSel_Tags_Panel
             // 
@@ -978,7 +981,7 @@
             this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(423, 717);
+            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(430, 671);
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
             this.OKCancelFlowLayoutPanel.TabIndex = 10;
@@ -1007,17 +1010,27 @@
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
-            // DL_ImportSavesCheckBox
+            // AllPanel
             // 
-            this.DL_ImportSavesCheckBox.AutoSize = true;
-            this.DL_ImportSavesCheckBox.Checked = true;
-            this.DL_ImportSavesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.DL_ImportSavesCheckBox.Location = new System.Drawing.Point(24, 112);
-            this.DL_ImportSavesCheckBox.Name = "DL_ImportSavesCheckBox";
-            this.DL_ImportSavesCheckBox.Size = new System.Drawing.Size(86, 17);
-            this.DL_ImportSavesCheckBox.TabIndex = 1;
-            this.DL_ImportSavesCheckBox.Text = "Import saves";
-            this.DL_ImportSavesCheckBox.UseVisualStyleBackColor = true;
+            this.AllPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.AllPanel.AutoScroll = true;
+            this.AllPanel.Controls.Add(this.IniTabControl);
+            this.AllPanel.Controls.Add(this.FieldSelectionTable);
+            this.AllPanel.Location = new System.Drawing.Point(0, 0);
+            this.AllPanel.Name = "AllPanel";
+            this.AllPanel.Size = new System.Drawing.Size(592, 672);
+            this.AllPanel.TabIndex = 11;
+            // 
+            // Prefer_NDL_Label
+            // 
+            this.Prefer_NDL_Label.Location = new System.Drawing.Point(479, 1);
+            this.Prefer_NDL_Label.Name = "Prefer_NDL_Label";
+            this.Prefer_NDL_Label.Size = new System.Drawing.Size(93, 20);
+            this.Prefer_NDL_Label.TabIndex = 0;
+            this.Prefer_NDL_Label.Text = "NewDarkLoader";
+            this.Prefer_NDL_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ImportFromMultipleLoadersForm
             // 
@@ -1025,14 +1038,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(591, 752);
+            this.ClientSize = new System.Drawing.Size(592, 700);
+            this.Controls.Add(this.AllPanel);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
-            this.Controls.Add(this.FieldSelectionTable);
-            this.Controls.Add(this.IniTabControl);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(380, 160);
             this.Name = "ImportFromMultipleLoadersForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -1097,6 +1109,7 @@
             this.FMSel_ReleaseDate_Panel.PerformLayout();
             this.OKCancelFlowLayoutPanel.ResumeLayout(false);
             this.OKCancelFlowLayoutPanel.PerformLayout();
+            this.AllPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1115,7 +1128,6 @@
         private System.Windows.Forms.Label FMDataToImportLabel;
         private System.Windows.Forms.Label Prefer_DL_Label;
         private System.Windows.Forms.Label Prefer_FMSel_Label;
-        private System.Windows.Forms.Label Prefer_NDL_Label;
         private System.Windows.Forms.RadioButton DL_Title_RadioButton;
         private System.Windows.Forms.RadioButton DL_ReleaseDate_RadioButton;
         private System.Windows.Forms.RadioButton DL_LastPlayed_RadioButton;
@@ -1180,5 +1192,7 @@
         private System.Windows.Forms.Panel DL_Size_Panel;
         private System.Windows.Forms.Panel NDL_Size_Panel;
         private System.Windows.Forms.CheckBox DL_ImportSavesCheckBox;
+        private System.Windows.Forms.Panel AllPanel;
+        private System.Windows.Forms.Label Prefer_NDL_Label;
     }
 }
