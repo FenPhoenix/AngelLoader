@@ -27,7 +27,7 @@ namespace AngelLoader.Forms.Import
         private readonly RadioButton[] SizeRBs;
         private readonly RadioButton[][] PriorityCheckSets;
 
-        internal readonly ImportList ImportList;
+        internal readonly ImportList ImportPriorities;
 
         internal string DL_IniFile;
 
@@ -40,7 +40,7 @@ namespace AngelLoader.Forms.Import
         {
             InitializeComponent();
 
-            ImportList = new ImportList();
+            ImportPriorities = new ImportList();
             FMSelIniFiles = new List<string>();
             NDLIniFiles = new List<string>();
 
@@ -161,48 +161,48 @@ namespace AngelLoader.Forms.Import
 
             #region Set import priorities
 
-            ImportList.Title =
+            ImportPriorities.Title =
                 !ImportTitleCheckBox.Checked ? ImportPriority.NoImport :
                 DL_Title_RadioButton.Checked ? ImportPriority.DarkLoader :
                 FMSel_Title_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.ReleaseDate =
+            ImportPriorities.ReleaseDate =
                 !ImportReleaseDateCheckBox.Checked ? ImportPriority.NoImport :
                 DL_ReleaseDate_RadioButton.Checked ? ImportPriority.DarkLoader :
                 FMSel_ReleaseDate_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.LastPlayed =
+            ImportPriorities.LastPlayed =
                 !ImportLastPlayedCheckBox.Checked ? ImportPriority.NoImport :
                 DL_LastPlayed_RadioButton.Checked ? ImportPriority.DarkLoader :
                 FMSel_LastPlayed_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.FinishedOn =
+            ImportPriorities.FinishedOn =
                 !ImportFinishedOnCheckBox.Checked ? ImportPriority.NoImport :
                 DL_Finished_RadioButton.Checked ? ImportPriority.DarkLoader :
                 FMSel_Finished_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.Comment =
+            ImportPriorities.Comment =
                 !ImportCommentCheckBox.Checked ? ImportPriority.NoImport :
                 DL_Comment_RadioButton.Checked ? ImportPriority.DarkLoader :
                 FMSel_Comment_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.Rating =
+            ImportPriorities.Rating =
                 !ImportRatingCheckBox.Checked ? ImportPriority.NoImport :
                 FMSel_Rating_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.DisabledMods =
+            ImportPriorities.DisabledMods =
                 !ImportDisabledModsCheckBox.Checked ? ImportPriority.NoImport :
                 FMSel_DisabledMods_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.Tags =
+            ImportPriorities.Tags =
                 !ImportTagsCheckBox.Checked ? ImportPriority.NoImport :
                 FMSel_Tags_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.SelectedReadme =
+            ImportPriorities.SelectedReadme =
                 !ImportSelectedReadmeCheckBox.Checked ? ImportPriority.NoImport :
                 FMSel_SelectedReadme_RadioButton.Checked ? ImportPriority.FMSel :
                 ImportPriority.NewDarkLoader;
-            ImportList.Size =
+            ImportPriorities.Size =
                 !ImportSizeCheckBox.Checked ? ImportPriority.NoImport :
                 DL_Size_RadioButton.Checked ? ImportPriority.DarkLoader :
                 ImportPriority.NewDarkLoader;

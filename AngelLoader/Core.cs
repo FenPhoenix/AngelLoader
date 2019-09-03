@@ -1181,16 +1181,16 @@ namespace AngelLoader
         // TODO: Finish implementing
         internal static async Task ImportFromMultipleLoaders()
         {
-            ImportList importList;
+            ImportList importPriorities;
             string dlIniFile;
             bool dlImportSaves;
-            List<string> FMSelIniFiles = new List<string>();
-            List<string> NDLIniFiles = new List<string>();
+            var FMSelIniFiles = new List<string>();
+            var NDLIniFiles = new List<string>();
             using (var f = new ImportFromMultipleLoadersForm())
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
 
-                importList = f.ImportList.DeepCopy();
+                importPriorities = f.ImportPriorities.DeepCopy();
                 dlIniFile = f.DL_IniFile;
                 dlImportSaves = f.DL_ImportSaves;
                 foreach (var item in f.FMSelIniFiles) FMSelIniFiles.Add(item);
@@ -1203,42 +1203,42 @@ namespace AngelLoader
 
             #region Fill DL fields
 
-            dlFields.Title = importList.Title == ImportPriority.DarkLoader;
-            dlFields.ReleaseDate = importList.ReleaseDate == ImportPriority.DarkLoader;
-            dlFields.LastPlayed = importList.LastPlayed == ImportPriority.DarkLoader;
-            dlFields.FinishedOn = importList.FinishedOn == ImportPriority.DarkLoader;
-            dlFields.Comment = importList.Comment == ImportPriority.DarkLoader;
-            dlFields.Size = importList.Size == ImportPriority.DarkLoader;
+            dlFields.Title = importPriorities.Title == ImportPriority.DarkLoader;
+            dlFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.DarkLoader;
+            dlFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.DarkLoader;
+            dlFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.DarkLoader;
+            dlFields.Comment = importPriorities.Comment == ImportPriority.DarkLoader;
+            dlFields.Size = importPriorities.Size == ImportPriority.DarkLoader;
 
             #endregion
 
             #region Fill FMSel fields
 
-            fmSelFields.Title = importList.Title == ImportPriority.FMSel;
-            fmSelFields.ReleaseDate = importList.ReleaseDate == ImportPriority.FMSel;
-            fmSelFields.LastPlayed = importList.LastPlayed == ImportPriority.FMSel;
-            fmSelFields.FinishedOn = importList.FinishedOn == ImportPriority.FMSel;
-            fmSelFields.Comment = importList.Comment == ImportPriority.FMSel;
-            fmSelFields.Rating = importList.Rating == ImportPriority.FMSel;
-            fmSelFields.DisabledMods = importList.DisabledMods == ImportPriority.FMSel;
-            fmSelFields.Tags = importList.Tags == ImportPriority.FMSel;
-            fmSelFields.SelectedReadme = importList.SelectedReadme == ImportPriority.FMSel;
-            fmSelFields.Size = importList.Size == ImportPriority.FMSel;
+            fmSelFields.Title = importPriorities.Title == ImportPriority.FMSel;
+            fmSelFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.FMSel;
+            fmSelFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.FMSel;
+            fmSelFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.FMSel;
+            fmSelFields.Comment = importPriorities.Comment == ImportPriority.FMSel;
+            fmSelFields.Rating = importPriorities.Rating == ImportPriority.FMSel;
+            fmSelFields.DisabledMods = importPriorities.DisabledMods == ImportPriority.FMSel;
+            fmSelFields.Tags = importPriorities.Tags == ImportPriority.FMSel;
+            fmSelFields.SelectedReadme = importPriorities.SelectedReadme == ImportPriority.FMSel;
+            fmSelFields.Size = importPriorities.Size == ImportPriority.FMSel;
 
             #endregion
 
             #region Fill NDL fields
 
-            ndlFields.Title = importList.Title == ImportPriority.NewDarkLoader;
-            ndlFields.ReleaseDate = importList.ReleaseDate == ImportPriority.NewDarkLoader;
-            ndlFields.LastPlayed = importList.LastPlayed == ImportPriority.NewDarkLoader;
-            ndlFields.FinishedOn = importList.FinishedOn == ImportPriority.NewDarkLoader;
-            ndlFields.Comment = importList.Comment == ImportPriority.NewDarkLoader;
-            ndlFields.Rating = importList.Rating == ImportPriority.NewDarkLoader;
-            ndlFields.DisabledMods = importList.DisabledMods == ImportPriority.NewDarkLoader;
-            ndlFields.Tags = importList.Tags == ImportPriority.NewDarkLoader;
-            ndlFields.SelectedReadme = importList.SelectedReadme == ImportPriority.NewDarkLoader;
-            ndlFields.Size = importList.Size == ImportPriority.NewDarkLoader;
+            ndlFields.Title = importPriorities.Title == ImportPriority.NewDarkLoader;
+            ndlFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.NewDarkLoader;
+            ndlFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.NewDarkLoader;
+            ndlFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.NewDarkLoader;
+            ndlFields.Comment = importPriorities.Comment == ImportPriority.NewDarkLoader;
+            ndlFields.Rating = importPriorities.Rating == ImportPriority.NewDarkLoader;
+            ndlFields.DisabledMods = importPriorities.DisabledMods == ImportPriority.NewDarkLoader;
+            ndlFields.Tags = importPriorities.Tags == ImportPriority.NewDarkLoader;
+            ndlFields.SelectedReadme = importPriorities.SelectedReadme == ImportPriority.NewDarkLoader;
+            ndlFields.Size = importPriorities.Size == ImportPriority.NewDarkLoader;
 
             #endregion
 
@@ -1299,7 +1299,7 @@ namespace AngelLoader
                 // Must do this
                 View.SetRowCount(0);
 
-                if (importFromDL)
+                if (importFromDL || dlImportSaves)
                 {
                     bool success = await ImportFromDarkLoaderReally(dlIniFile, true, dlImportSaves, dlFields);
                     if (!success) return;
