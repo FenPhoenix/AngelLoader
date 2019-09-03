@@ -16,6 +16,8 @@ namespace AngelLoader.Importing
 {
     internal static class ImportDarkLoader
     {
+        #region Private fields
+
         private static readonly string[] NonFMHeaders =
         {
             "[options]",
@@ -39,6 +41,10 @@ namespace AngelLoader.Importing
 
         private static readonly Regex DarkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
 
+        #endregion
+
+        #region Helpers
+
         private static string RemoveDLArchiveBadChars(string archive)
         {
             foreach (string s in new[] { "]", "\u0009", "\u000A", "\u000D" }) archive = archive.Replace(s, "");
@@ -47,6 +53,8 @@ namespace AngelLoader.Importing
 
         // Don't replace \r\n or \\ escapes because we use those in the exact same way so no conversion needed
         private static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
+
+        #endregion
 
         internal static async Task<bool>
         Import(string iniFile, bool importFMData, bool importSaves, List<FanMission> fmDataIniList, FieldsToImport fields)
@@ -300,7 +308,8 @@ namespace AngelLoader.Importing
             return (ImportError.None, importedFMs);
         }
 
-        private static async Task<bool> ImportSaves(string[] lines)
+        private static async Task<bool>
+        ImportSaves(string[] lines)
         {
             var t1Dir = "";
             var t2Dir = "";

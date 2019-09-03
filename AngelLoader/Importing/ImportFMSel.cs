@@ -14,8 +14,8 @@ namespace AngelLoader.Importing
 {
     internal static class ImportFMSel
     {
-        internal static async Task<bool> Import(string iniFile, List<FanMission> fmDataIniList,
-            FieldsToImport fields = null)
+        internal static async Task<bool>
+        Import(string iniFile, List<FanMission> fmDataIniList, FieldsToImport fields = null)
         {
             Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromFMSel);
             try

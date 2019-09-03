@@ -14,8 +14,8 @@ namespace AngelLoader.Importing
 {
     internal static class ImportNDL
     {
-        internal static async Task<bool> Import(string iniFile, List<FanMission> fmDataIniList,
-            FieldsToImport fields = null)
+        internal static async Task<bool>
+        Import(string iniFile, List<FanMission> fmDataIniList, FieldsToImport fields = null)
         {
             Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromNDL);
             try
@@ -44,7 +44,8 @@ namespace AngelLoader.Importing
         }
 
         private static async Task<(ImportError Error, List<FanMission> FMs)>
-        ImportInternal(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false, FieldsToImport fields = null)
+        ImportInternal(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false,
+            FieldsToImport fields = null)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
@@ -107,7 +108,8 @@ namespace AngelLoader.Importing
                         try
                         {
                             // NDL always searches subdirectories as well
-                            foreach (var f in Directory.EnumerateFiles(archiveDir, "*", SearchOption.AllDirectories))
+                            foreach (var f in Directory.EnumerateFiles(archiveDir, "*",
+                                SearchOption.AllDirectories))
                             {
                                 if (!f.ContainsI(Path.DirectorySeparatorChar + ".fix" +
                                                  Path.DirectorySeparatorChar))
