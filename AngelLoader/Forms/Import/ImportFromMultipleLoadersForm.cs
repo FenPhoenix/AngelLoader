@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader.Common.DataClasses;
+using AngelLoader.Common.Utility;
 using AngelLoader.Importing;
 
 namespace AngelLoader.Forms.Import
@@ -25,9 +27,22 @@ namespace AngelLoader.Forms.Import
         private readonly RadioButton[] SizeRBs;
         private readonly RadioButton[][] PriorityCheckSets;
 
+        internal readonly ImportList ImportList;
+
+        internal string DL_IniFile;
+
+        internal readonly List<string> FMSelIniFiles;
+        internal readonly List<string> NDLIniFiles;
+
+        internal bool DL_ImportSaves;
+
         public ImportFromMultipleLoadersForm()
         {
             InitializeComponent();
+
+            ImportList = new ImportList();
+            FMSelIniFiles = new List<string>();
+            NDLIniFiles = new List<string>();
 
             TitleRBs = new[] { DL_Title_RadioButton, FMSel_Title_RadioButton, NDL_Title_RadioButton };
             ReleaseDateRBs = new[] { DL_ReleaseDate_RadioButton, FMSel_ReleaseDate_RadioButton, NDL_ReleaseDate_RadioButton };
@@ -46,8 +61,17 @@ namespace AngelLoader.Forms.Import
                 TagsRBs, SelectedReadmeRBs, SizeRBs
             };
 
+            Localize();
+
             FMSel_ImportControls.Init(ImportType.FMSel);
             NDL_ImportControls.Init(ImportType.NewDarkLoader);
+        }
+
+        private void Localize()
+        {
+            DL_ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
+            OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
 
         private void ImportCheckBoxes_CheckedChanged(object sender, EventArgs e)
@@ -88,6 +112,102 @@ namespace AngelLoader.Forms.Import
                     foreach (var rb in set) if (rb != s) rb.Checked = false;
                 }
             }
+        }
+
+        private void ImportFromMultipleLoadersForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (DialogResult != DialogResult.OK) return;
+
+            #region Set DL ini files
+
+            DL_IniFile = DL_ImportControls.DarkLoaderIniText;
+            DL_ImportSaves = DL_ImportSavesCheckBox.Checked;
+
+            #endregion
+
+            #region Set FMSel ini files
+
+            if (!FMSel_ImportControls.Thief1IniFile.IsWhiteSpace())
+            {
+                FMSelIniFiles.Add(FMSel_ImportControls.Thief1IniFile);
+            }
+            if (!FMSel_ImportControls.Thief2IniFile.IsWhiteSpace())
+            {
+                FMSelIniFiles.Add(FMSel_ImportControls.Thief2IniFile);
+            }
+            if (!FMSel_ImportControls.Thief3IniFile.IsWhiteSpace())
+            {
+                FMSelIniFiles.Add(FMSel_ImportControls.Thief3IniFile);
+            }
+
+            #endregion
+
+            #region Set NDL ini files
+
+            if (!NDL_ImportControls.Thief1IniFile.IsWhiteSpace())
+            {
+                NDLIniFiles.Add(NDL_ImportControls.Thief1IniFile);
+            }
+            if (!NDL_ImportControls.Thief2IniFile.IsWhiteSpace())
+            {
+                NDLIniFiles.Add(NDL_ImportControls.Thief2IniFile);
+            }
+            if (!NDL_ImportControls.Thief3IniFile.IsWhiteSpace())
+            {
+                NDLIniFiles.Add(NDL_ImportControls.Thief3IniFile);
+            }
+
+            #endregion
+
+            #region Set import priorities
+
+            ImportList.Title =
+                !ImportTitleCheckBox.Checked ? ImportPriority.NoImport :
+                DL_Title_RadioButton.Checked ? ImportPriority.DarkLoader :
+                FMSel_Title_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.ReleaseDate =
+                !ImportReleaseDateCheckBox.Checked ? ImportPriority.NoImport :
+                DL_ReleaseDate_RadioButton.Checked ? ImportPriority.DarkLoader :
+                FMSel_ReleaseDate_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.LastPlayed =
+                !ImportLastPlayedCheckBox.Checked ? ImportPriority.NoImport :
+                DL_LastPlayed_RadioButton.Checked ? ImportPriority.DarkLoader :
+                FMSel_LastPlayed_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.FinishedOn =
+                !ImportFinishedOnCheckBox.Checked ? ImportPriority.NoImport :
+                DL_Finished_RadioButton.Checked ? ImportPriority.DarkLoader :
+                FMSel_Finished_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.Comment =
+                !ImportCommentCheckBox.Checked ? ImportPriority.NoImport :
+                DL_Comment_RadioButton.Checked ? ImportPriority.DarkLoader :
+                FMSel_Comment_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.Rating =
+                !ImportRatingCheckBox.Checked ? ImportPriority.NoImport :
+                FMSel_Rating_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.DisabledMods =
+                !ImportDisabledModsCheckBox.Checked ? ImportPriority.NoImport :
+                FMSel_DisabledMods_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.Tags =
+                !ImportTagsCheckBox.Checked ? ImportPriority.NoImport :
+                FMSel_Tags_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.SelectedReadme =
+                !ImportSelectedReadmeCheckBox.Checked ? ImportPriority.NoImport :
+                FMSel_SelectedReadme_RadioButton.Checked ? ImportPriority.FMSel :
+                ImportPriority.NewDarkLoader;
+            ImportList.Size =
+                !ImportSizeCheckBox.Checked ? ImportPriority.NoImport :
+                DL_Size_RadioButton.Checked ? ImportPriority.DarkLoader :
+                ImportPriority.NewDarkLoader;
+
+            #endregion
         }
     }
 }

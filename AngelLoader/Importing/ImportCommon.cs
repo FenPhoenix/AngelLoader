@@ -12,6 +12,45 @@ namespace AngelLoader.Importing
         FMSel
     }
 
+    public enum ImportPriority
+    {
+        NoImport,
+        DarkLoader,
+        FMSel,
+        NewDarkLoader
+    }
+
+    internal sealed class ImportList
+    {
+        internal ImportPriority Title;
+        internal ImportPriority ReleaseDate;
+        internal ImportPriority LastPlayed;
+        internal ImportPriority FinishedOn;
+        internal ImportPriority Comment;
+        internal ImportPriority Rating;
+        internal ImportPriority DisabledMods;
+        internal ImportPriority Tags;
+        internal ImportPriority SelectedReadme;
+        internal ImportPriority Size;
+
+        internal ImportList DeepCopy()
+        {
+            return new ImportList
+            {
+                Title = Title,
+                ReleaseDate = ReleaseDate,
+                LastPlayed = LastPlayed,
+                FinishedOn = FinishedOn,
+                Comment = Comment,
+                Rating = Rating,
+                DisabledMods = DisabledMods,
+                Tags = Tags,
+                SelectedReadme = SelectedReadme,
+                Size = Size
+            };
+        }
+    }
+
     internal sealed class FieldsToImport
     {
         internal bool Title;

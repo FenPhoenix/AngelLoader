@@ -103,6 +103,7 @@
             this.OKCancelFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
+            this.DL_ImportSavesCheckBox = new System.Windows.Forms.CheckBox();
             this.IniTabControl.SuspendLayout();
             this.DL_TabPage.SuspendLayout();
             this.FMSel_TabPage.SuspendLayout();
@@ -150,6 +151,7 @@
             // DL_TabPage
             // 
             this.DL_TabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.DL_TabPage.Controls.Add(this.DL_ImportSavesCheckBox);
             this.DL_TabPage.Controls.Add(this.DL_ImportControls);
             this.DL_TabPage.Location = new System.Drawing.Point(4, 22);
             this.DL_TabPage.Name = "DL_TabPage";
@@ -207,7 +209,7 @@
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 272F));
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 103F));
+            this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 104F));
             this.FieldSelectionTable.Controls.Add(this.NDL_Size_Panel, 3, 10);
             this.FieldSelectionTable.Controls.Add(this.NDL_ReleaseDate_Panel, 3, 2);
             this.FieldSelectionTable.Controls.Add(this.DL_Size_Panel, 1, 10);
@@ -431,7 +433,7 @@
             this.Prefer_NDL_Label.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Prefer_NDL_Label.Location = new System.Drawing.Point(479, 1);
             this.Prefer_NDL_Label.Name = "Prefer_NDL_Label";
-            this.Prefer_NDL_Label.Size = new System.Drawing.Size(97, 20);
+            this.Prefer_NDL_Label.Size = new System.Drawing.Size(98, 20);
             this.Prefer_NDL_Label.TabIndex = 0;
             this.Prefer_NDL_Label.Text = "NewDarkLoader";
             this.Prefer_NDL_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1005,6 +1007,18 @@
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
+            // DL_ImportSavesCheckBox
+            // 
+            this.DL_ImportSavesCheckBox.AutoSize = true;
+            this.DL_ImportSavesCheckBox.Checked = true;
+            this.DL_ImportSavesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.DL_ImportSavesCheckBox.Location = new System.Drawing.Point(24, 112);
+            this.DL_ImportSavesCheckBox.Name = "DL_ImportSavesCheckBox";
+            this.DL_ImportSavesCheckBox.Size = new System.Drawing.Size(86, 17);
+            this.DL_ImportSavesCheckBox.TabIndex = 1;
+            this.DL_ImportSavesCheckBox.Text = "Import saves";
+            this.DL_ImportSavesCheckBox.UseVisualStyleBackColor = true;
+            // 
             // ImportFromMultipleLoadersForm
             // 
             this.AcceptButton = this.OKButton;
@@ -1023,8 +1037,10 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Import from multiple loaders";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportFromMultipleLoadersForm_FormClosing);
             this.IniTabControl.ResumeLayout(false);
             this.DL_TabPage.ResumeLayout(false);
+            this.DL_TabPage.PerformLayout();
             this.FMSel_TabPage.ResumeLayout(false);
             this.NDL_TabPage.ResumeLayout(false);
             this.FieldSelectionTable.ResumeLayout(false);
@@ -1163,5 +1179,6 @@
         private System.Windows.Forms.Panel NDL_SelectedReadme_Panel;
         private System.Windows.Forms.Panel DL_Size_Panel;
         private System.Windows.Forms.Panel NDL_Size_Panel;
+        private System.Windows.Forms.CheckBox DL_ImportSavesCheckBox;
     }
 }

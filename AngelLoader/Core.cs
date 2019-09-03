@@ -997,6 +997,15 @@ namespace AngelLoader
                 FinishedOn = importFinishedOn
             };
 
+            await ImportFromDarkLoaderReally(iniFile, importFMData, importSaves, fields);
+
+            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
+            await View.SortAndSetFilter(forceDisplayFM: true);
+        }
+
+        private static async Task<bool>
+        ImportFromDarkLoaderReally(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
+        {
             View.ShowProgressBox(ProgressTasks.ImportFromDarkLoader);
             try
             {
@@ -1008,10 +1017,14 @@ namespace AngelLoader
                     if (error == ImportError.NoArchiveDirsFound)
                     {
                         View.ShowAlert(LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert);
-                        return;
+                        return false;
                     }
 
-                    return;
+                    View.ShowAlert(
+                        "An error occurred with DarkLoader importing. See the log file for details. " +
+                        "Aborting import operation.", LText.AlertMessages.Error);
+
+                    return false;
                 }
 
                 await ScanAndFind(fmsToScan,
@@ -1020,15 +1033,19 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception in DarkLoader import", ex);
-                return;
+
+                View.ShowAlert(
+                    "An error occurred with DarkLoader importing. See the log file for details. " +
+                    "Aborting import operation.", LText.AlertMessages.Error);
+
+                return false;
             }
             finally
             {
                 View.HideProgressBox();
             }
 
-            // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
-            await View.SortAndSetFilter(forceDisplayFM: true);
+            return true;
         }
 
         #region FMSel / NDL
@@ -1094,8 +1111,8 @@ namespace AngelLoader
                 if (file.IsWhiteSpace()) continue;
 
                 bool success = await (importType == ImportType.FMSel
-                    ? Core.ImportFromFMSel(file, fields)
-                    : Core.ImportFromNDL(file, fields));
+                    ? ImportFromFMSel(file, fields)
+                    : ImportFromNDL(file, fields));
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
@@ -1163,9 +1180,153 @@ namespace AngelLoader
         // TODO: Finish implementing
         internal static async Task ImportFromMultipleLoaders()
         {
+            ImportList importList;
+            string dlIniFile;
+            bool dlImportSaves;
+            List<string> FMSelIniFiles = new List<string>();
+            List<string> NDLIniFiles = new List<string>();
             using (var f = new ImportFromMultipleLoadersForm())
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
+
+                importList = f.ImportList.DeepCopy();
+                dlIniFile = f.DL_IniFile;
+                dlImportSaves = f.DL_ImportSaves;
+                foreach (var item in f.FMSelIniFiles) FMSelIniFiles.Add(item);
+                foreach (var item in f.NDLIniFiles) NDLIniFiles.Add(item);
+            }
+
+            var dlFields = new FieldsToImport();
+            var fmSelFields = new FieldsToImport();
+            var ndlFields = new FieldsToImport();
+
+            #region Fill DL fields
+
+            dlFields.Title = importList.Title == ImportPriority.DarkLoader;
+            dlFields.ReleaseDate = importList.ReleaseDate == ImportPriority.DarkLoader;
+            dlFields.LastPlayed = importList.LastPlayed == ImportPriority.DarkLoader;
+            dlFields.FinishedOn = importList.FinishedOn == ImportPriority.DarkLoader;
+            dlFields.Comment = importList.Comment == ImportPriority.DarkLoader;
+            dlFields.Size = importList.Size == ImportPriority.DarkLoader;
+
+            #endregion
+
+            #region Fill FMSel fields
+
+            fmSelFields.Title = importList.Title == ImportPriority.FMSel;
+            fmSelFields.ReleaseDate = importList.ReleaseDate == ImportPriority.FMSel;
+            fmSelFields.LastPlayed = importList.LastPlayed == ImportPriority.FMSel;
+            fmSelFields.FinishedOn = importList.FinishedOn == ImportPriority.FMSel;
+            fmSelFields.Comment = importList.Comment == ImportPriority.FMSel;
+            fmSelFields.Rating = importList.Rating == ImportPriority.FMSel;
+            fmSelFields.DisabledMods = importList.DisabledMods == ImportPriority.FMSel;
+            fmSelFields.Tags = importList.Tags == ImportPriority.FMSel;
+            fmSelFields.SelectedReadme = importList.SelectedReadme == ImportPriority.FMSel;
+            fmSelFields.Size = importList.Size == ImportPriority.FMSel;
+
+            #endregion
+
+            #region Fill NDL fields
+
+            ndlFields.Title = importList.Title == ImportPriority.NewDarkLoader;
+            ndlFields.ReleaseDate = importList.ReleaseDate == ImportPriority.NewDarkLoader;
+            ndlFields.LastPlayed = importList.LastPlayed == ImportPriority.NewDarkLoader;
+            ndlFields.FinishedOn = importList.FinishedOn == ImportPriority.NewDarkLoader;
+            ndlFields.Comment = importList.Comment == ImportPriority.NewDarkLoader;
+            ndlFields.Rating = importList.Rating == ImportPriority.NewDarkLoader;
+            ndlFields.DisabledMods = importList.DisabledMods == ImportPriority.NewDarkLoader;
+            ndlFields.Tags = importList.Tags == ImportPriority.NewDarkLoader;
+            ndlFields.SelectedReadme = importList.SelectedReadme == ImportPriority.NewDarkLoader;
+            ndlFields.Size = importList.Size == ImportPriority.NewDarkLoader;
+
+            #endregion
+
+            bool importFromDL = false;
+            bool importFromFMSel = false;
+            bool importFromNDL = false;
+
+            #region Set import bools
+
+            // There's enough manual twiddling of these fields going on, so using reflection.
+            // Not a bottleneck here.
+
+            foreach (var p in dlFields.GetType().GetFields())
+            {
+                if (p.FieldType == typeof(bool) && (bool)p.GetValue(importList))
+                {
+                    importFromDL = true;
+                    break;
+                }
+            }
+
+            foreach (var p in fmSelFields.GetType().GetFields())
+            {
+                if (p.FieldType == typeof(bool) && (bool)p.GetValue(importList))
+                {
+                    importFromFMSel = true;
+                    break;
+                }
+            }
+
+            foreach (var p in ndlFields.GetType().GetFields())
+            {
+                if (p.FieldType == typeof(bool) && (bool)p.GetValue(importList))
+                {
+                    importFromNDL = true;
+                    break;
+                }
+            }
+
+            #endregion
+
+            #region Check for if nothing was selected to import
+
+            if (!dlImportSaves &&
+                (!importFromDL && !importFromFMSel && !importFromNDL) ||
+                (dlIniFile.IsEmpty() && FMSelIniFiles.Count == 0 && NDLIniFiles.Count == 0))
+            {
+                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+                return;
+            }
+
+            #endregion
+
+            try
+            {
+                // Must do this
+                View.SetRowCount(0);
+
+                if (importFromDL)
+                {
+                    bool success = await ImportFromDarkLoaderReally(dlIniFile, true, dlImportSaves, dlFields);
+                    if (!success) return;
+                }
+
+                if (importFromFMSel)
+                {
+                    foreach (var f in FMSelIniFiles)
+                    {
+                        if (f.IsWhiteSpace()) continue;
+                        bool success = await ImportFromFMSel(f, fmSelFields);
+                        if (!success) return;
+                    }
+                }
+
+                if (importFromNDL)
+                {
+                    foreach (var f in NDLIniFiles)
+                    {
+                        if (f.IsWhiteSpace()) continue;
+                        bool success = await ImportFromNDL(f, ndlFields);
+                        if (!success) return;
+                    }
+                }
+
+            }
+            finally
+            {
+                // Must do this
+                await View.SortAndSetFilter(forceDisplayFM: true);
             }
         }
 
