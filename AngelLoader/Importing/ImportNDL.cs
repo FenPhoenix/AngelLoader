@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.CustomControls;
+using FMScanner;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Ini.Ini;
 
@@ -12,9 +14,37 @@ namespace AngelLoader.Importing
 {
     internal static class ImportNDL
     {
-        internal static async Task<(ImportError Error, List<FanMission> FMs)>
-            Import(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false,
-                FieldsToImport fields = null)
+        internal static async Task<bool> Import(string iniFile, List<FanMission> fmDataIniList,
+            FieldsToImport fields = null)
+        {
+            Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromNDL);
+            try
+            {
+                var (error, fmsToScan) = await ImportNDL.ImportInternal(iniFile, fmDataIniList, fields: fields);
+                if (error != ImportError.None)
+                {
+                    Log("Import error: " + error, stackTrace: true);
+                    return false;
+                }
+
+                await Core.ScanAndFind(fmsToScan,
+                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in NewDarkLoader import", ex);
+                return false;
+            }
+            finally
+            {
+                Core.View.HideProgressBox();
+            }
+
+            return true;
+        }
+
+        private static async Task<(ImportError Error, List<FanMission> FMs)>
+        ImportInternal(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false, FieldsToImport fields = null)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();

@@ -950,8 +950,6 @@ namespace AngelLoader
 
         #region Importing
 
-        // TODO: Get rid of the multiple levels of calls and just put each into one method
-
         internal static async Task ImportFromDarkLoader()
         {
             string iniFile;
@@ -998,58 +996,11 @@ namespace AngelLoader
                 FinishedOn = importFinishedOn
             };
 
-            await ImportFromDarkLoaderReally(iniFile, importFMData, importSaves, fields);
+            await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList, fields);
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
             await View.SortAndSetFilter(forceDisplayFM: true);
         }
-
-        private static async Task<bool>
-        ImportFromDarkLoaderReally(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
-        {
-            View.ShowProgressBox(ProgressTasks.ImportFromDarkLoader);
-            try
-            {
-                var (error, fmsToScan) = await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList, fields: fields);
-                if (error != ImportError.None)
-                {
-                    Log("Import.Error: " + error, stackTrace: true);
-
-                    if (error == ImportError.NoArchiveDirsFound)
-                    {
-                        View.ShowAlert(LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert);
-                        return false;
-                    }
-
-                    View.ShowAlert(
-                        "An error occurred with DarkLoader importing. See the log file for details. " +
-                        "Aborting import operation.", LText.AlertMessages.Error);
-
-                    return false;
-                }
-
-                await ScanAndFind(fmsToScan,
-                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
-            }
-            catch (Exception ex)
-            {
-                Log("Exception in DarkLoader import", ex);
-
-                View.ShowAlert(
-                    "An error occurred with DarkLoader importing. See the log file for details. " +
-                    "Aborting import operation.", LText.AlertMessages.Error);
-
-                return false;
-            }
-            finally
-            {
-                View.HideProgressBox();
-            }
-
-            return true;
-        }
-
-        #region FMSel / NDL
 
         internal static async Task ImportFromNDLOrFMSel(ImportType importType)
         {
@@ -1112,71 +1063,13 @@ namespace AngelLoader
                 if (file.IsWhiteSpace()) continue;
 
                 bool success = await (importType == ImportType.FMSel
-                    ? ImportFromFMSel(file, fields)
-                    : ImportFromNDL(file, fields));
+                    ? ImportFMSel.Import(file, FMDataIniList, fields)
+                    : ImportNDL.Import(file, FMDataIniList, fields));
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
             await View.SortAndSetFilter(forceDisplayFM: true);
         }
-
-        private static async Task<bool> ImportFromNDL(string iniFile, FieldsToImport fields = null)
-        {
-            View.ShowProgressBox(ProgressTasks.ImportFromNDL);
-            try
-            {
-                var (error, fmsToScan) = await ImportNDL.Import(iniFile, FMDataIniList, fields: fields);
-                if (error != ImportError.None)
-                {
-                    Log("Import error: " + error, stackTrace: true);
-                    return false;
-                }
-
-                await ScanAndFind(fmsToScan,
-                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
-            }
-            catch (Exception ex)
-            {
-                Log("Exception in NewDarkLoader import", ex);
-                return false;
-            }
-            finally
-            {
-                View.HideProgressBox();
-            }
-
-            return true;
-        }
-
-        private static async Task<bool> ImportFromFMSel(string iniFile, FieldsToImport fields = null)
-        {
-            View.ShowProgressBox(ProgressTasks.ImportFromFMSel);
-            try
-            {
-                var (error, fmsToScan) = await ImportFMSel.Import(iniFile, FMDataIniList, fields: fields);
-                if (error != ImportError.None)
-                {
-                    Log("Import error: " + error, stackTrace: true);
-                    return false;
-                }
-
-                await ScanAndFind(fmsToScan,
-                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true));
-            }
-            catch (Exception ex)
-            {
-                Log("Exception in FMSel import", ex);
-                return false;
-            }
-            finally
-            {
-                View.HideProgressBox();
-            }
-
-            return true;
-        }
-
-        #endregion
 
         // TODO: Finish implementing
         internal static async Task ImportFromMultipleLoaders()
@@ -1301,7 +1194,7 @@ namespace AngelLoader
 
                 if (importFromDL || dlImportSaves)
                 {
-                    bool success = await ImportFromDarkLoaderReally(dlIniFile, true, dlImportSaves, dlFields);
+                    bool success = await ImportDarkLoader.Import(dlIniFile, true, dlImportSaves, FMDataIniList, dlFields);
                     if (!success) return;
                 }
 
@@ -1310,7 +1203,7 @@ namespace AngelLoader
                     foreach (var f in FMSelIniFiles)
                     {
                         if (f.IsWhiteSpace()) continue;
-                        bool success = await ImportFromFMSel(f, fmSelFields);
+                        bool success = await ImportFMSel.Import(f, FMDataIniList, fmSelFields);
                         if (!success) return;
                     }
                 }
@@ -1320,11 +1213,10 @@ namespace AngelLoader
                     foreach (var f in NDLIniFiles)
                     {
                         if (f.IsWhiteSpace()) continue;
-                        bool success = await ImportFromNDL(f, ndlFields);
+                        bool success = await ImportNDL.Import(f, FMDataIniList, ndlFields);
                         if (!success) return;
                     }
                 }
-
             }
             finally
             {
@@ -1333,7 +1225,7 @@ namespace AngelLoader
             }
         }
 
-        private static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions)
+        internal static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions)
         {
             if (fms.Count == 0) return;
 

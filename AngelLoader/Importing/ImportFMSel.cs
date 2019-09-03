@@ -1,17 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.CustomControls;
+using FMScanner;
+using static AngelLoader.Common.Logger;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader.Importing
 {
     internal static class ImportFMSel
     {
-        internal static async Task<(ImportError Error, List<FanMission> FMs)>
-        Import(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false,
+        internal static async Task<bool> Import(string iniFile, List<FanMission> fmDataIniList,
+            FieldsToImport fields = null)
+        {
+            Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromFMSel);
+            try
+            {
+                var (error, fmsToScan) = await ImportInternal(iniFile, fmDataIniList, fields: fields);
+                if (error != ImportError.None)
+                {
+                    Log("Import error: " + error, stackTrace: true);
+                    return false;
+                }
+
+                await Core.ScanAndFind(fmsToScan,
+                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true));
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in FMSel import", ex);
+                return false;
+            }
+            finally
+            {
+                Core.View.HideProgressBox();
+            }
+
+            return true;
+        }
+
+        private static async Task<(ImportError Error, List<FanMission> FMs)>
+        ImportInternal(string iniFile, List<FanMission> mainList, bool returnUnmergedFMsList = false,
             FieldsToImport fields = null)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));

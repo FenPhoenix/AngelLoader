@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.CustomControls;
 using AngelLoader.WinAPI;
+using FMScanner;
 using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Importing
@@ -46,9 +48,54 @@ namespace AngelLoader.Importing
         // Don't replace \r\n or \\ escapes because we use those in the exact same way so no conversion needed
         private static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
 
-        internal static async Task<(ImportError Error, List<FanMission> FMs)>
-        Import(string iniFile, bool importFMData, bool importSaves, List<FanMission> mainList,
-               bool returnUnmergedFMsList = false, FieldsToImport fields = null)
+        internal static async Task<bool>
+        Import(string iniFile, bool importFMData, bool importSaves, List<FanMission> fmDataIniList, FieldsToImport fields)
+        {
+            Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromDarkLoader);
+            try
+            {
+                var (error, fmsToScan) = await ImportInternal(iniFile, importFMData, importSaves, fmDataIniList, fields: fields);
+                if (error != ImportError.None)
+                {
+                    Log("Import.Error: " + error, stackTrace: true);
+
+                    if (error == ImportError.NoArchiveDirsFound)
+                    {
+                        Core.View.ShowAlert(LText.Importing.DarkLoader_NoArchiveDirsFound, LText.AlertMessages.Alert);
+                        return false;
+                    }
+
+                    Core.View.ShowAlert(
+                        "An error occurred with DarkLoader importing. See the log file for details. " +
+                        "Aborting import operation.", LText.AlertMessages.Error);
+
+                    return false;
+                }
+
+                await Core.ScanAndFind(fmsToScan,
+                    ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in DarkLoader import", ex);
+
+                Core.View.ShowAlert(
+                    "An error occurred with DarkLoader importing. See the log file for details. " +
+                    "Aborting import operation.", LText.AlertMessages.Error);
+
+                return false;
+            }
+            finally
+            {
+                Core.View.HideProgressBox();
+            }
+
+            return true;
+        }
+
+        private static async Task<(ImportError Error, List<FanMission> FMs)>
+        ImportInternal(string iniFile, bool importFMData, bool importSaves, List<FanMission> mainList,
+                       bool returnUnmergedFMsList = false, FieldsToImport fields = null)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
@@ -229,7 +276,7 @@ namespace AngelLoader.Importing
                     }
                     catch (Exception ex)
                     {
-                        Log("Exception in " + nameof(ImportDarkLoader) + "." + nameof(Import), ex);
+                        Log("Exception in " + nameof(ImportDarkLoader) + "." + nameof(ImportInternal), ex);
                         return ImportError.Unknown;
                     }
                     finally
