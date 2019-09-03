@@ -1285,8 +1285,8 @@ namespace AngelLoader
             #region Check for if nothing was selected to import
 
             if (!dlImportSaves &&
-                (!importFromDL && !importFromFMSel && !importFromNDL) ||
-                (dlIniFile.IsEmpty() && FMSelIniFiles.Count == 0 && NDLIniFiles.Count == 0))
+                ((!importFromDL && !importFromFMSel && !importFromNDL) ||
+                (dlIniFile.IsEmpty() && FMSelIniFiles.Count == 0 && NDLIniFiles.Count == 0)))
             {
                 MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
                 return;
