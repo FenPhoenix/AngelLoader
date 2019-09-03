@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1250,27 +1251,29 @@ namespace AngelLoader
             // There's enough manual twiddling of these fields going on, so using reflection.
             // Not a bottleneck here.
 
-            foreach (var p in dlFields.GetType().GetFields())
+            const BindingFlags bFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+            foreach (var p in dlFields.GetType().GetFields(bFlags))
             {
-                if (p.FieldType == typeof(bool) && (bool)p.GetValue(importList))
+                if (p.FieldType == typeof(bool) && (bool)p.GetValue(dlFields))
                 {
                     importFromDL = true;
                     break;
                 }
             }
 
-            foreach (var p in fmSelFields.GetType().GetFields())
+            foreach (var p in fmSelFields.GetType().GetFields(bFlags))
             {
-                if (p.FieldType == typeof(bool) && (bool)p.GetValue(importList))
+                if (p.FieldType == typeof(bool) && (bool)p.GetValue(fmSelFields))
                 {
                     importFromFMSel = true;
                     break;
                 }
             }
 
-            foreach (var p in ndlFields.GetType().GetFields())
+            foreach (var p in ndlFields.GetType().GetFields(bFlags))
             {
-                if (p.FieldType == typeof(bool) && (bool)p.GetValue(importList))
+                if (p.FieldType == typeof(bool) && (bool)p.GetValue(ndlFields))
                 {
                     importFromNDL = true;
                     break;
