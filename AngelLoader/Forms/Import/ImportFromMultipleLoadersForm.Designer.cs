@@ -52,6 +52,7 @@
             this.Prefer_FMSel_Label = new System.Windows.Forms.Label();
             this.NDL_Tags_Panel = new System.Windows.Forms.Panel();
             this.NDL_Tags_RadioButton = new System.Windows.Forms.RadioButton();
+            this.Prefer_NDL_Label = new System.Windows.Forms.Label();
             this.FMSel_Tags_Panel = new System.Windows.Forms.Panel();
             this.FMSel_Tags_RadioButton = new System.Windows.Forms.RadioButton();
             this.ImportTitleCheckBox = new System.Windows.Forms.CheckBox();
@@ -104,7 +105,6 @@
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.OKButton = new System.Windows.Forms.Button();
             this.AllPanel = new System.Windows.Forms.Panel();
-            this.Prefer_NDL_Label = new System.Windows.Forms.Label();
             this.IniTabControl.SuspendLayout();
             this.DL_TabPage.SuspendLayout();
             this.FMSel_TabPage.SuspendLayout();
@@ -223,7 +223,7 @@
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 272F));
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 106F));
+            this.FieldSelectionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 108F));
             this.FieldSelectionTable.Controls.Add(this.NDL_Size_Panel, 3, 10);
             this.FieldSelectionTable.Controls.Add(this.NDL_ReleaseDate_Panel, 3, 2);
             this.FieldSelectionTable.Controls.Add(this.DL_Size_Panel, 1, 10);
@@ -263,7 +263,7 @@
             this.FieldSelectionTable.Controls.Add(this.DL_LastPlayed_Panel, 1, 3);
             this.FieldSelectionTable.Controls.Add(this.DL_ReleaseDate_Panel, 1, 2);
             this.FieldSelectionTable.Controls.Add(this.FMSel_ReleaseDate_Panel, 2, 2);
-            this.FieldSelectionTable.Location = new System.Drawing.Point(8, 392);
+            this.FieldSelectionTable.Location = new System.Drawing.Point(8, 368);
             this.FieldSelectionTable.Name = "FieldSelectionTable";
             this.FieldSelectionTable.RowCount = 11;
             this.FieldSelectionTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -440,6 +440,15 @@
             this.NDL_Tags_RadioButton.TabStop = true;
             this.NDL_Tags_RadioButton.UseVisualStyleBackColor = true;
             this.NDL_Tags_RadioButton.CheckedChanged += new System.EventHandler(this.Priority_RadioButtons_CheckedChanged);
+            // 
+            // Prefer_NDL_Label
+            // 
+            this.Prefer_NDL_Label.Location = new System.Drawing.Point(479, 1);
+            this.Prefer_NDL_Label.Name = "Prefer_NDL_Label";
+            this.Prefer_NDL_Label.Size = new System.Drawing.Size(93, 20);
+            this.Prefer_NDL_Label.TabIndex = 0;
+            this.Prefer_NDL_Label.Text = "NewDarkLoader";
+            this.Prefer_NDL_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FMSel_Tags_Panel
             // 
@@ -981,7 +990,7 @@
             this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(430, 671);
+            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(424, 647);
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
             this.OKCancelFlowLayoutPanel.TabIndex = 10;
@@ -1020,17 +1029,8 @@
             this.AllPanel.Controls.Add(this.FieldSelectionTable);
             this.AllPanel.Location = new System.Drawing.Point(0, 0);
             this.AllPanel.Name = "AllPanel";
-            this.AllPanel.Size = new System.Drawing.Size(592, 672);
+            this.AllPanel.Size = new System.Drawing.Size(592, 648);
             this.AllPanel.TabIndex = 11;
-            // 
-            // Prefer_NDL_Label
-            // 
-            this.Prefer_NDL_Label.Location = new System.Drawing.Point(479, 1);
-            this.Prefer_NDL_Label.Name = "Prefer_NDL_Label";
-            this.Prefer_NDL_Label.Size = new System.Drawing.Size(93, 20);
-            this.Prefer_NDL_Label.TabIndex = 0;
-            this.Prefer_NDL_Label.Text = "NewDarkLoader";
-            this.Prefer_NDL_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ImportFromMultipleLoadersForm
             // 
@@ -1038,7 +1038,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(592, 700);
+            this.ClientSize = new System.Drawing.Size(592, 684);
             this.Controls.Add(this.AllPanel);
             this.Controls.Add(this.OKCancelFlowLayoutPanel);
             this.Icon = global::AngelLoader.Properties.Resources.AngelLoader;

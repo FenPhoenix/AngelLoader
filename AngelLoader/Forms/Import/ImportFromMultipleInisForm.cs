@@ -40,6 +40,17 @@ namespace AngelLoader.Forms.Import
                 ? LText.Importing.ImportFromNewDarkLoader_TitleText
                 : LText.Importing.ImportFromFMSel_TitleText;
 
+            ImportTitleCheckBox.Text = LText.Importing.ImportData_Title;
+            ImportReleaseDateCheckBox.Text = LText.Importing.ImportData_ReleaseDate;
+            ImportLastPlayedCheckBox.Text = LText.Importing.ImportData_LastPlayed;
+            ImportFinishedOnCheckBox.Text = LText.Importing.ImportData_Finished;
+            ImportCommentCheckBox.Text = LText.Importing.ImportData_Comment;
+            ImportRatingCheckBox.Text = LText.Importing.ImportData_Rating;
+            ImportDisabledModsCheckBox.Text = LText.Importing.ImportData_DisabledMods;
+            ImportTagsCheckBox.Text = LText.Importing.ImportData_Tags;
+            ImportSelectedReadmeCheckBox.Text = LText.Importing.ImportData_SelectedReadme;
+            ImportSizeCheckBox.Text = LText.Importing.ImportData_Size;
+
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }

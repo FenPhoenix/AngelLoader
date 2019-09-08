@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
@@ -62,14 +57,30 @@ namespace AngelLoader.Forms.Import
             };
 
             Localize();
-
+            DL_ImportControls.Localize();
             FMSel_ImportControls.Init(ImportType.FMSel);
             NDL_ImportControls.Init(ImportType.NewDarkLoader);
         }
 
         private void Localize()
         {
+            Text = LText.Importing.ImportFromMultipleLoaders_TitleText;
+
             DL_ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
+
+            FMDataToImportLabel.Text = LText.Importing.FMDataToImport;
+            
+            ImportTitleCheckBox.Text = LText.Importing.ImportData_Title;
+            ImportReleaseDateCheckBox.Text = LText.Importing.ImportData_ReleaseDate;
+            ImportLastPlayedCheckBox.Text = LText.Importing.ImportData_LastPlayed;
+            ImportFinishedOnCheckBox.Text = LText.Importing.ImportData_Finished;
+            ImportCommentCheckBox.Text = LText.Importing.ImportData_Comment;
+            ImportRatingCheckBox.Text = LText.Importing.ImportData_Rating;
+            ImportDisabledModsCheckBox.Text = LText.Importing.ImportData_DisabledMods;
+            ImportTagsCheckBox.Text = LText.Importing.ImportData_Tags;
+            ImportSelectedReadmeCheckBox.Text = LText.Importing.ImportData_SelectedReadme;
+            ImportSizeCheckBox.Text = LText.Importing.ImportData_Size;
+
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }

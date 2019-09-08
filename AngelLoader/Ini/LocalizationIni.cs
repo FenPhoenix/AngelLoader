@@ -1436,6 +1436,54 @@ namespace AngelLoader.Ini
                         {
                             LText.Importing.Thief3 = lt.Substring(7);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportFromMultipleLoaders_TitleText="))
+                        {
+                            LText.Importing.ImportFromMultipleLoaders_TitleText = lt.Substring(36);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMDataToImport="))
+                        {
+                            LText.Importing.FMDataToImport = lt.Substring(15);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Title="))
+                        {
+                            LText.Importing.ImportData_Title = lt.Substring(17);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_ReleaseDate="))
+                        {
+                            LText.Importing.ImportData_ReleaseDate = lt.Substring(23);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_LastPlayed="))
+                        {
+                            LText.Importing.ImportData_LastPlayed = lt.Substring(22);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Finished="))
+                        {
+                            LText.Importing.ImportData_Finished = lt.Substring(20);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Comment="))
+                        {
+                            LText.Importing.ImportData_Comment = lt.Substring(19);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Rating="))
+                        {
+                            LText.Importing.ImportData_Rating = lt.Substring(18);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_DisabledMods="))
+                        {
+                            LText.Importing.ImportData_DisabledMods = lt.Substring(24);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Tags="))
+                        {
+                            LText.Importing.ImportData_Tags = lt.Substring(16);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_SelectedReadme="))
+                        {
+                            LText.Importing.ImportData_SelectedReadme = lt.Substring(26);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Size="))
+                        {
+                            LText.Importing.ImportData_Size = lt.Substring(16);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;

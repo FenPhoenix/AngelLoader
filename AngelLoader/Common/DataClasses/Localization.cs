@@ -460,6 +460,19 @@ namespace AngelLoader.Common.DataClasses
             internal static string Thief1 = "Thief 1";
             internal static string Thief2 = "Thief 2";
             internal static string Thief3 = "Thief 3";
+            [FenGenBlankLine]
+            internal static string ImportFromMultipleLoaders_TitleText = "Import from multiple loaders";
+            internal static string FMDataToImport = "FM data to import";
+            internal static string ImportData_Title = "Title";
+            internal static string ImportData_ReleaseDate = "Release date";
+            internal static string ImportData_LastPlayed = "Last played";
+            internal static string ImportData_Finished = "Finished";
+            internal static string ImportData_Comment = "Comment";
+            internal static string ImportData_Rating = "Rating";
+            internal static string ImportData_DisabledMods = "Disabled mods";
+            internal static string ImportData_Tags = "Tags";
+            internal static string ImportData_SelectedReadme = "Selected readme";
+            internal static string ImportData_Size = "Size";
         }
 
         internal static class ScanAllFMsBox
