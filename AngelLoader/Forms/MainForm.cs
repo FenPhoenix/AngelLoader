@@ -695,14 +695,7 @@ namespace AngelLoader.Forms
         // So don't touch anything the other touches: anything affecting preset tags or the FMs list.
         public void InitThreadable()
         {
-#if ReleaseBeta
-            var ver = typeof(MainForm).Assembly.GetName().Version;
-            var verThird = ver.Build > 0 ? @"." + ver.Build : "";
-            Text = @"AngelLoader " + ver.Major + @"." + ver.Minor + verThird;
-            base.Text += " " + Application.ProductVersion;
-#else
             Text = @"AngelLoader " + Application.ProductVersion;
-#endif
 
             // Aside from a possible OpenSettings() call in Model.Init() if it needs to throw up the Settings
             // window (which doesn't show the view, so the startup process is still left intact), this code is
