@@ -65,10 +65,20 @@ namespace AngelLoader.Importing
         internal bool Size;
     }
 
+    internal sealed class PriorityList
+    {
+        internal List<FanMission> CurrentFMs = new List<FanMission>();
+        internal List<FanMission> DarkLoaderFMs = new List<FanMission>();
+        internal List<FanMission> FMSelFMs = new List<FanMission>();
+        internal List<FanMission> NewDarkLoaderFMs = new List<FanMission>();
+        internal List<ImportList> Priorities = new List<ImportList>();
+    }
+
     internal static class ImportCommon
     {
         internal static List<FanMission>
-        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList, FieldsToImport fields = null)
+        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList,
+                            FieldsToImport fields = null, bool addMergedFMsToPriorityList = false)
         {
             if (fields == null)
             {
