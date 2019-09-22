@@ -635,7 +635,10 @@ namespace AngelLoader
                         extractor.FileExtractionFinished += (sender, e) =>
                         {
                             // We're extracting all the files, so we don't need to do an index check here.
-                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
+                            if (!e.FileInfo.IsDirectory)
+                            {
+                                SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
+                            }
 
                             if (ExtractCts.Token.IsCancellationRequested)
                             {
