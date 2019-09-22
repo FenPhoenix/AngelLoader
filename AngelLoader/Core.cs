@@ -1192,6 +1192,9 @@ namespace AngelLoader
                 // Must do this
                 View.SetRowCount(0);
 
+                // Extremely important!
+                ImportCommon.FMsPriority.Clear();
+
                 if (importFromDL || dlImportSaves)
                 {
                     bool success = await ImportDarkLoader.Import(dlIniFile, true, dlImportSaves, FMDataIniList, dlFields);

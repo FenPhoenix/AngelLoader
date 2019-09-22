@@ -8,8 +8,8 @@ namespace AngelLoader.Importing
     public enum ImportType
     {
         DarkLoader,
-        NewDarkLoader,
-        FMSel
+        FMSel,
+        NewDarkLoader
     }
 
     public enum ImportPriority
@@ -67,15 +67,55 @@ namespace AngelLoader.Importing
 
     internal sealed class PriorityList
     {
-        internal List<FanMission> CurrentFMs = new List<FanMission>();
-        internal List<FanMission> DarkLoaderFMs = new List<FanMission>();
-        internal List<FanMission> FMSelFMs = new List<FanMission>();
-        internal List<FanMission> NewDarkLoaderFMs = new List<FanMission>();
-        internal List<ImportList> Priorities = new List<ImportList>();
+        //internal List<FanMission> CurrentFMs = new List<FanMission>();
+        //internal List<FanMission> DarkLoaderFMs = new List<FanMission>();
+        //internal List<FanMission> FMSelFMs = new List<FanMission>();
+        //internal List<FanMission> NewDarkLoaderFMs = new List<FanMission>();
+        //internal List<ImportList> Priorities = new List<ImportList>();
+        internal FanMission DarkLoaderFMData = new FanMission();
+        internal FanMission FMSelFMData = new FanMission();
+        internal FanMission NewDarkLoaderFMData = new FanMission();
+        internal readonly ImportList Priority = new ImportList();
     }
 
     internal static class ImportCommon
     {
+        internal static readonly Dictionary<FanMission, PriorityList>
+        FMsPriority = new Dictionary<FanMission, PriorityList>();
+
+        private static ImportPriority ImportTypeToPriority(ImportType importType) => ((ImportPriority)importType) + 1;
+
+        private static void PriorityAdd(FanMission keyFM, FanMission priorityFMData, ImportType importType, FieldsToImport fields)
+        {
+            if (!FMsPriority.ContainsKey(keyFM)) FMsPriority.Add(keyFM, new PriorityList());
+
+            var pfm = FMsPriority[keyFM];
+
+            switch (importType)
+            {
+                case ImportType.DarkLoader:
+                    pfm.DarkLoaderFMData = priorityFMData;
+                    break;
+                case ImportType.FMSel:
+                    pfm.FMSelFMData = priorityFMData;
+                    break;
+                case ImportType.NewDarkLoader:
+                    pfm.NewDarkLoaderFMData = priorityFMData;
+                    break;
+            }
+
+            if (fields.Title) pfm.Priority.Title = ImportTypeToPriority(importType);
+            if (fields.ReleaseDate) pfm.Priority.ReleaseDate = ImportTypeToPriority(importType);
+            if (fields.LastPlayed) pfm.Priority.LastPlayed = ImportTypeToPriority(importType);
+            if (fields.FinishedOn) pfm.Priority.FinishedOn = ImportTypeToPriority(importType);
+            if (fields.Comment) pfm.Priority.Comment = ImportTypeToPriority(importType);
+            if (fields.Rating) pfm.Priority.Rating = ImportTypeToPriority(importType);
+            if (fields.DisabledMods) pfm.Priority.DisabledMods = ImportTypeToPriority(importType);
+            if (fields.Tags) pfm.Priority.Tags = ImportTypeToPriority(importType);
+            if (fields.SelectedReadme) pfm.Priority.SelectedReadme = ImportTypeToPriority(importType);
+            if (fields.Size) pfm.Priority.Size = ImportTypeToPriority(importType);
+        }
+
         internal static List<FanMission>
         MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList,
                             FieldsToImport fields = null, bool addMergedFMsToPriorityList = false)
@@ -122,26 +162,37 @@ namespace AngelLoader.Importing
                         (importType == ImportType.NewDarkLoader &&
                          mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
                     {
+                        var priorityFMData = new FanMission();
+
                         if (fields.Title && !importedFM.Title.IsEmpty())
                         {
                             mainFM.Title = importedFM.Title;
+                            priorityFMData.Title = importedFM.Title;
                         }
                         if (fields.ReleaseDate && importedFM.ReleaseDate != null)
                         {
                             mainFM.ReleaseDate = importedFM.ReleaseDate;
+                            priorityFMData.ReleaseDate = importedFM.ReleaseDate;
                         }
                         if (fields.LastPlayed)
                         {
                             mainFM.LastPlayed = importedFM.LastPlayed;
+                            priorityFMData.LastPlayed = importedFM.LastPlayed;
                         }
                         if (fields.FinishedOn)
                         {
                             mainFM.FinishedOn = importedFM.FinishedOn;
-                            if (importType != ImportType.FMSel) mainFM.FinishedOnUnknown = false;
+                            priorityFMData.FinishedOn = importedFM.FinishedOn;
+                            if (importType != ImportType.FMSel)
+                            {
+                                mainFM.FinishedOnUnknown = false;
+                                priorityFMData.FinishedOnUnknown = false;
+                            }
                         }
                         if (fields.Comment)
                         {
                             mainFM.Comment = importedFM.Comment;
+                            priorityFMData.Comment = importedFM.Comment;
                         }
 
                         if (importType == ImportType.NewDarkLoader ||
@@ -150,19 +201,24 @@ namespace AngelLoader.Importing
                             if (fields.Rating)
                             {
                                 mainFM.Rating = importedFM.Rating;
+                                priorityFMData.Rating = importedFM.Rating;
                             }
                             if (fields.DisabledMods)
                             {
                                 mainFM.DisabledMods = importedFM.DisabledMods;
+                                priorityFMData.DisabledMods = importedFM.DisabledMods;
                                 mainFM.DisableAllMods = importedFM.DisableAllMods;
+                                priorityFMData.DisableAllMods = importedFM.DisableAllMods;
                             }
                             if (fields.Tags)
                             {
                                 mainFM.TagsString = importedFM.TagsString;
+                                priorityFMData.TagsString = importedFM.TagsString;
                             }
                             if (fields.SelectedReadme)
                             {
                                 mainFM.SelectedReadme = importedFM.SelectedReadme;
+                                priorityFMData.SelectedReadme = importedFM.SelectedReadme;
                             }
                         }
                         if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
@@ -170,6 +226,7 @@ namespace AngelLoader.Importing
                             if (fields.Size && mainFM.SizeBytes == 0)
                             {
                                 mainFM.SizeBytes = importedFM.SizeBytes;
+                                priorityFMData.SizeBytes = importedFM.SizeBytes;
                             }
                         }
                         else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
@@ -177,6 +234,7 @@ namespace AngelLoader.Importing
                             if (fields.FinishedOn)
                             {
                                 mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                                priorityFMData.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                             }
                         }
 
@@ -189,6 +247,8 @@ namespace AngelLoader.Importing
 
                         importedFMsInMainList.Add(mainFM);
 
+                        PriorityAdd(mainFM, priorityFMData, importType, fields);
+
                         existingFound = true;
                         break;
                     }
@@ -200,23 +260,32 @@ namespace AngelLoader.Importing
                         Archive = importedFM.Archive,
                         InstalledDir = importedFM.InstalledDir
                     };
+
+                    var priorityFMData = new FanMission();
+
                     if (fields.Title)
                     {
                         newFM.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
+                            !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
+                            importedFM.InstalledDir;
+                        priorityFMData.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
                             !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
                             importedFM.InstalledDir;
                     }
                     if (fields.ReleaseDate)
                     {
                         newFM.ReleaseDate = importedFM.ReleaseDate;
+                        priorityFMData.ReleaseDate = importedFM.ReleaseDate;
                     }
                     if (fields.LastPlayed)
                     {
                         newFM.LastPlayed = importedFM.LastPlayed;
+                        priorityFMData.LastPlayed = importedFM.LastPlayed;
                     }
                     if (fields.Comment)
                     {
                         newFM.Comment = importedFM.Comment;
+                        priorityFMData.Comment = importedFM.Comment;
                     }
 
                     if (importType == ImportType.NewDarkLoader ||
@@ -225,19 +294,24 @@ namespace AngelLoader.Importing
                         if (fields.Rating)
                         {
                             newFM.Rating = importedFM.Rating;
+                            priorityFMData.Rating = importedFM.Rating;
                         }
                         if (fields.DisabledMods)
                         {
                             newFM.DisabledMods = importedFM.DisabledMods;
+                            priorityFMData.DisabledMods = importedFM.DisabledMods;
                             newFM.DisableAllMods = importedFM.DisableAllMods;
+                            priorityFMData.DisableAllMods = importedFM.DisableAllMods;
                         }
                         if (fields.Tags)
                         {
                             newFM.TagsString = importedFM.TagsString;
+                            priorityFMData.TagsString = importedFM.TagsString;
                         }
                         if (fields.SelectedReadme)
                         {
                             newFM.SelectedReadme = importedFM.SelectedReadme;
+                            priorityFMData.SelectedReadme = importedFM.SelectedReadme;
                         }
                     }
                     if (importType == ImportType.NewDarkLoader || importType == ImportType.DarkLoader)
@@ -245,10 +319,12 @@ namespace AngelLoader.Importing
                         if (fields.Size)
                         {
                             newFM.SizeBytes = importedFM.SizeBytes;
+                            priorityFMData.SizeBytes = importedFM.SizeBytes;
                         }
                         if (fields.FinishedOn)
                         {
                             newFM.FinishedOn = importedFM.FinishedOn;
+                            priorityFMData.FinishedOn = importedFM.FinishedOn;
                         }
                     }
                     else if (importType == ImportType.FMSel)
@@ -256,6 +332,7 @@ namespace AngelLoader.Importing
                         if (fields.FinishedOn)
                         {
                             newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
+                            priorityFMData.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                         }
                     }
 
@@ -263,6 +340,8 @@ namespace AngelLoader.Importing
 
                     mainList.Add(newFM);
                     importedFMsInMainList.Add(newFM);
+
+                    PriorityAdd(newFM, priorityFMData, importType, fields);
                 }
             }
 
