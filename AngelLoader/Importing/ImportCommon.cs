@@ -20,6 +20,20 @@ namespace AngelLoader.Importing
         NewDarkLoader
     }
 
+    internal sealed class ImportPriorities_Cascading
+    {
+        internal ImportPriority[] Title = new ImportPriority[4];
+        internal ImportPriority[] ReleaseDate = new ImportPriority[4];
+        internal ImportPriority[] LastPlayed = new ImportPriority[4];
+        internal ImportPriority[] FinishedOn = new ImportPriority[4];
+        internal ImportPriority[] Comment = new ImportPriority[4];
+        internal ImportPriority[] Rating = new ImportPriority[4];
+        internal ImportPriority[] DisabledMods = new ImportPriority[4];
+        internal ImportPriority[] Tags = new ImportPriority[4];
+        internal ImportPriority[] SelectedReadme = new ImportPriority[4];
+        internal ImportPriority[] Size = new ImportPriority[4];
+    }
+
     internal sealed class ImportList
     {
         internal ImportPriority Title;
@@ -349,6 +363,13 @@ namespace AngelLoader.Importing
             for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
 
             return importedFMsInMainList;
+        }
+
+        internal static void
+        MergeMultipleSets(List<FanMission> dlFMs, List<FanMission> fmSelFMs, List<FanMission> ndlFMs,
+                          ImportPriorities_Cascading ipc)
+        {
+
         }
     }
 }
