@@ -413,7 +413,12 @@ namespace AngelLoader
 
                         extractor.FileExtractionFinished += (sender, e) =>
                         {
-                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
+                            // This event gets fired for every file, even skipped files. So check if it's actually
+                            // one of ours.
+                            if (indexesList.Contains(e.FileInfo.Index))
+                            {
+                                SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
+                            }
                         };
 
                         try
