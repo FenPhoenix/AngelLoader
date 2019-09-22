@@ -59,6 +59,8 @@ namespace AngelLoader.CustomControls
                 progressTask == ProgressTasks.ScanAllFMs ? LText.ProgressBox.CheckingInstalledFMs
                 : "";
 
+            ProgressPercentLabel.Text = "";
+
             if (progressTask == ProgressTasks.UninstallFM ||
                 progressTask == ProgressTasks.ConvertFiles ||
                 progressTask == ProgressTasks.ImportFromDarkLoader ||
@@ -73,7 +75,6 @@ namespace AngelLoader.CustomControls
             {
                 ProgressBar.Style = ProgressBarStyle.Blocks;
                 ProgressCancelButton.Visible = progressTask != ProgressTasks.CacheFM;
-                ProgressPercentLabel.Text = "";
                 ProgressBar.SetValueInstant(0);
             }
 
