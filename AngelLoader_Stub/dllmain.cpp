@@ -62,9 +62,9 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     const fs::path args_file = fs::path(fs::temp_directory_path() / "AngelLoader" / "Stub" / "al_stub_args.tmp");
 
     const string fm_name_eq = "SelectedFMName=";
-    const int fm_name_eq_len = fm_name_eq.length();
+    const unsigned int fm_name_eq_len = fm_name_eq.length();
     const string disabled_mods_eq = "DisabledMods=";
-    const int disabled_mods_eq_len = disabled_mods_eq.length();
+    const unsigned int disabled_mods_eq_len = disabled_mods_eq.length();
 
     // Note: using ifstream instead of fopen bloats the dll up by 10k, but I can't get fopen to work. Reads the
     // encoding wrong I'm guessing, I don't frickin' know. At least this works, and I can come back and shrink it
@@ -79,11 +79,13 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     string line;
     while (std::getline(ifs, line))
     {
-        if (line.substr(0, fm_name_eq_len) == fm_name_eq)
+        if (line.length() > fm_name_eq_len &&
+            line.substr(0, fm_name_eq_len) == fm_name_eq)
         {
             fm_name = line.substr(fm_name_eq_len, string::npos);
         }
-        else if (line.substr(0, disabled_mods_eq_len) == disabled_mods_eq)
+        else if (line.length() > disabled_mods_eq_len &&
+            line.substr(0, disabled_mods_eq_len) == disabled_mods_eq)
         {
             disabled_mods = line.substr(disabled_mods_eq_len, string::npos);
         }
