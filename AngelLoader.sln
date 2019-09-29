@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FMScanner", "..\FMScanner\F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FenGen", "FenGen\FenGen.csproj", "{F8729702-3C79-44D3-97A0-836D30D452B4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AngelLoader_Stub_CPP", "AngelLoader_Stub_CPP\AngelLoader_Stub_CPP.vcxproj", "{3CC81750-4AE0-4CEA-B69E-85F226244D8F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AngelLoader_Stub", "AngelLoader_Stub\AngelLoader_Stub.vcxproj", "{3CC81750-4AE0-4CEA-B69E-85F226244D8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
