@@ -33,12 +33,14 @@ namespace AngelLoader.WinAPI
             private static extern bool FindClose(IntPtr hFindFile);
         }
 
+        [PublicAPI]
         private enum FINDEX_INFO_LEVELS
         {
             FindExInfoStandard = 0,
             FindExInfoBasic = 1
         }
 
+        [PublicAPI]
         private enum FINDEX_SEARCH_OPS
         {
             FindExSearchNameMatch = 0,

@@ -55,7 +55,7 @@ using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using FMScanner;
 using Gma.System.MouseKeyHook;
-using Ookii.Dialogs.WinForms;
+using AngelLoader.WinAPI.Ookii.Dialogs;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.Logger;

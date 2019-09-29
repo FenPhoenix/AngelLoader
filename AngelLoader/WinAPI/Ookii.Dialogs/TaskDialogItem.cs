@@ -1,20 +1,18 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using System.Collections;
-using AngelLoader.WinAPI.OokiiDialogs;
+using System.ComponentModel;
+using JetBrains.Annotations;
 
-namespace Ookii.Dialogs.WinForms
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     /// <summary>
     /// Represents a button or radio button on a task dialog.
     /// </summary>
     /// <threadsafety instance="false" static="true" />
     [ToolboxItem(false), DesignTimeVisible(false), DefaultProperty("Text"), DefaultEvent("Click")]
+    [PublicAPI]
     public abstract partial class TaskDialogItem : Component
     {
         private TaskDialog _owner;
@@ -25,10 +23,7 @@ namespace Ookii.Dialogs.WinForms
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskDialogItem"/> class.
         /// </summary>
-        protected TaskDialogItem()
-        {
-            InitializeComponent();
-        }
+        protected TaskDialogItem() => InitializeComponent();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskDialogItem"/> class with the specified container.
@@ -36,8 +31,7 @@ namespace Ookii.Dialogs.WinForms
         /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialogItem"/> to.</param>
         protected TaskDialogItem(IContainer container)
         {
-            if( container != null )
-                container.Add(this);
+            container?.Add(this);
 
             InitializeComponent();
         }
@@ -65,9 +59,9 @@ namespace Ookii.Dialogs.WinForms
         [Browsable(false)]
         public TaskDialog Owner
         {
-            get { return _owner; }
-            internal set 
-            { 
+            get => _owner;
+            internal set
+            {
                 _owner = value;
                 AutoAssignId();
             }
@@ -88,14 +82,14 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The text of the item."), DefaultValue("")]
         public string Text
         {
-            get { return _text ?? string.Empty; }
-            set 
+            get => _text ?? string.Empty;
+            set
             {
                 _text = value;
                 UpdateOwner();
             }
         }
-        
+
         /// <summary>
         /// Gets or sets a value that indicates whether the item is enabled.
         /// </summary>
@@ -109,14 +103,11 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("Indicates whether the item is enabled."), DefaultValue(true)]
         public bool Enabled
         {
-            get { return _enabled; }
-            set 
-            { 
+            get => _enabled;
+            set
+            {
                 _enabled = value;
-                if( Owner != null )
-                {
-                    Owner.SetItemEnabled(this);
-                }
+                Owner?.SetItemEnabled(this);
             }
         }
 
@@ -141,8 +132,8 @@ namespace Ookii.Dialogs.WinForms
         [Category("Data"), Description("The id of the item."), DefaultValue(0)]
         internal virtual int Id
         {
-            get { return _id; }
-            set 
+            get => _id;
+            set
             {
                 CheckDuplicateId(null, value);
                 _id = value;
@@ -164,8 +155,10 @@ namespace Ookii.Dialogs.WinForms
         /// </exception>
         public void Click()
         {
-            if( Owner == null )
+            if (Owner == null)
+            {
                 throw new InvalidOperationException(OokiiResources.NoAssociatedTaskDialogError);
+            }
 
             Owner.ClickItem(this);
         }
@@ -201,43 +194,35 @@ namespace Ookii.Dialogs.WinForms
         ///   displayed, this method has no effect.
         /// </para>
         /// </remarks>
-        protected void UpdateOwner()
-        {
-            if( Owner != null )
-                Owner.UpdateDialog();
-        }
+        protected void UpdateOwner() => Owner?.UpdateDialog();
 
-        internal virtual void CheckDuplicate(TaskDialogItem itemToExclude)
-        {
-            CheckDuplicateId(itemToExclude, _id);
-        }
+        internal virtual void CheckDuplicate(TaskDialogItem itemToExclude) => CheckDuplicateId(itemToExclude, _id);
 
         internal virtual void AutoAssignId()
         {
-            if( ItemCollection != null )
+            if (ItemCollection == null) return;
+
+            int highestId = 9;
+            foreach (TaskDialogItem item in ItemCollection)
             {
-                int highestId = 9;
-                foreach( TaskDialogItem item in ItemCollection )
-                {
-                    if( item.Id > highestId )
-                        highestId = item.Id;
-                }
-                Id = highestId + 1;
+                if (item.Id > highestId) highestId = item.Id;
             }
+            Id = highestId + 1;
         }
 
         private void CheckDuplicateId(TaskDialogItem itemToExclude, int id)
         {
-            if( id != 0 )
+            if (id == 0) return;
+
+            IEnumerable items = ItemCollection;
+            
+            if (items == null) return;
+
+            foreach (TaskDialogItem item in items)
             {
-                IEnumerable items = ItemCollection;
-                if( items != null )
+                if (item != this && item != itemToExclude && item.Id == id)
                 {
-                    foreach( TaskDialogItem item in items )
-                    {
-                        if( item != this && item != itemToExclude && item.Id == id )
-                            throw new InvalidOperationException(OokiiResources.DuplicateItemIdError);
-                    }
+                    throw new InvalidOperationException(OokiiResources.DuplicateItemIdError);
                 }
             }
         }

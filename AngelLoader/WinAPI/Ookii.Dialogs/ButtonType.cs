@@ -1,11 +1,7 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 
-namespace Ookii.Dialogs.WinForms
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     /// <summary>
     /// Represents the type of a task dialog button.

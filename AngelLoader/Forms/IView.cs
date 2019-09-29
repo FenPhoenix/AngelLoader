@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
-using Ookii.Dialogs.WinForms;
+using AngelLoader.WinAPI.Ookii.Dialogs;
 using static AngelLoader.CustomControls.ProgressPanel;
 
 namespace AngelLoader.Forms

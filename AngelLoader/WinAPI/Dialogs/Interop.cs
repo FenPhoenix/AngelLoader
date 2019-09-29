@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Dialogs
 {
@@ -24,6 +25,7 @@ namespace AngelLoader.WinAPI.Dialogs
 
     #endregion
 
+    [PublicAPI]
     internal enum HResult
     {
         /// <summary>     
@@ -106,6 +108,7 @@ namespace AngelLoader.WinAPI.Dialogs
 
     internal static class NativeMethods
     {
+        [PublicAPI]
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 4)]
         internal struct COMDLG_FILTERSPEC
         {
@@ -115,12 +118,14 @@ namespace AngelLoader.WinAPI.Dialogs
             internal string pszSpec;
         }
 
+        [PublicAPI]
         internal enum FDAP
         {
             FDAP_BOTTOM = 0x00000000,
             FDAP_TOP = 0x00000001
         }
 
+        [PublicAPI]
         internal enum FDE_SHAREVIOLATION_RESPONSE
         {
             FDESVR_DEFAULT = 0x00000000,
@@ -128,6 +133,7 @@ namespace AngelLoader.WinAPI.Dialogs
             FDESVR_REFUSE = 0x00000002
         }
 
+        [PublicAPI]
         internal enum FDE_OVERWRITE_RESPONSE
         {
             FDEOR_DEFAULT = 0x00000000,
@@ -135,6 +141,7 @@ namespace AngelLoader.WinAPI.Dialogs
             FDEOR_REFUSE = 0x00000002
         }
 
+        [PublicAPI]
         internal enum SIATTRIBFLAGS
         {
             SIATTRIBFLAGS_AND = 0x00000001,
@@ -142,6 +149,7 @@ namespace AngelLoader.WinAPI.Dialogs
             SIATTRIBFLAGS_APPCOMPAT = 0x00000003
         }
 
+        [PublicAPI]
         internal enum SIGDN : uint
         {
             SIGDN_NORMALDISPLAY = 0x00000000,
@@ -155,7 +163,7 @@ namespace AngelLoader.WinAPI.Dialogs
             SIGDN_PARENTRELATIVE = 0x80080001
         }
 
-        [Flags]
+        [PublicAPI, Flags]
         internal enum FOS : uint
         {
             FOS_OVERWRITEPROMPT = 0x00000002,
@@ -180,6 +188,7 @@ namespace AngelLoader.WinAPI.Dialogs
             FOS_DEFAULTNOMINIMODE = 0x20000000
         }
 
+        [PublicAPI]
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         internal struct PROPERTYKEY
         {
@@ -188,7 +197,7 @@ namespace AngelLoader.WinAPI.Dialogs
         }
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        public static extern HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
+        internal static extern HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
     }
 
     #region Interfaces

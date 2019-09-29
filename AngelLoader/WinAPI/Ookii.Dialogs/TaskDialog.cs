@@ -1,18 +1,16 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Windows.Forms;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Drawing.Design;
-using AngelLoader.WinAPI.OokiiDialogs;
+using System.Windows.Forms;
+using JetBrains.Annotations;
 
-namespace Ookii.Dialogs.WinForms
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     /// <summary>
     /// Displays a Task Dialog.
@@ -25,7 +23,9 @@ namespace Ookii.Dialogs.WinForms
     /// OS, but calling <see cref="Show"/> or <see cref="ShowDialog()"/> will throw an exception.
     /// </remarks>
     /// <threadsafety static="true" instance="false" />
+    [PublicAPI]
     [DefaultProperty("MainInstruction"), DefaultEvent("ButtonClicked"), Description("Displays a task dialog."), Designer(typeof(TaskDialogDesigner))]
+    [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public partial class TaskDialog : Component, IWin32Window
     {
         #region Events
@@ -109,7 +109,7 @@ namespace Ookii.Dialogs.WinForms
 
         private TaskDialogItemCollection<TaskDialogButton> _buttons;
         private TaskDialogItemCollection<TaskDialogRadioButton> _radioButtons;
-        private NativeMethods.TASKDIALOGCONFIG _config = new NativeMethods.TASKDIALOGCONFIG();
+        private NativeMethods.TASKDIALOGCONFIG _config;
         private TaskDialogIcon _mainIcon;
         private System.Drawing.Icon _customMainIcon;
         private System.Drawing.Icon _customFooterIcon;
@@ -118,13 +118,12 @@ namespace Ookii.Dialogs.WinForms
         private Dictionary<int, TaskDialogRadioButton> _radioButtonsById;
         private IntPtr _handle;
         private int _progressBarMarqueeAnimationSpeed = 100;
-        private int _progressBarMinimimum;
+        private int _progressBarMinimum;
         private int _progressBarMaximum = 100;
         private int _progressBarValue;
         private ProgressBarState _progressBarState = ProgressBarState.Normal;
         private int _inEventHandler;
         private bool _updatePending;
-        private object _tag;
         private System.Drawing.Icon _windowIcon;
 
         #endregion
@@ -139,7 +138,7 @@ namespace Ookii.Dialogs.WinForms
             InitializeComponent();
 
             _config.cbSize = (uint)Marshal.SizeOf(_config);
-            _config.pfCallback = new NativeMethods.TaskDialogCallback(TaskDialogCallback);
+            _config.pfCallback = TaskDialogCallback;
         }
 
         /// <summary>
@@ -148,13 +147,12 @@ namespace Ookii.Dialogs.WinForms
         /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialog"/> to.</param>
         public TaskDialog(IContainer container)
         {
-            if( container != null )
-                container.Add(this);
+            container?.Add(this);
 
             InitializeComponent();
 
             _config.cbSize = (uint)Marshal.SizeOf(_config);
-            _config.pfCallback = new NativeMethods.TaskDialogCallback(TaskDialogCallback);
+            _config.pfCallback = TaskDialogCallback;
         }
 
         #endregion
@@ -167,13 +165,7 @@ namespace Ookii.Dialogs.WinForms
         /// <value>
         /// Returns <see langword="true" /> for Windows Vista or later; otherwise <see langword="false" />.
         /// </value>
-        public static bool OSSupportsTaskDialogs
-        {
-            get
-            {
-                return NativeMethods.IsWindowsVistaOrLater;
-            }
-        }
+        public static bool OSSupportsTaskDialogs => NativeMethods.IsWindowsVistaOrLater;
 
         /// <summary>
         /// Gets a list of the buttons on the Task Dialog.
@@ -186,10 +178,7 @@ namespace Ookii.Dialogs.WinForms
         /// in the Windows-defined order, regardless of the order of the buttons in the collection.
         /// </remarks>
         [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogButton> Buttons
-        {
-            get { return _buttons ?? (_buttons = new TaskDialogItemCollection<TaskDialogButton>(this)); }
-        }
+        public TaskDialogItemCollection<TaskDialogButton> Buttons => _buttons ?? (_buttons = new TaskDialogItemCollection<TaskDialogButton>(this));
 
         /// <summary>
         /// Gets a list of the radio buttons on the Task Dialog.
@@ -198,11 +187,7 @@ namespace Ookii.Dialogs.WinForms
         /// A list of the radio buttons on the Task Dialog.
         /// </value>
         [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the radio buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogRadioButton> RadioButtons
-        {
-            get { return _radioButtons ?? (_radioButtons = new TaskDialogItemCollection<TaskDialogRadioButton>(this)); }
-        }
-	
+        public TaskDialogItemCollection<TaskDialogRadioButton> RadioButtons => _radioButtons ?? (_radioButtons = new TaskDialogItemCollection<TaskDialogRadioButton>(this));
 
         /// <summary>
         /// Gets or sets the window title of the task dialog.
@@ -213,10 +198,7 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The window title of the task dialog."), DefaultValue("")]
         public string WindowTitle
         {
-            get
-            {
-                return _config.pszWindowTitle ?? string.Empty;
-            }
+            get => _config.pszWindowTitle ?? string.Empty;
             set
             {
                 _config.pszWindowTitle = string.IsNullOrEmpty(value) ? null : value;
@@ -237,9 +219,9 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The dialog's main instruction."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string MainInstruction
         {
-            get { return _config.pszMainInstruction ?? string.Empty; }
-            set 
-            { 
+            get => _config.pszMainInstruction ?? string.Empty;
+            set
+            {
                 _config.pszMainInstruction = string.IsNullOrEmpty(value) ? null : value;
                 SetElementText(NativeMethods.TaskDialogElements.MainInstruction, MainInstruction);
             }
@@ -254,9 +236,9 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The dialog's primary content."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string Content
         {
-            get { return _config.pszContent ?? string.Empty; }
-            set 
-            { 
+            get => _config.pszContent ?? string.Empty;
+            set
+            {
                 _config.pszContent = string.IsNullOrEmpty(value) ? null : value;
                 SetElementText(NativeMethods.TaskDialogElements.Content, Content);
             }
@@ -272,21 +254,21 @@ namespace Ookii.Dialogs.WinForms
         /// This property is used only when the dialog is shown as a modeless dialog; if the dialog
         /// is modal, it will have no icon.
         /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The icon to be used in the title bar of the dialog. Used only when the dialog is shown as a modeless dialog."), DefaultValue(null)]        
+        [Localizable(true), Category("Appearance"), Description("The icon to be used in the title bar of the dialog. Used only when the dialog is shown as a modeless dialog."), DefaultValue(null)]
         public System.Drawing.Icon WindowIcon
         {
-            get 
+            get
             {
-                if( IsDialogRunning )
+                if (IsDialogRunning)
                 {
                     IntPtr icon = NativeMethods.SendMessage(Handle, NativeMethods.WM_GETICON, new IntPtr(NativeMethods.ICON_SMALL), IntPtr.Zero);
                     return System.Drawing.Icon.FromHandle(icon);
                 }
-                return _windowIcon; 
+                return _windowIcon;
             }
-            set { _windowIcon = value; }
+            set => _windowIcon = value;
         }
-	
+
 
         /// <summary>
         /// Gets or sets the icon to display in the task dialog.
@@ -302,10 +284,10 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The icon to display in the task dialog."), DefaultValue(TaskDialogIcon.Custom)]
         public TaskDialogIcon MainIcon
         {
-            get { return _mainIcon; }
-            set 
+            get => _mainIcon;
+            set
             {
-                if( _mainIcon != value )
+                if (_mainIcon != value)
                 {
                     _mainIcon = value;
                     UpdateDialog();
@@ -326,10 +308,10 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("A custom icon to display in the dialog."), DefaultValue(null)]
         public System.Drawing.Icon CustomMainIcon
         {
-            get { return _customMainIcon; }
-            set 
+            get => _customMainIcon;
+            set
             {
-                if( _customMainIcon != value )
+                if (_customMainIcon != value)
                 {
                     _customMainIcon = value;
                     UpdateDialog();
@@ -356,10 +338,10 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The icon to display in the footer area of the task dialog."), DefaultValue(TaskDialogIcon.Custom)]
         public TaskDialogIcon FooterIcon
         {
-            get { return _footerIcon; }
-            set 
+            get => _footerIcon;
+            set
             {
-                if( _footerIcon != value )
+                if (_footerIcon != value)
                 {
                     _footerIcon = value;
                     UpdateDialog();
@@ -385,10 +367,10 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("A custom icon to display in the footer area of the task dialog."), DefaultValue(null)]
         public System.Drawing.Icon CustomFooterIcon
         {
-            get { return _customFooterIcon; }
-            set 
+            get => _customFooterIcon;
+            set
             {
-                if( _customFooterIcon != value )
+                if (_customFooterIcon != value)
                 {
                     _customFooterIcon = value;
                     // TODO: This and customMainIcon don't need to use UpdateDialog, they can use TDM_UPDATE_ICON
@@ -410,20 +392,18 @@ namespace Ookii.Dialogs.WinForms
         /// </para>
         /// <para>
         ///   If a custom button is being displayed on a task dialog
-        ///   with <see cref="TaskDialog.ButtonStyle"/> set to <see cref="Ookii.Dialogs.WinForms.TaskDialogButtonStyle.CommandLinks"/>
-        ///   or <see cref="Ookii.Dialogs.WinForms.TaskDialogButtonStyle.CommandLinksNoIcon"/>, you delineate the command from the 
+        ///   with <see cref="TaskDialog.ButtonStyle"/> set to <see cref="AngelLoader.WinAPI.Ookii.Dialogs.TaskDialogButtonStyle.CommandLinks"/>
+        ///   or <see cref="AngelLoader.WinAPI.Ookii.Dialogs.TaskDialogButtonStyle.CommandLinksNoIcon"/>, you delineate the command from the 
         ///   note by placing a line break in the string specified by <see cref="TaskDialogItem.Text"/> property.
         /// </para>
         /// </remarks>
         [Category("Behavior"), Description("Indicates whether custom buttons should be displayed as normal buttons or command links."), DefaultValue(TaskDialogButtonStyle.Standard)]
         public TaskDialogButtonStyle ButtonStyle
         {
-            get
-            {
-                return GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinksNoIcon) ? TaskDialogButtonStyle.CommandLinksNoIcon :
-                    GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinks) ? TaskDialogButtonStyle.CommandLinks :
-                    TaskDialogButtonStyle.Standard;
-            }
+            get =>
+                GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinksNoIcon) ? TaskDialogButtonStyle.CommandLinksNoIcon :
+                GetFlag(NativeMethods.TaskDialogFlags.UseCommandLinks) ? TaskDialogButtonStyle.CommandLinks :
+                TaskDialogButtonStyle.Standard;
             set
             {
                 SetFlag(NativeMethods.TaskDialogFlags.UseCommandLinks, value == TaskDialogButtonStyle.CommandLinks);
@@ -445,11 +425,11 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The label for the verification checkbox."), DefaultValue("")]
         public string VerificationText
         {
-            get { return _config.pszVerificationText ?? string.Empty; }
-            set 
-            { 
+            get => _config.pszVerificationText ?? string.Empty;
+            set
+            {
                 string realValue = string.IsNullOrEmpty(value) ? null : value;
-                if( _config.pszVerificationText != realValue )
+                if (_config.pszVerificationText != realValue)
                 {
                     _config.pszVerificationText = realValue;
                     UpdateDialog();
@@ -461,7 +441,7 @@ namespace Ookii.Dialogs.WinForms
         /// Gets or sets a value that indicates whether the verification checkbox is checked ot not.
         /// </summary>
         /// <value>
-        /// <see langword="true" /> if the verficiation checkbox is checked; otherwise, <see langword="false" />.
+        /// <see langword="true" /> if the verification checkbox is checked; otherwise, <see langword="false" />.
         /// </value>
         /// <remarks>
         /// <para>
@@ -476,14 +456,13 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("Indicates whether the verification checkbox is checked ot not."), DefaultValue(false)]
         public bool IsVerificationChecked
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.VerificationFlagChecked); }
-            set 
-            { 
-                if( value != IsVerificationChecked )
+            get => GetFlag(NativeMethods.TaskDialogFlags.VerificationFlagChecked);
+            set
+            {
+                if (value != IsVerificationChecked)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.VerificationFlagChecked, value);
-                    if( IsDialogRunning )
-                        ClickVerification(value, false);
+                    if (IsDialogRunning) ClickVerification(value, false);
                 }
             }
         }
@@ -510,7 +489,7 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("Additional information to be displayed on the dialog."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string ExpandedInformation
         {
-            get { return _config.pszExpandedInformation ?? string.Empty; }
+            get => _config.pszExpandedInformation ?? string.Empty;
             set
             {
                 _config.pszExpandedInformation = string.IsNullOrEmpty(value) ? null : value;
@@ -538,11 +517,11 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The text to use for the control for collapsing the expandable information."), DefaultValue("")]
         public string ExpandedControlText
         {
-            get { return _config.pszExpandedControlText ?? string.Empty; }
-            set 
-            { 
+            get => _config.pszExpandedControlText ?? string.Empty;
+            set
+            {
                 string realValue = string.IsNullOrEmpty(value) ? null : value;
-                if( _config.pszExpandedControlText != realValue )
+                if (_config.pszExpandedControlText != realValue)
                 {
                     _config.pszExpandedControlText = realValue;
                     UpdateDialog();
@@ -551,7 +530,7 @@ namespace Ookii.Dialogs.WinForms
         }
 
         /// <summary>
-        /// Gets or sets the text to use for the control for expading the expandable information specified in <see cref="ExpandedInformation"/>.
+        /// Gets or sets the text to use for the control for expanding the expandable information specified in <see cref="ExpandedInformation"/>.
         /// </summary>
         /// <value>
         /// The text to use for the control for expanding the expandable information, or an empty string ("") if the
@@ -570,11 +549,11 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The text to use for the control for expanding the expandable information."), DefaultValue("")]
         public string CollapsedControlText
         {
-            get { return _config.pszCollapsedControlText ?? string.Empty; }
+            get => _config.pszCollapsedControlText ?? string.Empty;
             set
-            { 
+            {
                 string realValue = string.IsNullOrEmpty(value) ? null : value;
-                if( _config.pszCollapsedControlText != realValue )
+                if (_config.pszCollapsedControlText != realValue)
                 {
                     _config.pszCollapsedControlText = string.IsNullOrEmpty(value) ? null : value;
                     UpdateDialog();
@@ -592,28 +571,28 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("The text to be used in the footer area of the task dialog."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
         public string Footer
         {
-            get { return _config.pszFooterText ?? string.Empty; }
-            set 
-            { 
+            get => _config.pszFooterText ?? string.Empty;
+            set
+            {
                 _config.pszFooterText = string.IsNullOrEmpty(value) ? null : value;
                 SetElementText(NativeMethods.TaskDialogElements.Footer, Footer);
             }
         }
 
         /// <summary>
-        /// Specifies the width of the task dialog's client area in DLU's.
+        /// Specifies the width of the task dialog's client area in DLUs.
         /// </summary>
         /// <value>
-        /// The width of the task dialog's client area in DLU's, or 0 to have the task dialog calculate the ideal width.
+        /// The width of the task dialog's client area in DLUs, or 0 to have the task dialog calculate the ideal width.
         /// The default value is 0.
         /// </value>
         [Localizable(true), Category("Appearance"), Description("the width of the task dialog's client area in DLU's. If 0, task dialog will calculate the ideal width."), DefaultValue(0)]
         public int Width
         {
-            get { return (int)_config.cxWidth; }
-            set 
+            get => (int)_config.cxWidth;
+            set
             {
-                if( _config.cxWidth != (uint)value )
+                if (_config.cxWidth != (uint)value)
                 {
                     _config.cxWidth = (uint)value;
                     UpdateDialog();
@@ -645,10 +624,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("Indicates whether hyperlinks are allowed for the Content, ExpandedInformation and Footer properties."), DefaultValue(false)]
         public bool EnableHyperlinks
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.EnableHyperLinks); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.EnableHyperLinks);
+            set
             {
-                if( EnableHyperlinks != value )
+                if (EnableHyperlinks != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.EnableHyperLinks, value);
                     UpdateDialog();
@@ -668,10 +647,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("Indicates that the dialog should be able to be closed using Alt-F4, Escape and the title bar's close button even if no cancel button is specified."), DefaultValue(false)]
         public bool AllowDialogCancellation
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.AllowDialogCancellation); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.AllowDialogCancellation);
+            set
             {
-                if( AllowDialogCancellation != value )
+                if (AllowDialogCancellation != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.AllowDialogCancellation, value);
                     UpdateDialog();
@@ -691,10 +670,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("Indicates that the string specified by the ExpandedInformation property should be displayed at the bottom of the dialog's footer area instead of immediately after the dialog's content."), DefaultValue(false)]
         public bool ExpandFooterArea
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.ExpandFooterArea); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.ExpandFooterArea);
+            set
             {
-                if( ExpandFooterArea != value )
+                if (ExpandFooterArea != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.ExpandFooterArea, value);
                     UpdateDialog();
@@ -714,10 +693,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("Indicates that the string specified by the ExpandedInformation property should be displayed by default."), DefaultValue(false)]
         public bool ExpandedByDefault
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.ExpandedByDefault); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.ExpandedByDefault);
+            set
             {
-                if( ExpandedByDefault != value )
+                if (ExpandedByDefault != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.ExpandedByDefault, value);
                     UpdateDialog();
@@ -739,10 +718,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("Indicates whether the Timer event is raised periodically while the dialog is visible."), DefaultValue(false)]
         public bool RaiseTimerEvent
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.CallbackTimer); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.CallbackTimer);
+            set
             {
-                if( RaiseTimerEvent != value )
+                if (RaiseTimerEvent != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.CallbackTimer, value);
                     UpdateDialog();
@@ -760,10 +739,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Layout"), Description("Indicates whether the dialog is centered in the parent window instead of the screen."), DefaultValue(false)]
         public bool CenterParent
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.PositionRelativeToWindow); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.PositionRelativeToWindow);
+            set
             {
-                if( CenterParent != value )
+                if (CenterParent != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.PositionRelativeToWindow, value);
                     UpdateDialog();
@@ -781,10 +760,10 @@ namespace Ookii.Dialogs.WinForms
         [Localizable(true), Category("Appearance"), Description("Indicates whether text is displayed right to left."), DefaultValue(false)]
         public bool RightToLeft
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.RtlLayout); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.RtlLayout);
+            set
             {
-                if( RightToLeft != value )
+                if (RightToLeft != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.RtlLayout, value);
                     UpdateDialog();
@@ -806,10 +785,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Window Style"), Description("Indicates whether the dialog has a minimize box on its caption bar."), DefaultValue(false)]
         public bool MinimizeBox
         {
-            get { return GetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized); }
-            set 
+            get => GetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized);
+            set
             {
-                if( MinimizeBox != value )
+                if (MinimizeBox != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized, value);
                     UpdateDialog();
@@ -821,15 +800,15 @@ namespace Ookii.Dialogs.WinForms
         /// Gets or sets the type of progress bar displayed on the dialog.
         /// </summary>
         /// <value>
-        /// A <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle"/> that indicates the type of progress bar shown on the task dialog.
+        /// A <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle"/> that indicates the type of progress bar shown on the task dialog.
         /// </value>
         /// <remarks>
         /// <para>
-        ///   If this property is set to <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle.MarqueeProgressBar"/>, the marquee will
+        ///   If this property is set to <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.MarqueeProgressBar"/>, the marquee will
         ///   scroll as long as the dialog is visible.
         /// </para>
         /// <para>
-        ///   If this property is set to <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle.ProgressBar"/>, the value of the
+        ///   If this property is set to <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>, the value of the
         ///   <see cref="ProgressBarValue" /> property must be updated to advance the progress bar. This can be done e.g. by
         ///   an asynchronous operation or from the <see cref="Timer"/> event.
         /// </para>
@@ -841,15 +820,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("The type of progress bar displayed on the dialog."), DefaultValue(ProgressBarStyle.None)]
         public ProgressBarStyle ProgressBarStyle
         {
-            get
-            {
-                if( GetFlag(NativeMethods.TaskDialogFlags.ShowMarqueeProgressBar) )
-                    return ProgressBarStyle.MarqueeProgressBar;
-                else if( GetFlag(NativeMethods.TaskDialogFlags.ShowProgressBar) )
-                    return ProgressBarStyle.ProgressBar;
-                else
-                    return ProgressBarStyle.None;
-            }
+            get =>
+                GetFlag(NativeMethods.TaskDialogFlags.ShowMarqueeProgressBar) ? ProgressBarStyle.MarqueeProgressBar :
+                GetFlag(NativeMethods.TaskDialogFlags.ShowProgressBar) ? ProgressBarStyle.ProgressBar :
+                ProgressBarStyle.None;
             set
             {
                 SetFlag(NativeMethods.TaskDialogFlags.ShowMarqueeProgressBar, value == ProgressBarStyle.MarqueeProgressBar);
@@ -866,14 +840,14 @@ namespace Ookii.Dialogs.WinForms
         /// </value>
         /// <remarks>
         /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle.MarqueeProgressBar"/>.
+        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.MarqueeProgressBar"/>.
         /// </remarks>
         [Category("Behavior"), Description("The marquee animation speed of the progress bar in milliseconds."), DefaultValue(100)]
         public int ProgressBarMarqueeAnimationSpeed
         {
-            get { return _progressBarMarqueeAnimationSpeed; }
-            set 
-            { 
+            get => _progressBarMarqueeAnimationSpeed;
+            set
+            {
                 _progressBarMarqueeAnimationSpeed = value;
                 UpdateProgressBarMarqueeSpeed();
             }
@@ -887,18 +861,17 @@ namespace Ookii.Dialogs.WinForms
         /// </value>
         /// <remarks>
         /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle.ProgressBar"/>.
+        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">The new property value is not smaller than <see cref="ProgressBarMaximum"/>.</exception>
         [Category("Behavior"), Description("The lower bound of the range of the task dialog's progress bar."), DefaultValue(0)]
         public int ProgressBarMinimum
         {
-            get { return _progressBarMinimimum; }
-            set 
+            get => _progressBarMinimum;
+            set
             {
-                if( _progressBarMaximum <= value )
-                    throw new ArgumentOutOfRangeException("value");
-                _progressBarMinimimum = value;
+                if (_progressBarMaximum <= value) throw new ArgumentOutOfRangeException(nameof(value));
+                _progressBarMinimum = value;
                 UpdateProgressBarRange();
             }
         }
@@ -911,17 +884,16 @@ namespace Ookii.Dialogs.WinForms
         /// </value>
         /// <remarks>
         /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle.ProgressBar"/>.
+        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">The new property value is not larger than <see cref="ProgressBarMinimum"/>.</exception>
         [Category("Behavior"), Description("The upper bound of the range of the task dialog's progress bar."), DefaultValue(100)]
         public int ProgressBarMaximum
         {
-            get { return _progressBarMaximum; }
-            set 
+            get => _progressBarMaximum;
+            set
             {
-                if( value <= _progressBarMinimimum )
-                    throw new ArgumentOutOfRangeException("value");
+                if (value <= _progressBarMinimum) throw new ArgumentOutOfRangeException(nameof(value));
                 _progressBarMaximum = value;
                 UpdateProgressBarRange();
             }
@@ -935,7 +907,7 @@ namespace Ookii.Dialogs.WinForms
         /// </value>
         /// <remarks>
         /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle.ProgressBar"/>.
+        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
         /// <note>
         ///   Updating the value of the progress bar while the dialog is visible  may only be done from
         ///   the thread on which the task dialog was created.
@@ -945,12 +917,10 @@ namespace Ookii.Dialogs.WinForms
         [Category("Behavior"), Description("The current value of the task dialog's progress bar."), DefaultValue(0)]
         public int ProgressBarValue
         {
-            get { return _progressBarValue; }
-            set 
+            get => _progressBarValue;
+            set
             {
-                if( value < ProgressBarMinimum || value > ProgressBarMaximum )
-                    throw new ArgumentOutOfRangeException("value");
-
+                if (value < ProgressBarMinimum || value > ProgressBarMaximum) throw new ArgumentOutOfRangeException(nameof(value));
                 _progressBarValue = value;
                 UpdateProgressBarValue();
             }
@@ -960,18 +930,18 @@ namespace Ookii.Dialogs.WinForms
         /// Gets or sets the state of the task dialog's progress bar.
         /// </summary>
         /// <value>
-        /// A <see cref="Ookii.Dialogs.WinForms.ProgressBarState"/> indicating the state of the task dialog's progress bar.
-        /// The default value is <see cref="Ookii.Dialogs.WinForms.ProgressBarState.Normal"/>.
+        /// A <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarState"/> indicating the state of the task dialog's progress bar.
+        /// The default value is <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarState.Normal"/>.
         /// </value>
         /// <remarks>
-        /// This property is only used if the <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle"/> property is 
-        /// <see cref="Ookii.Dialogs.WinForms.ProgressBarStyle.ProgressBar"/>.
+        /// This property is only used if the <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle"/> property is 
+        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
         /// </remarks>
         [Category("Behavior"), Description("The state of the task dialog's progress bar."), DefaultValue(ProgressBarState.Normal)]
         public ProgressBarState ProgressBarState
         {
-            get { return _progressBarState; }
-            set 
+            get => _progressBarState;
+            set
             {
                 _progressBarState = value;
                 UpdateProgressBarState();
@@ -988,12 +958,7 @@ namespace Ookii.Dialogs.WinForms
         /// Use this property to store arbitrary information about the dialog.
         /// </remarks>
         [Category("Data"), Description("User-defined data about the component."), DefaultValue(null)]
-        public object Tag
-        {
-            get { return _tag; }
-            set { _tag = value; }
-        }
-	
+        public object Tag { get; set; }
 
         #endregion
 
@@ -1021,10 +986,7 @@ namespace Ookii.Dialogs.WinForms
         /// </para>
         /// </exception>
         /// <exception cref="NotSupportedException">Task dialogs are not supported on the current operating system.</exception>
-        public TaskDialogButton Show()
-        {
-            return ShowDialog(IntPtr.Zero);
-        }
+        public TaskDialogButton Show() => ShowDialog(IntPtr.Zero);
 
         /// <summary>
         /// Shows the task dialog as a modal dialog.
@@ -1047,23 +1009,16 @@ namespace Ookii.Dialogs.WinForms
         /// </para>
         /// </exception>
         /// <exception cref="NotSupportedException">Task dialogs are not supported on the current operating system.</exception>
-        public TaskDialogButton ShowDialog()
-        {
-            return ShowDialog((IWin32Window)null);
-        }
+        public TaskDialogButton ShowDialog() => ShowDialog(null);
 
         /// <summary>
-        /// This method is for internal Ookii.Dialogs.WinForms use and should not be called from your code.
+        /// This method is for internal AngelLoader.WinAPI.Ookii.Dialogs use and should not be called from your code.
         /// </summary>
         /// <param name="owner"></param>
         /// <returns></returns>
         public TaskDialogButton ShowDialog(IWin32Window owner)
         {
-            IntPtr ownerHandle;
-            if( owner == null )
-                ownerHandle = NativeMethods.GetActiveWindow();
-            else
-                ownerHandle = owner.Handle;
+            var ownerHandle = owner?.Handle ?? NativeMethods.GetActiveWindow();
             return ShowDialog(ownerHandle);
         }
 
@@ -1075,8 +1030,10 @@ namespace Ookii.Dialogs.WinForms
         /// <exception cref="InvalidOperationException">The task dialog is not being displayed.</exception>
         public void ClickVerification(bool checkState, bool setFocus)
         {
-            if( !IsDialogRunning )
+            if (!IsDialogRunning)
+            {
                 throw new InvalidOperationException(OokiiResources.TaskDialogNotRunningError);
+            }
 
             NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.ClickVerification, new IntPtr(checkState ? 1 : 0), new IntPtr(setFocus ? 1 : 0));
         }
@@ -1089,91 +1046,55 @@ namespace Ookii.Dialogs.WinForms
         /// Raises the <see cref="HyperlinkClicked"/> event.
         /// </summary>
         /// <param name="e">The <see cref="HyperlinkClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnHyperlinkClicked(HyperlinkClickedEventArgs e)
-        {
-            if( HyperlinkClicked != null )
-                HyperlinkClicked(this, e);
-        }
+        protected virtual void OnHyperlinkClicked(HyperlinkClickedEventArgs e) => HyperlinkClicked?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="ButtonClicked"/> event.
         /// </summary>
         /// <param name="e">The <see cref="TaskDialogItemClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnButtonClicked(TaskDialogItemClickedEventArgs e)
-        {
-            if( ButtonClicked != null )
-                ButtonClicked(this, e);
-        }
+        protected virtual void OnButtonClicked(TaskDialogItemClickedEventArgs e) => ButtonClicked?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="RadioButtonClicked"/> event.
         /// </summary>
         /// <param name="e">The <see cref="TaskDialogItemClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnRadioButtonClicked(TaskDialogItemClickedEventArgs e)
-        {
-            if( RadioButtonClicked != null )
-                RadioButtonClicked(this, e);
-        }
+        protected virtual void OnRadioButtonClicked(TaskDialogItemClickedEventArgs e) => RadioButtonClicked?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="VerificationClicked"/> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnVerificationClicked(EventArgs e)
-        {
-            if( VerificationClicked != null )
-                VerificationClicked(this, e);
-        }
+        protected virtual void OnVerificationClicked(EventArgs e) => VerificationClicked?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="Created"/> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnCreated(EventArgs e)
-        {
-            if( Created != null )
-                Created(this, e);
-        }
+        protected virtual void OnCreated(EventArgs e) => Created?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="Timer"/> event.
         /// </summary>
         /// <param name="e">The <see cref="TimerEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnTimer(TimerEventArgs e)
-        {
-            if( Timer != null )
-                Timer(this, e);
-        }
+        protected virtual void OnTimer(TimerEventArgs e) => Timer?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="Destroyed"/> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnDestroyed(EventArgs e)
-        {
-            if( Destroyed != null )
-                Destroyed(this, e);
-        }
+        protected virtual void OnDestroyed(EventArgs e) => Destroyed?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="ExpandButtonClicked"/> event.
         /// </summary>
         /// <param name="e">The <see cref="ExpandButtonClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnExpandButtonClicked(ExpandButtonClickedEventArgs e)
-        {
-            if( ExpandButtonClicked != null )
-                ExpandButtonClicked(this, e);
-        }
+        protected virtual void OnExpandButtonClicked(ExpandButtonClickedEventArgs e) => ExpandButtonClicked?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="HelpRequested"/> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnHelpRequested(EventArgs e)
-        {
-            if( HelpRequested != null )
-                HelpRequested(this, e);
-        }
+        protected virtual void OnHelpRequested(EventArgs e) => HelpRequested?.Invoke(this, e);
 
         #endregion
 
@@ -1181,7 +1102,7 @@ namespace Ookii.Dialogs.WinForms
 
         internal void SetItemEnabled(TaskDialogItem item)
         {
-            if( IsDialogRunning )
+            if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)(item is TaskDialogButton ? NativeMethods.TaskDialogMessages.EnableButton : NativeMethods.TaskDialogMessages.EnableRadioButton), new IntPtr(item.Id), new IntPtr(item.Enabled ? 1 : 0));
             }
@@ -1189,7 +1110,7 @@ namespace Ookii.Dialogs.WinForms
 
         internal void SetButtonElevationRequired(TaskDialogButton button)
         {
-            if( IsDialogRunning )
+            if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetButtonElevationRequiredState, new IntPtr(button.Id), new IntPtr(button.ElevationRequired ? 1 : 0));
             }
@@ -1197,8 +1118,10 @@ namespace Ookii.Dialogs.WinForms
 
         internal void ClickItem(TaskDialogItem item)
         {
-            if( !IsDialogRunning )
+            if (!IsDialogRunning)
+            {
                 throw new InvalidOperationException(OokiiResources.TaskDialogNotRunningError);
+            }
 
             NativeMethods.SendMessage(Handle, (int)(item is TaskDialogButton ? NativeMethods.TaskDialogMessages.ClickButton : NativeMethods.TaskDialogMessages.ClickRadioButton), new IntPtr(item.Id), IntPtr.Zero);
         }
@@ -1209,14 +1132,20 @@ namespace Ookii.Dialogs.WinForms
 
         private TaskDialogButton ShowDialog(IntPtr owner)
         {
-            if( !OSSupportsTaskDialogs )
+            if (!OSSupportsTaskDialogs)
+            {
                 throw new NotSupportedException(OokiiResources.TaskDialogsNotSupportedError);
+            }
 
-            if( IsDialogRunning )
+            if (IsDialogRunning)
+            {
                 throw new InvalidOperationException(OokiiResources.TaskDialogRunningError);
+            }
 
-            if( _buttons.Count == 0 )
+            if (_buttons.Count == 0)
+            {
                 throw new InvalidOperationException(OokiiResources.TaskDialogNoButtonsError);
+            }
 
             _config.hwndParent = owner;
             _config.dwCommonButtons = 0;
@@ -1234,21 +1163,18 @@ namespace Ookii.Dialogs.WinForms
                 int buttonId;
                 int radioButton;
                 bool verificationFlagChecked;
-                using( new ComCtlv6ActivationContext(true) )
+                using (new ComCtlv6ActivationContext(true))
                 {
                     NativeMethods.TaskDialogIndirect(ref _config, out buttonId, out radioButton, out verificationFlagChecked);
                 }
                 IsVerificationChecked = verificationFlagChecked;
 
-                TaskDialogRadioButton selectedRadioButton;
-                if( _radioButtonsById.TryGetValue(radioButton, out selectedRadioButton) )
+                if (_radioButtonsById.TryGetValue(radioButton, out var selectedRadioButton))
+                {
                     selectedRadioButton.Checked = true;
+                }
 
-                TaskDialogButton selectedButton;
-                if( _buttonsById.TryGetValue(buttonId, out selectedButton) )
-                    return selectedButton;
-                else
-                    return null;
+                return _buttonsById.TryGetValue(buttonId, out var selectedButton) ? selectedButton : null;
             }
             finally
             {
@@ -1259,68 +1185,61 @@ namespace Ookii.Dialogs.WinForms
 
         internal void UpdateDialog()
         {
-            if( IsDialogRunning )
+            if (!IsDialogRunning) return;
+
+            // If the navigate page message is sent from within the callback, the navigation won't
+            // take place until the callback returns. Any further messages sent after the navigate
+            // page message before the end of the callback will then be lost as the navigation occurs.
+            // For that reason, we defer it all the way until the end.
+            if (_inEventHandler > 0)
             {
-                // If the navigate page message is sent from within the callback, the navigation won't
-                // take place until the callback returns. Any further messages sent after the navigate
-                // page message before the end of the callback will then be lost as the navigation occurs.
-                // For that reason, we defer it all the way until the end.
-                if( _inEventHandler > 0 )
-                    _updatePending = true;
-                else
-                {
-                    _updatePending = false;
-                    CleanUpButtons(ref _config.pButtons, ref _config.cButtons);
-                    CleanUpButtons(ref _config.pRadioButtons, ref _config.cRadioButtons);
-                    _config.dwCommonButtons = 0;
-
-                    List<NativeMethods.TASKDIALOG_BUTTON> buttons = SetupButtons();
-                    List<NativeMethods.TASKDIALOG_BUTTON> radioButtons = SetupRadioButtons();
-
-                    SetupIcon();
-
-                    MarshalButtons(buttons, out _config.pButtons, out _config.cButtons);
-                    MarshalButtons(radioButtons, out _config.pRadioButtons, out _config.cRadioButtons);
-
-                    int size = Marshal.SizeOf(_config);
-                    IntPtr memory = Marshal.AllocHGlobal(size);
-                    try
-                    {
-                        Marshal.StructureToPtr(_config, memory, false);
-                        NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.NavigatePage, IntPtr.Zero, memory);
-                    }
-                    finally
-                    {
-                        Marshal.DestroyStructure(memory, typeof(NativeMethods.TASKDIALOGCONFIG));
-                        Marshal.FreeHGlobal(memory);
-                    }
-                }
+                _updatePending = true;
             }
-        }
-
-        private bool IsDialogRunning
-        {
-            get 
-            { 
-                // Intentially not using the Handle property, since the cross-thread call check should not be performed here.
-                return _handle != IntPtr.Zero; 
-            }
-        }
-
-        private void SetElementText(NativeMethods.TaskDialogElements element, string text)
-        {
-            if( IsDialogRunning )
+            else
             {
-                IntPtr newTextPtr = Marshal.StringToHGlobalUni(text);
+                _updatePending = false;
+                CleanUpButtons(ref _config.pButtons, ref _config.cButtons);
+                CleanUpButtons(ref _config.pRadioButtons, ref _config.cRadioButtons);
+                _config.dwCommonButtons = 0;
+
+                List<NativeMethods.TASKDIALOG_BUTTON> buttons = SetupButtons();
+                List<NativeMethods.TASKDIALOG_BUTTON> radioButtons = SetupRadioButtons();
+
+                SetupIcon();
+
+                MarshalButtons(buttons, out _config.pButtons, out _config.cButtons);
+                MarshalButtons(radioButtons, out _config.pRadioButtons, out _config.cRadioButtons);
+
+                int size = Marshal.SizeOf(_config);
+                IntPtr memory = Marshal.AllocHGlobal(size);
                 try
                 {
-                    IntPtr result = NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetElementText, new IntPtr((int)element), newTextPtr);
+                    Marshal.StructureToPtr(_config, memory, false);
+                    NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.NavigatePage, IntPtr.Zero, memory);
                 }
                 finally
                 {
-                    if( newTextPtr != IntPtr.Zero )
-                        Marshal.FreeHGlobal(newTextPtr);
+                    Marshal.DestroyStructure(memory, typeof(NativeMethods.TASKDIALOGCONFIG));
+                    Marshal.FreeHGlobal(memory);
                 }
+            }
+        }
+
+        // Intentionally not using the Handle property, since the cross-thread call check should not be performed here.
+        private bool IsDialogRunning => _handle != IntPtr.Zero;
+
+        private void SetElementText(NativeMethods.TaskDialogElements element, string text)
+        {
+            if (!IsDialogRunning) return;
+
+            IntPtr newTextPtr = Marshal.StringToHGlobalUni(text);
+            try
+            {
+                NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetElementText, new IntPtr((int)element), newTextPtr);
+            }
+            finally
+            {
+                if (newTextPtr != IntPtr.Zero) Marshal.FreeHGlobal(newTextPtr);
             }
         }
 
@@ -1333,84 +1252,100 @@ namespace Ookii.Dialogs.WinForms
         private void SetupIcon(TaskDialogIcon icon, System.Drawing.Icon customIcon, NativeMethods.TaskDialogFlags flag)
         {
             SetFlag(flag, false);
-            if( icon == TaskDialogIcon.Custom )
+            if (icon == TaskDialogIcon.Custom)
             {
-                if( customIcon != null )
+                if (customIcon != null)
                 {
                     SetFlag(flag, true);
-                    if( flag == NativeMethods.TaskDialogFlags.UseHIconMain )
+                    if (flag == NativeMethods.TaskDialogFlags.UseHIconMain)
+                    {
                         _config.hMainIcon = customIcon.Handle;
+                    }
                     else
+                    {
                         _config.hFooterIcon = customIcon.Handle;
+                    }
                 }
             }
             else
             {
-                if( flag == NativeMethods.TaskDialogFlags.UseHIconMain )
+                if (flag == NativeMethods.TaskDialogFlags.UseHIconMain)
+                {
                     _config.hMainIcon = new IntPtr((int)icon);
+                }
                 else
+                {
                     _config.hFooterIcon = new IntPtr((int)icon);
+                }
             }
         }
 
         private static void CleanUpButtons(ref IntPtr buttons, ref uint count)
         {
-            if( buttons != IntPtr.Zero )
+            if (buttons == IntPtr.Zero) return;
+
+            int elementSize = Marshal.SizeOf(typeof(NativeMethods.TASKDIALOG_BUTTON));
+            for (int x = 0; x < count; ++x)
             {
-                int elementSize = Marshal.SizeOf(typeof(NativeMethods.TASKDIALOG_BUTTON));
-                for( int x = 0; x < count; ++x )
-                {
-                    // This'll be safe until they introduce 128 bit machines. :)
-                    // It's the only way to do it without unsafe code.
-                    IntPtr offset = new IntPtr(buttons.ToInt64() + x * elementSize);
-                    Marshal.DestroyStructure(offset, typeof(NativeMethods.TASKDIALOG_BUTTON));
-                }
-                Marshal.FreeHGlobal(buttons);
-                buttons = IntPtr.Zero;
-                count = 0;
+                // This'll be safe until they introduce 128 bit machines. :)
+                // It's the only way to do it without unsafe code.
+                IntPtr offset = new IntPtr(buttons.ToInt64() + x * elementSize);
+                Marshal.DestroyStructure(offset, typeof(NativeMethods.TASKDIALOG_BUTTON));
             }
+            Marshal.FreeHGlobal(buttons);
+            buttons = IntPtr.Zero;
+            count = 0;
         }
 
         private static void MarshalButtons(List<NativeMethods.TASKDIALOG_BUTTON> buttons, out IntPtr buttonsPtr, out uint count)
         {
             buttonsPtr = IntPtr.Zero;
             count = 0;
-            if( buttons.Count > 0 )
+            if (buttons.Count == 0) return;
+
+            int elementSize = Marshal.SizeOf(typeof(NativeMethods.TASKDIALOG_BUTTON));
+            buttonsPtr = Marshal.AllocHGlobal(elementSize * buttons.Count);
+            for (int x = 0; x < buttons.Count; ++x)
             {
-                int elementSize = Marshal.SizeOf(typeof(NativeMethods.TASKDIALOG_BUTTON));
-                buttonsPtr = Marshal.AllocHGlobal(elementSize * buttons.Count);
-                for( int x = 0; x < buttons.Count; ++x )
-                {
-                    // This'll be safe until they introduce 128 bit machines. :)
-                    // It's the only way to do it without unsafe code.
-                    IntPtr offset = new IntPtr(buttonsPtr.ToInt64() + x * elementSize);
-                    Marshal.StructureToPtr(buttons[x], offset, false);
-                }
-                count = (uint)buttons.Count;
+                // This'll be safe until they introduce 128 bit machines. :)
+                // It's the only way to do it without unsafe code.
+                IntPtr offset = new IntPtr(buttonsPtr.ToInt64() + x * elementSize);
+                Marshal.StructureToPtr(buttons[x], offset, false);
             }
+            count = (uint)buttons.Count;
         }
 
         private List<NativeMethods.TASKDIALOG_BUTTON> SetupButtons()
         {
             _buttonsById = new Dictionary<int, TaskDialogButton>();
-            List<NativeMethods.TASKDIALOG_BUTTON> buttons = new List<NativeMethods.TASKDIALOG_BUTTON>();
+            var buttons = new List<NativeMethods.TASKDIALOG_BUTTON>();
             _config.nDefaultButton = 0;
-            foreach( TaskDialogButton button in Buttons )
+            foreach (TaskDialogButton button in Buttons)
             {
-                if( button.Id < 1 )
-                    throw new InvalidOperationException(OokiiResources.InvalidTaskDialogItemIdError);
-                _buttonsById.Add(button.Id, button);
-                if( button.Default )
-                    _config.nDefaultButton = button.Id;
-                if( button.ButtonType == ButtonType.Custom )
+                if (button.Id < 1)
                 {
-                    if( string.IsNullOrEmpty(button.Text) )
+                    throw new InvalidOperationException(OokiiResources.InvalidTaskDialogItemIdError);
+                }
+
+                _buttonsById.Add(button.Id, button);
+
+                if (button.Default) _config.nDefaultButton = button.Id;
+
+                if (button.ButtonType == ButtonType.Custom)
+                {
+                    if (string.IsNullOrEmpty(button.Text))
+                    {
                         throw new InvalidOperationException(OokiiResources.TaskDialogEmptyButtonLabelError);
-                    NativeMethods.TASKDIALOG_BUTTON taskDialogButton = new NativeMethods.TASKDIALOG_BUTTON();
-                    taskDialogButton.nButtonID = button.Id;
-                    taskDialogButton.pszButtonText = button.Text;
-                    if( ButtonStyle == TaskDialogButtonStyle.CommandLinks || ButtonStyle == TaskDialogButtonStyle.CommandLinksNoIcon && !string.IsNullOrEmpty(button.CommandLinkNote) )
+                    }
+                    var taskDialogButton = new NativeMethods.TASKDIALOG_BUTTON
+                    {
+                        nButtonID = button.Id,
+                        pszButtonText = button.Text
+                    };
+                    if (ButtonStyle == TaskDialogButtonStyle.CommandLinks || ButtonStyle == TaskDialogButtonStyle.CommandLinksNoIcon && !string.IsNullOrEmpty(button.CommandLinkNote))
+                    {
                         taskDialogButton.pszButtonText += "\n" + button.CommandLinkNote;
+                    }
                     buttons.Add(taskDialogButton);
                 }
                 else
@@ -1424,120 +1359,128 @@ namespace Ookii.Dialogs.WinForms
         private List<NativeMethods.TASKDIALOG_BUTTON> SetupRadioButtons()
         {
             _radioButtonsById = new Dictionary<int, TaskDialogRadioButton>();
-            List<NativeMethods.TASKDIALOG_BUTTON> radioButtons = new List<NativeMethods.TASKDIALOG_BUTTON>();
+            var radioButtons = new List<NativeMethods.TASKDIALOG_BUTTON>();
             _config.nDefaultRadioButton = 0;
-            foreach( TaskDialogRadioButton radioButton in RadioButtons )
+            foreach (TaskDialogRadioButton radioButton in RadioButtons)
             {
-                if( string.IsNullOrEmpty(radioButton.Text) )
+                if (string.IsNullOrEmpty(radioButton.Text))
+                {
                     throw new InvalidOperationException(OokiiResources.TaskDialogEmptyButtonLabelError);
-                if( radioButton.Id < 1 )
+                }
+
+                if (radioButton.Id < 1)
+                {
                     throw new InvalidOperationException(OokiiResources.InvalidTaskDialogItemIdError);
+                }
+
                 _radioButtonsById.Add(radioButton.Id, radioButton);
-                if( radioButton.Checked )
-                    _config.nDefaultRadioButton = radioButton.Id;
-                NativeMethods.TASKDIALOG_BUTTON taskDialogButton = new NativeMethods.TASKDIALOG_BUTTON();
-                taskDialogButton.nButtonID = radioButton.Id;
-                taskDialogButton.pszButtonText = radioButton.Text;
+
+                if (radioButton.Checked) _config.nDefaultRadioButton = radioButton.Id;
+
+                var taskDialogButton = new NativeMethods.TASKDIALOG_BUTTON
+                {
+                    nButtonID = radioButton.Id,
+                    pszButtonText = radioButton.Text
+                };
+
                 radioButtons.Add(taskDialogButton);
             }
+
             SetFlag(NativeMethods.TaskDialogFlags.NoDefaultRadioButton, _config.nDefaultRadioButton == 0);
             return radioButtons;
         }
 
         private void SetFlag(NativeMethods.TaskDialogFlags flag, bool value)
         {
-            if( value )
+            if (value)
+            {
                 _config.dwFlags |= flag;
+            }
             else
+            {
                 _config.dwFlags &= ~flag;
+            }
         }
 
-        private bool GetFlag(NativeMethods.TaskDialogFlags flag)
-        {
-            return (_config.dwFlags & flag) != 0;
-        }
+        private bool GetFlag(NativeMethods.TaskDialogFlags flag) => (_config.dwFlags & flag) != 0;
 
         private uint TaskDialogCallback(IntPtr hwnd, uint uNotification, IntPtr wParam, IntPtr lParam, IntPtr dwRefData)
         {
             Interlocked.Increment(ref _inEventHandler);
             try
             {
-                switch( (NativeMethods.TaskDialogNotifications)uNotification )
+                switch ((NativeMethods.TaskDialogNotifications)uNotification)
                 {
-                case NativeMethods.TaskDialogNotifications.Created:
-                    _handle = hwnd;
-                    DialogCreated();
-                    OnCreated(EventArgs.Empty);
-                    break;
-                case NativeMethods.TaskDialogNotifications.Destroyed:
-                    _handle = IntPtr.Zero;
-                    OnDestroyed(EventArgs.Empty);
-                    break;
-                case NativeMethods.TaskDialogNotifications.Navigated:
-                    DialogCreated();
-                    break;
-                case NativeMethods.TaskDialogNotifications.HyperlinkClicked:
-                    string url = Marshal.PtrToStringUni(lParam);
-                    OnHyperlinkClicked(new HyperlinkClickedEventArgs(url));
-                    break;
-                case NativeMethods.TaskDialogNotifications.ButtonClicked:
-                    TaskDialogButton button;
-                    if( _buttonsById.TryGetValue((int)wParam, out button) )
-                    {
-                        TaskDialogItemClickedEventArgs e = new TaskDialogItemClickedEventArgs(button);
-                        OnButtonClicked(e);
-                        if( e.Cancel )
-                            return 1;
-                    }
-                    break;
-                case NativeMethods.TaskDialogNotifications.VerificationClicked:
-                    IsVerificationChecked = ((int)wParam) == 1;
-                    OnVerificationClicked(EventArgs.Empty);
-                    break;
-                case NativeMethods.TaskDialogNotifications.RadioButtonClicked:
-                    TaskDialogRadioButton radioButton;
-                    if( _radioButtonsById.TryGetValue((int)wParam, out radioButton) )
-                    {
-                        radioButton.Checked = true; // there's no way to click a radio button without checking it, is there?
-                        TaskDialogItemClickedEventArgs e = new TaskDialogItemClickedEventArgs(radioButton);
-                        OnRadioButtonClicked(e);
-                    }
-                    break;
-                case NativeMethods.TaskDialogNotifications.Timer:
-                    TimerEventArgs timerEventArgs = new TimerEventArgs(wParam.ToInt32());
-                    OnTimer(timerEventArgs);
-                    return (uint)(timerEventArgs.ResetTickCount ? 1 : 0);
-                case NativeMethods.TaskDialogNotifications.ExpandoButtonClicked:
-                    OnExpandButtonClicked(new ExpandButtonClickedEventArgs(wParam.ToInt32() != 0));
-                    break;
-                case NativeMethods.TaskDialogNotifications.Help:
-                    OnHelpRequested(EventArgs.Empty);
-                    break;
+                    case NativeMethods.TaskDialogNotifications.Created:
+                        _handle = hwnd;
+                        DialogCreated();
+                        OnCreated(EventArgs.Empty);
+                        break;
+                    case NativeMethods.TaskDialogNotifications.Destroyed:
+                        _handle = IntPtr.Zero;
+                        OnDestroyed(EventArgs.Empty);
+                        break;
+                    case NativeMethods.TaskDialogNotifications.Navigated:
+                        DialogCreated();
+                        break;
+                    case NativeMethods.TaskDialogNotifications.HyperlinkClicked:
+                        string url = Marshal.PtrToStringUni(lParam);
+                        OnHyperlinkClicked(new HyperlinkClickedEventArgs(url));
+                        break;
+                    case NativeMethods.TaskDialogNotifications.ButtonClicked:
+                        if (_buttonsById.TryGetValue((int)wParam, out TaskDialogButton button))
+                        {
+                            var e = new TaskDialogItemClickedEventArgs(button);
+                            OnButtonClicked(e);
+                            if (e.Cancel) return 1;
+                        }
+                        break;
+                    case NativeMethods.TaskDialogNotifications.VerificationClicked:
+                        IsVerificationChecked = (int)wParam == 1;
+                        OnVerificationClicked(EventArgs.Empty);
+                        break;
+                    case NativeMethods.TaskDialogNotifications.RadioButtonClicked:
+                        if (_radioButtonsById.TryGetValue((int)wParam, out TaskDialogRadioButton radioButton))
+                        {
+                            // there's no way to click a radio button without checking it, is there?
+                            radioButton.Checked = true;
+                            var e = new TaskDialogItemClickedEventArgs(radioButton);
+                            OnRadioButtonClicked(e);
+                        }
+                        break;
+                    case NativeMethods.TaskDialogNotifications.Timer:
+                        var timerEventArgs = new TimerEventArgs(wParam.ToInt32());
+                        OnTimer(timerEventArgs);
+                        return (uint)(timerEventArgs.ResetTickCount ? 1 : 0);
+                    case NativeMethods.TaskDialogNotifications.ExpandoButtonClicked:
+                        OnExpandButtonClicked(new ExpandButtonClickedEventArgs(wParam.ToInt32() != 0));
+                        break;
+                    case NativeMethods.TaskDialogNotifications.Help:
+                        OnHelpRequested(EventArgs.Empty);
+                        break;
                 }
                 return 0;
             }
             finally
             {
                 Interlocked.Decrement(ref _inEventHandler);
-                if( _updatePending )
-                    UpdateDialog();
+                if (_updatePending) UpdateDialog();
             }
         }
 
         private void DialogCreated()
         {
-            if( _config.hwndParent == IntPtr.Zero && _windowIcon != null )
+            if (_config.hwndParent == IntPtr.Zero && _windowIcon != null)
             {
                 NativeMethods.SendMessage(Handle, NativeMethods.WM_SETICON, new IntPtr(NativeMethods.ICON_SMALL), _windowIcon.Handle);
             }
 
-            foreach( TaskDialogButton button in Buttons )
+            foreach (TaskDialogButton button in Buttons)
             {
-                if( !button.Enabled )
-                    SetItemEnabled(button);
-                if( button.ElevationRequired )
-                    SetButtonElevationRequired(button);
+                if (!button.Enabled) SetItemEnabled(button);
+                if (button.ElevationRequired) SetButtonElevationRequired(button);
             }
+
             UpdateProgressBarStyle();
             UpdateProgressBarMarqueeSpeed();
             UpdateProgressBarRange();
@@ -1547,7 +1490,7 @@ namespace Ookii.Dialogs.WinForms
 
         private void UpdateProgressBarStyle()
         {
-            if( IsDialogRunning )
+            if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetMarqueeProgressBar, new IntPtr(ProgressBarStyle == ProgressBarStyle.MarqueeProgressBar ? 1 : 0), IntPtr.Zero);
             }
@@ -1555,7 +1498,7 @@ namespace Ookii.Dialogs.WinForms
 
         private void UpdateProgressBarMarqueeSpeed()
         {
-            if( IsDialogRunning )
+            if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarMarquee, new IntPtr(ProgressBarMarqueeAnimationSpeed > 0 ? 1 : 0), new IntPtr(ProgressBarMarqueeAnimationSpeed));
             }
@@ -1563,19 +1506,18 @@ namespace Ookii.Dialogs.WinForms
 
         private void UpdateProgressBarRange()
         {
-            if( IsDialogRunning )
+            if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarRange, IntPtr.Zero, new IntPtr(ProgressBarMaximum << 16 | ProgressBarMinimum));
             }
-            if( ProgressBarValue < ProgressBarMinimum )
-                ProgressBarValue = ProgressBarMinimum;
-            if( ProgressBarValue > ProgressBarMaximum )
-                ProgressBarValue = ProgressBarMaximum;
+
+            if (ProgressBarValue < ProgressBarMinimum) ProgressBarValue = ProgressBarMinimum;
+            if (ProgressBarValue > ProgressBarMaximum) ProgressBarValue = ProgressBarMaximum;
         }
 
         private void UpdateProgressBarValue()
         {
-            if( IsDialogRunning )
+            if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarPos, new IntPtr(ProgressBarValue), IntPtr.Zero);
             }
@@ -1583,7 +1525,7 @@ namespace Ookii.Dialogs.WinForms
 
         private void UpdateProgressBarState()
         {
-            if( IsDialogRunning )
+            if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarState, new IntPtr((int)ProgressBarState + 1), IntPtr.Zero);
             }
@@ -1592,13 +1534,14 @@ namespace Ookii.Dialogs.WinForms
         private void CheckCrossThreadCall()
         {
             IntPtr handle = _handle;
-            if( handle != IntPtr.Zero )
+            if (handle != IntPtr.Zero)
             {
-                int processId;
-                int windowThreadId = NativeMethods.GetWindowThreadProcessId(handle, out processId);
+                int windowThreadId = NativeMethods.GetWindowThreadProcessId(handle, out _);
                 int threadId = NativeMethods.GetCurrentThreadId();
-                if( windowThreadId != threadId )
+                if (windowThreadId != threadId)
+                {
                     throw new InvalidOperationException(OokiiResources.TaskDialogIllegalCrossThreadCallError);
+                }
             }
         }
 

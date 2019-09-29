@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Taskbar
 {
+    [PublicAPI]
     internal enum TaskbarStates
     {
         NoProgress = 0,
@@ -12,6 +15,7 @@ namespace AngelLoader.WinAPI.Taskbar
         Paused = 8
     }
 
+    [UsedImplicitly]
     internal class TaskBarProgress
     {
         [ComImport]
@@ -19,6 +23,7 @@ namespace AngelLoader.WinAPI.Taskbar
         [ClassInterface(ClassInterfaceType.None)]
         private class TaskbarInstance { }
 
+        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
         private static readonly ITaskbarList3 Instance = (ITaskbarList3)new TaskbarInstance();
 
         // Windows 7 (version 6.1) is the minimum required version for this

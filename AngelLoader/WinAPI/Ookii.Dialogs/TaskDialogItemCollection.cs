@@ -1,36 +1,30 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.ObjectModel;
-using AngelLoader.WinAPI.OokiiDialogs;
+using JetBrains.Annotations;
 
-namespace Ookii.Dialogs.WinForms
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     /// <summary>
     /// Represents a list of <see cref="TaskDialogItem"/> objects.
     /// </summary>
     /// <typeparam name="T">The type of the task dialog item.</typeparam>
     /// <threadsafety instance="false" static="true" />
+    [PublicAPI]
     public class TaskDialogItemCollection<T> : Collection<T> where T : TaskDialogItem
     {
-        private TaskDialog _owner;
+        private readonly TaskDialog _owner;
 
-        internal TaskDialogItemCollection(TaskDialog owner)
-        {
-            _owner = owner;
-        }
+        internal TaskDialogItemCollection(TaskDialog owner) => _owner = owner;
 
         /// <summary>
         /// Overrides the <see cref="Collection{T}.ClearItems"/> method.
         /// </summary>
         protected override void ClearItems()
         {
-            foreach( T item in this )
-            {
-                item.Owner = null;
-            }
+            foreach (T item in this) item.Owner = null;
+
             base.ClearItems();
             _owner.UpdateDialog();
         }
@@ -56,22 +50,21 @@ namespace Ookii.Dialogs.WinForms
         /// </exception>
         protected override void InsertItem(int index, T item)
         {
-            if( item == null )
-                throw new ArgumentNullException("item");
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
-            if( item.Owner != null )
-                throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
+            if (item.Owner != null) throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
 
             item.Owner = _owner;
             try
             {
                 item.CheckDuplicate(null);
             }
-            catch( InvalidOperationException )
+            catch (InvalidOperationException)
             {
                 item.Owner = null;
                 throw;
             }
+
             base.InsertItem(index, item);
             _owner.UpdateDialog();
         }
@@ -119,27 +112,26 @@ namespace Ookii.Dialogs.WinForms
         /// </exception>
         protected override void SetItem(int index, T item)
         {
-            if( item == null )
-                throw new ArgumentNullException("item");
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
-            if( base[index] != item )
+            if (base[index] == item) return;
+
+            if (item.Owner != null) throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
+
+            item.Owner = _owner;
+            try
             {
-                if( item.Owner != null )
-                    throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
-                item.Owner = _owner;
-                try
-                {
-                    item.CheckDuplicate(base[index]);
-                }
-                catch( InvalidOperationException )
-                {
-                    item.Owner = null;
-                    throw;
-                }
-                base[index].Owner = null;
-                base.SetItem(index, item);
-                _owner.UpdateDialog();
+                item.CheckDuplicate(base[index]);
             }
+            catch (InvalidOperationException)
+            {
+                item.Owner = null;
+                throw;
+            }
+
+            base[index].Owner = null;
+            base.SetItem(index, item);
+            _owner.UpdateDialog();
         }
     }
 }

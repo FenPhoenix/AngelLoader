@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Dialogs
 {
+    [PublicAPI]
     public sealed class AutoFolderBrowserDialog : IDisposable
     {
         /// <summary>
@@ -230,9 +232,7 @@ namespace AngelLoader.WinAPI.Dialogs
 
         private void SetPropertiesFromDialogResult(NativeFolderBrowserDialog dialog)
         {
-            var coClass = (NativeFolderBrowserDialog)dialog;
-
-            coClass.GetResults(out IShellItemArray resultsArray);
+            dialog.GetResults(out IShellItemArray resultsArray);
 
             DirectoryNames.Clear();
 
@@ -241,8 +241,7 @@ namespace AngelLoader.WinAPI.Dialogs
             {
                 resultsArray.GetItemAt(i, out var result);
 
-                IntPtr ppszName = IntPtr.Zero;
-                HResult hr = result.GetDisplayName(NativeMethods.SIGDN.SIGDN_DESKTOPABSOLUTEPARSING, out ppszName);
+                HResult hr = result.GetDisplayName(NativeMethods.SIGDN.SIGDN_DESKTOPABSOLUTEPARSING, out IntPtr ppszName);
 
                 if (hr == HResult.Ok && ppszName != IntPtr.Zero)
                 {

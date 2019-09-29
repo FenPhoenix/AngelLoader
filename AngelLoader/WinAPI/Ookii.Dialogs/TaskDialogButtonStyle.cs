@@ -1,14 +1,13 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
-using System;
-using System.Collections.Generic;
-using System.Text;
+using JetBrains.Annotations;
 
-namespace Ookii.Dialogs.WinForms
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     /// <summary>
     /// Indicates the display style of custom buttons on a task dialog.
     /// </summary>
+    [PublicAPI]
     public enum TaskDialogButtonStyle
     {
         /// <summary>

@@ -1,14 +1,14 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Ookii.Dialogs.WinForms
+using JetBrains.Annotations;
+
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     /// <summary>
     /// Represents the state of the progress bar on the task dialog.
     /// </summary>
+    [PublicAPI]
     public enum ProgressBarState
     {
         /// <summary>

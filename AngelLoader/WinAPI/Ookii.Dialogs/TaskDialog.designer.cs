@@ -1,4 +1,4 @@
-namespace Ookii.Dialogs.WinForms
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     partial class TaskDialog
     {
