@@ -66,6 +66,9 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     const string disabled_mods_eq = "DisabledMods=";
     const int disabled_mods_eq_len = disabled_mods_eq.length();
 
+    // Note: using ifstream instead of fopen bloats the dll up by 10k, but I can't get fopen to work. Reads the
+    // encoding wrong I'm guessing, I don't frickin' know. At least this works, and I can come back and shrink it
+    // down later when I know better what I'm doing.
     std::ifstream ifs(args_file.string().c_str());
     if (!ifs.is_open())
     {
