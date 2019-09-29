@@ -102,7 +102,8 @@ namespace AngelLoader
 
                 try
                 {
-                    using (var sw = new StreamWriter(Paths.StubCommFilePath, false, Encoding.UTF8))
+                    // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
+                    using (var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default))
                     {
                         sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
                         sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
