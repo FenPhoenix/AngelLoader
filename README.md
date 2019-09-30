@@ -26,3 +26,8 @@ In short, AngelLoader aims to be a complete successor to DarkLoader, being an al
     - For the minimal build:
         - Just extract the ffmpeg folder to the solution base dir.
     - My custom build should be a NuGet package, but I can't figure out how to make a NuGet package consisting only of binaries, as no matter what I try it just gleefully vomits out an empty .dll along with the actual stuff
+
+## License
+AngelLoader's code is released under the MIT license, except portions which are otherwise specified.
+AngelLoader contains portions of code from the following:
+- Ookii Dialogs by [Sven Groot](http://www.ookii.org/software/dialogs/), modified by [Caio Proiete](https://github.com/caioproiete/ookii-dialogs-winforms), and further modified and slimmed down by myself. This code is released under the BSD 3-clause license.
