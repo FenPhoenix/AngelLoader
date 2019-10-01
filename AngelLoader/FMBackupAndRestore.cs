@@ -283,7 +283,7 @@ namespace AngelLoader
 
                         if (efn.EqualsI(Paths.FMSelInf) ||
                             // IsDirectory has been unreliable in the past, so check manually here too
-                            entry.IsDirectory || efn.Length > 0 && efn[efn.Length - 1] == '/' ||
+                            entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
                             IsSaveOrScreenshot(efn, fmIsT3))
                         {
                             continue;
