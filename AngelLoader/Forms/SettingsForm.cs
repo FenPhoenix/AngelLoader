@@ -615,7 +615,7 @@ namespace AngelLoader.Forms
 
             bool error = false;
 
-            // TODO: Run a similar thing to Model.CheckPaths() to check for cam_mod.ini etc. to be thorough
+            // TODO: Check for cam_mod.ini etc. to be thorough
 
             foreach (var tb in GameExePathTextBoxes)
             {

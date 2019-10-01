@@ -33,7 +33,7 @@ namespace AngelLoader
             }
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
-            // MT: This is thread-safe, the view ctor and Init() doesn't touch it.
+            // MT: This is thread-safe, the view ctor and InitThreadable() doesn't touch it.
             Common.Common.PresetTags.DeepCopyTo(Common.Common.GlobalTags);
 
             #region Back up lists and read FM data file
