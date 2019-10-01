@@ -126,13 +126,7 @@ namespace AngelLoader
 
             foreach (var f in files)
             {
-                // Calling them manually right from within this loop is like a billion times faster somehow. Meh?
-                if (f.EndsWithI(".txt") ||
-                    f.EndsWithI(".rtf") ||
-                    f.EndsWithI(".wri") ||
-                    f.EndsWithI(".glml") ||
-                    f.EndsWithI(".html") ||
-                    f.EndsWithI(".htm"))
+                if (f.IsValidReadme())
                 {
                     readmes.Add(f.Substring(path.Length + 1));
                 }
@@ -202,8 +196,19 @@ namespace AngelLoader
                 await SevenZipExtract(fmArchivePath, fmCachePath, readmes, view);
             }
 
+            // Guard check so we don't do useless HTML work if we don't have any HTML readmes
+            bool htmlReadmeExists = false;
+            for (int i = 0; i < readmes.Count; i++)
+            {
+                if (readmes[i].ExtIsHtml())
+                {
+                    htmlReadmeExists = true;
+                    break;
+                }
+            }
+
             // TODO: Support .7z here too
-            if (fmArchivePath.ExtIsZip() && Directory.Exists(fmCachePath))
+            if (htmlReadmeExists && fmArchivePath.ExtIsZip() && Directory.Exists(fmCachePath))
             {
                 try
                 {
