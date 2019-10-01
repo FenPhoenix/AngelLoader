@@ -190,34 +190,38 @@ namespace AngelLoader
             if (fm.Archive.ExtIsZip())
             {
                 ZipExtract(fmArchivePath, fmCachePath, readmes);
+
+                // TODO: Support HTML ref extraction for .7z files too
+                // Will require full extract for the same reason scan does - we need to scan files to know what
+                // other files to scan, etc. and a full extract is with 99.9999% certainty going to be faster
+                // than chugging through the whole thing over and over and over for each new file we find we need
+
+                // Guard check so we don't do useless HTML work if we don't have any HTML readmes
+                bool htmlReadmeExists = false;
+                for (int i = 0; i < readmes.Count; i++)
+                {
+                    if (readmes[i].ExtIsHtml())
+                    {
+                        htmlReadmeExists = true;
+                        break;
+                    }
+                }
+
+                if (htmlReadmeExists && Directory.Exists(fmCachePath))
+                {
+                    try
+                    {
+                        ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Exception in " + nameof(ExtractHTMLRefFiles), ex);
+                    }
+                }
             }
             else
             {
                 await SevenZipExtract(fmArchivePath, fmCachePath, readmes, view);
-            }
-
-            // Guard check so we don't do useless HTML work if we don't have any HTML readmes
-            bool htmlReadmeExists = false;
-            for (int i = 0; i < readmes.Count; i++)
-            {
-                if (readmes[i].ExtIsHtml())
-                {
-                    htmlReadmeExists = true;
-                    break;
-                }
-            }
-
-            // TODO: Support .7z here too
-            if (htmlReadmeExists && fmArchivePath.ExtIsZip() && Directory.Exists(fmCachePath))
-            {
-                try
-                {
-                    ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception in " + nameof(ExtractHTMLRefFiles), ex);
-                }
             }
 
             fm.NoReadmes = readmes.Count == 0;
