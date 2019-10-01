@@ -953,12 +953,7 @@ namespace AngelLoader.Forms
 #endif
         }
 
-        private void MainForm_Deactivate(object sender, EventArgs e)
-        {
-            FMsDGV.CancelColumnResize();
-            MainSplitContainer.CancelResize();
-            TopSplitContainer.CancelResize();
-        }
+        private void MainForm_Deactivate(object sender, EventArgs e) => CancelResizables();
 
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
@@ -981,6 +976,13 @@ namespace AngelLoader.Forms
             if (WindowState == FormWindowState.Normal) NominalWindowLocation = new Point(Location.X, Location.Y);
         }
 
+        private void CancelResizables()
+        {
+            FMsDGV.CancelColumnResize();
+            MainSplitContainer.CancelResize();
+            TopSplitContainer.CancelResize();
+        }
+
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -993,9 +995,7 @@ namespace AngelLoader.Forms
             }
             else if (e.KeyCode == Keys.Escape)
             {
-                FMsDGV.CancelColumnResize();
-                MainSplitContainer.CancelResize();
-                TopSplitContainer.CancelResize();
+                CancelResizables();
 
                 HideAddTagDropDown();
             }
@@ -1047,7 +1047,7 @@ namespace AngelLoader.Forms
             // Extremely cheap and cheesy, but otherwise I have to figure out how to wait for a completely
             // separate and detached thread to complete. Argh. Threading sucks.
             // TODO: I only block the view during zip extracts, which are pretty quick.
-            // Do I really want to put up the dialog during that situation?
+            // Do I really want to put up this dialog during that situation?
             if (!EverythingPanel.Enabled || ViewBlocked)
             {
                 MessageBox.Show(LText.AlertMessages.AppClosing_OperationInProgress, LText.AlertMessages.Alert,
