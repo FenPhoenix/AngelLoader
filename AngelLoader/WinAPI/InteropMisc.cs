@@ -81,9 +81,20 @@ namespace AngelLoader.WinAPI
 
         #region Keyboard
 
-        internal const int MK_CONTROL = 8;
+        // MK_ only to be used in mouse messages
+        // VK_ only to be used in keyboard messages
+        internal const int MK_CONTROL = 0x8;
+        internal const int VK_SHIFT = 0x10;
+        internal const int VK_CONTROL = 0x11;
+        internal const int VK_ALT = 0x12; // this is supposed to be called VK_MENU but screw that
         internal const int WM_KEYDOWN = 0x100;
+        internal const int WM_SYSKEYDOWN = 0x104;
+        internal const int WM_KEYUP = 0x101;
         internal const int VK_ESCAPE = 0x1B;
+        internal const int VK_PAGEUP = 0x21;
+        internal const int VK_PAGEDOWN = 0x22;
+        internal const int VK_END = 0x23;
+        internal const int VK_HOME = 0x24;
 
         #endregion
 

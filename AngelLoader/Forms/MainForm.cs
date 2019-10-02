@@ -49,12 +49,10 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.CustomControls.Static_LazyLoaded;
-using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using FMScanner;
-using Gma.System.MouseKeyHook;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
@@ -591,13 +589,37 @@ namespace AngelLoader.Forms
                     return BlockMessage;
                 }
             }
+            else if (m.Msg == InteropMisc.WM_SYSKEYDOWN)
+            {
+                int wParam = (int)m.WParam, lParam = (int)m.LParam;
+                if (Control.ModifierKeys == Keys.Alt && wParam == (int)Keys.F4) return PassMessageOn;
+            }
+            else if (m.Msg == InteropMisc.WM_KEYDOWN)
+            {
+                int wParam = (int)m.WParam, lParam = (int)m.LParam;
+
+                //Trace.WriteLine("wParam: " + wParam);
+                //Trace.WriteLine("lParam: " + lParam);
+
+                if (KeyPressesDisabled || ViewBlocked ||
+                    (FMsDGV.Focused &&
+                    ((wParam == InteropMisc.VK_PAGEUP ||
+                      (Control.ModifierKeys == Keys.Control && wParam == InteropMisc.VK_HOME)) &&
+                     FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
+                    ((wParam == InteropMisc.VK_PAGEDOWN ||
+                      (Control.ModifierKeys == Keys.Control && wParam == InteropMisc.VK_END)) &&
+                     FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)))
+                {
+                    return BlockMessage;
+                }
+            }
+            else if (m.Msg == InteropMisc.WM_KEYUP)
+            {
+                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
+            }
 
             return PassMessageOn;
         }
-
-        private IKeyboardMouseEvents AppMouseKeyHook;
-
-        #region Mouse hook
 
         // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
         private bool CursorOutsideAddTagsDropDownArea()
@@ -609,71 +631,6 @@ namespace AngelLoader.Forms
                    !CursorOverControl(AddTagTextBox) &&
                    !CursorOverControl(AddTagButton);
         }
-
-        private void HookMouseDown(object sender, MouseEventExtArgs e)
-        {
-            // CanFocus will be false if there are modal windows open
-            if (!CanFocus) return;
-
-            if (ViewBlocked)
-            {
-                e.Handled = true;
-            }
-            else if (CursorOutsideAddTagsDropDownArea())
-            {
-                HideAddTagDropDown();
-                e.Handled = true;
-            }
-        }
-
-        private void MouseHook_OnMouseMessage(object sender, MouseHookEventArgs e)
-        {
-            Trace.WriteLine(e.Msg + ", " + new Random().Next());
-            if (e.Msg == InteropMisc.WM_MOUSEMOVE || e.Msg == InteropMisc.WM_NCMOUSEMOVE)
-            {
-                if (!CanFocus) return;
-                if (ViewBlocked)
-                {
-                    e.Handled = true;
-                    return;
-                }
-
-                ShowReadmeControls(CursorOverReadmeArea());
-            }
-        }
-
-        private void HookMouseMove(object sender, MouseEventExtArgs e)
-        {
-            if (!CanFocus) return;
-            if (ViewBlocked)
-            {
-                e.Handled = true;
-                return;
-            }
-
-            ShowReadmeControls(CursorOverReadmeArea());
-        }
-
-        private void HookKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Alt && e.KeyCode == Keys.F4) return;
-            if (KeyPressesDisabled || ViewBlocked ||
-                ((e.KeyCode == Keys.PageUp || (e.Control && e.KeyCode == Keys.Home)) &&
-                 FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
-                ((e.KeyCode == Keys.PageDown || (e.Control && e.KeyCode == Keys.End)) &&
-                 FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1))
-            {
-                e.SuppressKeyPress = true;
-            }
-        }
-
-        private void HookKeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Alt && e.KeyCode == Keys.F4) return;
-            if (KeyPressesDisabled || ViewBlocked) e.SuppressKeyPress = true;
-        }
-
-        #endregion
 
         #endregion
 
@@ -985,16 +942,6 @@ namespace AngelLoader.Forms
             ChangeFilterControlsForGameType();
             ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
-            // Hook these up last so they don't cause anything to happen while we're initializing
-            //AppMouseKeyHook = Hook.AppEvents();
-            //AppMouseKeyHook.MouseDownExt += HookMouseDown;
-            //AppMouseKeyHook.MouseMoveExt += HookMouseMove;
-            //AppMouseKeyHook.KeyDown += HookKeyDown;
-            //AppMouseKeyHook.KeyUp += HookKeyUp;
-
-            //Invoke(new Action(MouseHook.Start));
-            //MouseHook.OnMouseMessage += MouseHook_OnMouseMessage;
-
             Application.AddMessageFilter(this);
         }
 
@@ -1111,7 +1058,6 @@ namespace AngelLoader.Forms
             }
 
             Application.RemoveMessageFilter(this);
-            // Mouse/keyboard hook will dispose along with the form
 
             // Argh, stupid hack to get this to not run TWICE on Application.Exit()
             // Application.Exit() is the worst thing ever. Before closing it just does whatever the hell it wants.
@@ -2373,6 +2319,10 @@ namespace AngelLoader.Forms
             #endregion
         }
 
+        // Okay, boys and girls. We get the glitched last row on keyboard-scroll if we don't do this idiot thing.
+        // No, we can't do any of the normal things you'd think would work in RefreshFMsList() itself. I tried.
+        // Everything is stupid. Whatever.
+        private bool _fmsListOneTimeHackRefreshDone;
         private async void FMsDGV_SelectionChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
@@ -2384,6 +2334,12 @@ namespace AngelLoader.Forms
             else
             {
                 FMsDGV.SelectProperly();
+
+                if (!_fmsListOneTimeHackRefreshDone)
+                {
+                    RefreshFMsList(FMsDGV.GetSelectedFMPosInfo(), startup: false, KeepSel.TrueNearest);
+                    _fmsListOneTimeHackRefreshDone = true;
+                }
 
                 await DisplaySelectedFM(refreshReadme: true);
             }
