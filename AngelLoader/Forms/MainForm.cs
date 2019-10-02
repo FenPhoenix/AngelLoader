@@ -474,8 +474,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Message filters and hooks
-
         // Keeping this for the mousewheel functionality because it passes on the message directly and so allows
         // any pressed keys to also be passed along to the control (allows Ctrl+Mousewheel for rtfbox zoom f.ex.)
         public bool PreFilterMessage(ref Message m)
@@ -484,8 +482,11 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
+            // Note: CanFocus will be false if there are modal windows open
+
             // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
             // needing to actually be focused. Vital for a good user experience.
+            #region Mouse
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
                 #region Temp hack
@@ -493,8 +494,6 @@ namespace AngelLoader.Forms
                 // IMPORTANT! Do this check inside each if block rather than above, because the message may not
                 // be a mousemove message, and in that case we'd be trying to get a window point from a random
                 // value, and that causes the min,max,close button flickering.
-                // I should eventually get rid of this filter and just use a custom mouse hook that can pass the
-                // keys-held value and all, but for now, this works
                 Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
                 IntPtr hWnd = InteropMisc.WindowFromPoint(pos);
                 if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
@@ -555,14 +554,12 @@ namespace AngelLoader.Forms
                     }
                 }
             }
+            // Just handle the NC* messages and presto, we don't even need the mouse hook anymore!
             else if (m.Msg == InteropMisc.WM_MOUSEMOVE || m.Msg == InteropMisc.WM_NCMOUSEMOVE)
             {
                 if (!CanFocus) return PassMessageOn;
 
-                if (CursorOutsideAddTagsDropDownArea() || ViewBlocked)
-                {
-                    return BlockMessage;
-                }
+                if (CursorOutsideAddTagsDropDownArea() || ViewBlocked) return BlockMessage;
 
                 ShowReadmeControls(CursorOverReadmeArea());
             }
@@ -576,7 +573,6 @@ namespace AngelLoader.Forms
                      m.Msg == InteropMisc.WM_MBUTTONUP || m.Msg == InteropMisc.WM_NCMBUTTONUP ||
                      m.Msg == InteropMisc.WM_RBUTTONUP || m.Msg == InteropMisc.WM_NCRBUTTONUP)
             {
-                // CanFocus will be false if there are modal windows open
                 if (!CanFocus) return PassMessageOn;
 
                 if (ViewBlocked)
@@ -589,25 +585,28 @@ namespace AngelLoader.Forms
                     return BlockMessage;
                 }
             }
+            #endregion
+            #region Keys
+            // To handle alt presses, we have to handle WM_SYSKEYDOWN, which handles alt and F10. Sure why not.
             else if (m.Msg == InteropMisc.WM_SYSKEYDOWN)
             {
-                int wParam = (int)m.WParam, lParam = (int)m.LParam;
-                if (Control.ModifierKeys == Keys.Alt && wParam == (int)Keys.F4) return PassMessageOn;
+                int wParam = (int)m.WParam;
+                if (ModifierKeys == Keys.Alt && wParam == (int)Keys.F4) return PassMessageOn;
             }
+            // Any other keys have to use this.
             else if (m.Msg == InteropMisc.WM_KEYDOWN)
             {
-                int wParam = (int)m.WParam, lParam = (int)m.LParam;
-
-                //Trace.WriteLine("wParam: " + wParam);
-                //Trace.WriteLine("lParam: " + lParam);
+                int wParam = (int)m.WParam;
 
                 if (KeyPressesDisabled || ViewBlocked ||
                     (FMsDGV.Focused &&
                     ((wParam == InteropMisc.VK_PAGEUP ||
-                      (Control.ModifierKeys == Keys.Control && wParam == InteropMisc.VK_HOME)) &&
+                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_HOME) ||
+                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_UP)) &&
                      FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
                     ((wParam == InteropMisc.VK_PAGEDOWN ||
-                      (Control.ModifierKeys == Keys.Control && wParam == InteropMisc.VK_END)) &&
+                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_END) ||
+                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_DOWN)) &&
                      FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)))
                 {
                     return BlockMessage;
@@ -617,22 +616,10 @@ namespace AngelLoader.Forms
             {
                 if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
             }
+            #endregion
 
             return PassMessageOn;
         }
-
-        // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
-        private bool CursorOutsideAddTagsDropDownArea()
-        {
-            // Check Visible first, otherwise we might be passing a null ref!
-            return AddTagLLDropDown.Visible &&
-                   // Check Size instead of ClientSize in order to support clicking the scroll bar
-                   !CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true) &&
-                   !CursorOverControl(AddTagTextBox) &&
-                   !CursorOverControl(AddTagButton);
-        }
-
-        #endregion
 
         #region Init / load / show
 
@@ -1479,6 +1466,17 @@ namespace AngelLoader.Forms
         {
             return ReadmeRichTextBox.Visible ? CursorOverControl(ReadmeRichTextBox) :
                 ViewHTMLReadmeLLButton.Visible && CursorOverControl(MainSplitContainer.Panel2);
+        }
+
+        // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
+        private bool CursorOutsideAddTagsDropDownArea()
+        {
+            // Check Visible first, otherwise we might be passing a null ref!
+            return AddTagLLDropDown.Visible &&
+                   // Check Size instead of ClientSize in order to support clicking the scroll bar
+                   !CursorOverControl(AddTagLLDropDown.ListBox, fullArea: true) &&
+                   !CursorOverControl(AddTagTextBox) &&
+                   !CursorOverControl(AddTagButton);
         }
 
         private bool CursorOverControl(Control control, bool fullArea = false)
@@ -3839,7 +3837,7 @@ namespace AngelLoader.Forms
         #endregion
 
         // Allows the readme controls to hide when the mouse moves directly from the readme area onto another
-        // window. General-case showing and hiding is still handled by the mouse hook for reliability.
+        // window. General-case showing and hiding is still handled by PreFilterMessage() for reliability.
         // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
         internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
         {

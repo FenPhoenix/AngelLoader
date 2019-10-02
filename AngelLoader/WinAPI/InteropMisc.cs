@@ -95,6 +95,10 @@ namespace AngelLoader.WinAPI
         internal const int VK_PAGEDOWN = 0x22;
         internal const int VK_END = 0x23;
         internal const int VK_HOME = 0x24;
+        internal const int VK_LEFT = 0x25;
+        internal const int VK_UP = 0x26;
+        internal const int VK_RIGHT = 0x27;
+        internal const int VK_DOWN = 0x28;
 
         #endregion
 
@@ -109,9 +113,6 @@ namespace AngelLoader.WinAPI
 
         [DllImport("user32.dll")]
         internal static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
-
-        [DllImport("kernel32")]
-        internal static extern uint GetCurrentThreadId();
 
         #region Process
 
