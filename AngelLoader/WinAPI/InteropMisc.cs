@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
+using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
 
 namespace AngelLoader.WinAPI
@@ -40,16 +41,17 @@ namespace AngelLoader.WinAPI
 
         #region Mouse
 
+        // NC prefix means the mouse was over a non-client area
+
         internal const int WM_SETCURSOR = 0x20;
 
-        internal const int WH_MOUSE = 7;
-        internal const int WH_MOUSE_LL = 14;
-
         internal const int WM_MOUSEWHEEL = 0x20A;
-        internal const int WM_MOUSEHWHEEL = 0x020E;
+        internal const int WM_MOUSEHWHEEL = 0x020E; // Mousewheel tilt
 
         internal const int WM_MOUSEMOVE = 0x200;
         internal const int WM_NCMOUSEMOVE = 0xA0;
+
+        internal const int WM_MOUSELEAVE = 0x02A3;
 
         internal const int WM_LBUTTONUP = 0x202;
         internal const int WM_NCLBUTTONUP = 0x00A2;
@@ -75,24 +77,24 @@ namespace AngelLoader.WinAPI
         internal const int WM_RBUTTONDBLCLK = 0x206;
         internal const int WM_NCRBUTTONDBLCLK = 0xA6;
 
-        internal const int WM_MOUSELEAVE = 0x02A3;
-
         #endregion
 
         #region Keyboard
 
-        // MK_ only to be used in mouse messages
-        // VK_ only to be used in keyboard messages
-        internal const int MK_CONTROL = 0x8;
-        internal const int VK_SHIFT = 0x10;
-        internal const int VK_CONTROL = 0x11;
-        internal const int VK_ALT = 0x12; // this is supposed to be called VK_MENU but screw that
         internal const int WM_KEYDOWN = 0x100;
         internal const int WM_SYSKEYDOWN = 0x104;
         internal const int WM_KEYUP = 0x101;
+
+        // MK_ only to be used in mouse messages
+        internal const int MK_CONTROL = 0x8;
+
+        // VK_ only to be used in keyboard messages
+        internal const int VK_SHIFT = 0x10;
+        internal const int VK_CONTROL = 0x11;
+        internal const int VK_ALT = 0x12; // this is supposed to be called VK_MENU but screw that
         internal const int VK_ESCAPE = 0x1B;
-        internal const int VK_PAGEUP = 0x21;
-        internal const int VK_PAGEDOWN = 0x22;
+        internal const int VK_PAGEUP = 0x21; // VK_PRIOR
+        internal const int VK_PAGEDOWN = 0x22; // VK_NEXT
         internal const int VK_END = 0x23;
         internal const int VK_HOME = 0x24;
         internal const int VK_LEFT = 0x25;
@@ -116,7 +118,7 @@ namespace AngelLoader.WinAPI
 
         #region Process
 
-        [Flags]
+        [PublicAPI, Flags]
         internal enum ProcessAccessFlags : uint
         {
             All = 0x001F0FFF,
