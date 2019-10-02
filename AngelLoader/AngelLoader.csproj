@@ -386,6 +386,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinAPI\FastIO.cs" />
     <Compile Include="WinAPI\InteropMisc.cs" />
+    <Compile Include="WinAPI\MouseHook.cs" />
     <Compile Include="WinAPI\Ookii.Dialogs\ButtonType.cs" />
     <Compile Include="WinAPI\Ookii.Dialogs\ComCtlv6ActivationContext.cs" />
     <Compile Include="WinAPI\Ookii.Dialogs\OokiiResources.cs" />

@@ -86,6 +86,9 @@ namespace AngelLoader.WinAPI
         [DllImport("user32.dll")]
         internal static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
 
+        [DllImport("kernel32")]
+        internal static extern uint GetCurrentThreadId();
+
         #region Process
 
         [Flags]
