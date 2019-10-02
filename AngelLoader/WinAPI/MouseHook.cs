@@ -19,16 +19,18 @@ namespace AngelLoader.WinAPI
     internal class MouseHookEventArgs : MouseEventArgs
     {
         public MouseHookEventArgs(MouseButtons button, int clicks, int x, int y, int delta, uint timestamp,
-            MouseButtonState mouseButtonState)
+            MouseButtonState mouseButtonState, int msg)
             : base(button, clicks, x, y, delta)
         {
             MouseButtonState = mouseButtonState;
             Timestamp = timestamp;
+            Msg = msg;
         }
 
         internal MouseButtonState MouseButtonState;
         internal uint Timestamp;
         internal bool Handled;
+        internal int Msg;
     }
 
     public static class MouseHook
@@ -67,7 +69,7 @@ namespace AngelLoader.WinAPI
 
         #endregion
 
-        public static event MouseEventHandler OnMouseMessage;
+        internal static event EventHandler<MouseHookEventArgs> OnMouseMessage;
 
         private static IntPtr _mouseHook;
         private delegate int LowLevelMouseProc(int nCode, int wParam, IntPtr lParam);
@@ -78,6 +80,7 @@ namespace AngelLoader.WinAPI
             if (_mouseHook != IntPtr.Zero) return;
 
             MouseHookProcedure = MouseHookCallback;
+            //_appHookProc = (code, param, lParam) => HookProcedure(code, param, lParam, callback);
             _mouseHook = SetWindowsHookEx(WH_MOUSE, MouseHookProcedure, IntPtr.Zero, GetCurrentThreadId());
 
             if (_mouseHook == IntPtr.Zero)
@@ -100,30 +103,46 @@ namespace AngelLoader.WinAPI
 
         private static int MouseHookCallback(int nCode, int wParam, IntPtr lParam)
         {
-            if (nCode > -1 && OnMouseMessage != null)
+            if (nCode == 0 && OnMouseMessage != null)
             {
+                //Trace.WriteLine(new Random().Next());
+
                 var hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
 
                 var button =
-                    wParam == WM_LBUTTONDOWN ? MouseButtons.Left :
-                    wParam == WM_MBUTTONDOWN ? MouseButtons.Middle :
-                    wParam == WM_RBUTTONDOWN ? MouseButtons.Right :
+                    wParam == WM_LBUTTONDOWN || wParam == WM_NCLBUTTONDOWN ? MouseButtons.Left :
+                    wParam == WM_MBUTTONDOWN || wParam == WM_NCMBUTTONDOWN ? MouseButtons.Middle :
+                    wParam == WM_RBUTTONDOWN || wParam == WM_NCRBUTTONDOWN ? MouseButtons.Right :
                     MouseButtons.None;
+
+                var state =
+                    wParam == WM_LBUTTONDOWN || wParam == WM_NCLBUTTONDOWN ||
+                    wParam == WM_MBUTTONDOWN || wParam == WM_NCMBUTTONDOWN ||
+                    wParam == WM_RBUTTONDOWN || wParam == WM_NCRBUTTONDOWN ? MouseButtonState.Down :
+                    wParam == WM_LBUTTONUP || wParam == WM_NCLBUTTONUP ||
+                    wParam == WM_MBUTTONUP || wParam == WM_NCMBUTTONUP ||
+                    wParam == WM_RBUTTONUP || wParam == WM_NCRBUTTONUP ? MouseButtonState.Up :
+                    MouseButtonState.None;
 
                 int mouseDelta = wParam == WM_MOUSEWHEEL ? (int)((hookStruct.mouseData >> 16) & 0xffff) : 0;
 
                 int clicks =
                     button == MouseButtons.None ? 0 :
-                    wParam == WM_LBUTTONDBLCLK || wParam == WM_RBUTTONDBLCLK || wParam == WM_MBUTTONDBLCLK ? 2 :
+                    wParam == WM_LBUTTONDBLCLK || wParam == WM_NCLBUTTONDBLCLK ||
+                    wParam == WM_RBUTTONDBLCLK || wParam == WM_NCRBUTTONDBLCLK ||
+                    wParam == WM_MBUTTONDBLCLK || wParam == WM_NCMBUTTONDBLCLK ? 2 :
                     1;
 
-                var e = new MouseEventArgs(button, clicks, (int)hookStruct.pt.x, (int)hookStruct.pt.y, mouseDelta);
+                var e = new MouseHookEventArgs(button, clicks, (int)hookStruct.pt.x, (int)hookStruct.pt.y,
+                    mouseDelta, hookStruct.time, state, wParam);
                 OnMouseMessage(null, e);
 
-                if (button == MouseButtons.Left)
-                {
-                    return -1;
-                }
+                if (e.Handled) return -1;
+
+                //if (button == MouseButtons.Left)
+                //{
+                //    return -1;
+                //}
             }
 
             return CallNextHookEx(_mouseHook, nCode, wParam, lParam);

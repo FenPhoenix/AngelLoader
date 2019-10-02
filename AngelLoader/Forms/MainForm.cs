@@ -557,6 +557,40 @@ namespace AngelLoader.Forms
                     }
                 }
             }
+            else if (m.Msg == InteropMisc.WM_MOUSEMOVE || m.Msg == InteropMisc.WM_NCMOUSEMOVE)
+            {
+                if (!CanFocus) return PassMessageOn;
+
+                if (CursorOutsideAddTagsDropDownArea() || ViewBlocked)
+                {
+                    return BlockMessage;
+                }
+
+                ShowReadmeControls(CursorOverReadmeArea());
+            }
+            else if (m.Msg == InteropMisc.WM_LBUTTONDOWN || m.Msg == InteropMisc.WM_NCLBUTTONDOWN ||
+                     m.Msg == InteropMisc.WM_MBUTTONDOWN || m.Msg == InteropMisc.WM_NCMBUTTONDOWN ||
+                     m.Msg == InteropMisc.WM_RBUTTONDOWN || m.Msg == InteropMisc.WM_NCRBUTTONDOWN ||
+                     m.Msg == InteropMisc.WM_LBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCLBUTTONDBLCLK ||
+                     m.Msg == InteropMisc.WM_MBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCMBUTTONDBLCLK ||
+                     m.Msg == InteropMisc.WM_RBUTTONDBLCLK || m.Msg == InteropMisc.WM_NCRBUTTONDBLCLK ||
+                     m.Msg == InteropMisc.WM_LBUTTONUP || m.Msg == InteropMisc.WM_NCLBUTTONUP ||
+                     m.Msg == InteropMisc.WM_MBUTTONUP || m.Msg == InteropMisc.WM_NCMBUTTONUP ||
+                     m.Msg == InteropMisc.WM_RBUTTONUP || m.Msg == InteropMisc.WM_NCRBUTTONUP)
+            {
+                // CanFocus will be false if there are modal windows open
+                if (!CanFocus) return PassMessageOn;
+
+                if (ViewBlocked)
+                {
+                    return BlockMessage;
+                }
+                else if (CursorOutsideAddTagsDropDownArea())
+                {
+                    HideAddTagDropDown();
+                    return BlockMessage;
+                }
+            }
 
             return PassMessageOn;
         }
@@ -589,6 +623,22 @@ namespace AngelLoader.Forms
             {
                 HideAddTagDropDown();
                 e.Handled = true;
+            }
+        }
+
+        private void MouseHook_OnMouseMessage(object sender, MouseHookEventArgs e)
+        {
+            Trace.WriteLine(e.Msg + ", " + new Random().Next());
+            if (e.Msg == InteropMisc.WM_MOUSEMOVE || e.Msg == InteropMisc.WM_NCMOUSEMOVE)
+            {
+                if (!CanFocus) return;
+                if (ViewBlocked)
+                {
+                    e.Handled = true;
+                    return;
+                }
+
+                ShowReadmeControls(CursorOverReadmeArea());
             }
         }
 
@@ -936,11 +986,15 @@ namespace AngelLoader.Forms
             ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
             // Hook these up last so they don't cause anything to happen while we're initializing
-            AppMouseKeyHook = Hook.AppEvents();
-            AppMouseKeyHook.MouseDownExt += HookMouseDown;
-            AppMouseKeyHook.MouseMoveExt += HookMouseMove;
-            AppMouseKeyHook.KeyDown += HookKeyDown;
-            AppMouseKeyHook.KeyUp += HookKeyUp;
+            //AppMouseKeyHook = Hook.AppEvents();
+            //AppMouseKeyHook.MouseDownExt += HookMouseDown;
+            //AppMouseKeyHook.MouseMoveExt += HookMouseMove;
+            //AppMouseKeyHook.KeyDown += HookKeyDown;
+            //AppMouseKeyHook.KeyUp += HookKeyUp;
+
+            //Invoke(new Action(MouseHook.Start));
+            //MouseHook.OnMouseMessage += MouseHook_OnMouseMessage;
+
             Application.AddMessageFilter(this);
         }
 
