@@ -12,7 +12,7 @@ using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader
-{
+{//
     internal class AudioConverter
     {
         private readonly FanMission FM;
