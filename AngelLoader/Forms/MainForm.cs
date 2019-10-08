@@ -4106,23 +4106,23 @@ namespace AngelLoader.Forms
 
         private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => PaintFilterBarFLP(e);
 
-        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlayFMButton(PlayFMButton.Enabled, e);
+        private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlayFMButton(PlayFMButton, e);
 
-        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(PatchAddDMLButton.Enabled, e);
+        private void PatchAddDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(PatchAddDMLButton, e);
 
-        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(PatchRemoveDMLButton.Enabled, e);
+        private void PatchRemoveDMLButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(PatchRemoveDMLButton, e);
 
-        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintTopRightMenuButton(TopRightMenuButton.Enabled, e);
+        private void TopRightMenuButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintTopRightMenuButton(TopRightMenuButton, e);
 
-        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintWebSearchButton(WebSearchButton.Enabled, e);
+        private void WebSearchButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintWebSearchButton(WebSearchButton, e);
 
-        private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintReadmeFullScreenButton(ReadmeFullScreenButton.Enabled, e);
+        private void ReadmeFullScreenButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintReadmeFullScreenButton(ReadmeFullScreenButton, e);
 
-        private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintResetLayoutButton(ResetLayoutButton.Enabled, e);
+        private void ResetLayoutButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintResetLayoutButton(ResetLayoutButton, e);
 
-        private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton.Enabled, e);
+        private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton, e);
 
-        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons(((Button)sender).Enabled, e);
+        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons((Button)sender, e);
 
         #endregion
 

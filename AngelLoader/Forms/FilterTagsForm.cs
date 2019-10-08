@@ -334,8 +334,8 @@ namespace AngelLoader.Forms
             NotButton.Enabled = !tagInAny;
         }
 
-        private void RemoveButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(((Button)sender).Enabled, e);
+        private void RemoveButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton((Button)sender, e);
 
-        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintExButton(((Button)sender).Enabled, e);
+        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintExButton((Button)sender, e);
     }
 }

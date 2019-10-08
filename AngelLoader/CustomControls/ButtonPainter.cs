@@ -8,32 +8,32 @@ namespace AngelLoader.CustomControls
     {
         private static readonly SolidBrush playArrowBrush = new SolidBrush(Color.FromArgb(45, 154, 47));
         private static readonly Point[] playArrowPoints = { new Point(15, 5), new Point(29, 17), new Point(15, 29) };
-        internal static void PaintPlayFMButton(bool enabled, PaintEventArgs e)
+        internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
-            e.Graphics.FillPolygon(enabled ? playArrowBrush : SystemBrushes.ControlDark, playArrowPoints);
+            e.Graphics.FillPolygon(button.Enabled ? playArrowBrush : SystemBrushes.ControlDark, playArrowPoints);
         }
 
-        internal static void PaintPlusButton(bool enabled, PaintEventArgs e)
+        internal static void PaintPlusButton(Button button, PaintEventArgs e)
         {
-            var hRect = new Rectangle((e.ClipRectangle.Width / 2) - 4, (e.ClipRectangle.Height / 2), 10, 2);
-            var vRect = new Rectangle((e.ClipRectangle.Width / 2), (e.ClipRectangle.Height / 2) - 4, 2, 10);
-            e.Graphics.FillRectangles(enabled ? Brushes.Black : SystemBrushes.ControlDark, new[] { hRect, vRect });
+            var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, (button.ClientRectangle.Height / 2), 10, 2);
+            var vRect = new Rectangle((button.ClientRectangle.Width / 2), (button.ClientRectangle.Height / 2) - 4, 2, 10);
+            e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, new[] { hRect, vRect });
         }
 
-        internal static void PaintMinusButton(bool enabled, PaintEventArgs e)
+        internal static void PaintMinusButton(Button button, PaintEventArgs e)
         {
-            var hRect = new Rectangle((e.ClipRectangle.Width / 2) - 4, (e.ClipRectangle.Height / 2), 10, 2);
-            e.Graphics.FillRectangle(enabled ? Brushes.Black : SystemBrushes.ControlDark, hRect);
+            var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, (button.ClientRectangle.Height / 2), 10, 2);
+            e.Graphics.FillRectangle(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, hRect);
         }
 
-        internal static void PaintExButton(bool enabled, PaintEventArgs e)
+        internal static void PaintExButton(Button button, PaintEventArgs e)
         {
-            var wh = e.ClipRectangle.Width / 2;
-            var hh = e.ClipRectangle.Height / 2;
+            var wh = button.ClientRectangle.Width / 2;
+            var hh = button.ClientRectangle.Height / 2;
             var ps = new[]
             {
                 // top
@@ -61,15 +61,15 @@ namespace AngelLoader.CustomControls
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
-            e.Graphics.FillPolygon(enabled ? Brushes.Black : SystemBrushes.ControlDark, ps);
+            e.Graphics.FillPolygon(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, ps);
         }
 
         private static readonly Rectangle ham1 = new Rectangle(1, 1, 14, 2);
         private static readonly Rectangle ham2 = new Rectangle(1, 7, 14, 2);
         private static readonly Rectangle ham3 = new Rectangle(1, 13, 14, 2);
-        internal static void PaintTopRightMenuButton(bool enabled, PaintEventArgs e)
+        internal static void PaintTopRightMenuButton(Button button, PaintEventArgs e)
         {
-            e.Graphics.FillRectangles(enabled ? Brushes.Black : SystemBrushes.ControlDark, new[] { ham1, ham2, ham3 });
+            e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, new[] { ham1, ham2, ham3 });
         }
 
         private static readonly Color AL_LightBlue = Color.FromArgb(4, 125, 202);
@@ -79,14 +79,14 @@ namespace AngelLoader.CustomControls
         private static readonly Rectangle webSearchRect1 = new Rectangle(12, 11, 19, 2);
         private static readonly RectangleF webSearchRect2 = new RectangleF(10, 16.5f, 23, 2);
         private static readonly Rectangle webSearchRect3 = new Rectangle(12, 22, 19, 2);
-        internal static void PaintWebSearchButton(bool enabled, PaintEventArgs e)
+        internal static void PaintWebSearchButton(Button button, PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
-            var pen = enabled ? webSearchCirclePen : webSearchCircleDisabledPen;
+            var pen = button.Enabled ? webSearchCirclePen : webSearchCircleDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 10, 6, 23, 23);
             e.Graphics.DrawEllipse(pen, 17, 6, 9, 23);
@@ -129,9 +129,9 @@ namespace AngelLoader.CustomControls
             new Point(13, 17),
             new Point(17, 17)
         };
-        internal static void PaintReadmeFullScreenButton(bool enabled, PaintEventArgs e)
+        internal static void PaintReadmeFullScreenButton(Button button, PaintEventArgs e)
         {
-            var brush = enabled ? Brushes.Black : SystemBrushes.ControlDark;
+            var brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
 
             e.Graphics.FillPolygon(brush, readmeFullScreenTopLeft);
             e.Graphics.FillPolygon(brush, readmeFullScreenTopRight);
@@ -141,9 +141,9 @@ namespace AngelLoader.CustomControls
 
         private static readonly Pen resetLayoutPen = new Pen(Color.FromArgb(123, 123, 123), 2);
         private static readonly Pen resetLayoutPenDisabled = new Pen(SystemColors.ControlDark, 2);
-        internal static void PaintResetLayoutButton(bool enabled, PaintEventArgs e)
+        internal static void PaintResetLayoutButton(Button button, PaintEventArgs e)
         {
-            var pen = enabled ? resetLayoutPen : resetLayoutPenDisabled;
+            var pen = button.Enabled ? resetLayoutPen : resetLayoutPenDisabled;
             e.Graphics.DrawRectangle(pen, 3, 3, 16, 16);
             e.Graphics.DrawLine(pen, 13, 2, 13, 10);
             e.Graphics.DrawLine(pen, 2, 11, 18, 11);
@@ -158,14 +158,14 @@ namespace AngelLoader.CustomControls
             new Point(32, 25),
             new Point(28, 21)
         };
-        internal static void PaintScanAllFMsButton(bool enabled, PaintEventArgs e)
+        internal static void PaintScanAllFMsButton(Button button, PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
-            var pen = enabled ? scanPen : scanDisabledPen;
+            var pen = button.Enabled ? scanPen : scanDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 11, 7, 18, 18);
             e.Graphics.FillPolygon(pen.Brush, scanPoints);
@@ -177,15 +177,15 @@ namespace AngelLoader.CustomControls
         private static readonly Pen scanSmallHandlePen = new Pen(AL_LightBlue, 2.6f);
         private static readonly Pen scanSmallHandleDisabledPen = new Pen(SystemColors.ControlDark, 2.6f);
         private static readonly RectangleF scanSmallHandleRect = new RectangleF(15, 15, 2.4f, 2.4f);
-        internal static void PaintScanSmallButtons(bool enabled, PaintEventArgs e)
+        internal static void PaintScanSmallButtons(Button button, PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
-            var pen = enabled ? scanSmallCirclePen : scanSmallCircleDisabledPen;
-            var hPen = enabled ? scanSmallHandlePen : scanSmallHandleDisabledPen;
+            var pen = button.Enabled ? scanSmallCirclePen : scanSmallCircleDisabledPen;
+            var hPen = button.Enabled ? scanSmallHandlePen : scanSmallHandleDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 4.25f, 4.25f, 10.6f, 10.6f);
 
