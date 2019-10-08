@@ -1,3 +1,8 @@
+// TODO: This stub is now 195k because of statically linking the stuff.
+// I don't like it, but whatever. It's not really of any consequence, I just like minimalism.
+// I can always come back in here if I ever get more to grips with what I'm doing when it comes to C++ strings
+// and squash this junk down some. Till then, meh.
+
 /*
  We have NewDark executables call out to this stub program, which provides the NewDark game with data that has
  been passed to it by AngelLoader via a temp file. We do it this way in order to support AngelLoader being
