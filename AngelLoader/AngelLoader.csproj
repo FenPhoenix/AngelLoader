@@ -557,12 +557,6 @@
     <None Include="WinAPI\Ookii.Dialogs\LICENSE" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FMScanner\FMScanner\FMScanner.csproj">
-      <Project>{c1821715-157d-4a33-8170-2953714bb7c0}</Project>
-      <Name>FMScanner</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
@@ -589,6 +583,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tests\TestData\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\FMScanner\FMScanner\FMScanner.csproj">
+      <Project>{c1821715-157d-4a33-8170-2953714bb7c0}</Project>
+      <Name>FMScanner</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
