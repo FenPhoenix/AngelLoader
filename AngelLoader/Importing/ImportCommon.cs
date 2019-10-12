@@ -20,19 +20,19 @@ namespace AngelLoader.Importing
         NewDarkLoader
     }
 
-    internal sealed class ImportPriorities_Cascading
-    {
-        internal ImportPriority[] Title = new ImportPriority[4];
-        internal ImportPriority[] ReleaseDate = new ImportPriority[4];
-        internal ImportPriority[] LastPlayed = new ImportPriority[4];
-        internal ImportPriority[] FinishedOn = new ImportPriority[4];
-        internal ImportPriority[] Comment = new ImportPriority[4];
-        internal ImportPriority[] Rating = new ImportPriority[4];
-        internal ImportPriority[] DisabledMods = new ImportPriority[4];
-        internal ImportPriority[] Tags = new ImportPriority[4];
-        internal ImportPriority[] SelectedReadme = new ImportPriority[4];
-        internal ImportPriority[] Size = new ImportPriority[4];
-    }
+    //internal sealed class ImportPriorities_Cascading
+    //{
+    //    internal ImportPriority[] Title = new ImportPriority[4];
+    //    internal ImportPriority[] ReleaseDate = new ImportPriority[4];
+    //    internal ImportPriority[] LastPlayed = new ImportPriority[4];
+    //    internal ImportPriority[] FinishedOn = new ImportPriority[4];
+    //    internal ImportPriority[] Comment = new ImportPriority[4];
+    //    internal ImportPriority[] Rating = new ImportPriority[4];
+    //    internal ImportPriority[] DisabledMods = new ImportPriority[4];
+    //    internal ImportPriority[] Tags = new ImportPriority[4];
+    //    internal ImportPriority[] SelectedReadme = new ImportPriority[4];
+    //    internal ImportPriority[] Size = new ImportPriority[4];
+    //}
 
     internal sealed class ImportList
     {
@@ -79,56 +79,56 @@ namespace AngelLoader.Importing
         internal bool Size;
     }
 
-    internal sealed class PriorityList
-    {
-        //internal List<FanMission> CurrentFMs = new List<FanMission>();
-        //internal List<FanMission> DarkLoaderFMs = new List<FanMission>();
-        //internal List<FanMission> FMSelFMs = new List<FanMission>();
-        //internal List<FanMission> NewDarkLoaderFMs = new List<FanMission>();
-        //internal List<ImportList> Priorities = new List<ImportList>();
-        internal FanMission DarkLoaderFMData = new FanMission();
-        internal FanMission FMSelFMData = new FanMission();
-        internal FanMission NewDarkLoaderFMData = new FanMission();
-        internal readonly ImportList Priority = new ImportList();
-    }
+    //internal sealed class PriorityList
+    //{
+    //    //internal List<FanMission> CurrentFMs = new List<FanMission>();
+    //    //internal List<FanMission> DarkLoaderFMs = new List<FanMission>();
+    //    //internal List<FanMission> FMSelFMs = new List<FanMission>();
+    //    //internal List<FanMission> NewDarkLoaderFMs = new List<FanMission>();
+    //    //internal List<ImportList> Priorities = new List<ImportList>();
+    //    internal FanMission DarkLoaderFMData = new FanMission();
+    //    internal FanMission FMSelFMData = new FanMission();
+    //    internal FanMission NewDarkLoaderFMData = new FanMission();
+    //    internal readonly ImportList Priority = new ImportList();
+    //}
 
     internal static class ImportCommon
     {
-        internal static readonly Dictionary<FanMission, PriorityList>
-        FMsPriority = new Dictionary<FanMission, PriorityList>();
+        //internal static readonly Dictionary<FanMission, PriorityList>
+        //FMsPriority = new Dictionary<FanMission, PriorityList>();
 
-        private static ImportPriority ImportTypeToPriority(ImportType importType) => ((ImportPriority)importType) + 1;
+        //private static ImportPriority ImportTypeToPriority(ImportType importType) => ((ImportPriority)importType) + 1;
 
-        private static void PriorityAdd(FanMission keyFM, FanMission priorityFMData, ImportType importType, FieldsToImport fields)
-        {
-            if (!FMsPriority.ContainsKey(keyFM)) FMsPriority.Add(keyFM, new PriorityList());
+        //private static void PriorityAdd(FanMission keyFM, FanMission priorityFMData, ImportType importType, FieldsToImport fields)
+        //{
+        //    if (!FMsPriority.ContainsKey(keyFM)) FMsPriority.Add(keyFM, new PriorityList());
 
-            var pfm = FMsPriority[keyFM];
+        //    var pfm = FMsPriority[keyFM];
 
-            switch (importType)
-            {
-                case ImportType.DarkLoader:
-                    pfm.DarkLoaderFMData = priorityFMData;
-                    break;
-                case ImportType.FMSel:
-                    pfm.FMSelFMData = priorityFMData;
-                    break;
-                case ImportType.NewDarkLoader:
-                    pfm.NewDarkLoaderFMData = priorityFMData;
-                    break;
-            }
+        //    switch (importType)
+        //    {
+        //        case ImportType.DarkLoader:
+        //            pfm.DarkLoaderFMData = priorityFMData;
+        //            break;
+        //        case ImportType.FMSel:
+        //            pfm.FMSelFMData = priorityFMData;
+        //            break;
+        //        case ImportType.NewDarkLoader:
+        //            pfm.NewDarkLoaderFMData = priorityFMData;
+        //            break;
+        //    }
 
-            if (fields.Title) pfm.Priority.Title = ImportTypeToPriority(importType);
-            if (fields.ReleaseDate) pfm.Priority.ReleaseDate = ImportTypeToPriority(importType);
-            if (fields.LastPlayed) pfm.Priority.LastPlayed = ImportTypeToPriority(importType);
-            if (fields.FinishedOn) pfm.Priority.FinishedOn = ImportTypeToPriority(importType);
-            if (fields.Comment) pfm.Priority.Comment = ImportTypeToPriority(importType);
-            if (fields.Rating) pfm.Priority.Rating = ImportTypeToPriority(importType);
-            if (fields.DisabledMods) pfm.Priority.DisabledMods = ImportTypeToPriority(importType);
-            if (fields.Tags) pfm.Priority.Tags = ImportTypeToPriority(importType);
-            if (fields.SelectedReadme) pfm.Priority.SelectedReadme = ImportTypeToPriority(importType);
-            if (fields.Size) pfm.Priority.Size = ImportTypeToPriority(importType);
-        }
+        //    if (fields.Title) pfm.Priority.Title = ImportTypeToPriority(importType);
+        //    if (fields.ReleaseDate) pfm.Priority.ReleaseDate = ImportTypeToPriority(importType);
+        //    if (fields.LastPlayed) pfm.Priority.LastPlayed = ImportTypeToPriority(importType);
+        //    if (fields.FinishedOn) pfm.Priority.FinishedOn = ImportTypeToPriority(importType);
+        //    if (fields.Comment) pfm.Priority.Comment = ImportTypeToPriority(importType);
+        //    if (fields.Rating) pfm.Priority.Rating = ImportTypeToPriority(importType);
+        //    if (fields.DisabledMods) pfm.Priority.DisabledMods = ImportTypeToPriority(importType);
+        //    if (fields.Tags) pfm.Priority.Tags = ImportTypeToPriority(importType);
+        //    if (fields.SelectedReadme) pfm.Priority.SelectedReadme = ImportTypeToPriority(importType);
+        //    if (fields.Size) pfm.Priority.Size = ImportTypeToPriority(importType);
+        //}
 
         internal static List<FanMission>
         MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList,
@@ -261,7 +261,7 @@ namespace AngelLoader.Importing
 
                         importedFMsInMainList.Add(mainFM);
 
-                        PriorityAdd(mainFM, priorityFMData, importType, fields);
+                        //PriorityAdd(mainFM, priorityFMData, importType, fields);
 
                         existingFound = true;
                         break;
@@ -355,7 +355,7 @@ namespace AngelLoader.Importing
                     mainList.Add(newFM);
                     importedFMsInMainList.Add(newFM);
 
-                    PriorityAdd(newFM, priorityFMData, importType, fields);
+                    //PriorityAdd(newFM, priorityFMData, importType, fields);
                 }
             }
 
@@ -365,11 +365,11 @@ namespace AngelLoader.Importing
             return importedFMsInMainList;
         }
 
-        internal static void
-        MergeMultipleSets(List<FanMission> dlFMs, List<FanMission> fmSelFMs, List<FanMission> ndlFMs,
-                          ImportPriorities_Cascading ipc)
-        {
+        //internal static void
+        //MergeMultipleSets(List<FanMission> dlFMs, List<FanMission> fmSelFMs, List<FanMission> ndlFMs,
+        //                  ImportPriorities_Cascading ipc)
+        //{
 
-        }
+        //}
     }
 }

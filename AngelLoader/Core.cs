@@ -1072,161 +1072,163 @@ namespace AngelLoader
         }
 
         // TODO: Finish implementing
-        internal static async Task ImportFromMultipleLoaders()
-        {
-            ImportList importPriorities;
-            string dlIniFile;
-            bool dlImportSaves;
-            var FMSelIniFiles = new List<string>();
-            var NDLIniFiles = new List<string>();
-            using (var f = new ImportFromMultipleLoadersForm())
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
+        #region ImportFromMultipleLoaders
+        //internal static async Task ImportFromMultipleLoaders()
+        //{
+        //    ImportList importPriorities;
+        //    string dlIniFile;
+        //    bool dlImportSaves;
+        //    var FMSelIniFiles = new List<string>();
+        //    var NDLIniFiles = new List<string>();
+        //    using (var f = new ImportFromMultipleLoadersForm())
+        //    {
+        //        if (f.ShowDialog() != DialogResult.OK) return;
 
-                importPriorities = f.ImportPriorities.DeepCopy();
-                dlIniFile = f.DL_IniFile;
-                dlImportSaves = f.DL_ImportSaves;
-                foreach (var item in f.FMSelIniFiles) FMSelIniFiles.Add(item);
-                foreach (var item in f.NDLIniFiles) NDLIniFiles.Add(item);
-            }
+        //        importPriorities = f.ImportPriorities.DeepCopy();
+        //        dlIniFile = f.DL_IniFile;
+        //        dlImportSaves = f.DL_ImportSaves;
+        //        foreach (var item in f.FMSelIniFiles) FMSelIniFiles.Add(item);
+        //        foreach (var item in f.NDLIniFiles) NDLIniFiles.Add(item);
+        //    }
 
-            var dlFields = new FieldsToImport();
-            var fmSelFields = new FieldsToImport();
-            var ndlFields = new FieldsToImport();
+        //    var dlFields = new FieldsToImport();
+        //    var fmSelFields = new FieldsToImport();
+        //    var ndlFields = new FieldsToImport();
 
-            #region Fill DL fields
+        //    #region Fill DL fields
 
-            dlFields.Title = importPriorities.Title == ImportPriority.DarkLoader;
-            dlFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.DarkLoader;
-            dlFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.DarkLoader;
-            dlFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.DarkLoader;
-            dlFields.Comment = importPriorities.Comment == ImportPriority.DarkLoader;
-            dlFields.Size = importPriorities.Size == ImportPriority.DarkLoader;
+        //    dlFields.Title = importPriorities.Title == ImportPriority.DarkLoader;
+        //    dlFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.DarkLoader;
+        //    dlFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.DarkLoader;
+        //    dlFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.DarkLoader;
+        //    dlFields.Comment = importPriorities.Comment == ImportPriority.DarkLoader;
+        //    dlFields.Size = importPriorities.Size == ImportPriority.DarkLoader;
 
-            #endregion
+        //    #endregion
 
-            #region Fill FMSel fields
+        //    #region Fill FMSel fields
 
-            fmSelFields.Title = importPriorities.Title == ImportPriority.FMSel;
-            fmSelFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.FMSel;
-            fmSelFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.FMSel;
-            fmSelFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.FMSel;
-            fmSelFields.Comment = importPriorities.Comment == ImportPriority.FMSel;
-            fmSelFields.Rating = importPriorities.Rating == ImportPriority.FMSel;
-            fmSelFields.DisabledMods = importPriorities.DisabledMods == ImportPriority.FMSel;
-            fmSelFields.Tags = importPriorities.Tags == ImportPriority.FMSel;
-            fmSelFields.SelectedReadme = importPriorities.SelectedReadme == ImportPriority.FMSel;
-            fmSelFields.Size = importPriorities.Size == ImportPriority.FMSel;
+        //    fmSelFields.Title = importPriorities.Title == ImportPriority.FMSel;
+        //    fmSelFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.FMSel;
+        //    fmSelFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.FMSel;
+        //    fmSelFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.FMSel;
+        //    fmSelFields.Comment = importPriorities.Comment == ImportPriority.FMSel;
+        //    fmSelFields.Rating = importPriorities.Rating == ImportPriority.FMSel;
+        //    fmSelFields.DisabledMods = importPriorities.DisabledMods == ImportPriority.FMSel;
+        //    fmSelFields.Tags = importPriorities.Tags == ImportPriority.FMSel;
+        //    fmSelFields.SelectedReadme = importPriorities.SelectedReadme == ImportPriority.FMSel;
+        //    fmSelFields.Size = importPriorities.Size == ImportPriority.FMSel;
 
-            #endregion
+        //    #endregion
 
-            #region Fill NDL fields
+        //    #region Fill NDL fields
 
-            ndlFields.Title = importPriorities.Title == ImportPriority.NewDarkLoader;
-            ndlFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.NewDarkLoader;
-            ndlFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.NewDarkLoader;
-            ndlFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.NewDarkLoader;
-            ndlFields.Comment = importPriorities.Comment == ImportPriority.NewDarkLoader;
-            ndlFields.Rating = importPriorities.Rating == ImportPriority.NewDarkLoader;
-            ndlFields.DisabledMods = importPriorities.DisabledMods == ImportPriority.NewDarkLoader;
-            ndlFields.Tags = importPriorities.Tags == ImportPriority.NewDarkLoader;
-            ndlFields.SelectedReadme = importPriorities.SelectedReadme == ImportPriority.NewDarkLoader;
-            ndlFields.Size = importPriorities.Size == ImportPriority.NewDarkLoader;
+        //    ndlFields.Title = importPriorities.Title == ImportPriority.NewDarkLoader;
+        //    ndlFields.ReleaseDate = importPriorities.ReleaseDate == ImportPriority.NewDarkLoader;
+        //    ndlFields.LastPlayed = importPriorities.LastPlayed == ImportPriority.NewDarkLoader;
+        //    ndlFields.FinishedOn = importPriorities.FinishedOn == ImportPriority.NewDarkLoader;
+        //    ndlFields.Comment = importPriorities.Comment == ImportPriority.NewDarkLoader;
+        //    ndlFields.Rating = importPriorities.Rating == ImportPriority.NewDarkLoader;
+        //    ndlFields.DisabledMods = importPriorities.DisabledMods == ImportPriority.NewDarkLoader;
+        //    ndlFields.Tags = importPriorities.Tags == ImportPriority.NewDarkLoader;
+        //    ndlFields.SelectedReadme = importPriorities.SelectedReadme == ImportPriority.NewDarkLoader;
+        //    ndlFields.Size = importPriorities.Size == ImportPriority.NewDarkLoader;
 
-            #endregion
+        //    #endregion
 
-            bool importFromDL = false;
-            bool importFromFMSel = false;
-            bool importFromNDL = false;
+        //    bool importFromDL = false;
+        //    bool importFromFMSel = false;
+        //    bool importFromNDL = false;
 
-            #region Set import bools
+        //    #region Set import bools
 
-            // There's enough manual twiddling of these fields going on, so using reflection.
-            // Not a bottleneck here.
+        //    // There's enough manual twiddling of these fields going on, so using reflection.
+        //    // Not a bottleneck here.
 
-            const BindingFlags bFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+        //    const BindingFlags bFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
-            foreach (var p in dlFields.GetType().GetFields(bFlags))
-            {
-                if (p.FieldType == typeof(bool) && (bool)p.GetValue(dlFields))
-                {
-                    importFromDL = true;
-                    break;
-                }
-            }
+        //    foreach (var p in dlFields.GetType().GetFields(bFlags))
+        //    {
+        //        if (p.FieldType == typeof(bool) && (bool)p.GetValue(dlFields))
+        //        {
+        //            importFromDL = true;
+        //            break;
+        //        }
+        //    }
 
-            foreach (var p in fmSelFields.GetType().GetFields(bFlags))
-            {
-                if (p.FieldType == typeof(bool) && (bool)p.GetValue(fmSelFields))
-                {
-                    importFromFMSel = true;
-                    break;
-                }
-            }
+        //    foreach (var p in fmSelFields.GetType().GetFields(bFlags))
+        //    {
+        //        if (p.FieldType == typeof(bool) && (bool)p.GetValue(fmSelFields))
+        //        {
+        //            importFromFMSel = true;
+        //            break;
+        //        }
+        //    }
 
-            foreach (var p in ndlFields.GetType().GetFields(bFlags))
-            {
-                if (p.FieldType == typeof(bool) && (bool)p.GetValue(ndlFields))
-                {
-                    importFromNDL = true;
-                    break;
-                }
-            }
+        //    foreach (var p in ndlFields.GetType().GetFields(bFlags))
+        //    {
+        //        if (p.FieldType == typeof(bool) && (bool)p.GetValue(ndlFields))
+        //        {
+        //            importFromNDL = true;
+        //            break;
+        //        }
+        //    }
 
-            #endregion
+        //    #endregion
 
-            #region Check for if nothing was selected to import
+        //    #region Check for if nothing was selected to import
 
-            if (!dlImportSaves &&
-                ((!importFromDL && !importFromFMSel && !importFromNDL) ||
-                (dlIniFile.IsEmpty() && FMSelIniFiles.Count == 0 && NDLIniFiles.Count == 0)))
-            {
-                MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
-            }
+        //    if (!dlImportSaves &&
+        //        ((!importFromDL && !importFromFMSel && !importFromNDL) ||
+        //        (dlIniFile.IsEmpty() && FMSelIniFiles.Count == 0 && NDLIniFiles.Count == 0)))
+        //    {
+        //        MessageBox.Show(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
+        //        return;
+        //    }
 
-            #endregion
+        //    #endregion
 
-            try
-            {
-                // Must do this
-                View.SetRowCount(0);
+        //    try
+        //    {
+        //        // Must do this
+        //        View.SetRowCount(0);
 
-                // Extremely important!
-                ImportCommon.FMsPriority.Clear();
+        //        // Extremely important!
+        //        ImportCommon.FMsPriority.Clear();
 
-                if (importFromDL || dlImportSaves)
-                {
-                    bool success = await ImportDarkLoader.Import(dlIniFile, true, dlImportSaves, FMDataIniList, dlFields);
-                    if (!success) return;
-                }
+        //        if (importFromDL || dlImportSaves)
+        //        {
+        //            bool success = await ImportDarkLoader.Import(dlIniFile, true, dlImportSaves, FMDataIniList, dlFields);
+        //            if (!success) return;
+        //        }
 
-                if (importFromFMSel)
-                {
-                    foreach (var f in FMSelIniFiles)
-                    {
-                        if (f.IsWhiteSpace()) continue;
-                        bool success = await ImportFMSel.Import(f, FMDataIniList, fmSelFields);
-                        if (!success) return;
-                    }
-                }
+        //        if (importFromFMSel)
+        //        {
+        //            foreach (var f in FMSelIniFiles)
+        //            {
+        //                if (f.IsWhiteSpace()) continue;
+        //                bool success = await ImportFMSel.Import(f, FMDataIniList, fmSelFields);
+        //                if (!success) return;
+        //            }
+        //        }
 
-                if (importFromNDL)
-                {
-                    foreach (var f in NDLIniFiles)
-                    {
-                        if (f.IsWhiteSpace()) continue;
-                        bool success = await ImportNDL.Import(f, FMDataIniList, ndlFields);
-                        if (!success) return;
-                    }
-                }
-            }
-            finally
-            {
-                // Must do this
-                await View.SortAndSetFilter(forceDisplayFM: true);
-            }
-        }
+        //        if (importFromNDL)
+        //        {
+        //            foreach (var f in NDLIniFiles)
+        //            {
+        //                if (f.IsWhiteSpace()) continue;
+        //                bool success = await ImportNDL.Import(f, FMDataIniList, ndlFields);
+        //                if (!success) return;
+        //            }
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        // Must do this
+        //        await View.SortAndSetFilter(forceDisplayFM: true);
+        //    }
+        //}
+        #endregion
 
         internal static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions)
         {

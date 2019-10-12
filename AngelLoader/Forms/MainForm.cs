@@ -2503,7 +2503,12 @@ namespace AngelLoader.Forms
 
         internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
-        internal async void ImportFromMultipleLoadersMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromMultipleLoaders();
+#if DEBUG
+        internal async void ImportFromMultipleLoadersMenuItem_Click(object sender, EventArgs e)
+        {
+            //await Core.ImportFromMultipleLoaders();
+        }
+#endif
 
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 

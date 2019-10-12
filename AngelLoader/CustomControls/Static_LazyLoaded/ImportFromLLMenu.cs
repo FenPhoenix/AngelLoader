@@ -13,8 +13,8 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
         private static ToolStripMenuItem ImportFromDarkLoaderMenuItem;
         private static ToolStripMenuItem ImportFromFMSelMenuItem;
         private static ToolStripMenuItem ImportFromNewDarkLoaderMenuItem;
-        private static ToolStripSeparator Sep1;
-        private static ToolStripMenuItem ImportFromMultipleLoadersMenuItem;
+        //private static ToolStripSeparator Sep1;
+        //private static ToolStripMenuItem ImportFromMultipleLoadersMenuItem;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -26,22 +26,22 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             ImportFromDarkLoaderMenuItem = new ToolStripMenuItem { Text = @"DarkLoader..." };
             ImportFromFMSelMenuItem = new ToolStripMenuItem { Text = @"FMSel..." };
             ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItem { Text = @"NewDarkLoader..." };
-            Sep1 = new ToolStripSeparator();
-            ImportFromMultipleLoadersMenuItem = new ToolStripMenuItem();
+            //Sep1 = new ToolStripSeparator();
+            //ImportFromMultipleLoadersMenuItem = new ToolStripMenuItem();
 
             ImportFromMenu.Items.AddRange(new ToolStripItem[]
             {
                 ImportFromDarkLoaderMenuItem,
                 ImportFromFMSelMenuItem,
                 ImportFromNewDarkLoaderMenuItem,
-                Sep1,
-                ImportFromMultipleLoadersMenuItem
+                //Sep1,
+                //ImportFromMultipleLoadersMenuItem
             });
 
             ImportFromDarkLoaderMenuItem.Click += form.ImportFromDarkLoaderMenuItem_Click;
             ImportFromFMSelMenuItem.Click += form.ImportFromFMSelMenuItem_Click;
             ImportFromNewDarkLoaderMenuItem.Click += form.ImportFromNewDarkLoaderMenuItem_Click;
-            ImportFromMultipleLoadersMenuItem.Click += form.ImportFromMultipleLoadersMenuItem_Click;
+            //ImportFromMultipleLoadersMenuItem.Click += form.ImportFromMultipleLoadersMenuItem_Click;
 
             _constructed = true;
 
@@ -51,7 +51,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
         internal static void Localize()
         {
             if (!_constructed) return;
-            ImportFromMultipleLoadersMenuItem.Text = LText.Importing.ImportFromMultipleLoaders;
+            //ImportFromMultipleLoadersMenuItem.Text = LText.Importing.ImportFromMultipleLoaders;
         }
     }
 }

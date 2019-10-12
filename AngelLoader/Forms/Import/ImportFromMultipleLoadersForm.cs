@@ -64,7 +64,7 @@ namespace AngelLoader.Forms.Import
 
         private void Localize()
         {
-            Text = LText.Importing.ImportFromMultipleLoaders_TitleText;
+            //Text = LText.Importing.ImportFromMultipleLoaders_TitleText;
 
             DL_ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
 

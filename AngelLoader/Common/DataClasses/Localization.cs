@@ -439,8 +439,6 @@ namespace AngelLoader.Common.DataClasses
 
         internal static class Importing
         {
-            [FenGenComment("This goes in the \"Import from...\" menu below the other loaders' names")]
-            internal static string ImportFromMultipleLoaders = "Multiple loaders...";
             [FenGenBlankLine]
             internal static string NothingWasImported = "Nothing was imported.";
             internal static string SelectedFileIsNotAValidPath = "Selected file is not a valid path.";
@@ -461,8 +459,6 @@ namespace AngelLoader.Common.DataClasses
             internal static string Thief2 = "Thief 2";
             internal static string Thief3 = "Thief 3";
             [FenGenBlankLine]
-            internal static string ImportFromMultipleLoaders_TitleText = "Import from multiple loaders";
-            internal static string FMDataToImport = "FM data to import";
             internal static string ImportData_Title = "Title";
             internal static string ImportData_ReleaseDate = "Release date";
             internal static string ImportData_LastPlayed = "Last played";

@@ -1368,11 +1368,7 @@ namespace AngelLoader.Ini
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("ImportFromMultipleLoaders="))
-                        {
-                            LText.Importing.ImportFromMultipleLoaders = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("NothingWasImported="))
+                        if (lt.StartsWithFast_NoNullChecks("NothingWasImported="))
                         {
                             LText.Importing.NothingWasImported = lt.Substring(19);
                         }
@@ -1435,14 +1431,6 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Thief3="))
                         {
                             LText.Importing.Thief3 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportFromMultipleLoaders_TitleText="))
-                        {
-                            LText.Importing.ImportFromMultipleLoaders_TitleText = lt.Substring(36);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDataToImport="))
-                        {
-                            LText.Importing.FMDataToImport = lt.Substring(15);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("ImportData_Title="))
                         {

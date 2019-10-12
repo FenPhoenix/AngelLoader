@@ -27,9 +27,9 @@ namespace AngelLoader.Forms.Import
         private void Localize()
         {
             Text = LText.Importing.ImportFromDarkLoader_TitleText;
-            
+
             ImportControls.Localize();
-            
+
             ImportFMDataCheckBox.Text = LText.Importing.DarkLoader_ImportFMData;
             ImportSavesCheckBox.Text = LText.Importing.DarkLoader_ImportSaves;
 
@@ -39,7 +39,7 @@ namespace AngelLoader.Forms.Import
             ImportFinishedOnCheckBox.Text = LText.Importing.ImportData_Finished;
             ImportCommentCheckBox.Text = LText.Importing.ImportData_Comment;
             ImportSizeCheckBox.Text = LText.Importing.ImportData_Size;
-            
+
             OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
         }
