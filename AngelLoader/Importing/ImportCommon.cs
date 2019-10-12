@@ -12,13 +12,13 @@ namespace AngelLoader.Importing
         NewDarkLoader
     }
 
-    public enum ImportPriority
-    {
-        NoImport,
-        DarkLoader,
-        FMSel,
-        NewDarkLoader
-    }
+    //public enum ImportPriority
+    //{
+    //    NoImport,
+    //    DarkLoader,
+    //    FMSel,
+    //    NewDarkLoader
+    //}
 
     //internal sealed class ImportPriorities_Cascading
     //{
@@ -34,36 +34,36 @@ namespace AngelLoader.Importing
     //    internal ImportPriority[] Size = new ImportPriority[4];
     //}
 
-    internal sealed class ImportList
-    {
-        internal ImportPriority Title;
-        internal ImportPriority ReleaseDate;
-        internal ImportPriority LastPlayed;
-        internal ImportPriority FinishedOn;
-        internal ImportPriority Comment;
-        internal ImportPriority Rating;
-        internal ImportPriority DisabledMods;
-        internal ImportPriority Tags;
-        internal ImportPriority SelectedReadme;
-        internal ImportPriority Size;
+    //internal sealed class ImportList
+    //{
+    //    internal ImportPriority Title;
+    //    internal ImportPriority ReleaseDate;
+    //    internal ImportPriority LastPlayed;
+    //    internal ImportPriority FinishedOn;
+    //    internal ImportPriority Comment;
+    //    internal ImportPriority Rating;
+    //    internal ImportPriority DisabledMods;
+    //    internal ImportPriority Tags;
+    //    internal ImportPriority SelectedReadme;
+    //    internal ImportPriority Size;
 
-        internal ImportList DeepCopy()
-        {
-            return new ImportList
-            {
-                Title = Title,
-                ReleaseDate = ReleaseDate,
-                LastPlayed = LastPlayed,
-                FinishedOn = FinishedOn,
-                Comment = Comment,
-                Rating = Rating,
-                DisabledMods = DisabledMods,
-                Tags = Tags,
-                SelectedReadme = SelectedReadme,
-                Size = Size
-            };
-        }
-    }
+    //    internal ImportList DeepCopy()
+    //    {
+    //        return new ImportList
+    //        {
+    //            Title = Title,
+    //            ReleaseDate = ReleaseDate,
+    //            LastPlayed = LastPlayed,
+    //            FinishedOn = FinishedOn,
+    //            Comment = Comment,
+    //            Rating = Rating,
+    //            DisabledMods = DisabledMods,
+    //            Tags = Tags,
+    //            SelectedReadme = SelectedReadme,
+    //            Size = Size
+    //        };
+    //    }
+    //}
 
     internal sealed class FieldsToImport
     {
@@ -132,7 +132,7 @@ namespace AngelLoader.Importing
 
         internal static List<FanMission>
         MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList,
-                            FieldsToImport fields = null, bool addMergedFMsToPriorityList = false)
+                            FieldsToImport fields = null/*, bool addMergedFMsToPriorityList = false*/)
         {
             if (fields == null)
             {
