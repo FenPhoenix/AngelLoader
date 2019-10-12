@@ -107,7 +107,7 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetDir)AngelLoader_Stub.dll" "$(SolutionDir)AngelLoader\bin\x86\Release" /y</Command>
+      <Command>xcopy "$(TargetDir)AngelLoader_Stub.dll" "$(SolutionDir)temp_transfer_bin" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -5,6 +5,7 @@
 *.exe
 ffmpeg/**
 BinReleaseOnly/**
+temp_transfer_bin/**
 
 # User-specific files
 *.suo

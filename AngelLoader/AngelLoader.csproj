@@ -631,6 +631,6 @@ set fenGenArgs=-fmdata -language_t
 rem ---
 
 xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i
-</PreBuildEvent>
+xcopy "$(SolutionDir)temp_transfer_bin\*.*" "$(TargetDir)" /y /i</PreBuildEvent>
   </PropertyGroup>
 </Project>
