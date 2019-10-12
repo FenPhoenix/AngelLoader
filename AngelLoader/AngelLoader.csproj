@@ -567,7 +567,7 @@
       <Version>2019.1.3</Version>
     </PackageReference>
     <PackageReference Include="Squid-Box.SevenZipSharp">
-      <Version>1.2.219</Version>
+      <Version>1.2.231</Version>
     </PackageReference>
     <PackageReference Include="xFFmpeg.NET">
       <Version>3.3.3</Version>
