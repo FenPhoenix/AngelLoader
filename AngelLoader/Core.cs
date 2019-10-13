@@ -276,6 +276,11 @@ namespace AngelLoader
 
                 #endregion
 
+                Config.SteamExe = sf.OutConfig.SteamExe;
+                Config.T1UseSteam = sf.OutConfig.T1UseSteam;
+                Config.T2UseSteam = sf.OutConfig.T2UseSteam;
+                Config.T3UseSteam = sf.OutConfig.T3UseSteam;
+
                 Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
 
                 Config.FMArchivePaths.ClearAndAdd(sf.OutConfig.FMArchivePaths);
