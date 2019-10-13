@@ -937,6 +937,8 @@ namespace AngelLoader.Forms
 
             var (result, fileName) = BrowseForExeFile(initialPath);
             if (result == DialogResult.OK) tb.Text = fileName ?? "";
+
+            ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
         }
 
         private void BackupPathTextBox_Leave(object sender, EventArgs e)
