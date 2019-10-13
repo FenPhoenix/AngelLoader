@@ -398,7 +398,7 @@ namespace AngelLoader.Forms
             PathsPage.Thief2ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
             PathsPage.Thief3ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
 
-            PathsPage.SteamExeBrowseButton.Leave += GameExePathTextBoxes_Leave;
+            PathsPage.SteamExeTextBox.Leave += GameExePathTextBoxes_Leave;
 
             PathsPage.SteamExeBrowseButton.Click += GameExePathBrowseButtons_Click;
 
