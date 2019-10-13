@@ -108,7 +108,7 @@
             this.SteamGroupBox.Location = new System.Drawing.Point(8, 216);
             this.SteamGroupBox.Name = "SteamGroupBox";
             this.SteamGroupBox.Size = new System.Drawing.Size(424, 160);
-            this.SteamGroupBox.TabIndex = 4;
+            this.SteamGroupBox.TabIndex = 1;
             this.SteamGroupBox.TabStop = false;
             this.SteamGroupBox.Text = "Steam options";
             // 
@@ -118,7 +118,7 @@
             this.LaunchTheseGamesThroughSteamLabel.Location = new System.Drawing.Point(16, 72);
             this.LaunchTheseGamesThroughSteamLabel.Name = "LaunchTheseGamesThroughSteamLabel";
             this.LaunchTheseGamesThroughSteamLabel.Size = new System.Drawing.Size(181, 13);
-            this.LaunchTheseGamesThroughSteamLabel.TabIndex = 11;
+            this.LaunchTheseGamesThroughSteamLabel.TabIndex = 3;
             this.LaunchTheseGamesThroughSteamLabel.Text = "Launch these games through Steam:";
             // 
             // T3UseSteamCheckBox
@@ -127,7 +127,7 @@
             this.T3UseSteamCheckBox.Location = new System.Drawing.Point(24, 128);
             this.T3UseSteamCheckBox.Name = "T3UseSteamCheckBox";
             this.T3UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T3UseSteamCheckBox.TabIndex = 10;
+            this.T3UseSteamCheckBox.TabIndex = 6;
             this.T3UseSteamCheckBox.Text = "Thief 3";
             this.T3UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -137,7 +137,7 @@
             this.SteamExeLabel.Location = new System.Drawing.Point(16, 24);
             this.SteamExeLabel.Name = "SteamExeLabel";
             this.SteamExeLabel.Size = new System.Drawing.Size(178, 13);
-            this.SteamExeLabel.TabIndex = 8;
+            this.SteamExeLabel.TabIndex = 0;
             this.SteamExeLabel.Text = "Path to Steam executable (optional):";
             // 
             // T2UseSteamCheckBox
@@ -146,7 +146,7 @@
             this.T2UseSteamCheckBox.Location = new System.Drawing.Point(24, 112);
             this.T2UseSteamCheckBox.Name = "T2UseSteamCheckBox";
             this.T2UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T2UseSteamCheckBox.TabIndex = 10;
+            this.T2UseSteamCheckBox.TabIndex = 5;
             this.T2UseSteamCheckBox.Text = "Thief 2";
             this.T2UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -157,7 +157,7 @@
             this.SteamExeTextBox.Location = new System.Drawing.Point(16, 40);
             this.SteamExeTextBox.Name = "SteamExeTextBox";
             this.SteamExeTextBox.Size = new System.Drawing.Size(320, 20);
-            this.SteamExeTextBox.TabIndex = 5;
+            this.SteamExeTextBox.TabIndex = 1;
             // 
             // T1UseSteamCheckBox
             // 
@@ -165,7 +165,7 @@
             this.T1UseSteamCheckBox.Location = new System.Drawing.Point(24, 96);
             this.T1UseSteamCheckBox.Name = "T1UseSteamCheckBox";
             this.T1UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T1UseSteamCheckBox.TabIndex = 10;
+            this.T1UseSteamCheckBox.TabIndex = 4;
             this.T1UseSteamCheckBox.Text = "Thief 1";
             this.T1UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -177,7 +177,7 @@
             this.SteamExeBrowseButton.Name = "SteamExeBrowseButton";
             this.SteamExeBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SteamExeBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.SteamExeBrowseButton.TabIndex = 6;
+            this.SteamExeBrowseButton.TabIndex = 2;
             this.SteamExeBrowseButton.Text = "Browse...";
             this.SteamExeBrowseButton.UseVisualStyleBackColor = true;
             // 
@@ -199,7 +199,7 @@
             this.PathsToGameExesGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.PathsToGameExesGroupBox.Name = "PathsToGameExesGroupBox";
             this.PathsToGameExesGroupBox.Size = new System.Drawing.Size(424, 192);
-            this.PathsToGameExesGroupBox.TabIndex = 1;
+            this.PathsToGameExesGroupBox.TabIndex = 0;
             this.PathsToGameExesGroupBox.TabStop = false;
             this.PathsToGameExesGroupBox.Text = "Paths to game executables";
             // 
