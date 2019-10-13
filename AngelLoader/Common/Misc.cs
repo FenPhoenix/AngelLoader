@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using AngelLoader.Common.DataClasses;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Common
@@ -12,6 +11,14 @@ namespace AngelLoader.Common
         internal const int KB = 1024;
         internal const int MB = KB * 1024;
         internal const int GB = MB * 1024;
+    }
+
+    [PublicAPI]
+    internal static class SteamAppIds
+    {
+        internal const string ThiefGold = "211600";
+        internal const string Thief2 = "211740";
+        internal const string Thief3 = "6980";
     }
 
     public enum Direction { Left, Right, Up, Down }

@@ -19,6 +19,12 @@ namespace AngelLoader.Common.DataClasses
         internal string T2Exe = "";
         internal string T3Exe = "";
 
+        internal bool T1UseSteam;
+        internal bool T2UseSteam;
+        internal bool T3UseSteam;
+
+        internal string SteamExe = "";
+
         // Session-only; don't write these out
         internal FMInstallPaths FMInstallPaths = new FMInstallPaths("", "", "");
         internal void SetT1FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(value, FMInstallPaths.T2, FMInstallPaths.T3);

@@ -72,7 +72,19 @@ namespace AngelLoader
 
             if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
-            StartExe(gameExe, gamePath, null);
+            string args = null;
+            if (!Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
+                (Config.T1UseSteam || Config.T2UseSteam || Config.T3UseSteam))
+            {
+                gameExe = Config.SteamExe;
+                gamePath = Path.GetDirectoryName(Config.SteamExe);
+                args = "-applaunch " + (
+                           game == Game.Thief1 ? SteamAppIds.ThiefGold :
+                           game == Game.Thief2 ? SteamAppIds.Thief2 :
+                           SteamAppIds.Thief3);
+            }
+
+            StartExe(gameExe, gamePath, args);
 
             return true;
         }
@@ -94,10 +106,24 @@ namespace AngelLoader
             // Only use the stub if we need to pass something we can't pass on the command line
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
             // dir in there manually. Which if you do, you're on your own mate.
-            var args = "-fm=\"" + fm.InstalledDir + "\"";
+
+            // Must be empty, not null, so it can be concatenated
+            string steamArgs = "";
+            if (!Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
+                (Config.T1UseSteam || Config.T2UseSteam || Config.T3UseSteam))
+            {
+                gameExe = Config.SteamExe;
+                gamePath = Path.GetDirectoryName(Config.SteamExe);
+                steamArgs = "-applaunch " + (
+                                fm.Game == Game.Thief1 ? SteamAppIds.ThiefGold :
+                                fm.Game == Game.Thief2 ? SteamAppIds.Thief2 :
+                                SteamAppIds.Thief3) + " ";
+            }
+
+            var args = steamArgs + "-fm=\"" + fm.InstalledDir + "\"";
             if (!fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
             {
-                args = "-fm";
+                args = steamArgs + "-fm";
                 Paths.PrepareTempPath(Paths.StubCommTemp);
 
                 try
@@ -179,7 +205,9 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception starting " + exe, ex);
+                    Log("Exception starting " + exe + "\r\n" +
+                        "workingPath: " + workingPath + "\r\n" +
+                        "args: " + args, ex);
                 }
             }
         }

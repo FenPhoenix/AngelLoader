@@ -488,6 +488,24 @@ namespace AngelLoader.Ini
                 {
                     config.FMsBackupPath = val.Trim();
                 }
+                #region Steam
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T1UseSteam) + "="))
+                {
+                    config.T1UseSteam = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T2UseSteam) + "="))
+                {
+                    config.T2UseSteam = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T3UseSteam) + "="))
+                {
+                    config.T3UseSteam = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SteamExe) + "="))
+                {
+                    config.SteamExe = val.Trim();
+                }
+                #endregion
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T1Exe) + "="))
                 {
                     config.T1Exe = val.Trim();
@@ -885,6 +903,12 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.T1Exe) + "=" + config.T1Exe.Trim());
                 sw.WriteLine(nameof(config.T2Exe) + "=" + config.T2Exe.Trim());
                 sw.WriteLine(nameof(config.T3Exe) + "=" + config.T3Exe.Trim());
+
+                sw.WriteLine(nameof(config.T1UseSteam) + "=" + config.T1UseSteam);
+                sw.WriteLine(nameof(config.T2UseSteam) + "=" + config.T2UseSteam);
+                sw.WriteLine(nameof(config.T3UseSteam) + "=" + config.T3UseSteam);
+                sw.WriteLine(nameof(config.SteamExe) + "=" + config.SteamExe);
+
                 sw.WriteLine(nameof(config.FMsBackupPath) + "=" + config.FMsBackupPath.Trim());
                 foreach (string path in config.FMArchivePaths) sw.WriteLine("FMArchivePath=" + path.Trim());
                 sw.WriteLine(nameof(config.FMArchivePathsIncludeSubfolders) + "=" + config.FMArchivePathsIncludeSubfolders);

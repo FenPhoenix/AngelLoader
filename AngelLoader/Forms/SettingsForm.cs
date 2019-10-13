@@ -105,11 +105,11 @@ namespace AngelLoader.Forms
             LangComboBox = OtherPage.LanguageComboBox;
 
             GameExePathTextBoxes = new[]
-
             {
                 PathsPage.Thief1ExePathTextBox,
                 PathsPage.Thief2ExePathTextBox,
-                PathsPage.Thief3ExePathTextBox
+                PathsPage.Thief3ExePathTextBox,
+                PathsPage.SteamExeTextBox
             };
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
@@ -222,6 +222,11 @@ namespace AngelLoader.Forms
             PathsPage.Thief1ExePathTextBox.Text = config.T1Exe;
             PathsPage.Thief2ExePathTextBox.Text = config.T2Exe;
             PathsPage.Thief3ExePathTextBox.Text = config.T3Exe;
+
+            PathsPage.SteamExeTextBox.Text = config.SteamExe;
+            PathsPage.T1UseSteamCheckBox.Checked = config.T1UseSteam;
+            PathsPage.T2UseSteamCheckBox.Checked = config.T2UseSteam;
+            PathsPage.T3UseSteamCheckBox.Checked = config.T3UseSteam;
 
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
@@ -392,6 +397,10 @@ namespace AngelLoader.Forms
             PathsPage.Thief1ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
             PathsPage.Thief2ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
             PathsPage.Thief3ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+
+            PathsPage.SteamExeBrowseButton.Leave += GameExePathTextBoxes_Leave;
+
+            PathsPage.SteamExeBrowseButton.Click += GameExePathBrowseButtons_Click;
 
             PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
             PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
@@ -662,6 +671,11 @@ namespace AngelLoader.Forms
             OutConfig.T2Exe = PathsPage.Thief2ExePathTextBox.Text.Trim();
             OutConfig.T3Exe = PathsPage.Thief3ExePathTextBox.Text.Trim();
 
+            OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
+            OutConfig.T1UseSteam = PathsPage.T1UseSteamCheckBox.Checked;
+            OutConfig.T2UseSteam = PathsPage.T2UseSteamCheckBox.Checked;
+            OutConfig.T3UseSteam = PathsPage.T3UseSteamCheckBox.Checked;
+
             OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
 
             // Manual so we can use Trim() on each
@@ -908,7 +922,8 @@ namespace AngelLoader.Forms
             var tb =
                 sender == PathsPage.Thief1ExePathBrowseButton ? PathsPage.Thief1ExePathTextBox :
                 sender == PathsPage.Thief2ExePathBrowseButton ? PathsPage.Thief2ExePathTextBox :
-                PathsPage.Thief3ExePathTextBox;
+                sender == PathsPage.Thief3ExePathBrowseButton ? PathsPage.Thief3ExePathTextBox :
+                PathsPage.SteamExeTextBox;
 
             string initialPath = "";
             try
