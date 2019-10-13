@@ -75,7 +75,8 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     // encoding wrong I'm guessing, I don't frickin' know. At least this works, and I can come back and shrink it
     // down later when I know better what I'm doing.
     std::ifstream ifs(args_file.string().c_str());
-    if (!ifs.is_open())
+    // This will be false if anything's wrong, including if the file doesn't exist (which is a check we need to make)
+    if (!ifs)
     {
         ifs.close();
         return kSelFMRet_Cancel;
