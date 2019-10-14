@@ -36,9 +36,9 @@ namespace AngelLoader.Forms.Import
                 ? LText.Importing.ChooseNewDarkLoaderIniFiles
                 : LText.Importing.ChooseFMSelIniFiles;
 
-            Thief1GroupBox.Text = LText.Importing.Thief1;
-            Thief2GroupBox.Text = LText.Importing.Thief2;
-            Thief3GroupBox.Text = LText.Importing.Thief3;
+            Thief1GroupBox.Text = LText.Global.Thief1;
+            Thief2GroupBox.Text = LText.Global.Thief2;
+            Thief3GroupBox.Text = LText.Global.Thief3;
 
             Thief1AutodetectCheckBox.Text = LText.Global.Autodetect;
             Thief2AutodetectCheckBox.Text = LText.Global.Autodetect;

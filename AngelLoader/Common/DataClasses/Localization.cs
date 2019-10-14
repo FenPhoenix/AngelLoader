@@ -45,6 +45,14 @@ namespace AngelLoader.Common.DataClasses
             internal static string KilobyteShort = "KB";
             internal static string MegabyteShort = "MB";
             internal static string GigabyteShort = "GB";
+            [FenGenBlankLine]
+            internal static string Thief1 = "Thief 1";
+            internal static string Thief2 = "Thief 2";
+            internal static string Thief3 = "Thief 3";
+            [FenGenBlankLine]
+            internal static string Thief1_Colon = "Thief 1:";
+            internal static string Thief2_Colon = "Thief 2:";
+            internal static string Thief3_Colon = "Thief 3:";
         }
 
         internal static class BrowseDialogs
@@ -132,18 +140,8 @@ namespace AngelLoader.Common.DataClasses
             internal static string Unknown = "Unknown";
         }
 
-        internal static class GameTabs
-        {
-            internal static string Thief1 = "Thief 1";
-            internal static string Thief2 = "Thief 2";
-            internal static string Thief3 = "Thief 3";
-        }
-
         internal static class FilterBar
         {
-            internal static string Thief1ToolTip = "Thief 1";
-            internal static string Thief2ToolTip = "Thief 2";
-            internal static string Thief3ToolTip = "Thief 3";
             [FenGenBlankLine]
             internal static string Title = "Title:";
             internal static string Author = "Author:";
@@ -286,10 +284,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal static class PlayOriginalGameMenu
         {
-            internal static string Thief1 = "Thief 1";
-            internal static string Thief2 = "Thief 2";
             internal static string Thief2_Multiplayer = "Thief 2 (multiplayer)";
-            internal static string Thief3 = "Thief 3";
         }
 
         internal static class MainButtons
@@ -330,13 +325,14 @@ namespace AngelLoader.Common.DataClasses
             internal static string InitialSettings_TabText = "Initial Settings";
             [FenGenBlankLine]
             internal static string Paths_PathsToGameExes = "Paths to game executables";
-            internal static string Paths_Thief1 = "Thief 1:";
-            internal static string Paths_Thief2 = "Thief 2:";
-            internal static string Paths_Thief3 = "Thief 3:";
 
             internal static string Paths_Thief1AndThief2RequireNewDark = "* Thief 1 and Thief 2 require NewDark.";
-
             internal static string Paths_Thief3RequiresSneakyUpgrade = "* Thief 3 requires the Sneaky Upgrade 1.1.9.1 or above.";
+
+            internal static string Paths_SteamOptions = "Steam options";
+            internal static string Paths_PathToSteamExecutable = "Path to Steam executable (optional)";
+            internal static string Paths_LaunchTheseGamesThroughSteam = "Launch these games through Steam:";
+
             internal static string Paths_Other = "Other";
             internal static string Paths_BackupPath = "FM backup path:";
             internal static string Paths_FMArchivePaths = "FM archive paths";
@@ -455,9 +451,6 @@ namespace AngelLoader.Common.DataClasses
             internal static string ImportFromFMSel_TitleText = "Import from FMSel";
             internal static string ChooseNewDarkLoaderIniFiles = "Choose NewDarkLoader .ini file(s):";
             internal static string ChooseFMSelIniFiles = "Choose FMSel .ini file(s):";
-            internal static string Thief1 = "Thief 1";
-            internal static string Thief2 = "Thief 2";
-            internal static string Thief3 = "Thief 3";
             [FenGenBlankLine]
             internal static string ImportData_Title = "Title";
             internal static string ImportData_ReleaseDate = "Release date";

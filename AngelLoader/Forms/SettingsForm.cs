@@ -469,33 +469,42 @@ namespace AngelLoader.Forms
                     : LText.SettingsWindow.Paths_TabText;
 
                 PathsPage.PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
-                PathsPage.Thief1ExePathLabel.Text = LText.SettingsWindow.Paths_Thief1;
-                PathsPage.Thief2ExePathLabel.Text = LText.SettingsWindow.Paths_Thief2;
-                PathsPage.Thief3ExePathLabel.Text = LText.SettingsWindow.Paths_Thief3;
+                PathsPage.Thief1ExePathLabel.Text = LText.Global.Thief1_Colon;
+                PathsPage.Thief2ExePathLabel.Text = LText.Global.Thief2_Colon;
+                PathsPage.Thief3ExePathLabel.Text = LText.Global.Thief3_Colon;
+
+                PathsPage.SteamOptionsGroupBox.Text = LText.SettingsWindow.Paths_SteamOptions;
+                PathsPage.SteamExeLabel.Text = LText.SettingsWindow.Paths_PathToSteamExecutable;
+                PathsPage.LaunchTheseGamesThroughSteamLabel.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
+                PathsPage.T1UseSteamCheckBox.Text = LText.Global.Thief1;
+                PathsPage.T2UseSteamCheckBox.Text = LText.Global.Thief2;
+                PathsPage.T3UseSteamCheckBox.Text = LText.Global.Thief3;
 
                 PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
                 // Manual "flow layout" for textbox/browse button combos
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     var button =
                         i == 0 ? PathsPage.Thief1ExePathBrowseButton :
                         i == 1 ? PathsPage.Thief2ExePathBrowseButton :
                         i == 2 ? PathsPage.Thief3ExePathBrowseButton :
-                        PathsPage.BackupPathBrowseButton;
+                        i == 3 ? PathsPage.BackupPathBrowseButton :
+                        PathsPage.SteamExeBrowseButton;
 
                     var textBox =
                         i == 0 ? PathsPage.Thief1ExePathTextBox :
                         i == 1 ? PathsPage.Thief2ExePathTextBox :
                         i == 2 ? PathsPage.Thief3ExePathTextBox :
-                        PathsPage.BackupPathTextBox;
+                        i == 3 ? PathsPage.BackupPathTextBox :
+                        PathsPage.SteamExeTextBox;
 
                     button.SetTextAutoSize(textBox, LText.Global.BrowseEllipses);
                 }
 
                 PathsPage.GameRequirementsLabel.Text =
-                    LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark + "\r\n" +
+                    LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark + Environment.NewLine +
                     LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade;
 
                 PathsPage.FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;

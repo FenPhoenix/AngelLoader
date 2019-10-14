@@ -96,6 +96,30 @@ namespace AngelLoader.Ini
                         {
                             LText.Global.GigabyteShort = lt.Substring(14);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief1="))
+                        {
+                            LText.Global.Thief1 = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief2="))
+                        {
+                            LText.Global.Thief2 = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief3="))
+                        {
+                            LText.Global.Thief3 = lt.Substring(7);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief1_Colon="))
+                        {
+                            LText.Global.Thief1_Colon = lt.Substring(13);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Colon="))
+                        {
+                            LText.Global.Thief2_Colon = lt.Substring(13);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief3_Colon="))
+                        {
+                            LText.Global.Thief3_Colon = lt.Substring(13);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -375,48 +399,12 @@ namespace AngelLoader.Ini
                         i++;
                     }
                 }
-                else if (lineT == "[GameTabs]")
-                {
-                    while (i < lines.Length - 1)
-                    {
-                        var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Thief1="))
-                        {
-                            LText.GameTabs.Thief1 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2="))
-                        {
-                            LText.GameTabs.Thief2 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief3="))
-                        {
-                            LText.GameTabs.Thief3 = lt.Substring(7);
-                        }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
-                        {
-                            break;
-                        }
-                        i++;
-                    }
-                }
                 else if (lineT == "[FilterBar]")
                 {
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Thief1ToolTip="))
-                        {
-                            LText.FilterBar.Thief1ToolTip = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2ToolTip="))
-                        {
-                            LText.FilterBar.Thief2ToolTip = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief3ToolTip="))
-                        {
-                            LText.FilterBar.Thief3ToolTip = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Title="))
+                        if (lt.StartsWithFast_NoNullChecks("Title="))
                         {
                             LText.FilterBar.Title = lt.Substring(6);
                         }
@@ -884,21 +872,9 @@ namespace AngelLoader.Ini
                     while (i < lines.Length - 1)
                     {
                         var lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Thief1="))
-                        {
-                            LText.PlayOriginalGameMenu.Thief1 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2="))
-                        {
-                            LText.PlayOriginalGameMenu.Thief2 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Multiplayer="))
+                        if (lt.StartsWithFast_NoNullChecks("Thief2_Multiplayer="))
                         {
                             LText.PlayOriginalGameMenu.Thief2_Multiplayer = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief3="))
-                        {
-                            LText.PlayOriginalGameMenu.Thief3 = lt.Substring(7);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
@@ -1040,18 +1016,6 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Paths_PathsToGameExes = lt.Substring(22);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_Thief1="))
-                        {
-                            LText.SettingsWindow.Paths_Thief1 = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_Thief2="))
-                        {
-                            LText.SettingsWindow.Paths_Thief2 = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_Thief3="))
-                        {
-                            LText.SettingsWindow.Paths_Thief3 = lt.Substring(13);
-                        }
                         else if (lt.StartsWithFast_NoNullChecks("Paths_Thief1AndThief2RequireNewDark="))
                         {
                             LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark = lt.Substring(36);
@@ -1059,6 +1023,18 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Paths_Thief3RequiresSneakyUpgrade="))
                         {
                             LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade = lt.Substring(34);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Paths_SteamOptions="))
+                        {
+                            LText.SettingsWindow.Paths_SteamOptions = lt.Substring(19);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Paths_PathToSteamExecutable="))
+                        {
+                            LText.SettingsWindow.Paths_PathToSteamExecutable = lt.Substring(28);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Paths_LaunchTheseGamesThroughSteam="))
+                        {
+                            LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam = lt.Substring(35);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Paths_Other="))
                         {
@@ -1419,18 +1395,6 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("ChooseFMSelIniFiles="))
                         {
                             LText.Importing.ChooseFMSelIniFiles = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief1="))
-                        {
-                            LText.Importing.Thief1 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2="))
-                        {
-                            LText.Importing.Thief2 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief3="))
-                        {
-                            LText.Importing.Thief3 = lt.Substring(7);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("ImportData_Title="))
                         {

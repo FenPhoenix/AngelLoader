@@ -49,10 +49,10 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            Thief1MenuItem.Text = LText.PlayOriginalGameMenu.Thief1.EscapeAmpersands();
-            Thief2MenuItem.Text = LText.PlayOriginalGameMenu.Thief2.EscapeAmpersands();
+            Thief1MenuItem.Text = LText.Global.Thief1.EscapeAmpersands();
+            Thief2MenuItem.Text = LText.Global.Thief2.EscapeAmpersands();
             Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer.EscapeAmpersands();
-            Thief3MenuItem.Text = LText.PlayOriginalGameMenu.Thief3.EscapeAmpersands();
+            Thief3MenuItem.Text = LText.Global.Thief3.EscapeAmpersands();
         }
     }
 }

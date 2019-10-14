@@ -1088,9 +1088,9 @@ namespace AngelLoader.Forms
             {
                 #region Game tabs
 
-                Thief1TabPage.Text = LText.GameTabs.Thief1;
-                Thief2TabPage.Text = LText.GameTabs.Thief2;
-                Thief3TabPage.Text = LText.GameTabs.Thief3;
+                Thief1TabPage.Text = LText.Global.Thief1;
+                Thief2TabPage.Text = LText.Global.Thief2;
+                Thief3TabPage.Text = LText.Global.Thief3;
 
                 // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
                 var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
@@ -1106,9 +1106,9 @@ namespace AngelLoader.Forms
                     PositionFilterBarAfterTabs();
                 }
 
-                FilterByThief1Button.ToolTipText = LText.FilterBar.Thief1ToolTip;
-                FilterByThief2Button.ToolTipText = LText.FilterBar.Thief2ToolTip;
-                FilterByThief3Button.ToolTipText = LText.FilterBar.Thief3ToolTip;
+                FilterByThief1Button.ToolTipText = LText.Global.Thief1;
+                FilterByThief2Button.ToolTipText = LText.Global.Thief2;
+                FilterByThief3Button.ToolTipText = LText.Global.Thief3;
 
                 FilterTitleLabel.Text = LText.FilterBar.Title;
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
