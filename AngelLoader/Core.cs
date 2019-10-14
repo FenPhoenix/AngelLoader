@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -302,11 +301,14 @@ namespace AngelLoader
                     WriteConfigIni(Config, Paths.ConfigIni);
 
                     // We have to do this here because we won't have before
-                    // PERF_TODO: I guess thread these the same as on regular startup?
-                    FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true);
-                    // Have to do all three here, because we skipped them all before
-                    View = new MainForm();
-                    View.InitThreadable();
+                    using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true)))
+                    {
+                        // Have to do the full View init sequence here, because we skipped them all before
+                        View = new MainForm();
+                        View.InitThreadable();
+
+                        findFMsTask.Wait();
+                    }
                     // Again, last line and nothing up the call stack, so call without await.
 #pragma warning disable 4014
                     View.FinishInitAndShow();
@@ -1241,6 +1243,7 @@ namespace AngelLoader
 
             await ScanFMs(fms, scanOptions);
             // TODO: Why am I doing a find after a scan?!?!?! WTF use is this?
+            // Note: I might be doing it to get rid of any duplicates or bad data that may have been imported?
             FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
         }
 
