@@ -48,7 +48,7 @@ namespace AngelLoader.Common
 
                 // Must check for null, because a null return means "path not found", while a default value return
                 // means "key name not found". Jank.
-                if (regKey == null || regKey is int regKeyDefault && regKeyDefault == -1 || !(regKey is string))
+                if (regKey == null || (regKey is int regKeyDefault && regKeyDefault == -1) || !(regKey is string))
                 {
                     Log("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
                     return null;
