@@ -73,16 +73,8 @@ namespace AngelLoader
             if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
             string args = null;
-            if (!Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
-                (Config.T1UseSteam || Config.T2UseSteam || Config.T3UseSteam))
-            {
-                gameExe = Config.SteamExe;
-                gamePath = Path.GetDirectoryName(Config.SteamExe);
-                args = "-applaunch " + (
-                           game == Game.Thief1 ? SteamAppIds.ThiefGold :
-                           game == Game.Thief2 ? SteamAppIds.Thief2 :
-                           SteamAppIds.Thief3);
-            }
+            var sv = GetSteamValues(game);
+            if (sv.Success) (_, gameExe, gamePath, args) = sv;
 
             StartExe(gameExe, gamePath, args);
 
@@ -97,29 +89,23 @@ namespace AngelLoader
                 return false;
             }
 
-            var (success, gameExe, gamePath) =
-                GetGameExeAndPath(fm.Game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
+            var (success, gameExe, gamePath) = GetGameExeAndPath(fm.Game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
             if (!success) return false;
 
             SetUsAsSelector(fm.Game, gameExe, gamePath);
 
+            // Must be empty, not null, so it can be concatenated
+            string steamArgs = "";
+            var sv = GetSteamValues(fm.Game);
+            if (sv.Success)
+            {
+                (_, gameExe, gamePath, steamArgs) = sv;
+                steamArgs += " ";
+            }
+
             // Only use the stub if we need to pass something we can't pass on the command line
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
             // dir in there manually. Which if you do, you're on your own mate.
-
-            // Must be empty, not null, so it can be concatenated
-            string steamArgs = "";
-            if (!Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
-                (Config.T1UseSteam || Config.T2UseSteam || Config.T3UseSteam))
-            {
-                gameExe = Config.SteamExe;
-                gamePath = Path.GetDirectoryName(Config.SteamExe);
-                steamArgs = "-applaunch " + (
-                                fm.Game == Game.Thief1 ? SteamAppIds.ThiefGold :
-                                fm.Game == Game.Thief2 ? SteamAppIds.Thief2 :
-                                SteamAppIds.Thief3) + " ";
-            }
-
             var args = steamArgs + "-fm=\"" + fm.InstalledDir + "\"";
             if (!fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
             {
@@ -254,6 +240,29 @@ namespace AngelLoader
             if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
             return (true, gameExe, gamePath);
+        }
+
+        private static (bool Success, string GameExe, string GamePath, string Args)
+        GetSteamValues(Game game)
+        {
+            if (!Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) && Config.LaunchGamesWithSteam &&
+                ((game == Game.Thief1 && Config.T1UseSteam) ||
+                 (game == Game.Thief2 && Config.T2UseSteam) ||
+                 (game == Game.Thief3 && Config.T3UseSteam)))
+            {
+                string gameExe = Config.SteamExe;
+                string gamePath = Path.GetDirectoryName(Config.SteamExe);
+                string args = "-applaunch " + (
+                                  game == Game.Thief1 ? SteamAppIds.ThiefGold :
+                                  game == Game.Thief2 ? SteamAppIds.Thief2 :
+                                                        SteamAppIds.Thief3);
+
+                return (true, gameExe, gamePath, args);
+            }
+            else
+            {
+                return (false, null, null, null);
+            }
         }
 
         #endregion

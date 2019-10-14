@@ -276,6 +276,7 @@ namespace AngelLoader
                 #endregion
 
                 Config.SteamExe = sf.OutConfig.SteamExe;
+                Config.LaunchGamesWithSteam = sf.OutConfig.LaunchGamesWithSteam;
                 Config.T1UseSteam = sf.OutConfig.T1UseSteam;
                 Config.T2UseSteam = sf.OutConfig.T2UseSteam;
                 Config.T3UseSteam = sf.OutConfig.T3UseSteam;

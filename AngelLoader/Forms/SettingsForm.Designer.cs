@@ -91,7 +91,7 @@
             // ErrorLabel
             // 
             this.ErrorLabel.AutoSize = true;
-            this.errorProvider1.SetError(this.ErrorLabel, "temp");
+            this.errorProvider1.SetError(this.ErrorLabel, "Error");
             this.ErrorLabel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.errorProvider1.SetIconAlignment(this.ErrorLabel, System.Windows.Forms.ErrorIconAlignment.MiddleLeft);
             this.ErrorLabel.Location = new System.Drawing.Point(462, 12);

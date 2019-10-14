@@ -331,7 +331,7 @@ namespace AngelLoader.Common.DataClasses
 
             internal static string Paths_SteamOptions = "Steam options";
             internal static string Paths_PathToSteamExecutable = "Path to Steam executable (optional)";
-            internal static string Paths_LaunchTheseGamesThroughSteam = "Launch these games through Steam:";
+            internal static string Paths_LaunchTheseGamesThroughSteam = "If Steam exists, use it to launch these games:";
 
             internal static string Paths_Other = "Other";
             internal static string Paths_BackupPath = "FM backup path:";

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AngelLoader.Common;
@@ -51,7 +52,7 @@ namespace AngelLoader.Forms
         private readonly ISettingsPage[] Pages;
         private readonly int?[] PageVScrollValues;
 
-        private readonly TextBox[] GameExePathTextBoxes;
+        private readonly TextBox[] ExePathTextBoxes;
 
         #endregion
 
@@ -104,7 +105,7 @@ namespace AngelLoader.Forms
             LangGroupBox = OtherPage.LanguageGroupBox;
             LangComboBox = OtherPage.LanguageComboBox;
 
-            GameExePathTextBoxes = new[]
+            ExePathTextBoxes = new[]
             {
                 PathsPage.Thief1ExePathTextBox,
                 PathsPage.Thief2ExePathTextBox,
@@ -224,9 +225,12 @@ namespace AngelLoader.Forms
             PathsPage.Thief3ExePathTextBox.Text = config.T3Exe;
 
             PathsPage.SteamExeTextBox.Text = config.SteamExe;
+            PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
+            PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked = config.LaunchGamesWithSteam;
             PathsPage.T1UseSteamCheckBox.Checked = config.T1UseSteam;
             PathsPage.T2UseSteamCheckBox.Checked = config.T2UseSteam;
             PathsPage.T3UseSteamCheckBox.Checked = config.T3UseSteam;
+            SetUseSteamGameCheckBoxesEnabled(config.LaunchGamesWithSteam);
 
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
@@ -390,17 +394,19 @@ namespace AngelLoader.Forms
             // Comes last so we don't have to use any DisableEvents blocks
             #region Hook up page events
 
-            PathsPage.Thief1ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
-            PathsPage.Thief2ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
-            PathsPage.Thief3ExePathTextBox.Leave += GameExePathTextBoxes_Leave;
+            PathsPage.Thief1ExePathTextBox.Leave += ExePathTextBoxes_Leave;
+            PathsPage.Thief2ExePathTextBox.Leave += ExePathTextBoxes_Leave;
+            PathsPage.Thief3ExePathTextBox.Leave += ExePathTextBoxes_Leave;
 
-            PathsPage.Thief1ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
-            PathsPage.Thief2ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
-            PathsPage.Thief3ExePathBrowseButton.Click += GameExePathBrowseButtons_Click;
+            PathsPage.Thief1ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
+            PathsPage.Thief2ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
+            PathsPage.Thief3ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
 
-            PathsPage.SteamExeTextBox.Leave += GameExePathTextBoxes_Leave;
+            PathsPage.SteamExeTextBox.Leave += ExePathTextBoxes_Leave;
+            PathsPage.LaunchTheseGamesThroughSteamCheckBox.CheckedChanged += LaunchTheseGamesThroughSteamCheckBox_CheckedChanged;
+            PathsPage.SteamExeTextBox.TextChanged += SteamExeTextBox_TextChanged;
 
-            PathsPage.SteamExeBrowseButton.Click += GameExePathBrowseButtons_Click;
+            PathsPage.SteamExeBrowseButton.Click += ExePathBrowseButtons_Click;
 
             PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
             PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
@@ -452,6 +458,18 @@ namespace AngelLoader.Forms
             Localize(suspendResume: false);
         }
 
+        private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
+        {
+            PathsPage.T1UseSteamCheckBox.Enabled = enabled;
+            PathsPage.T2UseSteamCheckBox.Enabled = enabled;
+            PathsPage.T3UseSteamCheckBox.Enabled = enabled;
+        }
+
+        private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            SetUseSteamGameCheckBoxesEnabled(PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked);
+        }
+
         private void Localize(bool suspendResume = true)
         {
             if (suspendResume) this.SuspendDrawing();
@@ -475,7 +493,7 @@ namespace AngelLoader.Forms
 
                 PathsPage.SteamOptionsGroupBox.Text = LText.SettingsWindow.Paths_SteamOptions;
                 PathsPage.SteamExeLabel.Text = LText.SettingsWindow.Paths_PathToSteamExecutable;
-                PathsPage.LaunchTheseGamesThroughSteamLabel.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
+                PathsPage.LaunchTheseGamesThroughSteamCheckBox.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
                 PathsPage.T1UseSteamCheckBox.Text = LText.Global.Thief1;
                 PathsPage.T2UseSteamCheckBox.Text = LText.Global.Thief2;
                 PathsPage.T3UseSteamCheckBox.Text = LText.Global.Thief3;
@@ -635,7 +653,7 @@ namespace AngelLoader.Forms
 
             // TODO: Check for cam_mod.ini etc. to be thorough
 
-            foreach (var tb in GameExePathTextBoxes)
+            foreach (var tb in ExePathTextBoxes)
             {
                 if (!tb.Text.IsWhiteSpace() && !File.Exists(tb.Text))
                 {
@@ -658,7 +676,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                foreach (var tb in GameExePathTextBoxes)
+                foreach (var tb in ExePathTextBoxes)
                 {
                     tb.BackColor = SystemColors.Window;
                     tb.Tag = PathError.False;
@@ -681,6 +699,7 @@ namespace AngelLoader.Forms
             OutConfig.T3Exe = PathsPage.Thief3ExePathTextBox.Text.Trim();
 
             OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
+            OutConfig.LaunchGamesWithSteam = PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked;
             OutConfig.T1UseSteam = PathsPage.T1UseSteamCheckBox.Checked;
             OutConfig.T2UseSteam = PathsPage.T2UseSteamCheckBox.Checked;
             OutConfig.T3UseSteam = PathsPage.T3UseSteamCheckBox.Checked;
@@ -918,15 +937,13 @@ namespace AngelLoader.Forms
 
         #region Paths page
 
-        #region Game exe paths
-
-        private void GameExePathTextBoxes_Leave(object sender, EventArgs e)
+        private void ExePathTextBoxes_Leave(object sender, EventArgs e)
         {
             var s = (TextBox)sender;
             ShowPathError(s, !s.Text.IsEmpty() && !File.Exists(s.Text));
         }
 
-        private void GameExePathBrowseButtons_Click(object sender, EventArgs e)
+        private void ExePathBrowseButtons_Click(object sender, EventArgs e)
         {
             var tb =
                 sender == PathsPage.Thief1ExePathBrowseButton ? PathsPage.Thief1ExePathTextBox :
@@ -958,12 +975,16 @@ namespace AngelLoader.Forms
 
         private void BackupPathBrowseButton_Click(object sender, EventArgs e)
         {
+            var tb = PathsPage.BackupPathTextBox;
+
             using (var d = new AutoFolderBrowserDialog())
             {
-                d.InitialDirectory = PathsPage.BackupPathTextBox.Text;
+                d.InitialDirectory = tb.Text;
                 d.MultiSelect = false;
-                if (d.ShowDialog() == DialogResult.OK) PathsPage.BackupPathTextBox.Text = d.DirectoryName;
+                if (d.ShowDialog() == DialogResult.OK) tb.Text = d.DirectoryName;
             }
+
+            ShowPathError(tb, !Directory.Exists(tb.Text));
         }
 
         private static (DialogResult Result, string FileName)
@@ -977,7 +998,11 @@ namespace AngelLoader.Forms
             }
         }
 
-        #endregion
+        private void SteamExeTextBox_TextChanged(object sender, EventArgs e)
+        {
+            PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
+        }
+
 
         #region Archive paths
 
@@ -1195,7 +1220,7 @@ namespace AngelLoader.Forms
 
             if (!shown)
             {
-                foreach (var tb in GameExePathTextBoxes)
+                foreach (var tb in ExePathTextBoxes)
                 {
                     if (tb.Tag is PathError gError && gError == PathError.True) return;
                 }

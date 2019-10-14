@@ -489,6 +489,10 @@ namespace AngelLoader.Ini
                     config.FMsBackupPath = val.Trim();
                 }
                 #region Steam
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.LaunchGamesWithSteam) + "="))
+                {
+                    config.LaunchGamesWithSteam = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T1UseSteam) + "="))
                 {
                     config.T1UseSteam = val.EqualsTrue();
@@ -904,6 +908,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.T2Exe) + "=" + config.T2Exe.Trim());
                 sw.WriteLine(nameof(config.T3Exe) + "=" + config.T3Exe.Trim());
 
+                sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
                 sw.WriteLine(nameof(config.T1UseSteam) + "=" + config.T1UseSteam);
                 sw.WriteLine(nameof(config.T2UseSteam) + "=" + config.T2UseSteam);
                 sw.WriteLine(nameof(config.T3UseSteam) + "=" + config.T3UseSteam);

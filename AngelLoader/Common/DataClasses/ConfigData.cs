@@ -19,9 +19,11 @@ namespace AngelLoader.Common.DataClasses
         internal string T2Exe = "";
         internal string T3Exe = "";
 
-        internal bool T1UseSteam;
-        internal bool T2UseSteam;
-        internal bool T3UseSteam;
+        // If a Steam exe is specified, that is
+        internal bool LaunchGamesWithSteam = true;
+        internal bool T1UseSteam = true;
+        internal bool T2UseSteam = true;
+        internal bool T3UseSteam = true;
 
         internal string SteamExe = "";
 

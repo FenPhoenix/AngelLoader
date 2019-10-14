@@ -31,7 +31,6 @@
             this.PagePanel = new System.Windows.Forms.Panel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
             this.SteamOptionsGroupBox = new System.Windows.Forms.GroupBox();
-            this.LaunchTheseGamesThroughSteamLabel = new System.Windows.Forms.Label();
             this.T3UseSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.SteamExeLabel = new System.Windows.Forms.Label();
             this.T2UseSteamCheckBox = new System.Windows.Forms.CheckBox();
@@ -60,6 +59,8 @@
             this.BackupPathBrowseButton = new System.Windows.Forms.Button();
             this.BackupPathTextBox = new System.Windows.Forms.TextBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
+            this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
+            this.LaunchTheseGamesThroughSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
             this.SteamOptionsGroupBox.SuspendLayout();
@@ -67,6 +68,7 @@
             this.GameRequirementsPanel.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
+            this.LaunchTheseGamesThroughSteamPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -94,16 +96,13 @@
             this.ActualPathsPanel.Size = new System.Drawing.Size(440, 736);
             this.ActualPathsPanel.TabIndex = 4;
             // 
-            // SteamGroupBox
+            // SteamOptionsGroupBox
             // 
             this.SteamOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.SteamOptionsGroupBox.Controls.Add(this.LaunchTheseGamesThroughSteamLabel);
-            this.SteamOptionsGroupBox.Controls.Add(this.T3UseSteamCheckBox);
+            this.SteamOptionsGroupBox.Controls.Add(this.LaunchTheseGamesThroughSteamPanel);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeLabel);
-            this.SteamOptionsGroupBox.Controls.Add(this.T2UseSteamCheckBox);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeTextBox);
-            this.SteamOptionsGroupBox.Controls.Add(this.T1UseSteamCheckBox);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeBrowseButton);
             this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 216);
             this.SteamOptionsGroupBox.Name = "SteamOptionsGroupBox";
@@ -112,19 +111,12 @@
             this.SteamOptionsGroupBox.TabStop = false;
             this.SteamOptionsGroupBox.Text = "Steam options";
             // 
-            // LaunchTheseGamesThroughSteamLabel
-            // 
-            this.LaunchTheseGamesThroughSteamLabel.AutoSize = true;
-            this.LaunchTheseGamesThroughSteamLabel.Location = new System.Drawing.Point(16, 72);
-            this.LaunchTheseGamesThroughSteamLabel.Name = "LaunchTheseGamesThroughSteamLabel";
-            this.LaunchTheseGamesThroughSteamLabel.Size = new System.Drawing.Size(181, 13);
-            this.LaunchTheseGamesThroughSteamLabel.TabIndex = 3;
-            this.LaunchTheseGamesThroughSteamLabel.Text = "Launch these games through Steam:";
-            // 
             // T3UseSteamCheckBox
             // 
             this.T3UseSteamCheckBox.AutoSize = true;
-            this.T3UseSteamCheckBox.Location = new System.Drawing.Point(24, 128);
+            this.T3UseSteamCheckBox.Checked = true;
+            this.T3UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.T3UseSteamCheckBox.Location = new System.Drawing.Point(8, 56);
             this.T3UseSteamCheckBox.Name = "T3UseSteamCheckBox";
             this.T3UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
             this.T3UseSteamCheckBox.TabIndex = 6;
@@ -143,7 +135,9 @@
             // T2UseSteamCheckBox
             // 
             this.T2UseSteamCheckBox.AutoSize = true;
-            this.T2UseSteamCheckBox.Location = new System.Drawing.Point(24, 112);
+            this.T2UseSteamCheckBox.Checked = true;
+            this.T2UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.T2UseSteamCheckBox.Location = new System.Drawing.Point(8, 40);
             this.T2UseSteamCheckBox.Name = "T2UseSteamCheckBox";
             this.T2UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
             this.T2UseSteamCheckBox.TabIndex = 5;
@@ -162,7 +156,9 @@
             // T1UseSteamCheckBox
             // 
             this.T1UseSteamCheckBox.AutoSize = true;
-            this.T1UseSteamCheckBox.Location = new System.Drawing.Point(24, 96);
+            this.T1UseSteamCheckBox.Checked = true;
+            this.T1UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.T1UseSteamCheckBox.Location = new System.Drawing.Point(8, 24);
             this.T1UseSteamCheckBox.Name = "T1UseSteamCheckBox";
             this.T1UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
             this.T1UseSteamCheckBox.TabIndex = 4;
@@ -423,6 +419,30 @@
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
             this.DummyAutoScrollPanel.TabIndex = 13;
             // 
+            // LaunchTheseGamesThroughSteamPanel
+            // 
+            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.LaunchTheseGamesThroughSteamCheckBox);
+            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.T1UseSteamCheckBox);
+            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.T3UseSteamCheckBox);
+            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.T2UseSteamCheckBox);
+            this.LaunchTheseGamesThroughSteamPanel.Enabled = false;
+            this.LaunchTheseGamesThroughSteamPanel.Location = new System.Drawing.Point(16, 72);
+            this.LaunchTheseGamesThroughSteamPanel.Name = "LaunchTheseGamesThroughSteamPanel";
+            this.LaunchTheseGamesThroughSteamPanel.Size = new System.Drawing.Size(392, 80);
+            this.LaunchTheseGamesThroughSteamPanel.TabIndex = 7;
+            // 
+            // LaunchTheseGamesThroughSteamCheckBox
+            // 
+            this.LaunchTheseGamesThroughSteamCheckBox.AutoSize = true;
+            this.LaunchTheseGamesThroughSteamCheckBox.Checked = true;
+            this.LaunchTheseGamesThroughSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.LaunchTheseGamesThroughSteamCheckBox.Location = new System.Drawing.Point(0, 0);
+            this.LaunchTheseGamesThroughSteamCheckBox.Name = "LaunchTheseGamesThroughSteamCheckBox";
+            this.LaunchTheseGamesThroughSteamCheckBox.Size = new System.Drawing.Size(238, 17);
+            this.LaunchTheseGamesThroughSteamCheckBox.TabIndex = 7;
+            this.LaunchTheseGamesThroughSteamCheckBox.Text = "If Steam exists, use it to launch these games:";
+            this.LaunchTheseGamesThroughSteamCheckBox.UseVisualStyleBackColor = true;
+            // 
             // PathsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -442,6 +462,8 @@
             this.FMArchivePathsGroupBox.PerformLayout();
             this.OtherGroupBox.ResumeLayout(false);
             this.OtherGroupBox.PerformLayout();
+            this.LaunchTheseGamesThroughSteamPanel.ResumeLayout(false);
+            this.LaunchTheseGamesThroughSteamPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -476,9 +498,10 @@
         internal System.Windows.Forms.TextBox SteamExeTextBox;
         internal System.Windows.Forms.Button SteamExeBrowseButton;
         internal System.Windows.Forms.GroupBox SteamOptionsGroupBox;
-        internal System.Windows.Forms.Label LaunchTheseGamesThroughSteamLabel;
         internal System.Windows.Forms.CheckBox T3UseSteamCheckBox;
         internal System.Windows.Forms.CheckBox T2UseSteamCheckBox;
         internal System.Windows.Forms.CheckBox T1UseSteamCheckBox;
+        internal System.Windows.Forms.Panel LaunchTheseGamesThroughSteamPanel;
+        internal System.Windows.Forms.CheckBox LaunchTheseGamesThroughSteamCheckBox;
     }
 }
