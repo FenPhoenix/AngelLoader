@@ -46,7 +46,7 @@ namespace AngelLoader.Common
                 var regKey = Registry.GetValue(
                     @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows", "SaveGamePath", -1);
 
-                if (regKey is int regKeyDefault && regKeyDefault == -1)
+                if (regKey == null || regKey is int regKeyDefault && regKeyDefault == -1 || !(regKey is string))
                 {
                     Log("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
                     return null;
