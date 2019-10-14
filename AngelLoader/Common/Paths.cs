@@ -46,6 +46,8 @@ namespace AngelLoader.Common
                 var regKey = Registry.GetValue(
                     @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows", "SaveGamePath", -1);
 
+                // Must check for null, because a null return means "path not found", while a default value return
+                // means "key name not found". Jank.
                 if (regKey == null || regKey is int regKeyDefault && regKeyDefault == -1 || !(regKey is string))
                 {
                     Log("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
@@ -86,6 +88,12 @@ namespace AngelLoader.Common
             catch (IOException ex)
             {
                 Log("The RegistryKey that contains the specified value has been marked for deletion.", ex);
+            }
+            catch (Exception ex)
+            {
+                // Shouldn't happen, but it was because of the lack of this catch-all that an unlikely but serious
+                // bug used to be possible here.
+                Log("Unexpected exception occurred in " + nameof(GetSneakyOptionsIni), ex);
             }
 
             return null;
