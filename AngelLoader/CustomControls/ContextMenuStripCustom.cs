@@ -13,10 +13,7 @@ namespace AngelLoader.CustomControls
 
         public ContextMenuStripCustom(IContainer container) : base(container) { }
 
-        internal void SetPreventCloseOnClickItems(params ToolStripMenuItem[] items)
-        {
-            _preventCloseItems = items;
-        }
+        internal void SetPreventCloseOnClickItems(params ToolStripMenuItem[] items) => _preventCloseItems = items;
 
         protected override void OnItemClicked(ToolStripItemClickedEventArgs e)
         {

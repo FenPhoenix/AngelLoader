@@ -17,8 +17,9 @@ namespace AngelLoader.CustomControls
             get => _checked;
             set
             {
+                if (_checked == value) return;
+
                 _checked = value;
-                // TODO: Only do the stuff if the checked state has actually changed
                 BackColor = _checked ? SystemColors.Window : SystemColors.Control;
                 CheckedChanged?.Invoke(this, EventArgs.Empty);
             }

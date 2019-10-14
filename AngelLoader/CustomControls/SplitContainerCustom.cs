@@ -137,9 +137,7 @@ namespace AngelLoader.CustomControls
             }
             else
             {
-                SplitterPercent = IsMain()
-                    ? Defaults.MainSplitterPercent
-                    : Defaults.TopSplitterPercent;
+                SplitterPercent = IsMain() ? Defaults.MainSplitterPercent : Defaults.TopSplitterPercent;
             }
         }
 
