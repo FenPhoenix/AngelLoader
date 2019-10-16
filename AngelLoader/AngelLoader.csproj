@@ -594,10 +594,10 @@ set destDir="C:\AngelLoader_Public_Package\"
 set destDir="C:\AngelLoader\"
 )
 
-xcopy "$(TargetDir)AngelLoader.exe" %25destDir%25 /y
-xcopy "$(TargetDir)AngelLoader.exe.config" %25destDir%25 /y
+xcopy "$(TargetDir)AngelLoader.exe" "%25destDir%25" /y
+xcopy "$(TargetDir)AngelLoader.exe.config" "%25destDir%25" /y
 
-xcopy "$(TargetDir)*.dll" %25destDir%25 /y
+xcopy "$(TargetDir)*.dll" "%25destDir%25" /y
 
 rem Dumb hack to get rid of extraneous dll files because ludicrously
 rem xcopy requires you to make an entire file just to list excludes, rather than
@@ -605,10 +605,12 @@ rem specifying them on the command line like someone who is not clinically insan
 del /F "%25destDir%25JetBrains.Annotations.dll"
 del /F "%25destDir%25*xunit*.dll"
 
-xcopy "$(TargetDir)x86\7z.dll" %25destDir%25 /y
+xcopy "$(TargetDir)x86\7z.dll"" %25destDir%25" /y
 xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
 
-xcopy "$(TargetDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
+xcopy "$(SolutionDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
+
+xcopy "$(SolutionDir)temp_transfer_bin\*.*" "%25destDir%25" /y /i
 
 if $(ConfigurationName) == Release_Public (
 xcopy "$(ProjectDir)Languages\English.ini" "%25destDir%25Data\Languages\" /y
@@ -628,9 +630,6 @@ set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
 set fenGenArgs=-fmdata -language_t
 
 %25FenGen%25 %25fenGenArgs%25
-rem ---
-
-xcopy "$(SolutionDir)ffmpeg" "$(TargetDir)ffmpeg" /y /i
-xcopy "$(SolutionDir)temp_transfer_bin\*.*" "$(TargetDir)" /y /i</PreBuildEvent>
+rem ---</PreBuildEvent>
   </PropertyGroup>
 </Project>

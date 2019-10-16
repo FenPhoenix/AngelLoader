@@ -8,6 +8,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AngelLoader_Stub", "AngelLoader_Stub\AngelLoader_Stub.vcxproj", "{3CC81750-4AE0-4CEA-B69E-85F226244D8F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngelLoader", "AngelLoader\AngelLoader.csproj", "{AF85B663-5D2C-481A-B301-D9047D494C2C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+		{3CC81750-4AE0-4CEA-B69E-85F226244D8F} = {3CC81750-4AE0-4CEA-B69E-85F226244D8F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FMScanner", "..\FMScanner\FMScanner\FMScanner.csproj", "{C1821715-157D-4A33-8170-2953714BB7C0}"
 EndProject
