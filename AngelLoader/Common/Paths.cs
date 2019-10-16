@@ -43,6 +43,9 @@ namespace AngelLoader.Common
             {
                 // Tested on Win7 Ultimate 64: Admin and non-Admin accounts can both read this key
                 // TODO: Test on Win10
+                // TODO: If we ever go 64-bit, this will need to be augmented with a Wow6432Node check
+                // Software\Wow6432Node\... rather than just Software\...
+                // But don't do it if we don't need to cause then it's twice as many checks and twice as slow
                 var regKey = Registry.GetValue(
                     @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows", "SaveGamePath", -1);
 
