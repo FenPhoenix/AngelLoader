@@ -317,6 +317,7 @@ namespace AngelLoader
              - No section headers
             */
             int lastSelKeyIndex = -1;
+            bool fmLineFound = false;
             bool loaderIsAlreadyUs = false;
             for (int i = 0; i < lines.Count; i++)
             {
@@ -326,6 +327,12 @@ namespace AngelLoader
                 {
                     lt = lt.TrimStart(';').Trim();
                 } while (lt.Length > 0 && lt[0] == ';');
+
+                if (!fmLineFound && lt.EqualsI("fm"))
+                {
+                    if (lines[i].TrimStart().StartsWith(";")) lines[i] = "fm";
+                    fmLineFound = true;
+                }
 
                 if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length && lt
                         .Substring(fmSelectorKey.Length + 1).TrimStart().ToBackSlashes()
@@ -385,7 +392,9 @@ namespace AngelLoader
         private static bool SetUsAsT3FMSelector()
         {
             const string externSelectorKey = "ExternSelector=";
-            bool existingKeyOverwritten = false;
+            const string alwaysShowKey = "AlwaysShow=";
+            bool existingExternSelectorKeyOverwritten = false;
+            bool existingAlwaysShowKeyOverwritten = false;
             int insertLineIndex = -1;
 
             var ini = Paths.GetSneakyOptionsIni();
@@ -417,11 +426,17 @@ namespace AngelLoader
                 while (i < lines.Count - 1)
                 {
                     var lt = lines[i + 1].Trim();
-                    if (lt.StartsWithI(externSelectorKey))
+                    if (!existingExternSelectorKeyOverwritten &&
+                        lt.StartsWithI(externSelectorKey))
                     {
                         lines[i + 1] = externSelectorKey + stubPath;
-                        existingKeyOverwritten = true;
-                        break;
+                        existingExternSelectorKeyOverwritten = true;
+                    }
+                    else if (!existingAlwaysShowKeyOverwritten &&
+                        lt.StartsWithI(alwaysShowKey))
+                    {
+                        lines[i + 1] = alwaysShowKey + "true";
+                        existingAlwaysShowKeyOverwritten = true;
                     }
 
                     if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']') break;
@@ -431,10 +446,14 @@ namespace AngelLoader
                 break;
             }
 
-            if (!existingKeyOverwritten)
+            if (!existingExternSelectorKeyOverwritten && insertLineIndex > -1)
             {
-                if (insertLineIndex < 0) return false;
                 lines.Insert(insertLineIndex, externSelectorKey + stubPath);
+            }
+
+            if (!existingAlwaysShowKeyOverwritten && insertLineIndex > -1)
+            {
+                lines.Insert(insertLineIndex, alwaysShowKey + "true");
             }
 
             try
