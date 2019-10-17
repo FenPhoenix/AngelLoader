@@ -94,8 +94,7 @@ namespace AngelLoader
 
             SetUsAsSelector(fm.Game, gameExe, gamePath);
 
-            // Must be empty, not null, so it can be concatenated
-            string steamArgs = "";
+            string steamArgs = null;
             var sv = GetSteamValues(fm.Game);
             if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
 
@@ -242,7 +241,7 @@ namespace AngelLoader
         private static (bool Success, string GameExe, string GamePath, string Args)
         GetSteamValues(Game game)
         {
-            if (!Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) && Config.LaunchGamesWithSteam &&
+            if (Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
                 ((game == Game.Thief1 && Config.T1UseSteam) ||
                  (game == Game.Thief2 && Config.T2UseSteam) ||
                  (game == Game.Thief3 && Config.T3UseSteam)))
