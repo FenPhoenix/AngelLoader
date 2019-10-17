@@ -97,19 +97,16 @@ namespace AngelLoader
             // Must be empty, not null, so it can be concatenated
             string steamArgs = "";
             var sv = GetSteamValues(fm.Game);
-            if (sv.Success)
-            {
-                (_, gameExe, gamePath, steamArgs) = sv;
-                steamArgs += " ";
-            }
+            if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
 
             // Only use the stub if we need to pass something we can't pass on the command line
+            // 2019-10-16: This includes launching through Steam; we can't pass anything custom then either
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
             // dir in there manually. Which if you do, you're on your own mate.
-            var args = steamArgs + "-fm=\"" + fm.InstalledDir + "\"";
-            if (!fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
+            var args = !steamArgs.IsEmpty() ? steamArgs : "-fm=\"" + fm.InstalledDir + "\"";
+            if (!steamArgs.IsEmpty() || !fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
             {
-                args = steamArgs + "-fm";
+                args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
                 Paths.PrepareTempPath(Paths.StubCommTemp);
 
                 try
@@ -282,9 +279,13 @@ namespace AngelLoader
             }
         }
 
+        // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
+        // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
+
         private static bool SetUsAsDarkFMSelector(string gameExe, string gamePath)
         {
             const string fmSelectorKey = "fm_selector";
+            const string fmCommentLine = "always start the FM Selector (if one is present)";
 
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
             if (!File.Exists(camModIni))
@@ -318,6 +319,7 @@ namespace AngelLoader
             */
             int lastSelKeyIndex = -1;
             bool fmLineFound = false;
+            int fmCommentLineIndex = -1;
             bool loaderIsAlreadyUs = false;
             for (int i = 0; i < lines.Count; i++)
             {
@@ -328,13 +330,24 @@ namespace AngelLoader
                     lt = lt.TrimStart(';').Trim();
                 } while (lt.Length > 0 && lt[0] == ';');
 
+                // Steam robustness: get rid of any fan mission specifiers in here
+                // line is "fm BrokenTriad_1_0" for example
+                if (lt.StartsWithI("fm") && lt.Length > 2 && char.IsWhiteSpace(lt[2]) &&
+                    lt.Substring(2).Trim().Length > 0)
+                {
+                    if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";" + lines[i];
+                }
+
+                if (fmCommentLineIndex == -1 && lt.EqualsI(fmCommentLine)) fmCommentLineIndex = i;
+
                 if (!fmLineFound && lt.EqualsI("fm"))
                 {
                     if (lines[i].TrimStart().StartsWith(";")) lines[i] = "fm";
                     fmLineFound = true;
                 }
 
-                if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length && lt
+                if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
+                    char.IsWhiteSpace(lt[fmSelectorKey.Length]) && lt
                         .Substring(fmSelectorKey.Length + 1).TrimStart().ToBackSlashes()
                         .EqualsI(stubPath.ToBackSlashes()))
                 {
@@ -354,7 +367,7 @@ namespace AngelLoader
 
                 if (lt.EqualsI(fmSelectorKey) ||
                     (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
-                    (lt[fmSelectorKey.Length] == ' ' || lt[fmSelectorKey.Length] == '\t')))
+                    char.IsWhiteSpace(lt[fmSelectorKey.Length])))
                 {
                     if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";" + lines[i];
                     lastSelKeyIndex = i;
@@ -370,6 +383,20 @@ namespace AngelLoader
                 else
                 {
                     lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + stubPath);
+                }
+            }
+
+            if (!fmLineFound)
+            {
+                if (fmCommentLineIndex == -1 || fmCommentLineIndex == lines.Count - 1)
+                {
+                    lines.Add("");
+                    lines.Add("; " + fmCommentLine);
+                    lines.Add("fm");
+                }
+                else
+                {
+                    lines.Insert(fmCommentLineIndex + 1, "fm");
                 }
             }
 
@@ -393,6 +420,7 @@ namespace AngelLoader
         {
             const string externSelectorKey = "ExternSelector=";
             const string alwaysShowKey = "AlwaysShow=";
+            const string fanMissionKey = "FanMission=";
             bool existingExternSelectorKeyOverwritten = false;
             bool existingAlwaysShowKeyOverwritten = false;
             int insertLineIndex = -1;
@@ -437,6 +465,11 @@ namespace AngelLoader
                     {
                         lines[i + 1] = alwaysShowKey + "true";
                         existingAlwaysShowKeyOverwritten = true;
+                    }
+                    // Steam robustness: get rid of any fan mission specifiers in here
+                    else if (lt.StartsWithI(fanMissionKey))
+                    {
+                        lines[i + 1] = fanMissionKey;
                     }
 
                     if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']') break;
