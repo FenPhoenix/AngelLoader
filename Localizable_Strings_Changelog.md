@@ -12,38 +12,38 @@ The following strings have been **added** under the **\[SettingsWindow\]** secti
 
 In order to reduce duplication, the following strings have been **added** under the **\[Global\]** header:
 
-Thief1=Thief 1  
-Thief2=Thief 2  
-Thief3=Thief 3  
+`Thief1=Thief 1`  
+`Thief2=Thief 2`  
+`Thief3=Thief 3`  
 
-Thief1_Colon=Thief 1:  
-Thief2_Colon=Thief 2:  
-Thief3_Colon=Thief 3:  
+`Thief1_Colon=Thief 1:`  
+`Thief2_Colon=Thief 2:`  
+`Thief3_Colon=Thief 3:`  
 
 The following section and all its listed strings (listed below) has been **removed**:
 
-\[GameTabs\]  
-Thief1=Thief 1  
-Thief2=Thief 2  
-Thief3=Thief 3  
+`\[GameTabs\]`  
+`Thief1=Thief 1`  
+`Thief2=Thief 2`  
+`Thief3=Thief 3`  
 
 The following strings have been **removed** from the **\[FilterBar\]** section:
 
-Thief1ToolTip=Thief 1  
-Thief2ToolTip=Thief 2  
-Thief3ToolTip=Thief 3  
+`Thief1ToolTip=Thief 1`  
+`Thief2ToolTip=Thief 2`  
+`Thief3ToolTip=Thief 3`  
 
 The following strings have been **removed** from the **\[PlayOriginalGameMenu\]** section:
 
-Thief1=Thief 1  
-Thief2=Thief 2  
-Thief3=Thief 3  
+`Thief1=Thief 1`  
+`Thief2=Thief 2`  
+`Thief3=Thief 3`  
 
 And the following strings have been **removed** from the **\[SettingsWindow\]** section:
 
-Paths_Thief1=Thief 1:  
-Paths_Thief2=Thief 2:  
-Paths_Thief3=Thief 3:  
+`Paths_Thief1=Thief 1:`  
+`Paths_Thief2=Thief 2:`  
+`Paths_Thief3=Thief 3:`  
 
 #### Documentation:
 
@@ -51,8 +51,8 @@ Paths_Thief3=Thief 3:
 
 The following text has been **added** under the **Getting Started** -> **Initial Setup** section:
 
-\<h4\>Steam options\</h4\>  
-If you own one or more Thief games on Steam, you can specify the location of \<code\>steam.exe\</code\> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.
+`\<h4\>Steam options\</h4\>  
+If you own one or more Thief games on Steam, you can specify the location of \<code\>steam.exe\</code\> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.`
 
 #### images:
 
