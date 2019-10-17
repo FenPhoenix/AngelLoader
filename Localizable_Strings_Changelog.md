@@ -6,9 +6,9 @@
 
 The following strings have been **added** under the **\[SettingsWindow\]** section:
 
-Paths_SteamOptions=Steam options  
-Paths_PathToSteamExecutable=Path to Steam executable (optional):  
-Paths_LaunchTheseGamesThroughSteam=If Steam exists, use it to launch these games:
+`Paths_SteamOptions=Steam options`  
+`Paths_PathToSteamExecutable=Path to Steam executable (optional):`  
+`Paths_LaunchTheseGamesThroughSteam=If Steam exists, use it to launch these games:`
 
 In order to reduce duplication, the following strings have been **added** under the **\[Global\]** header:
 
