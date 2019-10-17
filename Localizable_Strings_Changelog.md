@@ -51,8 +51,8 @@ And the following strings have been **removed** from the **\[SettingsWindow\]** 
 
 The following text has been **added** under the **Getting Started** -> **Initial Setup** section:
 
-`\<h4\>Steam options\</h4\>  
-If you own one or more Thief games on Steam, you can specify the location of \<code\>steam.exe\</code\> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.`
+`\<h4\>Steam options\</h4\>`  
+`If you own one or more Thief games on Steam, you can specify the location of \<code\>steam.exe\</code\> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.`
 
 #### images:
 
@@ -67,13 +67,13 @@ The following image files have been **changed**:
 
 The following strings have been **added** under the **\[Importing\]** section:
 
-ImportData_Title=Title  
-ImportData_ReleaseDate=Release date  
-ImportData_LastPlayed=Last played  
-ImportData_Finished=Finished  
-ImportData_Comment=Comment  
-ImportData_Rating=Rating  
-ImportData_DisabledMods=Disabled mods  
-ImportData_Tags=Tags  
-ImportData_SelectedReadme=Selected readme  
-ImportData_Size=Size  
+`ImportData_Title=Title`  
+`ImportData_ReleaseDate=Release date`  
+`ImportData_LastPlayed=Last played`  
+`ImportData_Finished=Finished`  
+`ImportData_Comment=Comment`  
+`ImportData_Rating=Rating`  
+`ImportData_DisabledMods=Disabled mods`  
+`ImportData_Tags=Tags`  
+`ImportData_SelectedReadme=Selected readme`  
+`ImportData_Size=Size`  
