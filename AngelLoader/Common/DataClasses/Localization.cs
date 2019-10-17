@@ -325,14 +325,13 @@ namespace AngelLoader.Common.DataClasses
             internal static string InitialSettings_TabText = "Initial Settings";
             [FenGenBlankLine]
             internal static string Paths_PathsToGameExes = "Paths to game executables";
-
             internal static string Paths_Thief1AndThief2RequireNewDark = "* Thief 1 and Thief 2 require NewDark.";
             internal static string Paths_Thief3RequiresSneakyUpgrade = "* Thief 3 requires the Sneaky Upgrade 1.1.9.1 or above.";
-
+            [FenGenBlankLine]
             internal static string Paths_SteamOptions = "Steam options";
-            internal static string Paths_PathToSteamExecutable = "Path to Steam executable (optional)";
+            internal static string Paths_PathToSteamExecutable = "Path to Steam executable (optional):";
             internal static string Paths_LaunchTheseGamesThroughSteam = "If Steam exists, use it to launch these games:";
-
+            [FenGenBlankLine]
             internal static string Paths_Other = "Other";
             internal static string Paths_BackupPath = "FM backup path:";
             internal static string Paths_FMArchivePaths = "FM archive paths";
