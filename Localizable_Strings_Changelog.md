@@ -10,7 +10,7 @@ Paths_SteamOptions=Steam options
 Paths_PathToSteamExecutable=Path to Steam executable (optional):  
 Paths_LaunchTheseGamesThroughSteam=If Steam exists, use it to launch these games:
 
-**Note**: In v1.1.6, in order to reduce duplication, the following strings have been added under the **\[Global\]** header:
+**Note**: In v1.1.6, in order to reduce duplication, the following strings have been **added** under the **\[Global\]** header:
 
 Thief1=Thief 1  
 Thief2=Thief 2  
@@ -20,26 +20,26 @@ Thief1_Colon=Thief 1:
 Thief2_Colon=Thief 2:  
 Thief3_Colon=Thief 3:  
 
-The following section and all its listed strings (listed below) has been removed:
+The following section and all its listed strings (listed below) has been **removed**:
 
 \[GameTabs\]  
 Thief1=Thief 1  
 Thief2=Thief 2  
 Thief3=Thief 3  
 
-The following strings have been removed from the **\[FilterBar\]** section:
+The following strings have been **removed** from the **\[FilterBar\]** section:
 
 Thief1ToolTip=Thief 1  
 Thief2ToolTip=Thief 2  
 Thief3ToolTip=Thief 3  
 
-The following strings have been removed from the **\[PlayOriginalGameMenu\]** section:
+The following strings have been **removed** from the **\[PlayOriginalGameMenu\]** section:
 
 Thief1=Thief 1  
 Thief2=Thief 2  
 Thief3=Thief 3  
 
-And the following strings have been removed from the **\[SettingsWindow\]** section:
+And the following strings have been **removed** from the **\[SettingsWindow\]** section:
 
 Paths_Thief1=Thief 1:  
 Paths_Thief2=Thief 2:  
