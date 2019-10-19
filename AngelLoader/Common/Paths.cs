@@ -142,7 +142,7 @@ namespace AngelLoader.Common
 
         #region Methods
 
-        internal static void PrepareTempPath(string path)
+        internal static void CreateOrClearTempPath(string path)
         {
             #region Safety check
 
@@ -153,9 +153,9 @@ namespace AngelLoader.Common
 
             #endregion
 
-            try
+            if (Directory.Exists(path))
             {
-                if (Directory.Exists(path))
+                try
                 {
                     foreach (var f in FastIO.GetFilesTopOnly(path, "*"))
                     {
@@ -167,14 +167,21 @@ namespace AngelLoader.Common
                         Directory.Delete(d, recursive: true);
                     }
                 }
-                else
+                catch (Exception ex)
+                {
+                    Log("Exception clearing temp path " + path, ex);
+                }
+            }
+            else
+            {
+                try
                 {
                     Directory.CreateDirectory(path);
                 }
-            }
-            catch (Exception ex)
-            {
-                Log("Exception clearing temp path " + path, ex);
+                catch (Exception ex)
+                {
+                    Log("Exception creating temp path " + path, ex);
+                }
             }
         }
 

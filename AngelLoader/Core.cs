@@ -761,7 +761,7 @@ namespace AngelLoader
                 {
                     var progress = new Progress<ProgressReport>(ReportProgress);
 
-                    await Task.Run(() => Paths.PrepareTempPath(Paths.FMScannerTemp));
+                    await Task.Run(() => Paths.CreateOrClearTempPath(Paths.FMScannerTemp));
 
                     using (var scanner = new Scanner())
                     {

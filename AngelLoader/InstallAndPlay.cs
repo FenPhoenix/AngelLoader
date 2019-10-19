@@ -68,7 +68,7 @@ namespace AngelLoader
             SetUsAsSelector(game, gameExe, gamePath);
 
             // When the stub finds nothing in the stub comm folder, it will just start the game with no FM
-            Paths.PrepareTempPath(Paths.StubCommTemp);
+            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
             if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
@@ -106,7 +106,7 @@ namespace AngelLoader
             if (!steamArgs.IsEmpty() || !fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
             {
                 args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
-                Paths.PrepareTempPath(Paths.StubCommTemp);
+                Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
                 try
                 {
