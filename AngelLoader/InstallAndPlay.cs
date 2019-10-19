@@ -656,7 +656,7 @@ namespace AngelLoader
                         {
                             var entry = archive.Entries[i];
 
-                            var fileName = entry.FullName.Replace('/', '\\');
+                            var fileName = entry.FullName.ToBackSlashes();
 
                             if (fileName[fileName.Length - 1] == '\\') continue;
 
