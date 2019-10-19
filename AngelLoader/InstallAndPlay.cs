@@ -73,7 +73,7 @@ namespace AngelLoader
             if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
             string args = null;
-            var sv = GetSteamValues(game);
+            var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, args) = sv;
 
             StartExe(gameExe, gamePath, args);
@@ -95,7 +95,7 @@ namespace AngelLoader
             SetUsAsSelector(fm.Game, gameExe, gamePath);
 
             string steamArgs = null;
-            var sv = GetSteamValues(fm.Game);
+            var sv = GetSteamValues(fm.Game, playMP);
             if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
 
             // Only use the stub if we need to pass something we can't pass on the command line
@@ -239,9 +239,12 @@ namespace AngelLoader
         }
 
         private static (bool Success, string GameExe, string GamePath, string Args)
-        GetSteamValues(Game game)
+        GetSteamValues(Game game, bool playMP)
         {
-            if (Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
+            // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
+            // will start Thief2.exe
+            if (!playMP &&
+                Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
                 ((game == Game.Thief1 && Config.T1UseSteam) ||
                  (game == Game.Thief2 && Config.T2UseSteam) ||
                  (game == Game.Thief3 && Config.T3UseSteam)))
