@@ -726,6 +726,9 @@ namespace AngelLoader
                             // We're extracting all the files, so we don't need to do an index check here.
                             if (!e.FileInfo.IsDirectory)
                             {
+                                // We don't need to set timestamps because we're using ExtractArchive(), but we
+                                // call this to remove the ReadOnly attribute
+                                // TODO: Unset readonly for directories too
                                 SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
                             }
 
