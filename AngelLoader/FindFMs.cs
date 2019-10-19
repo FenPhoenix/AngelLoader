@@ -16,7 +16,7 @@ namespace AngelLoader
 {
     internal static class FindFMs
     {
-        // MT: On startup only, this is run in parallel with MainForm.ctor and .Init()
+        // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
         internal static void Find(FMInstallPaths fmInstPaths, List<FanMission> fmDataIniList, bool startup = false)
         {

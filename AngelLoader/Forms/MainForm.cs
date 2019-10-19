@@ -623,7 +623,7 @@ namespace AngelLoader.Forms
 
         #region Init / load / show
 
-        // InitializeComponent() only - for everything else use Init() below
+        // InitializeComponent() only - for everything else use init method(s) below
         public MainForm()
         {
 #if DEBUG
@@ -863,8 +863,8 @@ namespace AngelLoader.Forms
         {
             if (Visible) return;
 
-            // Sort the list here because Init() is run in parallel to FindFMs.Find() but sorting needs Find() to
-            // have been run first.
+            // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
+            // Find() to have been run first.
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
