@@ -24,18 +24,6 @@ namespace AngelLoader.CustomControls
         private const string AlphaCaps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private const string AlphaLower = "abcdefghijklmnopqrstuvwxyz";
 
-        // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
-        // and scale the width out
-        private const string HorizontalLineImagePart =
-            @"0100090000039000000000006700000000000400000003010800050000000b0200000000050000" +
-            @"000c0213000200030000001e000400000007010400040000000701040067000000410b2000cc00" +
-            @"130002000000000013000200000000002800000002000000130000000100040000000000000000" +
-            @"000000000000000000000000000000000000000000ffffff006666660000000000000000000000" +
-            @"000000000000000000000000000000000000000000000000000000000000000000000000000000" +
-            @"0000001101d503110100001101d503110100001101bafd11010000110100001101000011010000" +
-            @"2202000011010000110100001101000011010000110100001101803f1101803f1101803f1101c0" +
-            @"42040000002701ffff030000000000}\line ";
-
         private static bool IsAlphaCaps(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -49,6 +37,21 @@ namespace AngelLoader.CustomControls
 
         private static string GLMLToRTF(string text)
         {
+            // ReSharper disable StringLiteralTypo
+            // ReSharper disable CommentTypo
+
+            // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
+            // and scale the width out
+            const string HorizontalLineImagePart =
+                @"0100090000039000000000006700000000000400000003010800050000000b0200000000050000" +
+                @"000c0213000200030000001e000400000007010400040000000701040067000000410b2000cc00" +
+                @"130002000000000013000200000000002800000002000000130000000100040000000000000000" +
+                @"000000000000000000000000000000000000000000ffffff006666660000000000000000000000" +
+                @"000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                @"0000001101d503110100001101d503110100001101bafd11010000110100001101000011010000" +
+                @"2202000011010000110100001101000011010000110100001101803f1101803f1101803f1101c0" +
+                @"42040000002701ffff030000000000}\line ";
+
             // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
             // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
             // and the double-screen-width method doesn't give a consistent width anymore.
@@ -58,6 +61,9 @@ namespace AngelLoader.CustomControls
             const string HorizontalLine =
                 @"{\pict\wmetafile8\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 " +
                 HorizontalLineImagePart;
+
+            // ReSharper restore CommentTypo
+            // ReSharper restore StringLiteralTypo
 
             var sb = new StringBuilder();
 

@@ -88,8 +88,22 @@ namespace AngelLoader
 
             for (int i = 0; i < 3; i++)
             {
-                var instFMDirs = i == 0 ? t1InstalledFMDirs : i == 1 ? t2InstalledFMDirs : t3InstalledFMDirs;
-                var instPath = i == 0 ? fmInstPaths.T1 : i == 1 ? fmInstPaths.T2 : fmInstPaths.T3;
+                #region Set i-dependent values
+
+                var instFMDirs = i switch
+                {
+                    0 => t1InstalledFMDirs,
+                    1 => t2InstalledFMDirs,
+                    _ => t3InstalledFMDirs
+                };
+                var instPath = i switch
+                {
+                    0 => fmInstPaths.T1,
+                    1 => fmInstPaths.T2,
+                    _ => fmInstPaths.T3
+                };
+
+                #endregion
 
                 if (Directory.Exists(instPath))
                 {
@@ -143,9 +157,28 @@ namespace AngelLoader
 
             for (int i = 0; i < 3; i++)
             {
-                var instFMDirs = i == 0 ? t1InstalledFMDirs : i == 1 ? t2InstalledFMDirs : t3InstalledFMDirs;
-                var list = i == 0 ? t1List : i == 1 ? t2List : t3List;
-                var game = i == 0 ? Game.Thief1 : i == 1 ? Game.Thief2 : Game.Thief3;
+                #region Set i-dependent values
+
+                var instFMDirs = i switch
+                {
+                    0 => t1InstalledFMDirs,
+                    1 => t2InstalledFMDirs,
+                    _ => t3InstalledFMDirs
+                };
+                var list = i switch
+                {
+                    0 => t1List,
+                    1 => t2List,
+                    _ => t3List
+                };
+                var game = i switch
+                {
+                    0 => Game.Thief1,
+                    1 => Game.Thief2,
+                    _ => Game.Thief3
+                };
+
+                #endregion
 
                 foreach (var item in instFMDirs)
                 {
@@ -301,10 +334,10 @@ namespace AngelLoader
                     // ITS OWN METHOD(?!?!?!?!?!?!?!?!?!) Argh!
                     if (!fm.Checked &&
                         fm.Archive.IsEmpty() &&
-                        (fm.InstalledDir.EqualsI(aRemoveExt ?? (aRemoveExt = archive.RemoveExtension())) ||
-                         fm.InstalledDir.EqualsI(aFMSel ?? (aFMSel = archive.ToInstDirNameFMSel(false))) ||
-                         fm.InstalledDir.EqualsI(aFMSelTrunc ?? (aFMSelTrunc = archive.ToInstDirNameFMSel(true))) ||
-                         fm.InstalledDir.EqualsI(aNDL ?? (aNDL = archive.ToInstDirNameNDL()))))
+                        (fm.InstalledDir.EqualsI(aRemoveExt ??= archive.RemoveExtension()) ||
+                         fm.InstalledDir.EqualsI(aFMSel ??= archive.ToInstDirNameFMSel(false)) ||
+                         fm.InstalledDir.EqualsI(aFMSelTrunc ??= archive.ToInstDirNameFMSel(true)) ||
+                         fm.InstalledDir.EqualsI(aNDL ??= archive.ToInstDirNameNDL())))
                     {
                         fm.Archive = archive;
                         if (fm.NoArchive)
@@ -472,12 +505,14 @@ namespace AngelLoader
         {
             if (fm.Game == Game.Null) return null;
 
-            var gamePath =
-                fm.Game == Game.Thief1 ? fmInstPaths.T1 :
-                fm.Game == Game.Thief2 ? fmInstPaths.T2 :
+            var gamePath = fm.Game switch
+            {
+                Game.Thief1 => fmInstPaths.T1,
+                Game.Thief2 => fmInstPaths.T2,
                 // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
-                fm.Game == Game.Thief3 ? fmInstPaths.T3 :
-                null;
+                Game.Thief3 => fmInstPaths.T3,
+                _ => null
+            };
 
             if (gamePath.IsEmpty()) return null;
 
@@ -489,11 +524,9 @@ namespace AngelLoader
         {
             try
             {
-                using (var sw = new StreamWriter(path, append: false))
-                {
-                    sw.WriteLine("Name=" + fm.InstalledDir);
-                    sw.WriteLine("Archive=" + archiveName);
-                }
+                using var sw = new StreamWriter(path, append: false);
+                sw.WriteLine("Name=" + fm.InstalledDir);
+                sw.WriteLine("Archive=" + archiveName);
             }
             catch (Exception ex)
             {

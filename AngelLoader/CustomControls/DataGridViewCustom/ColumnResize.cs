@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.CustomControls
 {
@@ -7,6 +8,7 @@ namespace AngelLoader.CustomControls
     {
         #region Private fields
 
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private enum DataGridViewHitTestTypeInternal
         {
             None,

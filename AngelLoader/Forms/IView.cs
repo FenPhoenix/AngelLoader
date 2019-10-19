@@ -4,10 +4,12 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.WinAPI.Ookii.Dialogs;
+using JetBrains.Annotations;
 using static AngelLoader.CustomControls.ProgressPanel;
 
 namespace AngelLoader.Forms
 {
+    [PublicAPI]
     internal interface IView : ILocalizable
     {
         #region Progress box

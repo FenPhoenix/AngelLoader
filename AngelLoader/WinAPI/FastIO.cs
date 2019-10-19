@@ -122,35 +122,33 @@ namespace AngelLoader.WinAPI
             //const int ERROR_REM_NOT_LIST = 0x33;
             //const int ERROR_BAD_NETPATH = 0x35;
 
-            using (var findHandle = FindFirstFileEx(@"\\?\" + path.TrimEnd('\\') + '\\' + searchPattern,
+            using var findHandle = FindFirstFileEx(@"\\?\" + path.TrimEnd('\\') + '\\' + searchPattern,
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,
-                FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH))
+                FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
+
+            if (findHandle.IsInvalid)
             {
+                var err = Marshal.GetLastWin32Error();
+                if (err == ERROR_FILE_NOT_FOUND) return ret;
 
-                if (findHandle.IsInvalid)
-                {
-                    var err = Marshal.GetLastWin32Error();
-                    if (err == ERROR_FILE_NOT_FOUND) return ret;
-
-                    // Since the framework isn't here to save us, we should blanket-catch and throw on every
-                    // possible error other than file-not-found (as that's an intended scenario, obviously).
-                    // This isn't as nice as you'd get from a framework method call, but it gets the job done.
-                    ThrowException(searchPattern, err, path);
-                }
-                do
-                {
-                    if ((findData.dwFileAttributes & fileAttributeDirectory) != fileAttributeDirectory &&
-                        findData.cFileName != "." && findData.cFileName != "..")
-                    {
-                        // Exception could occur here
-                        var fullName = Path.Combine(path, findData.cFileName);
-
-                        ret.Add(fullName);
-                    }
-                } while (FindNextFileW(findHandle, out findData));
-
-                return ret;
+                // Since the framework isn't here to save us, we should blanket-catch and throw on every
+                // possible error other than file-not-found (as that's an intended scenario, obviously).
+                // This isn't as nice as you'd get from a framework method call, but it gets the job done.
+                ThrowException(searchPattern, err, path);
             }
+            do
+            {
+                if ((findData.dwFileAttributes & fileAttributeDirectory) != fileAttributeDirectory &&
+                    findData.cFileName != "." && findData.cFileName != "..")
+                {
+                    // Exception could occur here
+                    var fullName = Path.Combine(path, findData.cFileName);
+
+                    ret.Add(fullName);
+                }
+            } while (FindNextFileW(findHandle, out findData));
+
+            return ret;
         }
     }
 }

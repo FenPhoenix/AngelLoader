@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AngelLoader.Common;
@@ -502,21 +501,30 @@ namespace AngelLoader.Forms
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
                 // Manual "flow layout" for textbox/browse button combos
+                // TODO: I could just make these sequential/manual and it would be the same amount of code now
                 for (int i = 0; i < 5; i++)
                 {
-                    var button =
-                        i == 0 ? PathsPage.Thief1ExePathBrowseButton :
-                        i == 1 ? PathsPage.Thief2ExePathBrowseButton :
-                        i == 2 ? PathsPage.Thief3ExePathBrowseButton :
-                        i == 3 ? PathsPage.BackupPathBrowseButton :
-                        PathsPage.SteamExeBrowseButton;
+                    #region Set i-dependent values
 
-                    var textBox =
-                        i == 0 ? PathsPage.Thief1ExePathTextBox :
-                        i == 1 ? PathsPage.Thief2ExePathTextBox :
-                        i == 2 ? PathsPage.Thief3ExePathTextBox :
-                        i == 3 ? PathsPage.BackupPathTextBox :
-                        PathsPage.SteamExeTextBox;
+                    var button = i switch
+                    {
+                        0 => PathsPage.Thief1ExePathBrowseButton,
+                        1 => PathsPage.Thief2ExePathBrowseButton,
+                        2 => PathsPage.Thief3ExePathBrowseButton,
+                        3 => PathsPage.BackupPathBrowseButton,
+                        _ => PathsPage.SteamExeBrowseButton
+                    };
+
+                    var textBox = i switch
+                    {
+                        0 => PathsPage.Thief1ExePathTextBox,
+                        1 => PathsPage.Thief2ExePathTextBox,
+                        2 => PathsPage.Thief3ExePathTextBox,
+                        3 => PathsPage.BackupPathTextBox,
+                        _ => PathsPage.SteamExeTextBox
+                    };
+
+                    #endregion
 
                     button.SetTextAutoSize(textBox, LText.Global.BrowseEllipses);
                 }
@@ -990,12 +998,12 @@ namespace AngelLoader.Forms
         private static (DialogResult Result, string FileName)
         BrowseForExeFile(string initialPath)
         {
-            using (var dialog = new OpenFileDialog())
+            using var dialog = new OpenFileDialog
             {
-                dialog.InitialDirectory = initialPath;
-                dialog.Filter = LText.BrowseDialogs.ExeFiles + @"|*.exe";
-                return (dialog.ShowDialog(), dialog.FileName);
-            }
+                InitialDirectory = initialPath,
+                Filter = LText.BrowseDialogs.ExeFiles + @"|*.exe"
+            };
+            return (dialog.ShowDialog(), dialog.FileName);
         }
 
         private void SteamExeTextBox_TextChanged(object sender, EventArgs e)
@@ -1018,31 +1026,30 @@ namespace AngelLoader.Forms
 
         private void AddFMArchivePathButton_Click(object sender, EventArgs e)
         {
-            using (var d = new AutoFolderBrowserDialog())
+            using var d = new AutoFolderBrowserDialog();
+
+            var lb = PathsPage.FMArchivePathsListBox;
+            var initDir =
+                lb.SelectedIndex > -1 ? lb.SelectedItem.ToString() :
+                lb.Items.Count > 0 ? lb.Items[lb.Items.Count - 1].ToString() :
+                "";
+            if (!initDir.IsWhiteSpace())
             {
-                var lb = PathsPage.FMArchivePathsListBox;
-                var initDir =
-                    lb.SelectedIndex > -1 ? lb.SelectedItem.ToString() :
-                    lb.Items.Count > 0 ? lb.Items[lb.Items.Count - 1].ToString() :
-                    "";
-                if (!initDir.IsWhiteSpace())
+                try
                 {
-                    try
-                    {
-                        d.InitialDirectory = Path.GetDirectoryName(initDir);
-                    }
-                    catch
-                    {
-                        // ignore
-                    }
+                    d.InitialDirectory = Path.GetDirectoryName(initDir);
                 }
-                d.MultiSelect = true;
-                if (d.ShowDialog() == DialogResult.OK)
+                catch
                 {
-                    foreach (var dir in d.DirectoryNames)
-                    {
-                        if (!FMArchivePathExistsInBox(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
-                    }
+                    // ignore
+                }
+            }
+            d.MultiSelect = true;
+            if (d.ShowDialog() == DialogResult.OK)
+            {
+                foreach (var dir in d.DirectoryNames)
+                {
+                    if (!FMArchivePathExistsInBox(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
                 }
             }
         }

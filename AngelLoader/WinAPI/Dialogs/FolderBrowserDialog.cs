@@ -23,42 +23,36 @@ namespace AngelLoader.WinAPI.Dialogs
             if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
                 Environment.OSVersion.Version >= new Version(6, 0))
             {
-                using (var d = new VistaFolderBrowserDialog())
+                using var d = new VistaFolderBrowserDialog { InitialDirectory = InitialDirectory, MultiSelect = true };
+
+                if (d.ShowDialog() == DialogResult.OK)
                 {
-                    d.InitialDirectory = InitialDirectory;
-                    d.MultiSelect = true;
-                    if (d.ShowDialog() == DialogResult.OK)
-                    {
-                        DirectoryName = d.DirectoryName;
-                        DirectoryNames.Clear();
-                        foreach (var dir in d.DirectoryNames) DirectoryNames.Add(dir);
-                        result = DialogResult.OK;
-                    }
-                    else
-                    {
-                        result = DialogResult.Cancel;
-                    }
+                    DirectoryName = d.DirectoryName;
+                    DirectoryNames.Clear();
+                    foreach (var dir in d.DirectoryNames) DirectoryNames.Add(dir);
+                    result = DialogResult.OK;
+                }
+                else
+                {
+                    result = DialogResult.Cancel;
                 }
             }
             else
             {
                 // Fallback for pre-Vista, probably won't ever be hit seeing as we require Windows 7 or above,
                 // and even if we went back to .NET 4.6 we would still require Vista. But hey.
-                using (var d = new FolderBrowserDialog())
+                using var d = new FolderBrowserDialog { SelectedPath = InitialDirectory, ShowNewFolderButton = true };
+
+                if (d.ShowDialog() == DialogResult.OK)
                 {
-                    d.SelectedPath = InitialDirectory;
-                    d.ShowNewFolderButton = true;
-                    if (d.ShowDialog() == DialogResult.OK)
-                    {
-                        DirectoryName = d.SelectedPath;
-                        DirectoryNames.Clear();
-                        DirectoryNames.Add(d.SelectedPath);
-                        result = DialogResult.OK;
-                    }
-                    else
-                    {
-                        result = DialogResult.Cancel;
-                    }
+                    DirectoryName = d.SelectedPath;
+                    DirectoryNames.Clear();
+                    DirectoryNames.Add(d.SelectedPath);
+                    result = DialogResult.OK;
+                }
+                else
+                {
+                    result = DialogResult.Cancel;
                 }
             }
 

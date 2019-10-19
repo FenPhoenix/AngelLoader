@@ -7,6 +7,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace AngelLoader.WinAPI
 {
+    [PublicAPI]
     internal static class InteropMisc
     {
         internal const int WM_USER = 0x0400;
@@ -113,8 +114,8 @@ namespace AngelLoader.WinAPI
         [DllImport("user32.dll")]
         internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
 
-        [DllImport("user32.dll")]
-        internal static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
+        //[DllImport("user32.dll")]
+        //internal static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
 
         #region Process
 

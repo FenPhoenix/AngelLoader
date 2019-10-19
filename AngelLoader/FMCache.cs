@@ -239,82 +239,81 @@ namespace AngelLoader
         {
             var htmlRefFiles = new List<NameAndIndex>();
 
-            using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                ZipArchiveMode.Read, leaveOpen: false))
+            using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                ZipArchiveMode.Read, leaveOpen: false);
+
+            foreach (var f in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
-                foreach (var f in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.AllDirectories))
+                if (!f.ExtIsHtml()) continue;
+
+                var html = File.ReadAllText(f);
+
+                for (int i = 0; i < archive.Entries.Count; i++)
                 {
-                    if (!f.ExtIsHtml()) continue;
-
-                    var html = File.ReadAllText(f);
-
-                    for (int i = 0; i < archive.Entries.Count; i++)
+                    var e = archive.Entries[i];
+                    if (e.Name.IsEmpty() || !e.Name.Contains('.') || HTMLRefExcludes.Any(e.Name.EndsWithI))
                     {
-                        var e = archive.Entries[i];
+                        continue;
+                    }
+
+                    // We just do a dumb string-match search through the whole file. While it's true that HTML
+                    // files have their links in specific structures (href tags etc.), we don't attempt to
+                    // narrow it down to these because a) we want to future-proof against any new ways to link
+                    // that might come about, and b) HTML files can link out to other formats like CSS and
+                    // who knows what else, and we don't want to write parsers for every format under the sun.
+                    if (html.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != i))
+                    {
+                        htmlRefFiles.Add(new NameAndIndex { Index = i, Name = e.FullName });
+                    }
+                }
+            }
+
+            if (htmlRefFiles.Count > 0)
+            {
+                for (var ri = 0; ri < htmlRefFiles.Count; ri++)
+                {
+                    var f = htmlRefFiles[ri];
+                    if (HTMLRefExcludes.Any(f.Name.EndsWithI) ||
+                        ImageFileExtensions.Any(f.Name.EndsWithI))
+                    {
+                        continue;
+                    }
+
+                    var re = archive.Entries[f.Index];
+
+                    // 128k is generous. Any text or markup sort of file should be WELL under that.
+                    if (re.Length > 131_072) continue;
+
+                    string content;
+                    using (var es = re.Open())
+                    {
+                        using var sr = new StreamReader(es);
+                        content = sr.ReadToEnd();
+                    }
+
+                    for (int eI = 0; eI < archive.Entries.Count; eI++)
+                    {
+                        var e = archive.Entries[eI];
                         if (e.Name.IsEmpty() || !e.Name.Contains('.') || HTMLRefExcludes.Any(e.Name.EndsWithI))
                         {
                             continue;
                         }
 
-                        // We just do a dumb string-match search through the whole file. While it's true that HTML
-                        // files have their links in specific structures (href tags etc.), we don't attempt to
-                        // narrow it down to these because a) we want to future-proof against any new ways to link
-                        // that might come about, and b) HTML files can link out to other formats like CSS and
-                        // who knows what else, and we don't want to write parsers for every format under the sun.
-                        if (html.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != i))
+                        if (content.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != eI))
                         {
-                            htmlRefFiles.Add(new NameAndIndex { Index = i, Name = e.FullName });
+                            htmlRefFiles.Add(new NameAndIndex { Index = eI, Name = e.FullName });
                         }
                     }
                 }
+            }
 
-                if (htmlRefFiles.Count > 0)
+            if (htmlRefFiles.Count > 0)
+            {
+                foreach (var f in htmlRefFiles)
                 {
-                    for (var ri = 0; ri < htmlRefFiles.Count; ri++)
-                    {
-                        var f = htmlRefFiles[ri];
-                        if (HTMLRefExcludes.Any(f.Name.EndsWithI) ||
-                            ImageFileExtensions.Any(f.Name.EndsWithI))
-                        {
-                            continue;
-                        }
-
-                        var re = archive.Entries[f.Index];
-
-                        // 128k is generous. Any text or markup sort of file should be WELL under that.
-                        if (re.Length > 131_072) continue;
-
-                        string content;
-                        using (var es = re.Open())
-                        using (var sr = new StreamReader(es))
-                        {
-                            content = sr.ReadToEnd();
-                        }
-
-                        for (int eI = 0; eI < archive.Entries.Count; eI++)
-                        {
-                            var e = archive.Entries[eI];
-                            if (e.Name.IsEmpty() || !e.Name.Contains('.') || HTMLRefExcludes.Any(e.Name.EndsWithI))
-                            {
-                                continue;
-                            }
-
-                            if (content.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != eI))
-                            {
-                                htmlRefFiles.Add(new NameAndIndex { Index = eI, Name = e.FullName });
-                            }
-                        }
-                    }
-                }
-
-                if (htmlRefFiles.Count > 0)
-                {
-                    foreach (var f in htmlRefFiles)
-                    {
-                        var path = Path.GetDirectoryName(f.Name);
-                        if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                        archive.Entries[f.Index].ExtractToFile(Path.Combine(fmCachePath, f.Name), overwrite: true);
-                    }
+                    var path = Path.GetDirectoryName(f.Name);
+                    if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
+                    archive.Entries[f.Index].ExtractToFile(Path.Combine(fmCachePath, f.Name), overwrite: true);
                 }
             }
         }
@@ -326,46 +325,45 @@ namespace AngelLoader
         {
             try
             {
-                using (var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false))
-                {
-                    for (var i = 0; i < archive.Entries.Count; i++)
-                    {
-                        var entry = archive.Entries[i];
-                        var fn = entry.FullName;
-                        if (!fn.IsValidReadme() || entry.Length == 0) continue;
+                using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                    ZipArchiveMode.Read, leaveOpen: false);
 
-                        string t3ReadmeDir = null;
-                        if (fn.CountChars('/') + fn.CountChars('\\') == 1)
+                for (var i = 0; i < archive.Entries.Count; i++)
+                {
+                    var entry = archive.Entries[i];
+                    var fn = entry.FullName;
+                    if (!fn.IsValidReadme() || entry.Length == 0) continue;
+
+                    string t3ReadmeDir = null;
+                    if (fn.CountChars('/') + fn.CountChars('\\') == 1)
+                    {
+                        if (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
+                            fn.StartsWithI(Paths.T3ReadmeDir1 + '\\'))
                         {
-                            if (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
-                                fn.StartsWithI(Paths.T3ReadmeDir1 + '\\'))
-                            {
-                                t3ReadmeDir = Paths.T3ReadmeDir1;
-                            }
-                            else if (fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
-                                     fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))
-                            {
-                                t3ReadmeDir = Paths.T3ReadmeDir2;
-                            }
-                            else
-                            {
-                                continue;
-                            }
+                            t3ReadmeDir = Paths.T3ReadmeDir1;
                         }
-                        else if (fn.Contains('/') || fn.Contains('\\'))
+                        else if (fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
+                                 fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))
+                        {
+                            t3ReadmeDir = Paths.T3ReadmeDir2;
+                        }
+                        else
                         {
                             continue;
                         }
-
-                        Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
-                            ? Path.Combine(fmCachePath, t3ReadmeDir)
-                            : fmCachePath);
-
-                        var fileNameFull = Path.Combine(fmCachePath, fn);
-                        entry.ExtractToFile(fileNameFull, overwrite: true);
-                        readmes.Add(fn);
                     }
+                    else if (fn.Contains('/') || fn.Contains('\\'))
+                    {
+                        continue;
+                    }
+
+                    Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
+                        ? Path.Combine(fmCachePath, t3ReadmeDir)
+                        : fmCachePath);
+
+                    var fileNameFull = Path.Combine(fmCachePath, fn);
+                    entry.ExtractToFile(fileNameFull, overwrite: true);
+                    readmes.Add(fn);
                 }
             }
             catch (Exception ex)
@@ -392,52 +390,51 @@ namespace AngelLoader
 
                     Directory.CreateDirectory(fmCachePath);
 
-                    using (var extractor = new SevenZipExtractor(fmArchivePath))
+                    using var extractor = new SevenZipExtractor(fmArchivePath);
+
+                    var indexesList = new List<int>();
+                    for (var i = 0; i < extractor.FilesCount; i++)
                     {
-                        var indexesList = new List<int>();
-                        for (var i = 0; i < extractor.FilesCount; i++)
+                        var entry = extractor.ArchiveFileData[i];
+                        var fn = entry.FileName;
+                        if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                            ((fn.CountChars('/') + fn.CountChars('\\') == 1 &&
+                              (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
+                               fn.StartsWithI(Paths.T3ReadmeDir1 + '\\') ||
+                               fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
+                               fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))) ||
+                             (!fn.Contains('/') && !fn.Contains('\\'))))
                         {
-                            var entry = extractor.ArchiveFileData[i];
-                            var fn = entry.FileName;
-                            if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                                ((fn.CountChars('/') + fn.CountChars('\\') == 1 &&
-                                  (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
-                                   fn.StartsWithI(Paths.T3ReadmeDir1 + '\\') ||
-                                   fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
-                                   fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))) ||
-                                 (!fn.Contains('/') && !fn.Contains('\\'))))
-                            {
-                                indexesList.Add(i);
-                                readmes.Add(entry.FileName);
-                            }
+                            indexesList.Add(i);
+                            readmes.Add(entry.FileName);
                         }
+                    }
 
-                        if (indexesList.Count == 0) return;
+                    if (indexesList.Count == 0) return;
 
 
-                        extractor.Extracting += (sender, e) =>
+                    extractor.Extracting += (sender, e) =>
+                    {
+                        view.InvokeAsync(new Action(() => view.ReportCachingProgress(e.PercentDone)));
+                    };
+
+                    extractor.FileExtractionFinished += (sender, e) =>
+                    {
+                        // This event gets fired for every file, even skipped files. So check if it's actually
+                        // one of ours.
+                        if (indexesList.Contains(e.FileInfo.Index))
                         {
-                            view.InvokeAsync(new Action(() => view.ReportCachingProgress(e.PercentDone)));
-                        };
-
-                        extractor.FileExtractionFinished += (sender, e) =>
-                        {
-                            // This event gets fired for every file, even skipped files. So check if it's actually
-                            // one of ours.
-                            if (indexesList.Contains(e.FileInfo.Index))
-                            {
-                                SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
-                            }
-                        };
-
-                        try
-                        {
-                            extractor.ExtractFiles(fmCachePath, indexesList.ToArray());
+                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
                         }
-                        catch (Exception ex)
-                        {
-                            Log("Exception in 7z ExtractFiles() call", ex);
-                        }
+                    };
+
+                    try
+                    {
+                        extractor.ExtractFiles(fmCachePath, indexesList.ToArray());
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Exception in 7z ExtractFiles() call", ex);
                     }
                 }
                 catch (Exception ex)

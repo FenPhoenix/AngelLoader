@@ -111,11 +111,9 @@ namespace AngelLoader
                 try
                 {
                     // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
-                    using (var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default))
-                    {
-                        sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                        sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
-                    }
+                    using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default);
+                    sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+                    sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
                 }
                 catch (Exception ex)
                 {
@@ -176,21 +174,25 @@ namespace AngelLoader
 
         private static void StartExe(string exe, string workingPath, string args)
         {
-            using (var proc = new Process())
+            using var proc = new Process
             {
-                proc.StartInfo.FileName = exe;
-                if (!args.IsEmpty()) proc.StartInfo.Arguments = args;
-                proc.StartInfo.WorkingDirectory = workingPath;
-                try
+                StartInfo =
                 {
-                    proc.Start();
+                    FileName = exe,
+                    WorkingDirectory = workingPath,
+                    Arguments = !args.IsEmpty() ? args : ""
                 }
-                catch (Exception ex)
-                {
-                    Log("Exception starting " + exe + "\r\n" +
-                        "workingPath: " + workingPath + "\r\n" +
-                        "args: " + args, ex);
-                }
+            };
+
+            try
+            {
+                proc.Start();
+            }
+            catch (Exception ex)
+            {
+                Log("Exception starting " + exe + "\r\n" +
+                    "workingPath: " + workingPath + "\r\n" +
+                    "args: " + args, ex);
             }
         }
 
@@ -251,10 +253,12 @@ namespace AngelLoader
             {
                 string gameExe = Config.SteamExe;
                 string gamePath = Path.GetDirectoryName(Config.SteamExe);
-                string args = "-applaunch " + (
-                                  game == Game.Thief1 ? SteamAppIds.ThiefGold :
-                                  game == Game.Thief2 ? SteamAppIds.Thief2 :
-                                                        SteamAppIds.Thief3);
+                string args = "-applaunch " + game switch
+                {
+                    Game.Thief1 => SteamAppIds.ThiefGold,
+                    Game.Thief2 => SteamAppIds.Thief2,
+                              _ => SteamAppIds.Thief3
+                };
 
                 return (true, gameExe, gamePath, args);
             }
@@ -597,11 +601,9 @@ namespace AngelLoader
 
             try
             {
-                using (var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false))
-                {
-                    await sw.WriteLineAsync("Name=" + fm.InstalledDir);
-                    await sw.WriteLineAsync("Archive=" + fm.Archive);
-                }
+                using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf), append: false);
+                await sw.WriteLineAsync("Name=" + fm.InstalledDir);
+                await sw.WriteLineAsync("Archive=" + fm.Archive);
             }
             catch (Exception ex)
             {
@@ -652,37 +654,37 @@ namespace AngelLoader
                     Directory.CreateDirectory(fmInstalledPath);
 
                     var fs = new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read);
-                    using (var archive = new ZipArchive(fs, ZipArchiveMode.Read, leaveOpen: false))
+
+                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read, leaveOpen: false);
+
+                    int filesCount = archive.Entries.Count;
+                    for (var i = 0; i < filesCount; i++)
                     {
-                        int filesCount = archive.Entries.Count;
-                        for (var i = 0; i < filesCount; i++)
+                        var entry = archive.Entries[i];
+
+                        var fileName = entry.FullName.ToBackSlashes();
+
+                        if (fileName[fileName.Length - 1] == '\\') continue;
+
+                        if (fileName.Contains('\\'))
                         {
-                            var entry = archive.Entries[i];
+                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                fileName.Substring(0, fileName.LastIndexOf('\\'))));
+                        }
 
-                            var fileName = entry.FullName.ToBackSlashes();
+                        var extractedName = Path.Combine(fmInstalledPath, fileName);
+                        entry.ExtractToFile(extractedName, overwrite: true);
 
-                            if (fileName[fileName.Length - 1] == '\\') continue;
+                        UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
 
-                            if (fileName.Contains('\\'))
-                            {
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                    fileName.Substring(0, fileName.LastIndexOf('\\'))));
-                            }
+                        int percent = (100 * (i + 1)) / filesCount;
 
-                            var extractedName = Path.Combine(fmInstalledPath, fileName);
-                            entry.ExtractToFile(extractedName, overwrite: true);
+                        Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
 
-                            UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
-
-                            int percent = (100 * (i + 1)) / filesCount;
-
-                            Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
-
-                            if (ExtractCts.Token.IsCancellationRequested)
-                            {
-                                canceled = true;
-                                return;
-                            }
+                        if (ExtractCts.Token.IsCancellationRequested)
+                        {
+                            canceled = true;
+                            return;
                         }
                     }
                 }
@@ -708,50 +710,49 @@ namespace AngelLoader
                 {
                     Directory.CreateDirectory(fmInstalledPath);
 
-                    using (var extractor = new SevenZipExtractor(fmArchivePath))
+                    using var extractor = new SevenZipExtractor(fmArchivePath);
+
+                    extractor.Extracting += (sender, e) =>
                     {
-                        extractor.Extracting += (sender, e) =>
+                        if (!canceled && ExtractCts.Token.IsCancellationRequested)
                         {
-                            if (!canceled && ExtractCts.Token.IsCancellationRequested)
-                            {
-                                canceled = true;
-                            }
-                            if (canceled)
-                            {
-                                Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
-                                return;
-                            }
-                            Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(e.PercentDone)));
-                        };
-
-                        extractor.FileExtractionFinished += (sender, e) =>
-                        {
-                            // We're extracting all the files, so we don't need to do an index check here.
-                            if (!e.FileInfo.IsDirectory)
-                            {
-                                // We don't need to set timestamps because we're using ExtractArchive(), but we
-                                // call this to remove the ReadOnly attribute
-                                // TODO: Unset readonly for directories too
-                                SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
-                            }
-
-                            if (ExtractCts.Token.IsCancellationRequested)
-                            {
-                                Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
-                                canceled = true;
-                                e.Cancel = true;
-                            }
-                        };
-
-                        try
-                        {
-                            extractor.ExtractArchive(fmInstalledPath);
+                            canceled = true;
                         }
-                        catch (Exception ex)
+                        if (canceled)
                         {
-                            // Throws a weird exception even if everything's fine
-                            Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
+                            Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
+                            return;
                         }
+                        Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(e.PercentDone)));
+                    };
+
+                    extractor.FileExtractionFinished += (sender, e) =>
+                    {
+                        // We're extracting all the files, so we don't need to do an index check here.
+                        if (!e.FileInfo.IsDirectory)
+                        {
+                            // We don't need to set timestamps because we're using ExtractArchive(), but we
+                            // call this to remove the ReadOnly attribute
+                            // TODO: Unset readonly for directories too
+                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
+                        }
+
+                        if (ExtractCts.Token.IsCancellationRequested)
+                        {
+                            Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
+                            canceled = true;
+                            e.Cancel = true;
+                        }
+                    };
+
+                    try
+                    {
+                        extractor.ExtractArchive(fmInstalledPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Throws a weird exception even if everything's fine
+                        Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
                     }
                 }
                 catch (Exception ex)

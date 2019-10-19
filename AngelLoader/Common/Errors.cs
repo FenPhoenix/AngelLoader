@@ -1,5 +1,8 @@
-﻿namespace AngelLoader.Common
+﻿using JetBrains.Annotations;
+
+namespace AngelLoader.Common
 {
+    [PublicAPI]
     internal enum Error
     {
         None,
@@ -13,6 +16,7 @@
         T3FMInstPathNotFound
     }
 
+    [PublicAPI]
     internal enum ImportError
     {
         None,
@@ -20,6 +24,7 @@
         Unknown
     }
 
+    [PublicAPI]
     internal enum StubResponseError
     {
         RootTooLong,

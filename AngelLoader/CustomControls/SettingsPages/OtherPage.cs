@@ -1,8 +1,10 @@
 ﻿using System.Windows.Forms;
 using AngelLoader.Common.Utility;
+using JetBrains.Annotations;
 
 namespace AngelLoader.CustomControls.SettingsPages
 {
+    [PublicAPI]
     public partial class OtherPage : UserControl, Interfaces.ISettingsPage
     {
         public bool IsVisible { get => Visible; set => Visible = value; }

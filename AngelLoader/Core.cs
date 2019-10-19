@@ -119,18 +119,17 @@ namespace AngelLoader
                 {
                     #region Parallel load
 
-                    using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true)))
-                    {
-                        // It's safe to overlap this with Find(), but not with MainForm.ctor()
-                        configTask.Wait();
+                    using var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true));
 
-                        // Construct and init the view both right here, because they're both heavy operations and
-                        // we want them both to run in parallel with Find() to the greatest extent possible.
-                        View = new MainForm();
-                        View.InitThreadable();
+                    // It's safe to overlap this with Find(), but not with MainForm.ctor()
+                    configTask.Wait();
 
-                        findFMsTask.Wait();
-                    }
+                    // Construct and init the view both right here, because they're both heavy operations and we
+                    // want them both to run in parallel with Find() to the greatest extent possible.
+                    View = new MainForm();
+                    View.InitThreadable();
+
+                    findFMsTask.Wait();
 
                     #endregion
                 }
@@ -166,269 +165,268 @@ namespace AngelLoader
 
         public static async Task OpenSettings(bool startup = false)
         {
-            using (var sf = new SettingsForm(View, Config, startup))
+            using var sf = new SettingsForm(View, Config, startup);
+
+            // This needs to be separate so the below "always-save" stuff can work
+            var result = sf.ShowDialog();
+
+            #region Save window state
+
+            // Special case: these are meta, so they should always be set even if the user clicked Cancel
+            Config.SettingsTab = sf.OutConfig.SettingsTab;
+            Config.SettingsWindowSize = sf.OutConfig.SettingsWindowSize;
+            Config.SettingsWindowSplitterDistance = sf.OutConfig.SettingsWindowSplitterDistance;
+
+            Config.SettingsPathsVScrollPos = sf.OutConfig.SettingsPathsVScrollPos;
+            Config.SettingsFMDisplayVScrollPos = sf.OutConfig.SettingsFMDisplayVScrollPos;
+            Config.SettingsOtherVScrollPos = sf.OutConfig.SettingsOtherVScrollPos;
+
+            #endregion
+
+            if (result != DialogResult.OK)
             {
-                // This needs to be separate so the below "always-save" stuff can work
-                var result = sf.ShowDialog();
+                // Since nothing of consequence has yet happened, it's okay to do the brutal quit
+                if (startup) Environment.Exit(0);
+                return;
+            }
 
-                #region Save window state
+            #region Set changed bools
 
-                // Special case: these are meta, so they should always be set even if the user clicked Cancel
-                Config.SettingsTab = sf.OutConfig.SettingsTab;
-                Config.SettingsWindowSize = sf.OutConfig.SettingsWindowSize;
-                Config.SettingsWindowSplitterDistance = sf.OutConfig.SettingsWindowSplitterDistance;
+            bool archivePathsChanged =
+                !startup &&
+                (!Config.FMArchivePaths.SequenceEqual(sf.OutConfig.FMArchivePaths, StringComparer.OrdinalIgnoreCase) ||
+                 Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
 
-                Config.SettingsPathsVScrollPos = sf.OutConfig.SettingsPathsVScrollPos;
-                Config.SettingsFMDisplayVScrollPos = sf.OutConfig.SettingsFMDisplayVScrollPos;
-                Config.SettingsOtherVScrollPos = sf.OutConfig.SettingsOtherVScrollPos;
+            bool gamePathsChanged =
+                !startup &&
+                (!Config.T1Exe.EqualsI(sf.OutConfig.T1Exe) ||
+                 !Config.T2Exe.EqualsI(sf.OutConfig.T2Exe) ||
+                 !Config.T3Exe.EqualsI(sf.OutConfig.T3Exe));
 
-                #endregion
+            bool gameOrganizationChanged =
+                !startup && (Config.GameOrganization != sf.OutConfig.GameOrganization);
 
-                if (result != DialogResult.OK)
+            bool articlesChanged =
+                !startup &&
+                (Config.EnableArticles != sf.OutConfig.EnableArticles ||
+                 !Config.Articles.SequenceEqual(sf.OutConfig.Articles, StringComparer.InvariantCultureIgnoreCase) ||
+                 Config.MoveArticlesToEnd != sf.OutConfig.MoveArticlesToEnd);
+
+            bool dateFormatChanged =
+                !startup &&
+                (Config.DateFormat != sf.OutConfig.DateFormat ||
+                 Config.DateCustomFormatString != sf.OutConfig.DateCustomFormatString);
+
+            bool ratingDisplayStyleChanged =
+                !startup &&
+                (Config.RatingDisplayStyle != sf.OutConfig.RatingDisplayStyle ||
+                 Config.RatingUseStars != sf.OutConfig.RatingUseStars);
+
+            bool languageChanged =
+                !startup && !Config.Language.EqualsI(sf.OutConfig.Language);
+
+            bool useFixedFontChanged =
+                !startup && Config.ReadmeUseFixedWidthFont != sf.OutConfig.ReadmeUseFixedWidthFont;
+
+            #endregion
+
+            #region Set config data
+
+            // Set values individually (rather than deep-copying) so that non-Settings values don't get
+            // overwritten.
+
+            #region Paths tab
+
+            #region Game exes
+
+            Config.T1Exe = sf.OutConfig.T1Exe;
+            Config.T2Exe = sf.OutConfig.T2Exe;
+            Config.T3Exe = sf.OutConfig.T3Exe;
+
+            // TODO: These should probably go in the Settings form along with the cam_mod.ini check
+            // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
+            //       being thrown here.
+            Config.SetT1FMInstPath(!Config.T1Exe.IsWhiteSpace()
+                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
+                : "");
+            Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
+
+            Config.SetT2FMInstPath(!Config.T2Exe.IsWhiteSpace()
+                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
+                : "");
+            Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
+
+            Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
+
+            if (!Config.T3Exe.IsWhiteSpace())
+            {
+                var (error, useCentralSaves, t3FMInstPath) = GetInstFMsPathFromT3();
+                if (error == Error.None)
                 {
-                    // Since nothing of consequence has yet happened, it's okay to do the brutal quit
-                    if (startup) Environment.Exit(0);
-                    return;
+                    Config.SetT3FMInstPath(t3FMInstPath);
+                    Config.T3UseCentralSaves = useCentralSaves;
                 }
+            }
+            else
+            {
+                Config.SetT3FMInstPath("");
+            }
 
-                #region Set changed bools
+            #endregion
 
-                bool archivePathsChanged =
-                    !startup &&
-                    (!Config.FMArchivePaths.SequenceEqual(sf.OutConfig.FMArchivePaths, StringComparer.OrdinalIgnoreCase) ||
-                    Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
+            Config.SteamExe = sf.OutConfig.SteamExe;
+            Config.LaunchGamesWithSteam = sf.OutConfig.LaunchGamesWithSteam;
+            Config.T1UseSteam = sf.OutConfig.T1UseSteam;
+            Config.T2UseSteam = sf.OutConfig.T2UseSteam;
+            Config.T3UseSteam = sf.OutConfig.T3UseSteam;
 
-                bool gamePathsChanged =
-                    !startup &&
-                    (!Config.T1Exe.EqualsI(sf.OutConfig.T1Exe) ||
-                    !Config.T2Exe.EqualsI(sf.OutConfig.T2Exe) ||
-                    !Config.T3Exe.EqualsI(sf.OutConfig.T3Exe));
+            Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
 
-                bool gameOrganizationChanged =
-                    !startup && (Config.GameOrganization != sf.OutConfig.GameOrganization);
+            Config.FMArchivePaths.ClearAndAdd(sf.OutConfig.FMArchivePaths);
 
-                bool articlesChanged =
-                    !startup &&
-                    (Config.EnableArticles != sf.OutConfig.EnableArticles ||
-                    !Config.Articles.SequenceEqual(sf.OutConfig.Articles, StringComparer.InvariantCultureIgnoreCase) ||
-                    Config.MoveArticlesToEnd != sf.OutConfig.MoveArticlesToEnd);
+            Config.FMArchivePathsIncludeSubfolders = sf.OutConfig.FMArchivePathsIncludeSubfolders;
 
-                bool dateFormatChanged =
-                    !startup &&
-                    (Config.DateFormat != sf.OutConfig.DateFormat ||
-                    Config.DateCustomFormatString != sf.OutConfig.DateCustomFormatString);
+            #endregion
 
-                bool ratingDisplayStyleChanged =
-                    !startup &&
-                    (Config.RatingDisplayStyle != sf.OutConfig.RatingDisplayStyle ||
-                    Config.RatingUseStars != sf.OutConfig.RatingUseStars);
+            if (startup)
+            {
+                Config.Language = sf.OutConfig.Language;
 
-                bool languageChanged =
-                    !startup && !Config.Language.EqualsI(sf.OutConfig.Language);
-
-                bool useFixedFontChanged =
-                    !startup && Config.ReadmeUseFixedWidthFont != sf.OutConfig.ReadmeUseFixedWidthFont;
-
-                #endregion
-
-                #region Set config data
-
-                // Set values individually (rather than deep-copying) so that non-Settings values don't get
-                // overwritten.
-
-                #region Paths tab
-
-                #region Game exes
-
-                Config.T1Exe = sf.OutConfig.T1Exe;
-                Config.T2Exe = sf.OutConfig.T2Exe;
-                Config.T3Exe = sf.OutConfig.T3Exe;
-
-                // TODO: These should probably go in the Settings form along with the cam_mod.ini check
-                // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
-                //       being thrown here.
-                Config.SetT1FMInstPath(!Config.T1Exe.IsWhiteSpace()
-                    ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
-                    : "");
-                Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
-
-                Config.SetT2FMInstPath(!Config.T2Exe.IsWhiteSpace()
-                    ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
-                    : "");
-                Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
-
-                Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
-
-                if (!Config.T3Exe.IsWhiteSpace())
-                {
-                    var (error, useCentralSaves, t3FMInstPath) = GetInstFMsPathFromT3();
-                    if (error == Error.None)
-                    {
-                        Config.SetT3FMInstPath(t3FMInstPath);
-                        Config.T3UseCentralSaves = useCentralSaves;
-                    }
-                }
-                else
-                {
-                    Config.SetT3FMInstPath("");
-                }
-
-                #endregion
-
-                Config.SteamExe = sf.OutConfig.SteamExe;
-                Config.LaunchGamesWithSteam = sf.OutConfig.LaunchGamesWithSteam;
-                Config.T1UseSteam = sf.OutConfig.T1UseSteam;
-                Config.T2UseSteam = sf.OutConfig.T2UseSteam;
-                Config.T3UseSteam = sf.OutConfig.T3UseSteam;
-
-                Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
-
-                Config.FMArchivePaths.ClearAndAdd(sf.OutConfig.FMArchivePaths);
-
-                Config.FMArchivePathsIncludeSubfolders = sf.OutConfig.FMArchivePathsIncludeSubfolders;
-
-                #endregion
-
-                if (startup)
-                {
-                    Config.Language = sf.OutConfig.Language;
-
-                    // We don't need to set the paths again, because we've already done so above
+                // We don't need to set the paths again, because we've already done so above
 #if DEBUG
                     var checkPaths = SetPaths();
                     Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
 #endif
 
-                    WriteConfigIni(Config, Paths.ConfigIni);
+                WriteConfigIni(Config, Paths.ConfigIni);
 
-                    // We have to do this here because we won't have before
-                    using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true)))
-                    {
-                        // Have to do the full View init sequence here, because we skipped them all before
-                        View = new MainForm();
-                        View.InitThreadable();
+                // We have to do this here because we won't have before
+                using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true)))
+                {
+                    // Have to do the full View init sequence here, because we skipped them all before
+                    View = new MainForm();
+                    View.InitThreadable();
 
-                        findFMsTask.Wait();
-                    }
-                    // Again, last line and nothing up the call stack, so call without await.
+                    findFMsTask.Wait();
+                }
+                // Again, last line and nothing up the call stack, so call without await.
 #pragma warning disable 4014
-                    View.FinishInitAndShow();
+                View.FinishInitAndShow();
 #pragma warning restore 4014
 
-                    return;
-                }
+                return;
+            }
 
-                // From this point on, we're not in startup mode.
+            // From this point on, we're not in startup mode.
 
-                // For clarity, don't copy the other tabs' data on startup, because their tabs won't be shown and
-                // so they won't have been changed
+            // For clarity, don't copy the other tabs' data on startup, because their tabs won't be shown and
+            // so they won't have been changed
 
-                #region FM Display tab
+            #region FM Display tab
 
-                Config.GameOrganization = sf.OutConfig.GameOrganization;
+            Config.GameOrganization = sf.OutConfig.GameOrganization;
 
-                Config.EnableArticles = sf.OutConfig.EnableArticles;
-                Config.Articles.ClearAndAdd(sf.OutConfig.Articles);
+            Config.EnableArticles = sf.OutConfig.EnableArticles;
+            Config.Articles.ClearAndAdd(sf.OutConfig.Articles);
 
-                Config.MoveArticlesToEnd = sf.OutConfig.MoveArticlesToEnd;
+            Config.MoveArticlesToEnd = sf.OutConfig.MoveArticlesToEnd;
 
-                Config.RatingDisplayStyle = sf.OutConfig.RatingDisplayStyle;
-                Config.RatingUseStars = sf.OutConfig.RatingUseStars;
+            Config.RatingDisplayStyle = sf.OutConfig.RatingDisplayStyle;
+            Config.RatingUseStars = sf.OutConfig.RatingUseStars;
 
-                Config.DateFormat = sf.OutConfig.DateFormat;
-                Config.DateCustomFormat1 = sf.OutConfig.DateCustomFormat1;
-                Config.DateCustomSeparator1 = sf.OutConfig.DateCustomSeparator1;
-                Config.DateCustomFormat2 = sf.OutConfig.DateCustomFormat2;
-                Config.DateCustomSeparator2 = sf.OutConfig.DateCustomSeparator2;
-                Config.DateCustomFormat3 = sf.OutConfig.DateCustomFormat3;
-                Config.DateCustomSeparator3 = sf.OutConfig.DateCustomSeparator3;
-                Config.DateCustomFormat4 = sf.OutConfig.DateCustomFormat4;
-                Config.DateCustomFormatString = sf.OutConfig.DateCustomFormatString;
+            Config.DateFormat = sf.OutConfig.DateFormat;
+            Config.DateCustomFormat1 = sf.OutConfig.DateCustomFormat1;
+            Config.DateCustomSeparator1 = sf.OutConfig.DateCustomSeparator1;
+            Config.DateCustomFormat2 = sf.OutConfig.DateCustomFormat2;
+            Config.DateCustomSeparator2 = sf.OutConfig.DateCustomSeparator2;
+            Config.DateCustomFormat3 = sf.OutConfig.DateCustomFormat3;
+            Config.DateCustomSeparator3 = sf.OutConfig.DateCustomSeparator3;
+            Config.DateCustomFormat4 = sf.OutConfig.DateCustomFormat4;
+            Config.DateCustomFormatString = sf.OutConfig.DateCustomFormatString;
 
-                #endregion
+            #endregion
 
-                #region Other tab
+            #region Other tab
 
-                Config.ConvertWAVsTo16BitOnInstall = sf.OutConfig.ConvertWAVsTo16BitOnInstall;
-                Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
+            Config.ConvertWAVsTo16BitOnInstall = sf.OutConfig.ConvertWAVsTo16BitOnInstall;
+            Config.ConvertOGGsToWAVsOnInstall = sf.OutConfig.ConvertOGGsToWAVsOnInstall;
 
-                Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
+            Config.ConfirmUninstall = sf.OutConfig.ConfirmUninstall;
 
-                Config.BackupFMData = sf.OutConfig.BackupFMData;
-                Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
+            Config.BackupFMData = sf.OutConfig.BackupFMData;
+            Config.BackupAlwaysAsk = sf.OutConfig.BackupAlwaysAsk;
 
-                Config.Language = sf.OutConfig.Language;
+            Config.Language = sf.OutConfig.Language;
 
-                Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
+            Config.WebSearchUrl = sf.OutConfig.WebSearchUrl;
 
-                Config.ConfirmPlayOnDCOrEnter = sf.OutConfig.ConfirmPlayOnDCOrEnter;
+            Config.ConfirmPlayOnDCOrEnter = sf.OutConfig.ConfirmPlayOnDCOrEnter;
 
-                Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
-                Config.HideFMListZoomButtons = sf.OutConfig.HideFMListZoomButtons;
+            Config.HideUninstallButton = sf.OutConfig.HideUninstallButton;
+            Config.HideFMListZoomButtons = sf.OutConfig.HideFMListZoomButtons;
 
-                Config.ReadmeUseFixedWidthFont = sf.OutConfig.ReadmeUseFixedWidthFont;
+            Config.ReadmeUseFixedWidthFont = sf.OutConfig.ReadmeUseFixedWidthFont;
 
-                #endregion
+            #endregion
 
-                // These ones MUST NOT be set on startup, because the source values won't be valid
-                Config.SortedColumn = (Column)View.CurrentSortedColumnIndex;
-                Config.SortDirection = View.CurrentSortDirection;
+            // These ones MUST NOT be set on startup, because the source values won't be valid
+            Config.SortedColumn = (Column)View.CurrentSortedColumnIndex;
+            Config.SortDirection = View.CurrentSortDirection;
 
-                #endregion
+            #endregion
 
-                #region Change-specific actions (pre-refresh)
+            #region Change-specific actions (pre-refresh)
 
-                View.ShowInstallUninstallButton(!Config.HideUninstallButton);
-                View.ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
+            View.ShowInstallUninstallButton(!Config.HideUninstallButton);
+            View.ShowFMsListZoomButtons(!Config.HideFMListZoomButtons);
 
+            if (archivePathsChanged || gamePathsChanged)
+            {
+                FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
+            }
+            if (gameOrganizationChanged)
+            {
+                // Clear everything to defaults so we don't have any leftover state screwing things all up
+                Config.ClearAllSelectedFMs();
+                Config.ClearAllFilters();
+                Config.GameTab = Game.Thief1;
+                View.ClearAllUIAndInternalFilters();
+                if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
+                View.ChangeGameOrganization();
+            }
+            if (ratingDisplayStyleChanged)
+            {
+                View.UpdateRatingDisplayStyle(Config.RatingDisplayStyle, startup: false);
+            }
+            if (useFixedFontChanged)
+            {
+                View.ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
+            }
+
+            #endregion
+
+            #region Call appropriate refresh method (if applicable)
+
+            // Game paths should have been checked and verified before OK was clicked, so assume they're good
+            // here
+            if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged)
+            {
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
-                }
-                if (gameOrganizationChanged)
-                {
-                    // Clear everything to defaults so we don't have any leftover state screwing things all up
-                    Config.ClearAllSelectedFMs();
-                    Config.ClearAllFilters();
-                    Config.GameTab = Game.Thief1;
-                    View.ClearAllUIAndInternalFilters();
-                    if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
-                    View.ChangeGameOrganization();
-                }
-                if (ratingDisplayStyleChanged)
-                {
-                    View.UpdateRatingDisplayStyle(Config.RatingDisplayStyle, startup: false);
-                }
-                if (useFixedFontChanged)
-                {
-                    View.ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
+                    if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
                 }
 
-                #endregion
-
-                #region Call appropriate refresh method (if applicable)
-
-                // Game paths should have been checked and verified before OK was clicked, so assume they're good
-                // here
-                if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged)
-                {
-                    if (archivePathsChanged || gamePathsChanged)
-                    {
-                        if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
-                    }
-
-                    // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
-                    // If I store the selected FM up above the Find(), I can make the FM not have to reload if
-                    // it's still selected
-                    await View.SortAndSetFilter(keepSelection: !gameOrganizationChanged, forceDisplayFM: true);
-                }
-                else if (dateFormatChanged || languageChanged)
-                {
-                    View.RefreshFMsListKeepSelection();
-                }
-
-                #endregion
+                // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
+                // If I store the selected FM up above the Find(), I can make the FM not have to reload if
+                // it's still selected
+                await View.SortAndSetFilter(keepSelection: !gameOrganizationChanged, forceDisplayFM: true);
             }
+            else if (dateFormatChanged || languageChanged)
+            {
+                View.RefreshFMsListKeepSelection();
+            }
+
+            #endregion
         }
 
         // Future use
@@ -442,20 +440,22 @@ namespace AngelLoader
 
         internal static void SortFMsViewList(Column column, SortOrder sortDirection)
         {
-            var comparer =
-                column == Column.Game ? new FMGameComparer(sortDirection) :
-                column == Column.Installed ? new FMInstalledComparer(sortDirection) :
-                column == Column.Title ? new FMTitleComparer(sortDirection) :
-                column == Column.Archive ? new FMArchiveComparer(sortDirection) :
-                column == Column.Author ? new FMAuthorComparer(sortDirection) :
-                column == Column.Size ? new FMSizeComparer(sortDirection) :
-                column == Column.Rating ? new FMRatingComparer(sortDirection) :
-                column == Column.Finished ? new FMFinishedComparer(sortDirection) :
-                column == Column.ReleaseDate ? new FMReleaseDateComparer(sortDirection) :
-                column == Column.LastPlayed ? new FMLastPlayedComparer(sortDirection) :
-                column == Column.DisabledMods ? new FMDisabledModsComparer(sortDirection) :
-                column == Column.Comment ? new FMCommentComparer(sortDirection) :
-                (IComparer<FanMission>)null;
+            var comparer = column switch
+            {
+                Column.Game => new FMGameComparer(sortDirection),
+                Column.Installed => new FMInstalledComparer(sortDirection),
+                Column.Title => new FMTitleComparer(sortDirection),
+                Column.Archive => new FMArchiveComparer(sortDirection),
+                Column.Author => new FMAuthorComparer(sortDirection),
+                Column.Size => new FMSizeComparer(sortDirection),
+                Column.Rating => new FMRatingComparer(sortDirection),
+                Column.Finished => new FMFinishedComparer(sortDirection),
+                Column.ReleaseDate => new FMReleaseDateComparer(sortDirection),
+                Column.LastPlayed => new FMLastPlayedComparer(sortDirection),
+                Column.DisabledMods => new FMDisabledModsComparer(sortDirection),
+                Column.Comment => new FMCommentComparer(sortDirection),
+                _ => (IComparer<FanMission>)null
+            };
 
             Debug.Assert(comparer != null, nameof(comparer) + "==null: column not being handled");
 
@@ -763,13 +763,8 @@ namespace AngelLoader
 
                     await Task.Run(() => Paths.CreateOrClearTempPath(Paths.FMScannerTemp));
 
-                    using (var scanner = new Scanner())
-                    {
-                        scanner.LogFile = Paths.ScannerLogFile;
-                        scanner.ZipEntryNameEncoding = Encoding.UTF8;
-
-                        fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, ScanCts.Token);
-                    }
+                    using var scanner = new Scanner { LogFile = Paths.ScannerLogFile, ZipEntryNameEncoding = Encoding.UTF8 };
+                    fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, ScanCts.Token);
                 }
                 catch (OperationCanceledException)
                 {

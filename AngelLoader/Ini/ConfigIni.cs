@@ -532,18 +532,12 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.GameTab) + "="))
                 {
-                    switch (val)
+                    config.GameTab = val switch
                     {
-                        case nameof(Game.Thief2):
-                            config.GameTab = Game.Thief2;
-                            break;
-                        case nameof(Game.Thief3):
-                            config.GameTab = Game.Thief3;
-                            break;
-                        default:
-                            config.GameTab = Game.Thief1;
-                            break;
-                    }
+                        nameof(Game.Thief2) => Game.Thief2,
+                        nameof(Game.Thief3) => Game.Thief3,
+                        _ => Game.Thief1
+                    };
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMInstDir="))
                 {
@@ -959,12 +953,19 @@ namespace AngelLoader.Ini
 
                 for (int fi = 0; fi < 4; fi++)
                 {
-                    var filter =
-                        fi == 0 ? config.Filter :
-                        fi == 1 ? config.GameTabsState.T1Filter :
-                        fi == 2 ? config.GameTabsState.T2Filter :
-                        config.GameTabsState.T3Filter;
-                    var p = fi == 0 ? "" : fi == 1 ? "T1" : fi == 2 ? "T2" : "T3";
+                    #region Set i-dependent values
+
+                    var filter = fi switch
+                    {
+                        0 => config.Filter,
+                        1 => config.GameTabsState.T1Filter,
+                        2 => config.GameTabsState.T2Filter,
+                        _ => config.GameTabsState.T3Filter
+                    };
+
+                    var p = fi switch { 0 => "", 1 => "T1", 2 => "T2", _ => "T3" };
+
+                    #endregion
 
                     if (fi == 0) sw.WriteLine("FilterGames=" + commaCombineGameFlags(config.Filter.Games));
 

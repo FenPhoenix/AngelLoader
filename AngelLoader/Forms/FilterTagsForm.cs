@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -59,8 +58,23 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < 3; i++)
             {
-                var c1b = i == 0 ? RemoveSelectedAndButton : i == 1 ? RemoveSelectedOrButton : RemoveSelectedNotButton;
-                var cab = i == 0 ? RemoveAllAndButton : i == 1 ? RemoveAllOrButton : RemoveAllNotButton;
+                #region Set i-dependent values
+
+                var c1b = i switch
+                {
+                    0 => RemoveSelectedAndButton,
+                    1 => RemoveSelectedOrButton,
+                    _ => RemoveSelectedNotButton
+                };
+                var cab = i switch
+                {
+                    0 => RemoveAllAndButton,
+                    1 => RemoveAllOrButton,
+                    _ => RemoveAllNotButton
+                };
+
+                #endregion
+
                 MainToolTip.SetToolTip(c1b, LText.TagsFilterBox.ClearSelectedToolTip);
                 MainToolTip.SetToolTip(cab, LText.TagsFilterBox.ClearAllToolTip);
             }
@@ -72,7 +86,8 @@ namespace AngelLoader.Forms
             var newWidthAll = Math.Max(Math.Max(AndButton.Width, OrButton.Width), NotButton.Width);
             for (int i = 0; i < 3; i++)
             {
-                var button = i == 0 ? AndButton : i == 1 ? OrButton : NotButton;
+                var button = i switch { 0 => AndButton, 1 => OrButton, _ => NotButton };
+
                 button.Width = newWidthAll;
                 button.CenterH(MoveButtonsPanel);
             }
@@ -156,10 +171,7 @@ namespace AngelLoader.Forms
             var tv =
                 tags == TagsFilter.AndTags ? AndTreeView :
                 tags == TagsFilter.OrTags ? OrTreeView :
-                tags == TagsFilter.NotTags ? NotTreeView :
-                null;
-
-            Debug.Assert(tv != null, "FillTreeView: tv == null");
+                NotTreeView;
 
             tv.SuspendDrawing();
             tv.Nodes.Clear();
@@ -186,10 +198,7 @@ namespace AngelLoader.Forms
             var filteredTags =
                 sender == AndButton ? TagsFilter.AndTags :
                 sender == OrButton ? TagsFilter.OrTags :
-                sender == NotButton ? TagsFilter.NotTags :
-                null;
-
-            Debug.Assert(filteredTags != null, "AddTagsButtons_Click: filteredTags == null");
+                TagsFilter.NotTags;
 
             // Parent node = category, child node = tag
             bool isCategory = o.SelectedNode.Parent == null;
@@ -230,18 +239,12 @@ namespace AngelLoader.Forms
             var tags =
                 sender == RemoveSelectedAndButton ? TagsFilter.AndTags :
                 sender == RemoveSelectedOrButton ? TagsFilter.OrTags :
-                sender == RemoveSelectedNotButton ? TagsFilter.NotTags :
-                null;
-
-            Debug.Assert(tags != null, "RemoveSelectedButtons_Click: tags == null");
+                TagsFilter.NotTags;
 
             var tv =
                 sender == RemoveSelectedAndButton ? AndTreeView :
                 sender == RemoveSelectedOrButton ? OrTreeView :
-                sender == RemoveSelectedNotButton ? NotTreeView :
-                null;
-
-            Debug.Assert(tv != null, "RemoveSelectedButtons_Click: tv == null");
+                NotTreeView;
 
             if (tv.SelectedNode == null) return;
 
@@ -271,10 +274,7 @@ namespace AngelLoader.Forms
             var tags =
                 sender == RemoveAllAndButton ? TagsFilter.AndTags :
                 sender == RemoveAllOrButton ? TagsFilter.OrTags :
-                sender == RemoveAllNotButton ? TagsFilter.NotTags :
-                null;
-
-            Debug.Assert(tags != null, "RemoveSelectedButtons_Click: tags == null");
+                TagsFilter.NotTags;
 
             tags.Clear();
 
@@ -305,13 +305,13 @@ namespace AngelLoader.Forms
 
             for (int t = 0; t < 3; t++)
             {
-                var filteredTags =
-                    t == 0 ? TagsFilter.AndTags :
-                    t == 1 ? TagsFilter.OrTags :
-                    t == 2 ? TagsFilter.NotTags :
-                    null;
+                var filteredTags = t switch
+                {
+                    0 => TagsFilter.AndTags,
+                    1 => TagsFilter.OrTags,
+                    _ => TagsFilter.NotTags
+                };
 
-                Debug.Assert(filteredTags != null, "OriginTreeView_AfterSelect: filteredTags == null");
 
                 CatAndTags match = null;
                 for (int i = 0; i < filteredTags.Count; i++)

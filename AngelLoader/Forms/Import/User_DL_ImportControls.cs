@@ -16,21 +16,17 @@ namespace AngelLoader.Forms.Import
             DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
         }
 
-        internal string DarkLoaderIniText
-        {
-            get => DarkLoaderIniTextBox.Text;
-            set => DarkLoaderIniTextBox.Text = value;
-        }
+        internal string DarkLoaderIniText => DarkLoaderIniTextBox.Text;
 
         private void DarkLoaderIniBrowseButton_Click(object sender, EventArgs e)
         {
-            using (var d = new OpenFileDialog())
+            using var d = new OpenFileDialog
             {
-                d.Filter = LText.BrowseDialogs.IniFiles + @"|*.ini|" + LText.BrowseDialogs.AllFiles + @"|*.*";
-                if (d.ShowDialog() != DialogResult.OK) return;
+                Filter = LText.BrowseDialogs.IniFiles + @"|*.ini|" + LText.BrowseDialogs.AllFiles + @"|*.*"
+            };
+            if (d.ShowDialog() != DialogResult.OK) return;
 
-                DarkLoaderIniTextBox.Text = d.FileName;
-            }
+            DarkLoaderIniTextBox.Text = d.FileName;
         }
 
         private void AutodetectCheckBox_CheckedChanged(object sender, EventArgs e)

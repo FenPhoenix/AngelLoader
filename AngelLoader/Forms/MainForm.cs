@@ -170,10 +170,12 @@ namespace AngelLoader.Forms
 
                 using (new DisableEvents(this))
                 {
-                    GamesTabControl.SelectedTab =
-                        Config.GameTab == Game.Thief2 ? Thief2TabPage :
-                        Config.GameTab == Game.Thief3 ? Thief3TabPage :
-                        Thief1TabPage;
+                    GamesTabControl.SelectedTab = Config.GameTab switch
+                    {
+                        Game.Thief2 => Thief2TabPage,
+                        Game.Thief3 => Thief3TabPage,
+                        _ => Thief1TabPage
+                    };
                 }
             }
 
@@ -251,74 +253,71 @@ namespace AngelLoader.Forms
         public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancel_TD(string message, string title)
         {
-            using (var d = new TaskDialog())
-            using (var yesButton = new TaskDialogButton(ButtonType.Yes))
-            using (var noButton = new TaskDialogButton(ButtonType.No))
-            using (var cancelButton = new TaskDialogButton(ButtonType.Cancel))
-            {
-                d.AllowDialogCancellation = true;
-                d.ButtonStyle = TaskDialogButtonStyle.Standard;
-                d.WindowTitle = title;
-                d.Content = message;
-                d.VerificationText = LText.AlertMessages.DontAskAgain;
-                d.Buttons.Add(yesButton);
-                d.Buttons.Add(noButton);
-                d.Buttons.Add(cancelButton);
-                var buttonClicked = d.ShowDialog();
-                var cancel = buttonClicked == null || buttonClicked == cancelButton;
-                var cont = buttonClicked == yesButton;
-                var dontAskAgain = d.IsVerificationChecked;
-                return (cancel, cont, dontAskAgain);
-            }
+            using var d = new TaskDialog();
+            using var yesButton = new TaskDialogButton(ButtonType.Yes);
+            using var noButton = new TaskDialogButton(ButtonType.No);
+            using var cancelButton = new TaskDialogButton(ButtonType.Cancel);
+
+            d.AllowDialogCancellation = true;
+            d.ButtonStyle = TaskDialogButtonStyle.Standard;
+            d.WindowTitle = title;
+            d.Content = message;
+            d.VerificationText = LText.AlertMessages.DontAskAgain;
+            d.Buttons.Add(yesButton);
+            d.Buttons.Add(noButton);
+            d.Buttons.Add(cancelButton);
+            var buttonClicked = d.ShowDialog();
+            var cancel = buttonClicked == null || buttonClicked == cancelButton;
+            var cont = buttonClicked == yesButton;
+            var dontAskAgain = d.IsVerificationChecked;
+            return (cancel, cont, dontAskAgain);
         }
 
         public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
             bool showDontAskAgain, string yes, string no, string cancel)
         {
-            using (var d = new TaskDialog())
-            using (var yesButton = new TaskDialogButton(yes))
-            using (var noButton = new TaskDialogButton(no))
-            using (var cancelButton = new TaskDialogButton(cancel))
-            {
-                d.AllowDialogCancellation = true;
-                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
-                d.ButtonStyle = TaskDialogButtonStyle.Standard;
-                d.WindowTitle = title;
-                d.Content = message;
-                if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
-                d.Buttons.Add(yesButton);
-                d.Buttons.Add(noButton);
-                d.Buttons.Add(cancelButton);
-                var buttonClicked = d.ShowDialog();
-                var canceled = buttonClicked == null || buttonClicked == cancelButton;
-                var cont = buttonClicked == yesButton;
-                var dontAskAgain = d.IsVerificationChecked;
-                return (canceled, cont, dontAskAgain);
-            }
+            using var d = new TaskDialog();
+            using var yesButton = new TaskDialogButton(yes);
+            using var noButton = new TaskDialogButton(no);
+            using var cancelButton = new TaskDialogButton(cancel);
+
+            d.AllowDialogCancellation = true;
+            if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
+            d.ButtonStyle = TaskDialogButtonStyle.Standard;
+            d.WindowTitle = title;
+            d.Content = message;
+            if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
+            d.Buttons.Add(yesButton);
+            d.Buttons.Add(noButton);
+            d.Buttons.Add(cancelButton);
+            var buttonClicked = d.ShowDialog();
+            var canceled = buttonClicked == null || buttonClicked == cancelButton;
+            var cont = buttonClicked == yesButton;
+            var dontAskAgain = d.IsVerificationChecked;
+            return (canceled, cont, dontAskAgain);
         }
 
         public (bool Cancel, bool DontAskAgain)
         AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
             string yes, string no)
         {
-            using (var d = new TaskDialog())
-            using (var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes))
-            using (var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No))
-            {
-                d.AllowDialogCancellation = true;
-                if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
-                d.ButtonStyle = TaskDialogButtonStyle.Standard;
-                d.WindowTitle = title;
-                d.Content = message;
-                d.VerificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
-                d.Buttons.Add(yesButton);
-                d.Buttons.Add(noButton);
-                var buttonClicked = d.ShowDialog();
-                var cancel = buttonClicked != yesButton;
-                var dontAskAgain = d.IsVerificationChecked;
-                return (cancel, dontAskAgain);
-            }
+            using var d = new TaskDialog();
+            using var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
+            using var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
+
+            d.AllowDialogCancellation = true;
+            if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
+            d.ButtonStyle = TaskDialogButtonStyle.Standard;
+            d.WindowTitle = title;
+            d.Content = message;
+            d.VerificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
+            d.Buttons.Add(yesButton);
+            d.Buttons.Add(noButton);
+            var buttonClicked = d.ShowDialog();
+            var cancel = buttonClicked != yesButton;
+            var dontAskAgain = d.IsVerificationChecked;
+            return (cancel, dontAskAgain);
         }
 
         public void ShowAlert(string message, string title) => MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2037,7 +2036,7 @@ namespace AngelLoader.Forms
                     var fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
                     if (((fmFinished > 0 || fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
-                        ((fmFinished <= 0 && !fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished))
+                        (fmFinished == 0 && !fmFinishedOnUnknown && (FMsDGV.Filter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2167,25 +2166,26 @@ namespace AngelLoader.Forms
 
             // PERF: ~0.14ms per FM for en-US Long Date format
             // PERF_TODO: Test with custom - dt.ToString() might be slow?
-            string FormattedDate(DateTime dt)
+            static string FormattedDate(DateTime dt) => Config.DateFormat switch
             {
-                return
-                    Config.DateFormat == DateFormat.CurrentCultureShort ? dt.ToShortDateString() :
-                    Config.DateFormat == DateFormat.CurrentCultureLong ? dt.ToLongDateString() :
-                    Config.DateFormat == DateFormat.Custom ? dt.ToString(Config.DateCustomFormatString) :
-                    throw new Exception("Config.DateFormat is not what it should be!");
-            }
+                DateFormat.CurrentCultureShort => dt.ToShortDateString(),
+                DateFormat.CurrentCultureLong => dt.ToLongDateString(),
+                DateFormat.Custom => dt.ToString(Config.DateCustomFormatString),
+                _ => throw new Exception("Config.DateFormat is not what it should be!")
+            };
 
             switch ((Column)e.ColumnIndex)
             {
                 case Column.Game:
-                    e.Value =
-                        fm.Game == Game.Thief1 ? Thief1Icon :
-                        fm.Game == Game.Thief2 ? Thief2Icon :
-                        fm.Game == Game.Thief3 ? Thief3Icon :
-                        fm.Game == Game.Unsupported ? RedQuestionMarkIcon :
+                    e.Value = fm.Game switch
+                    {
+                        Game.Thief1 => Thief1Icon,
+                        Game.Thief2 => Thief2Icon,
+                        Game.Thief3 => Thief3Icon,
+                        Game.Unsupported => RedQuestionMarkIcon,
                         // Can't say null, or else it sets an ugly red-x image
-                        BlankIcon;
+                        _ => BlankIcon
+                    };
                     break;
 
                 case Column.Installed:

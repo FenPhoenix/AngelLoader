@@ -94,10 +94,8 @@ namespace AngelLoader.Common
         {
             try
             {
-                using (var sw = new StreamWriter(Paths.LogFile, append: false))
-                {
-                    sw.WriteLine(GetDateTimeStringFast() + " " + message + "\r\n");
-                }
+                using var sw = new StreamWriter(Paths.LogFile, append: false);
+                sw.WriteLine(GetDateTimeStringFast() + " " + message + "\r\n");
             }
             catch (Exception logEx)
             {
@@ -132,14 +130,14 @@ namespace AngelLoader.Common
             try
             {
                 Lock.EnterWriteLock();
-                using (var sw = new StreamWriter(Paths.LogFile, append: true))
-                {
-                    var methodNameStr = methodName ? callerMemberName + "\r\n" : "";
-                    sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
-                    if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
-                    if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
-                    sw.WriteLine();
-                }
+                
+                using var sw = new StreamWriter(Paths.LogFile, append: true);
+                
+                var methodNameStr = methodName ? callerMemberName + "\r\n" : "";
+                sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
+                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
+                if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
+                sw.WriteLine();
             }
             catch (Exception logEx)
             {

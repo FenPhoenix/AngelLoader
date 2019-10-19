@@ -44,16 +44,18 @@ namespace AngelLoader.CustomControls
 
             this.CenterHV(Owner, clientSize: true);
 
-            ProgressMessageLabel.Text =
-                progressTask == ProgressTasks.ScanAllFMs ? LText.ProgressBox.Scanning :
-                progressTask == ProgressTasks.InstallFM ? LText.ProgressBox.InstallingFM :
-                progressTask == ProgressTasks.UninstallFM ? LText.ProgressBox.UninstallingFM :
-                progressTask == ProgressTasks.ConvertFiles ? LText.ProgressBox.ConvertingFiles :
-                progressTask == ProgressTasks.ImportFromDarkLoader ? LText.ProgressBox.ImportingFromDarkLoader :
-                progressTask == ProgressTasks.ImportFromNDL ? LText.ProgressBox.ImportingFromNewDarkLoader :
-                progressTask == ProgressTasks.ImportFromFMSel ? LText.ProgressBox.ImportingFromFMSel :
-                progressTask == ProgressTasks.CacheFM ? LText.ProgressBox.CachingReadmeFiles :
-                "";
+            ProgressMessageLabel.Text = progressTask switch
+            {
+                ProgressTasks.ScanAllFMs => LText.ProgressBox.Scanning,
+                ProgressTasks.InstallFM => LText.ProgressBox.InstallingFM,
+                ProgressTasks.UninstallFM => LText.ProgressBox.UninstallingFM,
+                ProgressTasks.ConvertFiles => LText.ProgressBox.ConvertingFiles,
+                ProgressTasks.ImportFromDarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
+                ProgressTasks.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
+                ProgressTasks.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
+                ProgressTasks.CacheFM => LText.ProgressBox.CachingReadmeFiles,
+                _ => ""
+            };
 
             CurrentThingLabel.Text =
                 progressTask == ProgressTasks.ScanAllFMs ? LText.ProgressBox.CheckingInstalledFMs

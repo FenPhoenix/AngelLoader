@@ -110,83 +110,83 @@ namespace AngelLoader.CustomControls
 
                 ColumnHeaderMenuDisposables = new IDisposable[]
                 {
-                (ColumnHeaderContextMenu = new ContextMenuStripCustom { Name = nameof(ColumnHeaderContextMenu) }),
-                (ResetColumnVisibilityMenuItem = new ToolStripMenuItem { Name = nameof(ResetColumnVisibilityMenuItem) }),
-                (ResetAllColumnWidthsMenuItem = new ToolStripMenuItem { Name = nameof(ResetAllColumnWidthsMenuItem) }),
-                (ResetColumnPositionsMenuItem = new ToolStripMenuItem { Name = nameof(ResetColumnPositionsMenuItem) }),
-                (ColumnHeaderContextMenuSep1 = new ToolStripSeparator { Name = nameof(ColumnHeaderContextMenuSep1) }),
-                (ShowGameMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowGameMenuItem),
-                    Tag = Column.Game
-                }),
-                (ShowInstalledMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowInstalledMenuItem),
-                    Tag = Column.Installed
-                }),
-                (ShowTitleMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowTitleMenuItem),
-                    Tag = Column.Title
-                }),
-                (ShowArchiveMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowArchiveMenuItem),
-                    Tag = Column.Archive
-                }),
-                (ShowAuthorMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowAuthorMenuItem),
-                    Tag = Column.Author
-                }),
-                (ShowSizeMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowSizeMenuItem),
-                    Tag = Column.Size
-                }),
-                (ShowRatingMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowRatingMenuItem),
-                    Tag = Column.Rating
-                }),
-                (ShowFinishedMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowFinishedMenuItem),
-                    Tag = Column.Finished
-                }),
-                (ShowReleaseDateMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowReleaseDateMenuItem),
-                    Tag = Column.ReleaseDate
-                }),
-                (ShowLastPlayedMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowLastPlayedMenuItem),
-                    Tag = Column.LastPlayed
-                }),
-                (ShowDisabledModsMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowDisabledModsMenuItem),
-                    Tag = Column.DisabledMods
-                }),
-                (ShowCommentMenuItem = new ToolStripMenuItem
-                {
-                    CheckOnClick = true,
-                    Name = nameof(ShowCommentMenuItem),
-                    Tag = Column.Comment
-                })
+                    ColumnHeaderContextMenu = new ContextMenuStripCustom { Name = nameof(ColumnHeaderContextMenu) },
+                    ResetColumnVisibilityMenuItem = new ToolStripMenuItem { Name = nameof(ResetColumnVisibilityMenuItem) },
+                    ResetAllColumnWidthsMenuItem = new ToolStripMenuItem { Name = nameof(ResetAllColumnWidthsMenuItem) },
+                    ResetColumnPositionsMenuItem = new ToolStripMenuItem { Name = nameof(ResetColumnPositionsMenuItem) },
+                    ColumnHeaderContextMenuSep1 = new ToolStripSeparator { Name = nameof(ColumnHeaderContextMenuSep1) },
+                    ShowGameMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowGameMenuItem),
+                        Tag = Column.Game
+                    },
+                    ShowInstalledMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowInstalledMenuItem),
+                        Tag = Column.Installed
+                    },
+                    ShowTitleMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowTitleMenuItem),
+                        Tag = Column.Title
+                    },
+                    ShowArchiveMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowArchiveMenuItem),
+                        Tag = Column.Archive
+                    },
+                    ShowAuthorMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowAuthorMenuItem),
+                        Tag = Column.Author
+                    },
+                    ShowSizeMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowSizeMenuItem),
+                        Tag = Column.Size
+                    },
+                    ShowRatingMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowRatingMenuItem),
+                        Tag = Column.Rating
+                    },
+                    ShowFinishedMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowFinishedMenuItem),
+                        Tag = Column.Finished
+                    },
+                    ShowReleaseDateMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowReleaseDateMenuItem),
+                        Tag = Column.ReleaseDate
+                    },
+                    ShowLastPlayedMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowLastPlayedMenuItem),
+                        Tag = Column.LastPlayed
+                    },
+                    ShowDisabledModsMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowDisabledModsMenuItem),
+                        Tag = Column.DisabledMods
+                    },
+                    ShowCommentMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowCommentMenuItem),
+                        Tag = Column.Comment
+                    }
                 };
 
                 #endregion

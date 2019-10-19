@@ -1,20 +1,24 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.CustomControls
 {
     internal static class RichTextBoxCustom_Interop
     {
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll"), SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern IntPtr SetCursor(HandleRef hcursor);
 
         #region Reader mode
 
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal delegate bool TranslateDispatchCallbackDelegate(ref Message lpmsg);
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal delegate bool ReaderScrollCallbackDelegate(ref READERMODEINFO prmi, int dx, int dy);
 
-        [Flags]
+        [Flags, UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         internal enum ReaderModeFlags
         {
             None = 0x00,
@@ -23,7 +27,7 @@ namespace AngelLoader.CustomControls
             HorizontalOnly = 0x04
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential), SuppressMessage("ReSharper", "IdentifierTypo")]
         internal struct READERMODEINFO
         {
             internal int cbSize;
@@ -35,6 +39,7 @@ namespace AngelLoader.CustomControls
             internal IntPtr lParam;
         }
 
+        [SuppressMessage("ReSharper", "StringLiteralTypo"), SuppressMessage("ReSharper", "IdentifierTypo")]
         [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
         internal static extern void DoReaderMode(ref READERMODEINFO prmi);
 
@@ -42,7 +47,8 @@ namespace AngelLoader.CustomControls
 
         #region Cursor fix
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential), UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [SuppressMessage("ReSharper", "IdentifierTypo"), SuppressMessage("ReSharper", "CommentTypo")]
         internal struct NMHDR
         {
             internal IntPtr hwndFrom;
@@ -50,7 +56,8 @@ namespace AngelLoader.CustomControls
             internal int code;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential), UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer"), SuppressMessage("ReSharper", "IdentifierTypo")]
         internal class ENLINK
         {
             internal NMHDR nmhdr;
@@ -60,7 +67,8 @@ namespace AngelLoader.CustomControls
             internal CHARRANGE charrange = null;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential), UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal class CHARRANGE
         {
             internal int cpMin;
@@ -71,6 +79,7 @@ namespace AngelLoader.CustomControls
 
         #region Scroll
 
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers), SuppressMessage("ReSharper", "IdentifierTypo")]
         internal struct SCROLLINFO
         {
             internal uint cbSize;
@@ -82,6 +91,7 @@ namespace AngelLoader.CustomControls
             internal int nTrackPos;
         }
 
+        [PublicAPI, SuppressMessage("ReSharper", "IdentifierTypo")]
         internal enum ScrollBarDirection
         {
             SB_HORZ = 0,
@@ -90,6 +100,7 @@ namespace AngelLoader.CustomControls
             SB_BOTH = 3
         }
 
+        [PublicAPI, SuppressMessage("ReSharper", "IdentifierTypo")]
         internal enum ScrollInfoMask
         {
             SIF_RANGE = 0x0001,
@@ -102,9 +113,10 @@ namespace AngelLoader.CustomControls
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll"), SuppressMessage("ReSharper", "IdentifierTypo")]
         internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
 
         [DllImport("user32.dll")]

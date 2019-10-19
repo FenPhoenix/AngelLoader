@@ -5,11 +5,11 @@ using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 
 namespace AngelLoader.Common.DataClasses
 {
-    internal sealed class ConfigVar
-    {
-        internal string Name = "";
-        internal string Command = "";
-    }
+    //internal sealed class ConfigVar
+    //{
+    //    internal string Name = "";
+    //    internal string Command = "";
+    //}
 
     #region Columns
 

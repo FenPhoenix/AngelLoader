@@ -19,14 +19,14 @@ namespace AngelLoader.CustomControls
 
         internal static void PaintPlusButton(Button button, PaintEventArgs e)
         {
-            var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, (button.ClientRectangle.Height / 2), 10, 2);
-            var vRect = new Rectangle((button.ClientRectangle.Width / 2), (button.ClientRectangle.Height / 2) - 4, 2, 10);
+            var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
+            var vRect = new Rectangle(button.ClientRectangle.Width / 2, (button.ClientRectangle.Height / 2) - 4, 2, 10);
             e.Graphics.FillRectangles(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, new[] { hRect, vRect });
         }
 
         internal static void PaintMinusButton(Button button, PaintEventArgs e)
         {
-            var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, (button.ClientRectangle.Height / 2), 10, 2);
+            var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
             e.Graphics.FillRectangle(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, hRect);
         }
 

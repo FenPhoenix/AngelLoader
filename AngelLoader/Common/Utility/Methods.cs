@@ -139,23 +139,21 @@ namespace AngelLoader.Common.Utility
             return false;
         }
 
-        internal static string GetGameNameFromGameType(Game gameType)
+        internal static string GetGameNameFromGameType(Game gameType) => gameType switch
         {
-            return
-                gameType == Game.Thief1 ? "Thief 1" :
-                gameType == Game.Thief2 ? "Thief 2" :
-                gameType == Game.Thief3 ? "Thief 3" :
-                "[UnknownGameType]";
-        }
+            Game.Thief1 => "Thief 1",
+            Game.Thief2 => "Thief 2",
+            Game.Thief3 => "Thief 3",
+            _ => "[UnknownGameType]"
+        };
 
-        internal static string GetGameExeFromGameType(Game gameType)
+        internal static string GetGameExeFromGameType(Game gameType) => gameType switch
         {
-            return
-                gameType == Game.Thief1 ? Config.T1Exe :
-                gameType == Game.Thief2 ? Config.T2Exe :
-                gameType == Game.Thief3 ? Config.T3Exe :
-                null;
-        }
+            Game.Thief1 => Config.T1Exe,
+            Game.Thief2 => Config.T2Exe,
+            Game.Thief3 => Config.T3Exe,
+            _ => null
+        };
 
         [PublicAPI]
         internal static string GetProcessPath(int procId)
@@ -172,16 +170,13 @@ namespace AngelLoader.Common.Utility
             return "";
         }
 
-        internal static string GetFMInstallsBasePath(Game game)
+        internal static string GetFMInstallsBasePath(Game game) => game switch
         {
-            var thisFMInstallsBasePath =
-                game == Game.Thief1 ? Config.FMInstallPaths.T1 :
-                game == Game.Thief2 ? Config.FMInstallPaths.T2 :
-                game == Game.Thief3 ? Config.FMInstallPaths.T3 :
-                null;
-
-            return thisFMInstallsBasePath ?? "";
-        }
+            Game.Thief1 => Config.FMInstallPaths.T1,
+            Game.Thief2 => Config.FMInstallPaths.T2,
+            Game.Thief3 => Config.FMInstallPaths.T3,
+            _ => ""
+        };
 
         /// <summary>
         /// Returns the list of FM archive paths, returning subfolders as well if that option is enabled.

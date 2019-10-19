@@ -30,7 +30,7 @@ namespace AngelLoader.Forms.Import
             AutodetectGameIni(Game.Thief3, Thief3IniTextBox);
         }
 
-        internal void Localize()
+        private void Localize()
         {
             ChooseIniFilesLabel.Text = ImportType == ImportType.NewDarkLoader
                 ? LText.Importing.ChooseNewDarkLoaderIniFiles
@@ -73,13 +73,13 @@ namespace AngelLoader.Forms.Import
                 s == Thief2IniBrowseButton ? Thief2IniTextBox :
                 Thief3IniTextBox;
 
-            using (var d = new OpenFileDialog())
+            using var d = new OpenFileDialog
             {
-                d.Filter = LText.BrowseDialogs.IniFiles + @"|*.ini|" + LText.BrowseDialogs.AllFiles + @"|*.*";
-                if (d.ShowDialog() != DialogResult.OK) return;
+                Filter = LText.BrowseDialogs.IniFiles + @"|*.ini|" + LText.BrowseDialogs.AllFiles + @"|*.*"
+            };
+            if (d.ShowDialog() != DialogResult.OK) return;
 
-                tb.Text = d.FileName;
-            }
+            tb.Text = d.FileName;
         }
 
         private void AutodetectCheckBoxes_CheckedChanged(object sender, EventArgs e)

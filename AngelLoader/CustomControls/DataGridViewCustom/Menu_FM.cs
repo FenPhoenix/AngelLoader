@@ -93,51 +93,51 @@ namespace AngelLoader.CustomControls
 
             FMContextMenuDisposables = new IDisposable[]
             {
-                (FMContextMenu = new ContextMenuStrip { Name = nameof(FMContextMenu) }),
-                (PlayFMMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMMenuItem) }),
-                (PlayFMInMPMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMInMPMenuItem) }),
-                (PlayFMAdvancedMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMAdvancedMenuItem) }),
+                FMContextMenu = new ContextMenuStrip { Name = nameof(FMContextMenu) },
+                PlayFMMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMMenuItem) },
+                PlayFMInMPMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMInMPMenuItem) },
+                PlayFMAdvancedMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMAdvancedMenuItem) },
 
-                (InstallUninstallMenuItem = new ToolStripMenuItem { Name = nameof(InstallUninstallMenuItem) }),
+                InstallUninstallMenuItem = new ToolStripMenuItem { Name = nameof(InstallUninstallMenuItem) },
 
-                (OpenInDromEdSep = new ToolStripSeparator { Name = nameof(OpenInDromEdSep) }),
-                (OpenInDromEdMenuItem = new ToolStripMenuItem { Name = nameof(OpenInDromEdMenuItem) }),
+                OpenInDromEdSep = new ToolStripSeparator { Name = nameof(OpenInDromEdSep) },
+                OpenInDromEdMenuItem = new ToolStripMenuItem { Name = nameof(OpenInDromEdMenuItem) },
 
-                (FMContextMenuSep1 = new ToolStripSeparator { Name = nameof(FMContextMenuSep1) }),
+                FMContextMenuSep1 = new ToolStripSeparator { Name = nameof(FMContextMenuSep1) },
 
-                (ScanFMMenuItem = new ToolStripMenuItem { Name = nameof(ScanFMMenuItem) }),
+                ScanFMMenuItem = new ToolStripMenuItem { Name = nameof(ScanFMMenuItem) },
 
-                (ConvertAudioRCSubMenu = new ToolStripMenuItem { Name = nameof(ConvertAudioRCSubMenu) }),
-                (ConvertWAVsTo16BitMenuItem = new ToolStripMenuItem { Name = nameof(ConvertWAVsTo16BitMenuItem) }),
-                (ConvertOGGsToWAVsMenuItem = new ToolStripMenuItem { Name = nameof(ConvertOGGsToWAVsMenuItem) }),
+                ConvertAudioRCSubMenu = new ToolStripMenuItem { Name = nameof(ConvertAudioRCSubMenu) },
+                ConvertWAVsTo16BitMenuItem = new ToolStripMenuItem { Name = nameof(ConvertWAVsTo16BitMenuItem) },
+                ConvertOGGsToWAVsMenuItem = new ToolStripMenuItem { Name = nameof(ConvertOGGsToWAVsMenuItem) },
 
-                (FMContextMenuSep2 = new ToolStripSeparator { Name = nameof(FMContextMenuSep2) }),
+                FMContextMenuSep2 = new ToolStripSeparator { Name = nameof(FMContextMenuSep2) },
 
-                (RatingMenuItem = new ToolStripMenuItem { Name = nameof(RatingMenuItem) }),
-                (RatingMenuUnrated = new ToolStripMenuItem { Name = nameof(RatingMenuUnrated), CheckOnClick = true }),
-                (Rating0MenuItem = new ToolStripMenuItem { Name = nameof(Rating0MenuItem), CheckOnClick = true }),
-                (Rating1MenuItem = new ToolStripMenuItem { Name = nameof(Rating1MenuItem), CheckOnClick = true }),
-                (Rating2MenuItem = new ToolStripMenuItem { Name = nameof(Rating2MenuItem), CheckOnClick = true }),
-                (Rating3MenuItem = new ToolStripMenuItem { Name = nameof(Rating3MenuItem), CheckOnClick = true }),
-                (Rating4MenuItem = new ToolStripMenuItem { Name = nameof(Rating4MenuItem), CheckOnClick = true }),
-                (Rating5MenuItem = new ToolStripMenuItem { Name = nameof(Rating5MenuItem), CheckOnClick = true }),
-                (Rating6MenuItem = new ToolStripMenuItem { Name = nameof(Rating6MenuItem), CheckOnClick = true }),
-                (Rating7MenuItem = new ToolStripMenuItem { Name = nameof(Rating7MenuItem), CheckOnClick = true }),
-                (Rating8MenuItem = new ToolStripMenuItem { Name = nameof(Rating8MenuItem), CheckOnClick = true }),
-                (Rating9MenuItem = new ToolStripMenuItem { Name = nameof(Rating9MenuItem), CheckOnClick = true }),
-                (Rating10MenuItem = new ToolStripMenuItem { Name = nameof(Rating10MenuItem), CheckOnClick = true }),
+                RatingMenuItem = new ToolStripMenuItem { Name = nameof(RatingMenuItem) },
+                RatingMenuUnrated = new ToolStripMenuItem { Name = nameof(RatingMenuUnrated), CheckOnClick = true },
+                Rating0MenuItem = new ToolStripMenuItem { Name = nameof(Rating0MenuItem), CheckOnClick = true },
+                Rating1MenuItem = new ToolStripMenuItem { Name = nameof(Rating1MenuItem), CheckOnClick = true },
+                Rating2MenuItem = new ToolStripMenuItem { Name = nameof(Rating2MenuItem), CheckOnClick = true },
+                Rating3MenuItem = new ToolStripMenuItem { Name = nameof(Rating3MenuItem), CheckOnClick = true },
+                Rating4MenuItem = new ToolStripMenuItem { Name = nameof(Rating4MenuItem), CheckOnClick = true },
+                Rating5MenuItem = new ToolStripMenuItem { Name = nameof(Rating5MenuItem), CheckOnClick = true },
+                Rating6MenuItem = new ToolStripMenuItem { Name = nameof(Rating6MenuItem), CheckOnClick = true },
+                Rating7MenuItem = new ToolStripMenuItem { Name = nameof(Rating7MenuItem), CheckOnClick = true },
+                Rating8MenuItem = new ToolStripMenuItem { Name = nameof(Rating8MenuItem), CheckOnClick = true },
+                Rating9MenuItem = new ToolStripMenuItem { Name = nameof(Rating9MenuItem), CheckOnClick = true },
+                Rating10MenuItem = new ToolStripMenuItem { Name = nameof(Rating10MenuItem), CheckOnClick = true },
 
-                (FinishedOnMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnMenuItem) }),
-                (FinishedOnMenu = new ContextMenuStripCustom { Name = nameof(FinishedOnMenu) }),
-                (FinishedOnNormalMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnNormalMenuItem), CheckOnClick = true }),
-                (FinishedOnHardMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnHardMenuItem), CheckOnClick = true }),
-                (FinishedOnExpertMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnExpertMenuItem), CheckOnClick = true }),
-                (FinishedOnExtremeMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnExtremeMenuItem), CheckOnClick = true }),
-                (FinishedOnUnknownMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnUnknownMenuItem), CheckOnClick = true }),
+                FinishedOnMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnMenuItem) },
+                FinishedOnMenu = new ContextMenuStripCustom { Name = nameof(FinishedOnMenu) },
+                FinishedOnNormalMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnNormalMenuItem), CheckOnClick = true },
+                FinishedOnHardMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnHardMenuItem), CheckOnClick = true },
+                FinishedOnExpertMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnExpertMenuItem), CheckOnClick = true },
+                FinishedOnExtremeMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnExtremeMenuItem), CheckOnClick = true },
+                FinishedOnUnknownMenuItem = new ToolStripMenuItem { Name = nameof(FinishedOnUnknownMenuItem), CheckOnClick = true },
 
-                (FMContextMenuSep3 = new ToolStripSeparator { Name = nameof(FMContextMenuSep3) }),
+                FMContextMenuSep3 = new ToolStripSeparator { Name = nameof(FMContextMenuSep3) },
 
-                (WebSearchMenuItem = new ToolStripMenuItem { Name = nameof(WebSearchMenuItem) })
+                WebSearchMenuItem = new ToolStripMenuItem { Name = nameof(WebSearchMenuItem) }
             };
             #endregion
 

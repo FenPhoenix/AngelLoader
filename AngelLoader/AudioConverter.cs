@@ -45,20 +45,19 @@ namespace AngelLoader
                 // minute.
                 try
                 {
-                    using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
-                    using (var br = new BinaryReader(fs, Encoding.ASCII))
-                    {
-                        var riff = Encoding.ASCII.GetString(br.ReadBytes(4));
-                        if (riff != "RIFF") return -1;
-                        br.ReadBytes(4);
-                        var wave = Encoding.ASCII.GetString(br.ReadBytes(4));
-                        if (wave != "WAVE") return 0;
-                        var fmt = Encoding.ASCII.GetString(br.ReadBytes(4));
-                        if (fmt != "fmt ") return 0;
-                        br.ReadBytes(18);
-                        ushort bits = br.ReadUInt16();
-                        return bits;
-                    }
+                    using var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
+                    using var br = new BinaryReader(fs, Encoding.ASCII);
+
+                    var riff = Encoding.ASCII.GetString(br.ReadBytes(4));
+                    if (riff != "RIFF") return -1;
+                    br.ReadBytes(4);
+                    var wave = Encoding.ASCII.GetString(br.ReadBytes(4));
+                    if (wave != "WAVE") return 0;
+                    var fmt = Encoding.ASCII.GetString(br.ReadBytes(4));
+                    if (fmt != "fmt ") return 0;
+                    br.ReadBytes(18);
+                    ushort bits = br.ReadUInt16();
+                    return bits;
                 }
                 catch (Exception)
                 {
@@ -85,17 +84,16 @@ namespace AngelLoader
                     {
                         if (e.Data.IsEmpty()) return;
 
-                        using (var sr = new StringReader(e.Data))
+                        using var sr = new StringReader(e.Data);
+
+                        string line;
+                        while ((line = sr.ReadLine()) != null)
                         {
-                            string line;
-                            while ((line = sr.ReadLine()) != null)
+                            if (line.StartsWithFast_NoNullChecks("bits_per_sample=") &&
+                                int.TryParse(line.Substring(line.IndexOf('=') + 1), out int result))
                             {
-                                if (line.StartsWithFast_NoNullChecks("bits_per_sample=") &&
-                                    int.TryParse(line.Substring(line.IndexOf('=') + 1), out int result))
-                                {
-                                    ret = result;
-                                    break;
-                                }
+                                ret = result;
+                                break;
                             }
                         }
                     };

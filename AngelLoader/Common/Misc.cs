@@ -70,6 +70,7 @@ namespace AngelLoader.Common
      and has the added bonus of guaranteeing a reset of the value due to the using block.
     */
 
+    [PublicAPI]
     internal interface IEventDisabler
     {
         bool EventsDisabled { get; set; }
@@ -91,6 +92,12 @@ namespace AngelLoader.Common
 
     #region DisableKeyPresses
 
+    [PublicAPI]
+    internal interface IKeyPressDisabler
+    {
+        bool KeyPressesDisabled { get; set; }
+    }
+
     internal sealed class DisableKeyPresses : IDisposable
     {
         private readonly IKeyPressDisabler Obj;
@@ -104,11 +111,6 @@ namespace AngelLoader.Common
         public void Dispose() => Obj.KeyPressesDisabled = false;
     }
 
-    internal interface IKeyPressDisabler
-    {
-        bool KeyPressesDisabled { get; set; }
-    }
-
     #endregion
 
     internal interface ILocalizable
@@ -116,8 +118,8 @@ namespace AngelLoader.Common
         void Localize();
     }
 
-    internal static class Regexes
-    {
-        // Uh, nothing in here at the moment.
-    }
+    //internal static class Regexes
+    //{
+    //    // Uh, nothing in here at the moment.
+    //}
 }

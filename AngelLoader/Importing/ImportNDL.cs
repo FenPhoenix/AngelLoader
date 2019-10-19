@@ -20,7 +20,7 @@ namespace AngelLoader.Importing
             Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromNDL);
             try
             {
-                var (error, fmsToScan) = await ImportNDL.ImportInternal(iniFile, fmDataIniList, fields: fields);
+                var (error, fmsToScan) = await ImportInternal(iniFile, fmDataIniList, fields: fields);
                 if (error != ImportError.None)
                 {
                     Log("Import error: " + error, stackTrace: true);

@@ -146,7 +146,7 @@ namespace AngelLoader.CustomControls
                 return;
             }
 
-            int delta = 120;
+            const int delta = 120;
             WheelAccum += (int)m.WParam >> 16;
             if (Math.Abs(WheelAccum) >= delta)
             {
