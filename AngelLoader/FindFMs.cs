@@ -90,18 +90,8 @@ namespace AngelLoader
             {
                 #region Set i-dependent values
 
-                var instFMDirs = i switch
-                {
-                    0 => t1InstalledFMDirs,
-                    1 => t2InstalledFMDirs,
-                    _ => t3InstalledFMDirs
-                };
-                var instPath = i switch
-                {
-                    0 => fmInstPaths.T1,
-                    1 => fmInstPaths.T2,
-                    _ => fmInstPaths.T3
-                };
+                var instFMDirs = i switch { 0 => t1InstalledFMDirs, 1 => t2InstalledFMDirs, _ => t3InstalledFMDirs };
+                var instPath = i switch { 0 => fmInstPaths.T1, 1 => fmInstPaths.T2, _ => fmInstPaths.T3 };
 
                 #endregion
 
@@ -159,24 +149,9 @@ namespace AngelLoader
             {
                 #region Set i-dependent values
 
-                var instFMDirs = i switch
-                {
-                    0 => t1InstalledFMDirs,
-                    1 => t2InstalledFMDirs,
-                    _ => t3InstalledFMDirs
-                };
-                var list = i switch
-                {
-                    0 => t1List,
-                    1 => t2List,
-                    _ => t3List
-                };
-                var game = i switch
-                {
-                    0 => Game.Thief1,
-                    1 => Game.Thief2,
-                    _ => Game.Thief3
-                };
+                var instFMDirs = i switch { 0 => t1InstalledFMDirs, 1 => t2InstalledFMDirs, _ => t3InstalledFMDirs };
+                var list = i switch { 0 => t1List, 1 => t2List, _ => t3List };
+                var game = i switch { 0 => Game.Thief1, 1 => Game.Thief2, _ => Game.Thief3 };
 
                 #endregion
 

@@ -507,7 +507,7 @@ namespace AngelLoader
 
         private static string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
         {
-            string CreateAndReturn(string fmsPath)
+            static string CreateAndReturn(string fmsPath)
             {
                 try
                 {
@@ -670,10 +670,10 @@ namespace AngelLoader
 
             var scanningOne = fmsToScan.Count == 1;
 
-            #region Show progress box or block UI thread
-
             try
             {
+                #region Show progress box or block UI thread
+
                 if (scanningOne)
                 {
                     Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
@@ -700,7 +700,7 @@ namespace AngelLoader
 
                 #endregion
 
-                void ReportProgress(ProgressReport pr)
+                static void ReportProgress(ProgressReport pr)
                 {
                     var fmIsZip = pr.FMName.ExtIsArchive();
                     var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
@@ -1451,7 +1451,7 @@ namespace AngelLoader
         {
             // Since an FM's readmes are very few in number, we can afford to be all kinds of lazy and slow here
 
-            string StripPunctuation(string str)
+            static string StripPunctuation(string str)
             {
                 return str.Replace(" ", "").Replace("-", "").Replace("_", "").Replace(".", "").Replace(",", "")
                     .Replace(";", "").Replace("'", "");
@@ -1471,7 +1471,7 @@ namespace AngelLoader
                 }
             }
 
-            string FirstByPreferredFormat(List<string> files)
+            static string FirstByPreferredFormat(List<string> files)
             {
                 // Don't use IsValidReadme(), because we want a specific search order
                 return
@@ -1482,7 +1482,7 @@ namespace AngelLoader
                     files.FirstOrDefault(x => x.ExtIsHtml());
             }
 
-            bool ContainsUnsafePhrase(string str)
+            static bool ContainsUnsafePhrase(string str)
             {
                 return str.ContainsI("loot") ||
                        str.ContainsI("walkthrough") ||
@@ -1496,7 +1496,7 @@ namespace AngelLoader
                        str.ContainsI("notes");
             }
 
-            bool ContainsUnsafeOrJunkPhrase(string str)
+            static bool ContainsUnsafeOrJunkPhrase(string str)
             {
                 return ContainsUnsafePhrase(str) ||
                        str.EqualsI("scripts") ||

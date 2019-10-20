@@ -60,18 +60,8 @@ namespace AngelLoader.Forms
             {
                 #region Set i-dependent values
 
-                var c1b = i switch
-                {
-                    0 => RemoveSelectedAndButton,
-                    1 => RemoveSelectedOrButton,
-                    _ => RemoveSelectedNotButton
-                };
-                var cab = i switch
-                {
-                    0 => RemoveAllAndButton,
-                    1 => RemoveAllOrButton,
-                    _ => RemoveAllNotButton
-                };
+                var c1b = i switch { 0 => RemoveSelectedAndButton, 1 => RemoveSelectedOrButton, _ => RemoveSelectedNotButton };
+                var cab = i switch { 0 => RemoveAllAndButton, 1 => RemoveAllOrButton, _ => RemoveAllNotButton };
 
                 #endregion
 
@@ -337,5 +327,19 @@ namespace AngelLoader.Forms
         private void RemoveButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton((Button)sender, e);
 
         private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintExButton((Button)sender, e);
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _arrowRightBmp?.Dispose();
+                components?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
