@@ -1286,11 +1286,10 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
                 View.ShowProgressBox(ProgressTasks.ConvertFiles);
-                await ac.ConvertOGGsToWAVs();
+                await AudioConversion.OGGsToWAVs(fm);
             }
             finally
             {
@@ -1329,11 +1328,10 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
                 View.ShowProgressBox(ProgressTasks.ConvertFiles);
-                await ac.ConvertWAVsTo16Bit();
+                await AudioConversion.WAVsTo16Bit(fm);
             }
             finally
             {

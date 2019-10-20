@@ -605,14 +605,13 @@ namespace AngelLoader
                 Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
             }
 
-            var ac = new AudioConverter(fm, GetFMInstallsBasePath(fm.Game));
             try
             {
                 Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
-                await ac.ConvertMP3sToWAVs();
+                await AudioConversion.MP3sToWAVs(fm);
 
-                if (Config.ConvertOGGsToWAVsOnInstall) await ac.ConvertOGGsToWAVs();
-                if (Config.ConvertWAVsTo16BitOnInstall) await ac.ConvertWAVsTo16Bit();
+                if (Config.ConvertOGGsToWAVsOnInstall) await AudioConversion.OGGsToWAVs(fm);
+                if (Config.ConvertWAVsTo16BitOnInstall) await AudioConversion.WAVsTo16Bit(fm);
             }
             catch (Exception ex)
             {

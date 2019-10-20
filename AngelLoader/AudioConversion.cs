@@ -12,25 +12,16 @@ using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader
-{//
-    internal class AudioConverter
+{
+    internal static class AudioConversion
     {
-        private readonly FanMission FM;
-        private readonly string InstalledFMsBasePath;
-
-        internal AudioConverter(FanMission fm, string installedFMsBasePath)
-        {
-            FM = fm;
-            InstalledFMsBasePath = installedFMsBasePath;
-        }
-
         // TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
 
         // OpenAL doesn't play nice with anything over 16 bits, blasting out white noise when it tries to play
         // such. Converting all >16bit wavs to 16 bit fixes this.
-        internal async Task ConvertWAVsTo16Bit()
+        internal static async Task WAVsTo16Bit(FanMission fm)
         {
-            if (!GameIsDark(FM)) return;
+            if (!GameIsDark(fm)) return;
 
             if (!File.Exists(Paths.FFprobeExe) || !File.Exists(Paths.FFmpegExe))
             {
@@ -110,7 +101,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    var fmSndPath = GetFMSoundPathByGame();
+                    var fmSndPath = GetFMSoundPathByGame(fm);
                     if (!Directory.Exists(fmSndPath)) return;
 
                     _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
@@ -146,23 +137,23 @@ namespace AngelLoader
         }
 
         // Dark engine games can't play MP3s, so they must be converted in all cases.
-        internal async Task ConvertMP3sToWAVs() => await ConvertToWAVs("*.mp3");
+        internal static async Task MP3sToWAVs(FanMission fm) => await ConvertToWAVs(fm, "*.mp3");
 
         // From the FMSel manual:
         // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
         // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
         // them to WAV files during installation."
-        internal async Task ConvertOGGsToWAVs() => await ConvertToWAVs("*.ogg");
+        internal static async Task OGGsToWAVs(FanMission fm) => await ConvertToWAVs(fm, "*.ogg");
 
-        private async Task ConvertToWAVs(string pattern)
+        private static async Task ConvertToWAVs(FanMission fm, string pattern)
         {
-            if (!GameIsDark(FM)) return;
+            if (!GameIsDark(fm)) return;
 
             await Task.Run(async () =>
             {
                 try
                 {
-                    var fmSndPath = GetFMSoundPathByGame();
+                    var fmSndPath = GetFMSoundPathByGame(fm);
                     if (!Directory.Exists(fmSndPath)) return;
 
                     try
@@ -216,14 +207,14 @@ namespace AngelLoader
             });
         }
 
-        private string GetFMSoundPathByGame()
+        private static string GetFMSoundPathByGame(FanMission fm)
         {
             // Only T1/T2 can have audio converted for now, because it looks like SU's FMSel pointedly doesn't do
             // any conversion whatsoever, neither automatically nor even with a menu option. I'll assume Thief 3
             // doesn't need it and leave it at that.
-            Debug.Assert(GameIsDark(FM), !FM.Archive.IsEmpty() ? FM.Archive : FM.InstalledDir + " is not T1/T2");
+            Debug.Assert(GameIsDark(fm), !fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir + " is not T1/T2");
 
-            return Path.Combine(InstalledFMsBasePath, FM.InstalledDir, "snd");
+            return Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir, "snd");
         }
     }
 }
