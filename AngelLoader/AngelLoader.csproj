@@ -434,9 +434,6 @@
       <DependentUpon>FilterTagsForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Import\ImportFromMultipleLoadersForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>ImportFromMultipleLoadersForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Import\ImportFromDarkLoaderForm.resx" Condition="'$(Configuration)' == 'Debug'">
       <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
     </EmbeddedResource>
