@@ -174,19 +174,14 @@ namespace AngelLoader
 
         private static void StartExe(string exe, string workingPath, string args)
         {
-            using var proc = new Process
+            try
             {
-                StartInfo =
+                ProcessStart_UseShellExecute(new ProcessStartInfo
                 {
                     FileName = exe,
                     WorkingDirectory = workingPath,
                     Arguments = !args.IsEmpty() ? args : ""
-                }
-            };
-
-            try
-            {
-                proc.Start();
+                });
             }
             catch (Exception ex)
             {
@@ -257,7 +252,7 @@ namespace AngelLoader
                 {
                     Game.Thief1 => SteamAppIds.ThiefGold,
                     Game.Thief2 => SteamAppIds.Thief2,
-                              _ => SteamAppIds.Thief3
+                    _ => SteamAppIds.Thief3
                 };
 
                 return (true, gameExe, gamePath, args);

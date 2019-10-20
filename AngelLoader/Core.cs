@@ -1609,7 +1609,7 @@ namespace AngelLoader
 
             try
             {
-                Process.Start(fmDir);
+                ProcessStart_UseShellExecute(fmDir);
             }
             catch (Exception ex)
             {
@@ -1630,7 +1630,7 @@ namespace AngelLoader
 
             try
             {
-                Process.Start(finalUrl);
+                ProcessStart_UseShellExecute(finalUrl);
             }
             catch (FileNotFoundException ex)
             {
@@ -1660,7 +1660,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    Process.Start(path);
+                    ProcessStart_UseShellExecute(path);
                 }
                 catch (Exception ex)
                 {
@@ -1677,7 +1677,7 @@ namespace AngelLoader
         {
             try
             {
-                Process.Start(link);
+                ProcessStart_UseShellExecute(link);
             }
             catch (Exception ex)
             {
