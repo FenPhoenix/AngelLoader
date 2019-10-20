@@ -43,11 +43,18 @@ namespace AngelLoader.Common
             {
                 // Tested on Win7 Ultimate 64: Admin and non-Admin accounts can both read this key
                 // TODO: Test on Win10
-                // TODO: If we ever go 64-bit, this will need to be augmented with a Wow6432Node check
-                // Software\Wow6432Node\... rather than just Software\...
-                // But don't do it if we don't need to cause then it's twice as many checks and twice as slow
+
+                // We're not x64 currently, but this check lets us be compatible for an easy switch if we decide
+                // to do so in the future.
                 var regKey = Registry.GetValue(
-                    @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows", "SaveGamePath", -1);
+                    !Environment.Is64BitProcess
+                        // If we're x86 Win/x86 app OR x64 Win/x86 app, then this is the right path. On x86 Win,
+                        // this is the actual registry path, and on x64 Win/x86 app, this will redirect to the
+                        // actual path (which is the same except "Wow6432Node\" is inserted after "Software\")
+                        ? @"HKEY_LOCAL_MACHINE\Software\Ion Storm\Thief - Deadly Shadows"
+                        // If we're x64 Win/x64 app, then \Software WON'T redirect to Software\Wow6432Node, so we
+                        // have to do it ourselves.
+                        : @"HKEY_LOCAL_MACHINE\Software\Wow6432Node\Ion Storm\Thief - Deadly Shadows", "SaveGamePath", -1);
 
                 // Must check for null, because a null return means "path not found", while a default value return
                 // means "key name not found". Jank.
