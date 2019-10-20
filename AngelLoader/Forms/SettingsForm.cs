@@ -501,33 +501,11 @@ namespace AngelLoader.Forms
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
                 // Manual "flow layout" for textbox/browse button combos
-                // TODO: I could just make these sequential/manual and it would be the same amount of code now
-                for (int i = 0; i < 5; i++)
-                {
-                    #region Set i-dependent values
-
-                    var button = i switch
-                    {
-                        0 => PathsPage.Thief1ExePathBrowseButton,
-                        1 => PathsPage.Thief2ExePathBrowseButton,
-                        2 => PathsPage.Thief3ExePathBrowseButton,
-                        3 => PathsPage.BackupPathBrowseButton,
-                        _ => PathsPage.SteamExeBrowseButton
-                    };
-
-                    var textBox = i switch
-                    {
-                        0 => PathsPage.Thief1ExePathTextBox,
-                        1 => PathsPage.Thief2ExePathTextBox,
-                        2 => PathsPage.Thief3ExePathTextBox,
-                        3 => PathsPage.BackupPathTextBox,
-                        _ => PathsPage.SteamExeTextBox
-                    };
-
-                    #endregion
-
-                    button.SetTextAutoSize(textBox, LText.Global.BrowseEllipses);
-                }
+                PathsPage.Thief1ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief1ExePathTextBox, LText.Global.BrowseEllipses);
+                PathsPage.Thief2ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief2ExePathTextBox, LText.Global.BrowseEllipses);
+                PathsPage.Thief3ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief3ExePathTextBox, LText.Global.BrowseEllipses);
+                PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
+                PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
 
                 PathsPage.GameRequirementsLabel.Text =
                     LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark + Environment.NewLine +
