@@ -38,7 +38,7 @@ namespace AngelLoader
                 return;
             }
 
-            int GetBitDepthFast(string file)
+            static int GetBitDepthFast(string file)
             {
                 // In case we read past the end of the file or can't open the file or whatever. We're trying to
                 // be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch it in a
