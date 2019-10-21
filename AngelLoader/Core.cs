@@ -201,7 +201,8 @@ namespace AngelLoader
                 !startup &&
                 (!Config.T1Exe.EqualsI(sf.OutConfig.T1Exe) ||
                  !Config.T2Exe.EqualsI(sf.OutConfig.T2Exe) ||
-                 !Config.T3Exe.EqualsI(sf.OutConfig.T3Exe));
+                 !Config.T3Exe.EqualsI(sf.OutConfig.T3Exe) ||
+                 !Config.SS2Exe.EqualsI(sf.OutConfig.SS2Exe));
 
             bool gameOrganizationChanged =
                 !startup && Config.GameOrganization != sf.OutConfig.GameOrganization;
