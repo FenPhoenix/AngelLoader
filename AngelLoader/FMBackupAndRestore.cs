@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
@@ -41,10 +42,17 @@ namespace AngelLoader
     {
         private const string T3SavesDir = "SaveGames";
         private const string DarkSavesDir = "saves";
+        private const string SS2CurrentDir = "current";
         // For multiplayer (currently T2-only)
         private const string DarkNetSavesDir = "netsaves";
         private const string ScreensDir = "screenshots";
         private const string RemoveFileEq = "RemoveFile=";
+
+        private static readonly Regex SS2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}/",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private static readonly Regex SS2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0123456789]{1,2}[/\\]?$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private static string ToSystemDirSep(this string str)
         {
@@ -73,6 +81,7 @@ namespace AngelLoader
                 var netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, DarkNetSavesDir);
                 // Screenshots directory name is the same for T1/T2/T3
                 var screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, ScreensDir);
+                var ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, SS2CurrentDir);
 
                 var bakFile = Path.Combine(Config.FMsBackupPath,
                     (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
@@ -94,6 +103,22 @@ namespace AngelLoader
                     {
                         savesAndScreensFiles.AddRange(Directory.GetFiles(screensPath, "*", SearchOption.AllDirectories));
                     }
+                    if (fm.Game == Game.SS2)
+                    {
+                        savesAndScreensFiles.AddRange(Directory.GetFiles(ss2CurrentPath, "*", SearchOption.AllDirectories));
+
+                        var ss2SaveDirs = Directory.GetDirectories(
+                            Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*",
+                            SearchOption.TopDirectoryOnly);
+
+                        foreach (var dir in ss2SaveDirs)
+                        {
+                            if (SS2SaveDirsOnDiskRegex.IsMatch(dir))
+                            {
+                                savesAndScreensFiles.AddRange(Directory.GetFiles(dir, "*", SearchOption.AllDirectories));
+                            }
+                        }
+                    }
 
                     if (savesAndScreensFiles.Count == 0) return;
 
@@ -113,9 +138,8 @@ namespace AngelLoader
 
                 var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories);
 
-                bool fmIsT3 = fm.Game == Game.Thief3;
                 var (changedList, addedList, fullList) =
-                    GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fmIsT3);
+                    GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fm.Game);
 
                 // If >90% of files are different, re-run and use only size difference
                 // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
@@ -123,7 +147,7 @@ namespace AngelLoader
                 if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
                 {
                     (changedList, addedList, fullList) =
-                        GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fmIsT3, useOnlySize: true);
+                        GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fm.Game, useOnlySize: true);
                 }
 
                 try
@@ -134,7 +158,7 @@ namespace AngelLoader
                     foreach (var f in installedFMFiles)
                     {
                         var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
-                        if (IsSaveOrScreenshot(fn, fmIsT3) ||
+                        if (IsSaveOrScreenshot(fn, fm.Game) ||
                             (!fn.EqualsI(Paths.FMSelInf) && (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
                         {
                             AddEntry(archive, f, fn);
@@ -177,15 +201,17 @@ namespace AngelLoader
             fs.CopyTo(eo);
         }
 
-        private static bool IsSaveOrScreenshot(string path, bool fmIsT3)
+        private static bool IsSaveOrScreenshot(string path, Game game)
         {
-            return path.StartsWithI(ScreensDir + '/') ||
-                   (fmIsT3 && path.StartsWithI(T3SavesDir + '/')) ||
-                   (!fmIsT3 && (path.StartsWithI(DarkSavesDir + '/') || path.StartsWithI(DarkNetSavesDir + '/')));
+            return path.StartsWithI(ScreensDir + "/") ||
+                   (game == Game.Thief3 && path.StartsWithI(T3SavesDir + "/")) ||
+                   (game == Game.SS2 &&
+                    (SS2SaveDirsInZipRegex.IsMatch(path) || path.StartsWithI(SS2CurrentDir + "/"))) ||
+                   (game != Game.Thief3 && (path.StartsWithI(DarkSavesDir + "/") || path.StartsWithI(DarkNetSavesDir + "/")));
         }
 
         private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
-        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, bool fmIsT3, bool useOnlySize = false)
+        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
         {
             var changedList = new List<string>();
             var addedList = new List<string>();
@@ -204,7 +230,7 @@ namespace AngelLoader
 
                     if (efn.EqualsI(Paths.FMSelInf) ||
                         (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
-                        IsSaveOrScreenshot(efn, fmIsT3))
+                        IsSaveOrScreenshot(efn, game))
                     {
                         continue;
                     }
@@ -242,7 +268,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
+                            Log("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
                         }
                     }
                 }
@@ -250,7 +276,7 @@ namespace AngelLoader
                 {
                     var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
 
-                    if (fn.EqualsI(Paths.FMSelInf) || IsSaveOrScreenshot(fn, fmIsT3))
+                    if (fn.EqualsI(Paths.FMSelInf) || IsSaveOrScreenshot(fn, game))
                     {
                         continue;
                     }
@@ -279,7 +305,7 @@ namespace AngelLoader
                     if (efn.EqualsI(Paths.FMSelInf) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
                         entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
-                        IsSaveOrScreenshot(efn, fmIsT3))
+                        IsSaveOrScreenshot(efn, game))
                     {
                         continue;
                     }
@@ -310,7 +336,7 @@ namespace AngelLoader
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", " + nameof(fmIsT3) + ": " + fmIsT3 + ")", ex);
+                            Log("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
                         }
                     }
                 }
@@ -430,19 +456,18 @@ namespace AngelLoader
                     {
                         for (var i = 0; i < filesCount; i++)
                         {
-                            var f = archive.Entries[i];
-                            var fn = f.FullName.ToForwardSlashes();
-                            if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
-                                !fn.StartsWithI(DarkSavesDir + '/') ||
-                                !fn.StartsWithI(DarkNetSavesDir + '/'))
+                            var entry = archive.Entries[i];
+                            var fn = entry.FullName.ToForwardSlashes();
+                            if (!fn.Contains('/'))
                             {
-                                continue;
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, DarkSavesDir));
+                                entry.ExtractToFile(Path.Combine(fmInstalledPath, DarkSavesDir, fn), overwrite: true);
                             }
-
-                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                fn.Substring(0, fn.LastIndexOf('/'))));
-
-                            f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                            else if (fm.Game == Game.SS2 && (SS2SaveDirsInZipRegex.IsMatch(fn) || fn.StartsWithI(SS2CurrentDir + "/")))
+                            {
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOf('/'))));
+                                entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
+                            }
                         }
                     }
                     else
@@ -452,21 +477,19 @@ namespace AngelLoader
                         {
                             for (var i = 0; i < filesCount; i++)
                             {
-                                var f = archive.Entries[i];
-                                var fn = f.FullName.ToForwardSlashes();
+                                var entry = archive.Entries[i];
+                                var fn = entry.FullName.ToForwardSlashes();
 
-                                if ((fn.Length > 0 && fn[fn.Length - 1] == '/') ||
-                                    (!fn.StartsWithI(savesDir + '/') &&
-                                     !fn.StartsWithI(DarkNetSavesDir + '/') &&
-                                     !fn.StartsWithI(ScreensDir + '/')))
+                                if (fn.Length > 0 && fn[fn.Length - 1] != '/' &&
+                                    (fn.StartsWithI(savesDir + "/") ||
+                                     fn.StartsWithI(DarkNetSavesDir + "/") ||
+                                     fn.StartsWithI(ScreensDir + "/") ||
+                                     (fm.Game == Game.SS2 &&
+                                     (SS2SaveDirsInZipRegex.IsMatch(fn) || fn.StartsWithI(SS2CurrentDir + "/")))))
                                 {
-                                    continue;
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOf('/'))));
+                                    entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                                 }
-
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                    fn.Substring(0, fn.LastIndexOf('/'))));
-
-                                f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                             }
                         }
                         else
@@ -485,9 +508,11 @@ namespace AngelLoader
                                     if (!line.StartsWithFast_NoNullChecks(RemoveFileEq)) continue;
 
                                     var val = line.Substring(11).ToForwardSlashes().Trim();
-                                    if (!val.StartsWithI(savesDir + '/') &&
-                                        !val.StartsWithI(DarkNetSavesDir + '/') &&
-                                        !val.StartsWithI(ScreensDir + '/') &&
+                                    if (!val.StartsWithI(savesDir + "/") &&
+                                        !val.StartsWithI(DarkNetSavesDir + "/") &&
+                                        !val.StartsWithI(ScreensDir + "/") &&
+                                        (fm.Game != Game.SS2 ||
+                                        (!SS2SaveDirsInZipRegex.IsMatch(val) && !val.StartsWithI(SS2CurrentDir + "/"))) &&
                                         !val.EqualsI(Paths.FMSelInf) &&
                                         // Reject malformed and/or maliciously formed paths - we're going to
                                         // delete these files, and we don't want to delete anything outside
@@ -515,8 +540,7 @@ namespace AngelLoader
 
                                 if (fn.Contains('/'))
                                 {
-                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                        fn.Substring(0, fn.LastIndexOf('/'))));
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOf('/'))));
                                 }
 
                                 f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
