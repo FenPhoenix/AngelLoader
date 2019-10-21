@@ -120,6 +120,7 @@ namespace AngelLoader.Common
         internal const string FMSelInf = "fmsel.inf";
 
         internal const string DromEdExe = "DromEd.exe";
+        internal const string ShockEdExe = "ShockEd.exe";
 
         internal const string T2MPExe = "Thief2MP.exe";
 

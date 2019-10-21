@@ -184,6 +184,10 @@ namespace AngelLoader.Ini
                 {
                     config.GameTabsState.T3Filter.Title = val;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterTitle="))
+                {
+                    config.GameTabsState.SS2Filter.Title = val;
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterAuthor="))
                 {
                     config.Filter.Author = val;
@@ -199,6 +203,10 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterAuthor="))
                 {
                     config.GameTabsState.T3Filter.Author = val;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterAuthor="))
+                {
+                    config.GameTabsState.SS2Filter.Author = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateFrom="))
                 {
@@ -216,6 +224,10 @@ namespace AngelLoader.Ini
                 {
                     config.GameTabsState.T3Filter.ReleaseDateFrom = ReadNullableHexDate(val);
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterReleaseDateFrom="))
+                {
+                    config.GameTabsState.SS2Filter.ReleaseDateFrom = ReadNullableHexDate(val);
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateTo="))
                 {
                     config.Filter.ReleaseDateTo = ReadNullableHexDate(val);
@@ -231,6 +243,10 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateTo="))
                 {
                     config.GameTabsState.T3Filter.ReleaseDateTo = ReadNullableHexDate(val);
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterReleaseDateTo="))
+                {
+                    config.GameTabsState.SS2Filter.ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedFrom="))
                 {
@@ -248,6 +264,10 @@ namespace AngelLoader.Ini
                 {
                     config.GameTabsState.T3Filter.LastPlayedFrom = ReadNullableHexDate(val);
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterLastPlayedFrom="))
+                {
+                    config.GameTabsState.SS2Filter.LastPlayedFrom = ReadNullableHexDate(val);
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedTo="))
                 {
                     config.Filter.LastPlayedTo = ReadNullableHexDate(val);
@@ -264,6 +284,13 @@ namespace AngelLoader.Ini
                 {
                     config.GameTabsState.T3Filter.LastPlayedTo = ReadNullableHexDate(val);
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterLastPlayedTo="))
+                {
+                    config.GameTabsState.SS2Filter.LastPlayedTo = ReadNullableHexDate(val);
+                }
+                // Note: These lines can't index past the end, because we won't get here unless the line contains
+                // '=' and since there are no '=' chars in the checked strings, we know the length must be at least
+                // checked string length + 1
                 else if (lineT.StartsWithFast_NoNullChecks("FilterTags") && line[10] != '=')
                 {
                     ReadTags(lineT, config.Filter, "");
@@ -279,6 +306,10 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterTags") && line[12] != '=')
                 {
                     ReadTags(lineT, config.GameTabsState.T3Filter, "T3");
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterTags") && line[13] != '=')
+                {
+                    ReadTags(lineT, config.GameTabsState.SS2Filter, "SS2");
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterGames="))
                 {
@@ -297,6 +328,9 @@ namespace AngelLoader.Ini
                                 break;
                             case nameof(Game.Thief3):
                                 config.Filter.Games |= Game.Thief3;
+                                break;
+                            case nameof(Game.SS2):
+                                config.Filter.Games |= Game.SS2;
                                 break;
                         }
                     }
@@ -317,6 +351,10 @@ namespace AngelLoader.Ini
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T3Filter.RatingFrom = result;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterRatingFrom="))
+                {
+                    if (int.TryParse(val, out int result)) config.GameTabsState.SS2Filter.RatingFrom = result;
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterRatingTo="))
                 {
                     if (int.TryParse(val, out int result)) config.Filter.RatingTo = result;
@@ -332,6 +370,10 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterRatingTo="))
                 {
                     if (int.TryParse(val, out int result)) config.GameTabsState.T3Filter.RatingTo = result;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterRatingTo="))
+                {
+                    if (int.TryParse(val, out int result)) config.GameTabsState.SS2Filter.RatingTo = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterFinishedStates="))
                 {
@@ -349,6 +391,10 @@ namespace AngelLoader.Ini
                 {
                     ReadFinishedStates(val, config.GameTabsState.T3Filter);
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterFinishedStates="))
+                {
+                    ReadFinishedStates(val, config.GameTabsState.SS2Filter);
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterShowJunk="))
                 {
                     config.Filter.ShowUnsupported = val.EqualsTrue();
@@ -364,6 +410,10 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterShowJunk="))
                 {
                     config.GameTabsState.T3Filter.ShowUnsupported = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterShowJunk="))
+                {
+                    config.GameTabsState.SS2Filter.ShowUnsupported = val.EqualsTrue();
                 }
 
                 #endregion
@@ -505,6 +555,10 @@ namespace AngelLoader.Ini
                 {
                     config.T3UseSteam = val.EqualsTrue();
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SS2UseSteam) + "="))
+                {
+                    config.SS2UseSteam = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SteamExe) + "="))
                 {
                     config.SteamExe = val.Trim();
@@ -522,6 +576,10 @@ namespace AngelLoader.Ini
                 {
                     config.T3Exe = val.Trim();
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SS2Exe) + "="))
+                {
+                    config.SS2Exe = val.Trim();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.GameOrganization) + "="))
                 {
                     var field = typeof(GameOrganization).GetField(val, BFlagsEnum);
@@ -536,6 +594,7 @@ namespace AngelLoader.Ini
                     {
                         nameof(Game.Thief2) => Game.Thief2,
                         nameof(Game.Thief3) => Game.Thief3,
+                        nameof(Game.SS2) => Game.SS2,
                         _ => Game.Thief1
                     };
                 }
@@ -550,6 +609,10 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("T3SelFMInstDir="))
                 {
                     config.GameTabsState.T3SelFM.InstalledName = val;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2SelFMInstDir="))
+                {
+                    config.GameTabsState.SS2SelFM.InstalledName = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMIndexFromTop="))
                 {
@@ -570,6 +633,13 @@ namespace AngelLoader.Ini
                     if (int.TryParse(val, out int result))
                     {
                         config.GameTabsState.T3SelFM.IndexFromTop = result;
+                    }
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SS2SelFMIndexFromTop="))
+                {
+                    if (int.TryParse(val, out int result))
+                    {
+                        config.GameTabsState.SS2SelFM.IndexFromTop = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SelFMInstDir="))
@@ -850,6 +920,12 @@ namespace AngelLoader.Ini
                 {
                     if (notEmpty) ret += ",";
                     ret += nameof(Game.Thief3);
+                    notEmpty = true;
+                }
+                if ((games & Game.SS2) == Game.SS2)
+                {
+                    if (notEmpty) ret += ",";
+                    ret += nameof(Game.SS2);
                 }
 
                 return ret;
@@ -901,11 +977,13 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.T1Exe) + "=" + config.T1Exe.Trim());
                 sw.WriteLine(nameof(config.T2Exe) + "=" + config.T2Exe.Trim());
                 sw.WriteLine(nameof(config.T3Exe) + "=" + config.T3Exe.Trim());
+                sw.WriteLine(nameof(config.SS2Exe) + "=" + config.SS2Exe.Trim());
 
                 sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
                 sw.WriteLine(nameof(config.T1UseSteam) + "=" + config.T1UseSteam);
                 sw.WriteLine(nameof(config.T2UseSteam) + "=" + config.T2UseSteam);
                 sw.WriteLine(nameof(config.T3UseSteam) + "=" + config.T3UseSteam);
+                sw.WriteLine(nameof(config.SS2UseSteam) + "=" + config.SS2UseSteam);
                 sw.WriteLine(nameof(config.SteamExe) + "=" + config.SteamExe);
 
                 sw.WriteLine(nameof(config.FMsBackupPath) + "=" + config.FMsBackupPath.Trim());
@@ -947,11 +1025,11 @@ namespace AngelLoader.Ini
 
                 #region Filters
 
-                string FilterDate(DateTime? dt) => dt == null
+                static string FilterDate(DateTime? dt) => dt == null
                     ? ""
                     : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
 
-                for (int fi = 0; fi < 4; fi++)
+                for (int fi = 0; fi < 5; fi++)
                 {
                     #region Set i-dependent values
 
@@ -960,10 +1038,11 @@ namespace AngelLoader.Ini
                         0 => config.Filter,
                         1 => config.GameTabsState.T1Filter,
                         2 => config.GameTabsState.T2Filter,
-                        _ => config.GameTabsState.T3Filter
+                        4 => config.GameTabsState.T3Filter,
+                        _ => config.GameTabsState.SS2Filter
                     };
 
-                    var p = fi switch { 0 => "", 1 => "T1", 2 => "T2", _ => "T3" };
+                    var p = fi switch { 0 => "", 1 => "T1", 2 => "T2", 3 => "T3", _ => "SS2" };
 
                     #endregion
 
@@ -987,7 +1066,7 @@ namespace AngelLoader.Ini
 
                     #region Tags
 
-                    string TagsToString(CatAndTagsList tagsList)
+                    static string TagsToString(CatAndTagsList tagsList)
                     {
                         var intermediateTagsList = new List<string>();
                         foreach (var catAndTag in tagsList)
@@ -1047,6 +1126,8 @@ namespace AngelLoader.Ini
                 sw.WriteLine("T2SelFMIndexFromTop=" + config.GameTabsState.T2SelFM.IndexFromTop);
                 sw.WriteLine("T3SelFMInstDir=" + config.GameTabsState.T3SelFM.InstalledName);
                 sw.WriteLine("T3SelFMIndexFromTop=" + config.GameTabsState.T3SelFM.IndexFromTop);
+                sw.WriteLine("SS2SelFMInstDir=" + config.GameTabsState.SS2SelFM.InstalledName);
+                sw.WriteLine("SS2SelFMIndexFromTop=" + config.GameTabsState.SS2SelFM.IndexFromTop);
 
                 #endregion
 

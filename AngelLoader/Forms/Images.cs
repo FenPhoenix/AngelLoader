@@ -9,9 +9,13 @@ namespace AngelLoader.Forms
         private static Bitmap _Thief1_16;
         private static Bitmap _Thief2_16;
         private static Bitmap _Thief3_16;
+        private static Bitmap _Shock2_16;
+
         private static Bitmap _Thief1_21;
         private static Bitmap _Thief2_21;
         private static Bitmap _Thief3_21;
+        private static Bitmap _Shock2_21;
+
         private static Icon _AngelLoader;
         private static Bitmap _Install_24;
         private static Bitmap _Uninstall_24;
@@ -26,9 +30,13 @@ namespace AngelLoader.Forms
         private static bool c_Thief1_16;
         private static bool c_Thief2_16;
         private static bool c_Thief3_16;
+        private static bool c_Shock2_16;
+
         private static bool c_Thief1_21;
         private static bool c_Thief2_21;
         private static bool c_Thief3_21;
+        private static bool c_Shock2_21;
+
         private static bool c_AngelLoader;
         private static bool c_Install_24;
         private static bool c_Uninstall_24;
@@ -88,6 +96,22 @@ namespace AngelLoader.Forms
             }
         }
 
+        public static Bitmap Shock2_16
+        {
+            get
+            {
+                if (c_Shock2_16)
+                {
+                    return _Shock2_16;
+                }
+                else
+                {
+                    c_Shock2_16 = true;
+                    return _Shock2_16 = Resources.Shock2_16;
+                }
+            }
+        }
+
         public static Bitmap Thief1_21
         {
             get
@@ -132,6 +156,22 @@ namespace AngelLoader.Forms
                 {
                     c_Thief3_21 = true;
                     return _Thief3_21 = Resources.Thief3_21;
+                }
+            }
+        }
+
+        public static Bitmap Shock2_21
+        {
+            get
+            {
+                if (c_Shock2_21)
+                {
+                    return _Shock2_21;
+                }
+                else
+                {
+                    c_Shock2_21 = true;
+                    return _Shock2_21 = Resources.Shock2_21;
                 }
             }
         }

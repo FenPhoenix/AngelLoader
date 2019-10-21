@@ -85,13 +85,26 @@ namespace AngelLoader
             var t1InstalledFMDirs = new List<string>();
             var t2InstalledFMDirs = new List<string>();
             var t3InstalledFMDirs = new List<string>();
+            var ss2InstalledFMDirs = new List<string>();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 #region Set i-dependent values
 
-                var instFMDirs = i switch { 0 => t1InstalledFMDirs, 1 => t2InstalledFMDirs, _ => t3InstalledFMDirs };
-                var instPath = i switch { 0 => fmInstPaths.T1, 1 => fmInstPaths.T2, _ => fmInstPaths.T3 };
+                var instFMDirs = i switch
+                {
+                    0 => t1InstalledFMDirs,
+                    1 => t2InstalledFMDirs,
+                    2 => t3InstalledFMDirs,
+                    _ => ss2InstalledFMDirs
+                };
+                var instPath = i switch
+                {
+                    0 => fmInstPaths.T1,
+                    1 => fmInstPaths.T2,
+                    2 => fmInstPaths.T3,
+                    _ => fmInstPaths.SS2
+                };
 
                 #endregion
 
@@ -144,14 +157,21 @@ namespace AngelLoader
             var t1List = new List<FanMission>();
             var t2List = new List<FanMission>();
             var t3List = new List<FanMission>();
+            var ss2List = new List<FanMission>();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 #region Set i-dependent values
 
-                var instFMDirs = i switch { 0 => t1InstalledFMDirs, 1 => t2InstalledFMDirs, _ => t3InstalledFMDirs };
-                var list = i switch { 0 => t1List, 1 => t2List, _ => t3List };
-                var game = i switch { 0 => Game.Thief1, 1 => Game.Thief2, _ => Game.Thief3 };
+                var instFMDirs = i switch
+                {
+                    0 => t1InstalledFMDirs,
+                    1 => t2InstalledFMDirs,
+                    2 => t3InstalledFMDirs,
+                    _ => ss2InstalledFMDirs
+                };
+                var list = i switch { 0 => t1List, 1 => t2List, 2 => t3List, _ => ss2List };
+                var game = i switch { 0 => Game.Thief1, 1 => Game.Thief2, 2 => Game.Thief3, _ => Game.SS2 };
 
                 #endregion
 
@@ -169,12 +189,13 @@ namespace AngelLoader
             if (t1List.Count > 0) MergeNewInstalledFMs(t1List, fmDataIniList, instInitCount);
             if (t2List.Count > 0) MergeNewInstalledFMs(t2List, fmDataIniList, instInitCount);
             if (t3List.Count > 0) MergeNewInstalledFMs(t3List, fmDataIniList, instInitCount);
+            if (ss2List.Count > 0) MergeNewInstalledFMs(ss2List, fmDataIniList, instInitCount);
 
             SetArchiveNames(fmInstPaths, fmArchives, fmDataIniList);
 
             SetInstalledNames(fmDataIniList);
 
-            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs);
+            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs, ss2InstalledFMDirs);
 
             /*
              TODO: There's an extreme corner case where duplicate FMs can appear in the list
@@ -486,6 +507,7 @@ namespace AngelLoader
                 Game.Thief2 => fmInstPaths.T2,
                 // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
                 Game.Thief3 => fmInstPaths.T3,
+                Game.SS2 => fmInstPaths.SS2,
                 _ => null
             };
 
@@ -510,7 +532,8 @@ namespace AngelLoader
         }
 
         private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList,
-            List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs)
+            List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs,
+            List<string> ss2InstalledFMDirs)
         {
             Core.ViewListGamesNull.Clear();
             for (var i = 0; i < fmDataIniList.Count; i++)
@@ -523,11 +546,13 @@ namespace AngelLoader
                 bool? notInT1Dirs = null;
                 bool? notInT2Dirs = null;
                 bool? notInT3Dirs = null;
+                bool? notInSS2Dirs = null;
 
                 if (item.Installed &&
                     ((item.Game == Game.Thief1 && (bool)(notInT1Dirs = !t1InstalledFMDirs.ContainsI(item.InstalledDir))) ||
                      (item.Game == Game.Thief2 && (bool)(notInT2Dirs = !t2InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.Thief3 && (bool)(notInT3Dirs = !t3InstalledFMDirs.ContainsI(item.InstalledDir)))))
+                     (item.Game == Game.Thief3 && (bool)(notInT3Dirs = !t3InstalledFMDirs.ContainsI(item.InstalledDir))) ||
+                     (item.Game == Game.SS2 && (bool)(notInSS2Dirs = !ss2InstalledFMDirs.ContainsI(item.InstalledDir)))))
                 {
                     item.Installed = false;
                 }
@@ -540,7 +565,8 @@ namespace AngelLoader
                 if ((!item.Installed ||
                      (item.Game == Game.Thief1 && (notInT1Dirs ?? !t1InstalledFMDirs.ContainsI(item.InstalledDir))) ||
                      (item.Game == Game.Thief2 && (notInT2Dirs ?? !t2InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.Thief3 && (notInT3Dirs ?? !t3InstalledFMDirs.ContainsI(item.InstalledDir)))) &&
+                     (item.Game == Game.Thief3 && (notInT3Dirs ?? !t3InstalledFMDirs.ContainsI(item.InstalledDir))) ||
+                     (item.Game == Game.SS2 && (notInSS2Dirs ?? !ss2InstalledFMDirs.ContainsI(item.InstalledDir)))) &&
                     // Shrink the list as we get matches so we can reduce our search time as we go
                     !fmArchives.ContainsIRemoveFirstHit(item.Archive))
                 {

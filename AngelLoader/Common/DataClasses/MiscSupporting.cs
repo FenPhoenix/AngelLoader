@@ -40,7 +40,7 @@ namespace AngelLoader.Common.DataClasses
 
     #endregion
 
-    [Flags] internal enum Game : uint { Null = 0, Thief1 = 1, Thief2 = 2, Thief3 = 4, Unsupported = 8 }
+    [Flags] internal enum Game : uint { Null = 0, Thief1 = 1, Thief2 = 2, Thief3 = 4, SS2 = 8, Unsupported = 16 }
 
     internal enum GameOrganization { ByTab, OneList }
 
@@ -56,17 +56,20 @@ namespace AngelLoader.Common.DataClasses
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
     // Struct for immutability?!
+    // TODO: This was done because I thought there was a threading problem, but it was something else, so maybe get rid of it
     internal struct FMInstallPaths
     {
-        internal FMInstallPaths(string t1, string t2, string t3)
+        internal FMInstallPaths(string t1, string t2, string t3, string ss2)
         {
             T1 = t1;
             T2 = t2;
             T3 = t3;
+            SS2 = ss2;
         }
         internal readonly string T1;
         internal readonly string T2;
         internal readonly string T3;
+        internal readonly string SS2;
     }
 
     #region Top-right tabs
@@ -367,10 +370,12 @@ namespace AngelLoader.Common.DataClasses
         internal readonly SelectedFM T1SelFM = new SelectedFM();
         internal readonly SelectedFM T2SelFM = new SelectedFM();
         internal readonly SelectedFM T3SelFM = new SelectedFM();
+        internal readonly SelectedFM SS2SelFM = new SelectedFM();
 
         internal readonly Filter T1Filter = new Filter();
         internal readonly Filter T2Filter = new Filter();
         internal readonly Filter T3Filter = new Filter();
+        internal readonly Filter SS2Filter = new Filter();
 
         // TODO: Add sorted column / sort order as a per-tab thing
 
@@ -379,9 +384,12 @@ namespace AngelLoader.Common.DataClasses
             T1Filter.DeepCopyTo(dest.T1Filter);
             T2Filter.DeepCopyTo(dest.T2Filter);
             T3Filter.DeepCopyTo(dest.T3Filter);
+            SS2Filter.DeepCopyTo(dest.SS2Filter);
+            
             T1SelFM.DeepCopyTo(dest.T1SelFM);
             T2SelFM.DeepCopyTo(dest.T2SelFM);
             T3SelFM.DeepCopyTo(dest.T3SelFM);
+            SS2SelFM.DeepCopyTo(dest.SS2SelFM);
         }
 
         internal void ClearSelectedFMs()
@@ -389,6 +397,7 @@ namespace AngelLoader.Common.DataClasses
             T1SelFM.Clear();
             T2SelFM.Clear();
             T3SelFM.Clear();
+            SS2SelFM.Clear();
         }
     }
 }

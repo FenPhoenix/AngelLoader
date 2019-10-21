@@ -153,8 +153,8 @@ namespace AngelLoader.Common.Utility
             var gamePath = Path.GetDirectoryName(gameExe);
             if (gamePath.IsEmpty()) return "";
 
-            var dromEdExe = Path.Combine(gamePath, Paths.DromEdExe);
-            return File.Exists(dromEdExe) ? dromEdExe : "";
+            var edExe = Path.Combine(gamePath, game == Game.SS2 ? Paths.ShockEdExe : Paths.DromEdExe);
+            return File.Exists(edExe) ? edExe : "";
         }
 
         internal static string GetT2MultiplayerExe()
@@ -246,6 +246,7 @@ namespace AngelLoader.Common.Utility
                              ((!Config.T1Exe.IsEmpty() && fnb.EqualsI(Config.T1Exe.ToBackSlashes())) ||
                               (!Config.T2Exe.IsEmpty() && fnb.EqualsI(Config.T2Exe.ToBackSlashes())) ||
                               (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())) ||
+                              (!Config.SS2Exe.IsEmpty() && fnb.EqualsI(Config.SS2Exe.ToBackSlashes())) ||
                               (!T2MPExe().IsEmpty() && fnb.EqualsI(T2MPExe().ToBackSlashes())))) ||
                             (!checkAllGames &&
                              (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
@@ -274,6 +275,7 @@ namespace AngelLoader.Common.Utility
             Game.Thief1 => "Thief 1",
             Game.Thief2 => "Thief 2",
             Game.Thief3 => "Thief 3",
+            Game.SS2 => "System Shock 2",
             _ => "[UnknownGameType]"
         };
 
@@ -282,6 +284,7 @@ namespace AngelLoader.Common.Utility
             Game.Thief1 => Config.T1Exe,
             Game.Thief2 => Config.T2Exe,
             Game.Thief3 => Config.T3Exe,
+            Game.SS2 => Config.SS2Exe,
             _ => null
         };
 
@@ -305,6 +308,7 @@ namespace AngelLoader.Common.Utility
             Game.Thief1 => Config.FMInstallPaths.T1,
             Game.Thief2 => Config.FMInstallPaths.T2,
             Game.Thief3 => Config.FMInstallPaths.T3,
+            Game.SS2 => Config.FMInstallPaths.SS2,
             _ => ""
         };
 
@@ -386,9 +390,9 @@ namespace AngelLoader.Common.Utility
             }
         }
 
-        internal static bool GameIsDark(FanMission fm) => fm.Game == Game.Thief1 || fm.Game == Game.Thief2;
+        internal static bool GameIsDark(FanMission fm) => fm.Game == Game.Thief1 || fm.Game == Game.Thief2 || fm.Game == Game.SS2;
 
-        internal static bool GameIsDark(Game game) => game == Game.Thief1 || game == Game.Thief2;
+        internal static bool GameIsDark(Game game) => game == Game.Thief1 || game == Game.Thief2 || game == Game.SS2;
 
         internal static bool GameIsKnownAndSupported(FanMission fm) => fm.Game != Game.Null && fm.Game != Game.Unsupported;
 

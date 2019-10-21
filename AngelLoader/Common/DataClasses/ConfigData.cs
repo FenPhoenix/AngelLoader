@@ -18,23 +18,27 @@ namespace AngelLoader.Common.DataClasses
         internal string T1Exe = "";
         internal string T2Exe = "";
         internal string T3Exe = "";
+        internal string SS2Exe = "";
 
         // If a Steam exe is specified, that is
         internal bool LaunchGamesWithSteam = true;
         internal bool T1UseSteam = true;
         internal bool T2UseSteam = true;
         internal bool T3UseSteam = true;
+        internal bool SS2UseSteam = true;
 
         internal string SteamExe = "";
 
         // Session-only; don't write these out
-        internal FMInstallPaths FMInstallPaths = new FMInstallPaths("", "", "");
-        internal void SetT1FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(value, FMInstallPaths.T2, FMInstallPaths.T3);
-        internal void SetT2FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, value, FMInstallPaths.T3);
-        internal void SetT3FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, FMInstallPaths.T2, value);
+        internal FMInstallPaths FMInstallPaths = new FMInstallPaths("", "", "", "");
+        internal void SetT1FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(value, FMInstallPaths.T2, FMInstallPaths.T3, FMInstallPaths.SS2);
+        internal void SetT2FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, value, FMInstallPaths.T3, FMInstallPaths.SS2);
+        internal void SetT3FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, FMInstallPaths.T2, value, FMInstallPaths.SS2);
+        internal void SetSS2FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, FMInstallPaths.T2, FMInstallPaths.T3, value);
 
         internal bool T1DromEdDetected;
         internal bool T2DromEdDetected;
+        internal bool SS2ShockEdDetected;
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)
         internal bool T2MPDetected;
 
@@ -56,6 +60,7 @@ namespace AngelLoader.Common.DataClasses
             GameTabsState.T1Filter.Clear();
             GameTabsState.T2Filter.Clear();
             GameTabsState.T3Filter.Clear();
+            GameTabsState.SS2Filter.Clear();
         }
 
         internal GameOrganization GameOrganization = GameOrganization.OneList;

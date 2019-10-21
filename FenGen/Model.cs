@@ -617,6 +617,10 @@ namespace FenGen
                                  Indent(5) + "{\r\n" +
                                  Indent(6) + objDotField + " = Game.Thief3;\r\n" +
                                  Indent(5) + "}\r\n" +
+                                 Indent(5) + "else if (val.EqualsI(nameof(Game.SS2)))\r\n" +
+                                 Indent(5) + "{\r\n" +
+                                 Indent(6) + objDotField + " = Game.SS2;\r\n" +
+                                 Indent(5) + "}\r\n" +
                                  Indent(5) + "else if (val.EqualsI(nameof(Game.Unsupported)))\r\n" +
                                  Indent(5) + "{\r\n" +
                                  Indent(6) + objDotField + " = Game.Unsupported;\r\n" +

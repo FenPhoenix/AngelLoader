@@ -94,6 +94,10 @@ namespace AngelLoader.Ini
                     {
                         fm.Game = Game.Thief3;
                     }
+                    else if (val.EqualsI(nameof(Game.SS2)))
+                    {
+                        fm.Game = Game.SS2;
+                    }
                     else if (val.EqualsI(nameof(Game.Unsupported)))
                     {
                         fm.Game = Game.Unsupported;

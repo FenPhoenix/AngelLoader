@@ -166,6 +166,10 @@ namespace AngelLoader.Forms
                         FMsDGV.GameTabsState.T3SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.T3Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
+                    case Game.SS2:
+                        FMsDGV.GameTabsState.SS2SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.SS2Filter.DeepCopyTo(FMsDGV.Filter);
+                        break;
                 }
 
                 using (new DisableEvents(this))
@@ -2430,8 +2434,9 @@ namespace AngelLoader.Forms
 
             PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.T1Exe.IsEmpty();
             PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.T2Exe.IsEmpty();
-            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.T3Exe.IsEmpty();
             PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
+            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.T3Exe.IsEmpty();
+            PlayOriginalGameLLMenu.SS2MenuItem.Enabled = !Config.SS2Exe.IsEmpty();
 
             ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
@@ -2443,7 +2448,8 @@ namespace AngelLoader.Forms
             var game =
                 item == PlayOriginalGameLLMenu.Thief1MenuItem ? Game.Thief1 :
                 item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Game.Thief2 :
-                Game.Thief3;
+                item == PlayOriginalGameLLMenu.Thief3MenuItem ? Game.Thief3 :
+                Game.SS2;
 
             bool playMP = item == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 

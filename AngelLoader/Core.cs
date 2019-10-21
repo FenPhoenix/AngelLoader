@@ -242,14 +242,22 @@ namespace AngelLoader
             Config.T1Exe = sf.OutConfig.T1Exe;
             Config.T2Exe = sf.OutConfig.T2Exe;
             Config.T3Exe = sf.OutConfig.T3Exe;
+            Config.SS2Exe = sf.OutConfig.SS2Exe;
 
             // TODO: These should probably go in the Settings form along with the cam_mod.ini check
             // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
             //       being thrown here.
+
+            #region Thief 1
+
             Config.SetT1FMInstPath(!Config.T1Exe.IsWhiteSpace()
                 ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
                 : "");
             Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
+
+            #endregion
+
+            #region Thief 2
 
             Config.SetT2FMInstPath(!Config.T2Exe.IsWhiteSpace()
                 ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
@@ -257,6 +265,10 @@ namespace AngelLoader
             Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
 
             Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
+
+            #endregion
+
+            #region Thief 3
 
             if (!Config.T3Exe.IsWhiteSpace())
             {
@@ -271,6 +283,17 @@ namespace AngelLoader
             {
                 Config.SetT3FMInstPath("");
             }
+
+            #endregion
+
+            #region SS2
+
+            Config.SetSS2FMInstPath(!Config.SS2Exe.IsWhiteSpace()
+                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.SS2Exe), out Error _)
+                : "");
+            Config.SS2ShockEdDetected = !GetDromEdExe(Game.SS2).IsEmpty();
+
+            #endregion
 
             #endregion
 
@@ -862,6 +885,7 @@ namespace AngelLoader
                             scannedFM.Game == Games.TDP ? Game.Thief1 :
                             scannedFM.Game == Games.TMA ? Game.Thief2 :
                             scannedFM.Game == Games.TDS ? Game.Thief3 :
+                            scannedFM.Game == Games.SS2 ? Game.SS2 :
                             Game.Null;
                     }
 
