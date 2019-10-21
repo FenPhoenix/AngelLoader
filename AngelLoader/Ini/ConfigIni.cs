@@ -1043,7 +1043,7 @@ namespace AngelLoader.Ini
                         0 => config.Filter,
                         1 => config.GameTabsState.T1Filter,
                         2 => config.GameTabsState.T2Filter,
-                        4 => config.GameTabsState.T3Filter,
+                        3 => config.GameTabsState.T3Filter,
                         _ => config.GameTabsState.SS2Filter
                     };
 
