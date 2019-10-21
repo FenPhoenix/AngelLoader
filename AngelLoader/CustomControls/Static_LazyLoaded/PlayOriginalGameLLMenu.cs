@@ -27,8 +27,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             Thief2MenuItem = new ToolStripMenuItem { Image = Images.Thief2_16 };
             Thief2MPMenuItem = new ToolStripMenuItem { Image = Images.Thief2_16 };
             Thief3MenuItem = new ToolStripMenuItem { Image = Images.Thief3_16 };
-            // TODO: @SS2: Add SS2 icon set
-            SS2MenuItem = new ToolStripMenuItem();
+            SS2MenuItem = new ToolStripMenuItem { Image = Images.Shock2_16 };
 
             Menu.Items.AddRange(new ToolStripItem[]
             {
@@ -58,8 +57,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             Thief2MenuItem.Text = LText.Global.Thief2.EscapeAmpersands();
             Thief2MPMenuItem.Text = LText.PlayOriginalGameMenu.Thief2_Multiplayer.EscapeAmpersands();
             Thief3MenuItem.Text = LText.Global.Thief3.EscapeAmpersands();
-            // TODO: @SS2: Replace this with localized text
-            SS2MenuItem.Text = @"System Shock 2".EscapeAmpersands();
+            SS2MenuItem.Text = LText.Global.SystemShock2.EscapeAmpersands();
         }
     }
 }

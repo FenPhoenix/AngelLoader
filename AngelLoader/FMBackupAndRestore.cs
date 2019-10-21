@@ -36,8 +36,6 @@ namespace AngelLoader
     // NOTE: Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
     //       for writing. Even if you put it after the using block, it throws. So always set this before writing!
 
-    // TODO: @SS2: Add support for SS2 saves folders here. They're more complicated.
-
     internal static class FMBackupAndRestore
     {
         private const string T3SavesDir = "SaveGames";
