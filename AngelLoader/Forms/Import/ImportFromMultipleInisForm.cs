@@ -63,7 +63,8 @@ namespace AngelLoader.Forms.Import
             {
                 ImportControls.Thief1IniFile.Trim(),
                 ImportControls.Thief2IniFile.Trim(),
-                ImportControls.Thief3IniFile.Trim()
+                ImportControls.Thief3IniFile.Trim(),
+                ImportControls.SS2IniFile.Trim()
             };
 
             ImportTitle = ImportTitleCheckBox.Checked;

@@ -41,9 +41,14 @@
             this.Thief1IniBrowseButton = new System.Windows.Forms.Button();
             this.Thief1IniTextBox = new System.Windows.Forms.TextBox();
             this.ChooseIniFilesLabel = new System.Windows.Forms.Label();
+            this.SS2GroupBox = new System.Windows.Forms.GroupBox();
+            this.SS2AutodetectCheckBox = new System.Windows.Forms.CheckBox();
+            this.SS2IniBrowseButton = new System.Windows.Forms.Button();
+            this.SS2IniTextBox = new System.Windows.Forms.TextBox();
             this.Thief3GroupBox.SuspendLayout();
             this.Thief2GroupBox.SuspendLayout();
             this.Thief1GroupBox.SuspendLayout();
+            this.SS2GroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // Thief3GroupBox
@@ -193,22 +198,71 @@
             this.ChooseIniFilesLabel.TabIndex = 6;
             this.ChooseIniFilesLabel.Text = "[Choose .ini files]";
             // 
+            // SS2GroupBox
+            // 
+            this.SS2GroupBox.Controls.Add(this.SS2AutodetectCheckBox);
+            this.SS2GroupBox.Controls.Add(this.SS2IniBrowseButton);
+            this.SS2GroupBox.Controls.Add(this.SS2IniTextBox);
+            this.SS2GroupBox.Location = new System.Drawing.Point(8, 312);
+            this.SS2GroupBox.Name = "SS2GroupBox";
+            this.SS2GroupBox.Size = new System.Drawing.Size(536, 88);
+            this.SS2GroupBox.TabIndex = 9;
+            this.SS2GroupBox.TabStop = false;
+            this.SS2GroupBox.Text = "System Shock 2";
+            // 
+            // SS2AutodetectCheckBox
+            // 
+            this.SS2AutodetectCheckBox.AutoSize = true;
+            this.SS2AutodetectCheckBox.Checked = true;
+            this.SS2AutodetectCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SS2AutodetectCheckBox.Location = new System.Drawing.Point(16, 24);
+            this.SS2AutodetectCheckBox.Name = "SS2AutodetectCheckBox";
+            this.SS2AutodetectCheckBox.Size = new System.Drawing.Size(78, 17);
+            this.SS2AutodetectCheckBox.TabIndex = 4;
+            this.SS2AutodetectCheckBox.Text = "Autodetect";
+            this.SS2AutodetectCheckBox.UseVisualStyleBackColor = true;
+            this.SS2AutodetectCheckBox.CheckedChanged += new System.EventHandler(this.AutodetectCheckBoxes_CheckedChanged);
+            // 
+            // SS2IniBrowseButton
+            // 
+            this.SS2IniBrowseButton.AutoSize = true;
+            this.SS2IniBrowseButton.Enabled = false;
+            this.SS2IniBrowseButton.Location = new System.Drawing.Point(447, 48);
+            this.SS2IniBrowseButton.Name = "SS2IniBrowseButton";
+            this.SS2IniBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.SS2IniBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.SS2IniBrowseButton.TabIndex = 1;
+            this.SS2IniBrowseButton.Text = "Browse...";
+            this.SS2IniBrowseButton.UseVisualStyleBackColor = true;
+            this.SS2IniBrowseButton.Click += new System.EventHandler(this.ThiefIniBrowseButtons_Click);
+            // 
+            // SS2IniTextBox
+            // 
+            this.SS2IniTextBox.Location = new System.Drawing.Point(15, 49);
+            this.SS2IniTextBox.Name = "SS2IniTextBox";
+            this.SS2IniTextBox.ReadOnly = true;
+            this.SS2IniTextBox.Size = new System.Drawing.Size(432, 20);
+            this.SS2IniTextBox.TabIndex = 0;
+            // 
             // User_FMSel_NDL_ImportControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.SS2GroupBox);
             this.Controls.Add(this.Thief3GroupBox);
             this.Controls.Add(this.Thief2GroupBox);
             this.Controls.Add(this.Thief1GroupBox);
             this.Controls.Add(this.ChooseIniFilesLabel);
             this.Name = "User_FMSel_NDL_ImportControls";
-            this.Size = new System.Drawing.Size(551, 494);
+            this.Size = new System.Drawing.Size(551, 410);
             this.Thief3GroupBox.ResumeLayout(false);
             this.Thief3GroupBox.PerformLayout();
             this.Thief2GroupBox.ResumeLayout(false);
             this.Thief2GroupBox.PerformLayout();
             this.Thief1GroupBox.ResumeLayout(false);
             this.Thief1GroupBox.PerformLayout();
+            this.SS2GroupBox.ResumeLayout(false);
+            this.SS2GroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -228,5 +282,9 @@
         private System.Windows.Forms.Button Thief1IniBrowseButton;
         private System.Windows.Forms.TextBox Thief1IniTextBox;
         private System.Windows.Forms.Label ChooseIniFilesLabel;
+        private System.Windows.Forms.GroupBox SS2GroupBox;
+        private System.Windows.Forms.CheckBox SS2AutodetectCheckBox;
+        private System.Windows.Forms.Button SS2IniBrowseButton;
+        private System.Windows.Forms.TextBox SS2IniTextBox;
     }
 }

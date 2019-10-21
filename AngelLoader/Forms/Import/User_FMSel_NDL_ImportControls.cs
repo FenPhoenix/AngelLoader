@@ -13,6 +13,7 @@ namespace AngelLoader.Forms.Import
         internal string Thief1IniFile => Thief1IniTextBox.Text;
         internal string Thief2IniFile => Thief2IniTextBox.Text;
         internal string Thief3IniFile => Thief3IniTextBox.Text;
+        internal string SS2IniFile => SS2IniTextBox.Text;
 
         private ImportType ImportType;
 
@@ -28,6 +29,7 @@ namespace AngelLoader.Forms.Import
             AutodetectGameIni(Game.Thief1, Thief1IniTextBox);
             AutodetectGameIni(Game.Thief2, Thief2IniTextBox);
             AutodetectGameIni(Game.Thief3, Thief3IniTextBox);
+            AutodetectGameIni(Game.SS2, SS2IniTextBox);
         }
 
         private void Localize()
@@ -39,14 +41,17 @@ namespace AngelLoader.Forms.Import
             Thief1GroupBox.Text = LText.Global.Thief1;
             Thief2GroupBox.Text = LText.Global.Thief2;
             Thief3GroupBox.Text = LText.Global.Thief3;
+            SS2GroupBox.Text = LText.Global.SystemShock2;
 
             Thief1AutodetectCheckBox.Text = LText.Global.Autodetect;
             Thief2AutodetectCheckBox.Text = LText.Global.Autodetect;
             Thief3AutodetectCheckBox.Text = LText.Global.Autodetect;
+            SS2AutodetectCheckBox.Text = LText.Global.Autodetect;
 
             Thief1IniBrowseButton.SetTextAutoSize(Thief1IniTextBox, LText.Global.BrowseEllipses);
             Thief2IniBrowseButton.SetTextAutoSize(Thief2IniTextBox, LText.Global.BrowseEllipses);
             Thief3IniBrowseButton.SetTextAutoSize(Thief3IniTextBox, LText.Global.BrowseEllipses);
+            SS2IniBrowseButton.SetTextAutoSize(SS2IniTextBox, LText.Global.BrowseEllipses);
         }
 
         private void AutodetectGameIni(Game game, TextBox textBox)
@@ -71,7 +76,8 @@ namespace AngelLoader.Forms.Import
             var tb =
                 s == Thief1IniBrowseButton ? Thief1IniTextBox :
                 s == Thief2IniBrowseButton ? Thief2IniTextBox :
-                Thief3IniTextBox;
+                s == Thief3IniBrowseButton ? Thief3IniTextBox :
+                SS2IniTextBox;
 
             using var d = new OpenFileDialog
             {
@@ -88,15 +94,18 @@ namespace AngelLoader.Forms.Import
             var textBox =
                 s == Thief1AutodetectCheckBox ? Thief1IniTextBox :
                 s == Thief2AutodetectCheckBox ? Thief2IniTextBox :
-                Thief3IniTextBox;
+                s == Thief3AutodetectCheckBox ? Thief3IniTextBox :
+                SS2IniTextBox;
             var button =
                 s == Thief1AutodetectCheckBox ? Thief1IniBrowseButton :
                 s == Thief2AutodetectCheckBox ? Thief2IniBrowseButton :
-                Thief3IniBrowseButton;
+                s == Thief3AutodetectCheckBox ? Thief3IniBrowseButton :
+                SS2IniBrowseButton;
             var game =
                 s == Thief1AutodetectCheckBox ? Game.Thief1 :
                 s == Thief2AutodetectCheckBox ? Game.Thief2 :
-                Game.Thief3;
+                s == Thief3AutodetectCheckBox ? Game.Thief3 :
+                Game.SS2;
 
             textBox.ReadOnly = s.Checked;
             button.Enabled = !s.Checked;

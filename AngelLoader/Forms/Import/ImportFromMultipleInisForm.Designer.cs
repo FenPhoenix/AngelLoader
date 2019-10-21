@@ -77,7 +77,7 @@
             this.OKCancelFlowLayoutPanel.Controls.Add(this.Cancel_Button);
             this.OKCancelFlowLayoutPanel.Controls.Add(this.OKButton);
             this.OKCancelFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(386, 477);
+            this.OKCancelFlowLayoutPanel.Location = new System.Drawing.Point(386, 578);
             this.OKCancelFlowLayoutPanel.Name = "OKCancelFlowLayoutPanel";
             this.OKCancelFlowLayoutPanel.Size = new System.Drawing.Size(162, 29);
             this.OKCancelFlowLayoutPanel.TabIndex = 0;
@@ -86,7 +86,7 @@
             // 
             this.ImportControls.Location = new System.Drawing.Point(0, 0);
             this.ImportControls.Name = "ImportControls";
-            this.ImportControls.Size = new System.Drawing.Size(551, 312);
+            this.ImportControls.Size = new System.Drawing.Size(551, 408);
             this.ImportControls.TabIndex = 1;
             // 
             // ImportSizeCheckBox
@@ -94,7 +94,7 @@
             this.ImportSizeCheckBox.AutoSize = true;
             this.ImportSizeCheckBox.Checked = true;
             this.ImportSizeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportSizeCheckBox.Location = new System.Drawing.Point(16, 456);
+            this.ImportSizeCheckBox.Location = new System.Drawing.Point(16, 552);
             this.ImportSizeCheckBox.Name = "ImportSizeCheckBox";
             this.ImportSizeCheckBox.Size = new System.Drawing.Size(46, 17);
             this.ImportSizeCheckBox.TabIndex = 19;
@@ -106,7 +106,7 @@
             this.ImportFinishedOnCheckBox.AutoSize = true;
             this.ImportFinishedOnCheckBox.Checked = true;
             this.ImportFinishedOnCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(16, 440);
+            this.ImportFinishedOnCheckBox.Location = new System.Drawing.Point(16, 536);
             this.ImportFinishedOnCheckBox.Name = "ImportFinishedOnCheckBox";
             this.ImportFinishedOnCheckBox.Size = new System.Drawing.Size(80, 17);
             this.ImportFinishedOnCheckBox.TabIndex = 20;
@@ -118,7 +118,7 @@
             this.ImportSelectedReadmeCheckBox.AutoSize = true;
             this.ImportSelectedReadmeCheckBox.Checked = true;
             this.ImportSelectedReadmeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportSelectedReadmeCheckBox.Location = new System.Drawing.Point(16, 424);
+            this.ImportSelectedReadmeCheckBox.Location = new System.Drawing.Point(16, 520);
             this.ImportSelectedReadmeCheckBox.Name = "ImportSelectedReadmeCheckBox";
             this.ImportSelectedReadmeCheckBox.Size = new System.Drawing.Size(106, 17);
             this.ImportSelectedReadmeCheckBox.TabIndex = 21;
@@ -130,7 +130,7 @@
             this.ImportTagsCheckBox.AutoSize = true;
             this.ImportTagsCheckBox.Checked = true;
             this.ImportTagsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportTagsCheckBox.Location = new System.Drawing.Point(16, 408);
+            this.ImportTagsCheckBox.Location = new System.Drawing.Point(16, 504);
             this.ImportTagsCheckBox.Name = "ImportTagsCheckBox";
             this.ImportTagsCheckBox.Size = new System.Drawing.Size(50, 17);
             this.ImportTagsCheckBox.TabIndex = 22;
@@ -142,7 +142,7 @@
             this.ImportDisabledModsCheckBox.AutoSize = true;
             this.ImportDisabledModsCheckBox.Checked = true;
             this.ImportDisabledModsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportDisabledModsCheckBox.Location = new System.Drawing.Point(16, 392);
+            this.ImportDisabledModsCheckBox.Location = new System.Drawing.Point(16, 488);
             this.ImportDisabledModsCheckBox.Name = "ImportDisabledModsCheckBox";
             this.ImportDisabledModsCheckBox.Size = new System.Drawing.Size(95, 17);
             this.ImportDisabledModsCheckBox.TabIndex = 23;
@@ -154,7 +154,7 @@
             this.ImportRatingCheckBox.AutoSize = true;
             this.ImportRatingCheckBox.Checked = true;
             this.ImportRatingCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportRatingCheckBox.Location = new System.Drawing.Point(16, 376);
+            this.ImportRatingCheckBox.Location = new System.Drawing.Point(16, 472);
             this.ImportRatingCheckBox.Name = "ImportRatingCheckBox";
             this.ImportRatingCheckBox.Size = new System.Drawing.Size(57, 17);
             this.ImportRatingCheckBox.TabIndex = 24;
@@ -166,7 +166,7 @@
             this.ImportCommentCheckBox.AutoSize = true;
             this.ImportCommentCheckBox.Checked = true;
             this.ImportCommentCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportCommentCheckBox.Location = new System.Drawing.Point(16, 360);
+            this.ImportCommentCheckBox.Location = new System.Drawing.Point(16, 456);
             this.ImportCommentCheckBox.Name = "ImportCommentCheckBox";
             this.ImportCommentCheckBox.Size = new System.Drawing.Size(70, 17);
             this.ImportCommentCheckBox.TabIndex = 25;
@@ -178,7 +178,7 @@
             this.ImportLastPlayedCheckBox.AutoSize = true;
             this.ImportLastPlayedCheckBox.Checked = true;
             this.ImportLastPlayedCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(16, 344);
+            this.ImportLastPlayedCheckBox.Location = new System.Drawing.Point(16, 440);
             this.ImportLastPlayedCheckBox.Name = "ImportLastPlayedCheckBox";
             this.ImportLastPlayedCheckBox.Size = new System.Drawing.Size(80, 17);
             this.ImportLastPlayedCheckBox.TabIndex = 26;
@@ -190,7 +190,7 @@
             this.ImportReleaseDateCheckBox.AutoSize = true;
             this.ImportReleaseDateCheckBox.Checked = true;
             this.ImportReleaseDateCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(16, 328);
+            this.ImportReleaseDateCheckBox.Location = new System.Drawing.Point(16, 424);
             this.ImportReleaseDateCheckBox.Name = "ImportReleaseDateCheckBox";
             this.ImportReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
             this.ImportReleaseDateCheckBox.TabIndex = 27;
@@ -202,7 +202,7 @@
             this.ImportTitleCheckBox.AutoSize = true;
             this.ImportTitleCheckBox.Checked = true;
             this.ImportTitleCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ImportTitleCheckBox.Location = new System.Drawing.Point(16, 312);
+            this.ImportTitleCheckBox.Location = new System.Drawing.Point(16, 408);
             this.ImportTitleCheckBox.Name = "ImportTitleCheckBox";
             this.ImportTitleCheckBox.Size = new System.Drawing.Size(46, 17);
             this.ImportTitleCheckBox.TabIndex = 28;
@@ -215,7 +215,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(553, 512);
+            this.ClientSize = new System.Drawing.Size(553, 613);
             this.Controls.Add(this.ImportSizeCheckBox);
             this.Controls.Add(this.ImportFinishedOnCheckBox);
             this.Controls.Add(this.ImportSelectedReadmeCheckBox);
