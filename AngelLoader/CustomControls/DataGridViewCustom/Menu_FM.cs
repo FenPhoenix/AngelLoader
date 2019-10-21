@@ -16,6 +16,7 @@ namespace AngelLoader.CustomControls
         private bool _fmMenuCreated;
         private bool _installUninstallMenuEnabled;
         private bool _sayInstall;
+        private bool _sayShockEd;
         private bool _playFMMenuItemEnabled;
         private bool _scanFMMenuItemEnabled;
         private bool _openInDromEdSepVisible;
@@ -242,6 +243,7 @@ namespace AngelLoader.CustomControls
 
             InstallUninstallMenuItem.Enabled = _installUninstallMenuEnabled;
             SetConcreteInstallUninstallMenuItemText(_sayInstall);
+            SetConcreteDromEdMenuItemText(_sayShockEd);
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
@@ -300,6 +302,7 @@ namespace AngelLoader.CustomControls
             // make sure those items' text is set correctly.
             var selFM = SelectedRows.Count > 0 ? GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
+            bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
 
             #endregion
 
@@ -314,8 +317,7 @@ namespace AngelLoader.CustomControls
             #endregion
 
             SetConcreteInstallUninstallMenuItemText(sayInstall);
-
-            OpenInDromEdMenuItem.Text = LText.FMsList.FMMenu_OpenInDromEd.EscapeAmpersands();
+            SetConcreteDromEdMenuItemText(sayShockEd);
 
             ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
 
@@ -338,12 +340,13 @@ namespace AngelLoader.CustomControls
 
             FinishedOnMenuItem.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
 
-            var fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
+            bool fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
+            bool fmIsSS2 = selFM != null && selFM.Game == Game.SS2;
 
-            FinishedOnNormalMenuItem.Text = (fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
-            FinishedOnHardMenuItem.Text = (fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
-            FinishedOnExpertMenuItem.Text = (fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
-            FinishedOnExtremeMenuItem.Text = (fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme).EscapeAmpersands();
+            FinishedOnNormalMenuItem.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
+            FinishedOnHardMenuItem.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
+            FinishedOnExpertMenuItem.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
+            FinishedOnExtremeMenuItem.Text = (fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme).EscapeAmpersands();
             FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown.EscapeAmpersands();
 
             #endregion
@@ -427,6 +430,18 @@ namespace AngelLoader.CustomControls
             {
                 _openInDromEdSepVisible = value;
                 _openInDromEdMenuItemVisible = value;
+            }
+        }
+
+        internal void SetOpenInDromEdMenuItemText(bool sayShockEd)
+        {
+            if (_fmMenuCreated)
+            {
+                SetConcreteDromEdMenuItemText(sayShockEd);
+            }
+            else
+            {
+                _sayShockEd = sayShockEd;
             }
         }
 

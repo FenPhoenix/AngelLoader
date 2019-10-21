@@ -49,10 +49,12 @@ namespace AngelLoader.Common.DataClasses
             internal static string Thief1 = "Thief 1";
             internal static string Thief2 = "Thief 2";
             internal static string Thief3 = "Thief 3";
+            internal static string SystemShock2 = "System Shock 2";
             [FenGenBlankLine]
             internal static string Thief1_Colon = "Thief 1:";
             internal static string Thief2_Colon = "Thief 2:";
             internal static string Thief3_Colon = "Thief 3:";
+            internal static string SystemShock2_Colon = "System Shock 2:";
         }
 
         internal static class BrowseDialogs
@@ -108,6 +110,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string Play_ConfirmMessage = "Play FM?";
             [FenGenBlankLine]
             internal static string DromEd_ExecutableNotFound = "DromEd.exe was not found in the game directory. Unable to open FM.";
+            internal static string ShockEd_ExecutableNotFound = "ShockEd.exe was not found in the game directory. Unable to open FM.";
             internal static string DromEd_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to open FM.";
             [FenGenBlankLine]
             internal static string Thief2_Multiplayer_ExecutableNotFound = "Thief2MP.exe was not found in the game directory. Unable to play FM in multiplayer mode.";
@@ -137,12 +140,12 @@ namespace AngelLoader.Common.DataClasses
             internal static string Hard = "Hard";
             internal static string Expert = "Expert";
             internal static string Extreme = "Extreme";
+            internal static string Impossible = "Impossible";
             internal static string Unknown = "Unknown";
         }
 
         internal static class FilterBar
         {
-            [FenGenBlankLine]
             internal static string Title = "Title:";
             internal static string Author = "Author:";
             [FenGenBlankLine]
@@ -191,6 +194,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string FMMenu_InstallFM = "Install FM";
             internal static string FMMenu_UninstallFM = "Uninstall FM";
             internal static string FMMenu_OpenInDromEd = "Open FM in DromEd";
+            internal static string FMMenu_OpenInShockEd = "Open FM in ShockEd";
             internal static string FMMenu_Rating = "Rating";
             internal static string FMMenu_FinishedOn = "Finished on";
             internal static string FMMenu_ConvertAudio = "Convert audio";
@@ -263,6 +267,7 @@ namespace AngelLoader.Common.DataClasses
         internal static class PatchTab
         {
             internal static string TabText = "Patch & Customize";
+            [FenGenBlankLine]
             internal static string DMLPatchesApplied = ".dml patches applied to this FM:";
             internal static string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
             internal static string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";
@@ -434,7 +439,6 @@ namespace AngelLoader.Common.DataClasses
 
         internal static class Importing
         {
-            [FenGenBlankLine]
             internal static string NothingWasImported = "Nothing was imported.";
             internal static string SelectedFileIsNotAValidPath = "Selected file is not a valid path.";
             [FenGenBlankLine]

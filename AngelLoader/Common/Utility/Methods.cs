@@ -145,7 +145,7 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
-        internal static string GetDromEdExe(Game game)
+        internal static string GetDromEdOrShockEdExe(Game game)
         {
             var gameExe = GetGameExeFromGameType(game);
             if (gameExe.IsEmpty()) return "";
@@ -272,10 +272,10 @@ namespace AngelLoader.Common.Utility
 
         internal static string GetGameNameFromGameType(Game gameType) => gameType switch
         {
-            Game.Thief1 => "Thief 1",
-            Game.Thief2 => "Thief 2",
-            Game.Thief3 => "Thief 3",
-            Game.SS2 => "System Shock 2",
+            Game.Thief1 => LText.Global.Thief1,
+            Game.Thief2 => LText.Global.Thief2,
+            Game.Thief3 => LText.Global.Thief3,
+            Game.SS2 => LText.Global.SystemShock2,
             _ => "[UnknownGameType]"
         };
 

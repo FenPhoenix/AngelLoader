@@ -148,10 +148,12 @@ namespace AngelLoader
                 return false;
             }
 
-            var dromedExe = GetDromEdExe(fm.Game);
+            var dromedExe = GetDromEdOrShockEdExe(fm.Game);
             if (dromedExe.IsEmpty())
             {
-                Core.View.ShowAlert(LText.AlertMessages.DromEd_ExecutableNotFound, LText.AlertMessages.Alert);
+                Core.View.ShowAlert(fm.Game == Game.SS2
+                    ? LText.AlertMessages.ShockEd_ExecutableNotFound
+                    : LText.AlertMessages.DromEd_ExecutableNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
@@ -244,7 +246,8 @@ namespace AngelLoader
                 Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
                 ((game == Game.Thief1 && Config.T1UseSteam) ||
                  (game == Game.Thief2 && Config.T2UseSteam) ||
-                 (game == Game.Thief3 && Config.T3UseSteam)))
+                 (game == Game.Thief3 && Config.T3UseSteam) ||
+                 (game == Game.SS2 && Config.SS2UseSteam)))
             {
                 string gameExe = Config.SteamExe;
                 string gamePath = Path.GetDirectoryName(Config.SteamExe);
@@ -252,7 +255,8 @@ namespace AngelLoader
                 {
                     Game.Thief1 => SteamAppIds.ThiefGold,
                     Game.Thief2 => SteamAppIds.Thief2,
-                    _ => SteamAppIds.Thief3
+                    Game.Thief3 => SteamAppIds.Thief3,
+                    _ => SteamAppIds.SS2
                 };
 
                 return (true, gameExe, gamePath, args);
@@ -306,7 +310,7 @@ namespace AngelLoader
                 return false;
             }
 
-            // Confirmed ND T1/T2 can read this with both forward and backward slashes
+            // Confirmed NewDark can read this with both forward and backward slashes
             var stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
 
             /*

@@ -178,6 +178,7 @@ namespace AngelLoader.Forms
                     {
                         Game.Thief2 => Thief2TabPage,
                         Game.Thief3 => Thief3TabPage,
+                        Game.SS2 => SS2TabPage,
                         _ => Thief1TabPage
                     };
                 }
@@ -187,6 +188,7 @@ namespace AngelLoader.Forms
             FilterByThief1Button.Checked = (Config.Filter.Games & Game.Thief1) == Game.Thief1;
             FilterByThief2Button.Checked = (Config.Filter.Games & Game.Thief2) == Game.Thief2;
             FilterByThief3Button.Checked = (Config.Filter.Games & Game.Thief3) == Game.Thief3;
+            FilterBySS2Button.Checked = (Config.Filter.Games & Game.SS2) == Game.SS2;
 
             if (!startup) ChangeFilterControlsForGameType();
         }
@@ -212,6 +214,7 @@ namespace AngelLoader.Forms
                         FilterByThief1Button.Checked = false;
                         FilterByThief2Button.Checked = false;
                         FilterByThief3Button.Checked = false;
+                        FilterBySS2Button.Checked = false;
                     }
                     FilterTitleTextBox.Text = "";
                     FilterAuthorTextBox.Text = "";
@@ -370,6 +373,7 @@ namespace AngelLoader.Forms
         private Bitmap Thief1Icon;
         private Bitmap Thief2Icon;
         private Bitmap Thief3Icon;
+        private Bitmap SS2Icon;
         private Bitmap BlankIcon;
         private Bitmap CheckIcon;
         private Bitmap RedQuestionMarkIcon;
@@ -1091,9 +1095,11 @@ namespace AngelLoader.Forms
             {
                 #region Game tabs
 
+                // TODO: @SS2: Allow shortened tab text for space (T1, T2, T3, SS2)
                 Thief1TabPage.Text = LText.Global.Thief1;
                 Thief2TabPage.Text = LText.Global.Thief2;
                 Thief3TabPage.Text = LText.Global.Thief3;
+                SS2TabPage.Text = LText.Global.SystemShock2;
 
                 // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
                 var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
@@ -1112,6 +1118,7 @@ namespace AngelLoader.Forms
                 FilterByThief1Button.ToolTipText = LText.Global.Thief1;
                 FilterByThief2Button.ToolTipText = LText.Global.Thief2;
                 FilterByThief3Button.ToolTipText = LText.Global.Thief3;
+                FilterBySS2Button.ToolTipText = LText.Global.SystemShock2;
 
                 FilterTitleLabel.Text = LText.FilterBar.Title;
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
@@ -1406,6 +1413,7 @@ namespace AngelLoader.Forms
                 gameTab =
                     selGameTab == Thief2TabPage ? Game.Thief2 :
                     selGameTab == Thief3TabPage ? Game.Thief3 :
+                    selGameTab == SS2TabPage ? Game.SS2 :
                     Game.Thief1;
             }
             else
@@ -1704,6 +1712,7 @@ namespace AngelLoader.Forms
             if (FilterByThief1Button.Checked) FMsDGV.Filter.Games |= Game.Thief1;
             if (FilterByThief2Button.Checked) FMsDGV.Filter.Games |= Game.Thief2;
             if (FilterByThief3Button.Checked) FMsDGV.Filter.Games |= Game.Thief3;
+            if (FilterBySS2Button.Checked) FMsDGV.Filter.Games |= Game.SS2;
 
             FMsDGV.Filter.Finished = FinishedState.Null;
             if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Finished;
@@ -2066,6 +2075,7 @@ namespace AngelLoader.Forms
             Thief1Icon = Images.Thief1_21;
             Thief2Icon = Images.Thief2_21;
             Thief3Icon = Images.Thief3_21;
+            SS2Icon = Images.Shock2_21;
             BlankIcon = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
             CheckIcon = Resources.CheckCircle;
             RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
@@ -2186,6 +2196,7 @@ namespace AngelLoader.Forms
                         Game.Thief1 => Thief1Icon,
                         Game.Thief2 => Thief2Icon,
                         Game.Thief3 => Thief3Icon,
+                        Game.SS2 => SS2Icon,
                         Game.Unsupported => RedQuestionMarkIcon,
                         // Can't say null, or else it sets an ugly red-x image
                         _ => BlankIcon
@@ -2783,6 +2794,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.SetInstallUninstallMenuItemText(true);
             FMsDGV.SetInstallUninstallMenuItemEnabled(false);
+            FMsDGV.SetOpenInDromEdMenuItemText(false);
 
             // Special-cased; don't autosize this one
             InstallUninstallFMLLButton.SetSayInstall(true);
@@ -2882,25 +2894,32 @@ namespace AngelLoader.Forms
             }
 
             bool fmIsT3 = fm.Game == Game.Thief3;
+            bool fmIsSS2 = fm.Game == Game.SS2;
 
             #region Toggles
 
             // We should never get here when FMsList.Count == 0, but hey
             if (Core.FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
 
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Normal, fmIsT3 ? LText.Difficulties.Easy : LText.Difficulties.Normal);
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Hard, fmIsT3 ? LText.Difficulties.Normal : LText.Difficulties.Hard);
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Expert, fmIsT3 ? LText.Difficulties.Hard : LText.Difficulties.Expert);
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, fmIsT3 ? LText.Difficulties.Expert : LText.Difficulties.Extreme);
+            // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
+            // Thief 3 difficulties: Easy, Normal, Hard, Expert
+            // SS2 difficulties: Easy, Normal, Hard, Impossible
+
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Normal, fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal);
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Hard, fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard);
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Expert, fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert);
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme);
             // FinishedOnUnknownMenuItem text stays the same
 
             var installable = GameIsKnownAndSupported(fm);
 
             FMsDGV.SetInstallUninstallMenuItemEnabled(installable);
             FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
+            FMsDGV.SetOpenInDromEdMenuItemText(fmIsSS2);
 
             FMsDGV.SetOpenInDromEdVisible((fm.Game == Game.Thief1 && Config.T1DromEdDetected) ||
-                                          (fm.Game == Game.Thief2 && Config.T2DromEdDetected));
+                                          (fm.Game == Game.Thief2 && Config.T2DromEdDetected) ||
+                                          (fmIsSS2 && Config.SS2ShockEdDetected));
 
             FMsDGV.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
 
@@ -3239,12 +3258,14 @@ namespace AngelLoader.Forms
                 tabPage == Thief1TabPage ? FMsDGV.GameTabsState.T1SelFM :
                 tabPage == Thief2TabPage ? FMsDGV.GameTabsState.T2SelFM :
                 tabPage == Thief3TabPage ? FMsDGV.GameTabsState.T3SelFM :
+                tabPage == SS2TabPage ? FMsDGV.GameTabsState.SS2SelFM :
                 null;
 
             var gameFilter =
                 tabPage == Thief1TabPage ? FMsDGV.GameTabsState.T1Filter :
                 tabPage == Thief2TabPage ? FMsDGV.GameTabsState.T2Filter :
                 tabPage == Thief3TabPage ? FMsDGV.GameTabsState.T3Filter :
+                tabPage == SS2TabPage ? FMsDGV.GameTabsState.SS2Filter :
                 null;
 
             Debug.Assert(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
@@ -3276,6 +3297,7 @@ namespace AngelLoader.Forms
             FilterByThief1Button.Checked = gameSelFM == FMsDGV.GameTabsState.T1SelFM;
             FilterByThief2Button.Checked = gameSelFM == FMsDGV.GameTabsState.T2SelFM;
             FilterByThief3Button.Checked = gameSelFM == FMsDGV.GameTabsState.T3SelFM;
+            FilterBySS2Button.Checked = gameSelFM == FMsDGV.GameTabsState.SS2SelFM;
 
             gameSelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
             gameFilter.DeepCopyTo(FMsDGV.Filter);

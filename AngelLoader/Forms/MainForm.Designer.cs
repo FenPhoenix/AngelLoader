@@ -161,6 +161,8 @@
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.FilterBySS2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.SS2TabPage = new System.Windows.Forms.TabPage();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -198,6 +200,7 @@
             this.GameTabsImageList.Images.SetKeyName(0, "Thief1_16.png");
             this.GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
             this.GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
+            this.GameTabsImageList.Images.SetKeyName(3, "Shock2_16.png");
             // 
             // Test2Button
             // 
@@ -670,12 +673,13 @@
             this.FilterGameButtonsToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FilterByThief1Button,
             this.FilterByThief2Button,
-            this.FilterByThief3Button});
+            this.FilterByThief3Button,
+            this.FilterBySS2Button});
             this.FilterGameButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterGameButtonsToolStrip.Location = new System.Drawing.Point(0, 0);
             this.FilterGameButtonsToolStrip.Name = "FilterGameButtonsToolStrip";
             this.FilterGameButtonsToolStrip.PaddingDrawNudge = 0;
-            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(76, 26);
+            this.FilterGameButtonsToolStrip.Size = new System.Drawing.Size(101, 26);
             this.FilterGameButtonsToolStrip.TabIndex = 3;
             // 
             // FilterByThief1Button
@@ -721,7 +725,7 @@
             // FilterTitleLabel
             // 
             this.FilterTitleLabel.AutoSize = true;
-            this.FilterTitleLabel.Location = new System.Drawing.Point(86, 6);
+            this.FilterTitleLabel.Location = new System.Drawing.Point(111, 6);
             this.FilterTitleLabel.Margin = new System.Windows.Forms.Padding(10, 6, 0, 0);
             this.FilterTitleLabel.Name = "FilterTitleLabel";
             this.FilterTitleLabel.Size = new System.Drawing.Size(30, 13);
@@ -731,7 +735,7 @@
             // FilterTitleTextBox
             // 
             this.FilterTitleTextBox.DisallowedCharacters = "";
-            this.FilterTitleTextBox.Location = new System.Drawing.Point(119, 3);
+            this.FilterTitleTextBox.Location = new System.Drawing.Point(144, 3);
             this.FilterTitleTextBox.Name = "FilterTitleTextBox";
             this.FilterTitleTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterTitleTextBox.TabIndex = 6;
@@ -740,7 +744,7 @@
             // FilterAuthorLabel
             // 
             this.FilterAuthorLabel.AutoSize = true;
-            this.FilterAuthorLabel.Location = new System.Drawing.Point(275, 6);
+            this.FilterAuthorLabel.Location = new System.Drawing.Point(300, 6);
             this.FilterAuthorLabel.Margin = new System.Windows.Forms.Padding(9, 6, 0, 0);
             this.FilterAuthorLabel.Name = "FilterAuthorLabel";
             this.FilterAuthorLabel.Size = new System.Drawing.Size(41, 13);
@@ -750,7 +754,7 @@
             // FilterAuthorTextBox
             // 
             this.FilterAuthorTextBox.DisallowedCharacters = "";
-            this.FilterAuthorTextBox.Location = new System.Drawing.Point(319, 3);
+            this.FilterAuthorTextBox.Location = new System.Drawing.Point(344, 3);
             this.FilterAuthorTextBox.Name = "FilterAuthorTextBox";
             this.FilterAuthorTextBox.Size = new System.Drawing.Size(144, 20);
             this.FilterAuthorTextBox.TabIndex = 8;
@@ -778,7 +782,7 @@
             this.FilterByRatingLabel,
             this.FilterShowUnsupportedButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(466, 0);
+            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(491, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
             this.FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
             this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(294, 26);
@@ -1025,6 +1029,7 @@
             this.GamesTabControl.Controls.Add(this.Thief1TabPage);
             this.GamesTabControl.Controls.Add(this.Thief2TabPage);
             this.GamesTabControl.Controls.Add(this.Thief3TabPage);
+            this.GamesTabControl.Controls.Add(this.SS2TabPage);
             this.GamesTabControl.ImageList = this.GameTabsImageList;
             this.GamesTabControl.Location = new System.Drawing.Point(1, 5);
             this.GamesTabControl.Name = "GamesTabControl";
@@ -1036,7 +1041,6 @@
             // 
             // Thief1TabPage
             // 
-            this.Thief1TabPage.BackColor = System.Drawing.SystemColors.Control;
             this.Thief1TabPage.ImageIndex = 0;
             this.Thief1TabPage.Location = new System.Drawing.Point(4, 23);
             this.Thief1TabPage.Name = "Thief1TabPage";
@@ -1044,6 +1048,7 @@
             this.Thief1TabPage.Size = new System.Drawing.Size(1095, 0);
             this.Thief1TabPage.TabIndex = 0;
             this.Thief1TabPage.Text = "Thief 1";
+            this.Thief1TabPage.UseVisualStyleBackColor = true;
             // 
             // Thief2TabPage
             // 
@@ -1826,6 +1831,30 @@
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
+            // FilterBySS2Button
+            // 
+            this.FilterBySS2Button.AutoSize = false;
+            this.FilterBySS2Button.CheckOnClick = true;
+            this.FilterBySS2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterBySS2Button.Image = global::AngelLoader.Properties.Resources.Shock2_21;
+            this.FilterBySS2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterBySS2Button.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterBySS2Button.Name = "FilterBySS2Button";
+            this.FilterBySS2Button.Size = new System.Drawing.Size(25, 25);
+            this.FilterBySS2Button.ToolTipText = "System Shock 2";
+            this.FilterBySS2Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
+            // 
+            // SS2TabPage
+            // 
+            this.SS2TabPage.ImageIndex = 3;
+            this.SS2TabPage.Location = new System.Drawing.Point(4, 23);
+            this.SS2TabPage.Name = "SS2TabPage";
+            this.SS2TabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.SS2TabPage.Size = new System.Drawing.Size(1095, 0);
+            this.SS2TabPage.TabIndex = 3;
+            this.SS2TabPage.Text = "System Shock 2";
+            this.SS2TabPage.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2024,5 +2053,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         private CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
         private System.Windows.Forms.Button TopRightMenuButton;
+        private CustomControls.ToolStripButtonCustom FilterBySS2Button;
+        private System.Windows.Forms.TabPage SS2TabPage;
     }
 }

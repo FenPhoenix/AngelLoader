@@ -65,6 +65,13 @@ namespace AngelLoader.CustomControls
                 : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
         }
 
+        private void SetConcreteDromEdMenuItemText(bool sayShockEd)
+        {
+            OpenInDromEdMenuItem.Text = (sayShockEd
+                ? LText.FMsList.FMMenu_OpenInShockEd
+                : LText.FMsList.FMMenu_OpenInDromEd).EscapeAmpersands();
+        }
+
         #endregion
 
         #region API methods

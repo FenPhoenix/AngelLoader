@@ -108,6 +108,10 @@ namespace AngelLoader.Ini
                         {
                             LText.Global.Thief3 = lt.Substring(7);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("SystemShock2="))
+                        {
+                            LText.Global.SystemShock2 = lt.Substring(13);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Thief1_Colon="))
                         {
                             LText.Global.Thief1_Colon = lt.Substring(13);
@@ -119,6 +123,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("Thief3_Colon="))
                         {
                             LText.Global.Thief3_Colon = lt.Substring(13);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("SystemShock2_Colon="))
+                        {
+                            LText.Global.SystemShock2_Colon = lt.Substring(19);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
@@ -388,6 +396,10 @@ namespace AngelLoader.Ini
                         {
                             LText.Difficulties.Extreme = lt.Substring(8);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Impossible="))
+                        {
+                            LText.Difficulties.Impossible = lt.Substring(11);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Unknown="))
                         {
                             LText.Difficulties.Unknown = lt.Substring(8);
@@ -563,6 +575,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_OpenInDromEd="))
                         {
                             LText.FMsList.FMMenu_OpenInDromEd = lt.Substring(20);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_OpenInShockEd="))
+                        {
+                            LText.FMsList.FMMenu_OpenInShockEd = lt.Substring(21);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_Rating="))
                         {

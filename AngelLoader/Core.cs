@@ -253,7 +253,7 @@ namespace AngelLoader
             Config.SetT1FMInstPath(!Config.T1Exe.IsWhiteSpace()
                 ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
                 : "");
-            Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
+            Config.T1DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief1).IsEmpty();
 
             #endregion
 
@@ -262,7 +262,7 @@ namespace AngelLoader
             Config.SetT2FMInstPath(!Config.T2Exe.IsWhiteSpace()
                 ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
                 : "");
-            Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
+            Config.T2DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief2).IsEmpty();
 
             Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
 
@@ -291,7 +291,7 @@ namespace AngelLoader
             Config.SetSS2FMInstPath(!Config.SS2Exe.IsWhiteSpace()
                 ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.SS2Exe), out Error _)
                 : "");
-            Config.SS2ShockEdDetected = !GetDromEdExe(Game.SS2).IsEmpty();
+            Config.SS2ShockEdDetected = !GetDromEdOrShockEdExe(Game.SS2).IsEmpty();
 
             #endregion
 
@@ -317,8 +317,8 @@ namespace AngelLoader
 
                 // We don't need to set the paths again, because we've already done so above
 #if DEBUG
-                    var checkPaths = SetPaths();
-                    Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
+                var checkPaths = SetPaths();
+                Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
 #endif
 
                 WriteConfigIni(Config, Paths.ConfigIni);
@@ -490,15 +490,16 @@ namespace AngelLoader
             // TODO: These single-error returns don't work, change to something else
 
             // PERF: 9ms, but it's mostly IO. Darn.
-            var t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
-            var t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
-            var t3Exists = !Config.T3Exe.IsEmpty() && File.Exists(Config.T3Exe);
+            bool t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
+            bool t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
+            bool t3Exists = !Config.T3Exe.IsEmpty() && File.Exists(Config.T3Exe);
+            bool ss2Exists = !Config.SS2Exe.IsEmpty() && File.Exists(Config.SS2Exe);
 
             if (t1Exists)
             {
                 var gamePath = Path.GetDirectoryName(Config.T1Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.T1DromEdDetected = !GetDromEdExe(Game.Thief1).IsEmpty();
+                Config.T1DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief1).IsEmpty();
                 //if (error == Error.CamModIniNotFound) return Error.T1CamModIniNotFound;
                 Config.SetT1FMInstPath(gameFMsPath);
             }
@@ -506,7 +507,7 @@ namespace AngelLoader
             {
                 var gamePath = Path.GetDirectoryName(Config.T2Exe);
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.T2DromEdDetected = !GetDromEdExe(Game.Thief2).IsEmpty();
+                Config.T2DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief2).IsEmpty();
                 Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
                 //if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
                 Config.SetT2FMInstPath(gameFMsPath);
@@ -518,11 +519,19 @@ namespace AngelLoader
                 Config.SetT3FMInstPath(path);
                 Config.T3UseCentralSaves = useCentralSaves;
             }
+            if (ss2Exists)
+            {
+                var gamePath = Path.GetDirectoryName(Config.SS2Exe);
+                var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
+                Config.SS2ShockEdDetected = !GetDromEdOrShockEdExe(Game.SS2).IsEmpty();
+                //if (error != Error.None) return error;
+                Config.SetSS2FMInstPath(gameFMsPath);
+            }
 
             return
                 // Must be first, otherwise other stuff overrides it and then we don't act on it
                 !Directory.Exists(Config.FMsBackupPath) ? Error.BackupPathNotSpecified :
-                !t1Exists && !t2Exists && !t3Exists ? Error.NoGamesSpecified :
+                !t1Exists && !t2Exists && !t3Exists && !ss2Exists ? Error.NoGamesSpecified :
                 Error.None;
         }
 

@@ -163,6 +163,8 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new ComboBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
+            FilterBySS2Button = new ToolStripButtonCustom();
+            SS2TabPage = new TabPage();
 
             #endregion
 
@@ -215,10 +217,12 @@ namespace AngelLoader.Forms
             GameTabsImageList.Images.Add(Images.Thief1_16);
             GameTabsImageList.Images.Add(Images.Thief2_16);
             GameTabsImageList.Images.Add(Images.Thief3_16);
+            GameTabsImageList.Images.Add(Images.Shock2_16);
             GameTabsImageList.ColorDepth = ColorDepth.Depth32Bit;
             GameTabsImageList.Images.SetKeyName(0, "Thief1_16.png");
             GameTabsImageList.Images.SetKeyName(1, "Thief2_16.png");
             GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
+            GameTabsImageList.Images.SetKeyName(3, "Shock2_16.png");
             // 
             // ScanAllFMsButton
             // 
@@ -574,7 +578,8 @@ namespace AngelLoader.Forms
             FilterGameButtonsToolStrip.Items.AddRange(new ToolStripItem[] {
             FilterByThief1Button,
             FilterByThief2Button,
-            FilterByThief3Button});
+            FilterByThief3Button,
+            FilterBySS2Button});
             FilterGameButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
             FilterGameButtonsToolStrip.TabIndex = 3;
             // 
@@ -607,6 +612,16 @@ namespace AngelLoader.Forms
             FilterByThief3Button.Margin = new Padding(0);
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += FilterByGameCheckButtons_Click;
+            // 
+            // FilterBySS2Button
+            // 
+            FilterBySS2Button.AutoSize = false;
+            FilterBySS2Button.CheckOnClick = true;
+            FilterBySS2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            FilterBySS2Button.Image = Images.Shock2_21;
+            FilterBySS2Button.Margin = new Padding(0);
+            FilterBySS2Button.Size = new Size(25, 25);
+            FilterBySS2Button.Click += FilterByGameCheckButtons_Click;
             // 
             // FilterTitleLabel
             // 
@@ -835,6 +850,7 @@ namespace AngelLoader.Forms
             GamesTabControl.Controls.Add(Thief1TabPage);
             GamesTabControl.Controls.Add(Thief2TabPage);
             GamesTabControl.Controls.Add(Thief3TabPage);
+            GamesTabControl.Controls.Add(SS2TabPage);
             GamesTabControl.ImageList = GameTabsImageList;
             GamesTabControl.Location = new Point(1, 5);
             GamesTabControl.SelectedIndex = 0;
@@ -857,6 +873,11 @@ namespace AngelLoader.Forms
             // 
             Thief3TabPage.ImageIndex = 2;
             Thief3TabPage.TabIndex = 2;
+            //
+            // SS2TabPage
+            //
+            SS2TabPage.ImageIndex = 3;
+            SS2TabPage.TabIndex = 3;
             // 
             // TopRightMenuButton
             // 
