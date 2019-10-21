@@ -335,7 +335,7 @@ namespace AngelLoader.Common.DataClasses
             internal static string InitialSettings_TabText = "Initial Settings";
             [FenGenBlankLine]
             internal static string Paths_PathsToGameExes = "Paths to game executables";
-            internal static string Paths_Thief1AndThief2RequireNewDark = "* Thief 1 and Thief 2 require NewDark.";
+            internal static string Paths_DarkEngineGamesRequireNewDark = "* Thief 1, Thief 2 and System Shock 2 require NewDark.";
             internal static string Paths_Thief3RequiresSneakyUpgrade = "* Thief 3 requires the Sneaky Upgrade 1.1.9.1 or above.";
             [FenGenBlankLine]
             internal static string Paths_SteamOptions = "Steam options";
@@ -356,6 +356,7 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string FMDisplay_GameOrganization = "Game organization";
             internal static string FMDisplay_GameOrganizationByTab = "Each game in its own tab";
+            internal static string FMDisplay_UseShortGameTabNames = "Use short game names on tabs";
             internal static string FMDisplay_GameOrganizationOneList = "Everything in one list, and games are filters";
             [FenGenBlankLine]
             internal static string FMDisplay_Sorting = "Sorting";

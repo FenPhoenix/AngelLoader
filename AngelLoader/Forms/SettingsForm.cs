@@ -109,6 +109,7 @@ namespace AngelLoader.Forms
                 PathsPage.Thief1ExePathTextBox,
                 PathsPage.Thief2ExePathTextBox,
                 PathsPage.Thief3ExePathTextBox,
+                PathsPage.SS2ExePathTextBox,
                 PathsPage.SteamExeTextBox
             };
 
@@ -222,6 +223,7 @@ namespace AngelLoader.Forms
             PathsPage.Thief1ExePathTextBox.Text = config.T1Exe;
             PathsPage.Thief2ExePathTextBox.Text = config.T2Exe;
             PathsPage.Thief3ExePathTextBox.Text = config.T3Exe;
+            PathsPage.SS2ExePathTextBox.Text = config.SS2Exe;
 
             PathsPage.SteamExeTextBox.Text = config.SteamExe;
             PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
@@ -229,6 +231,7 @@ namespace AngelLoader.Forms
             PathsPage.T1UseSteamCheckBox.Checked = config.T1UseSteam;
             PathsPage.T2UseSteamCheckBox.Checked = config.T2UseSteam;
             PathsPage.T3UseSteamCheckBox.Checked = config.T3UseSteam;
+            PathsPage.SS2UseSteamCheckBox.Checked = config.SS2UseSteam;
             SetUseSteamGameCheckBoxesEnabled(config.LaunchGamesWithSteam);
 
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
@@ -258,6 +261,8 @@ namespace AngelLoader.Forms
 
                 FMDisplayPage.UseShortGameTabNamesCheckBox.Checked = config.UseShortGameTabNames;
 
+                #endregion
+
                 #region Articles
 
                 FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked = config.EnableArticles;
@@ -270,6 +275,8 @@ namespace AngelLoader.Forms
                 }
 
                 FMDisplayPage.MoveArticlesToEndCheckBox.Checked = config.MoveArticlesToEnd;
+
+                #endregion
 
                 #region Date format
 
@@ -343,7 +350,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                #endregion
+                #region Other page
 
                 #region File conversion
 
@@ -351,10 +358,6 @@ namespace AngelLoader.Forms
                 OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked = config.ConvertOGGsToWAVsOnInstall;
 
                 #endregion
-
-                #endregion
-
-                #region Other page
 
                 #region Uninstalling FMs
 
@@ -398,10 +401,12 @@ namespace AngelLoader.Forms
             PathsPage.Thief1ExePathTextBox.Leave += ExePathTextBoxes_Leave;
             PathsPage.Thief2ExePathTextBox.Leave += ExePathTextBoxes_Leave;
             PathsPage.Thief3ExePathTextBox.Leave += ExePathTextBoxes_Leave;
+            PathsPage.SS2ExePathTextBox.Leave += ExePathTextBoxes_Leave;
 
             PathsPage.Thief1ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
             PathsPage.Thief2ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
             PathsPage.Thief3ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
+            PathsPage.SS2ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
 
             PathsPage.SteamExeTextBox.Leave += ExePathTextBoxes_Leave;
             PathsPage.LaunchTheseGamesThroughSteamCheckBox.CheckedChanged += LaunchTheseGamesThroughSteamCheckBox_CheckedChanged;
@@ -464,6 +469,7 @@ namespace AngelLoader.Forms
             PathsPage.T1UseSteamCheckBox.Enabled = enabled;
             PathsPage.T2UseSteamCheckBox.Enabled = enabled;
             PathsPage.T3UseSteamCheckBox.Enabled = enabled;
+            PathsPage.SS2UseSteamCheckBox.Enabled = enabled;
         }
 
         private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -491,6 +497,7 @@ namespace AngelLoader.Forms
                 PathsPage.Thief1ExePathLabel.Text = LText.Global.Thief1_Colon;
                 PathsPage.Thief2ExePathLabel.Text = LText.Global.Thief2_Colon;
                 PathsPage.Thief3ExePathLabel.Text = LText.Global.Thief3_Colon;
+                PathsPage.SS2ExePathLabel.Text = LText.Global.SystemShock2_Colon;
 
                 PathsPage.SteamOptionsGroupBox.Text = LText.SettingsWindow.Paths_SteamOptions;
                 PathsPage.SteamExeLabel.Text = LText.SettingsWindow.Paths_PathToSteamExecutable;
@@ -498,6 +505,7 @@ namespace AngelLoader.Forms
                 PathsPage.T1UseSteamCheckBox.Text = LText.Global.Thief1;
                 PathsPage.T2UseSteamCheckBox.Text = LText.Global.Thief2;
                 PathsPage.T3UseSteamCheckBox.Text = LText.Global.Thief3;
+                PathsPage.SS2UseSteamCheckBox.Text = LText.Global.SystemShock2;
 
                 PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
@@ -506,11 +514,12 @@ namespace AngelLoader.Forms
                 PathsPage.Thief1ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief1ExePathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.Thief2ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief2ExePathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.Thief3ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief3ExePathTextBox, LText.Global.BrowseEllipses);
+                PathsPage.SS2ExePathBrowseButton.SetTextAutoSize(PathsPage.SS2ExePathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
 
                 PathsPage.GameRequirementsLabel.Text =
-                    LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark + Environment.NewLine +
+                    LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + Environment.NewLine +
                     LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade;
 
                 PathsPage.FMArchivePathsGroupBox.Text = LText.SettingsWindow.Paths_FMArchivePaths;
@@ -532,6 +541,7 @@ namespace AngelLoader.Forms
 
                     FMDisplayPage.GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
                     FMDisplayPage.OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationByTab;
+                    FMDisplayPage.UseShortGameTabNamesCheckBox.Text = LText.SettingsWindow.FMDisplay_UseShortGameTabNames;
                     FMDisplayPage.SortGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationOneList;
 
                     FMDisplayPage.SortingGroupBox.Text = LText.SettingsWindow.FMDisplay_Sorting;
@@ -685,12 +695,14 @@ namespace AngelLoader.Forms
             OutConfig.T1Exe = PathsPage.Thief1ExePathTextBox.Text.Trim();
             OutConfig.T2Exe = PathsPage.Thief2ExePathTextBox.Text.Trim();
             OutConfig.T3Exe = PathsPage.Thief3ExePathTextBox.Text.Trim();
+            OutConfig.SS2Exe = PathsPage.SS2ExePathTextBox.Text.Trim();
 
             OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
             OutConfig.LaunchGamesWithSteam = PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked;
             OutConfig.T1UseSteam = PathsPage.T1UseSteamCheckBox.Checked;
             OutConfig.T2UseSteam = PathsPage.T2UseSteamCheckBox.Checked;
             OutConfig.T3UseSteam = PathsPage.T3UseSteamCheckBox.Checked;
+            OutConfig.SS2UseSteam = PathsPage.SS2UseSteamCheckBox.Checked;
 
             OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
 
@@ -939,6 +951,7 @@ namespace AngelLoader.Forms
                 sender == PathsPage.Thief1ExePathBrowseButton ? PathsPage.Thief1ExePathTextBox :
                 sender == PathsPage.Thief2ExePathBrowseButton ? PathsPage.Thief2ExePathTextBox :
                 sender == PathsPage.Thief3ExePathBrowseButton ? PathsPage.Thief3ExePathTextBox :
+                sender == PathsPage.SS2ExePathBrowseButton ? PathsPage.SS2ExePathTextBox :
                 PathsPage.SteamExeTextBox;
 
             string initialPath = "";

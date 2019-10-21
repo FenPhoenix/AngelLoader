@@ -305,6 +305,7 @@ namespace AngelLoader
             Config.T1UseSteam = sf.OutConfig.T1UseSteam;
             Config.T2UseSteam = sf.OutConfig.T2UseSteam;
             Config.T3UseSteam = sf.OutConfig.T3UseSteam;
+            Config.SS2UseSteam = sf.OutConfig.SS2UseSteam;
 
             Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
 

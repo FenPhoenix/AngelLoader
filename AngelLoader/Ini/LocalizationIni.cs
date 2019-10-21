@@ -1052,9 +1052,9 @@ namespace AngelLoader.Ini
                         {
                             LText.SettingsWindow.Paths_PathsToGameExes = lt.Substring(22);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_Thief1AndThief2RequireNewDark="))
+                        else if (lt.StartsWithFast_NoNullChecks("Paths_DarkEngineGamesRequireNewDark="))
                         {
-                            LText.SettingsWindow.Paths_Thief1AndThief2RequireNewDark = lt.Substring(36);
+                            LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark = lt.Substring(36);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Paths_Thief3RequiresSneakyUpgrade="))
                         {
@@ -1111,6 +1111,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("FMDisplay_GameOrganizationByTab="))
                         {
                             LText.SettingsWindow.FMDisplay_GameOrganizationByTab = lt.Substring(32);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_UseShortGameTabNames="))
+                        {
+                            LText.SettingsWindow.FMDisplay_UseShortGameTabNames = lt.Substring(31);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("FMDisplay_GameOrganizationOneList="))
                         {
