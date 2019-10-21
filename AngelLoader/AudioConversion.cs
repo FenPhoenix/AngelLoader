@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -101,32 +102,35 @@ namespace AngelLoader
             {
                 try
                 {
-                    var fmSndPath = GetFMSoundPathByGame(fm);
-                    if (!Directory.Exists(fmSndPath)) return;
-
-                    _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
-
-                    var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
-                    foreach (var f in wavFiles)
+                    var fmSndPaths = GetFMSoundPathsByGame(fm);
+                    foreach (var fmSndPath in fmSndPaths)
                     {
-                        UnSetReadOnly(f);
+                        if (!Directory.Exists(fmSndPath)) return;
 
-                        int bits = GetBitDepthFast(f);
+                        _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
 
-                        // Header wasn't wav, so skip this one
-                        if (bits == -1) continue;
+                        var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
+                        foreach (var f in wavFiles)
+                        {
+                            UnSetReadOnly(f);
 
-                        if (bits == 0) bits = GetBitDepthSlow(f);
-                        if (bits >= 1 && bits <= 16) continue;
+                            int bits = GetBitDepthFast(f);
 
-                        var engine = new Engine(Paths.FFmpegExe);
-                        var options = new ConversionOptions { AudioBitRate = 16 };
-                        var inFile = new MediaFile(f);
-                        var outFile = new MediaFile(f.RemoveExtension() + ".al_16bit_.wav");
-                        await engine.ConvertAsync(inFile, outFile, options);
+                            // Header wasn't wav, so skip this one
+                            if (bits == -1) continue;
 
-                        File.Delete(f);
-                        File.Move(f.RemoveExtension() + ".al_16bit_.wav", f);
+                            if (bits == 0) bits = GetBitDepthSlow(f);
+                            if (bits >= 1 && bits <= 16) continue;
+
+                            var engine = new Engine(Paths.FFmpegExe);
+                            var options = new ConversionOptions { AudioBitRate = 16 };
+                            var inFile = new MediaFile(f);
+                            var outFile = new MediaFile(f.RemoveExtension() + ".al_16bit_.wav");
+                            await engine.ConvertAsync(inFile, outFile, options);
+
+                            File.Delete(f);
+                            File.Move(f.RemoveExtension() + ".al_16bit_.wav", f);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -153,50 +157,53 @@ namespace AngelLoader
             {
                 try
                 {
-                    var fmSndPath = GetFMSoundPathByGame(fm);
-                    if (!Directory.Exists(fmSndPath)) return;
-
-                    try
+                    var fmSndPaths = GetFMSoundPathsByGame(fm);
+                    foreach (var fmSndPath in fmSndPaths)
                     {
-                        _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Unable to set directory attributes on " + fmSndPath, ex);
-                    }
-
-                    string[] files;
-                    try
-                    {
-                        files = Directory.GetFiles(fmSndPath, pattern, SearchOption.AllDirectories);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Exception during file enumeration of " + fmSndPath, ex);
-                        return;
-                    }
-
-                    foreach (var f in files)
-                    {
-                        UnSetReadOnly(f);
+                        if (!Directory.Exists(fmSndPath)) return;
 
                         try
                         {
-                            var engine = new Engine(Paths.FFmpegExe);
-                            await engine.ConvertAsync(new MediaFile(f), new MediaFile(f.RemoveExtension() + ".wav"));
+                            _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in FFmpeg convert", ex);
+                            Log("Unable to set directory attributes on " + fmSndPath, ex);
                         }
 
+                        string[] files;
                         try
                         {
-                            File.Delete(f);
+                            files = Directory.GetFiles(fmSndPath, pattern, SearchOption.AllDirectories);
                         }
                         catch (Exception ex)
                         {
-                            Log("Exception in deleting file " + f, ex);
+                            Log("Exception during file enumeration of " + fmSndPath, ex);
+                            return;
+                        }
+
+                        foreach (var f in files)
+                        {
+                            UnSetReadOnly(f);
+
+                            try
+                            {
+                                var engine = new Engine(Paths.FFmpegExe);
+                                await engine.ConvertAsync(new MediaFile(f), new MediaFile(f.RemoveExtension() + ".wav"));
+                            }
+                            catch (Exception ex)
+                            {
+                                Log("Exception in FFmpeg convert", ex);
+                            }
+
+                            try
+                            {
+                                File.Delete(f);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log("Exception in deleting file " + f, ex);
+                            }
                         }
                     }
                 }
@@ -207,14 +214,18 @@ namespace AngelLoader
             });
         }
 
-        private static string GetFMSoundPathByGame(FanMission fm)
+        private static List<string> GetFMSoundPathsByGame(FanMission fm)
         {
-            // Only T1/T2 can have audio converted for now, because it looks like SU's FMSel pointedly doesn't do
-            // any conversion whatsoever, neither automatically nor even with a menu option. I'll assume Thief 3
-            // doesn't need it and leave it at that.
-            Debug.Assert(GameIsDark(fm), !fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir + " is not T1/T2");
+            var instPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
+            var sndPath = Path.Combine(instPath, "snd");
+            return
+                fm.Game == Game.SS2 ? new List<string> { sndPath, Path.Combine(instPath, "snd2") } :
+                GameIsDark(fm) ? new List<string> { sndPath } :
+                // Only T1/T2 can have audio converted for now, because it looks like SU's FMSel pointedly doesn't
+                // do any conversion whatsoever, neither automatically nor even with a menu option. I'll assume
+                // Thief 3 doesn't need it and leave it at that.
+                new List<string>();
 
-            return Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir, "snd");
         }
     }
 }
