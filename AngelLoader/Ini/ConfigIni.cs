@@ -588,6 +588,10 @@ namespace AngelLoader.Ini
                         config.GameOrganization = (GameOrganization)field.GetValue(null);
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.UseShortGameTabNames) + "="))
+                {
+                    config.UseShortGameTabNames = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.GameTab) + "="))
                 {
                     config.GameTab = val switch
@@ -993,6 +997,7 @@ namespace AngelLoader.Ini
                 #endregion
 
                 sw.WriteLine(nameof(config.GameOrganization) + "=" + config.GameOrganization);
+                sw.WriteLine(nameof(config.UseShortGameTabNames) + "=" + config.UseShortGameTabNames);
 
                 sw.WriteLine(nameof(config.EnableArticles) + "=" + config.EnableArticles);
                 sw.WriteLine(nameof(config.Articles) + "=" + commaCombine(config.Articles));

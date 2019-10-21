@@ -65,5 +65,7 @@ namespace AngelLoader.Forms
                                              string yes, string no, string cancel);
 
         void ChangeReadmeBoxFont(bool useFixed);
+
+        void ChangeGameTabNameShortness(bool refreshFilterBarPositionIfNeeded);
     }
 }

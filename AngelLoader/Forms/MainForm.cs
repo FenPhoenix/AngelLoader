@@ -331,6 +331,23 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        public void ChangeGameTabNameShortness(bool refreshFilterBarPositionIfNeeded)
+        {
+            Thief1TabPage.Text = Config.UseShortGameTabNames ? LText.Global.Thief1_Short : LText.Global.Thief1;
+            Thief2TabPage.Text = Config.UseShortGameTabNames ? LText.Global.Thief2_Short : LText.Global.Thief2;
+            Thief3TabPage.Text = Config.UseShortGameTabNames ? LText.Global.Thief3_Short : LText.Global.Thief3;
+            SS2TabPage.Text = Config.UseShortGameTabNames ? LText.Global.SystemShock2_Short : LText.Global.SystemShock2;
+
+            // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
+            var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
+            GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 5;
+
+            if (refreshFilterBarPositionIfNeeded && Config.GameOrganization == GameOrganization.ByTab)
+            {
+                PositionFilterBarAfterTabs();
+            }
+        }
+
         #endregion
 
         #region Private fields
@@ -1095,15 +1112,7 @@ namespace AngelLoader.Forms
             {
                 #region Game tabs
 
-                // TODO: @SS2: Allow shortened tab text for space (T1, T2, T3, SS2)
-                Thief1TabPage.Text = LText.Global.Thief1;
-                Thief2TabPage.Text = LText.Global.Thief2;
-                Thief3TabPage.Text = LText.Global.Thief3;
-                SS2TabPage.Text = LText.Global.SystemShock2;
-
-                // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
-                var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
-                GamesTabControl.Width = lastGameTabsRect.X + lastGameTabsRect.Width + 5;
+                ChangeGameTabNameShortness(false);
 
                 #endregion
 

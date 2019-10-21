@@ -51,6 +51,11 @@ namespace AngelLoader.Common.DataClasses
             internal static string Thief3 = "Thief 3";
             internal static string SystemShock2 = "System Shock 2";
             [FenGenBlankLine]
+            internal static string Thief1_Short = "T1";
+            internal static string Thief2_Short = "T2";
+            internal static string Thief3_Short = "T3";
+            internal static string SystemShock2_Short = "SS2";
+            [FenGenBlankLine]
             internal static string Thief1_Colon = "Thief 1:";
             internal static string Thief2_Colon = "Thief 2:";
             internal static string Thief3_Colon = "Thief 3:";

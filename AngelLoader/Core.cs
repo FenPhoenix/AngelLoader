@@ -204,7 +204,10 @@ namespace AngelLoader
                  !Config.T3Exe.EqualsI(sf.OutConfig.T3Exe));
 
             bool gameOrganizationChanged =
-                !startup && (Config.GameOrganization != sf.OutConfig.GameOrganization);
+                !startup && Config.GameOrganization != sf.OutConfig.GameOrganization;
+
+            bool useShortGameTabNamesChanged =
+                !startup && Config.UseShortGameTabNames != sf.OutConfig.UseShortGameTabNames;
 
             bool articlesChanged =
                 !startup &&
@@ -232,8 +235,7 @@ namespace AngelLoader
 
             #region Set config data
 
-            // Set values individually (rather than deep-copying) so that non-Settings values don't get
-            // overwritten.
+            // Set values individually (rather than deep-copying) so that non-Settings values don't get overwritten.
 
             #region Paths tab
 
@@ -342,12 +344,13 @@ namespace AngelLoader
 
             // From this point on, we're not in startup mode.
 
-            // For clarity, don't copy the other tabs' data on startup, because their tabs won't be shown and
-            // so they won't have been changed
+            // For clarity, don't copy the other tabs' data on startup, because their tabs won't be shown and so
+            // they won't have been changed
 
             #region FM Display tab
 
             Config.GameOrganization = sf.OutConfig.GameOrganization;
+            Config.UseShortGameTabNames = sf.OutConfig.UseShortGameTabNames;
 
             Config.EnableArticles = sf.OutConfig.EnableArticles;
             Config.Articles.ClearAndAdd(sf.OutConfig.Articles);
@@ -416,6 +419,10 @@ namespace AngelLoader
                 View.ClearAllUIAndInternalFilters();
                 if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                 View.ChangeGameOrganization();
+            }
+            if (useShortGameTabNamesChanged)
+            {
+                View.ChangeGameTabNameShortness(refreshFilterBarPositionIfNeeded: true);
             }
             if (ratingDisplayStyleChanged)
             {

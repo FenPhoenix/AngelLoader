@@ -35,6 +35,7 @@
             this.RatingNDLDisplayStyleRadioButton = new System.Windows.Forms.RadioButton();
             this.DateFormatGroupBox = new System.Windows.Forms.GroupBox();
             this.PreviewDateFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.PreviewDateLabel = new System.Windows.Forms.Label();
             this.DateCustomFormatPanel = new System.Windows.Forms.Panel();
             this.DateSeparator3TextBox = new System.Windows.Forms.TextBox();
             this.DateSeparator2TextBox = new System.Windows.Forms.TextBox();
@@ -55,7 +56,7 @@
             this.SortGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
-            this.PreviewDateLabel = new System.Windows.Forms.Label();
+            this.UseShortGameTabNamesCheckBox = new System.Windows.Forms.CheckBox();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
@@ -74,7 +75,7 @@
             this.RatingDisplayStyleGroupBox.Controls.Add(this.RatingExamplePictureBox);
             this.RatingDisplayStyleGroupBox.Controls.Add(this.RatingFMSelDisplayStyleRadioButton);
             this.RatingDisplayStyleGroupBox.Controls.Add(this.RatingNDLDisplayStyleRadioButton);
-            this.RatingDisplayStyleGroupBox.Location = new System.Drawing.Point(8, 220);
+            this.RatingDisplayStyleGroupBox.Location = new System.Drawing.Point(8, 256);
             this.RatingDisplayStyleGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.RatingDisplayStyleGroupBox.Name = "RatingDisplayStyleGroupBox";
             this.RatingDisplayStyleGroupBox.Size = new System.Drawing.Size(480, 124);
@@ -134,7 +135,7 @@
             this.DateFormatGroupBox.Controls.Add(this.DateCustomRadioButton);
             this.DateFormatGroupBox.Controls.Add(this.DateCurrentCultureLongRadioButton);
             this.DateFormatGroupBox.Controls.Add(this.DateCurrentCultureShortRadioButton);
-            this.DateFormatGroupBox.Location = new System.Drawing.Point(8, 352);
+            this.DateFormatGroupBox.Location = new System.Drawing.Point(8, 388);
             this.DateFormatGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.DateFormatGroupBox.Name = "DateFormatGroupBox";
             this.DateFormatGroupBox.Size = new System.Drawing.Size(480, 152);
@@ -152,6 +153,16 @@
             this.PreviewDateFlowLayoutPanel.Name = "PreviewDateFlowLayoutPanel";
             this.PreviewDateFlowLayoutPanel.Size = new System.Drawing.Size(464, 16);
             this.PreviewDateFlowLayoutPanel.TabIndex = 21;
+            // 
+            // PreviewDateLabel
+            // 
+            this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PreviewDateLabel.AutoSize = true;
+            this.PreviewDateLabel.Location = new System.Drawing.Point(386, 0);
+            this.PreviewDateLabel.Name = "PreviewDateLabel";
+            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
+            this.PreviewDateLabel.TabIndex = 20;
+            this.PreviewDateLabel.Text = "[Preview date]";
             // 
             // DateCustomFormatPanel
             // 
@@ -261,7 +272,7 @@
             this.SortingGroupBox.Controls.Add(this.MoveArticlesToEndCheckBox);
             this.SortingGroupBox.Controls.Add(this.EnableIgnoreArticlesCheckBox);
             this.SortingGroupBox.Controls.Add(this.ArticlesTextBox);
-            this.SortingGroupBox.Location = new System.Drawing.Point(8, 100);
+            this.SortingGroupBox.Location = new System.Drawing.Point(8, 136);
             this.SortingGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.SortingGroupBox.Name = "SortingGroupBox";
             this.SortingGroupBox.Size = new System.Drawing.Size(480, 112);
@@ -308,12 +319,13 @@
             // 
             this.GameOrganizationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.GameOrganizationGroupBox.Controls.Add(this.UseShortGameTabNamesCheckBox);
             this.GameOrganizationGroupBox.Controls.Add(this.OrganizeGamesByTabRadioButton);
             this.GameOrganizationGroupBox.Controls.Add(this.SortGamesInOneListRadioButton);
             this.GameOrganizationGroupBox.Location = new System.Drawing.Point(8, 8);
             this.GameOrganizationGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.GameOrganizationGroupBox.Name = "GameOrganizationGroupBox";
-            this.GameOrganizationGroupBox.Size = new System.Drawing.Size(480, 84);
+            this.GameOrganizationGroupBox.Size = new System.Drawing.Size(480, 120);
             this.GameOrganizationGroupBox.TabIndex = 4;
             this.GameOrganizationGroupBox.TabStop = false;
             this.GameOrganizationGroupBox.Text = "Game organization";
@@ -334,7 +346,7 @@
             this.SortGamesInOneListRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SortGamesInOneListRadioButton.Checked = true;
-            this.SortGamesInOneListRadioButton.Location = new System.Drawing.Point(16, 44);
+            this.SortGamesInOneListRadioButton.Location = new System.Drawing.Point(16, 80);
             this.SortGamesInOneListRadioButton.Name = "SortGamesInOneListRadioButton";
             this.SortGamesInOneListRadioButton.Size = new System.Drawing.Size(456, 32);
             this.SortGamesInOneListRadioButton.TabIndex = 1;
@@ -353,25 +365,25 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(496, 525);
+            this.PagePanel.Size = new System.Drawing.Size(496, 551);
             this.PagePanel.TabIndex = 8;
             // 
             // DummyAutoScrollPanel
             // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 92);
+            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 128);
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
             this.DummyAutoScrollPanel.TabIndex = 8;
             // 
-            // PreviewDateLabel
+            // UseShortGameTabNamesCheckBox
             // 
-            this.PreviewDateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.PreviewDateLabel.AutoSize = true;
-            this.PreviewDateLabel.Location = new System.Drawing.Point(386, 0);
-            this.PreviewDateLabel.Name = "PreviewDateLabel";
-            this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
-            this.PreviewDateLabel.TabIndex = 20;
-            this.PreviewDateLabel.Text = "[Preview date]";
+            this.UseShortGameTabNamesCheckBox.AutoSize = true;
+            this.UseShortGameTabNamesCheckBox.Location = new System.Drawing.Point(40, 56);
+            this.UseShortGameTabNamesCheckBox.Name = "UseShortGameTabNamesCheckBox";
+            this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
+            this.UseShortGameTabNamesCheckBox.TabIndex = 2;
+            this.UseShortGameTabNamesCheckBox.Text = "Use short game names on tabs";
+            this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
             // 
             // FMDisplayPage
             // 
@@ -379,7 +391,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "FMDisplayPage";
-            this.Size = new System.Drawing.Size(496, 525);
+            this.Size = new System.Drawing.Size(496, 551);
             this.RatingDisplayStyleGroupBox.ResumeLayout(false);
             this.RatingDisplayStyleGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
@@ -392,6 +404,7 @@
             this.SortingGroupBox.ResumeLayout(false);
             this.SortingGroupBox.PerformLayout();
             this.GameOrganizationGroupBox.ResumeLayout(false);
+            this.GameOrganizationGroupBox.PerformLayout();
             this.PagePanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -427,5 +440,6 @@
         internal System.Windows.Forms.Panel DummyAutoScrollPanel;
         private System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
         internal System.Windows.Forms.Label PreviewDateLabel;
+        internal System.Windows.Forms.CheckBox UseShortGameTabNamesCheckBox;
     }
 }

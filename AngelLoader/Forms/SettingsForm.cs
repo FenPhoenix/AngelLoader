@@ -256,6 +256,8 @@ namespace AngelLoader.Forms
                         break;
                 }
 
+                FMDisplayPage.UseShortGameTabNamesCheckBox.Checked = config.UseShortGameTabNames;
+
                 #region Articles
 
                 FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked = config.EnableArticles;
@@ -713,6 +715,8 @@ namespace AngelLoader.Forms
                 OutConfig.GameOrganization = FMDisplayPage.OrganizeGamesByTabRadioButton.Checked
                         ? GameOrganization.ByTab
                         : GameOrganization.OneList;
+
+                OutConfig.UseShortGameTabNames = FMDisplayPage.UseShortGameTabNamesCheckBox.Checked;
 
                 #endregion
 

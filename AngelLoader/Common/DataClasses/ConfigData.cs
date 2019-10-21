@@ -196,6 +196,8 @@ namespace AngelLoader.Common.DataClasses
 
         #endregion
 
+        internal bool UseShortGameTabNames = false;
+
         //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
     }
 }

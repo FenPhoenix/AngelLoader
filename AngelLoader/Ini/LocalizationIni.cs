@@ -112,6 +112,22 @@ namespace AngelLoader.Ini
                         {
                             LText.Global.SystemShock2 = lt.Substring(13);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief1_Short="))
+                        {
+                            LText.Global.Thief1_Short = lt.Substring(13);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Short="))
+                        {
+                            LText.Global.Thief2_Short = lt.Substring(13);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Thief3_Short="))
+                        {
+                            LText.Global.Thief3_Short = lt.Substring(13);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("SystemShock2_Short="))
+                        {
+                            LText.Global.SystemShock2_Short = lt.Substring(19);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Thief1_Colon="))
                         {
                             LText.Global.Thief1_Colon = lt.Substring(13);
@@ -307,6 +323,10 @@ namespace AngelLoader.Ini
                         else if (lt.StartsWithFast_NoNullChecks("DromEd_ExecutableNotFound="))
                         {
                             LText.AlertMessages.DromEd_ExecutableNotFound = lt.Substring(26);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ShockEd_ExecutableNotFound="))
+                        {
+                            LText.AlertMessages.ShockEd_ExecutableNotFound = lt.Substring(27);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("DromEd_UnknownGameType="))
                         {
