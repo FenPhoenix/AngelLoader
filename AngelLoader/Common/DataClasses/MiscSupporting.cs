@@ -367,15 +367,15 @@ namespace AngelLoader.Common.DataClasses
 
     internal sealed class GameTabsState
     {
-        internal SelectedFM T1SelFM { get; } = new SelectedFM();
-        internal SelectedFM T2SelFM { get; } = new SelectedFM();
-        internal SelectedFM T3SelFM { get; } = new SelectedFM();
-        internal SelectedFM SS2SelFM { get; } = new SelectedFM();
+        internal readonly SelectedFM T1SelFM = new SelectedFM();
+        internal readonly SelectedFM T2SelFM = new SelectedFM();
+        internal readonly SelectedFM T3SelFM = new SelectedFM();
+        internal readonly SelectedFM SS2SelFM = new SelectedFM();
 
-        internal Filter T1Filter { get; } = new Filter();
-        internal Filter T2Filter { get; } = new Filter();
-        internal Filter T3Filter { get; } = new Filter();
-        internal Filter SS2Filter { get; } = new Filter();
+        internal readonly Filter T1Filter = new Filter();
+        internal readonly Filter T2Filter = new Filter();
+        internal readonly Filter T3Filter = new Filter();
+        internal readonly Filter SS2Filter = new Filter();
 
         // TODO: Add sorted column / sort order as a per-tab thing
 
