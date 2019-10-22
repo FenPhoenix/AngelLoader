@@ -41,6 +41,7 @@ namespace AngelLoader.Common.DataClasses
     #endregion
 
     [Flags] internal enum Game : uint { Null = 0, Thief1 = 1, Thief2 = 2, Thief3 = 4, SS2 = 8, Unsupported = 16 }
+    internal enum GameIndex : uint { Thief1, Thief2, Thief3, SS2 }
 
     internal enum GameOrganization { ByTab, OneList }
 
