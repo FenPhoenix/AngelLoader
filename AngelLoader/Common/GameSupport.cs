@@ -56,7 +56,7 @@ namespace AngelLoader.Common
         #region Conversion
 
         /// <summary>
-        /// Converts a Game to a GameIndex. *Make sure the game has been checked for convertibility first!
+        /// Converts a Game to a GameIndex. *Narrowing conversion, so make sure the game has been checked for convertibility first!
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
@@ -72,6 +72,11 @@ namespace AngelLoader.Common
             _ => throw new IndexOutOfRangeException(nameof(game) + " was an out-of-range value which is not convertible to GameIndex.")
         };
 
+        /// <summary>
+        /// Converts a GameIndex to a Game. Widening conversion, so it will always succeed.
+        /// </summary>
+        /// <param name="gameIndex"></param>
+        /// <returns></returns>
         internal static Game GameIndexToGame(GameIndex gameIndex) => gameIndex switch
         {
             GameIndex.Thief1 => Game.Thief1,
@@ -83,6 +88,7 @@ namespace AngelLoader.Common
         #endregion
 
         #region Get game name from game type
+
         internal static string GetGameNameFromGameType(GameIndex gameIndex) => GetGameNameFromGameType(GameIndexToGame(gameIndex));
 
         internal static string GetGameNameFromGameType(Game game) => game switch
