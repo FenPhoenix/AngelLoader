@@ -103,16 +103,13 @@ namespace AngelLoader.Common.DataClasses
         internal void ClearAllSelectedFMs()
         {
             SelFM.Clear();
-            GameTabsState.ClearSelectedFMs();
+            GameTabsState.ClearAllSelectedFMs();
         }
 
         internal void ClearAllFilters()
         {
             Filter.Clear();
-            GameTabsState.T1Filter.Clear();
-            GameTabsState.T2Filter.Clear();
-            GameTabsState.T3Filter.Clear();
-            GameTabsState.SS2Filter.Clear();
+            GameTabsState.ClearAllFilters();
         }
 
         internal GameOrganization GameOrganization = GameOrganization.OneList;

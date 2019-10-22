@@ -154,25 +154,8 @@ namespace AngelLoader.Forms
 
                 Config.GameTabsState.DeepCopyTo(FMsDGV.GameTabsState);
 
-                switch (Config.GameTab)
-                {
-                    case GameIndex.Thief1:
-                        FMsDGV.GameTabsState.GetSelectedFM(Thief1).DeepCopyTo(FMsDGV.CurrentSelFM);
-                        FMsDGV.GameTabsState.T1Filter.DeepCopyTo(FMsDGV.Filter);
-                        break;
-                    case GameIndex.Thief2:
-                        FMsDGV.GameTabsState.GetSelectedFM(Thief2).DeepCopyTo(FMsDGV.CurrentSelFM);
-                        FMsDGV.GameTabsState.T2Filter.DeepCopyTo(FMsDGV.Filter);
-                        break;
-                    case GameIndex.Thief3:
-                        FMsDGV.GameTabsState.GetSelectedFM(Thief3).DeepCopyTo(FMsDGV.CurrentSelFM);
-                        FMsDGV.GameTabsState.T3Filter.DeepCopyTo(FMsDGV.Filter);
-                        break;
-                    case GameIndex.SS2:
-                        FMsDGV.GameTabsState.GetSelectedFM(SS2).DeepCopyTo(FMsDGV.CurrentSelFM);
-                        FMsDGV.GameTabsState.SS2Filter.DeepCopyTo(FMsDGV.Filter);
-                        break;
-                }
+                FMsDGV.GameTabsState.GetSelectedFM(Config.GameTab).DeepCopyTo(FMsDGV.CurrentSelFM);
+                FMsDGV.GameTabsState.GetFilter(Config.GameTab).DeepCopyTo(FMsDGV.Filter);
 
                 using (new DisableEvents(this))
                 {
@@ -3267,10 +3250,10 @@ namespace AngelLoader.Forms
                 null;
 
             var gameFilter =
-                tabPage == Thief1TabPage ? FMsDGV.GameTabsState.T1Filter :
-                tabPage == Thief2TabPage ? FMsDGV.GameTabsState.T2Filter :
-                tabPage == Thief3TabPage ? FMsDGV.GameTabsState.T3Filter :
-                tabPage == SS2TabPage ? FMsDGV.GameTabsState.SS2Filter :
+                tabPage == Thief1TabPage ? FMsDGV.GameTabsState.GetFilter(Thief1) :
+                tabPage == Thief2TabPage ? FMsDGV.GameTabsState.GetFilter(Thief2) :
+                tabPage == Thief3TabPage ? FMsDGV.GameTabsState.GetFilter(Thief3) :
+                tabPage == SS2TabPage ? FMsDGV.GameTabsState.GetFilter(SS2) :
                 null;
 
             Debug.Assert(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");

@@ -352,11 +352,15 @@ namespace AngelLoader.Common.DataClasses
         internal GameTabsState()
         {
             SelectedFMs = new SelectedFM[SupportedGameCount];
+            Filters = new Filter[SupportedGameCount];
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 SelectedFMs[i] = new SelectedFM();
+                Filters[i] = new Filter();
             }
         }
+
+        #region Selected FMs
 
         internal readonly SelectedFM[] SelectedFMs;
 
@@ -371,32 +375,45 @@ namespace AngelLoader.Common.DataClasses
 
         internal void SetSelectedFM(GameIndex index, SelectedFM value) => SelectedFMs[(uint)index] = value;
 
-        internal readonly Filter T1Filter = new Filter();
-        internal readonly Filter T2Filter = new Filter();
-        internal readonly Filter T3Filter = new Filter();
-        internal readonly Filter SS2Filter = new Filter();
+        #endregion
+
+        #region Filters
+
+        // Filter
+        internal readonly Filter[] Filters;
+
+        internal Filter GetFilter(GameIndex index) => Filters[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal Filter GetFilterUnsafe(Game game) => Filters[(uint)GameToGameIndex(game)];
+
+        internal void SetFilter(GameIndex index, Filter value) => Filters[(uint)index] = value;
+
+        #endregion
 
         // TODO: Add sorted column / sort order as a per-tab thing
 
         internal void DeepCopyTo(GameTabsState dest)
         {
-            T1Filter.DeepCopyTo(dest.T1Filter);
-            T2Filter.DeepCopyTo(dest.T2Filter);
-            T3Filter.DeepCopyTo(dest.T3Filter);
-            SS2Filter.DeepCopyTo(dest.SS2Filter);
-
-            for (int i = 0; i < SelectedFMs.Length; i++)
+            for (int i = 0; i < SupportedGameCount; i++)
             {
                 SelectedFMs[i].DeepCopyTo(dest.SelectedFMs[i]);
+                Filters[i].DeepCopyTo(dest.Filters[i]);
             }
         }
 
-        internal void ClearSelectedFMs()
+        internal void ClearAllSelectedFMs()
         {
-            for (int i = 0; i < SelectedFMs.Length; i++)
-            {
-                SelectedFMs[i].Clear();
-            }
+            for (int i = 0; i < SelectedFMs.Length; i++) SelectedFMs[i].Clear();
+        }
+
+        internal void ClearAllFilters()
+        {
+            for (int i = 0; i < SupportedGameCount; i++) Filters[i].Clear();
         }
     }
 }

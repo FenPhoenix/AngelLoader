@@ -176,19 +176,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterTitle="))
                 {
-                    config.GameTabsState.T1Filter.Title = val;
+                    config.GameTabsState.GetFilter(Thief1).Title = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterTitle="))
                 {
-                    config.GameTabsState.T2Filter.Title = val;
+                    config.GameTabsState.GetFilter(Thief2).Title = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterTitle="))
                 {
-                    config.GameTabsState.T3Filter.Title = val;
+                    config.GameTabsState.GetFilter(Thief3).Title = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterTitle="))
                 {
-                    config.GameTabsState.SS2Filter.Title = val;
+                    config.GameTabsState.GetFilter(SS2).Title = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterAuthor="))
                 {
@@ -196,19 +196,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterAuthor="))
                 {
-                    config.GameTabsState.T1Filter.Author = val;
+                    config.GameTabsState.GetFilter(Thief1).Author = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterAuthor="))
                 {
-                    config.GameTabsState.T2Filter.Author = val;
+                    config.GameTabsState.GetFilter(Thief2).Author = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterAuthor="))
                 {
-                    config.GameTabsState.T3Filter.Author = val;
+                    config.GameTabsState.GetFilter(Thief3).Author = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterAuthor="))
                 {
-                    config.GameTabsState.SS2Filter.Author = val;
+                    config.GameTabsState.GetFilter(SS2).Author = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateFrom="))
                 {
@@ -216,19 +216,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.T1Filter.ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.T2Filter.ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.T3Filter.ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.SS2Filter.ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).ReleaseDateFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateTo="))
                 {
@@ -236,19 +236,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.T1Filter.ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.T2Filter.ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.T3Filter.ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.SS2Filter.ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).ReleaseDateTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedFrom="))
                 {
@@ -256,19 +256,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.T1Filter.LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.T2Filter.LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.T3Filter.LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.SS2Filter.LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).LastPlayedFrom = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedTo="))
                 {
@@ -276,19 +276,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.T1Filter.LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).LastPlayedTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.T2Filter.LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).LastPlayedTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.T3Filter.LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).LastPlayedTo = ReadNullableHexDate(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.SS2Filter.LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).LastPlayedTo = ReadNullableHexDate(val);
                 }
                 // Note: These lines can't index past the end, because we won't get here unless the line contains
                 // '=' and since there are no '=' chars in the checked strings, we know the length must be at least
@@ -299,19 +299,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterTags") && line[12] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.T1Filter, "T1");
+                    ReadTags(lineT, config.GameTabsState.GetFilter(Thief1), "T1");
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterTags") && line[12] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.T2Filter, "T2");
+                    ReadTags(lineT, config.GameTabsState.GetFilter(Thief2), "T2");
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterTags") && line[12] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.T3Filter, "T3");
+                    ReadTags(lineT, config.GameTabsState.GetFilter(Thief3), "T3");
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterTags") && line[13] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.SS2Filter, "SS2");
+                    ReadTags(lineT, config.GameTabsState.GetFilter(SS2), "SS2");
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterGames="))
                 {
@@ -343,19 +343,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterRatingFrom="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.T1Filter.RatingFrom = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(Thief1).RatingFrom = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterRatingFrom="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.T2Filter.RatingFrom = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(Thief2).RatingFrom = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterRatingFrom="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.T3Filter.RatingFrom = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(Thief3).RatingFrom = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterRatingFrom="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.SS2Filter.RatingFrom = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(SS2).RatingFrom = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterRatingTo="))
                 {
@@ -363,19 +363,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterRatingTo="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.T1Filter.RatingTo = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(Thief1).RatingTo = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterRatingTo="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.T2Filter.RatingTo = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(Thief2).RatingTo = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterRatingTo="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.T3Filter.RatingTo = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(Thief3).RatingTo = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterRatingTo="))
                 {
-                    if (int.TryParse(val, out int result)) config.GameTabsState.SS2Filter.RatingTo = result;
+                    if (int.TryParse(val, out int result)) config.GameTabsState.GetFilter(SS2).RatingTo = result;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterFinishedStates="))
                 {
@@ -383,19 +383,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.T1Filter);
+                    ReadFinishedStates(val, config.GameTabsState.GetFilter(Thief1));
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.T2Filter);
+                    ReadFinishedStates(val, config.GameTabsState.GetFilter(Thief2));
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.T3Filter);
+                    ReadFinishedStates(val, config.GameTabsState.GetFilter(Thief3));
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.SS2Filter);
+                    ReadFinishedStates(val, config.GameTabsState.GetFilter(SS2));
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterShowJunk="))
                 {
@@ -403,19 +403,19 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterShowJunk="))
                 {
-                    config.GameTabsState.T1Filter.ShowUnsupported = val.EqualsTrue();
+                    config.GameTabsState.GetFilter(Thief1).ShowUnsupported = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterShowJunk="))
                 {
-                    config.GameTabsState.T2Filter.ShowUnsupported = val.EqualsTrue();
+                    config.GameTabsState.GetFilter(Thief2).ShowUnsupported = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterShowJunk="))
                 {
-                    config.GameTabsState.T3Filter.ShowUnsupported = val.EqualsTrue();
+                    config.GameTabsState.GetFilter(Thief3).ShowUnsupported = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterShowJunk="))
                 {
-                    config.GameTabsState.SS2Filter.ShowUnsupported = val.EqualsTrue();
+                    config.GameTabsState.GetFilter(SS2).ShowUnsupported = val.EqualsTrue();
                 }
 
                 #endregion
@@ -1043,10 +1043,10 @@ namespace AngelLoader.Ini
                     var filter = fi switch
                     {
                         0 => config.Filter,
-                        1 => config.GameTabsState.T1Filter,
-                        2 => config.GameTabsState.T2Filter,
-                        3 => config.GameTabsState.T3Filter,
-                        _ => config.GameTabsState.SS2Filter
+                        1 => config.GameTabsState.GetFilter(Thief1),
+                        2 => config.GameTabsState.GetFilter(Thief2),
+                        3 => config.GameTabsState.GetFilter(Thief3),
+                        _ => config.GameTabsState.GetFilter(SS2)
                     };
 
                     var p = fi switch { 0 => "", 1 => "T1", 2 => "T2", 3 => "T3", _ => "SS2" };
