@@ -338,6 +338,8 @@ namespace AngelLoader.Forms
         private float FMsListDefaultFontSizeInPoints;
         private int FMsListDefaultRowHeight;
 
+        // To order them such that we can just look them up with an index
+        private TabPage[] GameTabsInEnumOrder;
         private TabPage[] TopRightTabsInEnumOrder;
 
         private enum KeepSel
@@ -704,6 +706,14 @@ namespace AngelLoader.Forms
 
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
+
+            GameTabsInEnumOrder = new[]
+            {
+                Thief1TabPage,
+                Thief2TabPage,
+                Thief3TabPage,
+                SS2TabPage
+            };
 
             #region Top-right tabs
 
@@ -1393,20 +1403,19 @@ namespace AngelLoader.Forms
 
         private void UpdateConfig()
         {
-            GameIndex gameTab;
+            GameIndex gameTab = Thief1;
             if (Config.GameOrganization == GameOrganization.ByTab)
             {
                 SaveCurrentTabSelectedFM(GamesTabControl.SelectedTab);
                 var selGameTab = GamesTabControl.SelectedTab;
-                gameTab =
-                    selGameTab == Thief2TabPage ? GameIndex.Thief2 :
-                    selGameTab == Thief3TabPage ? GameIndex.Thief3 :
-                    selGameTab == SS2TabPage ? GameIndex.SS2 :
-                    GameIndex.Thief1;
-            }
-            else
-            {
-                gameTab = GameIndex.Thief1;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    if (GameTabsInEnumOrder[i] == selGameTab)
+                    {
+                        gameTab = (GameIndex)i;
+                        break;
+                    }
+                }
             }
 
             var selectedFM = FMsDGV.GetSelectedFMPosInfo();
@@ -3242,19 +3251,17 @@ namespace AngelLoader.Forms
         private (SelectedFM GameSelFM, Filter GameFilter)
         GetGameSelFMAndFilter(TabPage tabPage)
         {
-            var gameSelFM =
-                tabPage == Thief1TabPage ? FMsDGV.GameTabsState.GetSelectedFM(Thief1) :
-                tabPage == Thief2TabPage ? FMsDGV.GameTabsState.GetSelectedFM(Thief2) :
-                tabPage == Thief3TabPage ? FMsDGV.GameTabsState.GetSelectedFM(Thief3) :
-                tabPage == SS2TabPage ? FMsDGV.GameTabsState.GetSelectedFM(SS2) :
-                null;
-
-            var gameFilter =
-                tabPage == Thief1TabPage ? FMsDGV.GameTabsState.GetFilter(Thief1) :
-                tabPage == Thief2TabPage ? FMsDGV.GameTabsState.GetFilter(Thief2) :
-                tabPage == Thief3TabPage ? FMsDGV.GameTabsState.GetFilter(Thief3) :
-                tabPage == SS2TabPage ? FMsDGV.GameTabsState.GetFilter(SS2) :
-                null;
+            SelectedFM gameSelFM = null;
+            Filter gameFilter = null;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (GameTabsInEnumOrder[i] == tabPage)
+                {
+                    gameSelFM = FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
+                    gameFilter = FMsDGV.GameTabsState.GetFilter((GameIndex)i);
+                    break;
+                }
+            }
 
             Debug.Assert(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
             Debug.Assert(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
