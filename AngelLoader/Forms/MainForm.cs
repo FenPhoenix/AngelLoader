@@ -157,19 +157,19 @@ namespace AngelLoader.Forms
                 switch (Config.GameTab)
                 {
                     case GameIndex.Thief1:
-                        FMsDGV.GameTabsState.T1SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.GetSelectedFM(Thief1).DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.T1Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
                     case GameIndex.Thief2:
-                        FMsDGV.GameTabsState.T2SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.GetSelectedFM(Thief2).DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.T2Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
                     case GameIndex.Thief3:
-                        FMsDGV.GameTabsState.T3SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.GetSelectedFM(Thief3).DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.T3Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
                     case GameIndex.SS2:
-                        FMsDGV.GameTabsState.SS2SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
+                        FMsDGV.GameTabsState.GetSelectedFM(SS2).DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.SS2Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
                 }
@@ -3260,10 +3260,10 @@ namespace AngelLoader.Forms
         GetGameSelFMAndFilter(TabPage tabPage)
         {
             var gameSelFM =
-                tabPage == Thief1TabPage ? FMsDGV.GameTabsState.T1SelFM :
-                tabPage == Thief2TabPage ? FMsDGV.GameTabsState.T2SelFM :
-                tabPage == Thief3TabPage ? FMsDGV.GameTabsState.T3SelFM :
-                tabPage == SS2TabPage ? FMsDGV.GameTabsState.SS2SelFM :
+                tabPage == Thief1TabPage ? FMsDGV.GameTabsState.GetSelectedFM(Thief1) :
+                tabPage == Thief2TabPage ? FMsDGV.GameTabsState.GetSelectedFM(Thief2) :
+                tabPage == Thief3TabPage ? FMsDGV.GameTabsState.GetSelectedFM(Thief3) :
+                tabPage == SS2TabPage ? FMsDGV.GameTabsState.GetSelectedFM(SS2) :
                 null;
 
             var gameFilter =
@@ -3299,10 +3299,10 @@ namespace AngelLoader.Forms
 
             var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(GamesTabControl.SelectedTab);
 
-            FilterByThief1Button.Checked = gameSelFM == FMsDGV.GameTabsState.T1SelFM;
-            FilterByThief2Button.Checked = gameSelFM == FMsDGV.GameTabsState.T2SelFM;
-            FilterByThief3Button.Checked = gameSelFM == FMsDGV.GameTabsState.T3SelFM;
-            FilterBySS2Button.Checked = gameSelFM == FMsDGV.GameTabsState.SS2SelFM;
+            FilterByThief1Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(Thief1);
+            FilterByThief2Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(Thief2);
+            FilterByThief3Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(Thief3);
+            FilterBySS2Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(SS2);
 
             gameSelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
             gameFilter.DeepCopyTo(FMsDGV.Filter);

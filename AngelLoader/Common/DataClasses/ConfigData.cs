@@ -68,7 +68,7 @@ namespace AngelLoader.Common.DataClasses
         // If a Steam exe is specified, that is
         internal bool LaunchGamesWithSteam = true;
 
-        #region Use Steam settings
+        #region Use Steam switches
 
         internal readonly bool[] UseSteamSwitches;
 

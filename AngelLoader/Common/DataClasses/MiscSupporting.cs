@@ -349,10 +349,27 @@ namespace AngelLoader.Common.DataClasses
 
     internal sealed class GameTabsState
     {
-        internal readonly SelectedFM T1SelFM = new SelectedFM();
-        internal readonly SelectedFM T2SelFM = new SelectedFM();
-        internal readonly SelectedFM T3SelFM = new SelectedFM();
-        internal readonly SelectedFM SS2SelFM = new SelectedFM();
+        internal GameTabsState()
+        {
+            SelectedFMs = new SelectedFM[SupportedGameCount];
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                SelectedFMs[i] = new SelectedFM();
+            }
+        }
+
+        internal readonly SelectedFM[] SelectedFMs;
+
+        internal SelectedFM GetSelectedFM(GameIndex index) => SelectedFMs[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal SelectedFM GetSelectedFMUnsafe(Game game) => SelectedFMs[(uint)GameToGameIndex(game)];
+
+        internal void SetSelectedFM(GameIndex index, SelectedFM value) => SelectedFMs[(uint)index] = value;
 
         internal readonly Filter T1Filter = new Filter();
         internal readonly Filter T2Filter = new Filter();
@@ -368,18 +385,18 @@ namespace AngelLoader.Common.DataClasses
             T3Filter.DeepCopyTo(dest.T3Filter);
             SS2Filter.DeepCopyTo(dest.SS2Filter);
 
-            T1SelFM.DeepCopyTo(dest.T1SelFM);
-            T2SelFM.DeepCopyTo(dest.T2SelFM);
-            T3SelFM.DeepCopyTo(dest.T3SelFM);
-            SS2SelFM.DeepCopyTo(dest.SS2SelFM);
+            for (int i = 0; i < SelectedFMs.Length; i++)
+            {
+                SelectedFMs[i].DeepCopyTo(dest.SelectedFMs[i]);
+            }
         }
 
         internal void ClearSelectedFMs()
         {
-            T1SelFM.Clear();
-            T2SelFM.Clear();
-            T3SelFM.Clear();
-            SS2SelFM.Clear();
+            for (int i = 0; i < SelectedFMs.Length; i++)
+            {
+                SelectedFMs[i].Clear();
+            }
         }
     }
 }

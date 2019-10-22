@@ -606,46 +606,46 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMInstDir="))
                 {
-                    config.GameTabsState.T1SelFM.InstalledName = val;
+                    config.GameTabsState.GetSelectedFM(Thief1).InstalledName = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2SelFMInstDir="))
                 {
-                    config.GameTabsState.T2SelFM.InstalledName = val;
+                    config.GameTabsState.GetSelectedFM(Thief2).InstalledName = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3SelFMInstDir="))
                 {
-                    config.GameTabsState.T3SelFM.InstalledName = val;
+                    config.GameTabsState.GetSelectedFM(Thief3).InstalledName = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2SelFMInstDir="))
                 {
-                    config.GameTabsState.SS2SelFM.InstalledName = val;
+                    config.GameTabsState.GetSelectedFM(SS2).InstalledName = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
-                        config.GameTabsState.T1SelFM.IndexFromTop = result;
+                        config.GameTabsState.GetSelectedFM(Thief1).IndexFromTop = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
-                        config.GameTabsState.T2SelFM.IndexFromTop = result;
+                        config.GameTabsState.GetSelectedFM(Thief2).IndexFromTop = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
-                        config.GameTabsState.T3SelFM.IndexFromTop = result;
+                        config.GameTabsState.GetSelectedFM(Thief3).IndexFromTop = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2SelFMIndexFromTop="))
                 {
                     if (int.TryParse(val, out int result))
                     {
-                        config.GameTabsState.SS2SelFM.IndexFromTop = result;
+                        config.GameTabsState.GetSelectedFM(SS2).IndexFromTop = result;
                     }
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SelFMInstDir="))
@@ -1127,14 +1127,14 @@ namespace AngelLoader.Ini
 
                 sw.WriteLine("SelFMInstDir=" + config.SelFM.InstalledName);
                 sw.WriteLine("SelFMIndexFromTop=" + config.SelFM.IndexFromTop);
-                sw.WriteLine("T1SelFMInstDir=" + config.GameTabsState.T1SelFM.InstalledName);
-                sw.WriteLine("T1SelFMIndexFromTop=" + config.GameTabsState.T1SelFM.IndexFromTop);
-                sw.WriteLine("T2SelFMInstDir=" + config.GameTabsState.T2SelFM.InstalledName);
-                sw.WriteLine("T2SelFMIndexFromTop=" + config.GameTabsState.T2SelFM.IndexFromTop);
-                sw.WriteLine("T3SelFMInstDir=" + config.GameTabsState.T3SelFM.InstalledName);
-                sw.WriteLine("T3SelFMIndexFromTop=" + config.GameTabsState.T3SelFM.IndexFromTop);
-                sw.WriteLine("SS2SelFMInstDir=" + config.GameTabsState.SS2SelFM.InstalledName);
-                sw.WriteLine("SS2SelFMIndexFromTop=" + config.GameTabsState.SS2SelFM.IndexFromTop);
+                sw.WriteLine("T1SelFMInstDir=" + config.GameTabsState.GetSelectedFM(Thief1).InstalledName);
+                sw.WriteLine("T1SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(Thief1).IndexFromTop);
+                sw.WriteLine("T2SelFMInstDir=" + config.GameTabsState.GetSelectedFM(Thief2).InstalledName);
+                sw.WriteLine("T2SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(Thief2).IndexFromTop);
+                sw.WriteLine("T3SelFMInstDir=" + config.GameTabsState.GetSelectedFM(Thief3).InstalledName);
+                sw.WriteLine("T3SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(Thief3).IndexFromTop);
+                sw.WriteLine("SS2SelFMInstDir=" + config.GameTabsState.GetSelectedFM(SS2).InstalledName);
+                sw.WriteLine("SS2SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(SS2).IndexFromTop);
 
                 #endregion
 
