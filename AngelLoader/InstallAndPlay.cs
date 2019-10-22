@@ -561,7 +561,7 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
+            var gameExe = Config.GetGameExeUnsafe(fm.Game);
             var gameName = GetGameNameFromGameType(fm.Game);
             if (!File.Exists(gameExe))
             {
@@ -570,7 +570,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var instBasePath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
+            var instBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
 
             if (!Directory.Exists(instBasePath))
             {
@@ -809,7 +809,7 @@ namespace AngelLoader
                 Config.ConfirmUninstall = !dontAskAgain;
             }
 
-            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
+            var gameExe = Config.GetGameExeUnsafe(fm.Game);
             var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
@@ -822,7 +822,7 @@ namespace AngelLoader
 
             try
             {
-                var fmInstalledPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
+                var fmInstalledPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
 
                 var fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)

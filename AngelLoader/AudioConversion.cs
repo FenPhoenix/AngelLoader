@@ -218,10 +218,10 @@ namespace AngelLoader
 
         private static List<string> GetFMSoundPathsByGame(FanMission fm)
         {
-            // Guard for the below GameToGameIndex conversion
+            // Guard for the below unsafe Game conversion
             if (!GameIsDark(fm.Game)) return new List<string>();
 
-            var instPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
+            var instPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             var sndPath = Path.Combine(instPath, "snd");
             return
                 fm.Game == Game.SS2 ? new List<string> { sndPath, Path.Combine(instPath, "snd2") } :

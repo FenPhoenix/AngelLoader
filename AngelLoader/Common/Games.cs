@@ -5,9 +5,37 @@ namespace AngelLoader.Common
 {
     internal static class Games
     {
-        // All game stuff in one place, making it easy to change
-        [Flags] internal enum Game : uint { Null = 0, Thief1 = 1, Thief2 = 2, Thief3 = 4, SS2 = 8, Unsupported = 16 }
-        internal enum GameIndex : uint { Thief1, Thief2, Thief3, SS2 }
+        // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in
+        // the code that need updating.
+
+        #region Enums
+
+        // These is flags so we can combine its values for filtering by multiple games
+        [Flags]
+        internal enum Game : uint
+        {
+            Null = 0,
+
+            // Known/supported games
+            Thief1 = 1,
+            Thief2 = 2,
+            Thief3 = 4,
+            SS2 = 8,
+
+            Unsupported = 16
+        }
+
+        internal enum GameIndex : uint
+        {
+            Thief1,
+            Thief2,
+            Thief3,
+            SS2
+        }
+
+        #endregion
+
+        #region Conversion
 
         /// <summary>
         /// Converts a Game to a GameIndex. *Make sure the game has been checked for convertibility first!
@@ -22,7 +50,8 @@ namespace AngelLoader.Common
             Game.Thief3 => GameIndex.Thief3,
             Game.SS2 => GameIndex.SS2,
             Game.Null => throw new IndexOutOfRangeException(nameof(game) + " was " + nameof(Game.Null) + ", which is not convertible to GameIndex."),
-            _ => throw new IndexOutOfRangeException(nameof(game) + " was " + nameof(Game.Unsupported) + ", which is not convertible to GameIndex.")
+            Game.Unsupported => throw new IndexOutOfRangeException(nameof(game) + " was " + nameof(Game.Unsupported) + ", which is not convertible to GameIndex."),
+            _ => throw new IndexOutOfRangeException(nameof(game) + " was an out-of-range value which is not convertible to GameIndex.")
         };
 
         internal static Game GameIndexToGame(GameIndex gameIndex) => gameIndex switch
@@ -33,7 +62,13 @@ namespace AngelLoader.Common
             _ => Game.SS2,
         };
 
+        #endregion
+
+        #region Get game name from game type
+        internal static string GetGameNameFromGameType(GameIndex gameIndex) => GetGameNameFromGameType(GameIndexToGame(gameIndex));
+
         internal static string GetGameNameFromGameType(Game game) => game switch
+
         {
             Game.Thief1 => LText.Global.Thief1,
             Game.Thief2 => LText.Global.Thief2,
@@ -42,10 +77,14 @@ namespace AngelLoader.Common
             _ => "[UnknownGameType]"
         };
 
-        internal static string GetGameNameFromGameType(GameIndex gameIndex) => GetGameNameFromGameType(GameIndexToGame(gameIndex));
+        #endregion
+
+        #region Game type checks
 
         internal static bool GameIsDark(Game game) => game == Game.Thief1 || game == Game.Thief2 || game == Game.SS2;
         internal static bool GameIsDark(GameIndex game) => game == GameIndex.Thief1 || game == GameIndex.Thief2 || game == GameIndex.SS2;
         internal static bool GameIsKnownAndSupported(Game game) => game != Game.Null && game != Game.Unsupported;
+
+        #endregion
     }
 }

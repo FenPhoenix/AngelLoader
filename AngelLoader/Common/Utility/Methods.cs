@@ -202,7 +202,7 @@ namespace AngelLoader.Common.Utility
 
             if (fm.Installed)
             {
-                var instPath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
+                var instPath = Config.GetFMInstallPathUnsafe(fm.Game);
                 if (instPath.IsEmpty()) return false;
 
                 string path;

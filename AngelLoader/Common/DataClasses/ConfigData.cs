@@ -16,13 +16,40 @@ namespace AngelLoader.Common.DataClasses
         // TODO: Check all code to make sure it's safe for these to be null, then make them null by default
         internal string FMsBackupPath = "";
 
+        #region Game exes
+
+        // TODO: @GENGAMES: Make it so I don't have to remember to change the length of these when I add a new game
         internal readonly string[] GameExes = { "", "", "", "" };
+
         internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal string GetGameExeUnsafe(Game game) => GameExes[(uint)GameToGameIndex(game)];
+
         internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
 
+        #endregion
+
+        #region FM install paths
+
         internal readonly string[] FMInstallPaths = { "", "", "", "" };
+
         internal string GetFMInstallPath(GameIndex index) => FMInstallPaths[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal string GetFMInstallPathUnsafe(Game game) => FMInstallPaths[(uint)GameToGameIndex(game)];
+
         internal void SetFMInstallPath(GameIndex index, string value) => FMInstallPaths[(uint)index] = value;
+
+        #endregion
 
         // If a Steam exe is specified, that is
         internal bool LaunchGamesWithSteam = true;

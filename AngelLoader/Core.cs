@@ -779,7 +779,7 @@ namespace AngelLoader
                     }
                     else if (GameIsKnownAndSupported(fm.Game))
                     {
-                        var fmInstalledPath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
+                        var fmInstalledPath = Config.GetFMInstallPathUnsafe(fm.Game);
                         if (!fmInstalledPath.IsEmpty())
                         {
                             fmsToScanFiltered.Add(fm);
@@ -1299,7 +1299,7 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsDark(fm.Game)) return;
 
-            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
+            var gameExe = Config.GetGameExeUnsafe(fm.Game);
             var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
@@ -1340,7 +1340,7 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsDark(fm.Game)) return;
 
-            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
+            var gameExe = Config.GetGameExeUnsafe(fm.Game);
             var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
@@ -1394,7 +1394,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var installedFMPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
+            var installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             try
             {
                 var dmlFile = Path.GetFileName(sourceDMLPath);
@@ -1418,14 +1418,14 @@ namespace AngelLoader
                 Log("RemoveDML: fm is not Dark", stackTrace: true);
                 return false;
             }
-            
+
             if (!FMIsReallyInstalled(fm))
             {
                 View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
-            var installedFMPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
+            var installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             try
             {
                 File.Delete(Path.Combine(installedFMPath, dmlFile));
@@ -1451,7 +1451,7 @@ namespace AngelLoader
 
             try
             {
-                var dmlFiles = FastIO.GetFilesTopOnly(Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir), "*.dml");
+                var dmlFiles = FastIO.GetFilesTopOnly(Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir), "*.dml");
                 for (int i = 0; i < dmlFiles.Count; i++) dmlFiles[i] = dmlFiles[i].GetFileNameFast();
                 return (true, dmlFiles);
             }
@@ -1469,7 +1469,7 @@ namespace AngelLoader
         private static string GetReadmeFileFullPath(FanMission fm)
         {
             return FMIsReallyInstalled(fm)
-                ? Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir, fm.SelectedReadme)
+                ? Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
         }
 
@@ -1654,11 +1654,11 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
-                Log(nameof(OpenFMFolder)+": fm is not known or supported", stackTrace: true);
+                Log(nameof(OpenFMFolder) + ": fm is not known or supported", stackTrace: true);
                 return;
             }
 
-            var installsBasePath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
+            var installsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
             string fmDir;
             if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
