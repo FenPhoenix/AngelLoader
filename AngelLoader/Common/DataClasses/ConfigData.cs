@@ -3,23 +3,35 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Games;
+using static AngelLoader.Common.GameSupport;
 
 namespace AngelLoader.Common.DataClasses
 {
     internal sealed class ConfigData
     {
+        internal ConfigData()
+        {
+            // Automatically set the correct length based on our actual supported game count
+            GameExes = new string[SupportedGameCount];
+            FMInstallPaths = new string[SupportedGameCount];
+
+            // We want them empty strings, not null, for safety
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameExes[i] = "";
+                FMInstallPaths[i] = "";
+            }
+        }
+
         #region Paths
 
         internal readonly List<string> FMArchivePaths = new List<string>();
         internal bool FMArchivePathsIncludeSubfolders = false;
-        // TODO: Check all code to make sure it's safe for these to be null, then make them null by default
         internal string FMsBackupPath = "";
 
         #region Game exes
 
-        // TODO: @GENGAMES: Make it so I don't have to remember to change the length of these when I add a new game
-        internal readonly string[] GameExes = { "", "", "", "" };
+        internal readonly string[] GameExes;
 
         internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
 
@@ -36,7 +48,7 @@ namespace AngelLoader.Common.DataClasses
 
         #region FM install paths
 
-        internal readonly string[] FMInstallPaths = { "", "", "", "" };
+        internal readonly string[] FMInstallPaths;
 
         internal string GetFMInstallPath(GameIndex index) => FMInstallPaths[(uint)index];
 

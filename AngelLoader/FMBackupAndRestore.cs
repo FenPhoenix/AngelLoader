@@ -13,7 +13,7 @@ using AngelLoader.Ini;
 using AngelLoader.WinAPI;
 using SevenZip;
 using static AngelLoader.Common.Common;
-using static AngelLoader.Common.Games;
+using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using CompressionLevel = System.IO.Compression.CompressionLevel;

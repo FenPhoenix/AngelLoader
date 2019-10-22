@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Games;
+using static AngelLoader.Common.GameSupport;
 
 namespace AngelLoader.Common.DataClasses
 {

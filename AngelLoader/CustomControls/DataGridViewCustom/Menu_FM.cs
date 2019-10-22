@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.Common;
-using static AngelLoader.Common.Games;
+using static AngelLoader.Common.GameSupport;
 
 namespace AngelLoader.CustomControls
 {

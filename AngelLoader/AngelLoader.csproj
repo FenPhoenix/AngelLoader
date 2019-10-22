@@ -175,7 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AudioConversion.cs" />
-    <Compile Include="Common\Games.cs" />
+    <Compile Include="Common\GameSupport.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="Common\Attributes.cs" />
     <Compile Include="Common\CatAndTags.cs" />

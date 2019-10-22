@@ -13,7 +13,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
 using static AngelLoader.Common.Common;
-using static AngelLoader.Common.Games;
+using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.CustomControls.ProgressPanel;

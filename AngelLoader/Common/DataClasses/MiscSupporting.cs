@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
-using static AngelLoader.Common.Games;
+using static AngelLoader.Common.GameSupport;
 
 namespace AngelLoader.Common.DataClasses
 {

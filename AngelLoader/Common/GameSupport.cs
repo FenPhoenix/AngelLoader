@@ -3,11 +3,13 @@ using AngelLoader.Common.DataClasses;
 
 namespace AngelLoader.Common
 {
-    internal static class Games
+    internal static class GameSupport
     {
         // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in
         // the code that need updating.
 
+        internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;
+        
         #region Enums
 
         // These is flags so we can combine its values for filtering by multiple games
@@ -34,7 +36,7 @@ namespace AngelLoader.Common
         }
 
         #endregion
-
+        
         #region Conversion
 
         /// <summary>

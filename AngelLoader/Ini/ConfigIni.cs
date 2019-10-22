@@ -9,8 +9,8 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Games;
-using static AngelLoader.Common.Games.GameIndex;
+using static AngelLoader.Common.GameSupport;
+using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Ini

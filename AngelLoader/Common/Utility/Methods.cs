@@ -9,8 +9,8 @@ using FMScanner;
 using JetBrains.Annotations;
 using SevenZip;
 using static AngelLoader.Common.Common;
-using static AngelLoader.Common.Games;
-using static AngelLoader.Common.Games.GameIndex;
+using static AngelLoader.Common.GameSupport;
+using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.WinAPI.InteropMisc;
 

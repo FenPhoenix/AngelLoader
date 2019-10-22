@@ -13,7 +13,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.CustomControls.SettingsPages;
 using AngelLoader.WinAPI.Dialogs;
-using static AngelLoader.Common.Games.GameIndex;
+using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.CustomControls.SettingsPages.Interfaces;
 
