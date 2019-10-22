@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Games;
+using static AngelLoader.Common.Games.GameIndex;
 using static AngelLoader.Common.Logger;
 
 namespace AngelLoader.Ini
@@ -564,21 +566,21 @@ namespace AngelLoader.Ini
                     config.SteamExe = val.Trim();
                 }
                 #endregion
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T1Exe) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1Exe="))
                 {
-                    config.T1Exe = val.Trim();
+                    config.SetGameExe(Thief1, val.Trim());
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T2Exe) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2Exe="))
                 {
-                    config.T2Exe = val.Trim();
+                    config.SetGameExe(Thief2, val.Trim());
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T3Exe) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3Exe="))
                 {
-                    config.T3Exe = val.Trim();
+                    config.SetGameExe(Thief3, val.Trim());
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SS2Exe) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("SS2Exe="))
                 {
-                    config.SS2Exe = val.Trim();
+                    config.SetGameExe(SS2, val.Trim());
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.GameOrganization) + "="))
                 {
@@ -596,10 +598,10 @@ namespace AngelLoader.Ini
                 {
                     config.GameTab = val switch
                     {
-                        nameof(Game.Thief2) => Game.Thief2,
-                        nameof(Game.Thief3) => Game.Thief3,
-                        nameof(Game.SS2) => Game.SS2,
-                        _ => Game.Thief1
+                        nameof(GameIndex.Thief2) => GameIndex.Thief2,
+                        nameof(GameIndex.Thief3) => GameIndex.Thief3,
+                        nameof(GameIndex.SS2) => GameIndex.SS2,
+                        _ => GameIndex.Thief1
                     };
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMInstDir="))
@@ -978,10 +980,10 @@ namespace AngelLoader.Ini
 
                 #region Paths
 
-                sw.WriteLine(nameof(config.T1Exe) + "=" + config.T1Exe.Trim());
-                sw.WriteLine(nameof(config.T2Exe) + "=" + config.T2Exe.Trim());
-                sw.WriteLine(nameof(config.T3Exe) + "=" + config.T3Exe.Trim());
-                sw.WriteLine(nameof(config.SS2Exe) + "=" + config.SS2Exe.Trim());
+                sw.WriteLine("T1Exe=" + config.GetGameExe(Thief1).Trim());
+                sw.WriteLine("T2Exe=" + config.GetGameExe(Thief2).Trim());
+                sw.WriteLine("T3Exe=" + config.GetGameExe(Thief3).Trim());
+                sw.WriteLine("SS2Exe=" + config.GetGameExe(SS2).Trim());
 
                 sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
                 sw.WriteLine(nameof(config.T1UseSteam) + "=" + config.T1UseSteam);

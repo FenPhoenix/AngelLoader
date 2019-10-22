@@ -11,8 +11,10 @@ using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI;
 using SevenZip;
-using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Games;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.CustomControls.ProgressPanel;
 
 namespace AngelLoader
@@ -113,7 +115,7 @@ namespace AngelLoader
 
             var readmes = new List<string>();
 
-            var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
+            var thisFMInstallsBasePath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
 
             var path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
             var files = FastIO.GetFilesTopOnly(path, "*");

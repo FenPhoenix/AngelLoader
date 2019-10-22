@@ -19,6 +19,8 @@ using AngelLoader.WinAPI;
 using FMScanner;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
+using static AngelLoader.Common.Games;
+using static AngelLoader.Common.Games.GameIndex;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.CustomControls.ProgressPanel;
@@ -199,10 +201,10 @@ namespace AngelLoader
 
             bool gamePathsChanged =
                 !startup &&
-                (!Config.T1Exe.EqualsI(sf.OutConfig.T1Exe) ||
-                 !Config.T2Exe.EqualsI(sf.OutConfig.T2Exe) ||
-                 !Config.T3Exe.EqualsI(sf.OutConfig.T3Exe) ||
-                 !Config.SS2Exe.EqualsI(sf.OutConfig.SS2Exe));
+                (!Config.GetGameExe(Thief1).EqualsI(sf.OutConfig.GetGameExe(Thief1)) ||
+                 !Config.GetGameExe(Thief2).EqualsI(sf.OutConfig.GetGameExe(Thief2)) ||
+                 !Config.GetGameExe(Thief3).EqualsI(sf.OutConfig.GetGameExe(Thief3)) ||
+                 !Config.GetGameExe(SS2).EqualsI(sf.OutConfig.GetGameExe(SS2)));
 
             bool gameOrganizationChanged =
                 !startup && Config.GameOrganization != sf.OutConfig.GameOrganization;
@@ -242,10 +244,7 @@ namespace AngelLoader
 
             #region Game exes
 
-            Config.T1Exe = sf.OutConfig.T1Exe;
-            Config.T2Exe = sf.OutConfig.T2Exe;
-            Config.T3Exe = sf.OutConfig.T3Exe;
-            Config.SS2Exe = sf.OutConfig.SS2Exe;
+            for (int i = 0; i < Config.GameExes.Length; i++) Config.GameExes[i] = sf.OutConfig.GameExes[i];
 
             // TODO: These should probably go in the Settings form along with the cam_mod.ini check
             // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
@@ -253,19 +252,19 @@ namespace AngelLoader
 
             #region Thief 1
 
-            Config.SetT1FMInstPath(!Config.T1Exe.IsWhiteSpace()
-                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T1Exe), out Error _)
+            Config.SetFMInstallPath(Thief1, !Config.GetGameExe(Thief1).IsWhiteSpace()
+                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(Thief1)), out Error _)
                 : "");
-            Config.T1DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief1).IsEmpty();
+            Config.T1DromEdDetected = !GetEditorExe(Thief1).IsEmpty();
 
             #endregion
 
             #region Thief 2
 
-            Config.SetT2FMInstPath(!Config.T2Exe.IsWhiteSpace()
-                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.T2Exe), out Error _)
+            Config.SetFMInstallPath(Thief2, !Config.GetGameExe(Thief2).IsWhiteSpace()
+                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(Thief2)), out Error _)
                 : "");
-            Config.T2DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief2).IsEmpty();
+            Config.T2DromEdDetected = !GetEditorExe(Thief2).IsEmpty();
 
             Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
 
@@ -273,28 +272,28 @@ namespace AngelLoader
 
             #region Thief 3
 
-            if (!Config.T3Exe.IsWhiteSpace())
+            if (!Config.GetGameExe(Thief3).IsWhiteSpace())
             {
                 var (error, useCentralSaves, t3FMInstPath) = GetInstFMsPathFromT3();
                 if (error == Error.None)
                 {
-                    Config.SetT3FMInstPath(t3FMInstPath);
+                    Config.SetFMInstallPath(Thief3, t3FMInstPath);
                     Config.T3UseCentralSaves = useCentralSaves;
                 }
             }
             else
             {
-                Config.SetT3FMInstPath("");
+                Config.SetFMInstallPath(Thief3, "");
             }
 
             #endregion
 
             #region SS2
 
-            Config.SetSS2FMInstPath(!Config.SS2Exe.IsWhiteSpace()
-                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.SS2Exe), out Error _)
+            Config.SetFMInstallPath(SS2, !Config.GetGameExe(SS2).IsWhiteSpace()
+                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(SS2)), out Error _)
                 : "");
-            Config.SS2ShockEdDetected = !GetDromEdOrShockEdExe(Game.SS2).IsEmpty();
+            Config.SS2ShockEdDetected = !GetEditorExe(SS2).IsEmpty();
 
             #endregion
 
@@ -417,7 +416,7 @@ namespace AngelLoader
                 // Clear everything to defaults so we don't have any leftover state screwing things all up
                 Config.ClearAllSelectedFMs();
                 Config.ClearAllFilters();
-                Config.GameTab = Game.Thief1;
+                Config.GameTab = GameIndex.Thief1;
                 View.ClearAllUIAndInternalFilters();
                 if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                 View.ChangeGameOrganization();
@@ -499,42 +498,42 @@ namespace AngelLoader
             // TODO: These single-error returns don't work, change to something else
 
             // PERF: 9ms, but it's mostly IO. Darn.
-            bool t1Exists = !Config.T1Exe.IsEmpty() && File.Exists(Config.T1Exe);
-            bool t2Exists = !Config.T2Exe.IsEmpty() && File.Exists(Config.T2Exe);
-            bool t3Exists = !Config.T3Exe.IsEmpty() && File.Exists(Config.T3Exe);
-            bool ss2Exists = !Config.SS2Exe.IsEmpty() && File.Exists(Config.SS2Exe);
+            bool t1Exists = !Config.GetGameExe(Thief1).IsEmpty() && File.Exists(Config.GetGameExe(Thief1));
+            bool t2Exists = !Config.GetGameExe(Thief2).IsEmpty() && File.Exists(Config.GetGameExe(Thief2));
+            bool t3Exists = !Config.GetGameExe(Thief3).IsEmpty() && File.Exists(Config.GetGameExe(Thief3));
+            bool ss2Exists = !Config.GetGameExe(SS2).IsEmpty() && File.Exists(Config.GetGameExe(SS2));
 
             if (t1Exists)
             {
-                var gamePath = Path.GetDirectoryName(Config.T1Exe);
+                var gamePath = Path.GetDirectoryName(Config.GetGameExe(Thief1));
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.T1DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief1).IsEmpty();
+                Config.T1DromEdDetected = !GetEditorExe(Thief1).IsEmpty();
                 //if (error == Error.CamModIniNotFound) return Error.T1CamModIniNotFound;
-                Config.SetT1FMInstPath(gameFMsPath);
+                Config.SetFMInstallPath(Thief1, gameFMsPath);
             }
             if (t2Exists)
             {
-                var gamePath = Path.GetDirectoryName(Config.T2Exe);
+                var gamePath = Path.GetDirectoryName(Config.GetGameExe(Thief2));
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.T2DromEdDetected = !GetDromEdOrShockEdExe(Game.Thief2).IsEmpty();
+                Config.T2DromEdDetected = !GetEditorExe(Thief2).IsEmpty();
                 Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
                 //if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
-                Config.SetT2FMInstPath(gameFMsPath);
+                Config.SetFMInstallPath(Thief2, gameFMsPath);
             }
             if (t3Exists)
             {
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
                 //if (error != Error.None) return error;
-                Config.SetT3FMInstPath(path);
+                Config.SetFMInstallPath(Thief3, path);
                 Config.T3UseCentralSaves = useCentralSaves;
             }
             if (ss2Exists)
             {
-                var gamePath = Path.GetDirectoryName(Config.SS2Exe);
+                var gamePath = Path.GetDirectoryName(Config.GetGameExe(SS2));
                 var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.SS2ShockEdDetected = !GetDromEdOrShockEdExe(Game.SS2).IsEmpty();
+                Config.SS2ShockEdDetected = !GetEditorExe(SS2).IsEmpty();
                 //if (error != Error.None) return error;
-                Config.SetSS2FMInstPath(gameFMsPath);
+                Config.SetFMInstallPath(SS2, gameFMsPath);
             }
 
             return
@@ -778,9 +777,9 @@ namespace AngelLoader
                         fmsToScanFiltered.Add(fm);
                         fms.Add(fmArchivePath);
                     }
-                    else if (GameIsKnownAndSupported(fm))
+                    else if (GameIsKnownAndSupported(fm.Game))
                     {
-                        var fmInstalledPath = GetFMInstallsBasePath(fm.Game);
+                        var fmInstalledPath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
                         if (!fmInstalledPath.IsEmpty())
                         {
                             fmsToScanFiltered.Add(fm);
@@ -849,7 +848,7 @@ namespace AngelLoader
 
                     #region Set FM fields
 
-                    var gameSup = scannedFM.Game != Games.Unsupported;
+                    var gameSup = scannedFM.Game != FMScanner.Games.Unsupported;
 
                     if (scanOptions.ScanTitle)
                     {
@@ -899,11 +898,11 @@ namespace AngelLoader
                     if (scanOptions.ScanGameType)
                     {
                         sel.Game =
-                            scannedFM.Game == Games.Unsupported ? Game.Unsupported :
-                            scannedFM.Game == Games.TDP ? Game.Thief1 :
-                            scannedFM.Game == Games.TMA ? Game.Thief2 :
-                            scannedFM.Game == Games.TDS ? Game.Thief3 :
-                            scannedFM.Game == Games.SS2 ? Game.SS2 :
+                            scannedFM.Game == FMScanner.Games.Unsupported ? Game.Unsupported :
+                            scannedFM.Game == FMScanner.Games.TDP ? Game.Thief1 :
+                            scannedFM.Game == FMScanner.Games.TMA ? Game.Thief2 :
+                            scannedFM.Game == FMScanner.Games.TDS ? Game.Thief3 :
+                            scannedFM.Game == FMScanner.Games.SS2 ? Game.SS2 :
                             Game.Null;
                     }
 
@@ -1298,11 +1297,9 @@ namespace AngelLoader
 
         internal static async Task ConvertOGGsToWAVs(FanMission fm)
         {
-            if (!fm.Installed || !GameIsDark(fm)) return;
+            if (!fm.Installed || !GameIsDark(fm.Game)) return;
 
-            Debug.Assert(fm.Game != Game.Null, "fm.Game is Game.Null");
-
-            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
             var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
@@ -1341,11 +1338,9 @@ namespace AngelLoader
 
         internal static async Task ConvertWAVsTo16Bit(FanMission fm)
         {
-            if (!fm.Installed || !GameIsDark(fm)) return;
+            if (!fm.Installed || !GameIsDark(fm.Game)) return;
 
-            Debug.Assert(fm.Game != Game.Null, "fm.Game is Game.Null");
-
-            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
             var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
@@ -1387,13 +1382,19 @@ namespace AngelLoader
 
         internal static bool AddDML(FanMission fm, string sourceDMLPath)
         {
+            if (!GameIsDark(fm.Game))
+            {
+                Log("AddDML: fm is not Dark", stackTrace: true);
+                return false;
+            }
+
             if (!FMIsReallyInstalled(fm))
             {
                 View.ShowAlert(LText.AlertMessages.Patch_AddDML_InstallDirNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
-            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
+            var installedFMPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
             try
             {
                 var dmlFile = Path.GetFileName(sourceDMLPath);
@@ -1412,13 +1413,19 @@ namespace AngelLoader
 
         internal static bool RemoveDML(FanMission fm, string dmlFile)
         {
+            if (!GameIsDark(fm.Game))
+            {
+                Log("RemoveDML: fm is not Dark", stackTrace: true);
+                return false;
+            }
+            
             if (!FMIsReallyInstalled(fm))
             {
                 View.ShowAlert(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound, LText.AlertMessages.Alert);
                 return false;
             }
 
-            var installedFMPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
+            var installedFMPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
             try
             {
                 File.Delete(Path.Combine(installedFMPath, dmlFile));
@@ -1436,9 +1443,15 @@ namespace AngelLoader
         internal static (bool Success, List<string> DMLFiles)
         GetDMLFiles(FanMission fm)
         {
+            if (!GameIsDark(fm.Game))
+            {
+                Log("GetDMLFiles: fm is not Dark", stackTrace: true);
+                return (false, new List<string>());
+            }
+
             try
             {
-                var dmlFiles = FastIO.GetFilesTopOnly(Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir), "*.dml");
+                var dmlFiles = FastIO.GetFilesTopOnly(Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir), "*.dml");
                 for (int i = 0; i < dmlFiles.Count; i++) dmlFiles[i] = dmlFiles[i].GetFileNameFast();
                 return (true, dmlFiles);
             }
@@ -1456,7 +1469,7 @@ namespace AngelLoader
         private static string GetReadmeFileFullPath(FanMission fm)
         {
             return FMIsReallyInstalled(fm)
-                ? Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir, fm.SelectedReadme)
+                ? Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
         }
 
@@ -1639,7 +1652,13 @@ namespace AngelLoader
 
         internal static void OpenFMFolder(FanMission fm)
         {
-            var installsBasePath = GetFMInstallsBasePath(fm.Game);
+            if (!GameIsKnownAndSupported(fm.Game))
+            {
+                Log(nameof(OpenFMFolder)+": fm is not known or supported", stackTrace: true);
+                return;
+            }
+
+            var installsBasePath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
             string fmDir;
             if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
@@ -1871,7 +1890,7 @@ namespace AngelLoader
             Filter filter,
             SelectedFM selectedFM,
             GameTabsState gameTabsState,
-            Game gameTab,
+            GameIndex gameTab,
             TopRightTabsData topRightTabsData,
             bool topRightPanelCollapsed,
             float readmeZoomFactor)
@@ -1922,7 +1941,7 @@ namespace AngelLoader
                 case GameOrganization.OneList:
                     Config.ClearAllSelectedFMs();
                     selectedFM.DeepCopyTo(Config.SelFM);
-                    Config.GameTab = Game.Thief1;
+                    Config.GameTab = GameIndex.Thief1;
                     break;
 
                 case GameOrganization.ByTab:

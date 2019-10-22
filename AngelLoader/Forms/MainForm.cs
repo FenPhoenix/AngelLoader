@@ -52,10 +52,12 @@ using AngelLoader.CustomControls.Static_LazyLoaded;
 using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
-using FMScanner;
 using AngelLoader.WinAPI.Ookii.Dialogs;
+using FMScanner;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
+using static AngelLoader.Common.Games;
+using static AngelLoader.Common.Games.GameIndex;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 
@@ -148,25 +150,25 @@ namespace AngelLoader.Forms
             else // ByTab
             {
                 // In case they don't match
-                Config.Filter.Games = Config.GameTab;
+                Config.Filter.Games = GameIndexToGame(Config.GameTab);
 
                 Config.GameTabsState.DeepCopyTo(FMsDGV.GameTabsState);
 
                 switch (Config.GameTab)
                 {
-                    case Game.Thief1:
+                    case GameIndex.Thief1:
                         FMsDGV.GameTabsState.T1SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.T1Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
-                    case Game.Thief2:
+                    case GameIndex.Thief2:
                         FMsDGV.GameTabsState.T2SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.T2Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
-                    case Game.Thief3:
+                    case GameIndex.Thief3:
                         FMsDGV.GameTabsState.T3SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.T3Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
-                    case Game.SS2:
+                    case GameIndex.SS2:
                         FMsDGV.GameTabsState.SS2SelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
                         FMsDGV.GameTabsState.SS2Filter.DeepCopyTo(FMsDGV.Filter);
                         break;
@@ -174,13 +176,7 @@ namespace AngelLoader.Forms
 
                 using (new DisableEvents(this))
                 {
-                    GamesTabControl.SelectedTab = Config.GameTab switch
-                    {
-                        Game.Thief2 => Thief2TabPage,
-                        Game.Thief3 => Thief3TabPage,
-                        Game.SS2 => SS2TabPage,
-                        _ => Thief1TabPage
-                    };
+                    GamesTabControl.SelectedIndex = (int)Config.GameTab;
                 }
             }
 
@@ -999,7 +995,7 @@ namespace AngelLoader.Forms
         {
             if (e.KeyCode == Keys.Enter)
             {
-                if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM()))
+                if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM().Game))
                 {
                     e.SuppressKeyPress = true;
                     await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), askConfIfRequired: true);
@@ -1414,20 +1410,20 @@ namespace AngelLoader.Forms
 
         private void UpdateConfig()
         {
-            Game gameTab;
+            GameIndex gameTab;
             if (Config.GameOrganization == GameOrganization.ByTab)
             {
                 SaveCurrentTabSelectedFM(GamesTabControl.SelectedTab);
                 var selGameTab = GamesTabControl.SelectedTab;
                 gameTab =
-                    selGameTab == Thief2TabPage ? Game.Thief2 :
-                    selGameTab == Thief3TabPage ? Game.Thief3 :
-                    selGameTab == SS2TabPage ? Game.SS2 :
-                    Game.Thief1;
+                    selGameTab == Thief2TabPage ? GameIndex.Thief2 :
+                    selGameTab == Thief3TabPage ? GameIndex.Thief3 :
+                    selGameTab == SS2TabPage ? GameIndex.SS2 :
+                    GameIndex.Thief1;
             }
             else
             {
-                gameTab = Game.Thief1;
+                gameTab = GameIndex.Thief1;
             }
 
             var selectedFM = FMsDGV.GetSelectedFMPosInfo();
@@ -1821,7 +1817,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
                     var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (GameIsKnownAndSupported(fm) && (FMsDGV.Filter.Games & fm.Game) != fm.Game)
+                    if (GameIsKnownAndSupported(fm.Game) && (FMsDGV.Filter.Games & fm.Game) != fm.Game)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2419,7 +2415,7 @@ namespace AngelLoader.Forms
         private async void FMsDGV_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             FanMission fm;
-            if (e.RowIndex < 0 || !FMsDGV.RowSelected() || !GameIsKnownAndSupported(fm = FMsDGV.GetSelectedFM()))
+            if (e.RowIndex < 0 || !FMsDGV.RowSelected() || !GameIsKnownAndSupported((fm = FMsDGV.GetSelectedFM()).Game))
             {
                 return;
             }
@@ -2452,11 +2448,11 @@ namespace AngelLoader.Forms
         {
             PlayOriginalGameLLMenu.Construct(this, components);
 
-            PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.T1Exe.IsEmpty();
-            PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.T2Exe.IsEmpty();
+            PlayOriginalGameLLMenu.Thief1MenuItem.Enabled = !Config.GetGameExe(Thief1).IsEmpty();
+            PlayOriginalGameLLMenu.Thief2MenuItem.Enabled = !Config.GetGameExe(Thief2).IsEmpty();
             PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
-            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.T3Exe.IsEmpty();
-            PlayOriginalGameLLMenu.SS2MenuItem.Enabled = !Config.SS2Exe.IsEmpty();
+            PlayOriginalGameLLMenu.Thief3MenuItem.Enabled = !Config.GetGameExe(Thief3).IsEmpty();
+            PlayOriginalGameLLMenu.SS2MenuItem.Enabled = !Config.GetGameExe(SS2).IsEmpty();
 
             ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
@@ -2466,10 +2462,10 @@ namespace AngelLoader.Forms
             var item = (ToolStripMenuItem)sender;
 
             var game =
-                item == PlayOriginalGameLLMenu.Thief1MenuItem ? Game.Thief1 :
-                item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Game.Thief2 :
-                item == PlayOriginalGameLLMenu.Thief3MenuItem ? Game.Thief3 :
-                Game.SS2;
+                item == PlayOriginalGameLLMenu.Thief1MenuItem ? GameIndex.Thief1 :
+                item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? GameIndex.Thief2 :
+                item == PlayOriginalGameLLMenu.Thief3MenuItem ? GameIndex.Thief3 :
+                GameIndex.SS2;
 
             bool playMP = item == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
@@ -2893,7 +2889,7 @@ namespace AngelLoader.Forms
         {
             var fm = FMsDGV.GetSelectedFM();
 
-            if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm) && !fm.MarkedScanned))
+            if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm.Game) && !fm.MarkedScanned))
             {
                 using (new DisableKeyPresses(this))
                 {
@@ -2920,7 +2916,7 @@ namespace AngelLoader.Forms
             FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme);
             // FinishedOnUnknownMenuItem text stays the same
 
-            var installable = GameIsKnownAndSupported(fm);
+            var installable = GameIsKnownAndSupported(fm.Game);
 
             FMsDGV.SetInstallUninstallMenuItemEnabled(installable);
             FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
@@ -2941,7 +2937,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.SetScanFMMenuItemEnabled(true);
 
-            FMsDGV.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm) && fm.Installed);
+            FMsDGV.SetConvertAudioRCSubMenuEnabled(GameIsDark(fm.Game) && fm.Installed);
 
             WebSearchButton.Enabled = true;
 
@@ -3042,7 +3038,7 @@ namespace AngelLoader.Forms
 
                 AddTagTextBox.Text = "";
 
-                if (fm.Installed)
+                if (GameIsDark(fm.Game) && fm.Installed)
                 {
                     PatchMainPanel.Show();
                     PatchFMNotInstalledLabel.Hide();

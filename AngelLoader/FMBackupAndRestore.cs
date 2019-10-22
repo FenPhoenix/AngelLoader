@@ -13,6 +13,7 @@ using AngelLoader.Ini;
 using AngelLoader.WinAPI;
 using SevenZip;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Games;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
@@ -63,7 +64,7 @@ namespace AngelLoader
                                              (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                               (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
 
-            if (!GameIsKnownAndSupported(fm))
+            if (!GameIsKnownAndSupported(fm.Game))
             {
                 Log("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", stackTrace: true);
                 return;
@@ -73,7 +74,7 @@ namespace AngelLoader
             {
                 if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
-                var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
+                var thisFMInstallsBasePath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
                 var savesDir = fm.Game == Game.Thief3 ? T3SavesDir : DarkSavesDir;
                 var savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
                 var netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, DarkNetSavesDir);
@@ -364,6 +365,12 @@ namespace AngelLoader
 
         internal static async Task RestoreSavesAndScreenshots(FanMission fm)
         {
+            if (!GameIsKnownAndSupported(fm.Game))
+            {
+                Log("Game type is unknown or unsupported (" + fm.Archive + ", " + fm.InstalledDir + ", " + fm.Game + ")", stackTrace: true);
+                return;
+            }
+
             bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                              (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
             bool fmIsT3 = fm.Game == Game.Thief3;
@@ -443,7 +450,7 @@ namespace AngelLoader
 
                 var excludes = new List<string>();
 
-                var thisFMInstallsBasePath = GetFMInstallsBasePath(fm.Game);
+                var thisFMInstallsBasePath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
                 var fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
                 using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),

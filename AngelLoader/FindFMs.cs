@@ -8,6 +8,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI;
+using static AngelLoader.Common.Games;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.Ini.Ini;
@@ -18,8 +19,10 @@ namespace AngelLoader
     {
         // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
-        internal static void Find(FMInstallPaths fmInstPaths, List<FanMission> fmDataIniList, bool startup = false)
+        internal static void Find(string[] fmInstPaths, List<FanMission> fmDataIniList, bool startup = false)
         {
+            int gameCount = fmInstPaths.Length;
+
             if (!startup)
             {
                 // Make sure we don't lose anything when we re-find!
@@ -82,31 +85,15 @@ namespace AngelLoader
 
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
             // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
-            var t1InstalledFMDirs = new List<string>();
-            var t2InstalledFMDirs = new List<string>();
-            var t3InstalledFMDirs = new List<string>();
-            var ss2InstalledFMDirs = new List<string>();
+            var perGameInstFMDirsList = new List<List<string>>(gameCount);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < gameCount; i++)
             {
-                #region Set i-dependent values
+                // NOTE! Make sure this list ends up with gameCount items in it. Just in case I change the loop
+                // or something.
+                perGameInstFMDirsList.Add(new List<string>());
 
-                var instFMDirs = i switch
-                {
-                    0 => t1InstalledFMDirs,
-                    1 => t2InstalledFMDirs,
-                    2 => t3InstalledFMDirs,
-                    _ => ss2InstalledFMDirs
-                };
-                var instPath = i switch
-                {
-                    0 => fmInstPaths.T1,
-                    1 => fmInstPaths.T2,
-                    2 => fmInstPaths.T3,
-                    _ => fmInstPaths.SS2
-                };
-
-                #endregion
+                var instPath = fmInstPaths[i];
 
                 if (Directory.Exists(instPath))
                 {
@@ -115,7 +102,7 @@ namespace AngelLoader
                         foreach (var d in Directory.GetDirectories(instPath, "*", SearchOption.TopDirectoryOnly))
                         {
                             var dirName = d.GetTopmostDirName();
-                            if (!dirName.EqualsI(".fmsel.cache")) instFMDirs.Add(dirName);
+                            if (!dirName.EqualsI(".fmsel.cache")) perGameInstFMDirsList[i].Add(dirName);
                         }
                     }
                     catch (Exception ex)
@@ -154,30 +141,16 @@ namespace AngelLoader
 
             #region Build FanMission objects from installed dirs
 
-            var t1List = new List<FanMission>();
-            var t2List = new List<FanMission>();
-            var t3List = new List<FanMission>();
-            var ss2List = new List<FanMission>();
+            var perGameFMsList = new List<List<FanMission>>(gameCount);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < gameCount; i++)
             {
-                #region Set i-dependent values
+                // NOTE! List must have gameCount items in it
+                perGameFMsList.Add(new List<FanMission>());
 
-                var instFMDirs = i switch
+                foreach (var item in perGameInstFMDirsList[i])
                 {
-                    0 => t1InstalledFMDirs,
-                    1 => t2InstalledFMDirs,
-                    2 => t3InstalledFMDirs,
-                    _ => ss2InstalledFMDirs
-                };
-                var list = i switch { 0 => t1List, 1 => t2List, 2 => t3List, _ => ss2List };
-                var game = i switch { 0 => Game.Thief1, 1 => Game.Thief2, 2 => Game.Thief3, _ => Game.SS2 };
-
-                #endregion
-
-                foreach (var item in instFMDirs)
-                {
-                    list.Add(new FanMission { InstalledDir = item, Game = game, Installed = true });
+                    perGameFMsList[i].Add(new FanMission { InstalledDir = item, Game = GameIndexToGame((GameIndex)i), Installed = true });
                 }
             }
 
@@ -186,16 +159,17 @@ namespace AngelLoader
             MergeNewArchiveFMs(fmArchives, fmDataIniList, fmInstPaths);
 
             int instInitCount = fmDataIniList.Count;
-            if (t1List.Count > 0) MergeNewInstalledFMs(t1List, fmDataIniList, instInitCount);
-            if (t2List.Count > 0) MergeNewInstalledFMs(t2List, fmDataIniList, instInitCount);
-            if (t3List.Count > 0) MergeNewInstalledFMs(t3List, fmDataIniList, instInitCount);
-            if (ss2List.Count > 0) MergeNewInstalledFMs(ss2List, fmDataIniList, instInitCount);
+            for (int i = 0; i < gameCount; i++)
+            {
+                var curGameInstFMsList = perGameFMsList[i];
+                if (curGameInstFMsList.Count > 0) MergeNewInstalledFMs(curGameInstFMsList, fmDataIniList, instInitCount);
+            }
 
             SetArchiveNames(fmInstPaths, fmArchives, fmDataIniList);
 
             SetInstalledNames(fmDataIniList);
 
-            BuildViewList(fmArchives, fmDataIniList, t1InstalledFMDirs, t2InstalledFMDirs, t3InstalledFMDirs, ss2InstalledFMDirs);
+            BuildViewList(fmArchives, fmDataIniList, perGameInstFMDirsList, gameCount);
 
             /*
              TODO: There's an extreme corner case where duplicate FMs can appear in the list
@@ -213,7 +187,7 @@ namespace AngelLoader
 
         #region Set names
 
-        private static void SetArchiveNames(FMInstallPaths fmInstPaths, List<string> fmArchives, List<FanMission> fmDataIniList)
+        private static void SetArchiveNames(string[] fmInstPaths, List<string> fmArchives, List<FanMission> fmDataIniList)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
             for (var i = 0; i < fmDataIniList.Count; i++)
@@ -301,7 +275,7 @@ namespace AngelLoader
         #region Merge
 
         private static void MergeNewArchiveFMs(List<string> fmArchives, List<FanMission> fmDataIniList,
-            FMInstallPaths fmInstPaths)
+            string[] fmInstPaths)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = fmDataIniList.Count;
@@ -417,7 +391,7 @@ namespace AngelLoader
 
         #endregion
 
-        private static string GetArchiveNameFromInstalledDir(FMInstallPaths fmInstPaths, List<FanMission> fmDataIniList, FanMission fm, List<string> archives)
+        private static string GetArchiveNameFromInstalledDir(string[] fmInstPaths, List<FanMission> fmDataIniList, FanMission fm, List<string> archives)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -497,24 +471,14 @@ namespace AngelLoader
             return archiveName;
         }
 
-        private static string GetFMSelInfPath(FanMission fm, FMInstallPaths fmInstPaths)
+        private static string GetFMSelInfPath(FanMission fm, string[] fmInstPaths)
         {
-            if (fm.Game == Game.Null) return null;
+            if (!GameIsKnownAndSupported(fm.Game)) return null;
 
-            var gamePath = fm.Game switch
-            {
-                Game.Thief1 => fmInstPaths.T1,
-                Game.Thief2 => fmInstPaths.T2,
-                // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
-                Game.Thief3 => fmInstPaths.T3,
-                Game.SS2 => fmInstPaths.SS2,
-                _ => null
-            };
+            // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
+            var gamePath = fmInstPaths[(int)GameToGameIndex(fm.Game)];
 
-            if (gamePath.IsEmpty()) return null;
-
-            var fmDir = Path.Combine(gamePath, fm.InstalledDir);
-            return Path.Combine(fmDir, Paths.FMSelInf);
+            return gamePath.IsEmpty() ? null : Path.Combine(gamePath, fm.InstalledDir, Paths.FMSelInf);
         }
 
         private static void WriteFMSelInf(FanMission fm, string path, string archiveName)
@@ -532,10 +496,46 @@ namespace AngelLoader
         }
 
         private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList,
-            List<string> t1InstalledFMDirs, List<string> t2InstalledFMDirs, List<string> t3InstalledFMDirs,
-            List<string> ss2InstalledFMDirs)
+            List<List<string>> perGameInstalledFMDirsList, int gameCount)
         {
             Core.ViewListGamesNull.Clear();
+
+            var boolsList = new List<bool?>(gameCount);
+            for (int i = 0; i < gameCount; i++) boolsList.Add(null);
+
+            static bool NotInPerGameList(int gCount, FanMission fm, List<bool?> notInList, List<List<string>> list, bool useBool)
+            {
+                if (!GameIsKnownAndSupported(fm.Game)) return false;
+                int intGame = (int)GameToGameIndex(fm.Game);
+
+                if (!useBool)
+                {
+                    for (int i = 0; i < gCount; i++)
+                    {
+                        if (intGame == i &&
+                            (bool)(notInList[i] = !list[i].ContainsI(fm.InstalledDir)))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+                else
+                {
+                    for (int i = 0; i < gCount; i++)
+                    {
+                        if (intGame == i &&
+                            (notInList[i] ?? !list[i].ContainsI(fm.InstalledDir)))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            }
+
             for (var i = 0; i < fmDataIniList.Count; i++)
             {
                 var item = fmDataIniList[i];
@@ -543,16 +543,10 @@ namespace AngelLoader
                 #region Checks
 
                 // Attempt to avoid re-searching lists
-                bool? notInT1Dirs = null;
-                bool? notInT2Dirs = null;
-                bool? notInT3Dirs = null;
-                bool? notInSS2Dirs = null;
+                for (int ti = 0; ti < boolsList.Count; ti++) boolsList[ti] = null;
 
                 if (item.Installed &&
-                    ((item.Game == Game.Thief1 && (bool)(notInT1Dirs = !t1InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.Thief2 && (bool)(notInT2Dirs = !t2InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.Thief3 && (bool)(notInT3Dirs = !t3InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.SS2 && (bool)(notInSS2Dirs = !ss2InstalledFMDirs.ContainsI(item.InstalledDir)))))
+                    NotInPerGameList(gameCount, item, boolsList, perGameInstalledFMDirsList, useBool: false))
                 {
                     item.Installed = false;
                 }
@@ -563,10 +557,7 @@ namespace AngelLoader
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
                 // Good enough?
                 if ((!item.Installed ||
-                     (item.Game == Game.Thief1 && (notInT1Dirs ?? !t1InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.Thief2 && (notInT2Dirs ?? !t2InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.Thief3 && (notInT3Dirs ?? !t3InstalledFMDirs.ContainsI(item.InstalledDir))) ||
-                     (item.Game == Game.SS2 && (notInSS2Dirs ?? !ss2InstalledFMDirs.ContainsI(item.InstalledDir)))) &&
+                     NotInPerGameList(gameCount, item, boolsList, perGameInstalledFMDirsList, useBool: true)) &&
                     // Shrink the list as we get matches so we can reduce our search time as we go
                     !fmArchives.ContainsIRemoveFirstHit(item.Archive))
                 {

@@ -13,6 +13,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Games;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.CustomControls.ProgressPanel;
@@ -28,7 +29,20 @@ namespace AngelLoader
 
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
         {
-            Debug.Assert(!playMP || fm.Game == Game.Thief2, nameof(playMP) + " is true and fm.Game is not Thief 2");
+            if (!GameIsKnownAndSupported(fm.Game))
+            {
+                Log("Game is unknown or unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "fm.Game was: " + fm.Game, stackTrace: true);
+                return;
+            }
+
+            if (playMP && fm.Game != Game.Thief2)
+            {
+                Log("playMP was true, but fm.Game was not Thief 2.\r\n" +
+                    "fm: " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "fm.Game was: " + fm.Game, stackTrace: true);
+                return;
+            }
 
             if (askConfIfRequired && Config.ConfirmPlayOnDCOrEnter)
             {
@@ -57,7 +71,7 @@ namespace AngelLoader
 
         #region Play / open
 
-        internal static bool PlayOriginalGame(Game game, bool playMP = false)
+        internal static bool PlayOriginalGame(GameIndex game, bool playMP = false)
         {
             var (success, gameExe, gamePath) = GetGameExeAndPath(game, LText.AlertMessages.Play_ExecutableNotFound);
             if (!success) return false;
@@ -83,19 +97,23 @@ namespace AngelLoader
 
         private static bool PlayFM(FanMission fm, bool playMP = false)
         {
+            if (!GameIsKnownAndSupported(fm.Game)) return false;
+
             if (fm.Game == Game.Null)
             {
                 Core.View.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
-            var (success, gameExe, gamePath) = GetGameExeAndPath(fm.Game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
+            var game = GameToGameIndex(fm.Game);
+
+            var (success, gameExe, gamePath) = GetGameExeAndPath(game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
             if (!success) return false;
 
-            SetUsAsSelector(fm.Game, gameExe, gamePath);
+            SetUsAsSelector(game, gameExe, gamePath);
 
             string steamArgs = null;
-            var sv = GetSteamValues(fm.Game, playMP);
+            var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
 
             // Only use the stub if we need to pass something we can't pass on the command line
@@ -129,27 +147,35 @@ namespace AngelLoader
             return true;
         }
 
-        internal static bool OpenFMInDromEd(FanMission fm)
+        internal static bool OpenFMInEditor(FanMission fm)
         {
             #region Checks (specific to DromEd)
 
-            if (!GameIsDark(fm)) return false;
+            if (!GameIsDark(fm.Game))
+            {
+                Log("Game is not Dark, is unknown, or is unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
+                    "fm.Game was: " + fm.Game, stackTrace: true);
+                return false;
+            }
 
+            // TODO: This doesn't get hit anymore on account of the GameIsDark() check above
             if (fm.Game == Game.Null)
             {
                 Core.View.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
 
-            var gameExe = GetGameExeFromGameType(fm.Game);
+            var game = GameToGameIndex(fm.Game);
+
+            var gameExe = Config.GetGameExe(game);
             if (gameExe.IsEmpty())
             {
                 Log("gameExe is empty for " + fm.Game, stackTrace: true);
                 return false;
             }
 
-            var dromedExe = GetDromEdOrShockEdExe(fm.Game);
-            if (dromedExe.IsEmpty())
+            var editorExe = GetEditorExe(game);
+            if (editorExe.IsEmpty())
             {
                 Core.View.ShowAlert(fm.Game == Game.SS2
                     ? LText.AlertMessages.ShockEd_ExecutableNotFound
@@ -162,10 +188,10 @@ namespace AngelLoader
 
             #endregion
 
-            SetUsAsSelector(fm.Game, gameExe, gamePath);
+            SetUsAsSelector(game, gameExe, gamePath);
 
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
-            StartExe(dromedExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
+            StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
 
             return true;
         }
@@ -194,17 +220,15 @@ namespace AngelLoader
         }
 
         private static (bool Success, string gameExe, string gamePath)
-        GetGameExeAndPath(Game game, string exeNotFoundMessage, bool playMP = false)
+        GetGameExeAndPath(GameIndex gameIndex, string exeNotFoundMessage, bool playMP = false)
         {
             (bool, string, string) failed = (false, null, null);
 
-            if (game == Game.Null) return failed;
-
-            var gameExe = GetGameExeFromGameType(game);
+            var gameExe = Config.GetGameExe(gameIndex);
 
             #region Exe: Fail if blank or not found
 
-            var gameName = GetGameNameFromGameType(game);
+            var gameName = GetGameNameFromGameType(gameIndex);
 
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
@@ -238,24 +262,24 @@ namespace AngelLoader
         }
 
         private static (bool Success, string GameExe, string GamePath, string Args)
-        GetSteamValues(Game game, bool playMP)
+        GetSteamValues(GameIndex game, bool playMP)
         {
             // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
             // will start Thief2.exe
             if (!playMP &&
                 Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
-                ((game == Game.Thief1 && Config.T1UseSteam) ||
-                 (game == Game.Thief2 && Config.T2UseSteam) ||
-                 (game == Game.Thief3 && Config.T3UseSteam) ||
-                 (game == Game.SS2 && Config.SS2UseSteam)))
+                ((game == GameIndex.Thief1 && Config.T1UseSteam) ||
+                 (game == GameIndex.Thief2 && Config.T2UseSteam) ||
+                 (game == GameIndex.Thief3 && Config.T3UseSteam) ||
+                 (game == GameIndex.SS2 && Config.SS2UseSteam)))
             {
                 string gameExe = Config.SteamExe;
                 string gamePath = Path.GetDirectoryName(Config.SteamExe);
                 string args = "-applaunch " + game switch
                 {
-                    Game.Thief1 => SteamAppIds.ThiefGold,
-                    Game.Thief2 => SteamAppIds.Thief2,
-                    Game.Thief3 => SteamAppIds.Thief3,
+                    GameIndex.Thief1 => SteamAppIds.ThiefGold,
+                    GameIndex.Thief2 => SteamAppIds.Thief2,
+                    GameIndex.Thief3 => SteamAppIds.Thief3,
                     _ => SteamAppIds.SS2
                 };
 
@@ -271,10 +295,8 @@ namespace AngelLoader
 
         #region Set us as selector
 
-        private static void SetUsAsSelector(Game game, string gameExe, string gamePath)
+        private static void SetUsAsSelector(GameIndex game, string gameExe, string gamePath)
         {
-            Debug.Assert(GameIsKnownAndSupported(game), "!GameIsKnownAndSupported(game)");
-
             bool success = GameIsDark(game) ? SetUsAsDarkFMSelector(gameExe, gamePath) : SetUsAsT3FMSelector();
             if (!success)
             {
@@ -539,7 +561,7 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
             var gameName = GetGameNameFromGameType(fm.Game);
             if (!File.Exists(gameExe))
             {
@@ -548,7 +570,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var instBasePath = GetFMInstallsBasePath(fm.Game);
+            var instBasePath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
 
             if (!Directory.Exists(instBasePath))
             {
@@ -773,9 +795,7 @@ namespace AngelLoader
 
         private static async Task UninstallFM(FanMission fm)
         {
-            if (!fm.Installed || !GameIsKnownAndSupported(fm)) return;
-
-            Debug.Assert(fm.Game != Game.Null, "fm.Game is Game.Null");
+            if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return;
 
             if (Config.ConfirmUninstall)
             {
@@ -789,7 +809,7 @@ namespace AngelLoader
                 Config.ConfirmUninstall = !dontAskAgain;
             }
 
-            var gameExe = GetGameExeFromGameType(fm.Game);
+            var gameExe = Config.GetGameExe(GameToGameIndex(fm.Game));
             var gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
@@ -802,7 +822,7 @@ namespace AngelLoader
 
             try
             {
-                var fmInstalledPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
+                var fmInstalledPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
 
                 var fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)

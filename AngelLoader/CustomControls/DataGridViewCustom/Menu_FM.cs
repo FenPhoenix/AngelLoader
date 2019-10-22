@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Games;
 
 namespace AngelLoader.CustomControls
 {
@@ -591,7 +592,7 @@ namespace AngelLoader.CustomControls
         private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
         {
             var fm = GetSelectedFM();
-            if (fm.Installed || await InstallAndPlay.InstallFM(fm)) InstallAndPlay.OpenFMInDromEd(fm);
+            if (fm.Installed || await InstallAndPlay.InstallFM(fm)) InstallAndPlay.OpenFMInEditor(fm);
         }
 
         private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(GetSelectedFM());

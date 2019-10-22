@@ -9,6 +9,8 @@ using FMScanner;
 using JetBrains.Annotations;
 using SevenZip;
 using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Games;
+using static AngelLoader.Common.Games.GameIndex;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.WinAPI.InteropMisc;
 
@@ -145,23 +147,23 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
-        internal static string GetDromEdOrShockEdExe(Game game)
+        internal static string GetEditorExe(GameIndex game)
         {
-            var gameExe = GetGameExeFromGameType(game);
+            var gameExe = Config.GetGameExe(game);
             if (gameExe.IsEmpty()) return "";
 
             var gamePath = Path.GetDirectoryName(gameExe);
             if (gamePath.IsEmpty()) return "";
 
-            var edExe = Path.Combine(gamePath, game == Game.SS2 ? Paths.ShockEdExe : Paths.DromEdExe);
+            var edExe = Path.Combine(gamePath, game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe);
             return File.Exists(edExe) ? edExe : "";
         }
 
         internal static string GetT2MultiplayerExe()
         {
-            if (Config.T2Exe.IsEmpty()) return "";
+            if (Config.GetGameExe(Thief2).IsEmpty()) return "";
 
-            var gamePath = Path.GetDirectoryName(Config.T2Exe);
+            var gamePath = Path.GetDirectoryName(Config.GetGameExe(Thief2));
             if (gamePath.IsEmpty()) return "";
 
             var t2MPExe = Path.Combine(gamePath, Paths.T2MPExe);
@@ -196,9 +198,11 @@ namespace AngelLoader.Common.Utility
 
         internal static bool FMIsReallyInstalled(FanMission fm)
         {
+            if (!GameIsKnownAndSupported(fm.Game)) return false;
+
             if (fm.Installed)
             {
-                var instPath = GetFMInstallsBasePath(fm.Game);
+                var instPath = Config.GetFMInstallPath(GameToGameIndex(fm.Game));
                 if (instPath.IsEmpty()) return false;
 
                 string path;
@@ -226,9 +230,20 @@ namespace AngelLoader.Common.Utility
             string T2MPExe()
             {
                 if (!t2MPExe.IsEmpty()) return t2MPExe;
-                if (Config.T2Exe.IsEmpty()) return "";
-                var t2Path = Path.GetDirectoryName(Config.T2Exe);
+                if (Config.GetGameExe(Thief2).IsEmpty()) return "";
+                var t2Path = Path.GetDirectoryName(Config.GetGameExe(Thief2));
                 return t2MPExe = (t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe));
+            }
+
+            static bool AnyGameRunning(string fnb)
+            {
+                for (int i = 0; i < Config.GameExes.Length; i++)
+                {
+                    var exe = Config.GetGameExe((GameIndex)i);
+                    if (!exe.IsEmpty() && fnb.EqualsI(exe.ToBackSlashes())) return true;
+                }
+
+                return false;
             }
 
             // We're doing this whole rigamarole because the game might have been started by someone other than
@@ -243,10 +258,7 @@ namespace AngelLoader.Common.Utility
                     {
                         var fnb = fn.ToBackSlashes();
                         if ((checkAllGames &&
-                             ((!Config.T1Exe.IsEmpty() && fnb.EqualsI(Config.T1Exe.ToBackSlashes())) ||
-                              (!Config.T2Exe.IsEmpty() && fnb.EqualsI(Config.T2Exe.ToBackSlashes())) ||
-                              (!Config.T3Exe.IsEmpty() && fnb.EqualsI(Config.T3Exe.ToBackSlashes())) ||
-                              (!Config.SS2Exe.IsEmpty() && fnb.EqualsI(Config.SS2Exe.ToBackSlashes())) ||
+                             (AnyGameRunning(fnb) ||
                               (!T2MPExe().IsEmpty() && fnb.EqualsI(T2MPExe().ToBackSlashes())))) ||
                             (!checkAllGames &&
                              (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
@@ -270,24 +282,6 @@ namespace AngelLoader.Common.Utility
             return false;
         }
 
-        internal static string GetGameNameFromGameType(Game gameType) => gameType switch
-        {
-            Game.Thief1 => LText.Global.Thief1,
-            Game.Thief2 => LText.Global.Thief2,
-            Game.Thief3 => LText.Global.Thief3,
-            Game.SS2 => LText.Global.SystemShock2,
-            _ => "[UnknownGameType]"
-        };
-
-        internal static string GetGameExeFromGameType(Game gameType) => gameType switch
-        {
-            Game.Thief1 => Config.T1Exe,
-            Game.Thief2 => Config.T2Exe,
-            Game.Thief3 => Config.T3Exe,
-            Game.SS2 => Config.SS2Exe,
-            _ => null
-        };
-
         [PublicAPI]
         internal static string GetProcessPath(int procId)
         {
@@ -302,15 +296,6 @@ namespace AngelLoader.Common.Utility
             }
             return "";
         }
-
-        internal static string GetFMInstallsBasePath(Game game) => game switch
-        {
-            Game.Thief1 => Config.FMInstallPaths.T1,
-            Game.Thief2 => Config.FMInstallPaths.T2,
-            Game.Thief3 => Config.FMInstallPaths.T3,
-            Game.SS2 => Config.FMInstallPaths.SS2,
-            _ => ""
-        };
 
         /// <summary>
         /// Returns the list of FM archive paths, returning subfolders as well if that option is enabled.
@@ -389,14 +374,6 @@ namespace AngelLoader.Common.Utility
                 Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
             }
         }
-
-        internal static bool GameIsDark(FanMission fm) => fm.Game == Game.Thief1 || fm.Game == Game.Thief2 || fm.Game == Game.SS2;
-
-        internal static bool GameIsDark(Game game) => game == Game.Thief1 || game == Game.Thief2 || game == Game.SS2;
-
-        internal static bool GameIsKnownAndSupported(FanMission fm) => fm.Game != Game.Null && fm.Game != Game.Unsupported;
-
-        internal static bool GameIsKnownAndSupported(Game game) => game != Game.Null && game != Game.Unsupported;
 
         #region Tags
 

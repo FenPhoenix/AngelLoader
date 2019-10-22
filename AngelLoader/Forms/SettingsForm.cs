@@ -13,6 +13,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.CustomControls.SettingsPages;
 using AngelLoader.WinAPI.Dialogs;
+using static AngelLoader.Common.Games.GameIndex;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.CustomControls.SettingsPages.Interfaces;
 
@@ -220,10 +221,10 @@ namespace AngelLoader.Forms
 
             #region Paths page
 
-            PathsPage.Thief1ExePathTextBox.Text = config.T1Exe;
-            PathsPage.Thief2ExePathTextBox.Text = config.T2Exe;
-            PathsPage.Thief3ExePathTextBox.Text = config.T3Exe;
-            PathsPage.SS2ExePathTextBox.Text = config.SS2Exe;
+            PathsPage.Thief1ExePathTextBox.Text = config.GetGameExe(Thief1);
+            PathsPage.Thief2ExePathTextBox.Text = config.GetGameExe(Thief2);
+            PathsPage.Thief3ExePathTextBox.Text = config.GetGameExe(Thief3);
+            PathsPage.SS2ExePathTextBox.Text = config.GetGameExe(SS2);
 
             PathsPage.SteamExeTextBox.Text = config.SteamExe;
             PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
@@ -697,10 +698,10 @@ namespace AngelLoader.Forms
 
             #region Paths page
 
-            OutConfig.T1Exe = PathsPage.Thief1ExePathTextBox.Text.Trim();
-            OutConfig.T2Exe = PathsPage.Thief2ExePathTextBox.Text.Trim();
-            OutConfig.T3Exe = PathsPage.Thief3ExePathTextBox.Text.Trim();
-            OutConfig.SS2Exe = PathsPage.SS2ExePathTextBox.Text.Trim();
+            OutConfig.SetGameExe(Thief1, PathsPage.Thief1ExePathTextBox.Text.Trim());
+            OutConfig.SetGameExe(Thief2, PathsPage.Thief2ExePathTextBox.Text.Trim());
+            OutConfig.SetGameExe(Thief3, PathsPage.Thief3ExePathTextBox.Text.Trim());
+            OutConfig.SetGameExe(SS2, PathsPage.SS2ExePathTextBox.Text.Trim());
 
             OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
             OutConfig.LaunchGamesWithSteam = PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked;

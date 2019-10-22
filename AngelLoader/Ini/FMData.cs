@@ -5,6 +5,8 @@ using System.IO;
 using System.Text;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Games;
+
 namespace AngelLoader.Ini
 {
     internal static partial class Ini

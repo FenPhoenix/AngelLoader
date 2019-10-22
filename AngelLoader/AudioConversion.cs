@@ -9,6 +9,8 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
 using FFmpeg.NET;
+using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Games;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 
@@ -22,7 +24,7 @@ namespace AngelLoader
         // such. Converting all >16bit wavs to 16 bit fixes this.
         internal static async Task WAVsTo16Bit(FanMission fm)
         {
-            if (!GameIsDark(fm)) return;
+            if (!GameIsDark(fm.Game)) return;
 
             if (!File.Exists(Paths.FFprobeExe) || !File.Exists(Paths.FFmpegExe))
             {
@@ -151,7 +153,7 @@ namespace AngelLoader
 
         private static async Task ConvertToWAVs(FanMission fm, string pattern)
         {
-            if (!GameIsDark(fm)) return;
+            if (!GameIsDark(fm.Game)) return;
 
             await Task.Run(async () =>
             {
@@ -216,11 +218,14 @@ namespace AngelLoader
 
         private static List<string> GetFMSoundPathsByGame(FanMission fm)
         {
-            var instPath = Path.Combine(GetFMInstallsBasePath(fm.Game), fm.InstalledDir);
+            // Guard for the below GameToGameIndex conversion
+            if (!GameIsDark(fm.Game)) return new List<string>();
+
+            var instPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
             var sndPath = Path.Combine(instPath, "snd");
             return
                 fm.Game == Game.SS2 ? new List<string> { sndPath, Path.Combine(instPath, "snd2") } :
-                GameIsDark(fm) ? new List<string> { sndPath } :
+                GameIsDark(fm.Game) ? new List<string> { sndPath } :
                 // Only T1/T2 can have audio converted for now, because it looks like SU's FMSel pointedly doesn't
                 // do any conversion whatsoever, neither automatically nor even with a menu option. I'll assume
                 // Thief 3 doesn't need it and leave it at that.

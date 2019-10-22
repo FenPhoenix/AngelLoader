@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Games;
 
 namespace AngelLoader.Common.DataClasses
 {
@@ -15,10 +16,13 @@ namespace AngelLoader.Common.DataClasses
         // TODO: Check all code to make sure it's safe for these to be null, then make them null by default
         internal string FMsBackupPath = "";
 
-        internal string T1Exe = "";
-        internal string T2Exe = "";
-        internal string T3Exe = "";
-        internal string SS2Exe = "";
+        internal readonly string[] GameExes = { "", "", "", "" };
+        internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
+        internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
+
+        internal readonly string[] FMInstallPaths = { "", "", "", "" };
+        internal string GetFMInstallPath(GameIndex index) => FMInstallPaths[(uint)index];
+        internal void SetFMInstallPath(GameIndex index, string value) => FMInstallPaths[(uint)index] = value;
 
         // If a Steam exe is specified, that is
         internal bool LaunchGamesWithSteam = true;
@@ -30,12 +34,6 @@ namespace AngelLoader.Common.DataClasses
         internal string SteamExe = "";
 
         // Session-only; don't write these out
-        internal FMInstallPaths FMInstallPaths = new FMInstallPaths("", "", "", "");
-        internal void SetT1FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(value, FMInstallPaths.T2, FMInstallPaths.T3, FMInstallPaths.SS2);
-        internal void SetT2FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, value, FMInstallPaths.T3, FMInstallPaths.SS2);
-        internal void SetT3FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, FMInstallPaths.T2, value, FMInstallPaths.SS2);
-        internal void SetSS2FMInstPath(string value) => FMInstallPaths = new FMInstallPaths(FMInstallPaths.T1, FMInstallPaths.T2, FMInstallPaths.T3, value);
-
         internal bool T1DromEdDetected;
         internal bool T2DromEdDetected;
         internal bool SS2ShockEdDetected;
@@ -64,7 +62,7 @@ namespace AngelLoader.Common.DataClasses
         }
 
         internal GameOrganization GameOrganization = GameOrganization.OneList;
-        internal Game GameTab = Game.Thief1;
+        internal GameIndex GameTab = GameIndex.Thief1;
 
         internal readonly SelectedFM SelFM = new SelectedFM();
 

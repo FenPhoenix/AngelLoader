@@ -4,7 +4,8 @@ using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Importing;
-using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Games;
 
 namespace AngelLoader.Forms.Import
 {
@@ -26,10 +27,10 @@ namespace AngelLoader.Forms.Import
 
             Localize();
 
-            AutodetectGameIni(Game.Thief1, Thief1IniTextBox);
-            AutodetectGameIni(Game.Thief2, Thief2IniTextBox);
-            AutodetectGameIni(Game.Thief3, Thief3IniTextBox);
-            AutodetectGameIni(Game.SS2, SS2IniTextBox);
+            AutodetectGameIni(GameIndex.Thief1, Thief1IniTextBox);
+            AutodetectGameIni(GameIndex.Thief2, Thief2IniTextBox);
+            AutodetectGameIni(GameIndex.Thief3, Thief3IniTextBox);
+            AutodetectGameIni(GameIndex.SS2, SS2IniTextBox);
         }
 
         private void Localize()
@@ -54,11 +55,11 @@ namespace AngelLoader.Forms.Import
             SS2IniBrowseButton.SetTextAutoSize(SS2IniTextBox, LText.Global.BrowseEllipses);
         }
 
-        private void AutodetectGameIni(Game game, TextBox textBox)
+        private void AutodetectGameIni(GameIndex game, TextBox textBox)
         {
             var iniFile = ImportType == ImportType.NewDarkLoader ? "NewDarkLoader.ini" : "fmsel.ini";
 
-            var fmsPath = GetFMInstallsBasePath(game);
+            var fmsPath = Config.GetFMInstallPath(game);
             if (fmsPath.IsWhiteSpace())
             {
                 textBox.Text = "";
@@ -102,10 +103,10 @@ namespace AngelLoader.Forms.Import
                 s == Thief3AutodetectCheckBox ? Thief3IniBrowseButton :
                 SS2IniBrowseButton;
             var game =
-                s == Thief1AutodetectCheckBox ? Game.Thief1 :
-                s == Thief2AutodetectCheckBox ? Game.Thief2 :
-                s == Thief3AutodetectCheckBox ? Game.Thief3 :
-                Game.SS2;
+                s == Thief1AutodetectCheckBox ? GameIndex.Thief1 :
+                s == Thief2AutodetectCheckBox ? GameIndex.Thief2 :
+                s == Thief3AutodetectCheckBox ? GameIndex.Thief3 :
+                GameIndex.SS2;
 
             textBox.ReadOnly = s.Checked;
             button.Enabled = !s.Checked;
