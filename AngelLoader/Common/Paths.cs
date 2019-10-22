@@ -157,7 +157,7 @@ namespace AngelLoader.Common
             // Make sure we never delete any paths that are not safely tucked in our temp folder
             var baseTemp = _baseTemp.TrimEnd('\\', '/', ' ');
 
-            if (!path.StartsWithI(baseTemp + '\\') && !path.StartsWithI(baseTemp + '/')) return;
+            if (!path.StartsWithI(baseTemp + "\\") && !path.StartsWithI(baseTemp + "/")) return;
 
             #endregion
 

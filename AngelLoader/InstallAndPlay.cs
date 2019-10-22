@@ -110,12 +110,15 @@ namespace AngelLoader
             var (success, gameExe, gamePath) = GetGameExeAndPath(game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
             if (!success) return false;
 
+            // Always do this for robustness, see below
+            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+
             SetUsAsSelector(game, gameExe, gamePath);
 
             string steamArgs = null;
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
-
+            
             // Only use the stub if we need to pass something we can't pass on the command line
             // 2019-10-16: This includes launching through Steam; we can't pass anything custom then either
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
@@ -123,8 +126,23 @@ namespace AngelLoader
             var args = !steamArgs.IsEmpty() ? steamArgs : "-fm=\"" + fm.InstalledDir + "\"";
             if (!steamArgs.IsEmpty() || !fm.DisabledMods.IsWhiteSpace() || fm.DisableAllMods)
             {
+                // BUG: Possible stub comm file not being deleted in the following scenario:
+                // You launch a game through Steam, but the game doesn't actually launch (because you don't have
+                // it in your Steam library or any other situation in which it gets cancelled). Because the game
+                // never runs, it never deletes the stub comm file. The next time the game runs, it finds the stub
+                // file and loads up whatever FM was specified. This won't happen if you launch an FM or original
+                // game from AngelLoader, as we delete or overwrite the stub file ourselves before playing anything,
+                // but if you were to run the game manually, it would load whatever FM was specified in the stub
+                // once, and then delete it, so if you ran it again it would properly start the original game and
+                // everything would be fine again.
+                // I could solve it if there was a way to detect if we were being launched through Steam. I don't
+                // know if there is, but then I could just specify a Steam=True line in the stub file, and then
+                // if we're being launched through steam we read and act on it as usual, but if we're not, then
+                // we just delete it and ignore.
+                // I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
+                // works and one that doesn't, so I can test both paths.
+
                 args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
-                Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
                 try
                 {
@@ -187,6 +205,9 @@ namespace AngelLoader
             if (gamePath.IsEmpty()) return false;
 
             #endregion
+
+            // Just in case, and for consistency
+            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
             SetUsAsSelector(game, gameExe, gamePath);
 
