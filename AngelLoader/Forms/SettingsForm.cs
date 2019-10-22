@@ -229,10 +229,10 @@ namespace AngelLoader.Forms
             PathsPage.SteamExeTextBox.Text = config.SteamExe;
             PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
             PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked = config.LaunchGamesWithSteam;
-            PathsPage.T1UseSteamCheckBox.Checked = config.T1UseSteam;
-            PathsPage.T2UseSteamCheckBox.Checked = config.T2UseSteam;
-            PathsPage.T3UseSteamCheckBox.Checked = config.T3UseSteam;
-            PathsPage.SS2UseSteamCheckBox.Checked = config.SS2UseSteam;
+            PathsPage.T1UseSteamCheckBox.Checked = config.GetUseSteamSwitch(Thief1);
+            PathsPage.T2UseSteamCheckBox.Checked = config.GetUseSteamSwitch(Thief2);
+            PathsPage.T3UseSteamCheckBox.Checked = config.GetUseSteamSwitch(Thief3);
+            PathsPage.SS2UseSteamCheckBox.Checked = config.GetUseSteamSwitch(SS2);
             SetUseSteamGameCheckBoxesEnabled(config.LaunchGamesWithSteam);
 
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
@@ -705,11 +705,11 @@ namespace AngelLoader.Forms
 
             OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
             OutConfig.LaunchGamesWithSteam = PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked;
-            OutConfig.T1UseSteam = PathsPage.T1UseSteamCheckBox.Checked;
-            OutConfig.T2UseSteam = PathsPage.T2UseSteamCheckBox.Checked;
-            OutConfig.T3UseSteam = PathsPage.T3UseSteamCheckBox.Checked;
-            OutConfig.SS2UseSteam = PathsPage.SS2UseSteamCheckBox.Checked;
-
+            OutConfig.SetUseSteamSwitch(Thief1, PathsPage.T1UseSteamCheckBox.Checked);
+            OutConfig.SetUseSteamSwitch(Thief2, PathsPage.T2UseSteamCheckBox.Checked);
+            OutConfig.SetUseSteamSwitch(Thief3, PathsPage.T3UseSteamCheckBox.Checked);
+            OutConfig.SetUseSteamSwitch(SS2, PathsPage.SS2UseSteamCheckBox.Checked);
+            
             OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
 
             // Manual so we can use Trim() on each

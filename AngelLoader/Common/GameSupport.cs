@@ -8,8 +8,6 @@ namespace AngelLoader.Common
         // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in
         // the code that need updating.
 
-        internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;
-        
         #region Enums
 
         // These is flags so we can combine its values for filtering by multiple games
@@ -35,8 +33,20 @@ namespace AngelLoader.Common
             SS2
         }
 
+        private static readonly string[] SteamAppIds =
+        {
+            "211600", // Thief Gold
+            "211740", // Thief 2
+            "6980",   // Thief 3
+            "238210"  // SS2
+        };
+
         #endregion
-        
+
+        internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;
+
+        internal static string GetGameSteamId(GameIndex index) => SteamAppIds[(int)index];
+
         #region Conversion
 
         /// <summary>

@@ -545,21 +545,21 @@ namespace AngelLoader.Ini
                 {
                     config.LaunchGamesWithSteam = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T1UseSteam) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("T1UseSteam="))
                 {
-                    config.T1UseSteam = val.EqualsTrue();
+                    config.SetUseSteamSwitch(Thief1, val.EqualsTrue());
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T2UseSteam) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("T2UseSteam="))
                 {
-                    config.T2UseSteam = val.EqualsTrue();
+                    config.SetUseSteamSwitch(Thief2, val.EqualsTrue());
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.T3UseSteam) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("T3UseSteam="))
                 {
-                    config.T3UseSteam = val.EqualsTrue();
+                    config.SetUseSteamSwitch(Thief3, val.EqualsTrue());
                 }
-                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SS2UseSteam) + "="))
+                else if (lineT.StartsWithFast_NoNullChecks("SS2UseSteam="))
                 {
-                    config.SS2UseSteam = val.EqualsTrue();
+                    config.SetUseSteamSwitch(SS2, val.EqualsTrue());
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.SteamExe) + "="))
                 {
@@ -986,10 +986,10 @@ namespace AngelLoader.Ini
                 sw.WriteLine("SS2Exe=" + config.GetGameExe(SS2).Trim());
 
                 sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
-                sw.WriteLine(nameof(config.T1UseSteam) + "=" + config.T1UseSteam);
-                sw.WriteLine(nameof(config.T2UseSteam) + "=" + config.T2UseSteam);
-                sw.WriteLine(nameof(config.T3UseSteam) + "=" + config.T3UseSteam);
-                sw.WriteLine(nameof(config.SS2UseSteam) + "=" + config.SS2UseSteam);
+                sw.WriteLine("T1UseSteam=" + config.GetUseSteamSwitch(Thief1));
+                sw.WriteLine("T2UseSteam=" + config.GetUseSteamSwitch(Thief2));
+                sw.WriteLine("T3UseSteam=" + config.GetUseSteamSwitch(Thief3));
+                sw.WriteLine("SS2UseSteam=" + config.GetUseSteamSwitch(SS2));
                 sw.WriteLine(nameof(config.SteamExe) + "=" + config.SteamExe);
 
                 sw.WriteLine(nameof(config.FMsBackupPath) + "=" + config.FMsBackupPath.Trim());

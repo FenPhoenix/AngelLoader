@@ -14,12 +14,14 @@ namespace AngelLoader.Common.DataClasses
             // Automatically set the correct length based on our actual supported game count
             GameExes = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
+            UseSteamSwitches = new bool[SupportedGameCount];
 
             // We want them empty strings, not null, for safety
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameExes[i] = "";
                 FMInstallPaths[i] = "";
+                UseSteamSwitches[i] = true;
             }
         }
 
@@ -65,10 +67,23 @@ namespace AngelLoader.Common.DataClasses
 
         // If a Steam exe is specified, that is
         internal bool LaunchGamesWithSteam = true;
-        internal bool T1UseSteam = true;
-        internal bool T2UseSteam = true;
-        internal bool T3UseSteam = true;
-        internal bool SS2UseSteam = true;
+
+        #region Use Steam settings
+
+        internal readonly bool[] UseSteamSwitches;
+
+        internal bool GetUseSteamSwitch(GameIndex index) => UseSteamSwitches[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal bool GetUseSteamSwitchUnsafe(Game game) => UseSteamSwitches[(uint)GameToGameIndex(game)];
+
+        internal void SetUseSteamSwitch(GameIndex index, bool value) => UseSteamSwitches[(uint)index] = value;
+
+        #endregion
 
         internal string SteamExe = "";
 

@@ -267,21 +267,12 @@ namespace AngelLoader
             // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
             // will start Thief2.exe
             if (!playMP &&
-                Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe) &&
-                ((game == GameIndex.Thief1 && Config.T1UseSteam) ||
-                 (game == GameIndex.Thief2 && Config.T2UseSteam) ||
-                 (game == GameIndex.Thief3 && Config.T3UseSteam) ||
-                 (game == GameIndex.SS2 && Config.SS2UseSteam)))
+                !GetGameSteamId(game).IsEmpty() && Config.GetUseSteamSwitch(game) &&
+                Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe))
             {
                 string gameExe = Config.SteamExe;
                 string gamePath = Path.GetDirectoryName(Config.SteamExe);
-                string args = "-applaunch " + game switch
-                {
-                    GameIndex.Thief1 => SteamAppIds.ThiefGold,
-                    GameIndex.Thief2 => SteamAppIds.Thief2,
-                    GameIndex.Thief3 => SteamAppIds.Thief3,
-                    _ => SteamAppIds.SS2
-                };
+                string args = "-applaunch " + GetGameSteamId(game);
 
                 return (true, gameExe, gamePath, args);
             }

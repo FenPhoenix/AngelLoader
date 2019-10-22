@@ -13,15 +13,6 @@ namespace AngelLoader.Common
         internal const int GB = MB * 1024;
     }
 
-    [PublicAPI]
-    internal static class SteamAppIds
-    {
-        internal const string ThiefGold = "211600";
-        internal const string Thief2 = "211740";
-        internal const string Thief3 = "6980";
-        internal const string SS2 = "238210";
-    }
-
     public enum Direction { Left, Right, Up, Down }
 
     internal static class Defaults

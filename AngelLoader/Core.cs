@@ -244,7 +244,10 @@ namespace AngelLoader
 
             #region Game exes
 
-            for (int i = 0; i < Config.GameExes.Length; i++) Config.GameExes[i] = sf.OutConfig.GameExes[i];
+            for (int i = 0; i < Config.GameExes.Length; i++)
+            {
+                Config.GameExes[i] = sf.OutConfig.GameExes[i];
+            }
 
             // TODO: These should probably go in the Settings form along with the cam_mod.ini check
             // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
@@ -301,10 +304,11 @@ namespace AngelLoader
 
             Config.SteamExe = sf.OutConfig.SteamExe;
             Config.LaunchGamesWithSteam = sf.OutConfig.LaunchGamesWithSteam;
-            Config.T1UseSteam = sf.OutConfig.T1UseSteam;
-            Config.T2UseSteam = sf.OutConfig.T2UseSteam;
-            Config.T3UseSteam = sf.OutConfig.T3UseSteam;
-            Config.SS2UseSteam = sf.OutConfig.SS2UseSteam;
+
+            for (int i = 0; i < Config.UseSteamSwitches.Length; i++)
+            {
+                Config.UseSteamSwitches[i] = sf.OutConfig.UseSteamSwitches[i];
+            }
 
             Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
 
