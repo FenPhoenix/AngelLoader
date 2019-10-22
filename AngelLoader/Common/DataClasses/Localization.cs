@@ -356,7 +356,7 @@ namespace AngelLoader.Common.DataClasses
             [FenGenBlankLine]
             internal static string FMDisplay_GameOrganization = "Game organization";
             internal static string FMDisplay_GameOrganizationByTab = "Each game in its own tab";
-            internal static string FMDisplay_UseShortGameTabNames = "Use short game names on tabs";
+            internal static string FMDisplay_UseShortGameTabNames = "Use short names on game tabs";
             internal static string FMDisplay_GameOrganizationOneList = "Everything in one list, and games are filters";
             [FenGenBlankLine]
             internal static string FMDisplay_Sorting = "Sorting";

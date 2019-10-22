@@ -253,9 +253,11 @@ namespace AngelLoader.Forms
                 {
                     case GameOrganization.ByTab:
                         FMDisplayPage.OrganizeGamesByTabRadioButton.Checked = true;
+                        FMDisplayPage.UseShortGameTabNamesCheckBox.Enabled = true;
                         break;
                     case GameOrganization.OneList:
-                        FMDisplayPage.SortGamesInOneListRadioButton.Checked = true;
+                        FMDisplayPage.OrganizeGamesInOneListRadioButton.Checked = true;
+                        FMDisplayPage.UseShortGameTabNamesCheckBox.Enabled = false;
                         break;
                 }
 
@@ -424,6 +426,9 @@ namespace AngelLoader.Forms
 
             if (!startup)
             {
+                FMDisplayPage.OrganizeGamesByTabRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
+                FMDisplayPage.OrganizeGamesInOneListRadioButton.CheckedChanged += GameOrganizationRadioButtons_CheckedChanged;
+
                 FMDisplayPage.EnableIgnoreArticlesCheckBox.CheckedChanged += ArticlesCheckBox_CheckedChanged;
                 FMDisplayPage.ArticlesTextBox.Leave += ArticlesTextBox_Leave;
 
@@ -542,7 +547,7 @@ namespace AngelLoader.Forms
                     FMDisplayPage.GameOrganizationGroupBox.Text = LText.SettingsWindow.FMDisplay_GameOrganization;
                     FMDisplayPage.OrganizeGamesByTabRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationByTab;
                     FMDisplayPage.UseShortGameTabNamesCheckBox.Text = LText.SettingsWindow.FMDisplay_UseShortGameTabNames;
-                    FMDisplayPage.SortGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationOneList;
+                    FMDisplayPage.OrganizeGamesInOneListRadioButton.Text = LText.SettingsWindow.FMDisplay_GameOrganizationOneList;
 
                     FMDisplayPage.SortingGroupBox.Text = LText.SettingsWindow.FMDisplay_Sorting;
                     FMDisplayPage.EnableIgnoreArticlesCheckBox.Text = LText.SettingsWindow.FMDisplay_IgnoreArticles;
@@ -1056,6 +1061,11 @@ namespace AngelLoader.Forms
         #endregion
 
         #region FM Display page
+
+        private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)
+        {
+            FMDisplayPage.UseShortGameTabNamesCheckBox.Enabled = FMDisplayPage.OrganizeGamesByTabRadioButton.Checked;
+        }
 
         #region Articles
 

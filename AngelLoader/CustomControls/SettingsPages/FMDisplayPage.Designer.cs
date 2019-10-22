@@ -52,11 +52,11 @@
             this.EnableIgnoreArticlesCheckBox = new System.Windows.Forms.CheckBox();
             this.ArticlesTextBox = new System.Windows.Forms.TextBox();
             this.GameOrganizationGroupBox = new System.Windows.Forms.GroupBox();
+            this.UseShortGameTabNamesCheckBox = new System.Windows.Forms.CheckBox();
             this.OrganizeGamesByTabRadioButton = new System.Windows.Forms.RadioButton();
-            this.SortGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
+            this.OrganizeGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
-            this.UseShortGameTabNamesCheckBox = new System.Windows.Forms.CheckBox();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
@@ -321,7 +321,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GameOrganizationGroupBox.Controls.Add(this.UseShortGameTabNamesCheckBox);
             this.GameOrganizationGroupBox.Controls.Add(this.OrganizeGamesByTabRadioButton);
-            this.GameOrganizationGroupBox.Controls.Add(this.SortGamesInOneListRadioButton);
+            this.GameOrganizationGroupBox.Controls.Add(this.OrganizeGamesInOneListRadioButton);
             this.GameOrganizationGroupBox.Location = new System.Drawing.Point(8, 8);
             this.GameOrganizationGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
             this.GameOrganizationGroupBox.Name = "GameOrganizationGroupBox";
@@ -329,6 +329,16 @@
             this.GameOrganizationGroupBox.TabIndex = 4;
             this.GameOrganizationGroupBox.TabStop = false;
             this.GameOrganizationGroupBox.Text = "Game organization";
+            // 
+            // UseShortGameTabNamesCheckBox
+            // 
+            this.UseShortGameTabNamesCheckBox.AutoSize = true;
+            this.UseShortGameTabNamesCheckBox.Location = new System.Drawing.Point(40, 56);
+            this.UseShortGameTabNamesCheckBox.Name = "UseShortGameTabNamesCheckBox";
+            this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
+            this.UseShortGameTabNamesCheckBox.TabIndex = 2;
+            this.UseShortGameTabNamesCheckBox.Text = "Use short names on game tabs";
+            this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
             // 
             // OrganizeGamesByTabRadioButton
             // 
@@ -341,18 +351,18 @@
             this.OrganizeGamesByTabRadioButton.Text = "Each game in its own tab";
             this.OrganizeGamesByTabRadioButton.UseVisualStyleBackColor = true;
             // 
-            // SortGamesInOneListRadioButton
+            // OrganizeGamesInOneListRadioButton
             // 
-            this.SortGamesInOneListRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.OrganizeGamesInOneListRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.SortGamesInOneListRadioButton.Checked = true;
-            this.SortGamesInOneListRadioButton.Location = new System.Drawing.Point(16, 80);
-            this.SortGamesInOneListRadioButton.Name = "SortGamesInOneListRadioButton";
-            this.SortGamesInOneListRadioButton.Size = new System.Drawing.Size(456, 32);
-            this.SortGamesInOneListRadioButton.TabIndex = 1;
-            this.SortGamesInOneListRadioButton.TabStop = true;
-            this.SortGamesInOneListRadioButton.Text = "Everything in one list, and games are filters";
-            this.SortGamesInOneListRadioButton.UseVisualStyleBackColor = true;
+            this.OrganizeGamesInOneListRadioButton.Checked = true;
+            this.OrganizeGamesInOneListRadioButton.Location = new System.Drawing.Point(16, 80);
+            this.OrganizeGamesInOneListRadioButton.Name = "OrganizeGamesInOneListRadioButton";
+            this.OrganizeGamesInOneListRadioButton.Size = new System.Drawing.Size(456, 32);
+            this.OrganizeGamesInOneListRadioButton.TabIndex = 1;
+            this.OrganizeGamesInOneListRadioButton.TabStop = true;
+            this.OrganizeGamesInOneListRadioButton.Text = "Everything in one list, and games are filters";
+            this.OrganizeGamesInOneListRadioButton.UseVisualStyleBackColor = true;
             // 
             // PagePanel
             // 
@@ -374,16 +384,6 @@
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
             this.DummyAutoScrollPanel.TabIndex = 8;
-            // 
-            // UseShortGameTabNamesCheckBox
-            // 
-            this.UseShortGameTabNamesCheckBox.AutoSize = true;
-            this.UseShortGameTabNamesCheckBox.Location = new System.Drawing.Point(40, 56);
-            this.UseShortGameTabNamesCheckBox.Name = "UseShortGameTabNamesCheckBox";
-            this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
-            this.UseShortGameTabNamesCheckBox.TabIndex = 2;
-            this.UseShortGameTabNamesCheckBox.Text = "Use short game names on tabs";
-            this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
             // 
             // FMDisplayPage
             // 
@@ -435,7 +435,7 @@
         internal System.Windows.Forms.TextBox ArticlesTextBox;
         internal System.Windows.Forms.GroupBox GameOrganizationGroupBox;
         internal System.Windows.Forms.RadioButton OrganizeGamesByTabRadioButton;
-        internal System.Windows.Forms.RadioButton SortGamesInOneListRadioButton;
+        internal System.Windows.Forms.RadioButton OrganizeGamesInOneListRadioButton;
         internal System.Windows.Forms.Panel PagePanel;
         internal System.Windows.Forms.Panel DummyAutoScrollPanel;
         private System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
