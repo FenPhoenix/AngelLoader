@@ -87,6 +87,7 @@ namespace AngelLoader.Common.DataClasses
 
         internal string SteamExe = "";
 
+        // @GENGAMES: Miscellaneous game-specific stuff
         // Session-only; don't write these out
         internal bool T1DromEdDetected;
         internal bool T2DromEdDetected;

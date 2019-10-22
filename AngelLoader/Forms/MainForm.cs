@@ -164,10 +164,11 @@ namespace AngelLoader.Forms
             }
 
             // Do these even if we're not in startup, because we may have changed the game organization mode
-            FilterByThief1Button.Checked = (Config.Filter.Games & Game.Thief1) == Game.Thief1;
-            FilterByThief2Button.Checked = (Config.Filter.Games & Game.Thief2) == Game.Thief2;
-            FilterByThief3Button.Checked = (Config.Filter.Games & Game.Thief3) == Game.Thief3;
-            FilterBySS2Button.Checked = (Config.Filter.Games & Game.SS2) == Game.SS2;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                var game = GameIndexToGame((GameIndex)i);
+                FilterByGameButtonsInOrder[i].Checked = (Config.Filter.Games & game) == game;
+            }
 
             if (!startup) ChangeFilterControlsForGameType();
         }
@@ -190,10 +191,10 @@ namespace AngelLoader.Forms
                     bool oneList = Config.GameOrganization == GameOrganization.OneList;
                     if (oneList)
                     {
-                        FilterByThief1Button.Checked = false;
-                        FilterByThief2Button.Checked = false;
-                        FilterByThief3Button.Checked = false;
-                        FilterBySS2Button.Checked = false;
+                        for (int i = 0; i < SupportedGameCount; i++)
+                        {
+                            FilterByGameButtonsInOrder[i].Checked = false;
+                        }
                     }
                     FilterTitleTextBox.Text = "";
                     FilterAuthorTextBox.Text = "";
@@ -312,10 +313,12 @@ namespace AngelLoader.Forms
 
         public void ChangeGameTabNameShortness(bool refreshFilterBarPositionIfNeeded)
         {
-            Thief1TabPage.Text = Config.UseShortGameTabNames ? LText.Global.Thief1_Short : LText.Global.Thief1;
-            Thief2TabPage.Text = Config.UseShortGameTabNames ? LText.Global.Thief2_Short : LText.Global.Thief2;
-            Thief3TabPage.Text = Config.UseShortGameTabNames ? LText.Global.Thief3_Short : LText.Global.Thief3;
-            SS2TabPage.Text = Config.UseShortGameTabNames ? LText.Global.SystemShock2_Short : LText.Global.SystemShock2;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameTabsInOrder[i].Text = Config.UseShortGameTabNames
+                    ? GetShortGameNameFromGameType((GameIndex)i)
+                    : GetGameNameFromGameType((GameIndex)i);
+            }
 
             // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
             var lastGameTabsRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
@@ -339,8 +342,9 @@ namespace AngelLoader.Forms
         private int FMsListDefaultRowHeight;
 
         // To order them such that we can just look them up with an index
-        private TabPage[] GameTabsInEnumOrder;
-        private TabPage[] TopRightTabsInEnumOrder;
+        private readonly TabPage[] GameTabsInOrder;
+        private readonly ToolStripButtonCustom[] FilterByGameButtonsInOrder;
+        private readonly TabPage[] TopRightTabsInOrder;
 
         private enum KeepSel
         {
@@ -368,6 +372,7 @@ namespace AngelLoader.Forms
         // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
         // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
         // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
+        // @GENGAMES: put the game icons into an array
         private Bitmap Thief1Icon;
         private Bitmap Thief2Icon;
         private Bitmap Thief3Icon;
@@ -628,7 +633,8 @@ namespace AngelLoader.Forms
 
         #region Init / load / show
 
-        // InitializeComponent() only - for everything else use init method(s) below
+        // InitializeComponent() (and stuff that doesn't do anything) only - for everything else use the init
+        // method(s) below
         public MainForm()
         {
 #if DEBUG
@@ -642,6 +648,37 @@ namespace AngelLoader.Forms
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
 
             InitComponentManual();
+
+            // -------- New games go here!
+            // @GENGAMES
+            GameTabsInOrder = new[]
+            {
+                Thief1TabPage,
+                Thief2TabPage,
+                Thief3TabPage,
+                SS2TabPage
+            };
+
+            FilterByGameButtonsInOrder = new[]
+            {
+                FilterByThief1Button,
+                FilterByThief2Button,
+                FilterByThief3Button,
+                FilterBySS2Button
+            };
+
+            // Putting these into a list whose order matches the enum allows us to just iterate the list without
+            // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
+            // when we add new tab pages.
+            TopRightTabsInOrder = new[]
+            {
+                StatisticsTabPage,
+                EditFMTabPage,
+                CommentTabPage,
+                TagsTabPage,
+                PatchTabPage
+            };
+
 
 #if Release_Testing && !RT_StartupOnly
             #region Init debug-only controls
@@ -707,32 +744,12 @@ namespace AngelLoader.Forms
             // Allows shortcut keys to be detected globally (selected control doesn't affect them)
             KeyPreview = true;
 
-            GameTabsInEnumOrder = new[]
-            {
-                Thief1TabPage,
-                Thief2TabPage,
-                Thief3TabPage,
-                SS2TabPage
-            };
-
             #region Top-right tabs
-
-            // Putting these into a list whose order matches the enum allows us to just iterate the list without
-            // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
-            // when we add new tab pages.
-            TopRightTabsInEnumOrder = new[]
-            {
-                StatisticsTabPage,
-                EditFMTabPage,
-                CommentTabPage,
-                TagsTabPage,
-                PatchTabPage
-            };
 
             var sortedTabPages = new SortedDictionary<int, TabPage>();
             for (int i = 0; i < TopRightTabsCount; i++)
             {
-                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, TopRightTabsInEnumOrder[i]);
+                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, TopRightTabsInOrder[i]);
             }
 
 #if DEBUG
@@ -747,7 +764,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < TopRightTabsCount; i++)
             {
-                TopRightTabControl.ShowTab(TopRightTabsInEnumOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
+                TopRightTabControl.ShowTab(TopRightTabsInOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
                 TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
             }
 
@@ -844,7 +861,7 @@ namespace AngelLoader.Forms
             {
                 if ((int)Config.TopRightTabsData.SelectedTab == i)
                 {
-                    TopRightTabControl.SelectedTab = TopRightTabsInEnumOrder[i];
+                    TopRightTabControl.SelectedTab = TopRightTabsInOrder[i];
                     break;
                 }
             }
@@ -1113,10 +1130,10 @@ namespace AngelLoader.Forms
                     PositionFilterBarAfterTabs();
                 }
 
-                FilterByThief1Button.ToolTipText = LText.Global.Thief1;
-                FilterByThief2Button.ToolTipText = LText.Global.Thief2;
-                FilterByThief3Button.ToolTipText = LText.Global.Thief3;
-                FilterBySS2Button.ToolTipText = LText.Global.SystemShock2;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    FilterByGameButtonsInOrder[i].ToolTipText = GetGameNameFromGameType((GameIndex)i);
+                }
 
                 FilterTitleLabel.Text = LText.FilterBar.Title;
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
@@ -1410,7 +1427,7 @@ namespace AngelLoader.Forms
                 var selGameTab = GamesTabControl.SelectedTab;
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    if (GameTabsInEnumOrder[i] == selGameTab)
+                    if (GameTabsInOrder[i] == selGameTab)
                     {
                         gameTab = (GameIndex)i;
                         break;
@@ -1422,13 +1439,13 @@ namespace AngelLoader.Forms
 
             var topRightTabs = new TopRightTabsData
             {
-                SelectedTab = (TopRightTab)Array.IndexOf(TopRightTabsInEnumOrder, TopRightTabControl.SelectedTab)
+                SelectedTab = (TopRightTab)Array.IndexOf(TopRightTabsInOrder, TopRightTabControl.SelectedTab)
             };
 
             for (int i = 0; i < TopRightTabsCount; i++)
             {
-                (topRightTabs.Tabs[i].Position, _) = TopRightTabControl.FindBackingTab(TopRightTabsInEnumOrder[i]);
-                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(TopRightTabsInEnumOrder[i]);
+                (topRightTabs.Tabs[i].Position, _) = TopRightTabControl.FindBackingTab(TopRightTabsInOrder[i]);
+                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(TopRightTabsInOrder[i]);
             }
 
             #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
@@ -1706,10 +1723,10 @@ namespace AngelLoader.Forms
             FMsDGV.Filter.Author = FilterAuthorTextBox.Text;
 
             FMsDGV.Filter.Games = Game.Null;
-            if (FilterByThief1Button.Checked) FMsDGV.Filter.Games |= Game.Thief1;
-            if (FilterByThief2Button.Checked) FMsDGV.Filter.Games |= Game.Thief2;
-            if (FilterByThief3Button.Checked) FMsDGV.Filter.Games |= Game.Thief3;
-            if (FilterBySS2Button.Checked) FMsDGV.Filter.Games |= Game.SS2;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (FilterByGameButtonsInOrder[i].Checked) FMsDGV.Filter.Games |= GameIndexToGame((GameIndex)i);
+            }
 
             FMsDGV.Filter.Finished = FinishedState.Null;
             if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Finished;
@@ -2069,10 +2086,13 @@ namespace AngelLoader.Forms
             // TODO: Try lazy-loading these at a more granular level
             // The array and dictionary are obstacles to lazy-loading, but see if we still get good scrolling
             // perf when we look them up and load the individual images as needed, rather than all at once here
+
+            // TODO: @GENGAMES: Put these into an array
             Thief1Icon = Images.Thief1_21;
             Thief2Icon = Images.Thief2_21;
             Thief3Icon = Images.Thief3_21;
             SS2Icon = Images.Shock2_21;
+
             BlankIcon = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
             CheckIcon = Resources.CheckCircle;
             RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
@@ -2190,6 +2210,7 @@ namespace AngelLoader.Forms
                 case Column.Game:
                     e.Value = fm.Game switch
                     {
+                        // TODO: @GENGAMES
                         Game.Thief1 => Thief1Icon,
                         Game.Thief2 => Thief2Icon,
                         Game.Thief3 => Thief3Icon,
@@ -2436,6 +2457,8 @@ namespace AngelLoader.Forms
 
         #region Play original game
 
+        // @GENGAMES: Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
+        // Just gonna have to leave this part as-is.
         private void PlayOriginalGameButton_Click(object sender, EventArgs e)
         {
             PlayOriginalGameLLMenu.Construct(this, components);
@@ -2877,6 +2900,7 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Hide();
         }
 
+        // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
         private async Task DisplaySelectedFM(bool refreshReadme, bool refreshCache = false)
         {
             var fm = FMsDGV.GetSelectedFM();
@@ -2901,7 +2925,6 @@ namespace AngelLoader.Forms
             // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
             // Thief 3 difficulties: Easy, Normal, Hard, Expert
             // SS2 difficulties: Easy, Normal, Hard, Impossible
-
             FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Normal, fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal);
             FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Hard, fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard);
             FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Expert, fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert);
@@ -3255,7 +3278,7 @@ namespace AngelLoader.Forms
             Filter gameFilter = null;
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                if (GameTabsInEnumOrder[i] == tabPage)
+                if (GameTabsInOrder[i] == tabPage)
                 {
                     gameSelFM = FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
                     gameFilter = FMsDGV.GameTabsState.GetFilter((GameIndex)i);
@@ -3289,10 +3312,10 @@ namespace AngelLoader.Forms
 
             var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(GamesTabControl.SelectedTab);
 
-            FilterByThief1Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(Thief1);
-            FilterByThief2Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(Thief2);
-            FilterByThief3Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(Thief3);
-            FilterBySS2Button.Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM(SS2);
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                FilterByGameButtonsInOrder[i].Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
+            }
 
             gameSelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
             gameFilter.DeepCopyTo(FMsDGV.Filter);
@@ -3787,7 +3810,7 @@ namespace AngelLoader.Forms
             {
                 if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])
                 {
-                    tab = TopRightTabsInEnumOrder[i];
+                    tab = TopRightTabsInOrder[i];
                     break;
                 }
             }

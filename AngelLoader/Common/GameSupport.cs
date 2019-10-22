@@ -1,8 +1,11 @@
 ﻿using System;
 using AngelLoader.Common.DataClasses;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Common
 {
+    // @GENGAMES: The main location to add games
+    [PublicAPI]
     internal static class GameSupport
     {
         // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in
@@ -80,13 +83,23 @@ namespace AngelLoader.Common
         internal static string GetGameNameFromGameType(GameIndex gameIndex) => GetGameNameFromGameType(GameIndexToGame(gameIndex));
 
         internal static string GetGameNameFromGameType(Game game) => game switch
-
         {
             Game.Thief1 => LText.Global.Thief1,
             Game.Thief2 => LText.Global.Thief2,
             Game.Thief3 => LText.Global.Thief3,
             Game.SS2 => LText.Global.SystemShock2,
             _ => "[UnknownGameType]"
+        };
+
+        internal static string GetShortGameNameFromGameType(GameIndex gameIndex) => GetShortGameNameFromGameType(GameIndexToGame(gameIndex));
+
+        internal static string GetShortGameNameFromGameType(Game game) => game switch
+        {
+            Game.Thief1 => LText.Global.Thief1_Short,
+            Game.Thief2 => LText.Global.Thief2_Short,
+            Game.Thief3 => LText.Global.Thief3_Short,
+            Game.SS2 => LText.Global.SystemShock2_Short,
+            _ => "[UnknownShortGameType]"
         };
 
         #endregion
