@@ -13,7 +13,7 @@ namespace AngelLoader.Common
 
         #region Enums
 
-        // These is flags so we can combine its values for filtering by multiple games
+        // This is flags so we can combine its values for filtering by multiple games.
         [Flags]
         internal enum Game : uint
         {
@@ -28,6 +28,9 @@ namespace AngelLoader.Common
             Unsupported = 16
         }
 
+        // This is sequential so we can use it as an indexer into any same-ordered array. That way, we can avoid
+        // having to specify games individually everywhere throughout the code, and instead just do a loop and
+        // have it all done implicitly wherever it needs to be done.
         internal enum GameIndex : uint
         {
             Thief1,

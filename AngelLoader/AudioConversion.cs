@@ -18,7 +18,7 @@ namespace AngelLoader
 {
     internal static class AudioConversion
     {
-        // TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
+        // PERF_TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
 
         // OpenAL doesn't play nice with anything over 16 bits, blasting out white noise when it tries to play
         // such. Converting all >16bit wavs to 16 bit fixes this.
@@ -59,7 +59,7 @@ namespace AngelLoader
                 }
             }
 
-            // TODO: I could maybe speed this up by having the process not be recreated all the time?
+            // PERF_TODO: I could maybe speed this up by having the process not be recreated all the time?
             // I suspect it may be just the fact that it's a separate program that's constantly being started and
             // stopped. If that's the case, MEH. :\
             int GetBitDepthSlow(string file)
@@ -230,7 +230,6 @@ namespace AngelLoader
                 // do any conversion whatsoever, neither automatically nor even with a menu option. I'll assume
                 // Thief 3 doesn't need it and leave it at that.
                 new List<string>();
-
         }
     }
 }
