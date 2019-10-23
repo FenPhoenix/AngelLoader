@@ -330,13 +330,13 @@ namespace AngelLoader.Common.Utility
             return paths;
         }
 
-        internal static string FindFMArchive(FanMission fm, List<string> archivePaths = null)
+        internal static string FindFMArchive(string fmArchive, List<string> archivePaths = null)
         {
-            if (fm.Archive.IsEmpty()) return null;
+            if (fmArchive.IsEmpty()) return null;
 
             foreach (var path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
             {
-                var f = Path.Combine(path, fm.Archive);
+                var f = Path.Combine(path, fmArchive);
                 if (File.Exists(f)) return f;
             }
 

@@ -100,7 +100,7 @@ namespace AngelLoader
                 for (var i = 0; i < fmsToScan.Count; i++)
                 {
                     var fm = fmsToScan[i];
-                    var fmArchivePath = await Task.Run(() => FindFMArchive(fm, archivePaths));
+                    var fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive, archivePaths));
                     if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                     {
                         fmsToScanFiltered.Add(fm);

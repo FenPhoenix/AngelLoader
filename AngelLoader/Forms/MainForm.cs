@@ -2523,7 +2523,7 @@ namespace AngelLoader.Forms
             if (success) await SortAndSetFilter(forceDisplayFM: true);
         }
 
-        private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM());
+        private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM().Title);
 
         #region Bottom bar (right side)
 
@@ -3038,7 +3038,7 @@ namespace AngelLoader.Forms
             {
                 EditFMTitleTextBox.Text = fm.Title;
 
-                FillAltTitles(fm);
+                FillAltTitlesMenu(fm.AltTitles);
 
                 EditFMAuthorTextBox.Text = fm.Author;
 
@@ -3077,7 +3077,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            DisplayFMTags(fm);
+            DisplayFMTags(fm.Tags);
 
             #endregion
 
@@ -3209,20 +3209,20 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void FillAltTitles(FanMission fm)
+        private void FillAltTitlesMenu(List<string> fmAltTitles)
         {
             if (!AltTitlesLLMenu.Constructed) return;
 
             AltTitlesLLMenu.ClearItems();
 
-            if (fm.AltTitles.Count == 0)
+            if (fmAltTitles.Count == 0)
             {
                 EditFMAltTitlesArrowButton.Enabled = false;
             }
             else
             {
                 List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>();
-                foreach (var t in fm.AltTitles)
+                foreach (var t in fmAltTitles)
                 {
                     var item = new ToolStripMenuItem { Text = t };
                     item.Click += EditFMAltTitlesMenuItems_Click;
@@ -3234,7 +3234,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void DisplayFMTags(FanMission fm)
+        private void DisplayFMTags(CatAndTagsList fmTags)
         {
             var tv = TagsTreeView;
 
@@ -3243,11 +3243,11 @@ namespace AngelLoader.Forms
                 tv.SuspendDrawing();
                 tv.Nodes.Clear();
 
-                if (fm.Tags.Count == 0) return;
+                if (fmTags.Count == 0) return;
 
-                fm.Tags.SortAndMoveMiscToEnd();
+                fmTags.SortAndMoveMiscToEnd();
 
-                foreach (var item in fm.Tags)
+                foreach (var item in fmTags)
                 {
                     tv.Nodes.Add(item.Category);
                     var last = tv.Nodes[tv.Nodes.Count - 1];
@@ -3358,7 +3358,7 @@ namespace AngelLoader.Forms
         private void EditFMAltTitlesArrowButtonClick(object sender, EventArgs e)
         {
             AltTitlesLLMenu.Construct(components);
-            FillAltTitles(FMsDGV.GetSelectedFM());
+            FillAltTitlesMenu(FMsDGV.GetSelectedFM().AltTitles);
             ShowMenu(AltTitlesLLMenu.Menu, EditFMAltTitlesArrowButton, MenuPos.BottomLeft);
         }
 
@@ -3628,7 +3628,7 @@ namespace AngelLoader.Forms
             var success = Core.RemoveTagFromFM(fm, tv.SelectedNode.Parent?.Text, tv.SelectedNode?.Text);
             if (!success) return;
 
-            DisplayFMTags(fm);
+            DisplayFMTags(fm.Tags);
         }
 
         internal void AddTagListBox_MouseUp(object sender, MouseEventArgs e)
@@ -3646,7 +3646,7 @@ namespace AngelLoader.Forms
             if (catAndTag.CountChars(':') <= 1 && !catAndTag.IsWhiteSpace())
             {
                 Core.AddTagToFM(fm, catAndTag);
-                DisplayFMTags(fm);
+                DisplayFMTags(fm.Tags);
             }
 
             AddTagTextBox.Clear();

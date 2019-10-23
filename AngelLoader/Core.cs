@@ -1263,7 +1263,7 @@ namespace AngelLoader
             }
         }
 
-        internal static void OpenWebSearchUrl(FanMission fm)
+        internal static void OpenWebSearchUrl(string fmTitle)
         {
             var url = Config.WebSearchUrl;
             if (url.IsWhiteSpace() || url.Length > 32766) return;
@@ -1272,7 +1272,7 @@ namespace AngelLoader
 
             var finalUrl = Uri.EscapeUriString(index == -1
                 ? url
-                : url.Substring(0, index) + fm.Title + url.Substring(index + "$TITLE$".Length));
+                : url.Substring(0, index) + fmTitle + url.Substring(index + "$TITLE$".Length));
 
             try
             {

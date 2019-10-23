@@ -660,7 +660,7 @@ namespace AngelLoader.CustomControls
             if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
-        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM());
+        private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM().Title);
 
         #endregion
 
