@@ -649,37 +649,6 @@ namespace AngelLoader.Forms
 
             InitComponentManual();
 
-            // -------- New games go here!
-            // @GENGAMES
-            GameTabsInOrder = new[]
-            {
-                Thief1TabPage,
-                Thief2TabPage,
-                Thief3TabPage,
-                SS2TabPage
-            };
-
-            FilterByGameButtonsInOrder = new[]
-            {
-                FilterByThief1Button,
-                FilterByThief2Button,
-                FilterByThief3Button,
-                FilterBySS2Button
-            };
-
-            // Putting these into a list whose order matches the enum allows us to just iterate the list without
-            // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
-            // when we add new tab pages.
-            TopRightTabsInOrder = new[]
-            {
-                StatisticsTabPage,
-                EditFMTabPage,
-                CommentTabPage,
-                TagsTabPage,
-                PatchTabPage
-            };
-
-
 #if Release_Testing && !RT_StartupOnly
             #region Init debug-only controls
 
@@ -722,6 +691,36 @@ namespace AngelLoader.Forms
             #endregion
 #endif
 #endif
+
+            // -------- New games go here!
+            // @GENGAMES
+            GameTabsInOrder = new[]
+            {
+                Thief1TabPage,
+                Thief2TabPage,
+                Thief3TabPage,
+                SS2TabPage
+            };
+
+            FilterByGameButtonsInOrder = new[]
+            {
+                FilterByThief1Button,
+                FilterByThief2Button,
+                FilterByThief3Button,
+                FilterBySS2Button
+            };
+
+            // Putting these into a list whose order matches the enum allows us to just iterate the list without
+            // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
+            // when we add new tab pages.
+            TopRightTabsInOrder = new[]
+            {
+                StatisticsTabPage,
+                EditFMTabPage,
+                CommentTabPage,
+                TagsTabPage,
+                PatchTabPage
+            };
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
