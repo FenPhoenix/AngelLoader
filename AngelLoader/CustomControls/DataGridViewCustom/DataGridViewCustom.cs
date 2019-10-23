@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
+using static AngelLoader.Common.Common;
 
 namespace AngelLoader.CustomControls
 {
@@ -103,7 +104,7 @@ namespace AngelLoader.CustomControls
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal FanMission GetFMFromIndex(int index) => Core.FMsViewList[Filtered ? FilterShownIndexList[index] : index];
+        internal FanMission GetFMFromIndex(int index) => FMsViewList[Filtered ? FilterShownIndexList[index] : index];
 
         /// <summary>
         /// Gets the currently selected FM, taking the currently set filters into account.
@@ -121,7 +122,7 @@ namespace AngelLoader.CustomControls
             // Graceful default if a value is missing
             if (installedName.IsEmpty()) return 0;
 
-            for (int i = 0; i < (Filtered ? FilterShownIndexList.Count : Core.FMsViewList.Count); i++)
+            for (int i = 0; i < (Filtered ? FilterShownIndexList.Count : FMsViewList.Count); i++)
             {
                 if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
             }
@@ -129,11 +130,11 @@ namespace AngelLoader.CustomControls
             // If a refresh has caused our selected FM to be filtered out, find the next closest one
             if (Filtered && findNearest)
             {
-                for (int i = 0; i < Core.FMsViewList.Count; i++)
+                for (int i = 0; i < FMsViewList.Count; i++)
                 {
-                    if (Core.FMsViewList[i].InstalledDir.EqualsI(installedName))
+                    if (FMsViewList[i].InstalledDir.EqualsI(installedName))
                     {
-                        for (int j = i; j < Core.FMsViewList.Count; j++)
+                        for (int j = i; j < FMsViewList.Count; j++)
                         {
                             var index = FilterShownIndexList.IndexOf(j);
                             if (index > -1) return index;

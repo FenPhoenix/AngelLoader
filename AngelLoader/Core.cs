@@ -32,9 +32,6 @@ namespace AngelLoader
     {
         internal static IView View;
 
-        internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
-        private static readonly List<FanMission> FMDataIniList = new List<FanMission>();
-
         private static CancellationTokenSource ScanCts;
 
         internal static void Init(Task configTask)
@@ -121,7 +118,7 @@ namespace AngelLoader
                 {
                     #region Parallel load
 
-                    using var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true));
+                    using var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true));
 
                     // It's safe to overlap this with Find(), but not with MainForm.ctor()
                     configTask.Wait();
@@ -331,7 +328,7 @@ namespace AngelLoader
                 WriteConfigIni(Config, Paths.ConfigIni);
 
                 // We have to do this here because we won't have before
-                using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, FMDataIniList, startup: true)))
+                using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true)))
                 {
                     // Have to do the full View init sequence here, because we skipped them all before
                     View = new MainForm();
@@ -413,7 +410,7 @@ namespace AngelLoader
 
             if (archivePathsChanged || gamePathsChanged)
             {
-                FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
+                FindFMs.Find(Config.FMInstallPaths);
             }
             if (gameOrganizationChanged)
             {
@@ -1044,7 +1041,7 @@ namespace AngelLoader
                 FinishedOn = importFinishedOn
             };
 
-            await ImportDarkLoader.Import(iniFile, importFMData, importSaves, FMDataIniList, fields);
+            await ImportDarkLoader.Import(iniFile, importFMData, importSaves, fields);
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
             await View.SortAndSetFilter(forceDisplayFM: true);
@@ -1111,8 +1108,8 @@ namespace AngelLoader
                 if (file.IsWhiteSpace()) continue;
 
                 bool success = await (importType == ImportType.FMSel
-                    ? ImportFMSel.Import(file, FMDataIniList, fields)
-                    : ImportNDL.Import(file, FMDataIniList, fields));
+                    ? ImportFMSel.Import(file, fields)
+                    : ImportNDL.Import(file, fields));
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed
@@ -1285,14 +1282,14 @@ namespace AngelLoader
             await ScanFMs(fms, scanOptions);
             // TODO: Why am I doing a find after a scan?!?!?! WTF use is this?
             // Note: I might be doing it to get rid of any duplicates or bad data that may have been imported?
-            FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
+            FindFMs.Find(Config.FMInstallPaths);
         }
 
         #endregion
 
         internal static async Task FindNewFMsAndScanForGameType()
         {
-            FindFMs.Find(Config.FMInstallPaths, FMDataIniList);
+            FindFMs.Find(Config.FMInstallPaths);
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
             if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
         }

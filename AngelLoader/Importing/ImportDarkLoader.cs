@@ -57,12 +57,12 @@ namespace AngelLoader.Importing
         #endregion
 
         internal static async Task<bool>
-        Import(string iniFile, bool importFMData, bool importSaves, List<FanMission> fmDataIniList, FieldsToImport fields)
+        Import(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
         {
             Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromDarkLoader);
             try
             {
-                var (error, fmsToScan) = await ImportInternal(iniFile, importFMData, importSaves, fmDataIniList, fields: fields);
+                var (error, fmsToScan) = await ImportInternal(iniFile, importFMData, importSaves, fields: fields);
                 if (error != ImportError.None)
                 {
                     Log("Import.Error: " + error, stackTrace: true);
@@ -102,8 +102,8 @@ namespace AngelLoader.Importing
         }
 
         private static async Task<(ImportError Error, List<FanMission> FMs)>
-        ImportInternal(string iniFile, bool importFMData, bool importSaves, List<FanMission> mainList,
-                       bool returnUnmergedFMsList = false, FieldsToImport fields = null)
+        ImportInternal(string iniFile, bool importFMData, bool importSaves, bool returnUnmergedFMsList = false,
+            FieldsToImport fields = null)
         {
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
@@ -303,7 +303,7 @@ namespace AngelLoader.Importing
 
             var importedFMs = returnUnmergedFMsList
                 ? fms
-                : ImportCommon.MergeImportedFMData(ImportType.DarkLoader, fms, mainList, fields);
+                : ImportCommon.MergeImportedFMData(ImportType.DarkLoader, fms, fields);
 
             return (ImportError.None, importedFMs);
         }

@@ -1768,9 +1768,9 @@ namespace AngelLoader.Forms
 
             #region Title / initial
 
-            for (int i = 0; i < Core.FMsViewList.Count; i++)
+            for (int i = 0; i < FMsViewList.Count; i++)
             {
-                var fm = Core.FMsViewList[i];
+                var fm = FMsViewList[i];
 
                 if (titleIsWhitespace ||
                     fm.Title.ContainsI(FMsDGV.Filter.Title) ||
@@ -1790,7 +1790,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmAuthor = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].Author;
+                    var fmAuthor = FMsViewList[FMsDGV.FilterShownIndexList[i]].Author;
 
                     if (!fmAuthor.ContainsI(FMsDGV.Filter.Author))
                     {
@@ -1802,13 +1802,13 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            #region Show junk
+            #region Show unsupported
 
             if (!FMsDGV.Filter.ShowUnsupported)
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
                     if (fm.Game == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
@@ -1825,7 +1825,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
                     if (GameIsKnownAndSupported(fm.Game) && (FMsDGV.Filter.Games & fm.Game) != fm.Game)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
@@ -1848,7 +1848,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmTags = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].Tags;
+                    var fmTags = FMsViewList[FMsDGV.FilterShownIndexList[i]].Tags;
                     if (fmTags.Count == 0 && notTags.Count == 0)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
@@ -1990,7 +1990,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmRating = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].Rating;
+                    var fmRating = FMsViewList[FMsDGV.FilterShownIndexList[i]].Rating;
 
                     if (fmRating < rf || fmRating > rt)
                     {
@@ -2011,7 +2011,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmRelDate = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate;
+                    var fmRelDate = FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate;
 
                     if (fmRelDate == null ||
                         (rdf != null &&
@@ -2036,7 +2036,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmLastPlayed = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed;
+                    var fmLastPlayed = FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed;
 
                     if (fmLastPlayed == null ||
                         (lpdf != null &&
@@ -2058,7 +2058,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = Core.FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
                     var fmFinished = fm.FinishedOn;
                     var fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
@@ -2493,7 +2493,7 @@ namespace AngelLoader.Forms
 
         private async void ScanAllFMsButton_Click(object sender, EventArgs e)
         {
-            if (Core.FMsViewList.Count == 0) return;
+            if (FMsViewList.Count == 0) return;
 
             ScanOptions scanOptions = null;
             bool noneSelected;
@@ -2520,7 +2520,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            var success = await Core.ScanFMs(Core.FMsViewList, scanOptions);
+            var success = await Core.ScanFMs(FMsViewList, scanOptions);
             if (success) await SortAndSetFilter(forceDisplayFM: true);
         }
 
@@ -2714,7 +2714,7 @@ namespace AngelLoader.Forms
                 // -the subsequent row count set from being really slow
                 FMsDGV.Rows.Clear();
 
-                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : Core.FMsViewList.Count;
+                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : FMsViewList.Count;
 
                 if (FMsDGV.RowCount == 0)
                 {
@@ -2810,7 +2810,7 @@ namespace AngelLoader.Forms
         // Perpetual TODO: Make sure this clears everything including the top right tab stuff
         private void ClearShownData()
         {
-            if (Core.FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
+            if (FMsViewList.Count == 0) ScanAllFMsButton.Enabled = false;
 
             FMsDGV.SetInstallUninstallMenuItemText(true);
             FMsDGV.SetInstallUninstallMenuItemEnabled(false);
@@ -2920,7 +2920,7 @@ namespace AngelLoader.Forms
             #region Toggles
 
             // We should never get here when FMsList.Count == 0, but hey
-            if (Core.FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
+            if (FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
 
             // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
             // Thief 3 difficulties: Easy, Normal, Hard, Expert

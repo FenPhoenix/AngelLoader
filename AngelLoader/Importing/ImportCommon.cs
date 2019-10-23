@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Common;
 
 namespace AngelLoader.Importing
 {
@@ -131,8 +132,8 @@ namespace AngelLoader.Importing
         //}
 
         internal static List<FanMission>
-        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, List<FanMission> mainList,
-                            FieldsToImport fields = null/*, bool addMergedFMsToPriorityList = false*/)
+        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields = null
+            /*, bool addMergedFMsToPriorityList = false*/)
         {
             if (fields == null)
             {
@@ -153,7 +154,7 @@ namespace AngelLoader.Importing
 
             // Perf
             var checkedList = new List<FanMission>();
-            int initCount = mainList.Count;
+            int initCount = FMDataIniList.Count;
 
             // We can't just send back the list we got in, because we will have deep-copied them to the main list
             var importedFMsInMainList = new List<FanMission>();
@@ -165,7 +166,7 @@ namespace AngelLoader.Importing
                 bool existingFound = false;
                 for (int mainFMi = 0; mainFMi < initCount; mainFMi++)
                 {
-                    var mainFM = mainList[mainFMi];
+                    var mainFM = FMDataIniList[mainFMi];
 
                     if (!mainFM.Checked &&
                         (importType == ImportType.DarkLoader &&
@@ -352,7 +353,7 @@ namespace AngelLoader.Importing
 
                     newFM.MarkedScanned = true;
 
-                    mainList.Add(newFM);
+                    FMDataIniList.Add(newFM);
                     importedFMsInMainList.Add(newFM);
 
                     //PriorityAdd(newFM, priorityFMData, importType, fields);

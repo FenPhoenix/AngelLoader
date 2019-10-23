@@ -8,6 +8,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI;
+using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
@@ -19,7 +20,7 @@ namespace AngelLoader
     {
         // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
-        internal static void Find(string[] fmInstPaths, List<FanMission> fmDataIniList, bool startup = false)
+        internal static void Find(string[] fmInstPaths, bool startup = false)
         {
             int gameCount = fmInstPaths.Length;
 
@@ -44,13 +45,13 @@ namespace AngelLoader
             // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
             // up with a blank or incomplete list and then glibly save it out later.
             var backupList = new List<FanMission>();
-            foreach (var fm in fmDataIniList) backupList.Add(fm);
+            foreach (var fm in FMDataIniList) backupList.Add(fm);
 
             var viewBackupList = new List<FanMission>();
-            foreach (var fm in Core.FMsViewList) viewBackupList.Add(fm);
+            foreach (var fm in FMsViewList) viewBackupList.Add(fm);
 
-            fmDataIniList.Clear();
-            Core.FMsViewList.Clear();
+            FMDataIniList.Clear();
+            FMsViewList.Clear();
 
             var fmDataIniExists = File.Exists(Paths.FMDataIni);
 
@@ -58,7 +59,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    ReadFMDataIni(Paths.FMDataIni, fmDataIniList);
+                    ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
                 }
                 catch (Exception ex)
                 {
@@ -72,8 +73,8 @@ namespace AngelLoader
                     }
                     else
                     {
-                        fmDataIniList.ClearAndAdd(backupList);
-                        Core.FMsViewList.ClearAndAdd(viewBackupList);
+                        FMDataIniList.ClearAndAdd(backupList);
+                        FMsViewList.ClearAndAdd(viewBackupList);
                         return;
                     }
                 }
@@ -156,20 +157,20 @@ namespace AngelLoader
 
             #endregion
 
-            MergeNewArchiveFMs(fmArchives, fmDataIniList, fmInstPaths);
+            MergeNewArchiveFMs(fmArchives, fmInstPaths);
 
-            int instInitCount = fmDataIniList.Count;
+            int instInitCount = FMDataIniList.Count;
             for (int i = 0; i < gameCount; i++)
             {
                 var curGameInstFMsList = perGameFMsList[i];
-                if (curGameInstFMsList.Count > 0) MergeNewInstalledFMs(curGameInstFMsList, fmDataIniList, instInitCount);
+                if (curGameInstFMsList.Count > 0) MergeNewInstalledFMs(curGameInstFMsList, instInitCount);
             }
 
-            SetArchiveNames(fmInstPaths, fmArchives, fmDataIniList);
+            SetArchiveNames(fmInstPaths, fmArchives);
 
-            SetInstalledNames(fmDataIniList);
+            SetInstalledNames();
 
-            BuildViewList(fmArchives, fmDataIniList, perGameInstFMDirsList, gameCount);
+            BuildViewList(fmArchives, perGameInstFMDirsList, gameCount);
 
             /*
              TODO: There's an extreme corner case where duplicate FMs can appear in the list
@@ -187,18 +188,18 @@ namespace AngelLoader
 
         #region Set names
 
-        private static void SetArchiveNames(string[] fmInstPaths, List<string> fmArchives, List<FanMission> fmDataIniList)
+        private static void SetArchiveNames(string[] fmInstPaths, List<string> fmArchives)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
-            for (var i = 0; i < fmDataIniList.Count; i++)
+            for (var i = 0; i < FMDataIniList.Count; i++)
             {
-                var fm = fmDataIniList[i];
+                var fm = FMDataIniList[i];
 
                 if (fm.Archive.IsEmpty())
                 {
                     if (fm.InstalledDir.IsEmpty())
                     {
-                        fmDataIniList.RemoveAt(i);
+                        FMDataIniList.RemoveAt(i);
                         i--;
                         continue;
                     }
@@ -207,19 +208,19 @@ namespace AngelLoader
                     // Skip the expensive archive name search if we're marked as having no archive
                     if (!fm.NoArchive)
                     {
-                        archiveName = GetArchiveNameFromInstalledDir(fmInstPaths, fmDataIniList, fm, fmArchives);
+                        archiveName = GetArchiveNameFromInstalledDir(fmInstPaths, fm, fmArchives);
                     }
                     if (archiveName.IsEmpty()) continue;
 
                     // Exponential (slow) stuff, but we only do it once to correct the list and then never again
                     // NOTE: I guess this removes duplicates, which is why it has to do the search?
-                    var existingFM = fmDataIniList.FirstOrDefault(x => x.Archive.EqualsI(archiveName));
+                    var existingFM = FMDataIniList.FirstOrDefault(x => x.Archive.EqualsI(archiveName));
                     if (existingFM != null)
                     {
                         existingFM.InstalledDir = fm.InstalledDir;
                         existingFM.Installed = true;
                         existingFM.Game = fm.Game;
-                        fmDataIniList.RemoveAt(i);
+                        FMDataIniList.RemoveAt(i);
                         i--;
                     }
                     else
@@ -236,10 +237,10 @@ namespace AngelLoader
             }
         }
 
-        private static void SetInstalledNames(List<FanMission> fmDataIniList)
+        private static void SetInstalledNames()
         {
             // Fill in empty installed dir names, making sure to check for and handle truncated name collisions
-            foreach (var fm in fmDataIniList)
+            foreach (var fm in FMDataIniList)
             {
                 if (fm.InstalledDir.IsEmpty())
                 {
@@ -249,7 +250,7 @@ namespace AngelLoader
 
                     // Again, an exponential search, but again, we only do it once to correct the list and then
                     // never again
-                    while (fmDataIniList.Any(x => x.InstalledDir.EqualsI(instDir)))
+                    while (FMDataIniList.Any(x => x.InstalledDir.EqualsI(instDir)))
                     {
                         // Yeah, this'll never happen, but hey
                         if (i > 999) break;
@@ -274,11 +275,10 @@ namespace AngelLoader
 
         #region Merge
 
-        private static void MergeNewArchiveFMs(List<string> fmArchives, List<FanMission> fmDataIniList,
-            string[] fmInstPaths)
+        private static void MergeNewArchiveFMs(List<string> fmArchives, string[] fmInstPaths)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
-            int initCount = fmDataIniList.Count;
+            int initCount = FMDataIniList.Count;
 
             var checkedList = new List<FanMission>();
 
@@ -295,7 +295,7 @@ namespace AngelLoader
                 bool existingFound = false;
                 for (int i = 0; i < initCount; i++)
                 {
-                    var fm = fmDataIniList[i];
+                    var fm = FMDataIniList[i];
 
                     // This weird syntax is to memoize stuff for perf, but it seems if there's more than three of
                     // these comparisons(?!) then it either screws up or ReSharper just thinks it will screw up,
@@ -333,7 +333,7 @@ namespace AngelLoader
                 }
                 if (!existingFound)
                 {
-                    fmDataIniList.Add(new FanMission { Archive = archive, NoArchive = false });
+                    FMDataIniList.Add(new FanMission { Archive = archive, NoArchive = false });
                 }
             }
 
@@ -343,7 +343,7 @@ namespace AngelLoader
 
         // This takes an explicit initCount because we call this once per game, and we don't want to grow our
         // initCount with every call (we can keep it the initial size and still have this work, so it's faster)
-        private static void MergeNewInstalledFMs(List<FanMission> installedList, List<FanMission> fmDataIniList, int initCount)
+        private static void MergeNewInstalledFMs(List<FanMission> installedList, int initCount)
         {
             var checkedList = new List<FanMission>();
 
@@ -357,7 +357,7 @@ namespace AngelLoader
                 bool existingFound = false;
                 for (int i = 0; i < initCount; i++)
                 {
-                    var fm = fmDataIniList[i];
+                    var fm = FMDataIniList[i];
 
                     if (!isEmpty &&
                         // Early-out bool - much faster than checking EqualsI()
@@ -376,7 +376,7 @@ namespace AngelLoader
                 }
                 if (!existingFound)
                 {
-                    fmDataIniList.Add(new FanMission
+                    FMDataIniList.Add(new FanMission
                     {
                         InstalledDir = gFM.InstalledDir,
                         Game = gFM.Game,
@@ -391,7 +391,7 @@ namespace AngelLoader
 
         #endregion
 
-        private static string GetArchiveNameFromInstalledDir(string[] fmInstPaths, List<FanMission> fmDataIniList, FanMission fm, List<string> archives)
+        private static string GetArchiveNameFromInstalledDir(string[] fmInstPaths, FanMission fm, List<string> archives)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -421,9 +421,9 @@ namespace AngelLoader
                     archives.FirstOrDefault(x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
                     archives.FirstOrDefault(x => x.ToInstDirNameNDL().EqualsI(fm.InstalledDir)) ??
                     archives.FirstOrDefault(x => x.EqualsI(fm.InstalledDir)) ??
-                    fmDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir))?.Archive ??
-                    fmDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
-                    fmDataIniList.FirstOrDefault(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
+                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir))?.Archive ??
+                    FMDataIniList.FirstOrDefault(x => x.Archive.ToInstDirNameNDL().EqualsI(fm.InstalledDir))?.Archive ??
+                    FMDataIniList.FirstOrDefault(x => x.InstalledDir.EqualsI(fm.InstalledDir))?.Archive;
 
                 if (tryArchive.IsEmpty())
                 {
@@ -495,8 +495,8 @@ namespace AngelLoader
             }
         }
 
-        private static void BuildViewList(List<string> fmArchives, List<FanMission> fmDataIniList,
-            List<List<string>> perGameInstalledFMDirsList, int gameCount)
+        private static void BuildViewList(List<string> fmArchives, List<List<string>> perGameInstalledFMDirsList,
+            int gameCount)
         {
             Core.ViewListGamesNull.Clear();
 
@@ -536,9 +536,9 @@ namespace AngelLoader
                 }
             }
 
-            for (var i = 0; i < fmDataIniList.Count; i++)
+            for (var i = 0; i < FMDataIniList.Count; i++)
             {
-                var item = fmDataIniList[i];
+                var item = FMDataIniList[i];
 
                 #region Checks
 
@@ -576,7 +576,7 @@ namespace AngelLoader
                 item.CommentSingleLine = item.Comment.FromRNEscapes().ToSingleLineComment(100);
                 AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
 
-                Core.FMsViewList.Add(item);
+                FMsViewList.Add(item);
             }
         }
     }

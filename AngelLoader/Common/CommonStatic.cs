@@ -61,5 +61,8 @@ namespace AngelLoader.Common
         // Don't say this = PresetTags; that will make it a reference and we don't want that. It will be deep
         // copied later.
         internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList();
+
+        internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
+        internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
     }
 }
