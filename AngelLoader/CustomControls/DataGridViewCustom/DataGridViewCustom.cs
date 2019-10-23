@@ -43,6 +43,7 @@ namespace AngelLoader.CustomControls
         //  in a loop)
         internal bool Filtered = false;
 
+        // PERF_TODO: This could be new'd and capacity-set later to FMsViewList.Count, if we're really hardcore
         internal readonly List<int> FilterShownIndexList = new List<int>();
 
         #endregion
@@ -201,7 +202,7 @@ namespace AngelLoader.CustomControls
 
         internal List<ColumnData> GetColumnData()
         {
-            var columns = new List<ColumnData>();
+            var columns = new List<ColumnData>(Columns.Count);
 
             foreach (DataGridViewColumn col in Columns)
             {

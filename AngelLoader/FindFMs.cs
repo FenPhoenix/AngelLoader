@@ -38,7 +38,7 @@ namespace AngelLoader
 
             // Init or reinit - must be deep-copied or changes propagate back because reference types
             // MT: This is thread-safe, the view ctor and InitThreadable() doesn't touch it.
-            Common.Common.PresetTags.DeepCopyTo(Common.Common.GlobalTags);
+            PresetTags.DeepCopyTo(GlobalTags);
 
             #region Back up lists and read FM data file
 
@@ -524,6 +524,9 @@ namespace AngelLoader
                     return false;
                 }
             }
+
+            // Perf
+            FMsViewList.Capacity = FMDataIniList.Count;
 
             for (var i = 0; i < FMDataIniList.Count; i++)
             {

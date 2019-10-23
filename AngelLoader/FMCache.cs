@@ -113,7 +113,6 @@ namespace AngelLoader
         {
             Debug.Assert(fm.Installed, "fm.Installed is false when it should be true");
 
-            var readmes = new List<string>();
 
             var thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
 
@@ -125,6 +124,8 @@ namespace AngelLoader
             if (Directory.Exists(t3ReadmePath2)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath2, "*"));
 
             RemoveEmptyFiles(files);
+
+            var readmes = new List<string>(files.Count);
 
             foreach (var f in files)
             {
