@@ -17,7 +17,7 @@ namespace AngelLoader.Importing
         internal static async Task<bool>
         Import(string iniFile, FieldsToImport fields = null)
         {
-            Core.View.ShowProgressBox(ProgressPanel.ProgressTasks.ImportFromFMSel);
+            Core.View.ShowProgressBox(ProgressTasks.ImportFromFMSel);
             try
             {
                 var (error, fmsToScan) = await ImportInternal(iniFile, fields: fields);

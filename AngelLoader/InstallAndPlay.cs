@@ -118,7 +118,7 @@ namespace AngelLoader
             string steamArgs = null;
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
-            
+
             // Only use the stub if we need to pass something we can't pass on the command line
             // 2019-10-16: This includes launching through Steam; we can't pass anything custom then either
             // Add quotes around it in case there are spaces in the dir name. Will only happen if you put an FM
@@ -643,17 +643,21 @@ namespace AngelLoader
                 Log("Couldn't create " + Paths.FMSelInf + " in " + fmInstalledPath, ex);
             }
 
-            try
+            // Only Dark engine games need audio conversion
+            if (GameIsDark(fm.Game))
             {
-                Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
-                await AudioConversion.MP3sToWAVs(fm);
+                try
+                {
+                    Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
 
-                if (Config.ConvertOGGsToWAVsOnInstall) await AudioConversion.OGGsToWAVs(fm);
-                if (Config.ConvertWAVsTo16BitOnInstall) await AudioConversion.WAVsTo16Bit(fm);
-            }
-            catch (Exception ex)
-            {
-                Log("Exception in audio conversion", ex);
+                    await FMAudio.ConvertMP3sToWAVs(fm);
+                    if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertOGGsToWAVs(fm, false);
+                    if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertWAVsTo16Bit(fm, false);
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in audio conversion", ex);
+                }
             }
 
             try

@@ -16,21 +16,27 @@ using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader
 {
-    internal static class AudioConversion
+    internal static class FMAudio
     {
+        #region API methods
+
         // PERF_TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
 
         // OpenAL doesn't play nice with anything over 16 bits, blasting out white noise when it tries to play
         // such. Converting all >16bit wavs to 16 bit fixes this.
-        internal static async Task WAVsTo16Bit(FanMission fm)
+        internal static async Task ConvertWAVsTo16Bit(FanMission fm, bool doChecksAndProgressBox)
         {
-            if (!GameIsDark(fm.Game)) return;
-
-            if (!File.Exists(Paths.FFprobeExe) || !File.Exists(Paths.FFmpegExe))
+            if (doChecksAndProgressBox)
             {
-                Log("FFmpeg.exe or FFProbe.exe don't exist", stackTrace: true);
-                return;
+                var (success, refreshFM) = ChecksPassed(fm);
+                if (!success)
+                {
+                    if (refreshFM) await Core.View.RefreshSelectedFM(refreshReadme: false);
+                    return;
+                }
             }
+
+            #region Local functions
 
             static int GetBitDepthFast(string file)
             {
@@ -62,7 +68,7 @@ namespace AngelLoader
             // PERF_TODO: I could maybe speed this up by having the process not be recreated all the time?
             // I suspect it may be just the fact that it's a separate program that's constantly being started and
             // stopped. If that's the case, MEH. :\
-            int GetBitDepthSlow(string file)
+            static int GetBitDepthSlow(string file)
             {
                 int ret = 0;
 
@@ -100,56 +106,132 @@ namespace AngelLoader
                 return ret;
             }
 
-            await Task.Run(async () =>
+            #endregion
+
+            try
             {
-                try
+                if (doChecksAndProgressBox) Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
+
+                if (!File.Exists(Paths.FFprobeExe) || !File.Exists(Paths.FFmpegExe))
                 {
-                    var fmSndPaths = GetFMSoundPathsByGame(fm);
-                    foreach (var fmSndPath in fmSndPaths)
+                    Log("FFmpeg.exe or FFProbe.exe don't exist", stackTrace: true);
+                    return;
+                }
+
+                await Task.Run(async () =>
+                {
+                    try
                     {
-                        if (!Directory.Exists(fmSndPath)) return;
-
-                        _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
-
-                        var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
-                        foreach (var f in wavFiles)
+                        var fmSndPaths = GetFMSoundPathsByGame(fm);
+                        foreach (var fmSndPath in fmSndPaths)
                         {
-                            UnSetReadOnly(f);
+                            if (!Directory.Exists(fmSndPath)) return;
 
-                            int bits = GetBitDepthFast(f);
+                            _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
 
-                            // Header wasn't wav, so skip this one
-                            if (bits == -1) continue;
+                            var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
+                            foreach (var f in wavFiles)
+                            {
+                                UnSetReadOnly(f);
 
-                            if (bits == 0) bits = GetBitDepthSlow(f);
-                            if (bits >= 1 && bits <= 16) continue;
+                                int bits = GetBitDepthFast(f);
 
-                            var engine = new Engine(Paths.FFmpegExe);
-                            var options = new ConversionOptions { AudioBitRate = 16 };
-                            var inFile = new MediaFile(f);
-                            var outFile = new MediaFile(f.RemoveExtension() + ".al_16bit_.wav");
-                            await engine.ConvertAsync(inFile, outFile, options);
+                                // Header wasn't wav, so skip this one
+                                if (bits == -1) continue;
 
-                            File.Delete(f);
-                            File.Move(f.RemoveExtension() + ".al_16bit_.wav", f);
+                                if (bits == 0) bits = GetBitDepthSlow(f);
+                                if (bits >= 1 && bits <= 16) continue;
+
+                                var engine = new Engine(Paths.FFmpegExe);
+                                var options = new ConversionOptions { AudioBitRate = 16 };
+                                var inFile = new MediaFile(f);
+                                var outFile = new MediaFile(f.RemoveExtension() + ".al_16bit_.wav");
+                                await engine.ConvertAsync(inFile, outFile, options);
+
+                                File.Delete(f);
+                                File.Move(f.RemoveExtension() + ".al_16bit_.wav", f);
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception in file conversion", ex);
-                }
-            });
+                    catch (Exception ex)
+                    {
+                        Log("Exception in file conversion", ex);
+                    }
+                });
+            }
+            finally
+            {
+                if (doChecksAndProgressBox) Core.View.HideProgressBox();
+            }
         }
 
         // Dark engine games can't play MP3s, so they must be converted in all cases.
-        internal static async Task MP3sToWAVs(FanMission fm) => await ConvertToWAVs(fm, "*.mp3");
+        // This one won't be called anywhere except during install, because it always runs during install so
+        // there's no need to make it optional elsewhere. So we don't need to have a check bool or anything.
+        internal static async Task ConvertMP3sToWAVs(FanMission fm) => await ConvertToWAVs(fm, "*.mp3");
 
         // From the FMSel manual:
         // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
         // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
         // them to WAV files during installation."
-        internal static async Task OGGsToWAVs(FanMission fm) => await ConvertToWAVs(fm, "*.ogg");
+        internal static async Task ConvertOGGsToWAVs(FanMission fm, bool doChecksAndProgressBox)
+        {
+            if (doChecksAndProgressBox)
+            {
+                var (success, refreshFM) = ChecksPassed(fm);
+                if (!success)
+                {
+                    if (refreshFM) await Core.View.RefreshSelectedFM(refreshReadme: false);
+                    return;
+                }
+            }
+
+            try
+            {
+                if (doChecksAndProgressBox) Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
+                await ConvertToWAVs(fm, "*.ogg");
+            }
+            finally
+            {
+                if (doChecksAndProgressBox) Core.View.HideProgressBox();
+            }
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private static (bool Success, bool RefreshSelectedFM)
+        ChecksPassed(FanMission fm)
+        {
+            if (!fm.Installed || !GameIsDark(fm.Game)) return (false, false);
+
+            var gameExe = Config.GetGameExeUnsafe(fm.Game);
+            var gameName = GetGameNameFromGameType(fm.Game);
+            if (GameIsRunning(gameExe))
+            {
+                Core.View.ShowAlert(
+                    gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
+                    LText.AlertMessages.Alert);
+
+                return (false, false);
+            }
+
+            if (!FMIsReallyInstalled(fm))
+            {
+                var yes = Core.View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
+                    LText.AlertMessages.Alert);
+                if (yes) fm.Installed = false;
+
+                return (false, true);
+            }
+
+            return (true, false);
+        }
+
+        #endregion
+
+        #region Private methods
 
         private static async Task ConvertToWAVs(FanMission fm, string pattern)
         {
@@ -231,5 +313,7 @@ namespace AngelLoader
                 // Thief 3 doesn't need it and leave it at that.
                 new List<string>();
         }
+
+        #endregion
     }
 }

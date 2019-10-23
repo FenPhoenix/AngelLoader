@@ -13,6 +13,19 @@ namespace AngelLoader.Common
         internal const int GB = MB * 1024;
     }
 
+    // Public for param accessibility reasons or whatever
+    public enum ProgressTasks
+    {
+        ScanAllFMs,
+        InstallFM,
+        UninstallFM,
+        ConvertFiles,
+        ImportFromDarkLoader,
+        ImportFromNDL,
+        ImportFromFMSel,
+        CacheFM
+    }
+
     public enum Direction { Left, Right, Up, Down }
 
     internal static class Defaults

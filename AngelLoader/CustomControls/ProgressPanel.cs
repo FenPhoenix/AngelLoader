@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
@@ -13,19 +14,6 @@ namespace AngelLoader.CustomControls
         // TODO: The way this works is no longer really tenable - rework it to be cleaner
 
         #region Fields etc.
-
-        // Public for param accessibility reasons or whatever
-        public enum ProgressTasks
-        {
-            ScanAllFMs,
-            InstallFM,
-            UninstallFM,
-            ConvertFiles,
-            ImportFromDarkLoader,
-            ImportFromNDL,
-            ImportFromFMSel,
-            CacheFM
-        }
 
         private MainForm Owner;
         private ProgressTasks ProgressTask;

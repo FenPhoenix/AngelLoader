@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
+using AngelLoader.Common;
 using AngelLoader.CustomControls;
 using static AngelLoader.Common.Logger;
-using static AngelLoader.CustomControls.ProgressPanel;
 
 namespace AngelLoader.Forms
 {

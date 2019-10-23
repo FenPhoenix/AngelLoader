@@ -597,9 +597,9 @@ namespace AngelLoader.CustomControls
 
         private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(GetSelectedFM());
 
-        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await Core.ConvertWAVsTo16Bit(GetSelectedFM());
+        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await FMAudio.ConvertWAVsTo16Bit(GetSelectedFM(), true);
 
-        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await Core.ConvertOGGsToWAVs(GetSelectedFM());
+        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await FMAudio.ConvertOGGsToWAVs(GetSelectedFM(), true);
 
         private void RatingMenuItemsClick(object sender, EventArgs e)
         {
