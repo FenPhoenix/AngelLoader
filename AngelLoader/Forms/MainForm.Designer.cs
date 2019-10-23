@@ -1927,20 +1927,24 @@
         #endregion
 #endif
 
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+        private System.Windows.Forms.Button TestButton;
+        private System.Windows.Forms.Button Test2Button;
+        private System.Windows.Forms.Label DebugLabel;
+        private System.Windows.Forms.Label DebugLabel2;
+#endif
+
         private AngelLoader.CustomControls.SplitContainerCustom MainSplitContainer;
         private System.Windows.Forms.Panel BottomPanel;
-        private System.Windows.Forms.Button TestButton;
         private AngelLoader.CustomControls.DataGridViewCustom FMsDGV;
         private System.Windows.Forms.Button PlayFMButton;
         private AngelLoader.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
         private System.Windows.Forms.Button ScanAllFMsButton;
-        private System.Windows.Forms.Label DebugLabel;
         private AngelLoader.CustomControls.SplitContainerCustom TopSplitContainer;
         private System.Windows.Forms.Panel EverythingPanel;
         private System.Windows.Forms.Button SettingsButton;
         private AngelLoader.CustomControls.ComboBoxCustom ChooseReadmeComboBox;
         private System.Windows.Forms.Button ReadmeResetZoomButton;
-        private System.Windows.Forms.Button Test2Button;
         private System.Windows.Forms.Label FilterTitleLabel;
         private AngelLoader.CustomControls.TextBoxCustom FilterTitleTextBox;
         private System.Windows.Forms.Button PlayOriginalGameButton;
@@ -1982,7 +1986,6 @@
         private System.Windows.Forms.CheckBox EditFMDisableAllModsCheckBox;
         private System.Windows.Forms.TextBox EditFMDisabledModsTextBox;
         private System.Windows.Forms.Label EditFMDisabledModsLabel;
-        private System.Windows.Forms.Label DebugLabel2;
         private System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
         private AngelLoader.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
         private AngelLoader.CustomControls.ToolStripButtonCustom FilterByThief1Button;
