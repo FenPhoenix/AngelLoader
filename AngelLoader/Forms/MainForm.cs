@@ -372,7 +372,7 @@ namespace AngelLoader.Forms
         // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
         // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
         // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
-        // @GENGAMES: put the game icons into an array
+        // TODO: @GENGAMES: put the game icons into an array
         private Bitmap Thief1Icon;
         private Bitmap Thief2Icon;
         private Bitmap Thief3Icon;
