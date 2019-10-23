@@ -23,7 +23,6 @@ using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
-using static AngelLoader.CustomControls.ProgressPanel;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader
@@ -894,6 +893,7 @@ namespace AngelLoader
 
                     if (scanOptions.ScanGameType)
                     {
+                        // TODO: @GENGAMES: Hardcore conversion needed, no getting around it
                         sel.Game =
                             scannedFM.Game == FMScanner.Games.Unsupported ? Game.Unsupported :
                             scannedFM.Game == FMScanner.Games.TDP ? Game.Thief1 :

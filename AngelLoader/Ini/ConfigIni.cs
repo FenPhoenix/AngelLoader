@@ -320,6 +320,7 @@ namespace AngelLoader.Ini
 
                     foreach (var game in list)
                     {
+                        // TODO: @GENGAMES: Faster to do it manually
                         switch (game.Trim())
                         {
                             case nameof(Game.Thief1):
