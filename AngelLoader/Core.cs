@@ -196,12 +196,8 @@ namespace AngelLoader
                 (!Config.FMArchivePaths.SequenceEqual(sf.OutConfig.FMArchivePaths, StringComparer.OrdinalIgnoreCase) ||
                  Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
 
-            bool gamePathsChanged =
-                !startup &&
-                (!Config.GetGameExe(Thief1).EqualsI(sf.OutConfig.GetGameExe(Thief1)) ||
-                 !Config.GetGameExe(Thief2).EqualsI(sf.OutConfig.GetGameExe(Thief2)) ||
-                 !Config.GetGameExe(Thief3).EqualsI(sf.OutConfig.GetGameExe(Thief3)) ||
-                 !Config.GetGameExe(SS2).EqualsI(sf.OutConfig.GetGameExe(SS2)));
+            bool gamePathsChanged = !startup &&
+                               !Config.GameExes.SequenceEqual(sf.OutConfig.GameExes, StringComparer.OrdinalIgnoreCase);
 
             bool gameOrganizationChanged =
                 !startup && Config.GameOrganization != sf.OutConfig.GameOrganization;
