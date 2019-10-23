@@ -2875,11 +2875,7 @@ namespace AngelLoader.Forms
 
                 foreach (Control c in TagsTabPage.Controls) c.Enabled = false;
 
-                PatchDMLsListBox.Items.Clear();
-                PatchMainPanel.Show();
-                PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
-                PatchFMNotInstalledLabel.Hide();
-                PatchMainPanel.Enabled = false;
+                ShowPatchSection(enable: false);
             }
         }
 
@@ -2890,6 +2886,15 @@ namespace AngelLoader.Forms
             PatchFMNotInstalledLabel.Text = message;
             PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
             PatchFMNotInstalledLabel.Show();
+        }
+
+        private void ShowPatchSection(bool enable)
+        {
+            PatchDMLsListBox.Items.Clear();
+            PatchMainPanel.Show();
+            PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
+            PatchFMNotInstalledLabel.Hide();
+            PatchMainPanel.Enabled = enable;
         }
 
         private void BlankStatsPanelWithMessage(string message)
@@ -2962,7 +2967,11 @@ namespace AngelLoader.Forms
 
             PatchMainPanel.Enabled = true;
 
-            if (!fm.Installed)
+            if (fm.Installed)
+            {
+                ShowPatchSection(enable: true);
+            }
+            else
             {
                 HidePatchSectionWithMessage(LText.PatchTab.FMNotInstalled);
             }
