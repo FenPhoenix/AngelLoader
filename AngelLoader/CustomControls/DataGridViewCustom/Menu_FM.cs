@@ -595,7 +595,7 @@ namespace AngelLoader.CustomControls
             if (fm.Installed || await InstallAndPlay.InstallFM(fm)) InstallAndPlay.OpenFMInEditor(fm);
         }
 
-        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await Core.ScanFMAndRefresh(GetSelectedFM());
+        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await FMScan.ScanFMAndRefresh(GetSelectedFM());
 
         private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await FMAudio.ConvertWAVsTo16Bit(GetSelectedFM(), true);
 

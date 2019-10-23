@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using AngelLoader.CustomControls;
 using AngelLoader.WinAPI;
 using FMScanner;
 using static AngelLoader.Common.Logger;
@@ -80,7 +79,7 @@ namespace AngelLoader.Importing
                     return false;
                 }
 
-                await Core.ScanAndFind(fmsToScan,
+                await FMScan.ScanAndFind(fmsToScan,
                     ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true));
             }
             catch (Exception ex)

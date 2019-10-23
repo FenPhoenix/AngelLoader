@@ -897,10 +897,10 @@ namespace AngelLoader.Forms
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (Core.ViewListGamesNull.Count > 0)
+            if (ViewListGamesNull.Count > 0)
             {
                 Show();
-                await Core.ScanNewFMsForGameType();
+                await FMScan.ScanNewFMsForGameType();
             }
 
             SetFilter();
@@ -2440,7 +2440,7 @@ namespace AngelLoader.Forms
         private async Task RefreshFromDisk()
         {
             var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
-            using (new DisableEvents(this)) await Core.FindNewFMsAndScanForGameType();
+            using (new DisableEvents(this)) await FMScan.FindNewFMsAndScanForGameType();
             await SortAndSetFilter(selectedFM: selFM, forceDisplayFM: true);
         }
 
@@ -2519,7 +2519,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            var success = await Core.ScanFMs(FMsViewList, scanOptions);
+            var success = await FMScan.ScanFMs(FMsViewList, scanOptions);
             if (success) await SortAndSetFilter(forceDisplayFM: true);
         }
 
@@ -2908,7 +2908,7 @@ namespace AngelLoader.Forms
             {
                 using (new DisableKeyPresses(this))
                 {
-                    bool success = await Core.ScanFM(fm, GetDefaultScanOptions());
+                    bool success = await FMScan.ScanFM(fm, GetDefaultScanOptions());
                     if (success) RefreshSelectedFMRowOnly();
                 }
             }
@@ -3339,7 +3339,7 @@ namespace AngelLoader.Forms
 
         private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
         {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
         }
 
         #endregion
@@ -3467,17 +3467,17 @@ namespace AngelLoader.Forms
 
         private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
         {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
         }
 
         private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
         {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
         }
 
         private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
         {
-            await Core.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
         }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)

@@ -368,6 +368,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="FMScan.cs" />
     <Compile Include="Tests\MiscTests.cs" />
     <Compile Include="WinAPI\Dialogs\Interop.cs" />
     <Compile Include="WinAPI\Dialogs\FolderBrowserDialog.cs" />

@@ -164,7 +164,7 @@ namespace AngelLoader.CustomControls
             switch (ProgressTask)
             {
                 case ProgressTasks.ScanAllFMs:
-                    Core.CancelScan();
+                    FMScan.CancelScan();
                     break;
                 case ProgressTasks.InstallFM:
                     InstallAndPlay.CancelInstallFM();
