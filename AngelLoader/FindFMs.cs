@@ -279,8 +279,7 @@ namespace AngelLoader
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = FMDataIniList.Count;
-
-            var checkedList = new List<FanMission>();
+            bool[] checkedArray = new bool[initCount];
 
             for (int ai = 0; ai < fmArchives.Count; ai++)
             {
@@ -302,7 +301,7 @@ namespace AngelLoader
                     // because it then starts complaining that the iterator is never changed in the loop(?!?!)
                     // But only if more than three comparisons are done(?!?!?!?!?!) AND ONLY THEN IF IT'S NOT IN
                     // ITS OWN METHOD(?!?!?!?!?!?!?!?!?!) Argh!
-                    if (!fm.Checked &&
+                    if (!checkedArray[i] &&
                         fm.Archive.IsEmpty() &&
                         (fm.InstalledDir.EqualsI(aRemoveExt ??= archive.RemoveExtension()) ||
                          fm.InstalledDir.EqualsI(aFMSel ??= archive.ToInstDirNameFMSel(false)) ||
@@ -317,16 +316,14 @@ namespace AngelLoader
                         }
                         fm.NoArchive = false;
 
-                        fm.Checked = true;
-                        checkedList.Add(fm);
+                        checkedArray[i] = true;
                         existingFound = true;
                         break;
                     }
-                    else if (!fm.Checked &&
+                    else if (!checkedArray[i] &&
                              !fm.Archive.IsEmpty() && fm.Archive.EqualsI(archive))
                     {
-                        fm.Checked = true;
-                        checkedList.Add(fm);
+                        checkedArray[i] = true;
                         existingFound = true;
                         break;
                     }
@@ -336,16 +333,13 @@ namespace AngelLoader
                     FMDataIniList.Add(new FanMission { Archive = archive, NoArchive = false });
                 }
             }
-
-            // Reset temp bool
-            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
         }
 
         // This takes an explicit initCount because we call this once per game, and we don't want to grow our
         // initCount with every call (we can keep it the initial size and still have this work, so it's faster)
         private static void MergeNewInstalledFMs(List<FanMission> installedList, int initCount)
         {
-            var checkedList = new List<FanMission>();
+            bool[] checkedArray = new bool[initCount];
 
             for (int gFMi = 0; gFMi < installedList.Count; gFMi++)
             {
@@ -361,15 +355,13 @@ namespace AngelLoader
 
                     if (!isEmpty &&
                         // Early-out bool - much faster than checking EqualsI()
-                        !fm.Checked &&
+                        !checkedArray[i] &&
                         !fm.InstalledDir.IsEmpty() &&
                         fm.InstalledDir.EqualsI(gFM.InstalledDir))
                     {
                         fm.Game = gFM.Game;
                         fm.Installed = true;
-                        fm.Checked = true;
-                        // So we only loop through checked FMs when we reset them
-                        checkedList.Add(fm);
+                        checkedArray[i] = true;
                         existingFound = true;
                         break;
                     }
@@ -384,9 +376,6 @@ namespace AngelLoader
                     });
                 }
             }
-
-            // Reset temp bool
-            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
         }
 
         #endregion

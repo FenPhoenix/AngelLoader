@@ -17,10 +17,6 @@ namespace AngelLoader.Common.DataClasses
     // [FenGen:WriteEmptyValues=false]
     internal sealed class FanMission
     {
-        // Used as a performance optimization for merging
-        // [FenGen:DoNotSerialize]
-        internal bool Checked;
-
         // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the
         // normal archive list combine, this will be set to false again. Results in a nice perf gain if there are
         // archive-less FMs in the list.

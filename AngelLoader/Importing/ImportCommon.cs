@@ -153,8 +153,8 @@ namespace AngelLoader.Importing
             }
 
             // Perf
-            var checkedList = new List<FanMission>();
             int initCount = FMDataIniList.Count;
+            bool[] checkedArray = new bool[initCount];
 
             // We can't just send back the list we got in, because we will have deep-copied them to the main list
             var importedFMsInMainList = new List<FanMission>();
@@ -168,7 +168,7 @@ namespace AngelLoader.Importing
                 {
                     var mainFM = FMDataIniList[mainFMi];
 
-                    if (!mainFM.Checked &&
+                    if (!checkedArray[mainFMi] &&
                         (importType == ImportType.DarkLoader &&
                          mainFM.Archive.EqualsI(importedFM.Archive)) ||
                         (importType == ImportType.FMSel &&
@@ -255,10 +255,7 @@ namespace AngelLoader.Importing
 
                         mainFM.MarkedScanned = true;
 
-                        mainFM.Checked = true;
-
-                        // So we only loop through checked FMs when we reset them
-                        checkedList.Add(mainFM);
+                        checkedArray[mainFMi] = true;
 
                         importedFMsInMainList.Add(mainFM);
 
@@ -359,9 +356,6 @@ namespace AngelLoader.Importing
                     //PriorityAdd(newFM, priorityFMData, importType, fields);
                 }
             }
-
-            // Reset temp bool
-            for (int i = 0; i < checkedList.Count; i++) checkedList[i].Checked = false;
 
             return importedFMsInMainList;
         }
