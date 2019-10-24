@@ -178,7 +178,7 @@ namespace FenGen
 
         internal void Init()
         {
-            ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\AngelLoader"));
+            ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
 
 #if Release
             ReadArgsAndDoTasks();

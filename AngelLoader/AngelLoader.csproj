@@ -1,635 +1,142 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{AF85B663-5D2C-481A-B301-D9047D494C2C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>AngelLoader</RootNamespace>
-    <AssemblyName>AngelLoader</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Platforms>AnyCPU;x86</Platforms>
+    <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly</Configurations>
     <StartupObject>AngelLoader.Program</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;Debug</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;Release</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Testing|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <AssemblyTitle>AngelLoader</AssemblyTitle>
+    <Product>AngelLoader</Product>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Description>A fan mission loader and manager for Thief series games.</Description>
+    <Copyright>Copyright © 2018 - 2019</Copyright>
+    <Version>1.1.6</Version>
+    <AssemblyVersion>1.1.6</AssemblyVersion>
+    <FileVersion>1.1.6</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Beta|x86'">
-    <DebugSymbols>true</DebugSymbols>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <DefineConstants>TRACE;Release</DefineConstants>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x86'">
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Beta|x86'">
     <OutputPath>bin\x86\Release_Beta\</OutputPath>
     <DefineConstants>TRACE;Release, ReleaseBeta</DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Public|x86'">
-    <DebugSymbols>true</DebugSymbols>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Public|x86'">
+    <DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
     <OutputPath>bin\x86\Release_Public\</OutputPath>
-    <DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
     <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'RT_StartupOnly|x86'">
-    <DebugSymbols>true</DebugSymbols>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_StartupOnly|x86'">
+    <DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
+    <Optimize>true</Optimize>
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;Debug</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;Release</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Testing|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Release_Testing\</OutputPath>
-    <DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Beta|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Release_Beta\</OutputPath>
-    <DefineConstants>TRACE;Release, ReleaseBeta</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Public|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Release_Public\</OutputPath>
-    <DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'RT_StartupOnly|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\RT_StartupOnly\</OutputPath>
-    <DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
+    <Compile Remove="Forms\Import\ImportFromMultipleLoadersForm.cs" />
+    <Compile Remove="Forms\Import\ImportFromMultipleLoadersForm.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Forms\Import\ImportFromMultipleLoadersForm.resx" />
+    <EmbeddedResource Remove="Forms\Import\ImportFromMultipleLoadersForm.cs" />
+    <EmbeddedResource Remove="Forms\Import\ImportFromMultipleLoadersForm.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="7z.Libs" Version="19.0.1" />
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
+    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.2.231" />
+    <PackageReference Include="xFFmpeg.NET" Version="3.3.3" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FMScanner\FMScanner.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Security" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="FMAudio.cs" />
-    <Compile Include="Common\GameSupport.cs" />
-    <Compile Include="Core.cs" />
-    <Compile Include="Common\Attributes.cs" />
-    <Compile Include="Common\CatAndTags.cs" />
-    <Compile Include="Common\CommonStatic.cs" />
-    <Compile Include="Common\DataClasses\MiscSupporting.cs" />
-    <Compile Include="Common\HTMLNamedEntities.cs" />
-    <Compile Include="Common\DataClasses\Localization.cs" />
-    <Compile Include="Common\Logger.cs" />
-    <Compile Include="Common\Misc.cs" />
-    <Compile Include="Common\Comparers.cs" />
-    <Compile Include="Common\DataClasses\ConfigData.cs" />
-    <Compile Include="Common\Errors.cs" />
-    <Compile Include="Common\DataClasses\FanMissionData.cs" />
-    <Compile Include="CustomControls\ButtonPainter.cs" />
-    <Compile Include="CustomControls\DataGridViewCustom\ColumnResize.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\DataGridViewCustom\Menu_ColumnHeader.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\DataGridViewCustom\Menu_FM.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\RadioButtonCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ComboBoxCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ContextMenuStripCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ArrowButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ListBoxCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\RichTextBoxCustom\GLML.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\RichTextBoxCustom\Interop.cs" />
-    <Compile Include="CustomControls\RichTextBoxCustom\Workarounds.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\SettingsPages\FMDisplayPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\SettingsPages\FMDisplayPage.Designer.cs">
-      <DependentUpon>FMDisplayPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\SettingsPages\Interfaces.cs" />
-    <Compile Include="CustomControls\SettingsPages\OtherPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\SettingsPages\OtherPage.Designer.cs">
-      <DependentUpon>OtherPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\SettingsPages\PathsPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\SettingsPages\PathsPage.Designer.cs">
-      <DependentUpon>PathsPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\Static_LazyLoaded\AddTagLLDropDown.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\AddTagLLMenu.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\AltTitlesLLMenu.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\ChooseReadmeLLPanel.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\ImportFromLLMenu.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\InstallUninstallFMLLButton.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\PlayOriginalGameLLMenu.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\TopRightLLMenu.cs" />
-    <Compile Include="CustomControls\Static_LazyLoaded\ViewHTMLReadmeLLButton.cs" />
-    <Compile Include="CustomControls\TabControlCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ToolStripCustomControls.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ProgressPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\ProgressPanel.Designer.cs">
-      <DependentUpon>ProgressPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\TextBoxCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\TransparentPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\TreeViewCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FindFMs.cs" />
-    <Compile Include="FMCache.cs" />
-    <Compile Include="Forms\Images.cs" />
-    <Compile Include="Forms\Import\User_DL_ImportControls.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\Import\User_DL_ImportControls.Designer.cs">
-      <DependentUpon>User_DL_ImportControls.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Import\User_FMSel_NDL_ImportControls.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\Import\User_FMSel_NDL_ImportControls.Designer.cs">
-      <DependentUpon>User_FMSel_NDL_ImportControls.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\IView.cs" />
-    <Compile Include="Forms\MainForm_InitManual.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MainForm_Progress.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MainForm_ControlPainter.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingsForm.Designer.cs">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InstallAndPlay.cs" />
-    <Compile Include="Forms\FilterRatingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FilterRatingForm.Designer.cs">
-      <DependentUpon>FilterRatingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FilterDateForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FilterDateForm.Designer.cs">
-      <DependentUpon>FilterDateForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FMBackupAndRestore.cs" />
-    <Compile Include="Forms\Import\ImportFromDarkLoaderForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Import\ImportFromDarkLoaderForm.Designer.cs">
-      <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Import\ImportFromMultipleInisForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Import\ImportFromMultipleInisForm.Designer.cs">
-      <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ScanAllFMsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ScanAllFMsForm.Designer.cs">
-      <DependentUpon>ScanAllFMsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Importing\ImportDarkLoader.cs" />
-    <Compile Include="Importing\ImportCommon.cs" />
-    <Compile Include="Importing\ImportFMSel.cs" />
-    <Compile Include="Importing\ImportNDL.cs" />
-    <Compile Include="Ini\ConfigIni.cs" />
-    <Compile Include="Ini\FMData.cs" />
-    <Compile Include="Ini\IniCommon.cs" />
-    <Compile Include="Common\Paths.cs" />
-    <Compile Include="CustomControls\DataGridViewCustom\DataGridViewCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\RichTextBoxCustom\RichTextBoxCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\SplitContainerCustom.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FilterTagsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FilterTagsForm.Designer.cs">
-      <DependentUpon>FilterTagsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Ini\LocalizationIni.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="FMScan.cs" />
-    <Compile Include="Tests\MiscTests.cs" />
-    <Compile Include="WinAPI\Dialogs\Interop.cs" />
-    <Compile Include="WinAPI\Dialogs\FolderBrowserDialog.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WinAPI\FastIO.cs" />
-    <Compile Include="WinAPI\InteropMisc.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\ButtonType.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\ComCtlv6ActivationContext.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\OokiiResources.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\ExpandButtonClickedEventArgs.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\HyperlinkClickedEventArgs.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\NativeMethods.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\ProgressBarState.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\ProgressBarStyle.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\SafeHandles.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialog.designer.cs">
-      <DependentUpon>TaskDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogButtonStyle.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogDesigner.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogIcon.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogItem.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogItem.designer.cs">
-      <DependentUpon>TaskDialogItem.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogItemClickedEventArgs.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogItemCollection.cs" />
-    <Compile Include="WinAPI\Ookii.Dialogs\TaskDialogRadioButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WinAPI\Ookii.Dialogs\TimerEventArgs.cs" />
-    <Compile Include="WinAPI\Taskbar\Interop.cs" />
-    <Compile Include="WinAPI\Taskbar\TaskBarProgress.cs" />
-    <Compile Include="Common\Utility\Extensions.cs" />
-    <Compile Include="Common\Utility\Methods.cs" />
-    <EmbeddedResource Include="CustomControls\ProgressPanel.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>ProgressPanel.cs</DependentUpon>
-      <SubType>Designer</SubType>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\ProgressPanel.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SettingsPages\FMDisplayPage.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>FMDisplayPage.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\FMDisplayPage.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SettingsPages\OtherPage.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>OtherPage.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\OtherPage.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\SettingsPages\PathsPage.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>PathsPage.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\PathsPage.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterRatingForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>FilterRatingForm.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterDateForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>FilterDateForm.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FilterTagsForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>FilterTagsForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Import\ImportFromDarkLoaderForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>ImportFromDarkLoaderForm.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Import\ImportFromMultipleInisForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>ImportFromMultipleInisForm.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Import\User_DL_ImportControls.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>User_DL_ImportControls.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Import\User_FMSel_NDL_ImportControls.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>User_FMSel_NDL_ImportControls.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MainForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>MainForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ScanAllFMsForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>ScanAllFMsForm.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingsForm.resx" Condition="'$(Configuration)' == 'Debug'">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx">
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\AngelLoader.ico" />
-    <Content Include="Resources\FilterIcons\FilterByLastPlayed.png" />
-    <Content Include="Resources\FilterIcons\FilterByReleaseDate.png" />
-    <Content Include="Resources\FilterIcons\ClearFilters.png" />
-    <Content Include="Resources\FilterIcons\FilterByRating.png" />
-    <Content Include="Resources\FilterIcons\FilterByTags.png" />
-    <Content Include="Resources\FilterIcons\FinishedFilterIcon.png" />
-    <Content Include="Resources\FindNewFMs_21.png" />
-    <Content Include="Resources\FinishedOn\Finished_Expert.png" />
-    <Content Include="Resources\FinishedOn\Finished_Expert_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Hard.png" />
-    <Content Include="Resources\FinishedOn\Finished_Hard_Expert.png" />
-    <Content Include="Resources\FinishedOn\Finished_Hard_Expert_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Hard_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal_Expert.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal_Expert_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal_Hard.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Expert_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Normal_Hard_Extreme.png" />
-    <Content Include="Resources\FinishedOn\Finished_Unknown.png" />
-    <Content Include="Resources\GreenCheckCircle.png" />
-    <Content Include="Resources\Import_24.png" />
-    <Content Include="Resources\Install_24.png" />
-    <Content Include="Resources\Play_Original_24.png" />
-    <Content Include="Resources\RatingExample_FMSel_Number.png" />
-    <Content Include="Resources\RatingExample_FMSel_Stars.png" />
-    <Content Include="Resources\RatingExample_NDL.png" />
-    <Content Include="Resources\QuestionMarkCircleRed.png" />
-    <Content Include="Resources\Refresh.png" />
-    <Content Include="Resources\Settings_24.png" />
-    <Content Include="Resources\Shock2_16.png" />
-    <Content Include="Resources\Shock2_21.png" />
-    <Content Include="Resources\Show_Unsupported.png" />
-    <Content Include="Resources\StarRating\Stars0.png" />
-    <Content Include="Resources\StarRating\Stars0_5.png" />
-    <Content Include="Resources\StarRating\Stars1.png" />
-    <Content Include="Resources\StarRating\Stars1_5.png" />
-    <Content Include="Resources\StarRating\Stars2.png" />
-    <Content Include="Resources\StarRating\Stars2_5.png" />
-    <Content Include="Resources\StarRating\Stars3.png" />
-    <Content Include="Resources\StarRating\Stars3_5.png" />
-    <Content Include="Resources\StarRating\Stars4.png" />
-    <Content Include="Resources\StarRating\Stars4_5.png" />
-    <Content Include="Resources\StarRating\Stars5.png" />
-    <Content Include="Resources\Thief1_16.png" />
-    <Content Include="Resources\Thief1_21.png" />
-    <Content Include="Resources\Thief2_16.png" />
-    <Content Include="Resources\Thief2_21.png" />
-    <Content Include="Resources\FilterIcons\UnfinishedFilterIcon.png" />
-    <Content Include="Resources\Thief3_16.png" />
-    <Content Include="Resources\Thief3_21.png" />
-    <Content Include="Resources\Uninstall_24.png" />
-    <Content Include="Resources\ZoomIn_24.png" />
-    <Content Include="Resources\ZoomOut_24.png" />
-    <Content Include="Resources\ZoomReset_24.png" />
-    <None Include="WinAPI\Ookii.Dialogs\LICENSE" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="7z.Libs">
-      <Version>19.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="JetBrains.Annotations">
-      <Version>2019.1.3</Version>
-    </PackageReference>
-    <PackageReference Include="Squid-Box.SevenZipSharp">
-      <Version>1.2.231</Version>
-    </PackageReference>
-    <PackageReference Include="xFFmpeg.NET">
-      <Version>3.3.3</Version>
-    </PackageReference>
-    <PackageReference Include="xunit">
-      <Version>2.4.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.4.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests\TestData\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\FMScanner\FMScanner\FMScanner.csproj">
-      <Project>{c1821715-157d-4a33-8170-2953714bb7c0}</Project>
-      <Name>FMScanner</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release_Beta (
-set destDir="C:\AngelLoader_Beta_Package\"
-) else if $(ConfigurationName) == Release_Public (
-set destDir="C:\AngelLoader_Public_Package\"
-) else (
-set destDir="C:\AngelLoader\"
-)
 
-xcopy "$(TargetDir)AngelLoader.exe" "%25destDir%25" /y
-xcopy "$(TargetDir)AngelLoader.exe.config" "%25destDir%25" /y
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
+  </Target>
 
-xcopy "$(TargetDir)*.dll" "%25destDir%25" /y
-
-rem Dumb hack to get rid of extraneous dll files because ludicrously
-rem xcopy requires you to make an entire file just to list excludes, rather than
-rem specifying them on the command line like someone who is not clinically insane
-del /F "%25destDir%25JetBrains.Annotations.dll"
-del /F "%25destDir%25*xunit*.dll"
-
-xcopy "$(TargetDir)x86\7z.dll"" %25destDir%25" /y
-xcopy "$(TargetDir)x86\7z.dll" "$(TargetDir)" /y
-
-xcopy "$(SolutionDir)ffmpeg" "%25destDir%25ffmpeg\" /y /i
-
-xcopy "$(SolutionDir)temp_transfer_bin\*.*" "%25destDir%25" /y /i
-
-if $(ConfigurationName) == Release_Public (
-xcopy "$(ProjectDir)Languages\English.ini" "%25destDir%25Data\Languages\" /y
-) else (
-xcopy "$(ProjectDir)Languages" "%25destDir%25Data\Languages\" /y /i /e
-)
-
-xcopy "$(SolutionDir)BinReleaseOnly" "%25destDir%25" /y /i /e
-
-xcopy "$(SolutionDir)doc" "%25destDir%25doc\" /y /i /e</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>rem Autogenerate code
-rem ---
-set FenGen="$(SolutionDir)\FenGen\bin\Release\FenGen.exe"
-
-set fenGenArgs=-fmdata -language_t
-
-%25FenGen%25 %25fenGenArgs%25
-rem ---</PreBuildEvent>
-  </PropertyGroup>
 </Project>
