@@ -34,7 +34,10 @@ del /F "%destDir%testhost.dll"
 rem "%system%xcopy" "%SolutionDir%libs\x86\7z.dll" "%destDir%" /y
 rem "%system%xcopy" "%SolutionDir%\libs\x86\7z.dll" "%TargetDir%" /y
 
-"%system%xcopy" "%TargetDir%x86\7z.dll"" %25destDir%25" /y
+rem Inexplicably this doesn't work the first time. You have to build twice to get
+rem the stupid file to copy.
+rem Maybe there's some sort of "DependsOn" thing you can do. I dunno.
+"%system%xcopy" "%TargetDir%x86\7z.dll" "%destDir%" /y
 "%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
 
 "%system%xcopy" "%SolutionDir%ffmpeg" "%destDir%ffmpeg\" /y /i
