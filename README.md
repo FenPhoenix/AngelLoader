@@ -15,10 +15,6 @@ FM loaders have traditionally had FM scanning functionality, and AngelLoader's s
 In short, AngelLoader aims to be a complete successor to DarkLoader, being an all-in-one loader and manager with an intuitive interface, high performance, and many features both classic and modern.
 
 ## Building
-- Download [FMScanner](https://github.com/FenPhoenix/FMScanner)
-    - Add FMScanner.csproj to the AngelLoader solution in Visual Studio
-    - Add a reference from AngelLoader.csproj to FMScanner.csproj in Visual Studio
-    
 - Download a 32-bit build of [FFmpeg](https://ffmpeg.zeranoe.com/builds/) (**must be 32-bit**) or use this [custom minimal build](https://www.dropbox.com/s/hguxwku13kf16zc/ffmpeg_minimal_AngelLoader.zip)
     - For the regular build:
         - Create a folder named "ffmpeg" in the solution base dir.

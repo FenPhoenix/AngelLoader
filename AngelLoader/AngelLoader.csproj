@@ -97,34 +97,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\ProgressPanel.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\FMDisplayPage.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\OtherPage.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\PathsPage.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx">
-    </EmbeddedResource>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\ProgressPanel.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\FMDisplayPage.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\OtherPage.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\PathsPage.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx"/>
 
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
