@@ -525,9 +525,6 @@ namespace AngelLoader
                 }
             }
 
-            // Perf
-            FMsViewList.Capacity = FMDataIniList.Count;
-
             for (var i = 0; i < FMDataIniList.Count; i++)
             {
                 var item = FMDataIniList[i];
