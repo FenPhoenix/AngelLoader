@@ -34,13 +34,6 @@ namespace FenGen
             WriteDest(langClassName, dictList, destFile, langIniFile);
         }
 
-        private static bool GetAttributeName(string name, string match)
-        {
-            // We're just reading raw code, so we have no way to know whether an "Attribute" postfix is being
-            // inferred...
-            return name == match || name + "Attribute" == match;
-        }
-
         private static (string LangClassName, List<NamedDictionary> Dict)
         ReadSource(string file)
         {
