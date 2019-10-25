@@ -14,7 +14,7 @@ namespace FenGen
 {
     internal static class CommonStatic
     {
-        internal static readonly string _solutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
+        internal static readonly string SolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
         internal static MSBuildWorkspace Workspace;
         internal static Solution Solution;
         internal static Project Project;
@@ -25,7 +25,7 @@ namespace FenGen
 
             Workspace = MSBuildWorkspace.Create();
 
-            Solution = await Workspace.OpenSolutionAsync(Path.Combine(_solutionPath, "AngelLoader.sln"));
+            Solution = await Workspace.OpenSolutionAsync(Path.Combine(SolutionPath, "AngelLoader.sln"));
 
             // Throw if we don't find it, it's kind of important
             Project = Solution.Projects.First(x => x.AssemblyName.EqualsI("AngelLoader"));

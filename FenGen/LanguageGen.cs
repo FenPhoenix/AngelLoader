@@ -197,6 +197,8 @@ namespace FenGen
 
             #endregion
 
+            // TODO: Roslyn-ize this
+            // Requires figuring out the idiotic black magic of how to CONSTRUCT code with Roslyn, but hey...
             #region Write dest file
 
             // This may look janky and it may be error-prone to write, but at least I know HOW to write the damn
