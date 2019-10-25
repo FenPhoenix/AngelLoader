@@ -15,6 +15,12 @@ set destDir="C:\AngelLoader_Public_Package\"
 set destDir="C:\AngelLoader\"
 )
 
+rem Inexplicably this doesn't work the first time. You have to build twice to get
+rem the stupid file to copy.
+rem Maybe there's some sort of "DependsOn" thing you can do. I dunno.
+"%system%xcopy" "%TargetDir%x86\7z.dll" "%destDir%" /y
+"%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
+
 "%system%xcopy" "%TargetDir%AngelLoader.exe" "%destDir%" /y
 rem dll.config is for .NET Core 3
 rem "%system%xcopy" "%TargetDir%AngelLoader.dll.config" "%destDir%" /y
@@ -33,12 +39,6 @@ del /F "%destDir%testhost.dll"
 
 rem "%system%xcopy" "%SolutionDir%libs\x86\7z.dll" "%destDir%" /y
 rem "%system%xcopy" "%SolutionDir%\libs\x86\7z.dll" "%TargetDir%" /y
-
-rem Inexplicably this doesn't work the first time. You have to build twice to get
-rem the stupid file to copy.
-rem Maybe there's some sort of "DependsOn" thing you can do. I dunno.
-"%system%xcopy" "%TargetDir%x86\7z.dll" "%destDir%" /y
-"%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
 
 "%system%xcopy" "%SolutionDir%ffmpeg" "%destDir%ffmpeg\" /y /i
 
