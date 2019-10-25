@@ -14,11 +14,11 @@
     <AssemblyTitle>AngelLoader</AssemblyTitle>
     <Product>AngelLoader</Product>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Description>A fan mission loader and manager for Thief series games.</Description>
+    <Description>A standalone fan mission loader and manager for Thief Gold, Thief II, Thief: Deadly Shadows, and System Shock 2.</Description>
     <Copyright>Copyright © 2018 - 2019</Copyright>
-    <Version>1.1.6</Version>
-    <AssemblyVersion>1.1.6</AssemblyVersion>
-    <FileVersion>1.1.6</FileVersion>
+    <Version>1.2</Version>
+    <AssemblyVersion>1.2</AssemblyVersion>
+    <FileVersion>1.2</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
