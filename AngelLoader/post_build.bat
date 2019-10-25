@@ -15,9 +15,6 @@ set destDir="C:\AngelLoader_Public_Package\"
 set destDir="C:\AngelLoader\"
 )
 
-rem Inexplicably this doesn't work the first time. You have to build twice to get
-rem the stupid file to copy.
-rem Maybe there's some sort of "DependsOn" thing you can do. I dunno.
 "%system%xcopy" "%TargetDir%x86\7z.dll" "%destDir%" /y
 "%system%xcopy" "%TargetDir%x86\7z.dll" "%TargetDir%" /y
 
