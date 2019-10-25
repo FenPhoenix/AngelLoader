@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.MSBuild;
 using static FenGen.CommonStatic;
 using static FenGen.Methods;
 
 namespace FenGen
 {
-    internal class LanguageGen
+    internal static class LanguageGen
     {
         private class IniItem
         {
@@ -27,39 +32,60 @@ namespace FenGen
             internal readonly string Name;
         }
 
-        internal void Generate(string sourceFile, string destFile, string langIniFile)
+        internal static void Generate(string destFile, string langIniFile)
         {
-            var (langClassName, dictList) = ReadSource(sourceFile);
+            var (langClassName, dictList) = ReadSource();
 
             WriteDest(langClassName, dictList, destFile, langIniFile);
         }
 
         private static (string LangClassName, List<NamedDictionary> Dict)
-        ReadSource(string file)
+        ReadSource()
         {
+            const string FenGenLocalizationClassAttribute = "FenGenLocalizationClassAttribute";
+
             var retDict = new List<NamedDictionary>();
 
-            var code = File.ReadAllText(file);
-            var tree = CSharpSyntaxTree.ParseText(code);
+            var LocAttrMarkedClasses = new List<ClassDeclarationSyntax>();
 
-            ClassDeclarationSyntax LTextClass = null;
-            foreach (var item in tree.GetCompilationUnitRoot().DescendantNodes())
+            foreach (var t in CU.SyntaxTrees)
             {
-                if (!item.IsKind(SyntaxKind.ClassDeclaration)) continue;
-
-                var classItem = (ClassDeclarationSyntax)item;
-
-                if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0 &&
-                    classItem.AttributeLists[0].Attributes.Any(x =>
-                        GetAttributeName(x.Name.ToString(), "FenGenLocalizationClass")))
+                var sm = CU.GetSemanticModel(t);
+                var nodes = t.GetCompilationUnitRoot().DescendantNodesAndSelf();
+                foreach (var n in nodes)
                 {
-                    LTextClass = classItem;
-                    break;
+                    if (!n.IsKind(SyntaxKind.ClassDeclaration)) continue;
+
+                    var classItem = (ClassDeclarationSyntax)n;
+
+                    if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
+                    {
+                        foreach (var attr in classItem.AttributeLists[0].Attributes)
+                        {
+                            var type = sm.GetTypeInfo(attr).ConvertedType;
+                            if (type.Name == FenGenLocalizationClassAttribute)
+                            {
+                                LocAttrMarkedClasses.Add(classItem);
+                            }
+                        }
+                    }
                 }
             }
 
             // Make the whole thing fail so I can get a fail message in AngelLoader on build
-            if (LTextClass == null) throw new ArgumentNullException();
+            if (LocAttrMarkedClasses.Count > 1)
+            {
+                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenLocalizationClassAttribute + "'.";
+                ThrowErrorAndTerminate(multipleUsesError);
+            }
+            else if (LocAttrMarkedClasses.Count == 0)
+            {
+                const string noneFoundError = "ERROR: No uses of attribute '" + FenGenLocalizationClassAttribute +
+                    "' (No marked localization class found)";
+                ThrowErrorAndTerminate(noneFoundError);
+            }
+
+            var LTextClass = LocAttrMarkedClasses[0];
 
             foreach (var item in LTextClass.DescendantNodes())
             {

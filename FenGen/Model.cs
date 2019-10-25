@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static FenGen.CommonStatic;
 using static FenGen.Methods;
@@ -176,8 +177,10 @@ namespace FenGen
             View = view;
         }
 
-        internal void Init()
+        internal async void Init()
         {
+            await InitWorkspaceStuff();
+
             ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
 
 #if Release
@@ -241,24 +244,20 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.Language))
                         {
                             GenTasks.Add(GenType.Language);
-                            var sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\Localization.cs");
                             var destFile = Path.Combine(ALProjectPath, @"Ini\LocalizationIni.cs");
                             var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
-                            var langGen = new LanguageGen();
-                            langGen.Generate(sourceFile, destFile, langFile);
+                            LanguageGen.Generate(destFile, langFile);
                         }
                         break;
                     case "-language_t":
                         if (!GenTasks.Contains(GenType.Language))
                         {
                             GenTasks.Add(GenType.Language);
-                            var sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\Localization.cs");
                             var destFile = Path.Combine(ALProjectPath, @"Ini\LocalizationIni.cs");
                             var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
                             StateVars.WriteTestLangFile = true;
                             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
-                            var langGen = new LanguageGen();
-                            langGen.Generate(sourceFile, destFile, langFile);
+                            LanguageGen.Generate(destFile, langFile);
                         }
                         break;
                     case "-main_form_backing":

@@ -31,10 +31,22 @@ namespace FenGen
 
             ClassDeclarationSyntax LTextClass = null;
 
+            //var blah = c.GetTypeByMetadataName("AngelLoader.Common.Attributes.FenGenLocalizationClassAttribute");
+            //var blah = c.GetTypeByMetadataName("AngelLoader.Forms.MainForm");
+            var blah = c.GetTypeByMetadataName("AngelLoader.Common.FenGenLocalizationClassAttribute");
+            //var blah=c.GetTypeByMetadataName()
+            if (blah != null)
+            {
+                Trace.WriteLine("***********" + blah.Name);
+            }
+
+            Trace.WriteLine("");
+
             foreach (var t in c.SyntaxTrees)
             {
-                //var blah = c.GetSemanticModel(t);
-                //blah.
+                //var sm = c.GetSemanticModel(t);
+                //var si = sm.GetSymbolInfo((CompilationUnitSyntax)t.GetRoot());
+                //var blah = sm.SyntaxTree.GetRoot()
 
                 var nodes = t.GetCompilationUnitRoot().DescendantNodesAndSelf();
                 foreach (var n in nodes)
@@ -43,13 +55,29 @@ namespace FenGen
 
                     var classItem = (ClassDeclarationSyntax)n;
 
-                    if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0 &&
-                        classItem.AttributeLists[0].Attributes.Any(x =>
-                            GetAttributeName(x.Name.ToString(), "FenGenLocalizationClass")))
+                    if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
                     {
-                        LTextClass = classItem;
-                        goto breakout;
+                        foreach (var attr in classItem.AttributeLists[0].Attributes)
+                        {
+                            var type = c.GetSemanticModel(t).GetTypeInfo(attr).ConvertedType;
+                            //Trace.WriteLine("1111***************" + type.MetadataName);
+                            //Trace.WriteLine(type.Name);
+                            //Trace.WriteLine("");
+                            if (type.Name == "FenGenLocalizationClassAttribute")
+                            {
+                                LTextClass = classItem;
+                                goto breakout;
+                            }
+                        }
                     }
+
+                    //if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0 &&
+                    //    classItem.AttributeLists[0].Attributes.Any(x =>
+                    //        GetAttributeName(x.Name.ToString(), "FenGenLocalizationClass")))
+                    //{
+                    //    LTextClass = classItem;
+                    //    goto breakout;
+                    //}
                 }
             }
 
