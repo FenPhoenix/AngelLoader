@@ -4,7 +4,7 @@ AngelLoader
 <p align="center"><img src="http://fenphoenix.com/github/AngelLoader/main_window_cover_2_600.png" /></p>
 
 ## Description
-AngelLoader is a new fan mission loader for Thief 1, Thief 2, and Thief 3. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a standalone one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
+AngelLoader is a modern, standalone fan mission loader for Thief 1, Thief 2, Thief 3, and System Shock 2. Current loaders for those games (FMSel, NewDarkLoader) must be attached to each game individually, necessitating multiple installs, multiple setting of config options, the inability to manage all your missions in one place, etc. AngelLoader is a one-stop shop for all your missions: every FM can be viewed, played, edited, installed, and uninstalled from one place.
 
 The list of fan missions is filterable by game and many other criteria, and provides the option to either organize games by tab or to treat them as ordinary filters.
 
@@ -27,3 +27,7 @@ In short, AngelLoader aims to be a complete successor to DarkLoader, being an al
 AngelLoader's code is released under the MIT license, except portions which are otherwise specified.
 AngelLoader contains portions of code from the following:
 - Ookii Dialogs by [Sven Groot](http://www.ookii.org/software/dialogs/), modified by [Caio Proiete](https://github.com/caioproiete/ookii-dialogs-winforms), and further modified and slimmed down by myself. This code is released under the BSD 3-clause license.
+
+FMScanner, which has now been forked to be part of AngelLoader, uses portions of code from the following:
+- [SimpleHelpers.Net](https://github.com/khalidsalomao/SimpleHelpers.Net)
+- Modified portions of the [.NET Core](https://github.com/dotnet/corefx) System.IO.Compression code (tuned for scanning performance)
