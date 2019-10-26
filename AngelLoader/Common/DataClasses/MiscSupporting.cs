@@ -337,9 +337,7 @@ namespace AngelLoader.Common.DataClasses
             InstalledName = null;
         }
 
-        private string _installedName;
-        // TODO: Surely I don't need this weird null-ensure thing...?
-        internal string InstalledName { get => _installedName; set => _installedName = value.IsEmpty() ? null : value; }
+        internal string InstalledName;
 
         private int _indexFromTop;
         /// <summary>

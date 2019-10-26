@@ -12,7 +12,6 @@ using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
-using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader
 {
@@ -59,7 +58,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
+                    Ini.Ini.ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
                 }
                 catch (Exception ex)
                 {

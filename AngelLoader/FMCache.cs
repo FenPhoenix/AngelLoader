@@ -15,7 +15,6 @@ using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
-using static AngelLoader.CustomControls.ProgressPanel;
 
 namespace AngelLoader
 {
@@ -112,8 +111,7 @@ namespace AngelLoader
         private static CacheData GetCacheableDataInFMInstalledDir(FanMission fm)
         {
             Debug.Assert(fm.Installed, "fm.Installed is false when it should be true");
-
-
+            
             var thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
 
             var path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);

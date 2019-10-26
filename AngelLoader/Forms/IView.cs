@@ -5,7 +5,6 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using JetBrains.Annotations;
-using static AngelLoader.CustomControls.ProgressPanel;
 
 namespace AngelLoader.Forms
 {

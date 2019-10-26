@@ -430,8 +430,7 @@ namespace AngelLoader
 
             #region Call appropriate refresh method (if applicable)
 
-            // Game paths should have been checked and verified before OK was clicked, so assume they're good
-            // here
+            // Game paths should have been checked and verified before OK was clicked, so assume they're good here
             if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged)
             {
                 if (archivePathsChanged || gamePathsChanged)
@@ -1395,7 +1394,7 @@ namespace AngelLoader
                 case GameOrganization.OneList:
                     Config.ClearAllSelectedFMs();
                     selectedFM.DeepCopyTo(Config.SelFM);
-                    Config.GameTab = GameIndex.Thief1;
+                    Config.GameTab = Thief1;
                     break;
 
                 case GameOrganization.ByTab:

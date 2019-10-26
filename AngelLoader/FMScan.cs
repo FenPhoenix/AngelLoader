@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using FMScanner;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
@@ -21,16 +20,16 @@ namespace AngelLoader
 
         private static CancellationTokenSource ScanCts;
 
-        internal static async Task ScanFMAndRefresh(FanMission fm, ScanOptions scanOptions = null)
+        internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions scanOptions = null)
         {
             if (scanOptions == null) scanOptions = GetDefaultScanOptions();
             bool success = await ScanFM(fm, scanOptions);
             if (success) await Core.View.RefreshSelectedFM(refreshReadme: false);
         }
 
-        internal static Task<bool> ScanFM(FanMission fm, ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions);
+        internal static Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions);
 
-        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, ScanOptions scanOptions, bool markAsScanned = true)
+        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions, bool markAsScanned = true)
         {
             if (fmsToScan == null || fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
             {
@@ -69,7 +68,7 @@ namespace AngelLoader
 
                 #endregion
 
-                static void ReportProgress(ProgressReport pr)
+                static void ReportProgress(FMScanner.ProgressReport pr)
                 {
                     var fmIsZip = pr.FMName.ExtIsArchive();
                     var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
@@ -125,14 +124,14 @@ namespace AngelLoader
 
                 #region Run scanner
 
-                List<ScannedFMData> fmDataList;
+                List<FMScanner.ScannedFMData> fmDataList;
                 try
                 {
-                    var progress = new Progress<ProgressReport>(ReportProgress);
+                    var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
 
                     await Task.Run(() => Paths.CreateOrClearTempPath(Paths.FMScannerTemp));
 
-                    using var scanner = new Scanner { LogFile = Paths.ScannerLogFile, ZipEntryNameEncoding = Encoding.UTF8 };
+                    using var scanner = new FMScanner.Scanner { LogFile = Paths.ScannerLogFile, ZipEntryNameEncoding = Encoding.UTF8 };
                     fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, ScanCts.Token);
                 }
                 catch (OperationCanceledException)
@@ -311,7 +310,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    await ScanFMs(fmsToScan, ScanOptions.FalseDefault(scanGameType: true), markAsScanned: false);
+                    await ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), markAsScanned: false);
                 }
                 catch (Exception ex)
                 {
@@ -327,7 +326,7 @@ namespace AngelLoader
             if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
         }
 
-        internal static async Task ScanAndFind(List<FanMission> fms, ScanOptions scanOptions)
+        internal static async Task ScanAndFind(List<FanMission> fms, FMScanner.ScanOptions scanOptions)
         {
             if (fms.Count == 0) return;
 

@@ -599,10 +599,10 @@ namespace AngelLoader.Ini
                 {
                     config.GameTab = val switch
                     {
-                        nameof(GameIndex.Thief2) => GameIndex.Thief2,
-                        nameof(GameIndex.Thief3) => GameIndex.Thief3,
-                        nameof(GameIndex.SS2) => GameIndex.SS2,
-                        _ => GameIndex.Thief1
+                        nameof(Thief2) => Thief2,
+                        nameof(Thief3) => Thief3,
+                        nameof(SS2) => SS2,
+                        _ => Thief1
                     };
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMInstDir="))

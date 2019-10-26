@@ -11,6 +11,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     internal static class TopRightLLMenu
     {
         private static bool _constructed;
+        // TODO: @Robustness: Is there a way to automatically make this the right length?
         private static readonly bool[] _checkedStates = { true, true, true, true, true };
 
         internal static ContextMenuStripCustom Menu;

@@ -904,7 +904,7 @@ namespace AngelLoader.Forms
             }
 
             SetFilter();
-            if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, keepSelection: KeepSel.TrueNearest))
+            if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
                 await DisplaySelectedFM(true);
             }
@@ -2441,7 +2441,7 @@ namespace AngelLoader.Forms
         {
             var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
             using (new DisableEvents(this)) await FMScan.FindNewFMsAndScanForGameType();
-            await SortAndSetFilter(selectedFM: selFM, forceDisplayFM: true);
+            await SortAndSetFilter(selFM, forceDisplayFM: true);
         }
 
         #endregion
@@ -2476,10 +2476,10 @@ namespace AngelLoader.Forms
             var item = (ToolStripMenuItem)sender;
 
             var game =
-                item == PlayOriginalGameLLMenu.Thief1MenuItem ? GameIndex.Thief1 :
-                item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? GameIndex.Thief2 :
-                item == PlayOriginalGameLLMenu.Thief3MenuItem ? GameIndex.Thief3 :
-                GameIndex.SS2;
+                item == PlayOriginalGameLLMenu.Thief1MenuItem ? Thief1 :
+                item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Thief2 :
+                item == PlayOriginalGameLLMenu.Thief3MenuItem ? Thief3 :
+                SS2;
 
             bool playMP = item == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
