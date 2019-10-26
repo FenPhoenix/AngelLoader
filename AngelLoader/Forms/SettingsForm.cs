@@ -279,6 +279,8 @@ namespace AngelLoader.Forms
 
                 FMDisplayPage.MoveArticlesToEndCheckBox.Checked = config.MoveArticlesToEnd;
 
+                SetArticlesEnabledState();
+
                 #endregion
 
                 #region Date format
@@ -1070,7 +1072,9 @@ namespace AngelLoader.Forms
 
         #region Articles
 
-        private void ArticlesCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void ArticlesCheckBox_CheckedChanged(object sender, EventArgs e) => SetArticlesEnabledState();
+
+        private void SetArticlesEnabledState()
         {
             FMDisplayPage.ArticlesTextBox.Enabled = FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked;
             FMDisplayPage.MoveArticlesToEndCheckBox.Enabled = FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked;
