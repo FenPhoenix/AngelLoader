@@ -58,12 +58,12 @@ namespace AngelLoader.Common
                 int aLen = a.Length;
 
                 // Avoid concats for perf
-                if (!xArticleSet && xTitle.StartsWithI(a) && xTitleLen > aLen && (xTitle[aLen] == ' ' || xTitle[aLen] == '\t'))
+                if (!xArticleSet && xTitle.StartsWithI(a) && xTitleLen > aLen && char.IsWhiteSpace(xTitle[aLen]))
                 {
                     xTitle = xTitle.Substring(aLen + 1);
                     xArticleSet = true;
                 }
-                if (!yArticleSet && yTitle.StartsWithI(a) && yTitleLen > aLen && (yTitle[aLen] == ' ' || yTitle[aLen] == '\t'))
+                if (!yArticleSet && yTitle.StartsWithI(a) && yTitleLen > aLen && char.IsWhiteSpace(yTitle[aLen]))
                 {
                     yTitle = yTitle.Substring(aLen + 1);
                     yArticleSet = true;
