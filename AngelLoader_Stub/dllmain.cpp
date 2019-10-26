@@ -3,6 +3,8 @@
 // I can always come back in here if I ever get more to grips with what I'm doing when it comes to C++ strings
 // and squash this junk down some. Till then, meh.
 
+// TODO: Decide what to do about the explicit play-original stuff and alerting the user etc.
+
 /*
  We have NewDark executables call out to this stub program, which provides the NewDark game with data that has
  been passed to it by AngelLoader via a temp file. We do it this way in order to support AngelLoader being
@@ -31,13 +33,36 @@
  .NET version.
 */
 
+#undef switch_flip_courteous_behavior
+//#define switch_flip_courteous_behavior
+
 #include "AngelLoader_Stub.h"
 #include <string>
 #include <fstream>
 #include <filesystem>
 #include <cstdio>
+#ifdef  switch_flip_courteous_behavior
+#include <algorithm>
+#include <windows.h>
+#define MB_OK 0x00000000L
+#endif
 using std::string;
 namespace fs = std::filesystem;
+
+#ifdef  switch_flip_courteous_behavior
+bool equals_i(string s1, string s2)
+{
+    std::transform(s1.begin(), s1.end(), s1.begin(), toupper);
+    std::transform(s2.begin(), s2.end(), s2.begin(), toupper);
+    return s1 == s2;
+}
+
+int show_alert(LPCSTR message, LPCSTR title, UINT uType)
+{
+    MessageBoxA(nullptr, message, title, uType);
+    return kSelFMRet_ExitGame;
+}
+#endif
 
 extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 {
@@ -61,11 +86,15 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     // Might use if it will help with multi-language stuff
 
     string fm_name, disabled_mods;
+    bool play_original_game = false;
+    bool play_original_game_key_found = false;
 
     // Note: We can't make this into a char* right here, because of pointer and scope weirdness. We have to convert
     // each time later. Probably a better way to do it but whatever. C# cowboy learning the ropes.
     const fs::path args_file = fs::path(fs::temp_directory_path() / "AngelLoader" / "Stub" / "al_stub_args.tmp");
 
+    const string play_original_game_eq = "PlayOriginalGame=";
+    const unsigned int play_original_game_eq_len = play_original_game_eq.length();
     const string fm_name_eq = "SelectedFMName=";
     const unsigned int fm_name_eq_len = fm_name_eq.length();
     const string disabled_mods_eq = "DisabledMods=";
@@ -85,7 +114,16 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     string line;
     while (std::getline(ifs, line))
     {
-        if (line.length() > fm_name_eq_len &&
+        if (line.length() > play_original_game_eq_len &&
+            line.substr(0, play_original_game_eq_len) == play_original_game_eq)
+        {
+#ifdef  switch_flip_courteous_behavior
+            play_original_game_key_found = true;
+            string val = line.substr(play_original_game_eq_len, string::npos);
+            play_original_game = equals_i(val, "true");
+#endif
+        }
+        else if (line.length() > fm_name_eq_len &&
             line.substr(0, fm_name_eq_len) == fm_name_eq)
         {
             fm_name = line.substr(fm_name_eq_len, string::npos);

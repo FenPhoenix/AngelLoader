@@ -89,6 +89,9 @@ namespace AngelLoader
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, args) = sv;
 
+            // TODO: Decide what to do about explicit play-original etc.
+            //WriteStubCommFile(null, playOriginalGame: true);
+
             StartExe(gameExe, gamePath, args);
 
             return true;
@@ -143,17 +146,7 @@ namespace AngelLoader
 
                 args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 
-                try
-                {
-                    // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
-                    using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default);
-                    sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                    sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception writing stub file " + Paths.StubFileName, ex);
-                }
+                WriteStubCommFile(fm, playOriginalGame: false);
             }
 
             StartExe(gameExe, gamePath, args);
@@ -219,6 +212,22 @@ namespace AngelLoader
         #endregion
 
         #region Helpers
+
+        private static void WriteStubCommFile(FanMission fm, bool playOriginalGame)
+        {
+            try
+            {
+                // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
+                using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default);
+                //sw.WriteLine("PlayOriginalGame=" + playOriginalGame);
+                sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+                sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+            }
+            catch (Exception ex)
+            {
+                Log("Exception writing stub file " + Paths.StubFileName, ex);
+            }
+        }
 
         private static void StartExe(string exe, string workingPath, string args)
         {
