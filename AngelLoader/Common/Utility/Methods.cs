@@ -147,6 +147,8 @@ namespace AngelLoader.Common.Utility
 
         #endregion
 
+        #region Get exes
+
         internal static string GetEditorExe(GameIndex game)
         {
             var gameExe = Config.GetGameExe(game);
@@ -170,31 +172,28 @@ namespace AngelLoader.Common.Utility
             return File.Exists(t2MPExe) ? t2MPExe : "";
         }
 
-        internal static ScanOptions GetDefaultScanOptions()
-        {
-            return ScanOptions.FalseDefault(
-                scanTitle: true,
-                scanAuthor: true,
-                scanGameType: true,
-                scanCustomResources: true,
-                scanSize: true,
-                scanReleaseDate: true,
-                scanTags: true);
-        }
+        #endregion
 
-        internal static bool FMCustomResourcesScanned(FanMission fm)
-        {
-            return fm.HasMap != null &&
-                   fm.HasAutomap != null &&
-                   fm.HasScripts != null &&
-                   fm.HasTextures != null &&
-                   fm.HasSounds != null &&
-                   fm.HasObjects != null &&
-                   fm.HasCreatures != null &&
-                   fm.HasMotions != null &&
-                   fm.HasMovies != null &&
-                   fm.HasSubtitles != null;
-        }
+        internal static ScanOptions GetDefaultScanOptions() => ScanOptions.FalseDefault(
+            scanTitle: true,
+            scanAuthor: true,
+            scanGameType: true,
+            scanCustomResources: true,
+            scanSize: true,
+            scanReleaseDate: true,
+            scanTags: true);
+
+        internal static bool FMCustomResourcesScanned(FanMission fm) =>
+            fm.HasMap != null &&
+            fm.HasAutomap != null &&
+            fm.HasScripts != null &&
+            fm.HasTextures != null &&
+            fm.HasSounds != null &&
+            fm.HasObjects != null &&
+            fm.HasCreatures != null &&
+            fm.HasMotions != null &&
+            fm.HasMovies != null &&
+            fm.HasSubtitles != null;
 
         internal static bool FMIsReallyInstalled(FanMission fm)
         {
@@ -226,13 +225,15 @@ namespace AngelLoader.Common.Utility
             //Log("Checking if " + gameExe + " is running. Listing processes...");
             Log("Checking if " + gameExe + " is running.");
 
+            #region Local functions
+
             string t2MPExe = "";
             string T2MPExe()
             {
                 if (!t2MPExe.IsEmpty()) return t2MPExe;
                 if (Config.GetGameExe(Thief2).IsEmpty()) return "";
                 var t2Path = Path.GetDirectoryName(Config.GetGameExe(Thief2));
-                return t2MPExe = (t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe));
+                return t2MPExe = t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe);
             }
 
             static bool AnyGameRunning(string fnb)
@@ -245,6 +246,22 @@ namespace AngelLoader.Common.Utility
 
                 return false;
             }
+
+            static string GetProcessPath(int procId)
+            {
+                using (var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId))
+                {
+                    if (!hProc.IsInvalid)
+                    {
+                        var buffer = new StringBuilder(1024);
+                        int size = buffer.Capacity;
+                        if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer.ToString();
+                    }
+                }
+                return "";
+            }
+
+            #endregion
 
             // We're doing this whole rigamarole because the game might have been started by someone other than
             // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
@@ -282,20 +299,7 @@ namespace AngelLoader.Common.Utility
             return false;
         }
 
-        [PublicAPI]
-        internal static string GetProcessPath(int procId)
-        {
-            using (var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId))
-            {
-                if (!hProc.IsInvalid)
-                {
-                    var buffer = new StringBuilder(1024);
-                    int size = buffer.Capacity;
-                    if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer.ToString();
-                }
-            }
-            return "";
-        }
+        #region FM archives
 
         /// <summary>
         /// Returns the list of FM archive paths, returning subfolders as well if that option is enabled.
@@ -343,6 +347,10 @@ namespace AngelLoader.Common.Utility
             return null;
         }
 
+        #endregion
+
+        #region Set file attributes
+
         internal static void UnSetReadOnly(string fileOnDiskFullPath)
         {
             try
@@ -374,6 +382,8 @@ namespace AngelLoader.Common.Utility
                 Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
             }
         }
+
+        #endregion
 
         #region Tags
 
@@ -447,7 +457,11 @@ namespace AngelLoader.Common.Utility
                 CatAndTags match = null;
                 for (int i = 0; i < existingFMTags.Count; i++)
                 {
-                    if (existingFMTags[i].Category == cat) match = existingFMTags[i];
+                    if (existingFMTags[i].Category == cat)
+                    {
+                        match = existingFMTags[i];
+                        break;
+                    }
                 }
                 if (match == null)
                 {
@@ -466,7 +480,11 @@ namespace AngelLoader.Common.Utility
                 GlobalCatAndTags globalMatch = null;
                 for (int i = 0; i < GlobalTags.Count; i++)
                 {
-                    if (GlobalTags[i].Category.Name == cat) globalMatch = GlobalTags[i];
+                    if (GlobalTags[i].Category.Name == cat)
+                    {
+                        globalMatch = GlobalTags[i];
+                        break;
+                    }
                 }
                 if (globalMatch == null)
                 {
@@ -477,7 +495,15 @@ namespace AngelLoader.Common.Utility
                 {
                     globalMatch.Category.UsedCount++;
 
-                    var ft = FirstTagOrNull(globalMatch.Tags, tag);
+                    GlobalCatOrTag ft = null;
+                    for (int i = 0; i < globalMatch.Tags.Count; i++)
+                    {
+                        if (globalMatch.Tags[i].Name.EqualsI(tag))
+                        {
+                            ft = globalMatch.Tags[i];
+                            break;
+                        }
+                    }
                     if (ft == null)
                     {
                         globalMatch.Tags.Add(new GlobalCatOrTag { Name = tag, UsedCount = 1 });
@@ -490,17 +516,6 @@ namespace AngelLoader.Common.Utility
 
                 #endregion
             }
-        }
-
-        // Avoid the overhead of FirstOrDefault()
-        private static GlobalCatOrTag FirstTagOrNull(List<GlobalCatOrTag> tagsList, string tag)
-        {
-            for (int i = 0; i < tagsList.Count; i++)
-            {
-                if (tagsList[i].Name.EqualsI(tag)) return tagsList[i];
-            }
-
-            return null;
         }
 
         #endregion
