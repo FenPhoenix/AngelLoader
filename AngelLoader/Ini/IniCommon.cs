@@ -3,6 +3,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.Common;
@@ -96,6 +98,31 @@ namespace AngelLoader.Ini
             catch (ArgumentOutOfRangeException)
             {
                 return null;
+            }
+        }
+
+        private static readonly ReaderWriterLockSlim FMDataIniRWLock = new ReaderWriterLockSlim();
+        internal static void WriteFullFMDataIni()
+        {
+            try
+            {
+                FMDataIniRWLock.EnterWriteLock();
+                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception writing FM data ini", ex);
+            }
+            finally
+            {
+                try
+                {
+                    FMDataIniRWLock.ExitWriteLock();
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception exiting " + nameof(FMDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
+                }
             }
         }
     }

@@ -27,7 +27,7 @@ namespace AngelLoader
             if (!startup)
             {
                 // Make sure we don't lose anything when we re-find!
-                Core.WriteFullFMDataIni();
+                Ini.Ini.WriteFullFMDataIni();
 
                 // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from
                 // the list when it's in an indeterminate state (which can cause a selection change (bad) and/or
@@ -563,7 +563,7 @@ namespace AngelLoader
                     !item.Archive.IsEmpty() ? item.Archive.RemoveExtension() :
                     item.InstalledDir;
                 item.CommentSingleLine = item.Comment.FromRNEscapes().ToSingleLineComment(100);
-                AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
+                FMTags.AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
 
                 FMsViewList.Add(item);
             }

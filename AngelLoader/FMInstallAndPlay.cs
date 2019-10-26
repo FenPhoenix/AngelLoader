@@ -16,12 +16,11 @@ using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
-using static AngelLoader.CustomControls.ProgressPanel;
 using static AngelLoader.FMBackupAndRestore;
 
 namespace AngelLoader
 {
-    internal static class InstallAndPlay
+    internal static class FMInstallAndPlay
     {
         private static CancellationTokenSource ExtractCts;
 
@@ -630,7 +629,7 @@ namespace AngelLoader
 
             fm.Installed = true;
 
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
 
             try
             {
@@ -920,7 +919,7 @@ namespace AngelLoader
                     fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
                 }
 
-                Core.WriteFullFMDataIni();
+                Ini.Ini.WriteFullFMDataIni();
                 await Core.View.RefreshSelectedFM(refreshReadme: false);
             }
             catch (Exception ex)

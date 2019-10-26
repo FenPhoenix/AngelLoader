@@ -167,7 +167,7 @@ namespace AngelLoader.CustomControls
                     FMScan.CancelScan();
                     break;
                 case ProgressTasks.InstallFM:
-                    InstallAndPlay.CancelInstallFM();
+                    FMInstallAndPlay.CancelInstallFM();
                     break;
             }
         }

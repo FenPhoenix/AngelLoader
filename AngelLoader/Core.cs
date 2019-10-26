@@ -6,7 +6,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
@@ -16,7 +15,6 @@ using AngelLoader.Forms;
 using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
-using FMScanner;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.GameSupport;
@@ -1333,137 +1331,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Add/remove tag
-
-        internal static List<string> ListMatchingTags(string searchText)
-        {
-            // Smartasses who try to break it get nothing
-            if (searchText.CountChars(':') > 1 || searchText.IsWhiteSpace()) return null;
-
-            (string First, string Second) text;
-
-            var index = searchText.IndexOf(':');
-            if (index > -1)
-            {
-                text.First = searchText.Substring(0, index).Trim();
-                text.Second = searchText.Substring(index + 1).Trim();
-            }
-            else
-            {
-                text.First = searchText.Trim();
-                text.Second = "";
-            }
-
-            // Shut up, it works
-            var list = new List<string>();
-            foreach (var gCat in GlobalTags)
-            {
-                if (gCat.Category.Name.ContainsI(text.First))
-                {
-                    if (gCat.Tags.Count == 0)
-                    {
-                        if (gCat.Category.Name != "misc") list.Add(gCat.Category.Name + ":");
-                    }
-                    else
-                    {
-                        foreach (var gTag in gCat.Tags)
-                        {
-                            if (!text.Second.IsWhiteSpace() && !gTag.Name.ContainsI(text.Second)) continue;
-                            if (gCat.Category.Name == "misc")
-                            {
-                                if (text.Second.IsWhiteSpace() && !gCat.Category.Name.ContainsI(text.First))
-                                {
-                                    list.Add(gTag.Name);
-                                }
-                            }
-                            else
-                            {
-                                list.Add(gCat.Category.Name + ": " + gTag.Name);
-                            }
-                        }
-                    }
-                }
-                // if, not else if - we want to display found tags both categorized and uncategorized
-                if (gCat.Category.Name == "misc")
-                {
-                    foreach (var gTag in gCat.Tags)
-                    {
-                        if (gTag.Name.ContainsI(searchText)) list.Add(gTag.Name);
-                    }
-                }
-            }
-
-            list.Sort(StringComparer.OrdinalIgnoreCase);
-
-            return list;
-        }
-
-        internal static void AddTagToFM(FanMission fm, string catAndTag)
-        {
-            AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
-            UpdateFMTagsString(fm);
-            WriteFullFMDataIni();
-        }
-
-        internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText)
-        {
-            if (tagText.IsEmpty()) return false;
-
-            // Parent node (category)
-            if (catText.IsEmpty())
-            {
-                // TODO: These messageboxes are annoying, but they prevent accidental deletion.
-                // Figure out something better.
-                var cont = View.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
-                if (!cont) return false;
-
-                var cat = fm.Tags.FirstOrDefault(x => x.Category == tagText);
-                if (cat != null)
-                {
-                    fm.Tags.Remove(cat);
-                    UpdateFMTagsString(fm);
-
-                    // TODO: Profile the FirstOrDefaults and see if I should make them for loops
-                    var globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
-                    if (globalCat != null && !globalCat.Category.IsPreset)
-                    {
-                        if (globalCat.Category.UsedCount > 0) globalCat.Category.UsedCount--;
-                        if (globalCat.Category.UsedCount == 0) GlobalTags.Remove(globalCat);
-                    }
-                }
-            }
-            // Child node (tag)
-            else
-            {
-                var cont = View.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
-                if (!cont) return false;
-
-                var cat = fm.Tags.FirstOrDefault(x => x.Category == catText);
-                var tag = cat?.Tags.FirstOrDefault(x => x == tagText);
-                if (tag != null)
-                {
-                    cat.Tags.Remove(tag);
-                    if (cat.Tags.Count == 0) fm.Tags.Remove(cat);
-                    UpdateFMTagsString(fm);
-
-                    var globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
-                    var globalTag = globalCat?.Tags.FirstOrDefault(x => x.Name == tagText);
-                    if (globalTag != null && !globalTag.IsPreset)
-                    {
-                        if (globalTag.UsedCount > 0) globalTag.UsedCount--;
-                        if (globalTag.UsedCount == 0) globalCat.Tags.Remove(globalTag);
-                        if (globalCat.Tags.Count == 0) GlobalTags.Remove(globalCat);
-                    }
-                }
-            }
-
-            WriteFullFMDataIni();
-
-            return true;
-        }
-
-        #endregion
-
         internal static void UpdateConfig(
             FormWindowState mainWindowState,
             Size mainWindowSize,
@@ -1541,32 +1408,6 @@ namespace AngelLoader
             #endregion
 
             Config.ReadmeZoomFactor = readmeZoomFactor;
-        }
-
-        private static readonly ReaderWriterLockSlim FMDataIniRWLock = new ReaderWriterLockSlim();
-
-        internal static void WriteFullFMDataIni()
-        {
-            try
-            {
-                FMDataIniRWLock.EnterWriteLock();
-                WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
-            }
-            catch (Exception ex)
-            {
-                Log("Exception writing FM data ini", ex);
-            }
-            finally
-            {
-                try
-                {
-                    FMDataIniRWLock.ExitWriteLock();
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception exiting " + nameof(FMDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
-                }
-            }
         }
 
         internal static void Shutdown()

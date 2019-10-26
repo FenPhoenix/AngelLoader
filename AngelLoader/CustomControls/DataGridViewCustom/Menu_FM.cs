@@ -583,16 +583,16 @@ namespace AngelLoader.CustomControls
             if (RowCount == 0 || SelectedRows.Count == 0) e.Cancel = true;
         }
 
-        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
+        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
 
-        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: true);
+        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: true);
 
-        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(GetSelectedFM());
+        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(GetSelectedFM());
 
         private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
         {
             var fm = GetSelectedFM();
-            if (fm.Installed || await InstallAndPlay.InstallFM(fm)) InstallAndPlay.OpenFMInEditor(fm);
+            if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
         }
 
         private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await FMScan.ScanFMAndRefresh(GetSelectedFM());
@@ -608,7 +608,7 @@ namespace AngelLoader.CustomControls
                 if (RatingMenuItem.DropDownItems[i] != sender) continue;
                 GetSelectedFM().Rating = i - 1;
                 Owner.RefreshSelectedFM(refreshReadme: false);
-                Core.WriteFullFMDataIni();
+                Ini.Ini.WriteFullFMDataIni();
                 break;
             }
         }
@@ -652,7 +652,7 @@ namespace AngelLoader.CustomControls
             }
 
             Owner.RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)

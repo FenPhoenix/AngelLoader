@@ -250,7 +250,7 @@ namespace AngelLoader
 
                         // Don't clear the tags, because the user could have added a bunch and we should only
                         // add to those, not overwrite them
-                        if (gameSup) AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
+                        if (gameSup) FMTags.AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
                     }
 
                     sel.MarkedScanned = markAsScanned;
@@ -260,7 +260,7 @@ namespace AngelLoader
 
                 #endregion
 
-                Core.WriteFullFMDataIni();
+                Ini.Ini.WriteFullFMDataIni();
             }
             catch (Exception ex)
             {

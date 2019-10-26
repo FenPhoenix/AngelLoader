@@ -30,7 +30,7 @@ namespace AngelLoader.Tests
             // -Either modify InstallFM so that we pass it everything it uses, or else just fill out every global
             // it uses with correct values for our test
 
-            //bool success = await InstallAndPlay.InstallFM(fm);
+            //bool success = await FMInstallAndPlay.InstallFM(fm);
 
             // TODO: Assert audio files have been converted properly
         }
@@ -64,7 +64,7 @@ namespace AngelLoader.Tests
             cat5.Tags.Add("thing_shaped");
             fm.Tags.Add(cat5);
 
-            Methods.UpdateFMTagsString(fm);
+            FMTags.UpdateFMTagsString(fm);
 
             Assert.Equal(
                 "author:Tannar,author:Random_Taffer,contest:10 rooms,length:short,series,misc:campaign,misc:atmospheric,misc:other protagonist,misc:water,misc:thing_shaped",

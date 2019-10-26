@@ -39,6 +39,7 @@ namespace AngelLoader.Common.Utility
             return !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
         }
 
+        [PublicAPI]
         internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
 
         /// <summary>
@@ -47,6 +48,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="value"></param>
         /// <param name="substring"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static bool ContainsI(this string value, string substring) => value.Contains(substring, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
@@ -55,8 +57,10 @@ namespace AngelLoader.Common.Utility
         /// <param name="list"></param>
         /// <param name="str"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static bool ContainsI(this List<string> list, string str) => list.Contains(str, StringComparison.OrdinalIgnoreCase);
 
+        [PublicAPI]
         internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
@@ -65,6 +69,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="array"></param>
         /// <param name="str"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static bool ContainsI(this string[] array, string str) => array.Contains(str, StringComparison.OrdinalIgnoreCase);
 
         [PublicAPI]
@@ -88,6 +93,7 @@ namespace AngelLoader.Common.Utility
             return false;
         }
 
+        [PublicAPI]
         internal static bool Contains(this string[] value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
         {
             for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, stringComparison)) return true;

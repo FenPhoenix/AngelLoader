@@ -1007,7 +1007,7 @@ namespace AngelLoader.Forms
                 if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM().Game))
                 {
                     e.SuppressKeyPress = true;
-                    await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), askConfIfRequired: true);
+                    await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), askConfIfRequired: true);
                 }
             }
             else if (e.KeyCode == Keys.Escape)
@@ -2432,7 +2432,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            await InstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
+            await FMInstallAndPlay.InstallIfNeededAndPlay(fm, askConfIfRequired: true);
         }
 
         #endregion
@@ -2450,9 +2450,9 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
+        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
 
-        private async void PlayFMButton_Click(object sender, EventArgs e) => await InstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
+        private async void PlayFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 
         #region Play original game
 
@@ -2483,7 +2483,7 @@ namespace AngelLoader.Forms
 
             bool playMP = item == PlayOriginalGameLLMenu.Thief2MPMenuItem;
 
-            InstallAndPlay.PlayOriginalGame(game, playMP);
+            FMInstallAndPlay.PlayOriginalGame(game, playMP);
         }
 
         #endregion
@@ -3365,7 +3365,7 @@ namespace AngelLoader.Forms
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {
             EditFMTitleTextBox.Text = ((ToolStripMenuItem)sender).Text;
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
@@ -3378,7 +3378,7 @@ namespace AngelLoader.Forms
         private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
@@ -3391,7 +3391,7 @@ namespace AngelLoader.Forms
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3404,7 +3404,7 @@ namespace AngelLoader.Forms
                 : (DateTime?)null;
 
             RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
@@ -3412,7 +3412,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
             RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3425,7 +3425,7 @@ namespace AngelLoader.Forms
                 : (DateTime?)null;
 
             RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
@@ -3433,7 +3433,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
             RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
@@ -3446,7 +3446,7 @@ namespace AngelLoader.Forms
         private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3456,7 +3456,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
             RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -3466,7 +3466,7 @@ namespace AngelLoader.Forms
             FMsDGV.GetSelectedFM().Rating = rating;
             FMsDGV.SetRatingMenuItemChecked(rating);
             RefreshSelectedFMRowOnly();
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
@@ -3491,7 +3491,7 @@ namespace AngelLoader.Forms
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
             await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
         }
 
@@ -3521,7 +3521,7 @@ namespace AngelLoader.Forms
         private void CommentTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Core.WriteFullFMDataIni();
+            Ini.Ini.WriteFullFMDataIni();
         }
 
         #endregion
@@ -3560,7 +3560,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            var list = Core.ListMatchingTags(AddTagTextBox.Text);
+            var list = FMTags.GetMatchingTagsList(AddTagTextBox.Text);
             if (list == null)
             {
                 HideAddTagDropDown();
@@ -3625,7 +3625,7 @@ namespace AngelLoader.Forms
             var fm = FMsDGV.GetSelectedFM();
             var tv = TagsTreeView;
 
-            var success = Core.RemoveTagFromFM(fm, tv.SelectedNode.Parent?.Text, tv.SelectedNode?.Text);
+            var success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode.Parent?.Text, tv.SelectedNode?.Text);
             if (!success) return;
 
             DisplayFMTags(fm.Tags);
@@ -3645,7 +3645,7 @@ namespace AngelLoader.Forms
         {
             if (catAndTag.CountChars(':') <= 1 && !catAndTag.IsWhiteSpace())
             {
-                Core.AddTagToFM(fm, catAndTag);
+                FMTags.AddTagToFM(fm, catAndTag);
                 DisplayFMTags(fm.Tags);
             }
 
