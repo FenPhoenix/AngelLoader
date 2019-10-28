@@ -27,7 +27,7 @@ namespace AngelLoader.Ini
         // Not autogenerating these, because there's too many special cases, and adding stuff by hand is not that
         // big of a deal really.
 
-        private static ColumnData ConvertStringToColumnData(string str)
+        private static ColumnData? ConvertStringToColumnData(string str)
         {
             str = str.Trim().Trim(',');
 
@@ -98,7 +98,7 @@ namespace AngelLoader.Ini
                     tag = item.Trim();
                 }
 
-                CatAndTags match = null;
+                CatAndTags? match = null;
                 for (int i = 0; i < tagsList.Count; i++)
                 {
                     if (tagsList[i].Category == cat)
@@ -889,7 +889,8 @@ namespace AngelLoader.Ini
         // This is faster with reflection removed.
         internal static void WriteConfigIni(ConfigData config, string fileName)
         {
-            string commaCombine<T>(List<T> list)
+            // @R#_FALSE_POSITIVE: notnull is a valid C# 8 keyword
+            static string commaCombine<T>(List<T> list) where T : notnull
             {
                 var ret = "";
                 for (var i = 0; i < list.Count; i++)
@@ -905,7 +906,7 @@ namespace AngelLoader.Ini
 
             // TODO: Figure out a better way to be fast without this dopey manual code. Code generation?
 
-            string commaCombineGameFlags(Game games)
+            static string commaCombineGameFlags(Game games)
             {
                 var ret = "";
 
@@ -938,7 +939,7 @@ namespace AngelLoader.Ini
                 return ret;
             }
 
-            string commaCombineFinishedStates(FinishedState finished)
+            static string commaCombineFinishedStates(FinishedState finished)
             {
                 var ret = "";
 
@@ -960,7 +961,7 @@ namespace AngelLoader.Ini
 
             #endregion
 
-            StreamWriter sw = null;
+            StreamWriter? sw = null;
             try
             {
                 sw = new StreamWriter(fileName, false, Encoding.UTF8);
@@ -1003,6 +1004,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.UseShortGameTabNames) + "=" + config.UseShortGameTabNames);
 
                 sw.WriteLine(nameof(config.EnableArticles) + "=" + config.EnableArticles);
+                // @R#_FALSE_POSITIVE: See commaCombine() above
                 sw.WriteLine(nameof(config.Articles) + "=" + commaCombine(config.Articles));
                 sw.WriteLine(nameof(config.MoveArticlesToEnd) + "=" + config.MoveArticlesToEnd);
 

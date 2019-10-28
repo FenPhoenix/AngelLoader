@@ -61,12 +61,12 @@ namespace AngelLoader.Common
                 if (regKey == null || (regKey is int regKeyDefault && regKeyDefault == -1) || !(regKey is string))
                 {
                     Log("Couldn't find the registry key that points to Thief: Deadly Shadows options directory (SaveGamePath key)");
-                    return null;
+                    return "";
                 }
                 else
                 {
                     var regKeyStr = regKey.ToString();
-                    string soIni = null;
+                    string soIni = "";
                     try
                     {
                         soIni = Path.Combine(regKeyStr, "Options", "SneakyOptions.ini");
@@ -78,14 +78,14 @@ namespace AngelLoader.Common
                             "or was otherwise not a valid path (Path.Combine() failed).\r\n" +
                             "Registry key path was: " + regKeyStr + "\r\n" +
                             "Full path was: " + soIni, ex);
-                        return null;
+                        return "";
                     }
                     if (!File.Exists(soIni))
                     {
                         Log("Found the registry key but couldn't find SneakyOptions.ini.\r\n" +
                             "Registry key path was: " + regKeyStr + "\r\n" +
                             "Full path was: " + soIni);
-                        return null;
+                        return "";
                     }
 
                     return soIni;
@@ -106,7 +106,7 @@ namespace AngelLoader.Common
                 Log("Unexpected exception occurred in " + nameof(GetSneakyOptionsIni), ex);
             }
 
-            return null;
+            return "";
         }
 
         internal const string StubFileName = "AngelLoader_Stub.dll";

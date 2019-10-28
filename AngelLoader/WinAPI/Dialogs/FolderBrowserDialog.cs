@@ -65,12 +65,12 @@ namespace AngelLoader.WinAPI.Dialogs
         /// Gets or sets the initial directory displayed when the dialog is shown.
         /// If null, empty, or otherwise invalid, the default directory will be used.
         /// </summary>
-        public string InitialDirectory { get; set; }
+        public string InitialDirectory { get; set; } = "";
 
         /// <summary>
         /// Gets the selected directory. If <see cref="MultiSelect"/> is true, this will be the first selected directory.
         /// </summary>
-        public string DirectoryName { get; private set; }
+        public string DirectoryName { get; private set; } = "";
 
         /// <summary>
         /// Gets the selected directories. If <see cref="MultiSelect"/> is false, this will contain only one directory.
@@ -114,12 +114,12 @@ namespace AngelLoader.WinAPI.Dialogs
         /// Gets or sets the initial directory displayed when the dialog is shown.
         /// If null, empty, or otherwise invalid, the default directory will be used.
         /// </summary>
-        public string InitialDirectory { get; set; }
+        public string InitialDirectory { get; set; } = "";
 
         /// <summary>
         /// Gets the selected directory. If <see cref="MultiSelect"/> is true, this will be the first selected directory.
         /// </summary>
-        public string DirectoryName { get; private set; }
+        public string DirectoryName { get; private set; } = "";
 
         /// <summary>
         /// Gets the selected directories. If <see cref="MultiSelect"/> is false, this will contain only one directory.
@@ -152,7 +152,7 @@ namespace AngelLoader.WinAPI.Dialogs
 
         protected override bool RunDialog(IntPtr hwndOwner)
         {
-            NativeFolderBrowserDialog dialog = null;
+            NativeFolderBrowserDialog? dialog = null;
             try
             {
                 dialog = new NativeFolderBrowserDialog();

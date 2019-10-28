@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -161,7 +162,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="value"></param>
         /// <returns></returns>
         [ContractAnnotation("null => true")]
-        internal static bool IsEmpty(this string value) => string.IsNullOrEmpty(value);
+        internal static bool IsEmpty([NotNullWhen(false)] this string? value) => string.IsNullOrEmpty(value);
 
         /// <summary>
         /// Returns true if <paramref name="value"/> is null, empty, or whitespace.
@@ -169,7 +170,7 @@ namespace AngelLoader.Common.Utility
         /// <param name="value"></param>
         /// <returns></returns>
         [ContractAnnotation("null => true")]
-        internal static bool IsWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
+        internal static bool IsWhiteSpace([NotNullWhen(false)] this string? value) => string.IsNullOrWhiteSpace(value);
 
         #endregion
 
@@ -342,7 +343,6 @@ namespace AngelLoader.Common.Utility
         /// <returns></returns>
         internal static string RemoveExtension(this string fileName)
         {
-            if (fileName == null) return null;
             int i;
             return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
         }
@@ -356,7 +356,6 @@ namespace AngelLoader.Common.Utility
         /// <returns></returns>
         internal static string GetFileNameFast(this string path)
         {
-            if (path == null) return null;
             int i;
             return (i = path.LastIndexOf(Path.DirectorySeparatorChar)) == -1 ? path : path.Substring(i + 1);
         }
@@ -368,8 +367,6 @@ namespace AngelLoader.Common.Utility
         /// <returns></returns>
         internal static string GetFileNameFastBothDSC(this string path)
         {
-            if (path == null) return null;
-
             int i1 = path.LastIndexOf('\\');
             int i2 = path.LastIndexOf('/');
 
@@ -380,8 +377,6 @@ namespace AngelLoader.Common.Utility
 
         internal static string GetDirNameFast(this string path)
         {
-            if (path == null) return null;
-
             path = path.TrimEnd('\\', '/');
 
             int i1 = path.LastIndexOf('\\');
@@ -422,16 +417,16 @@ namespace AngelLoader.Common.Utility
 
         #region Escaping
 
-        internal static string FromRNEscapes(this string value) => value?.Replace(@"\r\n", "\r\n").Replace(@"\\", "\\");
+        internal static string FromRNEscapes(this string value) => value.Replace(@"\r\n", "\r\n").Replace(@"\\", "\\");
 
-        internal static string ToRNEscapes(this string value) => value?.Replace("\\", @"\\").Replace("\r\n", @"\r\n");
+        internal static string ToRNEscapes(this string value) => value.Replace("\\", @"\\").Replace("\r\n", @"\r\n");
 
         /// <summary>
         /// For text that goes in menus: "&" is a reserved character, so escape "&" to "&&"
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static string EscapeAmpersands(this string value) => value?.Replace("&", "&&");
+        internal static string EscapeAmpersands(this string value) => value.Replace("&", "&&");
 
         /// <summary>
         /// Just puts a \ in front of each character in the string.
@@ -453,9 +448,9 @@ namespace AngelLoader.Common.Utility
 
         #region Forward/backslash conversion
 
-        internal static string ToForwardSlashes(this string value) => value?.Replace('\\', '/');
+        internal static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
 
-        internal static string ToBackSlashes(this string value) => value?.Replace('/', '\\');
+        internal static string ToBackSlashes(this string value) => value.Replace('/', '\\');
 
         #endregion
 
@@ -621,7 +616,7 @@ namespace AngelLoader.Common.Utility
 
         internal static void CancelIfNotDisposed(this CancellationTokenSource value)
         {
-            try { value?.Cancel(); } catch (ObjectDisposedException) { }
+            try { value.Cancel(); } catch (ObjectDisposedException) { }
         }
     }
 }

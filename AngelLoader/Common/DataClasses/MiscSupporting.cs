@@ -334,10 +334,10 @@ namespace AngelLoader.Common.DataClasses
         internal void Clear()
         {
             IndexFromTop = 0;
-            InstalledName = null;
+            InstalledName = "";
         }
 
-        internal string InstalledName;
+        internal string InstalledName = "";
 
         private int _indexFromTop;
         /// <summary>

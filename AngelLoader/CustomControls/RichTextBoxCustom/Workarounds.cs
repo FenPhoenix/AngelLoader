@@ -15,10 +15,10 @@ namespace AngelLoader.CustomControls
 
         private SCROLLINFO _scrollInfo;
 
-        private Timer tmrAutoScroll;
+        private readonly Timer tmrAutoScroll = new Timer { Interval = 10 };
         private int scrollIncrementY;
         // No picture is used currently
-        private PictureBox pbGlyph;
+        private readonly PictureBox pbGlyph = new PictureBox { Size = new Size(26, 26), Visible = false };
         private bool endOnMouseUp;
         private int WheelAccum;
 
@@ -33,9 +33,7 @@ namespace AngelLoader.CustomControls
 
         private void InitReaderMode()
         {
-            tmrAutoScroll = new Timer { Interval = 10 };
             tmrAutoScroll.Tick += tmrAutoScroll_Tick;
-            pbGlyph = new PictureBox { Size = new Size(26, 26), Visible = false };
             Controls.Add(pbGlyph);
         }
 

@@ -14,12 +14,18 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
         // TODO: @Robustness: Is there a way to automatically make this the right length?
         private static readonly bool[] _checkedStates = { true, true, true, true, true };
 
-        internal static ContextMenuStripCustom Menu;
-        private static ToolStripMenuItem StatsMenuItem;
-        private static ToolStripMenuItem EditFMMenuItem;
-        private static ToolStripMenuItem CommentMenuItem;
-        private static ToolStripMenuItem TagsMenuItem;
-        private static ToolStripMenuItem PatchMenuItem;
+        private static ContextMenuStripCustom? _menu;
+        internal static ContextMenuStripCustom Menu
+        {
+            get => _menu!;
+            private set => _menu = value;
+        }
+
+        private static ToolStripMenuItem? StatsMenuItem;
+        private static ToolStripMenuItem? EditFMMenuItem;
+        private static ToolStripMenuItem? CommentMenuItem;
+        private static ToolStripMenuItem? TagsMenuItem;
+        private static ToolStripMenuItem? PatchMenuItem;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -99,11 +105,11 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
 
             if (!_constructed) return;
 
-            StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
-            EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
-            CommentMenuItem.Text = LText.CommentTab.TabText.EscapeAmpersands();
-            TagsMenuItem.Text = LText.TagsTab.TabText.EscapeAmpersands();
-            PatchMenuItem.Text = LText.PatchTab.TabText.EscapeAmpersands();
+            StatsMenuItem!.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
+            EditFMMenuItem!.Text = LText.EditFMTab.TabText.EscapeAmpersands();
+            CommentMenuItem!.Text = LText.CommentTab.TabText.EscapeAmpersands();
+            TagsMenuItem!.Text = LText.TagsTab.TabText.EscapeAmpersands();
+            PatchMenuItem!.Text = LText.PatchTab.TabText.EscapeAmpersands();
         }
     }
 }

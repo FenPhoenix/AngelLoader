@@ -110,7 +110,7 @@ namespace AngelLoader.Forms
 
         #region Find box
 
-        private static TreeNode FindFirstCatNodeStartingWithText(TreeView tv, string text)
+        private static TreeNode? FindFirstCatNodeStartingWithText(TreeView tv, string text)
         {
             foreach (TreeNode node in tv.Nodes)
             {
@@ -119,7 +119,7 @@ namespace AngelLoader.Forms
             return null;
         }
 
-        private static TreeNode FindFirstCatAndTagStartingWithText(TreeView tv, string tag, string cat)
+        private static TreeNode? FindFirstCatAndTagStartingWithText(TreeView tv, string tag, string cat)
         {
             foreach (TreeNode node in tv.Nodes)
             {
@@ -192,9 +192,9 @@ namespace AngelLoader.Forms
 
             // Parent node = category, child node = tag
             bool isCategory = o.SelectedNode.Parent == null;
-            var cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent.Text;
+            var cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
 
-            CatAndTags match = null;
+            CatAndTags? match = null;
             for (int i = 0; i < filteredTags.Count; i++)
             {
                 if (filteredTags[i].Category == cat) match = filteredTags[i];
@@ -251,7 +251,7 @@ namespace AngelLoader.Forms
                 var tag = cat?.Tags.FirstOrDefault(x => x == tv.SelectedNode.Text);
                 if (tag != null)
                 {
-                    cat.Tags.Remove(tag);
+                    cat!.Tags.Remove(tag);
                     if (cat.Tags.Count == 0) tags.Remove(cat);
                 }
             }
@@ -289,7 +289,7 @@ namespace AngelLoader.Forms
 
             // Parent node = category, child node = tag
             bool isCategory = o.SelectedNode.Parent == null;
-            var cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent.Text;
+            var cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
 
             bool tagInAny = false;
 
@@ -303,7 +303,7 @@ namespace AngelLoader.Forms
                 };
 
 
-                CatAndTags match = null;
+                CatAndTags? match = null;
                 for (int i = 0; i < filteredTags.Count; i++)
                 {
                     if (filteredTags[i].Category == cat) match = filteredTags[i];
@@ -311,7 +311,7 @@ namespace AngelLoader.Forms
                 if (match != null)
                 {
                     if (isCategory || match.Tags.ContainsI(o.SelectedNode.Text) ||
-                        (match.Category == o.SelectedNode.Parent.Text && match.Tags.Count == 0))
+                        (match.Category == o.SelectedNode.Parent!.Text && match.Tags.Count == 0))
                     {
                         tagInAny = true;
                         break;

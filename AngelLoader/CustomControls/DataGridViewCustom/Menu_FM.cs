@@ -14,7 +14,7 @@ namespace AngelLoader.CustomControls
     {
         #region Backing fields
 
-        private bool _fmMenuCreated;
+        private bool _fmMenuConstructed;
         private bool _installUninstallMenuEnabled;
         private bool _sayInstall;
         private bool _sayShockEd;
@@ -33,63 +33,63 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        private IDisposable[] FMContextMenuDisposables;
+        private IDisposable[]? FMContextMenuDisposables;
 
         #region FM context menu fields
 
-        private ContextMenuStrip FMContextMenu;
+        private ContextMenuStrip? FMContextMenu;
 
-        private ToolStripMenuItem PlayFMMenuItem;
-        private ToolStripMenuItem PlayFMInMPMenuItem;
-        private ToolStripMenuItem PlayFMAdvancedMenuItem;
-        private ToolStripMenuItem InstallUninstallMenuItem;
+        private ToolStripMenuItem? PlayFMMenuItem;
+        private ToolStripMenuItem? PlayFMInMPMenuItem;
+        private ToolStripMenuItem? PlayFMAdvancedMenuItem;
+        private ToolStripMenuItem? InstallUninstallMenuItem;
 
-        private ToolStripSeparator OpenInDromEdSep;
+        private ToolStripSeparator? OpenInDromEdSep;
 
-        private ToolStripMenuItem OpenInDromEdMenuItem;
+        private ToolStripMenuItem? OpenInDromEdMenuItem;
 
-        private ToolStripSeparator FMContextMenuSep1;
+        private ToolStripSeparator? FMContextMenuSep1;
 
-        private ToolStripMenuItem ScanFMMenuItem;
-        private ToolStripMenuItem ConvertAudioRCSubMenu;
-        private ToolStripMenuItem ConvertWAVsTo16BitMenuItem;
-        private ToolStripMenuItem ConvertOGGsToWAVsMenuItem;
+        private ToolStripMenuItem? ScanFMMenuItem;
+        private ToolStripMenuItem? ConvertAudioRCSubMenu;
+        private ToolStripMenuItem? ConvertWAVsTo16BitMenuItem;
+        private ToolStripMenuItem? ConvertOGGsToWAVsMenuItem;
 
-        private ToolStripSeparator FMContextMenuSep2;
+        private ToolStripSeparator? FMContextMenuSep2;
 
-        private ToolStripMenuItem RatingMenuItem;
-        private ToolStripMenuItem RatingMenuUnrated;
-        private ToolStripMenuItem Rating0MenuItem;
-        private ToolStripMenuItem Rating1MenuItem;
-        private ToolStripMenuItem Rating2MenuItem;
-        private ToolStripMenuItem Rating3MenuItem;
-        private ToolStripMenuItem Rating4MenuItem;
-        private ToolStripMenuItem Rating5MenuItem;
-        private ToolStripMenuItem Rating6MenuItem;
-        private ToolStripMenuItem Rating7MenuItem;
-        private ToolStripMenuItem Rating8MenuItem;
-        private ToolStripMenuItem Rating9MenuItem;
-        private ToolStripMenuItem Rating10MenuItem;
+        private ToolStripMenuItem? RatingMenuItem;
+        private ToolStripMenuItem? RatingMenuUnrated;
+        private ToolStripMenuItem? Rating0MenuItem;
+        private ToolStripMenuItem? Rating1MenuItem;
+        private ToolStripMenuItem? Rating2MenuItem;
+        private ToolStripMenuItem? Rating3MenuItem;
+        private ToolStripMenuItem? Rating4MenuItem;
+        private ToolStripMenuItem? Rating5MenuItem;
+        private ToolStripMenuItem? Rating6MenuItem;
+        private ToolStripMenuItem? Rating7MenuItem;
+        private ToolStripMenuItem? Rating8MenuItem;
+        private ToolStripMenuItem? Rating9MenuItem;
+        private ToolStripMenuItem? Rating10MenuItem;
 
-        private ToolStripMenuItem FinishedOnMenuItem;
-        private ContextMenuStripCustom FinishedOnMenu;
-        private ToolStripMenuItem FinishedOnNormalMenuItem;
-        private ToolStripMenuItem FinishedOnHardMenuItem;
-        private ToolStripMenuItem FinishedOnExpertMenuItem;
-        private ToolStripMenuItem FinishedOnExtremeMenuItem;
-        private ToolStripMenuItem FinishedOnUnknownMenuItem;
+        private ToolStripMenuItem? FinishedOnMenuItem;
+        private ContextMenuStripCustom? FinishedOnMenu;
+        private ToolStripMenuItem? FinishedOnNormalMenuItem;
+        private ToolStripMenuItem? FinishedOnHardMenuItem;
+        private ToolStripMenuItem? FinishedOnExpertMenuItem;
+        private ToolStripMenuItem? FinishedOnExtremeMenuItem;
+        private ToolStripMenuItem? FinishedOnUnknownMenuItem;
 
-        private ToolStripSeparator FMContextMenuSep3;
+        private ToolStripSeparator? FMContextMenuSep3;
 
-        private ToolStripMenuItem WebSearchMenuItem;
+        private ToolStripMenuItem? WebSearchMenuItem;
 
         #endregion
 
         #region Private methods
 
-        private void InitFMContextMenu()
+        private void ConstructFMContextMenu()
         {
-            if (_fmMenuCreated) return;
+            if (_fmMenuConstructed) return;
 
             #region Instantiation
 
@@ -264,7 +264,7 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            _fmMenuCreated = true;
+            _fmMenuConstructed = true;
 
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             SetRatingMenuItemChecked(_rating);
@@ -273,12 +273,12 @@ namespace AngelLoader.CustomControls
 
         private void UncheckFinishedOnMenuItemsExceptUnknown()
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                FinishedOnNormalMenuItem.Checked = false;
-                FinishedOnHardMenuItem.Checked = false;
-                FinishedOnExpertMenuItem.Checked = false;
-                FinishedOnExtremeMenuItem.Checked = false;
+                FinishedOnNormalMenuItem!.Checked = false;
+                FinishedOnHardMenuItem!.Checked = false;
+                FinishedOnExpertMenuItem!.Checked = false;
+                FinishedOnExtremeMenuItem!.Checked = false;
             }
             else
             {
@@ -295,7 +295,7 @@ namespace AngelLoader.CustomControls
 
         private void SetFMMenuTextToLocalized()
         {
-            if (!_fmMenuCreated) return;
+            if (!_fmMenuConstructed) return;
 
             #region Get current FM info
 
@@ -309,8 +309,8 @@ namespace AngelLoader.CustomControls
 
             #region Play
 
-            PlayFMMenuItem.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
-            PlayFMInMPMenuItem.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer.EscapeAmpersands();
+            PlayFMMenuItem!.Text = LText.FMsList.FMMenu_PlayFM.EscapeAmpersands();
+            PlayFMInMPMenuItem!.Text = LText.FMsList.FMMenu_PlayFM_Multiplayer.EscapeAmpersands();
 
             //PlayFMAdvancedMenuItem.Text = LText.FMsList.FMMenu_PlayFMAdvanced.EscapeAmpersands();
             //Core.SetDefaultConfigVarNamesToLocalized();
@@ -320,63 +320,63 @@ namespace AngelLoader.CustomControls
             SetConcreteInstallUninstallMenuItemText(sayInstall);
             SetConcreteDromEdMenuItemText(sayShockEd);
 
-            ScanFMMenuItem.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
+            ScanFMMenuItem!.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
 
             #region Convert audio submenu
 
-            ConvertAudioRCSubMenu.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
-            ConvertWAVsTo16BitMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit.EscapeAmpersands();
-            ConvertOGGsToWAVsMenuItem.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs.EscapeAmpersands();
+            ConvertAudioRCSubMenu!.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
+            ConvertWAVsTo16BitMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit.EscapeAmpersands();
+            ConvertOGGsToWAVsMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs.EscapeAmpersands();
 
             #endregion
 
             #region Rating submenu
 
-            RatingMenuItem.Text = LText.FMsList.FMMenu_Rating.EscapeAmpersands();
-            RatingMenuUnrated.Text = LText.Global.Unrated.EscapeAmpersands();
+            RatingMenuItem!.Text = LText.FMsList.FMMenu_Rating.EscapeAmpersands();
+            RatingMenuUnrated!.Text = LText.Global.Unrated.EscapeAmpersands();
 
             #endregion
 
             #region Finished On submenu
 
-            FinishedOnMenuItem.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
+            FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
 
             bool fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
             bool fmIsSS2 = selFM != null && selFM.Game == Game.SS2;
 
-            FinishedOnNormalMenuItem.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
-            FinishedOnHardMenuItem.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
-            FinishedOnExpertMenuItem.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
-            FinishedOnExtremeMenuItem.Text = (fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme).EscapeAmpersands();
-            FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown.EscapeAmpersands();
+            FinishedOnNormalMenuItem!.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
+            FinishedOnHardMenuItem!.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
+            FinishedOnExpertMenuItem!.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
+            FinishedOnExtremeMenuItem!.Text = (fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme).EscapeAmpersands();
+            FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown.EscapeAmpersands();
 
             #endregion
 
-            WebSearchMenuItem.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
+            WebSearchMenuItem!.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
         }
 
         internal void UpdateRatingList(bool fmSelStyle)
         {
-            if (!_fmMenuCreated) return;
+            if (!_fmMenuConstructed) return;
 
             for (int i = 0; i <= 10; i++)
             {
                 string num = (fmSelStyle ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture);
-                RatingMenuItem.DropDownItems[i + 1].Text = num;
+                RatingMenuItem!.DropDownItems[i + 1].Text = num;
             }
         }
 
         internal ContextMenuStrip GetFinishedOnMenu()
         {
-            InitFMContextMenu();
-            return FinishedOnMenu;
+            ConstructFMContextMenu();
+            return FinishedOnMenu!;
         }
 
         internal void SetPlayFMMenuItemEnabled(bool value)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                PlayFMMenuItem.Enabled = value;
+                PlayFMMenuItem!.Enabled = value;
             }
             else
             {
@@ -386,9 +386,9 @@ namespace AngelLoader.CustomControls
 
         internal void SetPlayFMInMPMenuItemVisible(bool value)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                PlayFMInMPMenuItem.Visible = value;
+                PlayFMInMPMenuItem!.Visible = value;
             }
             else
             {
@@ -398,9 +398,9 @@ namespace AngelLoader.CustomControls
 
         internal void SetInstallUninstallMenuItemEnabled(bool value)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                InstallUninstallMenuItem.Enabled = value;
+                InstallUninstallMenuItem!.Enabled = value;
             }
             else
             {
@@ -410,7 +410,7 @@ namespace AngelLoader.CustomControls
 
         internal void SetInstallUninstallMenuItemText(bool sayInstall)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
                 SetConcreteInstallUninstallMenuItemText(sayInstall);
             }
@@ -422,10 +422,10 @@ namespace AngelLoader.CustomControls
 
         internal void SetOpenInDromEdVisible(bool value)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                OpenInDromEdSep.Visible = value;
-                OpenInDromEdMenuItem.Visible = value;
+                OpenInDromEdSep!.Visible = value;
+                OpenInDromEdMenuItem!.Visible = value;
             }
             else
             {
@@ -436,7 +436,7 @@ namespace AngelLoader.CustomControls
 
         internal void SetOpenInDromEdMenuItemText(bool sayShockEd)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
                 SetConcreteDromEdMenuItemText(sayShockEd);
             }
@@ -448,9 +448,9 @@ namespace AngelLoader.CustomControls
 
         internal void SetScanFMMenuItemEnabled(bool value)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                ScanFMMenuItem.Enabled = value;
+                ScanFMMenuItem!.Enabled = value;
             }
             else
             {
@@ -460,9 +460,9 @@ namespace AngelLoader.CustomControls
 
         internal void SetConvertAudioRCSubMenuEnabled(bool value)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                ConvertAudioRCSubMenu.Enabled = value;
+                ConvertAudioRCSubMenu!.Enabled = value;
             }
             else
             {
@@ -474,9 +474,9 @@ namespace AngelLoader.CustomControls
         {
             value = value.Clamp(-1, 10);
 
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                ((ToolStripMenuItem)RatingMenuItem.DropDownItems[value + 1]).Checked = true;
+                ((ToolStripMenuItem)RatingMenuItem!.DropDownItems[value + 1]).Checked = true;
             }
             else
             {
@@ -486,14 +486,14 @@ namespace AngelLoader.CustomControls
 
         internal void SetFinishedOnMenuItemChecked(FinishedOn finishedOn, bool value)
         {
-            if (value && !_fmMenuCreated) _finishedOnUnknownChecked = false;
+            if (value && !_fmMenuConstructed) _finishedOnUnknownChecked = false;
 
             switch (finishedOn)
             {
                 case FinishedOn.Normal:
-                    if (_fmMenuCreated)
+                    if (_fmMenuConstructed)
                     {
-                        FinishedOnNormalMenuItem.Checked = value;
+                        FinishedOnNormalMenuItem!.Checked = value;
                     }
                     else
                     {
@@ -501,9 +501,9 @@ namespace AngelLoader.CustomControls
                     }
                     break;
                 case FinishedOn.Hard:
-                    if (_fmMenuCreated)
+                    if (_fmMenuConstructed)
                     {
-                        FinishedOnHardMenuItem.Checked = value;
+                        FinishedOnHardMenuItem!.Checked = value;
                     }
                     else
                     {
@@ -511,9 +511,9 @@ namespace AngelLoader.CustomControls
                     }
                     break;
                 case FinishedOn.Expert:
-                    if (_fmMenuCreated)
+                    if (_fmMenuConstructed)
                     {
-                        FinishedOnExpertMenuItem.Checked = value;
+                        FinishedOnExpertMenuItem!.Checked = value;
                     }
                     else
                     {
@@ -521,9 +521,9 @@ namespace AngelLoader.CustomControls
                     }
                     break;
                 case FinishedOn.Extreme:
-                    if (_fmMenuCreated)
+                    if (_fmMenuConstructed)
                     {
-                        FinishedOnExtremeMenuItem.Checked = value;
+                        FinishedOnExtremeMenuItem!.Checked = value;
                     }
                     else
                     {
@@ -538,25 +538,25 @@ namespace AngelLoader.CustomControls
             switch (finishedOn)
             {
                 case FinishedOn.Normal:
-                    if (_fmMenuCreated) FinishedOnNormalMenuItem.Text = text;
+                    if (_fmMenuConstructed) FinishedOnNormalMenuItem!.Text = text;
                     break;
                 case FinishedOn.Hard:
-                    if (_fmMenuCreated) FinishedOnHardMenuItem.Text = text;
+                    if (_fmMenuConstructed) FinishedOnHardMenuItem!.Text = text;
                     break;
                 case FinishedOn.Expert:
-                    if (_fmMenuCreated) FinishedOnExpertMenuItem.Text = text;
+                    if (_fmMenuConstructed) FinishedOnExpertMenuItem!.Text = text;
                     break;
                 case FinishedOn.Extreme:
-                    if (_fmMenuCreated) FinishedOnExtremeMenuItem.Text = text;
+                    if (_fmMenuConstructed) FinishedOnExtremeMenuItem!.Text = text;
                     break;
             }
         }
 
         internal void SetFinishedOnUnknownMenuItemChecked(bool value)
         {
-            if (_fmMenuCreated)
+            if (_fmMenuConstructed)
             {
-                FinishedOnUnknownMenuItem.Checked = value;
+                FinishedOnUnknownMenuItem!.Checked = value;
             }
             else
             {
@@ -603,7 +603,7 @@ namespace AngelLoader.CustomControls
 
         private void RatingMenuItemsClick(object sender, EventArgs e)
         {
-            for (int i = 0; i < RatingMenuItem.DropDownItems.Count; i++)
+            for (int i = 0; i < RatingMenuItem!.DropDownItems.Count; i++)
             {
                 if (RatingMenuItem.DropDownItems[i] != sender) continue;
                 GetSelectedFM().Rating = i - 1;
@@ -618,7 +618,7 @@ namespace AngelLoader.CustomControls
             var s = (ToolStripMenuItem)sender;
             if (!s.Checked) return;
 
-            foreach (ToolStripMenuItem item in RatingMenuItem.DropDownItems) if (item != s) item.Checked = false;
+            foreach (ToolStripMenuItem item in RatingMenuItem!.DropDownItems) if (item != s) item.Checked = false;
         }
 
         private void FinishedOnMenuItems_Click(object sender, EventArgs e)
@@ -637,7 +637,7 @@ namespace AngelLoader.CustomControls
             else
             {
                 uint at = 1;
-                foreach (ToolStripMenuItem item in FinishedOnMenu.Items)
+                foreach (ToolStripMenuItem item in FinishedOnMenu!.Items)
                 {
                     if (item == FinishedOnUnknownMenuItem) continue;
 
@@ -646,7 +646,7 @@ namespace AngelLoader.CustomControls
                 }
                 if (fm.FinishedOn > 0)
                 {
-                    FinishedOnUnknownMenuItem.Checked = false;
+                    FinishedOnUnknownMenuItem!.Checked = false;
                     fm.FinishedOnUnknown = false;
                 }
             }
@@ -657,7 +657,7 @@ namespace AngelLoader.CustomControls
 
         private void FinishedOnUnknownMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            if (FinishedOnUnknownMenuItem.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
+            if (FinishedOnUnknownMenuItem!.Checked) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
         private void WebSearchMenuItem_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(GetSelectedFM().Title);

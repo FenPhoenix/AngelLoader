@@ -132,7 +132,7 @@ namespace AngelLoader.Importing
         //}
 
         internal static List<FanMission>
-        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields = null
+        MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport? fields = null
             /*, bool addMergedFMsToPriorityList = false*/)
         {
             if (fields == null)

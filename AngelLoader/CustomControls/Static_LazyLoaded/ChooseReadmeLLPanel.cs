@@ -11,10 +11,15 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        private static Panel Panel;
-        internal static ListBoxCustom ListBox;
-        private static FlowLayoutPanel OKButtonFLP;
-        private static Button OKButton;
+        private static Panel? Panel;
+        private static ListBoxCustom? _listBox;
+        internal static ListBoxCustom ListBox
+        {
+            get => _listBox!;
+            private set => _listBox = value;
+        }
+        private static FlowLayoutPanel? OKButtonFLP;
+        private static Button? OKButton;
 
         internal static void Construct(MainForm form, Control container)
         {
@@ -68,23 +73,23 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
 
         internal static void Localize()
         {
-            if (_constructed) OKButton.SetTextAutoSize(LText.Global.OK, 75);
+            if (_constructed) OKButton!.SetTextAutoSize(LText.Global.OK, 75);
         }
 
         [UsedImplicitly] // Actually used in an ifdef block
         internal static void SuspendPanelLayout()
         {
-            if (_constructed) Panel.SuspendLayout();
+            if (_constructed) Panel!.SuspendLayout();
         }
 
         internal static void ResumePanelLayout()
         {
-            if (_constructed) Panel.ResumeLayout();
+            if (_constructed) Panel!.ResumeLayout();
         }
 
         internal static void ShowPanel(bool value)
         {
-            if (_constructed) Panel.Visible = value;
+            if (_constructed) Panel!.Visible = value;
         }
     }
 }

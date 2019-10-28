@@ -7,7 +7,12 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     {
         internal static bool Constructed { get; private set; }
 
-        internal static ListBox ListBox;
+        private static ListBox? _listBox;
+        internal static ListBox ListBox
+        {
+            get => _listBox!;
+            private set => _listBox = value;
+        }
 
         internal static void Construct(MainForm form, Control container)
         {

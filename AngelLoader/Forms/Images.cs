@@ -6,26 +6,26 @@ namespace AngelLoader.Forms
     // This class and everything accessible inside it needs to be public for the designers to recognize it
     public static class Images
     {
-        private static Bitmap _Thief1_16;
-        private static Bitmap _Thief2_16;
-        private static Bitmap _Thief3_16;
-        private static Bitmap _Shock2_16;
+        private static Bitmap? _Thief1_16;
+        private static Bitmap? _Thief2_16;
+        private static Bitmap? _Thief3_16;
+        private static Bitmap? _Shock2_16;
 
-        private static Bitmap _Thief1_21;
-        private static Bitmap _Thief2_21;
-        private static Bitmap _Thief3_21;
-        private static Bitmap _Shock2_21;
+        private static Bitmap? _Thief1_21;
+        private static Bitmap? _Thief2_21;
+        private static Bitmap? _Thief3_21;
+        private static Bitmap? _Shock2_21;
 
-        private static Icon _AngelLoader;
-        private static Bitmap _Install_24;
-        private static Bitmap _Uninstall_24;
-        private static Bitmap _ZoomIn;
-        private static Bitmap _ZoomOut;
-        private static Bitmap _ZoomReset;
-        private static Bitmap _Refresh;
-        private static Bitmap _RatingExample_NDL;
-        private static Bitmap _RatingExample_FMSel_Stars;
-        private static Bitmap _RatingExample_FMSel_Number;
+        private static Icon? _AngelLoader;
+        private static Bitmap? _Install_24;
+        private static Bitmap? _Uninstall_24;
+        private static Bitmap? _ZoomIn;
+        private static Bitmap? _ZoomOut;
+        private static Bitmap? _ZoomReset;
+        private static Bitmap? _Refresh;
+        private static Bitmap? _RatingExample_NDL;
+        private static Bitmap? _RatingExample_FMSel_Stars;
+        private static Bitmap? _RatingExample_FMSel_Number;
 
         private static bool c_Thief1_16;
         private static bool c_Thief2_16;
@@ -54,7 +54,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Thief1_16)
                 {
-                    return _Thief1_16;
+                    return _Thief1_16!;
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Thief2_16)
                 {
-                    return _Thief2_16;
+                    return _Thief2_16!;
                 }
                 else
                 {
@@ -86,7 +86,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Thief3_16)
                 {
-                    return _Thief3_16;
+                    return _Thief3_16!;
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Shock2_16)
                 {
-                    return _Shock2_16;
+                    return _Shock2_16!;
                 }
                 else
                 {
@@ -118,7 +118,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Thief1_21)
                 {
-                    return _Thief1_21;
+                    return _Thief1_21!;
                 }
                 else
                 {
@@ -134,7 +134,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Thief2_21)
                 {
-                    return _Thief2_21;
+                    return _Thief2_21!;
                 }
                 else
                 {
@@ -150,7 +150,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Thief3_21)
                 {
-                    return _Thief3_21;
+                    return _Thief3_21!;
                 }
                 else
                 {
@@ -166,7 +166,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Shock2_21)
                 {
-                    return _Shock2_21;
+                    return _Shock2_21!;
                 }
                 else
                 {
@@ -182,7 +182,7 @@ namespace AngelLoader.Forms
             {
                 if (c_AngelLoader)
                 {
-                    return _AngelLoader;
+                    return _AngelLoader!;
                 }
                 else
                 {
@@ -198,7 +198,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Install_24)
                 {
-                    return _Install_24;
+                    return _Install_24!;
                 }
                 else
                 {
@@ -214,7 +214,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Uninstall_24)
                 {
-                    return _Uninstall_24;
+                    return _Uninstall_24!;
                 }
                 else
                 {
@@ -230,7 +230,7 @@ namespace AngelLoader.Forms
             {
                 if (c_ZoomIn)
                 {
-                    return _ZoomIn;
+                    return _ZoomIn!;
                 }
                 else
                 {
@@ -246,7 +246,7 @@ namespace AngelLoader.Forms
             {
                 if (c_ZoomOut)
                 {
-                    return _ZoomOut;
+                    return _ZoomOut!;
                 }
                 else
                 {
@@ -262,7 +262,7 @@ namespace AngelLoader.Forms
             {
                 if (c_ZoomReset)
                 {
-                    return _ZoomReset;
+                    return _ZoomReset!;
                 }
                 else
                 {
@@ -278,7 +278,7 @@ namespace AngelLoader.Forms
             {
                 if (c_Refresh)
                 {
-                    return _Refresh;
+                    return _Refresh!;
                 }
                 else
                 {
@@ -294,7 +294,7 @@ namespace AngelLoader.Forms
             {
                 if (c_RatingExample_NDL)
                 {
-                    return _RatingExample_NDL;
+                    return _RatingExample_NDL!;
                 }
                 else
                 {
@@ -310,7 +310,7 @@ namespace AngelLoader.Forms
             {
                 if (c_RatingExample_FMSel_Stars)
                 {
-                    return _RatingExample_FMSel_Stars;
+                    return _RatingExample_FMSel_Stars!;
                 }
                 else
                 {
@@ -326,7 +326,7 @@ namespace AngelLoader.Forms
             {
                 if (c_RatingExample_FMSel_Number)
                 {
-                    return _RatingExample_FMSel_Number;
+                    return _RatingExample_FMSel_Number!;
                 }
                 else
                 {

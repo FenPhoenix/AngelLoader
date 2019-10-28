@@ -11,6 +11,8 @@
     <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
+    <Nullable>enable</Nullable>
+    
     <AssemblyTitle>AngelLoader</AssemblyTitle>
     <Product>AngelLoader</Product>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -69,6 +71,10 @@
   <ItemGroup>
     <PackageReference Include="7z.Libs" Version="19.0.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
+    <PackageReference Include="Nullable" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.2.231" />
     <PackageReference Include="xFFmpeg.NET" Version="3.3.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -97,20 +103,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\ProgressPanel.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\FMDisplayPage.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\OtherPage.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\PathsPage.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx"/>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx"/>
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\ProgressPanel.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\FMDisplayPage.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\OtherPage.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\PathsPage.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx" />
 
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

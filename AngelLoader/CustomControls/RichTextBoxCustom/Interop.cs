@@ -64,7 +64,7 @@ namespace AngelLoader.CustomControls
             internal int msg = 0;
             internal IntPtr wParam = IntPtr.Zero;
             internal IntPtr lParam = IntPtr.Zero;
-            internal CHARRANGE charrange = null;
+            internal CHARRANGE? charrange = null;
         }
 
         [StructLayout(LayoutKind.Sequential), UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]

@@ -27,7 +27,9 @@ namespace AngelLoader
 {
     internal static class Core
     {
+#pragma warning disable CS8618
         internal static IView View;
+#pragma warning restore CS8618
 
         internal static void Init(Task configTask)
         {
@@ -153,6 +155,7 @@ namespace AngelLoader
             else
             {
                 // async, but same as above
+                // View won't be null here
                 View.FinishInitAndShow();
             }
         }
@@ -476,7 +479,7 @@ namespace AngelLoader
                 Column.LastPlayed => new FMLastPlayedComparer(sortDirection),
                 Column.DisabledMods => new FMDisabledModsComparer(sortDirection),
                 Column.Comment => new FMCommentComparer(sortDirection),
-                _ => (IComparer<FanMission>)null
+                _ => (IComparer<FanMission>?)null
             };
 
             Debug.Assert(comparer != null, nameof(comparer) + "==null: column not being handled");
@@ -515,8 +518,11 @@ namespace AngelLoader
             {
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
                 //if (error != Error.None) return error;
-                Config.SetFMInstallPath(Thief3, path);
-                Config.T3UseCentralSaves = useCentralSaves;
+                if (error == Error.None)
+                {
+                    Config.SetFMInstallPath(Thief3, path);
+                    Config.T3UseCentralSaves = useCentralSaves;
+                }
             }
             if (ss2Exists)
             {
@@ -562,7 +568,7 @@ namespace AngelLoader
                 return CreateAndReturn(Path.Combine(gamePath, "FMs"));
             }
 
-            string path = null;
+            string path = "";
 
             using (var sr = new StreamReader(camModIni))
             {
@@ -619,7 +625,7 @@ namespace AngelLoader
             {
                 // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
                 MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (soError, false, null);
+                return (soError, false, "");
             }
 
             bool ignoreSavesKeyFound = false;
@@ -673,7 +679,7 @@ namespace AngelLoader
 
             return fmInstPathFound
                 ? (Error.None, !ignoreSavesKey, fmInstPath)
-                : (Error.T3FMInstPathNotFound, false, null);
+                : (Error.T3FMInstPathNotFound, false, "");
         }
 
         #endregion

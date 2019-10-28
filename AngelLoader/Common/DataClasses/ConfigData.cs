@@ -174,15 +174,15 @@ namespace AngelLoader.Common.DataClasses
 
         internal DateFormat DateFormat = DateFormat.CurrentCultureShort;
         // Clunky, but removes the need for parsing
-        internal string DateCustomFormat1;
-        internal string DateCustomSeparator1;
-        internal string DateCustomFormat2;
-        internal string DateCustomSeparator2;
-        internal string DateCustomFormat3;
-        internal string DateCustomSeparator3;
-        internal string DateCustomFormat4;
+        internal string DateCustomFormat1 = "";
+        internal string DateCustomSeparator1 = "";
+        internal string DateCustomFormat2 = "";
+        internal string DateCustomSeparator2 = "";
+        internal string DateCustomFormat3 = "";
+        internal string DateCustomSeparator3 = "";
+        internal string DateCustomFormat4 = "";
         // Session-only; don't write out
-        internal string DateCustomFormatString;
+        internal string DateCustomFormatString = "";
 
         #endregion
 

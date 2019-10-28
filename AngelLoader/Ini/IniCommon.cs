@@ -39,7 +39,7 @@ namespace AngelLoader.Ini
         // file is re-generated. I could make it so it doesn't get removed, but meh.
         internal static void ReadTranslatedLanguageName(string file)
         {
-            StreamReader sr = null;
+            StreamReader? sr = null;
             try
             {
                 sr = new StreamReader(file, Encoding.UTF8);

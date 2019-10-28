@@ -7,7 +7,7 @@ namespace AngelLoader.CustomControls
     public class ContextMenuStripCustom : ContextMenuStrip
     {
         private bool _preventClose;
-        private ToolStripMenuItem[] _preventCloseItems;
+        private ToolStripMenuItem[]? _preventCloseItems;
 
         public ContextMenuStripCustom() { }
 

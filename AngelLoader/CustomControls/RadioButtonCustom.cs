@@ -9,7 +9,8 @@ namespace AngelLoader.CustomControls
     {
         private bool _checked;
 
-        public event EventHandler CheckedChanged;
+        // @R#_FALSE_POSITIVE?
+        public event EventHandler? CheckedChanged;
 
         [Browsable(true)]
         public bool Checked

@@ -18,10 +18,11 @@ namespace AngelLoader
     {
         #region Scan
 
-        private static CancellationTokenSource ScanCts;
+        private static CancellationTokenSource ScanCts = new CancellationTokenSource();
 
-        internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions scanOptions = null)
+        internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions? scanOptions = null)
         {
+            // NULL_TODO: We could avoid a nullable by having a different way to do the default thing
             if (scanOptions == null) scanOptions = GetDefaultScanOptions();
             bool success = await ScanFM(fm, scanOptions);
             if (success) await Core.View.RefreshSelectedFM(refreshReadme: false);
@@ -237,7 +238,8 @@ namespace AngelLoader
 
                     if (scanOptions.ScanLanguages)
                     {
-                        sel.Languages = gameSup ? scannedFM.Languages : new string[0];
+                        // TODO: Uncomment if you start using this
+                        //sel.Languages = gameSup ? scannedFM.Languages : new string[0];
                         sel.LanguagesString = gameSup
                             ? scannedFM.Languages != null ? string.Join(", ", scannedFM.Languages) : ""
                             : "";

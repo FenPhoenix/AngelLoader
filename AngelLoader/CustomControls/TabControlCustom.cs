@@ -9,11 +9,11 @@ namespace AngelLoader.CustomControls
     {
         internal class BackingTab
         {
-            internal TabPage Tab;
+            internal TabPage? Tab;
             internal bool Visible = true;
         }
 
-        private TabPage DragTab;
+        private TabPage? DragTab;
         private readonly List<BackingTab> BackingTabList = new List<BackingTab>();
 
         public TabControlCustom()
@@ -32,7 +32,7 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        internal (int index, BackingTab backingTab)
+        internal (int index, BackingTab? backingTab)
         FindBackingTab(TabPage tab, bool indexVisibleOnly = false)
         {
             for (int i = 0, vi = 0; i < BackingTabList.Count; i++)
@@ -113,7 +113,7 @@ namespace AngelLoader.CustomControls
             base.OnMouseMove(e);
         }
 
-        private (int backingTabIndex, TabPage tab)
+        private (int backingTabIndex, TabPage? tab)
         GetTabAtPoint(Point position)
         {
             for (int i = 0; i < TabCount; i++)

@@ -12,42 +12,43 @@ namespace AngelLoader.CustomControls
         {
             #region Control backing fields
 
-            private static bool _menuCreated;
+            private static bool _constructed;
             // Internal only because of a Debug.Assert() for length and I don't wanna make a method just for that
             internal static readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
 
             #endregion
 
-            // Ugh, there goes the tidiness...
+#pragma warning disable 8618
             private static DataGridViewCustom Owner;
+#pragma warning restore 8618
 
             private enum ColumnProperties { Visible, DisplayIndex, Width }
 
-            private static IDisposable[] ColumnHeaderMenuDisposables;
+            private static IDisposable[]? ColumnHeaderMenuDisposables;
 
             #region Column header context menu fields
 
-            private static ContextMenuStripCustom ColumnHeaderContextMenu;
+            private static ContextMenuStripCustom? ColumnHeaderContextMenu;
 
-            private static ToolStripMenuItem ResetColumnVisibilityMenuItem;
-            private static ToolStripMenuItem ResetAllColumnWidthsMenuItem;
-            private static ToolStripMenuItem ResetColumnPositionsMenuItem;
+            private static ToolStripMenuItem? ResetColumnVisibilityMenuItem;
+            private static ToolStripMenuItem? ResetAllColumnWidthsMenuItem;
+            private static ToolStripMenuItem? ResetColumnPositionsMenuItem;
 
-            private static ToolStripSeparator ColumnHeaderContextMenuSep1;
+            private static ToolStripSeparator? ColumnHeaderContextMenuSep1;
 
-            private static ToolStripMenuItem[] ColumnHeaderCheckBoxMenuItems;
-            private static ToolStripMenuItem ShowGameMenuItem;
-            private static ToolStripMenuItem ShowInstalledMenuItem;
-            private static ToolStripMenuItem ShowTitleMenuItem;
-            private static ToolStripMenuItem ShowArchiveMenuItem;
-            private static ToolStripMenuItem ShowAuthorMenuItem;
-            private static ToolStripMenuItem ShowSizeMenuItem;
-            private static ToolStripMenuItem ShowRatingMenuItem;
-            private static ToolStripMenuItem ShowFinishedMenuItem;
-            private static ToolStripMenuItem ShowReleaseDateMenuItem;
-            private static ToolStripMenuItem ShowLastPlayedMenuItem;
-            private static ToolStripMenuItem ShowDisabledModsMenuItem;
-            private static ToolStripMenuItem ShowCommentMenuItem;
+            private static ToolStripMenuItem[]? ColumnHeaderCheckBoxMenuItems;
+            private static ToolStripMenuItem? ShowGameMenuItem;
+            private static ToolStripMenuItem? ShowInstalledMenuItem;
+            private static ToolStripMenuItem? ShowTitleMenuItem;
+            private static ToolStripMenuItem? ShowArchiveMenuItem;
+            private static ToolStripMenuItem? ShowAuthorMenuItem;
+            private static ToolStripMenuItem? ShowSizeMenuItem;
+            private static ToolStripMenuItem? ShowRatingMenuItem;
+            private static ToolStripMenuItem? ShowFinishedMenuItem;
+            private static ToolStripMenuItem? ShowReleaseDateMenuItem;
+            private static ToolStripMenuItem? ShowLastPlayedMenuItem;
+            private static ToolStripMenuItem? ShowDisabledModsMenuItem;
+            private static ToolStripMenuItem? ShowCommentMenuItem;
 
             #endregion
 
@@ -98,11 +99,11 @@ namespace AngelLoader.CustomControls
 
             #region Internal methods
 
-            internal static ContextMenuStrip GetContextMenu() => ColumnHeaderContextMenu;
+            internal static ContextMenuStrip? GetContextMenu() => ColumnHeaderContextMenu;
 
-            internal static void Init(DataGridViewCustom owner)
+            internal static void Construct(DataGridViewCustom owner)
             {
-                if (_menuCreated) return;
+                if (_constructed) return;
 
                 Owner = owner;
 
@@ -263,38 +264,38 @@ namespace AngelLoader.CustomControls
 
                 #endregion
 
-                _menuCreated = true;
+                _constructed = true;
 
                 SetMenuItemTextToLocalized();
             }
 
             internal static void SetMenuItemTextToLocalized()
             {
-                if (!_menuCreated) return;
+                if (!_constructed) return;
 
-                ResetColumnVisibilityMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
-                ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
-                ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions.EscapeAmpersands();
+                ResetColumnVisibilityMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnsToVisible.EscapeAmpersands();
+                ResetAllColumnWidthsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths.EscapeAmpersands();
+                ResetColumnPositionsMenuItem!.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions.EscapeAmpersands();
 
-                ShowGameMenuItem.Text = LText.FMsList.GameColumn.EscapeAmpersands();
-                ShowInstalledMenuItem.Text = LText.FMsList.InstalledColumn.EscapeAmpersands();
-                ShowTitleMenuItem.Text = LText.FMsList.TitleColumn.EscapeAmpersands();
-                ShowArchiveMenuItem.Text = LText.FMsList.ArchiveColumn.EscapeAmpersands();
-                ShowAuthorMenuItem.Text = LText.FMsList.AuthorColumn.EscapeAmpersands();
-                ShowSizeMenuItem.Text = LText.FMsList.SizeColumn.EscapeAmpersands();
-                ShowRatingMenuItem.Text = LText.FMsList.RatingColumn.EscapeAmpersands();
-                ShowFinishedMenuItem.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
-                ShowReleaseDateMenuItem.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
-                ShowLastPlayedMenuItem.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
-                ShowDisabledModsMenuItem.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
-                ShowCommentMenuItem.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
+                ShowGameMenuItem!.Text = LText.FMsList.GameColumn.EscapeAmpersands();
+                ShowInstalledMenuItem!.Text = LText.FMsList.InstalledColumn.EscapeAmpersands();
+                ShowTitleMenuItem!.Text = LText.FMsList.TitleColumn.EscapeAmpersands();
+                ShowArchiveMenuItem!.Text = LText.FMsList.ArchiveColumn.EscapeAmpersands();
+                ShowAuthorMenuItem!.Text = LText.FMsList.AuthorColumn.EscapeAmpersands();
+                ShowSizeMenuItem!.Text = LText.FMsList.SizeColumn.EscapeAmpersands();
+                ShowRatingMenuItem!.Text = LText.FMsList.RatingColumn.EscapeAmpersands();
+                ShowFinishedMenuItem!.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
+                ShowReleaseDateMenuItem!.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
+                ShowLastPlayedMenuItem!.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
+                ShowDisabledModsMenuItem!.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
+                ShowCommentMenuItem!.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
             }
 
             internal static void SetColumnChecked(int index, bool enabled)
             {
-                if (_menuCreated)
+                if (_constructed)
                 {
-                    ColumnHeaderCheckBoxMenuItems[index].Checked = enabled;
+                    ColumnHeaderCheckBoxMenuItems![index].Checked = enabled;
                 }
                 else
                 {

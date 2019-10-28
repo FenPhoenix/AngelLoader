@@ -34,7 +34,7 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
-        private readonly ILocalizable OwnerForm;
+        private readonly ILocalizable? OwnerForm;
 
         private readonly bool Startup;
 
@@ -76,7 +76,7 @@ namespace AngelLoader.Forms
         private readonly OtherPage OtherPage;
 #pragma warning restore IDE0069 // Disposable fields should be disposed
 
-        internal SettingsForm(ILocalizable ownerForm, ConfigData config, bool startup)
+        internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup)
         {
             InitializeComponent();
 
@@ -711,7 +711,7 @@ namespace AngelLoader.Forms
             OutConfig.SetUseSteamSwitch(Thief2, PathsPage.T2UseSteamCheckBox.Checked);
             OutConfig.SetUseSteamSwitch(Thief3, PathsPage.T3UseSteamCheckBox.Checked);
             OutConfig.SetUseSteamSwitch(SS2, PathsPage.SS2UseSteamCheckBox.Checked);
-            
+
             OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
 
             // Manual so we can use Trim() on each
@@ -1266,7 +1266,7 @@ namespace AngelLoader.Forms
 
         private void LocalizeOwnerForm()
         {
-            try { OwnerForm.Localize(); }
+            try { OwnerForm!.Localize(); }
             catch (Exception ex) { Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex); }
         }
     }

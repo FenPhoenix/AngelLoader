@@ -397,15 +397,13 @@ namespace AngelLoader.Common
     {
         public int Compare(CatAndTags x, CatAndTags y)
         {
-            Debug.Assert(x != null, "CategoryComparer: x is null");
-            Debug.Assert(y != null, "CategoryComparer: y is null");
-
             Debug.Assert(!x.Category.IsEmpty(), "CategoryComparer: x.Name is null or empty");
             Debug.Assert(!y.Category.IsEmpty(), "CategoryComparer: y.Name is null or empty");
 
             Debug.Assert(x.Category.ToLowerInvariant() == x.Category, "CategoryComparer: x.Name is not lowercase");
             Debug.Assert(y.Category.ToLowerInvariant() == y.Category, "CategoryComparer: y.Name is not lowercase");
 
+            // @R#_FALSE_POSITIVE
             x.Tags.Sort(StringComparer.OrdinalIgnoreCase);
             y.Tags.Sort(StringComparer.OrdinalIgnoreCase);
 
@@ -419,15 +417,13 @@ namespace AngelLoader.Common
     {
         public int Compare(GlobalCatAndTags x, GlobalCatAndTags y)
         {
-            Debug.Assert(x != null, "CategoryComparer: x is null");
-            Debug.Assert(y != null, "CategoryComparer: y is null");
-
             Debug.Assert(!x.Category.Name.IsEmpty(), "CategoryComparer: x.Name is null or empty");
             Debug.Assert(!y.Category.Name.IsEmpty(), "CategoryComparer: y.Name is null or empty");
 
             Debug.Assert(x.Category.Name.ToLowerInvariant() == x.Category.Name, "CategoryComparer: x.Name is not lowercase");
             Debug.Assert(y.Category.Name.ToLowerInvariant() == y.Category.Name, "CategoryComparer: y.Name is not lowercase");
 
+            // @R#_FALSE_POSITIVE
             x.Tags.Sort(new CatItemComparer());
             y.Tags.Sort(new CatItemComparer());
 
@@ -441,9 +437,7 @@ namespace AngelLoader.Common
     {
         public int Compare(GlobalCatOrTag x, GlobalCatOrTag y)
         {
-            Debug.Assert(x != null, "CatItemComparer: x is null");
-            Debug.Assert(y != null, "CatItemComparer: y is null");
-
+            // @R#_FALSE_POSITIVE
             return string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
         }
     }

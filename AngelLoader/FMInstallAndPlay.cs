@@ -22,7 +22,7 @@ namespace AngelLoader
 {
     internal static class FMInstallAndPlay
     {
-        private static CancellationTokenSource ExtractCts;
+        private static CancellationTokenSource ExtractCts = new CancellationTokenSource();
 
         internal static async Task InstallOrUninstall(FanMission fm) => await (fm.Installed ? UninstallFM(fm) : InstallFM(fm));
 
@@ -85,7 +85,7 @@ namespace AngelLoader
 
             if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
-            string args = null;
+            string args = "";
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, args) = sv;
 
@@ -117,7 +117,7 @@ namespace AngelLoader
 
             SetUsAsSelector(game, gameExe, gamePath);
 
-            string steamArgs = null;
+            string steamArgs = "";
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
 
@@ -251,7 +251,7 @@ namespace AngelLoader
         private static (bool Success, string gameExe, string gamePath)
         GetGameExeAndPath(GameIndex gameIndex, string exeNotFoundMessage, bool playMP = false)
         {
-            (bool, string, string) failed = (false, null, null);
+            (bool, string, string) failed = (false, "", "");
 
             var gameExe = Config.GetGameExe(gameIndex);
 
@@ -307,7 +307,7 @@ namespace AngelLoader
             }
             else
             {
-                return (false, null, null, null);
+                return (false, "", "", "");
             }
         }
 

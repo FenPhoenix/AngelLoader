@@ -50,7 +50,7 @@ namespace AngelLoader.CustomControls
 
         // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
         // control both its own SplitterDistance and that of its orthogonally-oriented sibling at the same time.
-        private SplitContainerCustom Sibling;
+        private SplitContainerCustom? Sibling;
         public void InjectSibling(SplitContainerCustom sibling) => Sibling = sibling;
 
         internal void SetFullScreen(bool enabled, bool suspendResume = true)
@@ -64,7 +64,7 @@ namespace AngelLoader.CustomControls
                     _storedCollapsiblePanelMinSize = Panel1MinSize;
                     _storedSplitterPercent = SplitterPercent;
                     Panel1MinSize = CollapsedSize;
-                    Sibling.Hide();
+                    Sibling!.Hide();
                     SplitterDistance = CollapsedSize;
                     FullScreen = true;
                     if (suspendResume) this.ResumeDrawing();
@@ -74,7 +74,7 @@ namespace AngelLoader.CustomControls
                     if (suspendResume) this.SuspendDrawing();
                     SplitterPercent = _storedSplitterPercent;
                     Panel1MinSize = _storedCollapsiblePanelMinSize;
-                    Sibling.Show();
+                    Sibling!.Show();
                     FullScreen = false;
                     IsSplitterFixed = false;
                     if (suspendResume) this.ResumeDrawing();
@@ -147,7 +147,7 @@ namespace AngelLoader.CustomControls
 
             IsSplitterFixed = false;
             SplitterDistance = OriginalDistance;
-            if (MouseOverCrossSection) Sibling.SplitterDistance = Sibling.OriginalDistance;
+            if (MouseOverCrossSection) Sibling!.SplitterDistance = Sibling.OriginalDistance;
             _mouseOverCrossSection = false;
         }
 
@@ -161,7 +161,7 @@ namespace AngelLoader.CustomControls
                  (!IsMain() && Cursor.Current == Cursors.VSplit)))
             {
                 OriginalDistance = SplitterDistance;
-                if (MouseOverCrossSection) Sibling.OriginalDistance = Sibling.SplitterDistance;
+                if (MouseOverCrossSection) Sibling!.OriginalDistance = Sibling.SplitterDistance;
                 IsSplitterFixed = true;
             }
             else
@@ -225,16 +225,16 @@ namespace AngelLoader.CustomControls
                     {
                         if (IsMain())
                         {
-                            Sibling.SuspendDrawing();
+                            Sibling!.SuspendDrawing();
                             this.SuspendDrawing();
                         }
                         else
                         {
                             this.SuspendDrawing();
-                            Sibling.SuspendDrawing();
+                            Sibling!.SuspendDrawing();
                         }
 
-                        Sibling.SplitterDistance = (axis == e.X ? e.Y : e.X).ClampToZero();
+                        Sibling!.SplitterDistance = (axis == e.X ? e.Y : e.X).ClampToZero();
                     }
                     else
                     {
@@ -247,13 +247,13 @@ namespace AngelLoader.CustomControls
                     {
                         if (IsMain())
                         {
-                            Sibling.ResumeDrawing();
+                            Sibling!.ResumeDrawing();
                             this.ResumeDrawing();
                         }
                         else
                         {
                             this.ResumeDrawing();
-                            Sibling.ResumeDrawing();
+                            Sibling!.ResumeDrawing();
                         }
                     }
                     else

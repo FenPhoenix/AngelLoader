@@ -79,12 +79,12 @@ namespace AngelLoader.Common.DataClasses
         internal bool? HasMovies;
         internal bool? HasSubtitles;
 
-        // [FenGen:DoNotSerialize]
-        internal string[] Languages;
-        internal string LanguagesString;
+        // not using for now, but add DoNotSerialize attribute here if I ever do
+        //internal string[] Languages;
+        internal string LanguagesString = "";
 
         // [FenGen:DoNotSerialize]
         internal readonly CatAndTagsList Tags = new CatAndTagsList();
-        internal string TagsString;
+        internal string TagsString = "";
     }
 }

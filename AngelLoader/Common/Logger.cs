@@ -103,7 +103,7 @@ namespace AngelLoader.Common
             }
         }
 
-        internal static void Log(string message, Exception ex = null, bool stackTrace = false, bool methodName = true,
+        internal static void Log(string message, Exception? ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
             try

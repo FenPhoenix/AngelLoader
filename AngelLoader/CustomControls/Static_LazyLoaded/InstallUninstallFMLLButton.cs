@@ -14,7 +14,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
         private static bool _sayInstall;
         private static bool _enabled;
         
-        private static Button Button;
+        private static Button? Button;
 
         internal static void SetSayInstall(bool value)
         {
@@ -24,7 +24,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
 
         internal static void SetEnabled(bool value)
         {
-            if (Constructed) Button.Enabled = value;
+            if (Constructed) Button!.Enabled = value;
             _enabled = value;
         }
 
@@ -61,10 +61,10 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
 
             // Special-case this button to always be the width of the longer of the two localized strings for
             // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
-            Button.SuspendDrawing();
+            Button!.SuspendDrawing();
 
             // Have to call this to get its layout working
-            Button.Show();
+            Button!.Show();
 
             var instString = LText.MainButtons.InstallFM;
             var uninstString = LText.MainButtons.UninstallFM;
@@ -83,16 +83,16 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             #endregion
         }
 
-        internal static void Show() => Button.Show();
+        internal static void Show() => Button!.Show();
 
         internal static void Hide()
         {
-            if (Constructed) Button.Hide();
+            if (Constructed) Button!.Hide();
         }
 
         private static void SetSayInstallState(bool value)
         {
-            Button.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
+            Button!.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
             Button.Image = value ? Images.Install_24 : Images.Uninstall_24;
         }
     }

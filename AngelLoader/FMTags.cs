@@ -51,21 +51,21 @@ namespace AngelLoader
                 var cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                var cat = fm.Tags.FirstOrDefault(x => x.Category == catText);
-                var tag = cat?.Tags.FirstOrDefault(x => x == tagText);
+                CatAndTags? cat = fm.Tags.FirstOrDefault(x => x.Category == catText);
+                string? tag = cat?.Tags.FirstOrDefault(x => x == tagText);
                 if (tag != null)
                 {
-                    cat.Tags.Remove(tag);
+                    cat!.Tags.Remove(tag);
                     if (cat.Tags.Count == 0) fm.Tags.Remove(cat);
                     UpdateFMTagsString(fm);
 
-                    var globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
-                    var globalTag = globalCat?.Tags.FirstOrDefault(x => x.Name == tagText);
+                    GlobalCatAndTags? globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
+                    GlobalCatOrTag? globalTag = globalCat?.Tags.FirstOrDefault(x => x.Name == tagText);
                     if (globalTag != null && !globalTag.IsPreset)
                     {
                         if (globalTag.UsedCount > 0) globalTag.UsedCount--;
-                        if (globalTag.UsedCount == 0) globalCat.Tags.Remove(globalTag);
-                        if (globalCat.Tags.Count == 0) GlobalTags.Remove(globalCat);
+                        if (globalTag.UsedCount == 0) globalCat!.Tags.Remove(globalTag);
+                        if (globalCat!.Tags.Count == 0) GlobalTags.Remove(globalCat);
                     }
                 }
             }
@@ -78,7 +78,7 @@ namespace AngelLoader
         internal static List<string> GetMatchingTagsList(string searchText)
         {
             // Smartasses who try to break it get nothing
-            if (searchText.CountChars(':') > 1 || searchText.IsWhiteSpace()) return null;
+            if (searchText.CountChars(':') > 1 || searchText.IsWhiteSpace()) return new List<string>();
 
             (string First, string Second) text;
 
@@ -205,7 +205,7 @@ namespace AngelLoader
 
                 #region FM tags
 
-                CatAndTags match = null;
+                CatAndTags? match = null;
                 for (int i = 0; i < existingFMTags.Count; i++)
                 {
                     if (existingFMTags[i].Category == cat)
@@ -228,7 +228,7 @@ namespace AngelLoader
 
                 #region Global tags
 
-                GlobalCatAndTags globalMatch = null;
+                GlobalCatAndTags? globalMatch = null;
                 for (int i = 0; i < GlobalTags.Count; i++)
                 {
                     if (GlobalTags[i].Category.Name == cat)
@@ -246,7 +246,7 @@ namespace AngelLoader
                 {
                     globalMatch.Category.UsedCount++;
 
-                    GlobalCatOrTag ft = null;
+                    GlobalCatOrTag? ft = null;
                     for (int i = 0; i < globalMatch.Tags.Count; i++)
                     {
                         if (globalMatch.Tags[i].Name.EqualsI(tag))

@@ -7,7 +7,13 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     internal static class AddTagLLMenu
     {
         private static bool _constructed;
-        internal static ContextMenuStrip Menu;
+
+        private static ContextMenuStrip? _menu;
+        internal static ContextMenuStrip Menu
+        {
+            get => _menu!;
+            private set => _menu = value;
+        }
 
         internal static void Construct(MainForm form, IContainer components)
         {

@@ -15,7 +15,7 @@ namespace AngelLoader.CustomControls
 
         #region Fields etc.
 
-        private MainForm Owner;
+        private MainForm? Owner;
         private ProgressTasks ProgressTask;
 
         #endregion
@@ -30,7 +30,7 @@ namespace AngelLoader.CustomControls
         {
             ProgressTask = progressTask;
 
-            this.CenterHV(Owner, clientSize: true);
+            this.CenterHV(Owner!, clientSize: true);
 
             ProgressMessageLabel.Text = progressTask switch
             {
@@ -74,7 +74,7 @@ namespace AngelLoader.CustomControls
         private void ShowThis()
         {
             Log(nameof(ShowThis) + " called", methodName: false);
-            Owner.EnableEverything(false);
+            Owner!.EnableEverything(false);
             Enabled = true;
 
             BringToFront();
@@ -96,7 +96,7 @@ namespace AngelLoader.CustomControls
             ProgressCancelButton.Show();
 
             Enabled = false;
-            Owner.EnableEverything(true);
+            Owner!.EnableEverything(true);
         }
 
         #endregion

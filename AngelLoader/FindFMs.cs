@@ -203,7 +203,8 @@ namespace AngelLoader
                         continue;
                     }
 
-                    string archiveName = null;
+                    // PERF_TODO: Should we keep null here because it's faster? Is it faster? (tight loop)
+                    string? archiveName = null;
                     // Skip the expensive archive name search if we're marked as having no archive
                     if (!fm.NoArchive)
                     {
@@ -285,10 +286,10 @@ namespace AngelLoader
                 var archive = fmArchives[ai];
 
                 // perf perf blah
-                string aRemoveExt = null;
-                string aFMSel = null;
-                string aFMSelTrunc = null;
-                string aNDL = null;
+                string? aRemoveExt = null;
+                string? aFMSel = null;
+                string? aFMSelTrunc = null;
+                string? aNDL = null;
 
                 bool existingFound = false;
                 for (int i = 0; i < initCount; i++)
@@ -379,7 +380,8 @@ namespace AngelLoader
 
         #endregion
 
-        private static string GetArchiveNameFromInstalledDir(string[] fmInstPaths, FanMission fm, List<string> archives)
+        // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
+        private static string? GetArchiveNameFromInstalledDir(string[] fmInstPaths, FanMission fm, List<string> archives)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -392,7 +394,7 @@ namespace AngelLoader
 
             var fmselInf = GetFMSelInfPath(fm, fmInstPaths);
 
-            string FixUp()
+            string? FixUp()
             {
                 // Make a best-effort attempt to find what this FM's archive name should be
                 // PERF: 5ms to run it once on the ~1500 set with no hits, but the time taken is all in the
@@ -459,7 +461,7 @@ namespace AngelLoader
             return archiveName;
         }
 
-        private static string GetFMSelInfPath(FanMission fm, string[] fmInstPaths)
+        private static string? GetFMSelInfPath(FanMission fm, string[] fmInstPaths)
         {
             if (!GameIsKnownAndSupported(fm.Game)) return null;
 

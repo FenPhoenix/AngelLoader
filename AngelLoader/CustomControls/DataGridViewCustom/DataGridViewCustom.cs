@@ -63,14 +63,14 @@ namespace AngelLoader.CustomControls
 
         private void SetConcreteInstallUninstallMenuItemText(bool sayInstall)
         {
-            InstallUninstallMenuItem.Text = (sayInstall
+            InstallUninstallMenuItem!.Text = (sayInstall
                 ? LText.FMsList.FMMenu_InstallFM
                 : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
         }
 
         private void SetConcreteDromEdMenuItemText(bool sayShockEd)
         {
-            OpenInDromEdMenuItem.Text = (sayShockEd
+            OpenInDromEdMenuItem!.Text = (sayShockEd
                 ? LText.FMsList.FMMenu_OpenInShockEd
                 : LText.FMsList.FMMenu_OpenInDromEd).EscapeAmpersands();
         }
@@ -81,6 +81,8 @@ namespace AngelLoader.CustomControls
 
         #region Init
 
+        // @R#_FALSE_POSITIVE: This should surround Owner declaration line, not the ctor
+#pragma warning disable 8618
         public DataGridViewCustom()
         {
             DoubleBuffered = true;
@@ -88,6 +90,7 @@ namespace AngelLoader.CustomControls
             Debug.Assert(Enum.GetValues(typeof(Column)).Length == ColumnHeaderLLMenu.ColumnCheckedStates.Length,
                 nameof(Column) + ".Length != " + nameof(ColumnHeaderLLMenu.ColumnCheckedStates) + ".Length");
         }
+#pragma warning restore 8618
 
         internal void InjectOwner(IView owner) => Owner = owner;
 
@@ -156,7 +159,7 @@ namespace AngelLoader.CustomControls
 
         internal SelectedFM GetSelectedFMPosInfo()
         {
-            var ret = new SelectedFM { InstalledName = null, IndexFromTop = 0 };
+            var ret = new SelectedFM { InstalledName = "", IndexFromTop = 0 };
 
             if (SelectedRows.Count == 0) return ret;
 
@@ -187,13 +190,13 @@ namespace AngelLoader.CustomControls
 
         internal void SetContextMenuToColumnHeader()
         {
-            ColumnHeaderLLMenu.Init(this);
+            ColumnHeaderLLMenu.Construct(this);
             ContextMenuStrip = ColumnHeaderLLMenu.GetContextMenu();
         }
 
         internal void SetContextMenuToFM()
         {
-            InitFMContextMenu();
+            ConstructFMContextMenu();
             ContextMenuStrip = FMContextMenu;
         }
 

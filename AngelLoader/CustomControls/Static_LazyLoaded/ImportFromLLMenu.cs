@@ -9,12 +9,18 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        internal static ContextMenuStrip ImportFromMenu;
-        private static ToolStripMenuItem ImportFromDarkLoaderMenuItem;
-        private static ToolStripMenuItem ImportFromFMSelMenuItem;
-        private static ToolStripMenuItem ImportFromNewDarkLoaderMenuItem;
-        //private static ToolStripSeparator Sep1;
-        //private static ToolStripMenuItem ImportFromMultipleLoadersMenuItem;
+        private static ContextMenuStrip? _importFromMenu;
+        internal static ContextMenuStrip ImportFromMenu
+        {
+            get => _importFromMenu!;
+            private set => _importFromMenu = value;
+        }
+
+        private static ToolStripMenuItem? ImportFromDarkLoaderMenuItem;
+        private static ToolStripMenuItem? ImportFromFMSelMenuItem;
+        private static ToolStripMenuItem? ImportFromNewDarkLoaderMenuItem;
+        //private static ToolStripSeparator? Sep1;
+        //private static ToolStripMenuItem? ImportFromMultipleLoadersMenuItem;
 
         internal static void Construct(MainForm form, IContainer components)
         {

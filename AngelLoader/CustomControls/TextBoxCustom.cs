@@ -10,7 +10,7 @@ namespace AngelLoader.CustomControls
     {
         [Browsable(true)] public string DisallowedCharacters { get; set; } = "";
 
-        private string _backingText;
+        private string _backingText = "";
 
         public void SetTextAndMoveCursorToEnd(string text)
         {

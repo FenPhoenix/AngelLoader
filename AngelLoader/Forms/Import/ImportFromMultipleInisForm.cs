@@ -8,7 +8,7 @@ namespace AngelLoader.Forms.Import
 {
     public partial class ImportFromMultipleInisForm : Form
     {
-        internal List<string> IniFiles;
+        internal List<string> IniFiles = new List<string>();
         internal bool ImportTitle;
         internal bool ImportReleaseDate;
         internal bool ImportLastPlayed;

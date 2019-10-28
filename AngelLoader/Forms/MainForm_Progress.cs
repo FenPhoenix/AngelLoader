@@ -9,7 +9,7 @@ namespace AngelLoader.Forms
     {
         // Not great code really, but works.
 
-        private ProgressPanel ProgressBox;
+        private ProgressPanel? ProgressBox;
 
         private void ConstructProgressBox()
         {
@@ -44,37 +44,37 @@ namespace AngelLoader.Forms
             ConstructProgressBox();
 
             Log(nameof(ShowProgressBox) + ": " + progressTask, methodName: false);
-            ProgressBox.ShowProgressWindow(progressTask, suppressShow);
+            ProgressBox!.ShowProgressWindow(progressTask, suppressShow);
         }
 
         public void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
             ConstructProgressBox();
-            ProgressBox.ReportScanProgress(fmNumber, fmsTotal, percent, fmName);
+            ProgressBox!.ReportScanProgress(fmNumber, fmsTotal, percent, fmName);
         }
 
         public void ReportFMExtractProgress(int percent)
         {
             ConstructProgressBox();
-            ProgressBox.ReportFMExtractProgress(percent);
+            ProgressBox!.ReportFMExtractProgress(percent);
         }
 
         public void ReportCachingProgress(int percent)
         {
             ConstructProgressBox();
-            ProgressBox.ReportCachingProgress(percent);
+            ProgressBox!.ReportCachingProgress(percent);
         }
 
         public void SetCancelingFMInstall()
         {
             ConstructProgressBox();
-            ProgressBox.SetCancelingFMInstall();
+            ProgressBox!.SetCancelingFMInstall();
         }
 
         public void HideProgressBox()
         {
             ConstructProgressBox();
-            ProgressBox.HideThis();
+            ProgressBox!.HideThis();
         }
     }
 }

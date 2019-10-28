@@ -334,9 +334,9 @@ namespace AngelLoader.Common.Utility
             return paths;
         }
 
-        internal static string FindFMArchive(string fmArchive, List<string> archivePaths = null)
+        internal static string FindFMArchive(string fmArchive, List<string>? archivePaths = null)
         {
-            if (fmArchive.IsEmpty()) return null;
+            if (fmArchive.IsEmpty()) return "";
 
             foreach (var path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
             {
@@ -344,7 +344,7 @@ namespace AngelLoader.Common.Utility
                 if (File.Exists(f)) return f;
             }
 
-            return null;
+            return "";
         }
 
         #endregion

@@ -35,7 +35,7 @@ namespace AngelLoader
 
         private sealed class NameAndIndex
         {
-            internal string Name;
+            internal string Name = "";
             internal int Index = -1;
         }
 
@@ -111,7 +111,7 @@ namespace AngelLoader
         private static CacheData GetCacheableDataInFMInstalledDir(FanMission fm)
         {
             Debug.Assert(fm.Installed, "fm.Installed is false when it should be true");
-            
+
             var thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
 
             var path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
@@ -335,7 +335,7 @@ namespace AngelLoader
                     var fn = entry.FullName;
                     if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
-                    string t3ReadmeDir = null;
+                    string? t3ReadmeDir = null;
                     if (fn.CountChars('/') + fn.CountChars('\\') == 1)
                     {
                         if (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||

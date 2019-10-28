@@ -287,7 +287,7 @@ namespace AngelLoader.Forms
 
         public (bool Cancel, bool DontAskAgain)
         AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-            string yes, string no)
+            string? yes, string? no)
         {
             using var d = new TaskDialog();
             using var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
@@ -298,7 +298,7 @@ namespace AngelLoader.Forms
             d.ButtonStyle = TaskDialogButtonStyle.Standard;
             d.WindowTitle = title;
             d.Content = message;
-            d.VerificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
+            if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
             d.Buttons.Add(yesButton);
             d.Buttons.Add(noButton);
             var buttonClicked = d.ShowDialog();
@@ -373,21 +373,21 @@ namespace AngelLoader.Forms
         // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
         // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
         // TODO: @GENGAMES: put the game icons into an array
-        private Bitmap Thief1Icon;
-        private Bitmap Thief2Icon;
-        private Bitmap Thief3Icon;
-        private Bitmap SS2Icon;
-        private Bitmap BlankIcon;
-        private Bitmap CheckIcon;
-        private Bitmap RedQuestionMarkIcon;
+        private Bitmap? Thief1Icon;
+        private Bitmap? Thief2Icon;
+        private Bitmap? Thief3Icon;
+        private Bitmap? SS2Icon;
+        private Bitmap? BlankIcon;
+        private Bitmap? CheckIcon;
+        private Bitmap? RedQuestionMarkIcon;
 
-        private Bitmap[] StarIcons;
-        private Dictionary<FinishedOn, Bitmap> FinishedOnIcons;
-        private Bitmap FinishedOnUnknownIcon;
+        private Bitmap[]? StarIcons;
+        private Dictionary<FinishedOn, Bitmap>? FinishedOnIcons;
+        private Bitmap? FinishedOnUnknownIcon;
 
         #endregion
 
-        private DataGridViewImageColumn RatingImageColumn;
+        private DataGridViewImageColumn? RatingImageColumn;
 
         public bool EventsDisabled { get; set; }
         public bool KeyPressesDisabled { get; set; }
@@ -396,7 +396,7 @@ namespace AngelLoader.Forms
         // middle of the operation
         private bool CellValueNeededDisabled;
 
-        private TransparentPanel ViewBlockingPanel;
+        private TransparentPanel? ViewBlockingPanel;
         private bool ViewBlocked;
 
         #endregion
@@ -1180,7 +1180,7 @@ namespace AngelLoader.Forms
                 AuthorColumn.HeaderText = LText.FMsList.AuthorColumn;
                 SizeColumn.HeaderText = LText.FMsList.SizeColumn;
                 RatingTextColumn.HeaderText = LText.FMsList.RatingColumn;
-                RatingImageColumn.HeaderText = LText.FMsList.RatingColumn;
+                RatingImageColumn!.HeaderText = LText.FMsList.RatingColumn;
                 FinishedColumn.HeaderText = LText.FMsList.FinishedColumn;
                 ReleaseDateColumn.HeaderText = LText.FMsList.ReleaseDateColumn;
                 LastPlayedColumn.HeaderText = LText.FMsList.LastPlayedColumn;
@@ -1527,7 +1527,7 @@ namespace AngelLoader.Forms
         {
             // No goal escapes me, mate
 
-            SelectedFM selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+            SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
             var f = FMsDGV.DefaultCellStyle.Font;
 
@@ -1656,7 +1656,7 @@ namespace AngelLoader.Forms
         /// <param name="keepSelection"></param>
         /// <param name="gameTabSwitch"></param>
         /// <returns></returns>
-        public async Task SortAndSetFilter(SelectedFM selectedFM = null, bool forceDisplayFM = false,
+        public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
             bool keepSelection = true, bool gameTabSwitch = false)
         {
             var oldSelectedFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
@@ -2268,7 +2268,7 @@ namespace AngelLoader.Forms
                     {
                         if (Config.RatingUseStars)
                         {
-                            e.Value = fm.Rating == -1 ? BlankIcon : StarIcons[fm.Rating];
+                            e.Value = fm.Rating == -1 ? BlankIcon : StarIcons![fm.Rating];
                         }
                         else
                         {
@@ -2278,7 +2278,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Finished:
-                    e.Value = fm.FinishedOnUnknown ? FinishedOnUnknownIcon : FinishedOnIcons[(FinishedOn)fm.FinishedOn];
+                    e.Value = fm.FinishedOnUnknown ? FinishedOnUnknownIcon : FinishedOnIcons![(FinishedOn)fm.FinishedOn];
                     break;
 
                 case Column.ReleaseDate:
@@ -2494,7 +2494,7 @@ namespace AngelLoader.Forms
         {
             if (FMsViewList.Count == 0) return;
 
-            ScanOptions scanOptions = null;
+            ScanOptions? scanOptions = null;
             bool noneSelected;
             using (var f = new ScanAllFMsForm())
             {
@@ -2519,7 +2519,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            var success = await FMScan.ScanFMs(FMsViewList, scanOptions);
+            var success = await FMScan.ScanFMs(FMsViewList, scanOptions!);
             if (success) await SortAndSetFilter(forceDisplayFM: true);
         }
 
@@ -2582,7 +2582,7 @@ namespace AngelLoader.Forms
 
             var newRatingColumn =
                 Config.RatingDisplayStyle == RatingDisplayStyle.FMSel && Config.RatingUseStars
-                    ? (DataGridViewColumn)RatingImageColumn
+                    ? (DataGridViewColumn)RatingImageColumn!
                     : RatingTextColumn;
 
             if (!startup)
@@ -2692,7 +2692,7 @@ namespace AngelLoader.Forms
         /// <param name="startup"></param>
         /// <param name="keepSelection"></param>
         /// <returns></returns>
-        private bool RefreshFMsList(SelectedFM selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False)
+        private bool RefreshFMsList(SelectedFM? selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False)
         {
             using (new DisableEvents(this))
             {
@@ -3090,7 +3090,7 @@ namespace AngelLoader.Forms
             var readmeFiles = cacheData.Readmes;
             readmeFiles.Sort();
 
-            if (!readmeFiles.ContainsI(fm.SelectedReadme)) fm.SelectedReadme = null;
+            if (!readmeFiles.ContainsI(fm.SelectedReadme)) fm.SelectedReadme = "";
 
             using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
 
@@ -3282,8 +3282,8 @@ namespace AngelLoader.Forms
         private (SelectedFM GameSelFM, Filter GameFilter)
         GetGameSelFMAndFilter(TabPage tabPage)
         {
-            SelectedFM gameSelFM = null;
-            Filter gameFilter = null;
+            SelectedFM? gameSelFM = null;
+            Filter? gameFilter = null;
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 if (GameTabsInOrder[i] == tabPage)
@@ -3297,7 +3297,7 @@ namespace AngelLoader.Forms
             Debug.Assert(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
             Debug.Assert(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
 
-            return (gameSelFM, gameFilter);
+            return (gameSelFM!, gameFilter!);
         }
 
         private void SaveCurrentTabSelectedFM(TabPage tabPage)
@@ -3561,7 +3561,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
 
             var list = FMTags.GetMatchingTagsList(AddTagTextBox.Text);
-            if (list == null)
+            if (list.Count == 0)
             {
                 HideAddTagDropDown();
             }
@@ -3625,7 +3625,7 @@ namespace AngelLoader.Forms
             var fm = FMsDGV.GetSelectedFM();
             var tv = TagsTreeView;
 
-            var success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode.Parent?.Text, tv.SelectedNode?.Text);
+            var success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode?.Parent?.Text ?? "", tv.SelectedNode?.Text ?? "");
             if (!success) return;
 
             DisplayFMTags(fm.Tags);
@@ -3813,7 +3813,7 @@ namespace AngelLoader.Forms
         {
             var s = (ToolStripMenuItem)sender;
 
-            TabPage tab = null;
+            TabPage? tab = null;
             for (int i = 0; i < TopRightTabsCount; i++)
             {
                 if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])

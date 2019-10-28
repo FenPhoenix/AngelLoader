@@ -34,7 +34,7 @@ namespace AngelLoader.CustomControls
 
         #endregion
 
-        private Font _monospaceFont;
+        private Font? _monospaceFont;
         private Font MonospaceFont => _monospaceFont ??= new Font(FontFamily.GenericMonospace, 10.0f);
 
         private bool _contentIsPlainText;

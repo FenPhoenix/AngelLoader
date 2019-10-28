@@ -4,7 +4,7 @@ namespace AngelLoader.Common
 {
     internal sealed class CatAndTags
     {
-        internal string Category;
+        internal string Category = "";
         internal readonly List<string> Tags = new List<string>();
     }
 
@@ -111,7 +111,7 @@ namespace AngelLoader.Common
 
     internal sealed class GlobalCatOrTag
     {
-        internal string Name;
+        internal string Name = "";
 
         /// <summary>
         /// If true, the tag will never be removed from the global list even if no FMs are using it.

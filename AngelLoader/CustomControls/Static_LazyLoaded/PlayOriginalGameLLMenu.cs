@@ -10,12 +10,47 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        internal static ContextMenuStrip Menu;
-        internal static ToolStripMenuItem Thief1MenuItem;
-        internal static ToolStripMenuItem Thief2MenuItem;
-        internal static ToolStripMenuItem Thief2MPMenuItem;
-        internal static ToolStripMenuItem Thief3MenuItem;
-        internal static ToolStripMenuItem SS2MenuItem;
+        private static ContextMenuStrip? _menu;
+        internal static ContextMenuStrip Menu
+        {
+            get => _menu!;
+            private set => _menu = value;
+        }
+
+        private static ToolStripMenuItem? _thief1MenuItem;
+        internal static ToolStripMenuItem Thief1MenuItem
+        {
+            get => _thief1MenuItem!;
+            private set => _thief1MenuItem = value;
+        }
+
+        private static ToolStripMenuItem? _thief2MenuItem;
+        internal static ToolStripMenuItem Thief2MenuItem
+        {
+            get => _thief2MenuItem!;
+            private set => _thief2MenuItem = value;
+        }
+
+        private static ToolStripMenuItem? _thief2MPMenuItem;
+        internal static ToolStripMenuItem Thief2MPMenuItem
+        {
+            get => _thief2MPMenuItem!;
+            private set => _thief2MPMenuItem = value;
+        }
+
+        private static ToolStripMenuItem? _thief3MenuItem;
+        internal static ToolStripMenuItem Thief3MenuItem
+        {
+            get => _thief3MenuItem!;
+            private set => _thief3MenuItem = value;
+        }
+
+        private static ToolStripMenuItem? _ss2MenuItem;
+        internal static ToolStripMenuItem SS2MenuItem
+        {
+            get => _ss2MenuItem!;
+            private set => _ss2MenuItem = value;
+        }
 
         internal static void Construct(MainForm form, IContainer components)
         {
