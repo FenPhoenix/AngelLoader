@@ -80,7 +80,7 @@ namespace AngelLoader.Common.DataClasses
         internal bool? HasSubtitles;
 
         // not using for now, but add DoNotSerialize attribute here if I ever do
-        //internal string[] Languages;
+        // internal string[] Languages;
         internal string LanguagesString = "";
 
         // [FenGen:DoNotSerialize]
