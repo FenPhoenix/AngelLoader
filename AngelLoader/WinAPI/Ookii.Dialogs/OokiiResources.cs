@@ -1,4 +1,7 @@
-﻿namespace AngelLoader.WinAPI.Ookii.Dialogs
+﻿// NULL_TODO
+#nullable disable
+
+namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
     internal static class OokiiResources
     {
