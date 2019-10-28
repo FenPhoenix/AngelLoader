@@ -194,6 +194,7 @@ namespace AngelLoader.Common
         {
             int ret;
             // Working
+#if false
             if (false)
             {
                 int one = _sortOrder == SortOrder.Ascending ? 1 : -1;
@@ -206,6 +207,7 @@ namespace AngelLoader.Common
                     x.Rating > -1 && y.Rating > -1 && x.Rating < y.Rating ? -1 : 1;
             }
             else
+#endif
             {
                 ret =
                     x == null || y == null ? 0 :
@@ -229,6 +231,7 @@ namespace AngelLoader.Common
         {
             int ret;
             // Working: will add new option for this when done
+#if false
             if (false)
             {
                 ret =
@@ -242,6 +245,7 @@ namespace AngelLoader.Common
                     x.FinishedOn > 0 && y.FinishedOn > 0 && x.FinishedOn < y.FinishedOn ? -1 : 1;
             }
             else
+#endif
             {
                 ret =
                     x == null || y == null ? 0 :
