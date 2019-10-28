@@ -6,7 +6,6 @@ using static AngelLoader.Common.GameSupport;
 namespace AngelLoader.Common.DataClasses
 {
     // FenGen reads this and outputs fast ini read and write methods.
-    // TODO: Document FenGen options somewhere
     // TODO: Version-header ini files right from the start, in case I have to change the format after release
     /*
      Notes to self:

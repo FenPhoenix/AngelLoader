@@ -121,7 +121,7 @@ namespace FMScanner
     [PublicAPI]
     public sealed class ProgressReport
     {
-        public string FMName;
+        public string FMName = ""; // non-null for safety
         public int FMNumber;
         public int FMsTotal;
         public int Percent;
