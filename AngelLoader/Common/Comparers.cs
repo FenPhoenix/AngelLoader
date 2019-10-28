@@ -86,7 +86,7 @@ namespace AngelLoader.Common
 
         public int Compare(FanMission x, FanMission y)
         {
-            int ret = x == null || y == null ? 0 : TitleCompare(x, y);
+            int ret = TitleCompare(x, y);
             return _sortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
@@ -100,7 +100,7 @@ namespace AngelLoader.Common
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                x == null || y == null ? 0 :
+                // @R#_FALSE_POSITIVE
                 x.Game == y.Game ? TitleCompare(x, y) :
                 x.Game == Game.Null ? -1 :
                 y.Game == Game.Null ? 1 :
@@ -119,7 +119,7 @@ namespace AngelLoader.Common
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                x == null || y == null ? 0 :
+                // @R#_FALSE_POSITIVE
                 x.Installed == y.Installed ? TitleCompare(x, y) :
                 // Installed goes on top, non-installed (blank icon) goes on bottom
                 x.Installed && !y.Installed ? -1 : 1;
@@ -137,7 +137,7 @@ namespace AngelLoader.Common
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                x == null || y == null ? 0 :
+                // @R#_FALSE_POSITIVE
                 x.Archive.IsEmpty() ? -1 :
                 y.Archive.IsEmpty() ? 1 :
                 string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
@@ -155,7 +155,7 @@ namespace AngelLoader.Common
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                x == null || y == null ? 0 :
+                // @R#_FALSE_POSITIVE
                 x.Author == y.Author ? TitleCompare(x, y) :
                 x.Author.IsEmpty() ? -1 :
                 y.Author.IsEmpty() ? 1 :
@@ -174,7 +174,7 @@ namespace AngelLoader.Common
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                x == null || y == null ? 0 :
+                // @R#_FALSE_POSITIVE
                 x.SizeBytes == y.SizeBytes ? TitleCompare(x, y) :
                 x.SizeBytes == 0 ? -1 :
                 y.SizeBytes == 0 ? 1 :
@@ -200,7 +200,6 @@ namespace AngelLoader.Common
                 int one = _sortOrder == SortOrder.Ascending ? 1 : -1;
 
                 ret =
-                    x == null || y == null ? 0 :
                     x.Rating == y.Rating ? TitleCompare(x, y) :
                     x.Rating == -1 && y.Rating > -1 ? one :
                     x.Rating > -1 && y.Rating == -1 ? -one :
@@ -210,7 +209,7 @@ namespace AngelLoader.Common
 #endif
             {
                 ret =
-                    x == null || y == null ? 0 :
+                    // @R#_FALSE_POSITIVE
                     x.Rating == y.Rating ? TitleCompare(x, y) :
                     x.Rating == 0 ? -1 :
                     y.Rating == 0 ? 1 :
@@ -235,7 +234,6 @@ namespace AngelLoader.Common
             if (false)
             {
                 ret =
-                    x == null || y == null ? 0 :
                     (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
                         ? TitleCompare(x, y) :
                     !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
@@ -248,7 +246,7 @@ namespace AngelLoader.Common
 #endif
             {
                 ret =
-                    x == null || y == null ? 0 :
+                    // @R#_FALSE_POSITIVE
                     !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
                     x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
                     (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
@@ -273,11 +271,8 @@ namespace AngelLoader.Common
             // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
             // sorted out of name order because of an invisible time difference.
             int ret;
-            if (x == null || y == null)
-            {
-                ret = 0;
-            }
-            else if (x.ReleaseDate == null && y.ReleaseDate == null)
+            // @R#_FALSE_POSITIVE
+            if (x.ReleaseDate == null && y.ReleaseDate == null)
             {
                 ret = TitleCompare(x, y);
             }
@@ -310,11 +305,8 @@ namespace AngelLoader.Common
             // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
             // second (you change it by playing it), and the user will expect precise sorting.
             int ret;
-            if (x == null || y == null)
-            {
-                ret = 0;
-            }
-            else if (x.LastPlayed == null && y.LastPlayed == null)
+            // @R#_FALSE_POSITIVE
+            if (x.LastPlayed == null && y.LastPlayed == null)
             {
                 ret = TitleCompare(x, y);
             }
@@ -345,7 +337,7 @@ namespace AngelLoader.Common
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                x == null || y == null ? 0 :
+                // @R#_FALSE_POSITIVE
                 x.DisableAllMods && !y.DisableAllMods ? -1 :
                 !x.DisableAllMods && y.DisableAllMods ? 1 :
                 (x.DisableAllMods && y.DisableAllMods) || x.DisabledMods == y.DisabledMods ? TitleCompare(x, y) :
@@ -367,7 +359,7 @@ namespace AngelLoader.Common
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                x == null || y == null ? 0 :
+                // @R#_FALSE_POSITIVE
                 x.CommentSingleLine == y.CommentSingleLine ? TitleCompare(x, y) :
                 // Sort this column content-first for better UX
                 x.CommentSingleLine.IsEmpty() ? 1 :

@@ -214,7 +214,7 @@ namespace AngelLoader
 
                     // Exponential (slow) stuff, but we only do it once to correct the list and then never again
                     // NOTE: I guess this removes duplicates, which is why it has to do the search?
-                    var existingFM = FMDataIniList.FirstOrDefault(x => x.Archive.EqualsI(archiveName));
+                    FanMission? existingFM = FMDataIniList.FirstOrDefault(x => x.Archive.EqualsI(archiveName));
                     if (existingFM != null)
                     {
                         existingFM.InstalledDir = fm.InstalledDir;
@@ -407,7 +407,7 @@ namespace AngelLoader
                 // wholly or at least partially unnecessary. If we don't have an archive name by this point, do
                 // we therefore already know this is not going to find anything?
                 bool truncate = fm.Game != Game.Thief3;
-                var tryArchive =
+                string? tryArchive =
                     archives.FirstOrDefault(x => x.ToInstDirNameFMSel(truncate).EqualsI(fm.InstalledDir)) ??
                     archives.FirstOrDefault(x => x.ToInstDirNameNDL().EqualsI(fm.InstalledDir)) ??
                     archives.FirstOrDefault(x => x.EqualsI(fm.InstalledDir)) ??

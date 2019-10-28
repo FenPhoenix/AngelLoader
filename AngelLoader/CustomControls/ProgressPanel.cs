@@ -58,7 +58,7 @@ namespace AngelLoader.CustomControls
                 progressTask == ProgressTasks.ImportFromFMSel)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
-                if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);
+                if (Owner?.IsHandleCreated == true) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);
                 ProgressCancelButton.Hide();
             }
             else
@@ -83,7 +83,7 @@ namespace AngelLoader.CustomControls
 
         internal void HideThis()
         {
-            if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
+            if (Owner?.IsHandleCreated == true) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
 
             Hide();
 
@@ -113,7 +113,7 @@ namespace AngelLoader.CustomControls
             CurrentThingLabel.Text = fmName;
             ProgressPercentLabel.Text = percent + @"%";
 
-            if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            if (Owner?.IsHandleCreated == true) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
         }
 
         internal void ReportFMExtractProgress(int percent)
@@ -122,7 +122,7 @@ namespace AngelLoader.CustomControls
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + @"%";
 
-            if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            if (Owner?.IsHandleCreated == true) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
         }
 
         internal void ReportCachingProgress(int percent)
@@ -132,11 +132,11 @@ namespace AngelLoader.CustomControls
 
             if (Visible)
             {
-                if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+                if (Owner?.IsHandleCreated == true) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
             }
             else
             {
-                if (Owner != null && Owner.IsHandleCreated) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
+                if (Owner?.IsHandleCreated == true) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
             }
         }
 

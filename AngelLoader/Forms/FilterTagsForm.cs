@@ -241,14 +241,14 @@ namespace AngelLoader.Forms
             // Parent node (category)
             if (tv.SelectedNode.Parent == null)
             {
-                var cat = tags.FirstOrDefault(x => x.Category == tv.SelectedNode.Text);
+                CatAndTags? cat = tags.FirstOrDefault(x => x.Category == tv.SelectedNode.Text);
                 if (cat != null) tags.Remove(cat);
             }
             // Child node (tag)
             else
             {
-                var cat = tags.FirstOrDefault(x => x.Category == tv.SelectedNode.Parent.Text);
-                var tag = cat?.Tags.FirstOrDefault(x => x == tv.SelectedNode.Text);
+                CatAndTags? cat = tags.FirstOrDefault(x => x.Category == tv.SelectedNode.Parent.Text);
+                string? tag = cat?.Tags.FirstOrDefault(x => x == tv.SelectedNode.Text);
                 if (tag != null)
                 {
                     cat!.Tags.Remove(tag);

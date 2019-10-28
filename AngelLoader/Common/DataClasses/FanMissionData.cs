@@ -52,6 +52,7 @@ namespace AngelLoader.Common.DataClasses
         // [FenGen:NumericEmpty=-1]
         internal int Rating { get => _rating; set => _rating = value.Clamp(-1, 10); }
 
+        // Intentional nulls
         internal DateTime? ReleaseDate = null;
         internal DateTime? LastPlayed = null;
 

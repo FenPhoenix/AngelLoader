@@ -133,7 +133,7 @@ namespace AngelLoader
                 }
             }
 
-            return new CacheData { Readmes = readmes };
+            return new CacheData(readmes);
         }
 
         private static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, IView view, bool refreshCache)
@@ -172,7 +172,7 @@ namespace AngelLoader
 
                 bool checkArchive = refreshCache || (readmes.Count == 0 && !fm.NoReadmes);
 
-                if (!checkArchive) return new CacheData { Readmes = readmes };
+                if (!checkArchive) return new CacheData(readmes);
             }
 
             // If cache dir DOESN'T exist, the above checkArchive decision won't be run, so run it here (prevents
@@ -227,7 +227,7 @@ namespace AngelLoader
 
             fm.NoReadmes = readmes.Count == 0;
 
-            return new CacheData { Readmes = readmes };
+            return new CacheData(readmes);
         }
 
         #endregion

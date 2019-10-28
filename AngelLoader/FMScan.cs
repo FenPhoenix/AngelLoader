@@ -32,7 +32,8 @@ namespace AngelLoader
 
         internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions, bool markAsScanned = true)
         {
-            if (fmsToScan == null || fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
+            // NULL_TODO: Do we need this FM null check...?
+            if (fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
             {
                 return false;
             }
@@ -166,6 +167,7 @@ namespace AngelLoader
                     }
 
                     var sel = fmsToScanFiltered[i];
+                    // NULL_TODO: Yeah pretty sure we don't need this anymore
                     if (sel == null)
                     {
                         // Same as above (this should never happen now, but hey)

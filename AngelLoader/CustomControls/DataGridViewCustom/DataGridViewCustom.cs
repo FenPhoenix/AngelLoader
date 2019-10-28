@@ -228,7 +228,7 @@ namespace AngelLoader.CustomControls
 
         internal void SetColumnData(List<ColumnData> columnDataList)
         {
-            if (columnDataList == null || columnDataList.Count == 0) return;
+            if (columnDataList.Count == 0) return;
 
             #region Important
 

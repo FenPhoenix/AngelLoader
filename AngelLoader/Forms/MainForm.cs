@@ -1864,7 +1864,7 @@ namespace AngelLoader.Forms
                         bool andPass = true;
                         foreach (var andTag in andTags)
                         {
-                            var match = fmTags.FirstOrDefault(x => x.Category == andTag.Category);
+                            CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == andTag.Category);
                             if (match == null)
                             {
                                 andPass = false;
@@ -1903,7 +1903,7 @@ namespace AngelLoader.Forms
                         bool orPass = false;
                         foreach (var orTag in orTags)
                         {
-                            var match = fmTags.FirstOrDefault(x => x.Category == orTag.Category);
+                            CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == orTag.Category);
                             if (match == null) continue;
 
                             if (orTag.Tags.Count > 0)
@@ -1942,7 +1942,7 @@ namespace AngelLoader.Forms
                         bool notPass = true;
                         foreach (var notTag in notTags)
                         {
-                            var match = fmTags.FirstOrDefault(x => x.Category == notTag.Category);
+                            CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == notTag.Category);
                             if (match == null) continue;
 
                             if (notTag.Tags.Count == 0)
@@ -3105,7 +3105,7 @@ namespace AngelLoader.Forms
                     ChooseReadmeComboBox.Hide();
                 }
             }
-            else // if fm.SelectedReadme is null or empty
+            else // if fm.SelectedReadme is empty
             {
                 if (readmeFiles.Count == 0)
                 {
@@ -3282,6 +3282,7 @@ namespace AngelLoader.Forms
         private (SelectedFM GameSelFM, Filter GameFilter)
         GetGameSelFMAndFilter(TabPage tabPage)
         {
+            // NULL_TODO: Null so I can assert
             SelectedFM? gameSelFM = null;
             Filter? gameFilter = null;
             for (int i = 0; i < SupportedGameCount; i++)
@@ -3813,6 +3814,7 @@ namespace AngelLoader.Forms
         {
             var s = (ToolStripMenuItem)sender;
 
+            // NULL_TODO: Null so I can assert
             TabPage? tab = null;
             for (int i = 0; i < TopRightTabsCount; i++)
             {

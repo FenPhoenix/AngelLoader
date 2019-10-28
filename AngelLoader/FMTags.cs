@@ -30,14 +30,14 @@ namespace AngelLoader
                 var cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
-                var cat = fm.Tags.FirstOrDefault(x => x.Category == tagText);
+                CatAndTags? cat = fm.Tags.FirstOrDefault(x => x.Category == tagText);
                 if (cat != null)
                 {
                     fm.Tags.Remove(cat);
                     UpdateFMTagsString(fm);
 
                     // TODO: Profile the FirstOrDefaults and see if I should make them for loops
-                    var globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
+                    GlobalCatAndTags? globalCat = GlobalTags.FirstOrDefault(x => x.Category.Name == cat.Category);
                     if (globalCat != null && !globalCat.Category.IsPreset)
                     {
                         if (globalCat.Category.UsedCount > 0) globalCat.Category.UsedCount--;

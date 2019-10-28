@@ -50,7 +50,9 @@ namespace AngelLoader.Common
     // We might want to add other things (thumbnails etc.) later, so it's a class
     internal class CacheData
     {
-        internal List<string> Readmes = new List<string>();
+        internal readonly List<string> Readmes;
+        internal CacheData() => Readmes = new List<string>();
+        internal CacheData(List<string> readmes) => Readmes = readmes;
     }
 
     internal enum ReadmeType { PlainText, RichText, HTML, GLML }

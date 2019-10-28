@@ -479,6 +479,8 @@ namespace AngelLoader
                 Column.LastPlayed => new FMLastPlayedComparer(sortDirection),
                 Column.DisabledMods => new FMDisabledModsComparer(sortDirection),
                 Column.Comment => new FMCommentComparer(sortDirection),
+                // NULL_TODO: Null only so I can run the assert below
+                // For if I ever need to add something here and forget... not likely
                 _ => (IComparer<FanMission>?)null
             };
 
@@ -563,7 +565,6 @@ namespace AngelLoader
             if (!File.Exists(camModIni))
             {
                 //error = Error.CamModIniNotFound;
-                //return null;
                 error = Error.None;
                 return CreateAndReturn(Path.Combine(gamePath, "FMs"));
             }
@@ -988,7 +989,7 @@ namespace AngelLoader
             try
             {
                 var dmlFile = Path.GetFileName(sourceDMLPath);
-                if (dmlFile == null) return false;
+                if (dmlFile.IsEmpty()) return false;
                 File.Copy(sourceDMLPath, Path.Combine(installedFMPath, dmlFile), overwrite: true);
             }
             catch (Exception ex)
@@ -1066,8 +1067,6 @@ namespace AngelLoader
         internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
-            Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
-
             var readmeOnDisk = GetReadmeFileFullPath(fm);
 
             if (fm.SelectedReadme.ExtIsHtml()) return (readmeOnDisk, ReadmeType.HTML);
@@ -1103,9 +1102,6 @@ namespace AngelLoader
             bool allEqual = true;
             for (var i = 0; i < readmeFiles.Count; i++)
             {
-                var rf = readmeFiles[i];
-                if (rf == null) continue;
-
                 if (i > 0 && !StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i]))
                         .EqualsI(StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i - 1]))))
                 {
@@ -1114,7 +1110,8 @@ namespace AngelLoader
                 }
             }
 
-            static string FirstByPreferredFormat(List<string> files)
+            // Null to match FirstOrDefault old behavior
+            static string? FirstByPreferredFormat(List<string> files)
             {
                 // Don't use IsValidReadme(), because we want a specific search order
                 return
@@ -1168,8 +1165,6 @@ namespace AngelLoader
                 var safeReadmes = new List<string>();
                 foreach (var rf in readmeFiles)
                 {
-                    if (rf == null) continue;
-
                     var fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
 
                     if (fn.EqualsI("Readme") || fn.EqualsI("ReadmeEn") || fn.EqualsI("ReadmeEng") ||
@@ -1192,12 +1187,12 @@ namespace AngelLoader
                 {
                     safeReadmes.Sort(new FileNameNoExtComparer());
 
-                    var eng = safeReadmes.FirstOrDefault(
+                    string? eng = safeReadmes.FirstOrDefault(
                         x => Path.GetFileNameWithoutExtension(x).EndsWithI("en") ||
                              Path.GetFileNameWithoutExtension(x).EndsWithI("eng"));
                     foreach (var item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                     {
-                        var str = safeReadmes.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).EqualsI(item));
+                        string? str = safeReadmes.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).EqualsI(item));
                         if (str != null)
                         {
                             safeReadmes.Remove(str);
@@ -1220,7 +1215,6 @@ namespace AngelLoader
                 for (var i = 0; i < readmeFiles.Count; i++)
                 {
                     var rf = readmeFiles[i];
-                    if (rf == null) continue;
 
                     var fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
                     if (!ContainsUnsafeOrJunkPhrase(fn))
