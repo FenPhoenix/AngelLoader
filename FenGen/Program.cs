@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FenGen
@@ -20,14 +19,6 @@ namespace FenGen
 
     internal sealed class AppContext : ApplicationContext
     {
-        public AppContext()
-        {
-            MainForm view = null;
-#if DEBUG
-            view = new MainForm();
-#endif
-            var model = new Model(view);
-            model.Init();
-        }
+        public AppContext() => Core.Init();
     }
 }

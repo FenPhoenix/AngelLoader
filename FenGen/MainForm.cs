@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace FenGen
 {
     internal partial class MainForm : Form
     {
-        internal Model Model { get; set; }
-
         internal MainForm()
         {
             InitializeComponent();
@@ -15,9 +12,9 @@ namespace FenGen
 
         private async void GenerateButton_Click(object sender, EventArgs e)
         {
-            //var sourceFile = Path.Combine(Model.ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
-            //var destFile = Path.Combine(Model.ALProjectPath, @"Ini\FMData.cs");
-            //Model.GenerateFMData(sourceFile, destFile);
+            //var sourceFile = Path.Combine(Core.ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
+            //var destFile = Path.Combine(Core.ALProjectPath, @"Ini\FMData.cs");
+            //Core.GenerateFMData(sourceFile, destFile);
             await Roslyn_Test.RunRoslynTest();
         }
 
