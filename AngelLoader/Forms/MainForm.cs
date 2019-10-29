@@ -53,7 +53,6 @@ using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
-using FMScanner;
 using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.GameSupport;
@@ -2494,7 +2493,7 @@ namespace AngelLoader.Forms
         {
             if (FMsViewList.Count == 0) return;
 
-            ScanOptions? scanOptions = null;
+            FMScanner.ScanOptions? scanOptions = null;
             bool noneSelected;
             using (var f = new ScanAllFMsForm())
             {
@@ -2502,7 +2501,7 @@ namespace AngelLoader.Forms
                 noneSelected = f.NoneSelected;
                 if (!noneSelected)
                 {
-                    scanOptions = ScanOptions.FalseDefault(
+                    scanOptions = FMScanner.ScanOptions.FalseDefault(
                         scanTitle: f.ScanOptions.ScanTitle,
                         scanAuthor: f.ScanOptions.ScanAuthor,
                         scanGameType: f.ScanOptions.ScanGameType,
@@ -3349,7 +3348,7 @@ namespace AngelLoader.Forms
 
         private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
         {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanCustomResources: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanCustomResources: true));
         }
 
         #endregion
@@ -3477,17 +3476,17 @@ namespace AngelLoader.Forms
 
         private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
         {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanTitle: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanTitle: true));
         }
 
         private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
         {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanAuthor: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanAuthor: true));
         }
 
         private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
         {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), ScanOptions.FalseDefault(scanReleaseDate: true));
+            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true));
         }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)

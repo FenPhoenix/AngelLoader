@@ -84,7 +84,7 @@ namespace FMScanner
         /// </summary>
         public bool ScanLanguages { get; set; } = true;
         /// <summary>
-        /// <see langword="true"/> to detect which game the mission is for (Thief 1, Thief 2, or Thief 3).
+        /// <see langword="true"/> to detect which game the mission is for (Thief 1, Thief 2, Thief 3, or System Shock 2).
         /// </summary>
         public bool ScanGameType { get; set; } = true;
         /// <summary>
@@ -129,20 +129,21 @@ namespace FMScanner
     }
 
     [PublicAPI]
-    public static class Games
+    public enum Game
     {
-        public static string TDP { get; } = "tdp";
-        public static string TMA { get; } = "tma";
-        public static string TDS { get; } = "tds";
-        public static string SS2 { get; } = "ss2";
-        public static string Unsupported { get; } = "unsupported";
+        Null,
+        Thief1,
+        Thief2,
+        Thief3,
+        SS2,
+        Unsupported
     }
 
     [PublicAPI]
-    public static class FMTypes
+    public enum FMType
     {
-        public static string FanMission { get; } = "fanmission";
-        public static string Campaign { get; } = "campaign";
+        FanMission,
+        Campaign
     }
 
     [PublicAPI]
@@ -153,9 +154,9 @@ namespace FMScanner
         public string Title { get; internal set; }
         public List<string> AlternateTitles { get; internal set; } = new List<string>();
         public string Author { get; internal set; }
-        public string Type { get; internal set; }
+        public FMType Type { get; internal set; }
         public string[] IncludedMissions { get; internal set; }
-        public string Game { get; internal set; }
+        public Game Game { get; internal set; }
         public string[] Languages { get; internal set; }
         public string Version { get; internal set; }
         public bool? NewDarkRequired { get; internal set; }

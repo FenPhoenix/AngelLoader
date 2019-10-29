@@ -179,7 +179,7 @@ namespace AngelLoader
 
                     #region Set FM fields
 
-                    var gameSup = scannedFM.Game != FMScanner.Games.Unsupported;
+                    var gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
 
                     if (scanOptions.ScanTitle)
                     {
@@ -228,14 +228,16 @@ namespace AngelLoader
 
                     if (scanOptions.ScanGameType)
                     {
-                        // TODO: @GENGAMES: Hardcore conversion needed, no getting around it
-                        sel.Game =
-                            scannedFM.Game == FMScanner.Games.Unsupported ? Game.Unsupported :
-                            scannedFM.Game == FMScanner.Games.TDP ? Game.Thief1 :
-                            scannedFM.Game == FMScanner.Games.TMA ? Game.Thief2 :
-                            scannedFM.Game == FMScanner.Games.TDS ? Game.Thief3 :
-                            scannedFM.Game == FMScanner.Games.SS2 ? Game.SS2 :
-                            Game.Null;
+                        // @GENGAMES: Do a hard convert at the API boundary, even though these now match the ordering
+                        sel.Game = scannedFM.Game switch
+                        {
+                            FMScanner.Game.Unsupported => Game.Unsupported,
+                            FMScanner.Game.Thief1 => Game.Thief1,
+                            FMScanner.Game.Thief2 => Game.Thief2,
+                            FMScanner.Game.Thief3 => Game.Thief3,
+                            FMScanner.Game.SS2 => Game.SS2,
+                            _ => Game.Null
+                        };
                     }
 
                     if (scanOptions.ScanLanguages)

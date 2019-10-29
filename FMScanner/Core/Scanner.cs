@@ -320,7 +320,7 @@ namespace FMScanner
             static ScannedFMData UnsupportedZip(string archivePath) => new ScannedFMData
             {
                 ArchiveName = GetFileName(archivePath),
-                Game = Games.Unsupported
+                Game = Game.Unsupported
             };
 
             static ScannedFMData UnsupportedDir() => null;
@@ -450,7 +450,7 @@ namespace FMScanner
 
             #endregion
 
-            bool fmIsT3 = fmData.Game == Games.TDS;
+            bool fmIsT3 = fmData.Game == Game.Thief3;
 
             void SetOrAddTitle(string value)
             {
@@ -484,11 +484,11 @@ namespace FMScanner
                     if (ScanOptions.ScanGameType)
                     {
                         fmData.Game = game;
-                        if (fmData.Game == Games.Unsupported) return fmData;
+                        if (fmData.Game == Game.Unsupported) return fmData;
                     }
                 }
 
-                fmIsSS2 = fmData.Game == Games.SS2;
+                fmIsSS2 = fmData.Game == Game.SS2;
 
                 #endregion
 
@@ -498,7 +498,7 @@ namespace FMScanner
                 // TODO: @SS2: Force SS2 to single mission for now
                 // Until I can figure out how to detect which .mis files are used without there being an actual
                 // list...
-                fmData.Type = fmIsSS2 || usedMisFiles.Count <= 1 ? FMTypes.FanMission : FMTypes.Campaign;
+                fmData.Type = fmIsSS2 || usedMisFiles.Count <= 1 ? FMType.FanMission : FMType.Campaign;
 
                 #region Check info files
 
@@ -692,7 +692,7 @@ namespace FMScanner
 
             if (ScanOptions.ScanTags)
             {
-                if (fmData.Type == FMTypes.Campaign) SetMiscTag(fmData, "campaign");
+                if (fmData.Type == FMType.Campaign) SetMiscTag(fmData, "campaign");
 
                 if (!string.IsNullOrEmpty(fmData.Author))
                 {
@@ -908,7 +908,7 @@ namespace FMScanner
                         fn.ExtIsNed() ||
                         fn.ExtIsUnr()))
                     {
-                        fmd.Game = Games.TDS;
+                        fmd.Game = Game.Thief3;
                         t3Found = true;
                         continue;
                     }
@@ -1037,7 +1037,7 @@ namespace FMScanner
                     FastIO.FilesExistSearchTop(t3DetectPath, "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr"))
                 {
                     t3Found = true;
-                    fmd.Game = Games.TDS;
+                    fmd.Game = Game.Thief3;
                 }
 
                 foreach (var f in EnumFiles("*", SearchOption.TopDirectoryOnly))
@@ -2563,10 +2563,10 @@ namespace FMScanner
             }
         }
 
-        private (bool? NewDarkRequired, string Game)
+        private (bool? NewDarkRequired, Game Game)
         GetGameTypeAndEngine(List<NameAndIndex> baseDirFiles, List<NameAndIndex> usedMisFiles)
         {
-            var ret = (NewDarkRequired: (bool?)null, Game: (string)null);
+            var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
 
             #region Choose smallest .gam file
 
@@ -2734,7 +2734,7 @@ namespace FMScanner
                         (!FmIsZip && i < 2 && dirBuf.Contains(MisFileStrings.MapParam)))
                     {
                         // TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
-                        return (null, Games.SS2);
+                        return (null, Game.SS2);
                     }
 
                     if (locations[i] == ss2MapParamLoc1 || locations[i] == ss2MapParamLoc2)
@@ -2769,10 +2769,10 @@ namespace FMScanner
             if (foundAtOldDarkThief2Location)
             {
                 return (ScanOptions.ScanNewDarkRequired ? (bool?)false : null,
-                        ScanOptions.ScanGameType ? Games.TMA : null);
+                        ScanOptions.ScanGameType ? Game.Thief2 : Game.Null);
             }
 
-            if (!ScanOptions.ScanGameType) return (ret.NewDarkRequired, (string)null);
+            if (!ScanOptions.ScanGameType) return (ret.NewDarkRequired, Game.Null);
 
             #region Check for T2-unique value in .gam or .mis (determines game type for both OldDark and NewDark)
 
@@ -2796,7 +2796,7 @@ namespace FMScanner
                 {
                     if (chunk.Contains(identString))
                     {
-                        ret.Game = Games.TMA;
+                        ret.Game = Game.Thief2;
                         break;
                     }
 
@@ -2804,7 +2804,7 @@ namespace FMScanner
                     for (int si = 0, ei = bufSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
                 }
 
-                if (string.IsNullOrEmpty(ret.Game)) ret.Game = Games.TDP;
+                if (ret.Game == Game.Null) ret.Game = Game.Thief1;
             }
             else
             {
@@ -2829,8 +2829,8 @@ namespace FMScanner
 
                     var content = br.ReadBytes((int)length);
                     ret.Game = content.Contains(MisFileStrings.Thief2UniqueStringMis)
-                        ? Games.TMA
-                        : Games.TDP;
+                        ? Game.Thief2
+                        : Game.Thief1;
                     break;
                 }
             }
