@@ -9,11 +9,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using FMScanner.FastZipReader.Deflate64Managed;
+using JetBrains.Annotations;
 
 namespace FMScanner.FastZipReader
 {
     // The disposable fields that this class owns get disposed when the ZipArchive it belongs to gets disposed
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
+    [PublicAPI]
     internal class ZipArchiveEntry
     {
         #region Fields
@@ -68,7 +70,6 @@ namespace FMScanner.FastZipReader
         /// </summary>
         private ZipArchive Archive { get; }
 
-        [CLSCompliant(false)]
         internal uint Crc32 { get; }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace FenGen
     internal sealed class FieldList : List<Field>
     {
         internal bool WriteEmptyValues;
-        internal string Version;
+        //internal string Version;
     }
 
     internal enum GenType
@@ -82,10 +82,7 @@ namespace FenGen
             "decimal"
         };
 
-        internal List<GenType> GenTasks = new List<GenType>();
-
-        private string CodeBehindFile { get; set; } =
-            @"C:\Users\Brian\Documents\Visual Studio 2017\Projects\AngelLoader\AngelLoader\MainForm.cs";
+        private readonly List<GenType> GenTasks = new List<GenType>();
 
         private FieldList Fields { get; } = new FieldList();
 
@@ -141,6 +138,7 @@ namespace FenGen
             ""
         };
 
+#if enable_config_gen
         private string[] ReadConfigIniTopLines { get; } =
         {
             "        internal static ConfigData ReadConfigIni(string fileName)",
@@ -154,6 +152,7 @@ namespace FenGen
             "                var lineT = line.TrimStart();",
             ""
         };
+#endif
 
         private string[] WriteFMDataIniTopLines { get; } =
         {
@@ -177,6 +176,8 @@ namespace FenGen
             View = view;
         }
 
+        private string ALProjectPath;
+
         internal async void Init()
         {
             await InitWorkspaceStuff();
@@ -195,9 +196,7 @@ namespace FenGen
 
         private static void ExitIfRelease() => Environment.Exit(1);
 
-        internal string ALProjectPath;
-
-        internal void ReadArgsAndDoTasks()
+        private void ReadArgsAndDoTasks()
         {
 #if DEBUG
             //return;
@@ -368,25 +367,24 @@ namespace FenGen
                 }
             }
 
-            using (var sw = new StreamWriter(destFile, append: false))
-            {
-                foreach (var l in DestTopLines) sw.WriteLine(l);
+            using var sw = new StreamWriter(destFile, append: false);
 
-                //var obj = GenType == GenType.FMData ? "fm" : "config";
-                var obj = "fm";
+            foreach (var l in DestTopLines) sw.WriteLine(l);
 
-                WriteReader(sw, obj);
+            //var obj = GenType == GenType.FMData ? "fm" : "config";
+            const string obj = "fm";
 
-                sw.WriteLine();
+            WriteReader(sw, obj);
 
-                WriteWriter(sw, obj);
+            sw.WriteLine();
 
-                // class
-                sw.WriteLine(Indent(1) + "}");
+            WriteWriter(sw, obj);
 
-                // namespace
-                sw.WriteLine("}");
-            }
+            // class
+            sw.WriteLine(Indent(1) + "}");
+
+            // namespace
+            sw.WriteLine("}");
         }
 
         private void WriteReader(StreamWriter sw, string obj)
@@ -468,29 +466,20 @@ namespace FenGen
                     var listType = field.Type.Substring(field.Type.IndexOf('<')).TrimStart('<').TrimEnd('>');
 
                     var ldt = field.ListDistinctType;
-                    string objListSet;
 
                     var varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
                         ? "val"
                         : "result";
 
-                    switch (ldt)
+                    string objListSet = ldt switch
                     {
-                        case ListDistinctType.None:
-                            objListSet = objDotField + ".Add(" + varToAdd + ");";
-                            break;
-                        case ListDistinctType.Exact:
-                            objListSet = "if (!" + objDotField + ".Contains(" + varToAdd + ")) " + objDotField + ".Add(" + varToAdd + ");";
-                            break;
-                        case ListDistinctType.CaseInsensitive:
-                            objListSet = listType == "string"
-                                ? "if (!" + objDotField + ".Contains(" + varToAdd + ", StringComparer.OrdinalIgnoreCase)) " + objDotField + ".Add(" + varToAdd + ");"
-                                : "if (!" + objDotField + ".Contains(" + varToAdd + ")) " + objDotField + ".Add(" + varToAdd + ");";
-                            break;
-                        default:
-                            objListSet = objDotField + ".Add(" + varToAdd + ");";
-                            break;
-                    }
+                        ListDistinctType.None => (objDotField + ".Add(" + varToAdd + ");"),
+                        ListDistinctType.Exact => ("if (!" + objDotField + ".Contains(" + varToAdd + ")) " + objDotField + ".Add(" + varToAdd + ");"),
+                        ListDistinctType.CaseInsensitive => (listType == "string"
+                            ? "if (!" + objDotField + ".Contains(" + varToAdd + ", StringComparer.OrdinalIgnoreCase)) " + objDotField + ".Add(" + varToAdd + ");"
+                            : "if (!" + objDotField + ".Contains(" + varToAdd + ")) " + objDotField + ".Add(" + varToAdd + ");"),
+                        _ => (objDotField + ".Add(" + varToAdd + ");")
+                    };
 
                     if (listType == "string")
                     {
@@ -694,18 +683,19 @@ namespace FenGen
                             Indent(5) + "{");
 
                         //if (Fields.WriteEmptyValues)
-                        if (true)
+#if true
                         {
                             sw.WriteLine(Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + s);");
                         }
                         // Disabled for now, for AngelLoader-specific perf
-                        else
+#else
                         {
                             sw.WriteLine(Indent(6) + "if (!string.IsNullOrEmpty(s))\r\n" +
                                          Indent(6) + "{\r\n" +
                                          Indent(7) + "sw.WriteLine(\"" + fieldWriteName + "=\" + s);\r\n" +
                                          Indent(6) + "}");
                         }
+#endif
 
                         sw.WriteLine(Indent(5) + "}");
                     }

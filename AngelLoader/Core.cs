@@ -1093,25 +1093,15 @@ namespace AngelLoader
         {
             // Since an FM's readmes are very few in number, we can afford to be all kinds of lazy and slow here
 
+            #region Local functions
+
             static string StripPunctuation(string str)
             {
                 return str.Replace(" ", "").Replace("-", "").Replace("_", "").Replace(".", "").Replace(",", "")
                     .Replace(";", "").Replace("'", "");
             }
 
-            bool allEqual = true;
-            for (var i = 0; i < readmeFiles.Count; i++)
-            {
-                if (i > 0 && !StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i]))
-                        .EqualsI(StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i - 1]))))
-                {
-                    allEqual = false;
-                    break;
-                }
-            }
-
-            // Null to match FirstOrDefault old behavior
-            static string? FirstByPreferredFormat(List<string> files)
+            static string FirstByPreferredFormat(List<string> files)
             {
                 // Don't use IsValidReadme(), because we want a specific search order
                 return
@@ -1119,7 +1109,7 @@ namespace AngelLoader
                     files.FirstOrDefault(x => x.ExtIsRtf()) ??
                     files.FirstOrDefault(x => x.ExtIsTxt()) ??
                     files.FirstOrDefault(x => x.ExtIsWri()) ??
-                    files.FirstOrDefault(x => x.ExtIsHtml());
+                    files.FirstOrDefault(x => x.ExtIsHtml()) ?? "";
             }
 
             static bool ContainsUnsafePhrase(string str)
@@ -1154,14 +1144,26 @@ namespace AngelLoader
                        str.ContainsI("hint");
             }
 
-            var safeReadme = "";
+            #endregion
+
+            bool allEqual = true;
+            for (int i = 0; i < readmeFiles.Count; i++)
+            {
+                if (i > 0 && !StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i]))
+                        .EqualsI(StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i - 1]))))
+                {
+                    allEqual = false;
+                    break;
+                }
+            }
+
+            string safeReadme = "";
             if (allEqual)
             {
                 safeReadme = FirstByPreferredFormat(readmeFiles);
             }
             else
             {
-
                 var safeReadmes = new List<string>();
                 foreach (var rf in readmeFiles)
                 {
@@ -1212,7 +1214,7 @@ namespace AngelLoader
             {
                 int numSafe = 0;
                 int safeIndex = -1;
-                for (var i = 0; i < readmeFiles.Count; i++)
+                for (int i = 0; i < readmeFiles.Count; i++)
                 {
                     var rf = readmeFiles[i];
 

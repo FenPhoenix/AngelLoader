@@ -121,15 +121,13 @@ namespace AngelLoader
 
                     if (savesAndScreensFiles.Count == 0) return;
 
-                    using (var archive =
+                    using var archive =
                         new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
-                            ZipArchiveMode.Create))
+                            ZipArchiveMode.Create);
+                    foreach (var f in savesAndScreensFiles)
                     {
-                        foreach (var f in savesAndScreensFiles)
-                        {
-                            var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
-                            AddEntry(archive, f, fn);
-                        }
+                        var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
+                        AddEntry(archive, f, fn);
                     }
 
                     return;

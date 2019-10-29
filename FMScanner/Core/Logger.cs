@@ -40,10 +40,7 @@ namespace FMScanner
             string message, Exception ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
-#if !logEnabled
-            return;
-#endif
-
+#if logEnabled
             if (logFile.IsEmpty()) return;
 
             try
@@ -90,6 +87,7 @@ namespace FMScanner
                     Debug.WriteLine(logEx);
                 }
             }
+#endif
         }
     }
 }
