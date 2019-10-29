@@ -172,14 +172,13 @@ namespace FenGen
         private static MainForm View;
 #endif
 
-        private static string ALProjectPath;
+        internal static string ALProjectPath;
 
         internal static async void Init()
         {
+            ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
 
             await InitWorkspaceStuff();
-
-            ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
 
 #if Release
             ReadArgsAndDoTasks();

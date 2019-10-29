@@ -12,12 +12,14 @@ namespace FenGen
 {
     internal static class CommonStatic
     {
+        // PERF_TODO: Roslyn is so slow it's laughable. It takes 1.5 seconds just to run InitWorkspaceStuff() alone.
+        // That's not even counting doing any actual work with it, which adds even more slug time.
+        // PERF_TODO: Go back to manually doing it all, and just organize AL so the gen can find things without too much brittleness
+
         #region Roslyn
 
-        private static readonly string _solutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
+        // Class-level so it doesn't get disposed at the end of the init method
         private static MSBuildWorkspace _workspace;
-        private static Solution _solution;
-        private static Project _project;
 
         internal static Compilation CU;
 
@@ -27,10 +29,8 @@ namespace FenGen
 
             _workspace = MSBuildWorkspace.Create();
 
-            _solution = await _workspace.OpenSolutionAsync(Path.Combine(_solutionPath, "AngelLoader.sln"));
-
             // Throw if we don't find it, it's kind of important
-            _project = _solution.Projects.First(x => x.AssemblyName.EqualsI("AngelLoader"));
+            var _project = await _workspace.OpenProjectAsync(Path.Combine(Core.ALProjectPath, "AngelLoader.csproj"));
 
             CU = await _project.GetCompilationAsync();
         }

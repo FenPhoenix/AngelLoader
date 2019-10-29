@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.MSBuild;
 using static FenGen.CommonStatic;
 using static FenGen.Methods;
 
@@ -62,15 +57,22 @@ namespace FenGen
                     {
                         foreach (var attr in classItem.AttributeLists[0].Attributes)
                         {
-                            var type = sm.GetTypeInfo(attr).ConvertedType;
-                            if (type.Name == FenGenLocalizationClassAttribute)
+                            //var type = sm.GetTypeInfo(attr).ConvertedType;
+                            //if (type.Name == FenGenLocalizationClassAttribute)
+
+                            // Not counting uses makes us 2x faster, and using our home-rolled GetAttributeName()
+                            // makes us 11x faster on top of that.
+                            if (GetAttributeName(attr.Name.ToString(), FenGenLocalizationClassAttribute))
                             {
                                 LocAttrMarkedClasses.Add(classItem);
+                                goto breakout;
                             }
                         }
                     }
                 }
             }
+
+            breakout:
 
             // Make the whole thing fail so I can get a fail message in AngelLoader on build
             if (LocAttrMarkedClasses.Count > 1)
@@ -264,47 +266,46 @@ namespace FenGen
         {
             if (test) langIniFile = StateVars.TestFile;
 
-            using (var sw = new StreamWriter(langIniFile, append: false, Encoding.UTF8))
+            using var sw = new StreamWriter(langIniFile, append: false, Encoding.UTF8);
+
+            var testPrefix = test ? "█" : "";
+
+            sw.WriteLine("; This is an AngelLoader language file.");
+            sw.WriteLine("; This file MUST be saved with UTF8 encoding in order to guarantee correct display of strings.");
+            sw.WriteLine();
+
+            for (var i = 0; i < dictList.Count; i++)
             {
-                var testPrefix = test ? "█" : "";
+                var dict = dictList[i];
 
-                sw.WriteLine("; This is an AngelLoader language file.");
-                sw.WriteLine("; This file MUST be saved with UTF8 encoding in order to guarantee correct display of strings.");
-                sw.WriteLine();
-
-                for (var i = 0; i < dictList.Count; i++)
+                sw.WriteLine("[" + dict.Name + "]");
+                foreach (var item in dict)
                 {
-                    var dict = dictList[i];
-
-                    sw.WriteLine("[" + dict.Name + "]");
-                    foreach (var item in dict)
+                    if (item.IsComment)
                     {
-                        if (item.IsComment)
+                        if (!item.Value.IsEmpty())
                         {
-                            if (!item.Value.IsEmpty())
-                            {
-                                var comments = item.Value.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                                foreach (var c in comments) sw.WriteLine("; " + c);
-                            }
+                            var comments = item.Value.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                            foreach (var c in comments) sw.WriteLine("; " + c);
                         }
-                        else if (item.Key.IsEmpty() && item.Value.IsEmpty())
+                    }
+                    else if (item.Key.IsEmpty() && item.Value.IsEmpty())
+                    {
+                        sw.WriteLine();
+                    }
+                    else
+                    {
+                        if (test && item.Key == "TranslatedLanguageName")
                         {
-                            sw.WriteLine();
+                            sw.WriteLine(item.Key + "=" + "TéstLang");
                         }
                         else
                         {
-                            if (test && item.Key == "TranslatedLanguageName")
-                            {
-                                sw.WriteLine(item.Key + "=" + "TéstLang");
-                            }
-                            else
-                            {
-                                sw.WriteLine(item.Key + "=" + testPrefix + item.Value);
-                            }
+                            sw.WriteLine(item.Key + "=" + testPrefix + item.Value);
                         }
                     }
-                    if (i < dictList.Count - 1) sw.WriteLine();
                 }
+                if (i < dictList.Count - 1) sw.WriteLine();
             }
         }
     }
