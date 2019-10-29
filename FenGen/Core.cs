@@ -168,7 +168,9 @@ namespace FenGen
         private static List<string> ReaderKeepLines { get; } = new List<string>();
         private static List<string> WriterKeepLines { get; } = new List<string>();
 
+#if DEBUG
         private static MainForm View;
+#endif
 
         private static string ALProjectPath;
 
@@ -252,15 +254,6 @@ namespace FenGen
                             StateVars.WriteTestLangFile = true;
                             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
                             LanguageGen.Generate(destFile, langFile);
-                        }
-                        break;
-                    case "-main_form_backing":
-                        if (!GenTasks.Contains(GenType.MainFormBacking))
-                        {
-                            GenTasks.Add(GenType.MainFormBacking);
-                            var sourceFile = Path.Combine(ALProjectPath, @"Forms\MainForm.Designer.cs");
-                            var destFile = Path.Combine(ALProjectPath, @"Forms\MainForm_InitFast.cs");
-                            MainFormBacking.Generate(sourceFile, destFile);
                         }
                         break;
                     default:

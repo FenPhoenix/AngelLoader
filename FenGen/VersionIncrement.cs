@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace FenGen
 {
+    // TODO: With the SDK project format, this whole thing needs to be ripped up and rewritten
+    // (because version stuff is now stored in the project file)
     internal static class VersionIncrement
     {
         internal static void Generate(string fileName, VersionType verType)
