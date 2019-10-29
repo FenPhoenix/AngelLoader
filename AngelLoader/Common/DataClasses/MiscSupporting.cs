@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define FenGen_TypeSource
+
+using System;
 using System.Diagnostics;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;

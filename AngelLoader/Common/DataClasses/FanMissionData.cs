@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define FenGen_FMDataSource
+
+using System;
 using System.Collections.Generic;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.GameSupport;

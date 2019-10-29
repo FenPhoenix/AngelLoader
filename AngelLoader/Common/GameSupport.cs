@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define FenGen_TypeSource
+
+using System;
 using AngelLoader.Common.DataClasses;
 using JetBrains.Annotations;
 

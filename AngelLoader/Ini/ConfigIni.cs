@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define FenGen_ConfigDest
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;

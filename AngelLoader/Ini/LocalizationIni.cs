@@ -1,3 +1,5 @@
+#define FenGen_LocalizationDest
+
 using System.IO;
 using System.Text;
 using AngelLoader.Common.DataClasses;

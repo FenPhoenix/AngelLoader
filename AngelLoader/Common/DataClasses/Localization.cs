@@ -1,4 +1,6 @@
-﻿using static AngelLoader.Common.Attributes;
+﻿#define FenGen_LocalizationSource
+
+using static AngelLoader.Common.Attributes;
 
 namespace AngelLoader.Common.DataClasses
 {

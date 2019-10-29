@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define FenGen_ConfigSource
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -7,6 +9,7 @@ using static AngelLoader.Common.GameSupport;
 
 namespace AngelLoader.Common.DataClasses
 {
+    // TODO: @FenGen: Get rid of WinForms type and other unsavory type stuff in here
     internal sealed class ConfigData
     {
         internal ConfigData()
