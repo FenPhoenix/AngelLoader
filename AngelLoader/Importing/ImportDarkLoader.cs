@@ -241,11 +241,11 @@ namespace AngelLoader.Importing
                                         try
                                         {
                                             var date = new DateTime(1899, 12, 30).AddDays(result);
-                                            fm.ReleaseDate = date.Year > 1998 ? date : (DateTime?)null;
+                                            fm.ReleaseDate.DateTime = date.Year > 1998 ? date : (DateTime?)null;
                                         }
                                         catch (ArgumentOutOfRangeException)
                                         {
-                                            fm.ReleaseDate = null;
+                                            fm.ReleaseDate.DateTime = null;
                                         }
                                     }
                                     else if (lts.StartsWith("date="))
@@ -254,11 +254,11 @@ namespace AngelLoader.Importing
                                         try
                                         {
                                             var date = new DateTime(1899, 12, 30).AddDays(result);
-                                            fm.LastPlayed = date.Year > 1998 ? date : (DateTime?)null;
+                                            fm.LastPlayed.DateTime = date.Year > 1998 ? date : (DateTime?)null;
                                         }
                                         catch (ArgumentOutOfRangeException)
                                         {
-                                            fm.LastPlayed = null;
+                                            fm.LastPlayed.DateTime = null;
                                         }
                                     }
                                     else if (lts.StartsWith("finished="))

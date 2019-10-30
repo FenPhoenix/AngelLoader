@@ -272,21 +272,21 @@ namespace AngelLoader.Common
             // sorted out of name order because of an invisible time difference.
             int ret;
             // @R#_FALSE_POSITIVE
-            if (x.ReleaseDate == null && y.ReleaseDate == null)
+            if (x.ReleaseDate.DateTime == null && y.ReleaseDate.DateTime == null)
             {
                 ret = TitleCompare(x, y);
             }
-            else if (x.ReleaseDate == null)
+            else if (x.ReleaseDate.DateTime == null)
             {
                 ret = -1;
             }
-            else if (y.ReleaseDate == null)
+            else if (y.ReleaseDate.DateTime == null)
             {
                 ret = 1;
             }
             else
             {
-                int cmp = ((DateTime)x.ReleaseDate).Date.CompareTo(((DateTime)y.ReleaseDate).Date);
+                int cmp = ((DateTime)x.ReleaseDate.DateTime).Date.CompareTo(((DateTime)y.ReleaseDate.DateTime).Date);
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
@@ -302,25 +302,25 @@ namespace AngelLoader.Common
 
         public int Compare(FanMission x, FanMission y)
         {
-            // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
-            // second (you change it by playing it), and the user will expect precise sorting.
             int ret;
             // @R#_FALSE_POSITIVE
-            if (x.LastPlayed == null && y.LastPlayed == null)
+            if (x.LastPlayed.DateTime == null && y.LastPlayed.DateTime == null)
             {
                 ret = TitleCompare(x, y);
             }
-            else if (x.LastPlayed == null)
+            else if (x.LastPlayed.DateTime == null)
             {
                 ret = -1;
             }
-            else if (y.LastPlayed == null)
+            else if (y.LastPlayed.DateTime == null)
             {
                 ret = 1;
             }
             else
             {
-                int cmp = ((DateTime)x.LastPlayed).CompareTo(((DateTime)y.LastPlayed));
+                // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
+                // second (you change it by playing it), and the user will expect precise sorting.
+                int cmp = ((DateTime)x.LastPlayed.DateTime).CompareTo((DateTime)y.LastPlayed.DateTime);
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 

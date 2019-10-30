@@ -605,6 +605,10 @@ namespace FenGen
                                  Indent(6) + objDotField + " = Game.Null;\r\n" +
                                  Indent(5) + "}");
                 }
+                else if (field.Type == "ExpandableDate")
+                {
+                    sw.WriteLine(Indent(5) + objDotField + ".UnixDateString = val;");
+                }
                 else if (field.Type == "DateTime?")
                 {
                     sw.WriteLine(Indent(5) + "var success = long.TryParse(\r\n" +
@@ -796,14 +800,30 @@ namespace FenGen
                             Indent(5) + "}");
                     }
                 }
+                else if (field.Type == "ExpandableDate")
+                {
+                    if (Fields.WriteEmptyValues)
+                    {
+                        sw.WriteLine(
+                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".UnixDateString);");
+                    }
+                    else
+                    {
+                        sw.WriteLine(
+                            Indent(5) + "if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))\r\n" +
+                            Indent(5) + "{\r\n" +
+                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".UnixDateString);\r\n" +
+                            Indent(5) + "}");
+                    }
+                }
                 else if (field.Type == "DateTime?")
                 {
                     if (Fields.WriteEmptyValues)
                     {
                         sw.WriteLine(
-                            Indent(6) + "var val = new DateTimeOffset((DateTime)" + objDotField +
+                            Indent(5) + "var val = new DateTimeOffset((DateTime)" + objDotField +
                             ").ToUnixTimeSeconds().ToString(\"X\");\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + val);");
+                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + val);");
                     }
                     else
                     {

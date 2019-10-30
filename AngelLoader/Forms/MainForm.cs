@@ -2009,7 +2009,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmRelDate = FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate;
+                    var fmRelDate = FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate.DateTime;
 
                     if (fmRelDate == null ||
                         (rdf != null &&
@@ -2034,7 +2034,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmLastPlayed = FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed;
+                    var fmLastPlayed = FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed.DateTime;
 
                     if (fmLastPlayed == null ||
                         (lpdf != null &&
@@ -2281,11 +2281,11 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.ReleaseDate:
-                    e.Value = fm.ReleaseDate != null ? FormattedDate((DateTime)fm.ReleaseDate) : "";
+                    e.Value = fm.ReleaseDate.DateTime != null ? FormattedDate((DateTime)fm.ReleaseDate.DateTime) : "";
                     break;
 
                 case Column.LastPlayed:
-                    e.Value = fm.LastPlayed != null ? FormattedDate((DateTime)fm.LastPlayed) : "";
+                    e.Value = fm.LastPlayed.DateTime != null ? FormattedDate((DateTime)fm.LastPlayed.DateTime) : "";
                     break;
 
                 case Column.DisabledMods:
@@ -3041,12 +3041,12 @@ namespace AngelLoader.Forms
 
                 EditFMAuthorTextBox.Text = fm.Author;
 
-                EditFMReleaseDateCheckBox.Checked = fm.ReleaseDate != null;
-                EditFMReleaseDateDateTimePicker.Value = fm.ReleaseDate ?? DateTime.Now;
+                EditFMReleaseDateCheckBox.Checked = fm.ReleaseDate.DateTime != null;
+                EditFMReleaseDateDateTimePicker.Value = fm.ReleaseDate.DateTime ?? DateTime.Now;
                 EditFMReleaseDateDateTimePicker.Visible = fm.ReleaseDate != null;
 
-                EditFMLastPlayedCheckBox.Checked = fm.LastPlayed != null;
-                EditFMLastPlayedDateTimePicker.Value = fm.LastPlayed ?? DateTime.Now;
+                EditFMLastPlayedCheckBox.Checked = fm.LastPlayed.DateTime != null;
+                EditFMLastPlayedDateTimePicker.Value = fm.LastPlayed.DateTime ?? DateTime.Now;
                 EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed != null;
 
                 EditFMDisableAllModsCheckBox.Checked = fm.DisableAllMods;
@@ -3399,7 +3399,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMReleaseDateDateTimePicker.Visible = EditFMReleaseDateCheckBox.Checked;
 
-            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateCheckBox.Checked
+            FMsDGV.GetSelectedFM().ReleaseDate.DateTime = EditFMReleaseDateCheckBox.Checked
                 ? EditFMReleaseDateDateTimePicker.Value
                 : (DateTime?)null;
 
@@ -3410,7 +3410,7 @@ namespace AngelLoader.Forms
         private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().ReleaseDate = EditFMReleaseDateDateTimePicker.Value;
+            FMsDGV.GetSelectedFM().ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
             RefreshSelectedFMRowOnly();
             Ini.Ini.WriteFullFMDataIni();
         }
@@ -3420,7 +3420,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             EditFMLastPlayedDateTimePicker.Visible = EditFMLastPlayedCheckBox.Checked;
 
-            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedCheckBox.Checked
+            FMsDGV.GetSelectedFM().LastPlayed.DateTime = EditFMLastPlayedCheckBox.Checked
                 ? EditFMLastPlayedDateTimePicker.Value
                 : (DateTime?)null;
 
@@ -3431,7 +3431,7 @@ namespace AngelLoader.Forms
         private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            FMsDGV.GetSelectedFM().LastPlayed = EditFMLastPlayedDateTimePicker.Value;
+            FMsDGV.GetSelectedFM().LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
             RefreshSelectedFMRowOnly();
             Ini.Ini.WriteFullFMDataIni();
         }

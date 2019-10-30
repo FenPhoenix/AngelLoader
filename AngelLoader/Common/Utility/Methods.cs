@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Text;
@@ -173,6 +174,35 @@ namespace AngelLoader.Common.Utility
         }
 
         #endregion
+
+        // Here so ExpandableDate objects don't have to carry it around
+        internal static DateTime? ExpandDateTime(string unixDate)
+        {
+            var success = long.TryParse(
+                unixDate,
+                NumberStyles.HexNumber,
+                DateTimeFormatInfo.InvariantInfo,
+                out long result);
+
+            if (success)
+            {
+                try
+                {
+                    return DateTimeOffset
+                        .FromUnixTimeSeconds(result)
+                        .DateTime
+                        .ToLocalTime();
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         internal static ScanOptions GetDefaultScanOptions() => ScanOptions.FalseDefault(
             scanTitle: true,

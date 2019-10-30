@@ -205,7 +205,7 @@ namespace AngelLoader
                     }
                     if (scanOptions.ScanReleaseDate)
                     {
-                        sel.ReleaseDate = gameSup ? scannedFM.LastUpdateDate : null;
+                        sel.ReleaseDate.DateTime = gameSup ? scannedFM.LastUpdateDate : null;
                     }
                     if (scanOptions.ScanCustomResources)
                     {

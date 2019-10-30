@@ -135,11 +135,11 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ReleaseDate="))
                             {
-                                fm.ReleaseDate = ReadNullableHexDate(lineFM.Substring(12));
+                                fm.ReleaseDate.UnixDateString = lineFM.Substring(12);
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("LastCompleted="))
                             {
-                                fm.LastPlayed = ReadNullableHexDate(lineFM.Substring(14));
+                                fm.LastPlayed.UnixDateString = lineFM.Substring(14);
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Finished="))
                             {

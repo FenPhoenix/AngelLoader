@@ -141,62 +141,12 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks("ReleaseDate="))
                 {
                     var val = lineT.Substring(12);
-                    var success = long.TryParse(
-                        val,
-                        NumberStyles.HexNumber,
-                        DateTimeFormatInfo.InvariantInfo,
-                        out long result);
-
-                    if (success)
-                    {
-                        try
-                        {
-                            var dateTime = DateTimeOffset
-                                .FromUnixTimeSeconds(result)
-                                .DateTime
-                                .ToLocalTime();
-
-                            fm.ReleaseDate = (DateTime?)dateTime;
-                        }
-                        catch (ArgumentOutOfRangeException)
-                        {
-                            fm.ReleaseDate = null;
-                        }
-                    }
-                    else
-                    {
-                        fm.ReleaseDate = null;
-                    }
+                    fm.ReleaseDate.UnixDateString = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("LastPlayed="))
                 {
                     var val = lineT.Substring(11);
-                    var success = long.TryParse(
-                        val,
-                        NumberStyles.HexNumber,
-                        DateTimeFormatInfo.InvariantInfo,
-                        out long result);
-
-                    if (success)
-                    {
-                        try
-                        {
-                            var dateTime = DateTimeOffset
-                                .FromUnixTimeSeconds(result)
-                                .DateTime
-                                .ToLocalTime();
-
-                            fm.LastPlayed = (DateTime?)dateTime;
-                        }
-                        catch (ArgumentOutOfRangeException)
-                        {
-                            fm.LastPlayed = null;
-                        }
-                    }
-                    else
-                    {
-                        fm.LastPlayed = null;
-                    }
+                    fm.LastPlayed.UnixDateString = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FinishedOn="))
                 {
@@ -358,15 +308,13 @@ namespace AngelLoader.Ini
                     {
                         sw.WriteLine("Rating=" + fm.Rating.ToString());
                     }
-                    if (fm.ReleaseDate != null)
+                    if (!string.IsNullOrEmpty(fm.ReleaseDate.UnixDateString))
                     {
-                        var val = new DateTimeOffset((DateTime)fm.ReleaseDate).ToUnixTimeSeconds().ToString("X");
-                        sw.WriteLine("ReleaseDate=" + val);
+                        sw.WriteLine("ReleaseDate=" + fm.ReleaseDate.UnixDateString);
                     }
-                    if (fm.LastPlayed != null)
+                    if (!string.IsNullOrEmpty(fm.LastPlayed.UnixDateString))
                     {
-                        var val = new DateTimeOffset((DateTime)fm.LastPlayed).ToUnixTimeSeconds().ToString("X");
-                        sw.WriteLine("LastPlayed=" + val);
+                        sw.WriteLine("LastPlayed=" + fm.LastPlayed.UnixDateString);
                     }
                     if (fm.FinishedOn != 0)
                     {

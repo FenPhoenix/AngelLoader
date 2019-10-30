@@ -184,15 +184,15 @@ namespace AngelLoader.Importing
                             mainFM.Title = importedFM.Title;
                             priorityFMData.Title = importedFM.Title;
                         }
-                        if (fields.ReleaseDate && importedFM.ReleaseDate != null)
+                        if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
                         {
-                            mainFM.ReleaseDate = importedFM.ReleaseDate;
-                            priorityFMData.ReleaseDate = importedFM.ReleaseDate;
+                            mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                            priorityFMData.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
                         }
                         if (fields.LastPlayed)
                         {
-                            mainFM.LastPlayed = importedFM.LastPlayed;
-                            priorityFMData.LastPlayed = importedFM.LastPlayed;
+                            mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                            priorityFMData.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
                         }
                         if (fields.FinishedOn)
                         {
@@ -286,13 +286,13 @@ namespace AngelLoader.Importing
                     }
                     if (fields.ReleaseDate)
                     {
-                        newFM.ReleaseDate = importedFM.ReleaseDate;
-                        priorityFMData.ReleaseDate = importedFM.ReleaseDate;
+                        newFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                        priorityFMData.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
                     }
                     if (fields.LastPlayed)
                     {
-                        newFM.LastPlayed = importedFM.LastPlayed;
-                        priorityFMData.LastPlayed = importedFM.LastPlayed;
+                        newFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                        priorityFMData.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
                     }
                     if (fields.Comment)
                     {

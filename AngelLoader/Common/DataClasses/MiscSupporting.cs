@@ -14,6 +14,41 @@ namespace AngelLoader.Common.DataClasses
     //    internal string Command = "";
     //}
 
+    // Startup perf: we don't need to convert them on ini read, we can lazy-load their heavy DateTime? objects
+    // later when we go to display them
+    internal sealed class ExpandableDate
+    {
+        private bool _expanded;
+        private DateTime? _dateTime;
+
+        internal string UnixDateString { get; set; } = "";
+
+        internal DateTime? DateTime
+        {
+            get
+            {
+                if (_expanded)
+                {
+                    return _dateTime;
+                }
+                else
+                {
+                    _dateTime = Methods.ExpandDateTime(UnixDateString);
+                    _expanded = true;
+                    return _dateTime;
+                }
+            }
+            set
+            {
+                _dateTime = value;
+                UnixDateString = value != null
+                    ? new DateTimeOffset((DateTime)value).ToUnixTimeSeconds().ToString("X")
+                    : "";
+                _expanded = true;
+            }
+        }
+    }
+
     #region Columns
 
     internal sealed class ColumnData

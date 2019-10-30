@@ -1,6 +1,5 @@
 ﻿#define FenGen_FMDataSource
 
-using System;
 using System.Collections.Generic;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.GameSupport;
@@ -54,8 +53,8 @@ namespace AngelLoader.Common.DataClasses
         internal int Rating { get => _rating; set => _rating = value.Clamp(-1, 10); }
 
         // Intentional nulls
-        internal DateTime? ReleaseDate = null;
-        internal DateTime? LastPlayed = null;
+        internal readonly ExpandableDate ReleaseDate = new ExpandableDate();
+        internal readonly ExpandableDate LastPlayed = new ExpandableDate();
 
         // [FenGen:DoNotSerialize]
         private uint _finishedOn = 0;

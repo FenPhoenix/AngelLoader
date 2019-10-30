@@ -63,7 +63,7 @@ namespace AngelLoader
 
             if (PlayFM(fm, playMP))
             {
-                fm.LastPlayed = DateTime.Now;
+                fm.LastPlayed.DateTime = DateTime.Now;
                 await Core.View.RefreshSelectedFM(refreshReadme: false);
             }
         }
