@@ -164,7 +164,7 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
             FilterBySS2Button = new ToolStripButtonCustom();
-            TagsTabDummyAutoScrollPanel = new Panel();
+            TagsTabAutoScrollMarker = new Control();
             SS2TabPage = new TabPage();
 
             #endregion
@@ -615,7 +615,7 @@ namespace AngelLoader.Forms
             // 
             // TagsTabDummyAutoScrollPanel
             // 
-            TagsTabDummyAutoScrollPanel.Size = new Size(240, 152);
+            TagsTabAutoScrollMarker.Size = new Size(240, 152);
             // 
             // FilterBySS2Button
             // 
@@ -1279,7 +1279,7 @@ namespace AngelLoader.Forms
             TagsTabPage.Controls.Add(AddTagTextBox);
             TagsTabPage.Controls.Add(AddRemoveTagFLP);
             TagsTabPage.Controls.Add(TagsTreeView);
-            TagsTabPage.Controls.Add(TagsTabDummyAutoScrollPanel);
+            TagsTabPage.Controls.Add(TagsTabAutoScrollMarker);
             TagsTabPage.Name = nameof(TagsTabPage);
             TagsTabPage.Size = new Size(526, 284);
             TagsTabPage.TabIndex = 1;

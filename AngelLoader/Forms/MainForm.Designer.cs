@@ -2067,6 +2067,6 @@
         private System.Windows.Forms.Button TopRightMenuButton;
         private CustomControls.ToolStripButtonCustom FilterBySS2Button;
         private System.Windows.Forms.TabPage SS2TabPage;
-        private System.Windows.Forms.Panel TagsTabDummyAutoScrollPanel;
+        private System.Windows.Forms.Control TagsTabAutoScrollMarker;
     }
 }
