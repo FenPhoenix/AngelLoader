@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,6 +11,9 @@ using static FenGen.Methods;
 
 namespace FenGen
 {
+    // PERF_TODO: Roslyn is still the big fat slug, with ParseText() taking hundreds of ms.
+    // Revert to parsing everything manually for speed. This is ludicrously untenable, who would even accept a
+    // multi-second tack-on to build time for code generation this simple?!
     internal static class LanguageGen
     {
         private class IniItem
@@ -40,8 +42,8 @@ namespace FenGen
         private static (string Source, string Dest)
         FindSourceAndDestFiles()
         {
-            const string locSourceTag = "#define FenGen_LocalizationSource";
-            const string locDestTag = "#define FenGen_LocalizationDest";
+            const string locSourceTag = "FenGen_LocalizationSource";
+            const string locDestTag = "FenGen_LocalizationDest";
 
             var sourceTaggedFiles = new List<string>();
             var destTaggedFiles = new List<string>();
@@ -55,16 +57,24 @@ namespace FenGen
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (line.IsWhiteSpace()) continue;
-                        var lt = line.Trim();
-                        if (Regex.Replace(lt, @"\s+", @" ") == locSourceTag)
+                        var lts = line.TrimStart();
+
+                        if (lts.Length > 0 && lts[0] != '#') break;
+
+                        if (lts.StartsWith(@"#define") && lts.Length > 7 && char.IsWhiteSpace(lts[7]))
                         {
-                            sourceTaggedFiles.Add(f);
-                            break;
-                        }
-                        else if (Regex.Replace(lt, @"\s+", @" ") == locDestTag)
-                        {
-                            destTaggedFiles.Add(f);
-                            break;
+                            var tag = lts.Substring(7).Trim();
+
+                            if (tag == locSourceTag)
+                            {
+                                sourceTaggedFiles.Add(f);
+                                break;
+                            }
+                            else if (tag == locDestTag)
+                            {
+                                destTaggedFiles.Add(f);
+                                break;
+                            }
                         }
                     }
                 }
