@@ -174,11 +174,9 @@ namespace FenGen
 
         internal static string ALProjectPath;
 
-        internal static async void Init()
+        internal static void Init()
         {
             ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
-
-            await InitWorkspaceStuff();
 
 #if Release
             ReadArgsAndDoTasks();
@@ -239,20 +237,18 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.Language))
                         {
                             GenTasks.Add(GenType.Language);
-                            var destFile = Path.Combine(ALProjectPath, @"Ini\LocalizationIni.cs");
                             var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
-                            LanguageGen.Generate(destFile, langFile);
+                            LanguageGen.Generate(langFile);
                         }
                         break;
                     case "-language_t":
                         if (!GenTasks.Contains(GenType.Language))
                         {
                             GenTasks.Add(GenType.Language);
-                            var destFile = Path.Combine(ALProjectPath, @"Ini\LocalizationIni.cs");
                             var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
                             StateVars.WriteTestLangFile = true;
                             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
-                            LanguageGen.Generate(destFile, langFile);
+                            LanguageGen.Generate(langFile);
                         }
                         break;
                     default:

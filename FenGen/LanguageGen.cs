@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,67 +28,113 @@ namespace FenGen
             internal readonly string Name;
         }
 
-        internal static void Generate(string destFile, string langIniFile)
+        internal static void Generate(string langIniFile)
         {
-            var (langClassName, dictList) = ReadSource();
+            var (sourceFile, destFile) = FindSourceAndDestFiles();
+
+            var (langClassName, dictList) = ReadSource(sourceFile);
 
             WriteDest(langClassName, dictList, destFile, langIniFile);
         }
 
-        private static (string LangClassName, List<NamedDictionary> Dict)
-        ReadSource()
+        private static (string Source, string Dest)
+        FindSourceAndDestFiles()
         {
-            const string FenGenLocalizationClassAttribute = "FenGenLocalizationClassAttribute";
+            const string locSourceTag = "#define FenGen_LocalizationSource";
+            const string locDestTag = "#define FenGen_LocalizationDest";
 
-            var retDict = new List<NamedDictionary>();
+            var sourceTaggedFiles = new List<string>();
+            var destTaggedFiles = new List<string>();
 
-            var LocAttrMarkedClasses = new List<ClassDeclarationSyntax>();
-
-            foreach (var t in CU.SyntaxTrees)
+            var files = Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories);
+            foreach (var f in files)
             {
-                var sm = CU.GetSemanticModel(t);
-                var nodes = t.GetCompilationUnitRoot().DescendantNodesAndSelf();
-                foreach (var n in nodes)
+                using (var sr = new StreamReader(f))
                 {
-                    if (!n.IsKind(SyntaxKind.ClassDeclaration)) continue;
-
-                    var classItem = (ClassDeclarationSyntax)n;
-
-                    if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
                     {
-                        foreach (var attr in classItem.AttributeLists[0].Attributes)
+                        if (line.IsWhiteSpace()) continue;
+                        var lt = line.Trim();
+                        if (Regex.Replace(lt, @"\s+", @" ") == locSourceTag)
                         {
-                            //var type = sm.GetTypeInfo(attr).ConvertedType;
-                            //if (type.Name == FenGenLocalizationClassAttribute)
-
-                            // Not counting uses makes us 2x faster, and using our home-rolled GetAttributeName()
-                            // makes us 11x faster on top of that.
-                            if (GetAttributeName(attr.Name.ToString(), FenGenLocalizationClassAttribute))
-                            {
-                                LocAttrMarkedClasses.Add(classItem);
-                                goto breakout;
-                            }
+                            sourceTaggedFiles.Add(f);
+                            break;
+                        }
+                        else if (Regex.Replace(lt, @"\s+", @" ") == locDestTag)
+                        {
+                            destTaggedFiles.Add(f);
+                            break;
                         }
                     }
                 }
             }
 
-            breakout:
+            #region Error reporting
 
-            // Make the whole thing fail so I can get a fail message in AngelLoader on build
-            if (LocAttrMarkedClasses.Count > 1)
+            static string AddError(string msg, string add)
+            {
+                if (msg.IsEmpty()) msg = "LanguageGen: ERRORS:";
+                msg += "\r\n" + add;
+                return msg;
+            }
+
+            string error = "";
+            if (sourceTaggedFiles.Count == 0) error = AddError(error, "-No tagged source file found");
+            if (destTaggedFiles.Count == 0) error = AddError(error, "-No tagged destination file found");
+            if (sourceTaggedFiles.Count > 1) error = AddError(error, "-Multiple tagged source files found");
+            if (destTaggedFiles.Count > 1) error = AddError(error, "-Multiple tagged destination files found");
+            if (!error.IsEmpty()) ThrowErrorAndTerminate(error);
+
+            #endregion
+
+            return (sourceTaggedFiles[0], destTaggedFiles[0]);
+        }
+
+        private static (string LangClassName, List<NamedDictionary> Dict)
+        ReadSource(string file)
+        {
+            const string FenGenLocalizationClassAttribute = "FenGenLocalizationClassAttribute";
+
+            var retDict = new List<NamedDictionary>();
+
+            var code = File.ReadAllText(file);
+            var tree = CSharpSyntaxTree.ParseText(code);
+
+            var attrMarkedClasses = new List<ClassDeclarationSyntax>();
+
+            var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
+            foreach (var n in nodes)
+            {
+                if (!n.IsKind(SyntaxKind.ClassDeclaration)) continue;
+
+                var classItem = (ClassDeclarationSyntax)n;
+
+                if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
+                {
+                    foreach (var attr in classItem.AttributeLists[0].Attributes)
+                    {
+                        if (GetAttributeName(attr.Name.ToString(), FenGenLocalizationClassAttribute))
+                        {
+                            attrMarkedClasses.Add(classItem);
+                        }
+                    }
+                }
+            }
+
+            if (attrMarkedClasses.Count > 1)
             {
                 const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenLocalizationClassAttribute + "'.";
                 ThrowErrorAndTerminate(multipleUsesError);
             }
-            else if (LocAttrMarkedClasses.Count == 0)
+            else if (attrMarkedClasses.Count == 0)
             {
                 const string noneFoundError = "ERROR: No uses of attribute '" + FenGenLocalizationClassAttribute +
                     "' (No marked localization class found)";
                 ThrowErrorAndTerminate(noneFoundError);
             }
 
-            var LTextClass = LocAttrMarkedClasses[0];
+            var LTextClass = attrMarkedClasses[0];
 
             foreach (var item in LTextClass.DescendantNodes())
             {
@@ -166,35 +213,55 @@ namespace FenGen
 
         private static void WriteDest(string langClassName, List<NamedDictionary> dictList, string destFile, string langIniFile)
         {
-            #region Read existing dest code
+            #region Find the class we're going to write to
+
+            const string FenGenLocalizationReadClassAttribute = "FenGenLocalizationReadWriteClass";
 
             var code = File.ReadAllText(destFile);
             var tree = CSharpSyntaxTree.ParseText(code);
 
-            ClassDeclarationSyntax IniClass = null;
+            var attrMarkedClasses = new List<ClassDeclarationSyntax>();
+
             foreach (var item in tree.GetCompilationUnitRoot().DescendantNodes())
             {
                 if (!item.IsKind(SyntaxKind.ClassDeclaration)) continue;
 
                 var classItem = (ClassDeclarationSyntax)item;
 
-                if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0 &&
-                    classItem.AttributeLists[0].Attributes.Any(x =>
-                        GetAttributeName(x.Name.ToString(), "FenGenLocalizationReadWriteClass")))
+                if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
                 {
-                    IniClass = classItem;
-                    break;
+                    foreach (var attr in classItem.AttributeLists[0].Attributes)
+                    {
+                        if (GetAttributeName(attr.Name.ToString(), FenGenLocalizationReadClassAttribute))
+                        {
+                            attrMarkedClasses.Add(classItem);
+                        }
+                    }
                 }
             }
 
-            // Make the whole thing fail so I can get a fail message in AngelLoader on build
-            if (IniClass == null) throw new ArgumentNullException();
+            if (attrMarkedClasses.Count > 1)
+            {
+                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenLocalizationReadClassAttribute + "'.";
+                ThrowErrorAndTerminate(multipleUsesError);
+            }
+            else if (attrMarkedClasses.Count == 0)
+            {
+                const string noneFoundError = "ERROR: No uses of attribute '" + FenGenLocalizationReadClassAttribute +
+                                              "' (No marked localization class found)";
+                ThrowErrorAndTerminate(noneFoundError);
+            }
 
-            var iniClassString = IniClass.ToString();
+            var iniClass = attrMarkedClasses[0];
+
+            // Make the whole thing fail so I can get a fail message in AngelLoader on build
+            if (iniClass == null) throw new ArgumentNullException();
+
+            var iniClassString = iniClass.ToString();
             var classDeclLine = iniClassString.Substring(0, iniClassString.IndexOf('{'));
 
             var codeBlock =
-                code.Substring(0, IniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
+                code.Substring(0, iniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
                     .TrimEnd() + "\r\n";
 
             #endregion
