@@ -162,7 +162,7 @@
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.FilterBySS2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.TagsTabDummyAutoScrollPanel = new System.Windows.Forms.Panel();
+            this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
             this.SS2TabPage = new System.Windows.Forms.TabPage();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
@@ -1557,7 +1557,7 @@
             this.TagsTabPage.Controls.Add(this.AddTagTextBox);
             this.TagsTabPage.Controls.Add(this.AddRemoveTagFLP);
             this.TagsTabPage.Controls.Add(this.TagsTreeView);
-            this.TagsTabPage.Controls.Add(this.TagsTabDummyAutoScrollPanel);
+            this.TagsTabPage.Controls.Add(this.TagsTabAutoScrollMarker);
             this.TagsTabPage.Location = new System.Drawing.Point(4, 22);
             this.TagsTabPage.Name = "TagsTabPage";
             this.TagsTabPage.Size = new System.Drawing.Size(526, 284);
@@ -1835,10 +1835,10 @@
             // 
             // TagsTabDummyAutoScrollPanel
             // 
-            this.TagsTabDummyAutoScrollPanel.Location = new System.Drawing.Point(0, 0);
-            this.TagsTabDummyAutoScrollPanel.Name = "TagsTabDummyAutoScrollPanel";
-            this.TagsTabDummyAutoScrollPanel.Size = new System.Drawing.Size(240, 152);
-            this.TagsTabDummyAutoScrollPanel.TabIndex = 5;
+            this.TagsTabAutoScrollMarker.Location = new System.Drawing.Point(0, 0);
+            this.TagsTabAutoScrollMarker.Name = "TagsTabDummyAutoScrollPanel";
+            this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
+            this.TagsTabAutoScrollMarker.TabIndex = 5;
             //
             // FilterBySS2Button
             // 
