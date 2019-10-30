@@ -52,7 +52,7 @@
             this.FMFileConversionGroupBox = new System.Windows.Forms.GroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new System.Windows.Forms.CheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new System.Windows.Forms.CheckBox();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.ReadmeGroupBox.SuspendLayout();
             this.ShowOrHideUIElementsGroupBox.SuspendLayout();
@@ -406,7 +406,7 @@
         internal System.Windows.Forms.GroupBox FMFileConversionGroupBox;
         internal System.Windows.Forms.CheckBox ConvertOGGsToWAVsOnInstallCheckBox;
         internal System.Windows.Forms.CheckBox ConvertWAVsTo16BitOnInstallCheckBox;
-        internal System.Windows.Forms.Panel DummyAutoScrollPanel;
+        internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal System.Windows.Forms.GroupBox ReadmeGroupBox;
         internal System.Windows.Forms.CheckBox ReadmeFixedWidthFontCheckBox;
     }

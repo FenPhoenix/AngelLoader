@@ -60,7 +60,7 @@
             this.BackupPathLabel = new System.Windows.Forms.Label();
             this.BackupPathBrowseButton = new System.Windows.Forms.Button();
             this.BackupPathTextBox = new System.Windows.Forms.TextBox();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.SS2ExePathTextBox = new System.Windows.Forms.TextBox();
             this.SS2ExePathBrowseButton = new System.Windows.Forms.Button();
             this.SS2ExePathLabel = new System.Windows.Forms.Label();
@@ -544,7 +544,7 @@
         internal System.Windows.Forms.Button RemoveFMArchivePathButton;
         internal System.Windows.Forms.ListBox FMArchivePathsListBox;
         internal System.Windows.Forms.Panel ActualPathsPanel;
-        internal System.Windows.Forms.Panel DummyAutoScrollPanel;
+        internal System.Windows.Forms.Control DummyAutoScrollPanel;
         internal System.Windows.Forms.Label SteamExeLabel;
         internal System.Windows.Forms.TextBox SteamExeTextBox;
         internal System.Windows.Forms.Button SteamExeBrowseButton;

@@ -56,7 +56,7 @@
             this.OrganizeGamesByTabRadioButton = new System.Windows.Forms.RadioButton();
             this.OrganizeGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Panel();
+            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
@@ -437,7 +437,7 @@
         internal System.Windows.Forms.RadioButton OrganizeGamesByTabRadioButton;
         internal System.Windows.Forms.RadioButton OrganizeGamesInOneListRadioButton;
         internal System.Windows.Forms.Panel PagePanel;
-        internal System.Windows.Forms.Panel DummyAutoScrollPanel;
+        internal System.Windows.Forms.Control DummyAutoScrollPanel;
         private System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
         internal System.Windows.Forms.Label PreviewDateLabel;
         internal System.Windows.Forms.CheckBox UseShortGameTabNamesCheckBox;
