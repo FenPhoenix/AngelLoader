@@ -4146,17 +4146,6 @@ namespace AngelLoader.Forms
 
         internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
-        // Hack for when the textbox is smaller than the button or overtop of it or whatever... anchoring...
-        // This only happens if the size is set while the top-right panel is squashed too far right or some other
-        // uncommon situation, but we have to account for it.
-        // TODO: Prevent Tags panel from squishing too far: just give it a min size and let it scroll
-        private void TopSplitContainer_Panel2_SizeChanged(object sender, EventArgs e)
-        {
-            AddTagTextBox.Width = AddTagButton.Left > AddTagTextBox.Left
-                ? (AddTagButton.Left - AddTagTextBox.Left) - 1
-                : 0;
-        }
-
         #region Control painting
 
         // Perf: Where feasible, it's way faster to simply draw images vector-style on-the-fly, rather than

@@ -164,6 +164,7 @@ namespace AngelLoader.Forms
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
             FilterBySS2Button = new ToolStripButtonCustom();
+            TagsTabDummyAutoScrollPanel = new Panel();
             SS2TabPage = new TabPage();
 
             #endregion
@@ -383,7 +384,6 @@ namespace AngelLoader.Forms
             TopSplitContainer.Panel2.Controls.Add(TopRightMenuButton);
             TopSplitContainer.Panel2.Controls.Add(TopRightCollapseButton);
             TopSplitContainer.Panel2.Controls.Add(TopRightTabControl);
-            TopSplitContainer.Panel2.SizeChanged += TopSplitContainer_Panel2_SizeChanged;
             TopSplitContainer.Size = new Size(1671, 309);
             TopSplitContainer.SplitterDistance = 1116;
             TopSplitContainer.TabIndex = 0;
@@ -612,6 +612,10 @@ namespace AngelLoader.Forms
             FilterByThief3Button.Margin = new Padding(0);
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += FilterByGameCheckButtons_Click;
+            // 
+            // TagsTabDummyAutoScrollPanel
+            // 
+            TagsTabDummyAutoScrollPanel.Size = new Size(240, 152);
             // 
             // FilterBySS2Button
             // 
@@ -1269,11 +1273,13 @@ namespace AngelLoader.Forms
             // 
             // TagsTabPage
             // 
+            TagsTabPage.AutoScroll = true;
             TagsTabPage.BackColor = SystemColors.Control;
             TagsTabPage.Controls.Add(AddTagButton);
             TagsTabPage.Controls.Add(AddTagTextBox);
             TagsTabPage.Controls.Add(AddRemoveTagFLP);
             TagsTabPage.Controls.Add(TagsTreeView);
+            TagsTabPage.Controls.Add(TagsTabDummyAutoScrollPanel);
             TagsTabPage.Name = nameof(TagsTabPage);
             TagsTabPage.Size = new Size(526, 284);
             TagsTabPage.TabIndex = 1;
