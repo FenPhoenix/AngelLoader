@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace FenGen
@@ -15,7 +16,11 @@ namespace FenGen
             //var sourceFile = Path.Combine(Core.ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
             //var destFile = Path.Combine(Core.ALProjectPath, @"Ini\FMData.cs");
             //Core.GenerateFMData(sourceFile, destFile);
-            await Roslyn_Test.RunRoslynTest();
+            //await Roslyn_Test.RunRoslynTest();
+            var langFile = Path.Combine(Core.ALProjectPath, @"Languages\English.ini");
+            StateVars.WriteTestLangFile = true;
+            StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
+            LanguageGen.Generate(langFile);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
