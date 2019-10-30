@@ -101,6 +101,190 @@ namespace FenGen
             return (sourceTaggedFiles[0], destTaggedFiles[0]);
         }
 
+#if false
+        private static (string LangClassName, List<NamedDictionary> Dict)
+        ReadSource_Fast(string file)
+        {
+            const string FenGenLocalizationClassAttribute = "FenGenLocalizationClassAttribute";
+
+            var retDict = new List<NamedDictionary>();
+
+            //var code = File.ReadAllText(file);
+            //var tree = CSharpSyntaxTree.ParseText(code);
+
+            var rawLines = File.ReadAllLines(file);
+            int attrCount = 0;
+            int attrIndex = -1;
+
+            var lines = new List<string>(rawLines.Length);
+
+            for (int i = 0; i < rawLines.Length; i++)
+            {
+                string lt = rawLines[i].Trim();
+                lines.Add(lt);
+                if (lt.StartsWith("[" + FenGenLocalizationClassAttribute + "]"))
+                {
+                    attrCount++;
+                    attrIndex = i;
+                }
+            }
+
+            if (attrCount > 1)
+            {
+                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenLocalizationClassAttribute + "'.";
+                ThrowErrorAndTerminate(multipleUsesError);
+            }
+            else if (attrCount == 0)
+            {
+                const string noneFoundError = "ERROR: No uses of attribute '" + FenGenLocalizationClassAttribute +
+                                              "' (No marked localization class found)";
+                ThrowErrorAndTerminate(noneFoundError);
+            }
+
+            static bool IsClassDeclaration(string line)
+            {
+                if (line.IsEmpty()) return false;
+                var split = line.Split(' ');
+                return (split.Length > 2 && split[split.Length - 1] == "{" && split[split.Length - 3] == "class") ||
+                       (split.Length > 1 && split[split.Length - 1] != "{" && split[split.Length - 2] == "class");
+            }
+
+            for (int i0 = attrIndex; i0 < lines.Count; i0++)
+            {
+                var line = lines[i0];
+                if (!IsClassDeclaration(line)) continue;
+
+                if (line[line.Length - 1] == '{')
+                {
+                    i0++;
+                }
+                else
+                {
+                    for (int j0 = i0 + 1; j0 < lines.Count; i0++) // i++ intentional
+                    {
+                        if (line == "{")
+                        {
+                            i0++;
+                            break;
+                        }
+                    }
+                }
+
+                //for(int i=0;i<)
+            }
+
+            // -------
+
+            var attrMarkedClasses = new List<ClassDeclarationSyntax>();
+
+            var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
+            foreach (var n in nodes)
+            {
+                if (!n.IsKind(SyntaxKind.ClassDeclaration)) continue;
+
+                var classItem = (ClassDeclarationSyntax)n;
+
+                if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
+                {
+                    foreach (var attr in classItem.AttributeLists[0].Attributes)
+                    {
+                        if (GetAttributeName(attr.Name.ToString(), FenGenLocalizationClassAttribute))
+                        {
+                            attrMarkedClasses.Add(classItem);
+                        }
+                    }
+                }
+            }
+
+            if (attrMarkedClasses.Count > 1)
+            {
+                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenLocalizationClassAttribute + "'.";
+                ThrowErrorAndTerminate(multipleUsesError);
+            }
+            else if (attrMarkedClasses.Count == 0)
+            {
+                const string noneFoundError = "ERROR: No uses of attribute '" + FenGenLocalizationClassAttribute +
+                    "' (No marked localization class found)";
+                ThrowErrorAndTerminate(noneFoundError);
+            }
+
+            var LTextClass = attrMarkedClasses[0];
+
+            foreach (var item in LTextClass.DescendantNodes())
+            {
+                if (!item.IsKind(SyntaxKind.ClassDeclaration)) continue;
+
+                var subClass = (ClassDeclarationSyntax)item;
+
+                var fields = subClass.DescendantNodes()
+                    .Where(x => x.IsKind(SyntaxKind.VariableDeclaration) ||
+                                x.IsKind(SyntaxKind.PropertyDeclaration) ||
+                                x.IsKind(SyntaxKind.Attribute))
+                    .ToArray();
+
+                if (fields.Length == 0) continue;
+
+                var dict = new NamedDictionary(subClass.Identifier.ToString());
+                foreach (var f in fields)
+                {
+                    string fName = "";
+                    string fValue = "";
+                    bool isComment = false;
+
+                    int blankLinesToAdd = 0;
+
+                    if (f is AttributeSyntax attr)
+                    {
+                        if (GetAttributeName(attr.Name.ToString(), "FenGenComment"))
+                        {
+                            var exp = (LiteralExpressionSyntax)attr.ArgumentList.Arguments[0].Expression;
+                            fValue = exp.Token.ValueText;
+                            isComment = true;
+                        }
+                        else if (GetAttributeName(attr.Name.ToString(), "FenGenBlankLine"))
+                        {
+                            var args = attr.ArgumentList;
+                            if (args == null || args.Arguments.Count == 0)
+                            {
+                                blankLinesToAdd = 1;
+                            }
+                            else if (args.Arguments.Count == 1)
+                            {
+                                blankLinesToAdd = (int)((LiteralExpressionSyntax)args.Arguments[0].Expression).Token.Value;
+                            }
+                        }
+                    }
+                    else if (f is VariableDeclarationSyntax vds)
+                    {
+                        var v = vds.Variables[0];
+                        fName = v.Identifier.ToString();
+                        fValue = ((LiteralExpressionSyntax)v.Initializer.Value).Token.ValueText;
+                    }
+                    else if (f is PropertyDeclarationSyntax pds)
+                    {
+                        fName = pds.Identifier.ToString();
+                        fValue = ((LiteralExpressionSyntax)pds.Initializer.Value).Token.ValueText;
+                    }
+
+                    if (blankLinesToAdd > 0)
+                    {
+                        for (int i = 0; i < blankLinesToAdd; i++)
+                        {
+                            dict.Add(new IniItem());
+                        }
+                    }
+                    else
+                    {
+                        dict.Add(new IniItem { Key = fName, Value = fValue, IsComment = isComment });
+                    }
+                }
+
+                retDict.Add(dict);
+            }
+
+            return (LTextClass.Identifier.ToString(), retDict);
+        }
+#endif
         private static (string LangClassName, List<NamedDictionary> Dict)
         ReadSource(string file)
         {
