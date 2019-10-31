@@ -90,7 +90,7 @@ namespace AngelLoader
             if (sv.Success) (_, gameExe, gamePath, args) = sv;
 
             // TODO: Decide what to do about explicit play-original etc.
-            //WriteStubCommFile(null, playOriginalGame: true);
+            WriteStubCommFile(null, playOriginalGame: true);
 
             StartExe(gameExe, gamePath, args);
 
@@ -213,13 +213,53 @@ namespace AngelLoader
 
         #region Helpers
 
+        //private static (bool bForceLanguage, string sLanguage)
+        //GetFMLanguage(FanMission fm)
+        //{
+
+        //}
+
         private static void WriteStubCommFile(FanMission fm, bool playOriginalGame)
         {
+            // BUG: TODO: AngelLoader doesn't handle languages correctly. Here's the FMSel code. Port this asap!
+            /*
+            // if g_pFMSelData->sLanguage is set it means that "fm_language" was defined in a config file, if that's the case
+            // it's treated like a forced FM language setting (mainly to allow FM authors to have an easy way to force different
+            // languages without having to change dark's language setting), it's ignored if not supported by the FM
+            if (*g_pFMSelData->sLanguage)
+            {
+                // check if the requested language is supported by the FM
+                std::list<string> langlist;
+                GetLanguages(fm, langlist);
+
+                if (IsLanguageInList(langlist, g_pFMSelData->sLanguage))
+                    g_pFMSelData->bForceLanguage = TRUE;
+                else
+                {
+                    // language not supported, use fallback
+                    if (!langlist.empty())
+                        strcpy_safe(g_pFMSelData->sLanguage, g_pFMSelData->nLanguageLen, langlist.front().c_str());
+                    else
+                        *g_pFMSelData->sLanguage = 0;
+                    g_pFMSelData->bForceLanguage = FALSE;
+                }
+            }
+            else
+            {
+                // determine FM default language (used if the FM doesn't support the language set in dark by the "language" cfg var)
+                string lang;
+                if (GetFallbackLanguage(fm, lang))
+                    strcpy_safe(g_pFMSelData->sLanguage, g_pFMSelData->nLanguageLen, lang.c_str());
+                else
+                    *g_pFMSelData->sLanguage = 0;
+                g_pFMSelData->bForceLanguage = FALSE;
+            }
+            */
             try
             {
                 // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
                 using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default);
-                //sw.WriteLine("PlayOriginalGame=" + playOriginalGame);
+                sw.WriteLine("PlayOriginalGame=" + playOriginalGame);
                 sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
                 sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
             }

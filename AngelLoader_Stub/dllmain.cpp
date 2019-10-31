@@ -33,8 +33,8 @@
  .NET version.
 */
 
-#undef switch_flip_courteous_behavior
-//#define switch_flip_courteous_behavior
+//#undef switch_flip_courteous_behavior
+#define switch_flip_courteous_behavior
 
 #include "AngelLoader_Stub.h"
 #include <string>
@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <windows.h>
 #define MB_OK 0x00000000L
+#define MB_ICONINFORMATION 0x00000040L
 #endif
 using std::string;
 namespace fs = std::filesystem;
@@ -57,9 +58,9 @@ bool equals_i(string s1, string s2)
     return s1 == s2;
 }
 
-int show_alert(LPCSTR message, LPCSTR title, UINT uType)
+int show_loader_alert()
 {
-    MessageBoxA(nullptr, message, title, uType);
+    MessageBoxA(nullptr, "AngelLoader is set as the loader for this game. To use a different loader, please open cam_mod.ini in your game folder for instructions on how to do so.", "AngelLoader", MB_OK | MB_ICONINFORMATION);
     return kSelFMRet_ExitGame;
 }
 #endif
@@ -70,6 +71,10 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     {
         return kSelFMRet_Cancel;
     }
+
+    string test_msg = string("bForceLanguage: ") + string(data->bForceLanguage == 1 ? "1" : "0") + string("\r\n");
+    test_msg += string("sLanguage: ") + string(data->sLanguage != NULL ? string(data->sLanguage) : "<null>");
+    MessageBoxA(nullptr, test_msg.c_str(), "Test", MB_OK);
 
     // data->sGameVersion:
     // Might eventually use
@@ -108,13 +113,14 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     if (!ifs)
     {
         ifs.close();
-        return kSelFMRet_Cancel;
+        return show_loader_alert();
+        //return kSelFMRet_Cancel;
     }
 
     string line;
     while (std::getline(ifs, line))
     {
-        if (line.length() > play_original_game_eq_len &&
+        if (line.length() > play_original_game_eq_len&&
             line.substr(0, play_original_game_eq_len) == play_original_game_eq)
         {
 #ifdef  switch_flip_courteous_behavior
@@ -123,12 +129,12 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
             play_original_game = equals_i(val, "true");
 #endif
         }
-        else if (line.length() > fm_name_eq_len &&
+        else if (line.length() > fm_name_eq_len&&
             line.substr(0, fm_name_eq_len) == fm_name_eq)
         {
             fm_name = line.substr(fm_name_eq_len, string::npos);
         }
-        else if (line.length() > disabled_mods_eq_len &&
+        else if (line.length() > disabled_mods_eq_len&&
             line.substr(0, disabled_mods_eq_len) == disabled_mods_eq)
         {
             disabled_mods = line.substr(disabled_mods_eq_len, string::npos);
@@ -140,9 +146,13 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     std::remove(args_file.string().c_str());
 
     // If no FM folder specified, play the original game
-    if (fm_name.empty())
+    if (play_original_game_key_found && play_original_game)
     {
         return kSelFMRet_Cancel;
+    }
+    else if (!play_original_game_key_found || fm_name.empty())
+    {
+        return show_loader_alert();
     }
     // error conditions; they can be reported through a response file if I decided to ever use that
     else if (fm_name.length() > 30 ||
