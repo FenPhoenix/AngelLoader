@@ -2098,6 +2098,8 @@ namespace AngelLoader.Forms
             BlankIcon = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
             CheckIcon = Resources.CheckCircle;
             RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
+            // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
+            // Then grab the internal object down below when we go to display them
             StarIcons = new[]
             {
                 Resources.Stars0,
