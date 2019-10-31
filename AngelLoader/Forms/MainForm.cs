@@ -566,6 +566,7 @@ namespace AngelLoader.Forms
                 }
             }
             // Just handle the NC* messages and presto, we don't even need the mouse hook anymore!
+            // NC = Non-Client, ie. the mouse was in a non-client area of the control
             else if (m.Msg == InteropMisc.WM_MOUSEMOVE || m.Msg == InteropMisc.WM_NCMOUSEMOVE)
             {
                 if (!CanFocus) return PassMessageOn;
@@ -592,7 +593,7 @@ namespace AngelLoader.Forms
                 }
                 else if (CursorOutsideAddTagsDropDownArea())
                 {
-                    HideAddTagDropDown();
+                    AddTagLLDropDown.HideAndClear();
                     return BlockMessage;
                 }
             }
@@ -979,7 +980,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (AddTagLLDropDown.Visible) HideAddTagDropDown();
+            if (AddTagLLDropDown.Visible) AddTagLLDropDown.HideAndClear();
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
@@ -1008,7 +1009,7 @@ namespace AngelLoader.Forms
             {
                 CancelResizables();
 
-                HideAddTagDropDown();
+                AddTagLLDropDown.HideAndClear();
             }
             else if (e.Control)
             {
@@ -3530,23 +3531,6 @@ namespace AngelLoader.Forms
 
         #region Tags tab
 
-        private void ShowAddTagDropDown()
-        {
-            var p = PointToClient(AddTagTextBox.PointToScreen(new Point(0, 0)));
-            AddTagLLDropDown.Construct(this, EverythingPanel);
-            AddTagLLDropDown.ListBox.Location = new Point(p.X, p.Y + AddTagTextBox.Height);
-            AddTagLLDropDown.ListBox.Size = new Size(Math.Max(AddTagTextBox.Width, 256), 225);
-
-            AddTagLLDropDown.ListBox.BringToFront();
-            AddTagLLDropDown.ListBox.Show();
-        }
-
-        private static void HideAddTagDropDown()
-        {
-            AddTagLLDropDown.Hide();
-            AddTagLLDropDown.Clear();
-        }
-
         // Robustness for if the user presses tab to get away, rather than clicking
         internal void AddTagTextBoxOrListBox_Leave(object sender, EventArgs e)
         {
@@ -3554,7 +3538,7 @@ namespace AngelLoader.Forms
                 (AddTagLLDropDown.Constructed &&
                  sender == AddTagLLDropDown.ListBox && !AddTagTextBox.Focused))
             {
-                HideAddTagDropDown();
+                AddTagLLDropDown.HideAndClear();
             }
         }
 
@@ -3565,21 +3549,17 @@ namespace AngelLoader.Forms
             var list = FMTags.GetMatchingTagsList(AddTagTextBox.Text);
             if (list.Count == 0)
             {
-                HideAddTagDropDown();
+                AddTagLLDropDown.HideAndClear();
             }
             else
             {
-                AddTagLLDropDown.Construct(this, EverythingPanel);
-                AddTagLLDropDown.Clear();
-                foreach (var item in list) AddTagLLDropDown.ListBox.Items.Add(item);
-
-                ShowAddTagDropDown();
+                AddTagLLDropDown.SetItemsAndShow(this, list);
             }
         }
 
         internal void AddTagTextBoxOrListBox_KeyDown(object sender, KeyEventArgs e)
         {
-            AddTagLLDropDown.Construct(this, EverythingPanel);
+            AddTagLLDropDown.Construct(this);
             var box = AddTagLLDropDown.ListBox;
 
             switch (e.KeyCode)
@@ -3652,7 +3632,7 @@ namespace AngelLoader.Forms
             }
 
             AddTagTextBox.Clear();
-            HideAddTagDropDown();
+            AddTagLLDropDown.HideAndClear();
         }
 
         private void AddTagButton_Click(object sender, EventArgs e) => AddTagOperation(FMsDGV.GetSelectedFM(), AddTagTextBox.Text);

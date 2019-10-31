@@ -1,4 +1,7 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 using AngelLoader.Forms;
 
 namespace AngelLoader.CustomControls.Static_LazyLoaded
@@ -14,34 +17,47 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             private set => _listBox = value;
         }
 
-        internal static void Construct(MainForm form, Control container)
+        internal static void Construct(MainForm owner)
         {
             if (Constructed) return;
 
             ListBox = new ListBox();
-            container.Controls.Add(ListBox);
+            owner.EverythingPanel.Controls.Add(ListBox);
             ListBox.FormattingEnabled = true;
             ListBox.TabIndex = 3;
             ListBox.Visible = false;
-            ListBox.SelectedIndexChanged += form.AddTagListBox_SelectedIndexChanged;
-            ListBox.KeyDown += form.AddTagTextBoxOrListBox_KeyDown;
-            ListBox.Leave += form.AddTagTextBoxOrListBox_Leave;
-            ListBox.MouseUp += form.AddTagListBox_MouseUp;
+            ListBox.SelectedIndexChanged += owner.AddTagListBox_SelectedIndexChanged;
+            ListBox.KeyDown += owner.AddTagTextBoxOrListBox_KeyDown;
+            ListBox.Leave += owner.AddTagTextBoxOrListBox_Leave;
+            ListBox.MouseUp += owner.AddTagListBox_MouseUp;
 
             Constructed = true;
+        }
+
+        internal static void SetItemsAndShow(MainForm owner, List<string> list)
+        {
+            Construct(owner);
+            
+            ListBox.Items.Clear();
+            foreach (var item in list) ListBox.Items.Add(item);
+
+            var p = owner.PointToClient(owner.AddTagTextBox.PointToScreen(new Point(0, 0)));
+            ListBox.Location = new Point(p.X, p.Y + owner.AddTagTextBox.Height);
+            ListBox.Size = new Size(Math.Max(owner.AddTagTextBox.Width, 256), 225);
+
+            ListBox.BringToFront();
+            ListBox.Show();
         }
 
         internal static bool Visible => Constructed && ListBox.Visible;
         internal static bool Focused => Constructed && ListBox.Focused;
 
-        internal static void Hide()
+        internal static void HideAndClear()
         {
-            if (Constructed) ListBox.Hide();
-        }
+            if (!Constructed) return;
 
-        internal static void Clear()
-        {
-            if (Constructed) ListBox.Items.Clear();
+            ListBox.Hide();
+            ListBox.Items.Clear();
         }
     }
 }
