@@ -244,28 +244,16 @@ namespace AngelLoader
             // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
             //       being thrown here.
 
-            #region Thief 1
+            // Thief 1
+            SetGameData(Thief1);
 
-            Config.SetFMInstallPath(Thief1, !Config.GetGameExe(Thief1).IsWhiteSpace()
-                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(Thief1)), out Error _)
-                : "");
-            Config.T1DromEdDetected = !GetEditorExe(Thief1).IsEmpty();
-
-            #endregion
-
-            #region Thief 2
-
-            Config.SetFMInstallPath(Thief2, !Config.GetGameExe(Thief2).IsWhiteSpace()
-                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(Thief2)), out Error _)
-                : "");
-            Config.T2DromEdDetected = !GetEditorExe(Thief2).IsEmpty();
-
-            Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
-
-            #endregion
+            // Thief 2
+            var t2_Exe_Specified = SetGameData(Thief2);
+            Config.T2MPDetected = t2_Exe_Specified && !GetT2MultiplayerExe().IsEmpty();
 
             #region Thief 3
 
+            // TODO: Look into how or if languages are supported in Thief 3
             if (!Config.GetGameExe(Thief3).IsWhiteSpace())
             {
                 var (error, useCentralSaves, t3FMInstPath) = GetInstFMsPathFromT3();
@@ -282,14 +270,8 @@ namespace AngelLoader
 
             #endregion
 
-            #region SS2
-
-            Config.SetFMInstallPath(SS2, !Config.GetGameExe(SS2).IsWhiteSpace()
-                ? GetInstFMsPathFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(SS2)), out Error _)
-                : "");
-            Config.SS2ShockEdDetected = !GetEditorExe(SS2).IsEmpty();
-
-            #endregion
+            // SS2
+            SetGameData(SS2);
 
             #endregion
 
@@ -454,6 +436,21 @@ namespace AngelLoader
             #endregion
         }
 
+        private static bool SetGameData(GameIndex gameIndex)
+        {
+            (string fmsPath, string fmLanguage, bool fmLanguageForced) data = ("", "", false);
+            bool game_Exe_Specified = !Config.GetGameExe(gameIndex).IsWhiteSpace();
+
+            if (game_Exe_Specified) data = GetInfoFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(gameIndex)), out Error _);
+
+            Config.SetFMInstallPath(gameIndex, data.fmsPath);
+            Config.SetGameEditorDetected(gameIndex, game_Exe_Specified && !GetEditorExe(gameIndex).IsEmpty());
+            Config.SetPerGameFMLanguage(gameIndex, data.fmLanguage);
+            Config.SetPerGameFMForcedLanguage(gameIndex, data.fmLanguageForced);
+
+            return game_Exe_Specified;
+        }
+
         // Future use
         //internal static void SetDefaultConfigVarNamesToLocalized()
         //{
@@ -499,41 +496,18 @@ namespace AngelLoader
             bool t3Exists = !Config.GetGameExe(Thief3).IsEmpty() && File.Exists(Config.GetGameExe(Thief3));
             bool ss2Exists = !Config.GetGameExe(SS2).IsEmpty() && File.Exists(Config.GetGameExe(SS2));
 
-            if (t1Exists)
-            {
-                var gamePath = Path.GetDirectoryName(Config.GetGameExe(Thief1));
-                var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.T1DromEdDetected = !GetEditorExe(Thief1).IsEmpty();
-                //if (error == Error.CamModIniNotFound) return Error.T1CamModIniNotFound;
-                Config.SetFMInstallPath(Thief1, gameFMsPath);
-            }
-            if (t2Exists)
-            {
-                var gamePath = Path.GetDirectoryName(Config.GetGameExe(Thief2));
-                var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.T2DromEdDetected = !GetEditorExe(Thief2).IsEmpty();
-                Config.T2MPDetected = !GetT2MultiplayerExe().IsEmpty();
-                //if (error == Error.CamModIniNotFound) return Error.T2CamModIniNotFound;
-                Config.SetFMInstallPath(Thief2, gameFMsPath);
-            }
+            if (t1Exists) SetGameData(Thief1);
+            if (t2Exists) SetGameData(Thief2);
             if (t3Exists)
             {
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
-                //if (error != Error.None) return error;
                 if (error == Error.None)
                 {
                     Config.SetFMInstallPath(Thief3, path);
                     Config.T3UseCentralSaves = useCentralSaves;
                 }
             }
-            if (ss2Exists)
-            {
-                var gamePath = Path.GetDirectoryName(Config.GetGameExe(SS2));
-                var gameFMsPath = GetInstFMsPathFromCamModIni(gamePath, out Error error);
-                Config.SS2ShockEdDetected = !GetEditorExe(SS2).IsEmpty();
-                //if (error != Error.None) return error;
-                Config.SetFMInstallPath(SS2, gameFMsPath);
-            }
+            if (ss2Exists) SetGameData(SS2);
 
             return
                 // Must be first, otherwise other stuff overrides it and then we don't act on it
@@ -544,9 +518,10 @@ namespace AngelLoader
 
         #region Get FM install paths
 
-        private static string GetInstFMsPathFromCamModIni(string gamePath, out Error error)
+        private static (string FMsPath, string FMLanguage, bool FMLanguageForced)
+        GetInfoFromCamModIni(string gamePath, out Error error)
         {
-            static string CreateAndReturn(string fmsPath)
+            static string CreateAndReturnFMsPath(string fmsPath)
             {
                 try
                 {
@@ -566,10 +541,12 @@ namespace AngelLoader
             {
                 //error = Error.CamModIniNotFound;
                 error = Error.None;
-                return CreateAndReturn(Path.Combine(gamePath, "FMs"));
+                return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), "", false);
             }
 
             string path = "";
+            string fm_language = "";
+            bool fm_language_forced = false;
 
             using (var sr = new StreamReader(camModIni))
             {
@@ -595,6 +572,21 @@ namespace AngelLoader
                     {
                         path = line.Substring(7).Trim();
                     }
+                    else if (line.StartsWithI(@"fm_language") && line.Length > 11 && char.IsWhiteSpace(line[11]))
+                    {
+                        fm_language = line.Substring(11).Trim();
+                    }
+                    else if (line.StartsWithI(@"fm_language_forced"))
+                    {
+                        if (line.Trim().Length == 18)
+                        {
+                            fm_language_forced = true;
+                        }
+                        else if (char.IsWhiteSpace(line[18]))
+                        {
+                            fm_language_forced = line.Substring(18).Trim() != "0";
+                        }
+                    }
                 }
             }
 
@@ -609,12 +601,14 @@ namespace AngelLoader
                 catch (Exception)
                 {
                     error = Error.None;
-                    return CreateAndReturn(Path.Combine(gamePath, "FMs"));
+                    return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), fm_language, fm_language_forced);
                 }
             }
 
             error = Error.None;
-            return Directory.Exists(path) ? path : CreateAndReturn(Path.Combine(gamePath, "FMs"));
+            return Directory.Exists(path)
+                ? (path, fm_language, fm_language_forced)
+                : (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), fm_language, fm_language_forced);
         }
 
         private static (Error Error, bool UseCentralSaves, string Path)

@@ -2944,9 +2944,7 @@ namespace AngelLoader.Forms
             FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
             FMsDGV.SetOpenInDromEdMenuItemText(fmIsSS2);
 
-            FMsDGV.SetOpenInDromEdVisible((fm.Game == Game.Thief1 && Config.T1DromEdDetected) ||
-                                          (fm.Game == Game.Thief2 && Config.T2DromEdDetected) ||
-                                          (fmIsSS2 && Config.SS2ShockEdDetected));
+            FMsDGV.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
 
             FMsDGV.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
 

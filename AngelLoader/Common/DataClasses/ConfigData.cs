@@ -17,13 +17,19 @@ namespace AngelLoader.Common.DataClasses
             // Automatically set the correct length based on our actual supported game count
             GameExes = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
+            FMLanguages = new string[SupportedGameCount];
+            FMForcedLanguages = new bool[SupportedGameCount];
+            GameEditorDetected = new bool[SupportedGameCount];
             UseSteamSwitches = new bool[SupportedGameCount];
 
             // We want them empty strings, not null, for safety
             for (int i = 0; i < SupportedGameCount; i++)
             {
+                // bool[]s are initialized to false by default, so in that case we don't need to do anything here
+
                 GameExes[i] = "";
                 FMInstallPaths[i] = "";
+                FMLanguages[i] = "";
                 UseSteamSwitches[i] = true;
             }
         }
@@ -68,6 +74,55 @@ namespace AngelLoader.Common.DataClasses
 
         #endregion
 
+        #region FM language and forced-language
+
+        internal readonly string[] FMLanguages;
+
+        internal string GetPerGameFMLanguage(GameIndex index) => FMLanguages[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal string GetPerGameFMLanguageUnsafe(Game game) => FMLanguages[(uint)GameToGameIndex(game)];
+
+        internal void SetPerGameFMLanguage(GameIndex index, string value) => FMLanguages[(uint)index] = value;
+
+        internal readonly bool[] FMForcedLanguages;
+
+        internal bool GetPerGameFMForcedLanguage(GameIndex index) => FMForcedLanguages[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal bool GetPerGameFMForcedLanguageUnsafe(Game game) => FMForcedLanguages[(uint)GameToGameIndex(game)];
+
+        internal void SetPerGameFMForcedLanguage(GameIndex index, bool value) => FMForcedLanguages[(uint)index] = value;
+
+        #endregion
+
+        #region Game editor detected
+
+        // Session-only; don't write these out
+
+        internal readonly bool[] GameEditorDetected;
+
+        internal bool GetGameEditorDetected(GameIndex index) => GameEditorDetected[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal bool GetGameEditorDetectedUnsafe(Game game) => GameEditorDetected[(uint)GameToGameIndex(game)];
+
+        internal void SetGameEditorDetected(GameIndex index, bool value) => GameEditorDetected[(uint)index] = value;
+
+        #endregion
+
         // If a Steam exe is specified, that is
         internal bool LaunchGamesWithSteam = true;
 
@@ -91,10 +146,6 @@ namespace AngelLoader.Common.DataClasses
         internal string SteamExe = "";
 
         // @GENGAMES: Miscellaneous game-specific stuff
-        // Session-only; don't write these out
-        internal bool T1DromEdDetected;
-        internal bool T2DromEdDetected;
-        internal bool SS2ShockEdDetected;
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)
         internal bool T2MPDetected;
 
