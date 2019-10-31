@@ -213,6 +213,13 @@ namespace AngelLoader
 
         #region Helpers
 
+        // So, we need to search the FM installed dir for language dirs no matter what we end up doing.
+        // FMSel's code is hard to make out some of the details, but it looks like it may just be searching every
+        // subfolder for any folder named after a language, then adding them to a list, earlying-out if it finds
+        // English.
+        // It also looks like it's picking the first language it finds as a fallback. That doesn't sound right.
+        // Have to look at it more closely...
+
         //private static (bool bForceLanguage, string sLanguage)
         //GetFMLanguage(FanMission fm)
         //{

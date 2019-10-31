@@ -72,9 +72,9 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
         return kSelFMRet_Cancel;
     }
 
-    string test_msg = string("bForceLanguage: ") + string(data->bForceLanguage == 1 ? "1" : "0") + string("\r\n");
-    test_msg += string("sLanguage: ") + string(data->sLanguage != NULL ? string(data->sLanguage) : "<null>");
-    MessageBoxA(nullptr, test_msg.c_str(), "Test", MB_OK);
+    //string test_msg = string("bForceLanguage: ") + string(data->bForceLanguage == 1 ? "1" : "0") + string("\r\n");
+    //test_msg += string("sLanguage: ") + string(data->sLanguage != NULL ? string(data->sLanguage) : "<null>");
+    //MessageBoxA(nullptr, test_msg.c_str(), "Test", MB_OK);
 
     // data->sGameVersion:
     // Might eventually use
