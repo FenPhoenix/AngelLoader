@@ -244,6 +244,7 @@ namespace AngelLoader
             // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
             //       being thrown here.
 
+            // @GENGAMES
             // Thief 1
             SetGameData(Thief1);
 
@@ -491,14 +492,17 @@ namespace AngelLoader
             // TODO: These single-error returns don't work, change to something else
 
             // PERF: 9ms, but it's mostly IO. Darn.
-            bool t1Exists = !Config.GetGameExe(Thief1).IsEmpty() && File.Exists(Config.GetGameExe(Thief1));
-            bool t2Exists = !Config.GetGameExe(Thief2).IsEmpty() && File.Exists(Config.GetGameExe(Thief2));
-            bool t3Exists = !Config.GetGameExe(Thief3).IsEmpty() && File.Exists(Config.GetGameExe(Thief3));
-            bool ss2Exists = !Config.GetGameExe(SS2).IsEmpty() && File.Exists(Config.GetGameExe(SS2));
+            bool[] gameExeExists = new bool[SupportedGameCount];
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                string gameExe = Config.GetGameExe((GameIndex)i);
+                gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
+            }
 
-            if (t1Exists) SetGameData(Thief1);
-            if (t2Exists) SetGameData(Thief2);
-            if (t3Exists)
+            // @GENGAMES
+            if (gameExeExists[(int)Thief1]) SetGameData(Thief1);
+            if (gameExeExists[(int)Thief2]) SetGameData(Thief2);
+            if (gameExeExists[(int)Thief3])
             {
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
                 if (error == Error.None)
@@ -507,12 +511,12 @@ namespace AngelLoader
                     Config.T3UseCentralSaves = useCentralSaves;
                 }
             }
-            if (ss2Exists) SetGameData(SS2);
+            if (gameExeExists[(int)SS2]) SetGameData(SS2);
 
             return
                 // Must be first, otherwise other stuff overrides it and then we don't act on it
                 !Directory.Exists(Config.FMsBackupPath) ? Error.BackupPathNotSpecified :
-                !t1Exists && !t2Exists && !t3Exists && !ss2Exists ? Error.NoGamesSpecified :
+                gameExeExists.All(x => false) ? Error.NoGamesSpecified :
                 Error.None;
         }
 
