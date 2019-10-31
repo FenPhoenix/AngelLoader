@@ -959,6 +959,7 @@ namespace AngelLoader.Forms
         {
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
+            // Regular Environment.Exit() because we're testing speed
             Environment.Exit(1);
             return;
 #endif

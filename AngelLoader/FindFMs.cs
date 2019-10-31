@@ -68,7 +68,7 @@ namespace AngelLoader
                         // Language will be loaded by this point
                         MessageBox.Show(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni,
                             LText.AlertMessages.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Environment.Exit(1);
+                        Core.EnvironmentExitDoShutdownTasks(1);
                     }
                     else
                     {

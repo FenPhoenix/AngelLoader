@@ -13,6 +13,14 @@ namespace AngelLoader.Common
         internal const int GB = MB * 1024;
     }
 
+    [PublicAPI]
+    internal enum Selector
+    {
+        FMSel,
+        NewDarkLoader,
+        AngelLoader
+    }
+
     // Public for param accessibility reasons or whatever
     public enum ProgressTasks
     {

@@ -183,7 +183,8 @@ namespace AngelLoader
             if (result != DialogResult.OK)
             {
                 // Since nothing of consequence has yet happened, it's okay to do the brutal quit
-                if (startup) Environment.Exit(0);
+                // We know the game paths by now, so we can do this
+                if (startup) EnvironmentExitDoShutdownTasks(0);
                 return;
             }
 
@@ -1422,7 +1423,35 @@ namespace AngelLoader
 
             WriteFullFMDataIni();
 
+            DoShutdownTasks();
+
             Application.Exit();
+        }
+
+        internal static void EnvironmentExitDoShutdownTasks(int exitCode)
+        {
+            DoShutdownTasks();
+            Environment.Exit(exitCode);
+        }
+
+        private static void DoShutdownTasks()
+        {
+            // Set FMSel back to being the default loader on exit, that way people will at least get something
+            // happening when they go and start the game exe manually
+            try
+            {
+                var t1Exe = Config.GetGameExe(Thief1);
+                if (!t1Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Selector.FMSel, t1Exe, Path.GetDirectoryName(t1Exe));
+                var t2Exe = Config.GetGameExe(Thief2);
+                if (!t2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Selector.FMSel, t2Exe, Path.GetDirectoryName(t2Exe));
+                var ss2Exe = Config.GetGameExe(SS2);
+                if (!ss2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Selector.FMSel, ss2Exe, Path.GetDirectoryName(ss2Exe));
+                // TODO: Put Thief 3 in here later
+            }
+            catch (Exception ex)
+            {
+                Log("Exception trying to write to config files to unset AngelLoader_Stub.dll as the loader on shutdown", ex);
+            }
         }
     }
 }

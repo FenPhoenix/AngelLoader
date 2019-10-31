@@ -17,6 +17,7 @@ using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.FMBackupAndRestore;
+#pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
 
 namespace AngelLoader
 {
@@ -364,11 +365,13 @@ namespace AngelLoader
 
         private static void SetUsAsSelector(GameIndex game, string gameExe, string gamePath)
         {
-            bool success = GameIsDark(game) ? SetUsAsDarkFMSelector(gameExe, gamePath) : SetUsAsT3FMSelector();
+            bool success = GameIsDark(game)
+                ? SetDarkFMSelector(Selector.AngelLoader, gameExe, gamePath)
+                : SetUsAsT3FMSelector();
             if (!success)
             {
                 Log("Unable to set us as the selector for " + gameExe + " (" +
-                    (GameIsDark(game) ? nameof(SetUsAsDarkFMSelector) : nameof(SetUsAsT3FMSelector)) +
+                    (GameIsDark(game) ? nameof(SetDarkFMSelector) : nameof(SetUsAsT3FMSelector)) +
                     " returned false)", stackTrace: true);
             }
         }
@@ -376,7 +379,7 @@ namespace AngelLoader
         // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
         // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
 
-        private static bool SetUsAsDarkFMSelector(string gameExe, string gamePath)
+        internal static bool SetDarkFMSelector(Selector selector, string gameExe, string gamePath)
         {
             const string fmSelectorKey = "fm_selector";
             const string fmCommentLine = "always start the FM Selector (if one is present)";
@@ -400,7 +403,12 @@ namespace AngelLoader
             }
 
             // Confirmed NewDark can read this with both forward and backward slashes
-            var stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
+            var stubPath = selector switch
+            {
+                Selector.FMSel => "fmsel.dll",
+                Selector.NewDarkLoader => "NewDarkLoader.dll",
+                Selector.AngelLoader => Path.Combine(Paths.Startup, Paths.StubFileName)
+            };
 
             /*
              Conforms to the way NewDark reads it:
