@@ -1142,7 +1142,16 @@ namespace AngelLoader.Forms
                 FilterByUnfinishedButton.ToolTipText = LText.FilterBar.UnfinishedToolTip;
 
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
-                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByRating);
+
+                // This one is tricky - it could have LText.Global.None as part of its text. Finally caught!
+                if (startup)
+                {
+                    Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByRating);
+                }
+                else
+                {
+                    UpdateRatingLabel();
+                }
 
                 FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowJunk;
 
