@@ -80,14 +80,11 @@ namespace AngelLoader.Forms
             FilterAuthorTextBox = new TextBoxCustom();
             FilterIconButtonsToolStrip = new ToolStripCustom();
             FilterByReleaseDateButton = new ToolStripButtonCustom();
-            FilterByReleaseDateLabel = new ToolStripLabel();
             FilterByLastPlayedButton = new ToolStripButtonCustom();
-            FilterByLastPlayedLabel = new ToolStripLabel();
             FilterByTagsButton = new ToolStripButtonCustom();
             FilterByFinishedButton = new ToolStripButtonCustom();
             FilterByUnfinishedButton = new ToolStripButtonCustom();
             FilterByRatingButton = new ToolStripButtonCustom();
-            FilterByRatingLabel = new ToolStripLabel();
             FilterShowUnsupportedButton = new ToolStripButtonCustom();
             RefreshAreaToolStrip = new ToolStripCustom();
             FMsListZoomInButton = new ToolStripButtonCustom();
@@ -662,14 +659,11 @@ namespace AngelLoader.Forms
             FilterIconButtonsToolStrip.ImageScalingSize = new Size(22, 22);
             FilterIconButtonsToolStrip.Items.AddRange(new ToolStripItem[] {
             FilterByReleaseDateButton,
-            FilterByReleaseDateLabel,
             FilterByLastPlayedButton,
-            FilterByLastPlayedLabel,
             FilterByTagsButton,
             FilterByFinishedButton,
             FilterByUnfinishedButton,
             FilterByRatingButton,
-            FilterByRatingLabel,
             FilterShowUnsupportedButton});
             FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
             FilterIconButtonsToolStrip.TabIndex = 3;
@@ -684,12 +678,6 @@ namespace AngelLoader.Forms
             FilterByReleaseDateButton.Size = new Size(25, 25);
             FilterByReleaseDateButton.Click += FilterByReleaseDateButton_Click;
             // 
-            // FilterByReleaseDateLabel
-            // 
-            FilterByReleaseDateLabel.ForeColor = Color.Maroon;
-            FilterByReleaseDateLabel.Margin = new Padding(4, 5, 0, 2);
-            FilterByReleaseDateLabel.Size = new Size(26, 15);
-            // 
             // FilterByLastPlayedButton
             // 
             FilterByLastPlayedButton.AutoSize = false;
@@ -698,12 +686,6 @@ namespace AngelLoader.Forms
             FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
             FilterByLastPlayedButton.Click += FilterByLastPlayedButton_Click;
-            // 
-            // FilterByLastPlayedLabel
-            // 
-            FilterByLastPlayedLabel.ForeColor = Color.Maroon;
-            FilterByLastPlayedLabel.Margin = new Padding(4, 5, 0, 2);
-            FilterByLastPlayedLabel.Size = new Size(25, 15);
             // 
             // FilterByTagsButton
             // 
@@ -742,12 +724,6 @@ namespace AngelLoader.Forms
             FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
             FilterByRatingButton.Size = new Size(25, 25);
             FilterByRatingButton.Click += FilterByRatingButton_Click;
-            // 
-            // FilterByRatingLabel
-            // 
-            FilterByRatingLabel.ForeColor = Color.Maroon;
-            FilterByRatingLabel.Margin = new Padding(4, 5, 0, 2);
-            FilterByRatingLabel.Size = new Size(19, 15);
             // 
             // FilterShowUnsupportedButton
             // 

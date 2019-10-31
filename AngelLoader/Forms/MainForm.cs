@@ -199,19 +199,21 @@ namespace AngelLoader.Forms
                     FilterAuthorTextBox.Text = "";
 
                     FilterByReleaseDateButton.Checked = false;
-                    FilterByReleaseDateLabel.Visible = false;
+                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByReleaseDate);
 
                     FilterByLastPlayedButton.Checked = false;
-                    FilterByLastPlayedLabel.Visible = false;
+                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByLastPlayed);
 
                     FilterByTagsButton.Checked = false;
                     FilterByFinishedButton.Checked = false;
                     FilterByUnfinishedButton.Checked = false;
 
                     FilterByRatingButton.Checked = false;
-                    FilterByRatingLabel.Visible = false;
+                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
 
                     FilterShowUnsupportedButton.Checked = false;
+
+                    // NOTE: Here is the line where the internal filter is cleared. It does in fact happen!
                     FMsDGV.Filter.Clear(oneList);
                 }
                 finally
@@ -821,13 +823,6 @@ namespace AngelLoader.Forms
 
             FilterBarFLP.HorizontalScroll.SmallChange = 20;
 
-            // Set these to invisible here, because if you do it on the UI, it constantly marks the form file as
-            // unsaved every time you open it even though no changes were made. Aggravating as hell. ToolStrips
-            // march to the beat of their own drum, that's for sure. :\
-            FilterByReleaseDateLabel.Visible = false;
-            FilterByLastPlayedLabel.Visible = false;
-            FilterByRatingLabel.Visible = false;
-
             Config.Filter.DeepCopyTo(FMsDGV.Filter);
             SetUIFilterValues(FMsDGV.Filter);
 
@@ -1137,17 +1132,17 @@ namespace AngelLoader.Forms
                 FilterAuthorLabel.Text = LText.FilterBar.Author;
 
                 FilterByReleaseDateButton.ToolTipText = LText.FilterBar.ReleaseDateToolTip;
-                FilterByReleaseDateLabel.ToolTipText = LText.FilterBar.ReleaseDateToolTip;
+                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByReleaseDate);
 
                 FilterByLastPlayedButton.ToolTipText = LText.FilterBar.LastPlayedToolTip;
-                FilterByLastPlayedLabel.ToolTipText = LText.FilterBar.LastPlayedToolTip;
+                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByLastPlayed);
 
                 FilterByTagsButton.ToolTipText = LText.FilterBar.TagsToolTip;
                 FilterByFinishedButton.ToolTipText = LText.FilterBar.FinishedToolTip;
                 FilterByUnfinishedButton.ToolTipText = LText.FilterBar.UnfinishedToolTip;
 
                 FilterByRatingButton.ToolTipText = LText.FilterBar.RatingToolTip;
-                FilterByRatingLabel.ToolTipText = LText.FilterBar.RatingToolTip;
+                Lazy_ToolStripLabels.Localize(Lazy_ToolStripLabel.FilterByRating);
 
                 FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowJunk;
 
@@ -2643,13 +2638,11 @@ namespace AngelLoader.Forms
                     var from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
                     var to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
 
-                    FilterByRatingLabel.Text = from + @" - " + to;
-
-                    FilterByRatingLabel.Visible = true;
+                    Lazy_ToolStripLabels.Show(this, Lazy_ToolStripLabel.FilterByRating, from + @" - " + to);
                 }
                 else
                 {
-                    FilterByRatingLabel.Visible = false;
+                    Lazy_ToolStripLabels.Hide(Lazy_ToolStripLabel.FilterByRating);
                 }
             }
             finally
@@ -4074,7 +4067,6 @@ namespace AngelLoader.Forms
             var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
             var fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
             var toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
-            var label = lastPlayed ? FilterByLastPlayedLabel : FilterByReleaseDateLabel;
 
             // Normally you can see the re-layout kind of "sequentially happen", this stops that and makes it
             // snappy
@@ -4083,14 +4075,19 @@ namespace AngelLoader.Forms
             {
                 if (button.Checked)
                 {
-                    var from = fromDate == null ? "" : fromDate.Value.ToShortDateString();
-                    var to = toDate == null ? "" : toDate.Value.ToShortDateString();
-                    label.Text = from + @" - " + to;
-                    label.Visible = true;
+                    string from = fromDate == null ? "" : fromDate.Value.ToShortDateString();
+                    string to = toDate == null ? "" : toDate.Value.ToShortDateString();
+
+                    Lazy_ToolStripLabels.Show(this,
+                        lastPlayed
+                            ? Lazy_ToolStripLabel.FilterByLastPlayed
+                            : Lazy_ToolStripLabel.FilterByReleaseDate, from + @" - " + to);
                 }
                 else
                 {
-                    label.Visible = false;
+                    Lazy_ToolStripLabels.Hide(lastPlayed
+                        ? Lazy_ToolStripLabel.FilterByLastPlayed
+                        : Lazy_ToolStripLabel.FilterByReleaseDate);
                 }
             }
             finally

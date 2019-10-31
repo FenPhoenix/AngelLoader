@@ -78,14 +78,11 @@
             this.FilterAuthorTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.FilterIconButtonsToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.FilterByReleaseDateButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FilterByReleaseDateLabel = new System.Windows.Forms.ToolStripLabel();
             this.FilterByLastPlayedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FilterByLastPlayedLabel = new System.Windows.Forms.ToolStripLabel();
             this.FilterByTagsButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByFinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByUnfinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FilterByRatingLabel = new System.Windows.Forms.ToolStripLabel();
             this.FilterShowUnsupportedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshAreaToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.FMsListZoomInButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
@@ -772,14 +769,11 @@
             this.FilterIconButtonsToolStrip.ImageScalingSize = new System.Drawing.Size(22, 22);
             this.FilterIconButtonsToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FilterByReleaseDateButton,
-            this.FilterByReleaseDateLabel,
             this.FilterByLastPlayedButton,
-            this.FilterByLastPlayedLabel,
             this.FilterByTagsButton,
             this.FilterByFinishedButton,
             this.FilterByUnfinishedButton,
             this.FilterByRatingButton,
-            this.FilterByRatingLabel,
             this.FilterShowUnsupportedButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(491, 0);
@@ -802,15 +796,6 @@
             this.FilterByReleaseDateButton.ToolTipText = "Release date";
             this.FilterByReleaseDateButton.Click += new System.EventHandler(this.FilterByReleaseDateButton_Click);
             // 
-            // FilterByReleaseDateLabel
-            // 
-            this.FilterByReleaseDateLabel.ForeColor = System.Drawing.Color.Maroon;
-            this.FilterByReleaseDateLabel.Margin = new System.Windows.Forms.Padding(4, 5, 0, 2);
-            this.FilterByReleaseDateLabel.Name = "FilterByReleaseDateLabel";
-            this.FilterByReleaseDateLabel.Size = new System.Drawing.Size(26, 15);
-            this.FilterByReleaseDateLabel.Text = "[rd]";
-            this.FilterByReleaseDateLabel.ToolTipText = "Release date";
-            // 
             // FilterByLastPlayedButton
             // 
             this.FilterByLastPlayedButton.AutoSize = false;
@@ -823,15 +808,6 @@
             this.FilterByLastPlayedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByLastPlayedButton.ToolTipText = "Last played";
             this.FilterByLastPlayedButton.Click += new System.EventHandler(this.FilterByLastPlayedButton_Click);
-            // 
-            // FilterByLastPlayedLabel
-            // 
-            this.FilterByLastPlayedLabel.ForeColor = System.Drawing.Color.Maroon;
-            this.FilterByLastPlayedLabel.Margin = new System.Windows.Forms.Padding(4, 5, 0, 2);
-            this.FilterByLastPlayedLabel.Name = "FilterByLastPlayedLabel";
-            this.FilterByLastPlayedLabel.Size = new System.Drawing.Size(25, 15);
-            this.FilterByLastPlayedLabel.Text = "[lp]";
-            this.FilterByLastPlayedLabel.ToolTipText = "Release date";
             // 
             // FilterByTagsButton
             // 
@@ -886,15 +862,6 @@
             this.FilterByRatingButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByRatingButton.ToolTipText = "Rating";
             this.FilterByRatingButton.Click += new System.EventHandler(this.FilterByRatingButton_Click);
-            // 
-            // FilterByRatingLabel
-            // 
-            this.FilterByRatingLabel.ForeColor = System.Drawing.Color.Maroon;
-            this.FilterByRatingLabel.Margin = new System.Windows.Forms.Padding(4, 5, 0, 2);
-            this.FilterByRatingLabel.Name = "FilterByRatingLabel";
-            this.FilterByRatingLabel.Size = new System.Drawing.Size(19, 15);
-            this.FilterByRatingLabel.Text = "[r]";
-            this.FilterByRatingLabel.ToolTipText = "Rating";
             // 
             // FilterShowUnsupportedButton
             // 
@@ -1937,136 +1904,133 @@
 #endif
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-        private System.Windows.Forms.Button TestButton;
-        private System.Windows.Forms.Button Test2Button;
-        private System.Windows.Forms.Label DebugLabel;
-        private System.Windows.Forms.Label DebugLabel2;
+        internal System.Windows.Forms.Button TestButton;
+        internal System.Windows.Forms.Button Test2Button;
+        internal System.Windows.Forms.Label DebugLabel;
+        internal System.Windows.Forms.Label DebugLabel2;
 #endif
 
-        private AngelLoader.CustomControls.SplitContainerCustom MainSplitContainer;
-        private System.Windows.Forms.Panel BottomPanel;
-        private AngelLoader.CustomControls.DataGridViewCustom FMsDGV;
-        private System.Windows.Forms.Button PlayFMButton;
-        private AngelLoader.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
-        private System.Windows.Forms.Button ScanAllFMsButton;
-        private AngelLoader.CustomControls.SplitContainerCustom TopSplitContainer;
-        private System.Windows.Forms.Panel EverythingPanel;
-        private System.Windows.Forms.Button SettingsButton;
-        private AngelLoader.CustomControls.ComboBoxCustom ChooseReadmeComboBox;
-        private System.Windows.Forms.Button ReadmeResetZoomButton;
-        private System.Windows.Forms.Label FilterTitleLabel;
-        private AngelLoader.CustomControls.TextBoxCustom FilterTitleTextBox;
-        private System.Windows.Forms.Button PlayOriginalGameButton;
-        private System.Windows.Forms.TabControl GamesTabControl;
-        private System.Windows.Forms.TabPage Thief1TabPage;
-        private System.Windows.Forms.TabPage Thief2TabPage;
-        private System.Windows.Forms.ImageList GameTabsImageList;
-        private AngelLoader.CustomControls.TabControlCustom TopRightTabControl;
-        private System.Windows.Forms.TabPage StatisticsTabPage;
-        private System.Windows.Forms.Label CustomResourcesLabel;
-        private System.Windows.Forms.CheckBox CR_MotionsCheckBox;
-        private System.Windows.Forms.CheckBox CR_CreaturesCheckBox;
-        private System.Windows.Forms.CheckBox CR_MapCheckBox;
-        private System.Windows.Forms.CheckBox CR_ScriptsCheckBox;
-        private System.Windows.Forms.CheckBox CR_ObjectsCheckBox;
-        private System.Windows.Forms.CheckBox CR_SubtitlesCheckBox;
-        private System.Windows.Forms.CheckBox CR_AutomapCheckBox;
-        private System.Windows.Forms.CheckBox CR_TexturesCheckBox;
-        private System.Windows.Forms.CheckBox CR_SoundsCheckBox;
-        private System.Windows.Forms.CheckBox CR_MoviesCheckBox;
-        private System.Windows.Forms.TabPage CommentTabPage;
-        private System.Windows.Forms.TextBox CommentTextBox;
-        private System.Windows.Forms.TabPage TagsTabPage;
-        private System.Windows.Forms.TreeView TagsTreeView;
-        private System.Windows.Forms.Button ResetLayoutButton;
-        private System.Windows.Forms.ToolTip MainToolTip;
-        private System.Windows.Forms.Button RemoveTagButton;
-        private System.Windows.Forms.Button AddTagButton;
-        private System.Windows.Forms.Button AddTagFromListButton;
-        private AngelLoader.CustomControls.TextBoxCustom AddTagTextBox;
-        private AngelLoader.CustomControls.TextBoxCustom FilterAuthorTextBox;
-        private System.Windows.Forms.Label FilterAuthorLabel;
-        private System.Windows.Forms.TabPage EditFMTabPage;
-        private System.Windows.Forms.DateTimePicker EditFMLastPlayedDateTimePicker;
-        private System.Windows.Forms.DateTimePicker EditFMReleaseDateDateTimePicker;
-        private System.Windows.Forms.TextBox EditFMAuthorTextBox;
-        private System.Windows.Forms.Label EditFMAuthorLabel;
-        private System.Windows.Forms.Label EditFMTitleLabel;
-        private System.Windows.Forms.CheckBox EditFMDisableAllModsCheckBox;
-        private System.Windows.Forms.TextBox EditFMDisabledModsTextBox;
-        private System.Windows.Forms.Label EditFMDisabledModsLabel;
-        private System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
-        private AngelLoader.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
-        private AngelLoader.CustomControls.ToolStripButtonCustom FilterByThief1Button;
-        private AngelLoader.CustomControls.ToolStripButtonCustom FilterByThief2Button;
-        private System.Windows.Forms.Panel StatsCheckBoxesPanel;
-        private System.Windows.Forms.CheckBox EditFMLastPlayedCheckBox;
-        private System.Windows.Forms.CheckBox EditFMReleaseDateCheckBox;
-        private System.Windows.Forms.ComboBox EditFMRatingComboBox;
-        private System.Windows.Forms.Label EditFMRatingLabel;
-        private System.Windows.Forms.Button EditFMFinishedOnButton;
-        private System.Windows.Forms.Button ReadmeFullScreenButton;
-        private System.Windows.Forms.Button WebSearchButton;
-        private AngelLoader.CustomControls.ArrowButton FilterBarScrollRightButton;
-        private AngelLoader.CustomControls.ArrowButton FilterBarScrollLeftButton;
-        private System.Windows.Forms.TextBox EditFMTitleTextBox;
-        private CustomControls.ArrowButton EditFMAltTitlesArrowButton;
-        private CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
-        private CustomControls.ToolStripButtonCustom FilterByFinishedButton;
-        private CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
-        private CustomControls.ToolStripButtonCustom FilterByRatingButton;
-        private CustomControls.ToolStripButtonCustom FilterByTagsButton;
-        private CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
-        private System.Windows.Forms.ToolStripLabel FilterByReleaseDateLabel;
-        private System.Windows.Forms.ToolStripLabel FilterByRatingLabel;
-        private System.Windows.Forms.Button ImportButton;
-        private CustomControls.ToolStripCustom RefreshAreaToolStrip;
-        private CustomControls.ToolStripButtonCustom ClearFiltersButton;
-        private CustomControls.ToolStripButtonCustom FilterByThief3Button;
-        private System.Windows.Forms.TabPage Thief3TabPage;
-        private CustomControls.ToolStripButtonCustom RefreshFiltersButton;
-        private System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
-        private System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
-        private CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
-        private System.Windows.Forms.ToolStripLabel FilterByLastPlayedLabel;
-        private System.Windows.Forms.Button ReadmeZoomInButton;
-        private System.Windows.Forms.Button ReadmeZoomOutButton;
-        private System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
-        private System.Windows.Forms.Button EditFMScanReleaseDateButton;
-        private System.Windows.Forms.Button EditFMScanAuthorButton;
-        private System.Windows.Forms.Button EditFMScanTitleButton;
-        private System.Windows.Forms.Button EditFMScanForReadmesButton;
-        private System.Windows.Forms.Button StatsScanCustomResourcesButton;
-        private System.Windows.Forms.TabPage PatchTabPage;
-        private System.Windows.Forms.ListBox PatchDMLsListBox;
-        private System.Windows.Forms.Button PatchRemoveDMLButton;
-        private System.Windows.Forms.Button PatchAddDMLButton;
-        private System.Windows.Forms.Label PatchDMLPatchesLabel;
-        private System.Windows.Forms.Panel PatchDMLsPanel;
-        private System.Windows.Forms.Label PatchFMNotInstalledLabel;
-        private System.Windows.Forms.Panel PatchMainPanel;
-        private System.Windows.Forms.Button PatchOpenFMFolderButton;
-        private AngelLoader.CustomControls.ArrowButton TopRightCollapseButton;
-        private CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
-        private CustomControls.ToolStripButtonCustom FMsListZoomInButton;
-        private CustomControls.ToolStripButtonCustom FMsListZoomOutButton;
-        private CustomControls.ToolStripButtonCustom FMsListResetZoomButton;
-        private System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
-        private System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn TitleColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ArchiveColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn AuthorColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SizeColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn RatingTextColumn;
-        private System.Windows.Forms.DataGridViewImageColumn FinishedColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ReleaseDateColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
-        private CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
-        private System.Windows.Forms.Button TopRightMenuButton;
-        private CustomControls.ToolStripButtonCustom FilterBySS2Button;
-        private System.Windows.Forms.TabPage SS2TabPage;
-        private System.Windows.Forms.Control TagsTabAutoScrollMarker;
+        internal AngelLoader.CustomControls.SplitContainerCustom MainSplitContainer;
+        internal System.Windows.Forms.Panel BottomPanel;
+        internal AngelLoader.CustomControls.DataGridViewCustom FMsDGV;
+        internal System.Windows.Forms.Button PlayFMButton;
+        internal AngelLoader.CustomControls.RichTextBoxCustom ReadmeRichTextBox;
+        internal System.Windows.Forms.Button ScanAllFMsButton;
+        internal AngelLoader.CustomControls.SplitContainerCustom TopSplitContainer;
+        internal System.Windows.Forms.Panel EverythingPanel;
+        internal System.Windows.Forms.Button SettingsButton;
+        internal AngelLoader.CustomControls.ComboBoxCustom ChooseReadmeComboBox;
+        internal System.Windows.Forms.Button ReadmeResetZoomButton;
+        internal System.Windows.Forms.Label FilterTitleLabel;
+        internal AngelLoader.CustomControls.TextBoxCustom FilterTitleTextBox;
+        internal System.Windows.Forms.Button PlayOriginalGameButton;
+        internal System.Windows.Forms.TabControl GamesTabControl;
+        internal System.Windows.Forms.TabPage Thief1TabPage;
+        internal System.Windows.Forms.TabPage Thief2TabPage;
+        internal System.Windows.Forms.ImageList GameTabsImageList;
+        internal AngelLoader.CustomControls.TabControlCustom TopRightTabControl;
+        internal System.Windows.Forms.TabPage StatisticsTabPage;
+        internal System.Windows.Forms.Label CustomResourcesLabel;
+        internal System.Windows.Forms.CheckBox CR_MotionsCheckBox;
+        internal System.Windows.Forms.CheckBox CR_CreaturesCheckBox;
+        internal System.Windows.Forms.CheckBox CR_MapCheckBox;
+        internal System.Windows.Forms.CheckBox CR_ScriptsCheckBox;
+        internal System.Windows.Forms.CheckBox CR_ObjectsCheckBox;
+        internal System.Windows.Forms.CheckBox CR_SubtitlesCheckBox;
+        internal System.Windows.Forms.CheckBox CR_AutomapCheckBox;
+        internal System.Windows.Forms.CheckBox CR_TexturesCheckBox;
+        internal System.Windows.Forms.CheckBox CR_SoundsCheckBox;
+        internal System.Windows.Forms.CheckBox CR_MoviesCheckBox;
+        internal System.Windows.Forms.TabPage CommentTabPage;
+        internal System.Windows.Forms.TextBox CommentTextBox;
+        internal System.Windows.Forms.TabPage TagsTabPage;
+        internal System.Windows.Forms.TreeView TagsTreeView;
+        internal System.Windows.Forms.Button ResetLayoutButton;
+        internal System.Windows.Forms.ToolTip MainToolTip;
+        internal System.Windows.Forms.Button RemoveTagButton;
+        internal System.Windows.Forms.Button AddTagButton;
+        internal System.Windows.Forms.Button AddTagFromListButton;
+        internal AngelLoader.CustomControls.TextBoxCustom AddTagTextBox;
+        internal AngelLoader.CustomControls.TextBoxCustom FilterAuthorTextBox;
+        internal System.Windows.Forms.Label FilterAuthorLabel;
+        internal System.Windows.Forms.TabPage EditFMTabPage;
+        internal System.Windows.Forms.DateTimePicker EditFMLastPlayedDateTimePicker;
+        internal System.Windows.Forms.DateTimePicker EditFMReleaseDateDateTimePicker;
+        internal System.Windows.Forms.TextBox EditFMAuthorTextBox;
+        internal System.Windows.Forms.Label EditFMAuthorLabel;
+        internal System.Windows.Forms.Label EditFMTitleLabel;
+        internal System.Windows.Forms.CheckBox EditFMDisableAllModsCheckBox;
+        internal System.Windows.Forms.TextBox EditFMDisabledModsTextBox;
+        internal System.Windows.Forms.Label EditFMDisabledModsLabel;
+        internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
+        internal AngelLoader.CustomControls.ToolStripCustom FilterGameButtonsToolStrip;
+        internal AngelLoader.CustomControls.ToolStripButtonCustom FilterByThief1Button;
+        internal AngelLoader.CustomControls.ToolStripButtonCustom FilterByThief2Button;
+        internal System.Windows.Forms.Panel StatsCheckBoxesPanel;
+        internal System.Windows.Forms.CheckBox EditFMLastPlayedCheckBox;
+        internal System.Windows.Forms.CheckBox EditFMReleaseDateCheckBox;
+        internal System.Windows.Forms.ComboBox EditFMRatingComboBox;
+        internal System.Windows.Forms.Label EditFMRatingLabel;
+        internal System.Windows.Forms.Button EditFMFinishedOnButton;
+        internal System.Windows.Forms.Button ReadmeFullScreenButton;
+        internal System.Windows.Forms.Button WebSearchButton;
+        internal AngelLoader.CustomControls.ArrowButton FilterBarScrollRightButton;
+        internal AngelLoader.CustomControls.ArrowButton FilterBarScrollLeftButton;
+        internal System.Windows.Forms.TextBox EditFMTitleTextBox;
+        internal CustomControls.ArrowButton EditFMAltTitlesArrowButton;
+        internal CustomControls.ToolStripCustom FilterIconButtonsToolStrip;
+        internal CustomControls.ToolStripButtonCustom FilterByFinishedButton;
+        internal CustomControls.ToolStripButtonCustom FilterByUnfinishedButton;
+        internal CustomControls.ToolStripButtonCustom FilterByRatingButton;
+        internal CustomControls.ToolStripButtonCustom FilterByTagsButton;
+        internal CustomControls.ToolStripButtonCustom FilterByReleaseDateButton;
+        internal System.Windows.Forms.Button ImportButton;
+        internal CustomControls.ToolStripCustom RefreshAreaToolStrip;
+        internal CustomControls.ToolStripButtonCustom ClearFiltersButton;
+        internal CustomControls.ToolStripButtonCustom FilterByThief3Button;
+        internal System.Windows.Forms.TabPage Thief3TabPage;
+        internal CustomControls.ToolStripButtonCustom RefreshFiltersButton;
+        internal System.Windows.Forms.FlowLayoutPanel BottomLeftButtonsFLP;
+        internal System.Windows.Forms.FlowLayoutPanel BottomRightButtonsFLP;
+        internal CustomControls.ToolStripButtonCustom FilterByLastPlayedButton;
+        internal System.Windows.Forms.Button ReadmeZoomInButton;
+        internal System.Windows.Forms.Button ReadmeZoomOutButton;
+        internal System.Windows.Forms.FlowLayoutPanel AddRemoveTagFLP;
+        internal System.Windows.Forms.Button EditFMScanReleaseDateButton;
+        internal System.Windows.Forms.Button EditFMScanAuthorButton;
+        internal System.Windows.Forms.Button EditFMScanTitleButton;
+        internal System.Windows.Forms.Button EditFMScanForReadmesButton;
+        internal System.Windows.Forms.Button StatsScanCustomResourcesButton;
+        internal System.Windows.Forms.TabPage PatchTabPage;
+        internal System.Windows.Forms.ListBox PatchDMLsListBox;
+        internal System.Windows.Forms.Button PatchRemoveDMLButton;
+        internal System.Windows.Forms.Button PatchAddDMLButton;
+        internal System.Windows.Forms.Label PatchDMLPatchesLabel;
+        internal System.Windows.Forms.Panel PatchDMLsPanel;
+        internal System.Windows.Forms.Label PatchFMNotInstalledLabel;
+        internal System.Windows.Forms.Panel PatchMainPanel;
+        internal System.Windows.Forms.Button PatchOpenFMFolderButton;
+        internal AngelLoader.CustomControls.ArrowButton TopRightCollapseButton;
+        internal CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
+        internal CustomControls.ToolStripButtonCustom FMsListZoomInButton;
+        internal CustomControls.ToolStripButtonCustom FMsListZoomOutButton;
+        internal CustomControls.ToolStripButtonCustom FMsListResetZoomButton;
+        internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
+        internal System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn TitleColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn ArchiveColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn AuthorColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn SizeColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn RatingTextColumn;
+        internal System.Windows.Forms.DataGridViewImageColumn FinishedColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn ReleaseDateColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
+        internal CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;
+        internal System.Windows.Forms.Button TopRightMenuButton;
+        internal CustomControls.ToolStripButtonCustom FilterBySS2Button;
+        internal System.Windows.Forms.TabPage SS2TabPage;
+        internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
     }
 }
