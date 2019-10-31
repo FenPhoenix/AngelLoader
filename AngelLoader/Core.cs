@@ -1,4 +1,6 @@
-﻿using System;
+﻿// TODO: Idea: We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;

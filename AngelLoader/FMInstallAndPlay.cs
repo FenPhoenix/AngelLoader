@@ -379,6 +379,7 @@ namespace AngelLoader
         // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
         // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
 
+        // TODO: Make AngelLoader detect if there's only ONE other commented fm_selector line; if there is, then reset to that one. Otherwise, just reset to fmsel.dll.
         internal static bool SetDarkFMSelector(Selector selector, string gameExe, string gamePath)
         {
             const string fmSelectorKey = "fm_selector";
