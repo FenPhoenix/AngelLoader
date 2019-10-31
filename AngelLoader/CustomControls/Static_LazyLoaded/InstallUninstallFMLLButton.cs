@@ -28,9 +28,11 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             _enabled = value;
         }
 
-        internal static void Construct(MainForm form, Control container)
+        internal static void Construct(MainForm owner)
         {
             if (Constructed) return;
+
+            var container = owner.BottomLeftButtonsFLP;
 
             Button = new Button { Visible = false };
 
@@ -45,7 +47,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             Button.TabIndex = 58;
             Button.TextImageRelation = TextImageRelation.ImageBeforeText;
             Button.UseVisualStyleBackColor = true;
-            Button.Click += form.InstallUninstallFMButton_Click;
+            Button.Click += owner.InstallUninstallFMButton_Click;
 
             Button.Enabled = _enabled;
             SetSayInstallState(_sayInstall);

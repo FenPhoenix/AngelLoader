@@ -129,7 +129,7 @@ namespace AngelLoader.Forms
             {
                 if (!InstallUninstallFMLLButton.Constructed)
                 {
-                    InstallUninstallFMLLButton.Construct(this, BottomLeftButtonsFLP);
+                    InstallUninstallFMLLButton.Construct(this);
                     InstallUninstallFMLLButton.Localize(false);
                 }
                 InstallUninstallFMLLButton.Show();
@@ -860,7 +860,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this, BottomLeftButtonsFLP);
+            if (!Config.HideUninstallButton) InstallUninstallFMLLButton.Construct(this);
 
             TopSplitContainer.CollapsedSize = TopRightCollapseButton.Width;
             if (Config.TopRightPanelCollapsed)
@@ -3187,8 +3187,7 @@ namespace AngelLoader.Forms
 
                 if (fileType == ReadmeType.HTML)
                 {
-                    ViewHTMLReadmeLLButton.Construct(this, MainSplitContainer.Panel2);
-                    ViewHTMLReadmeLLButton.Show();
+                    ViewHTMLReadmeLLButton.Show(this);
                     SetReadmeVisible(false);
                     // In case the cursor is over the scroll bar area
                     if (CursorOverReadmeArea()) ShowReadmeControls(true);
@@ -3838,8 +3837,7 @@ namespace AngelLoader.Forms
 
             if (fm.SelectedReadme.ExtIsHtml())
             {
-                ViewHTMLReadmeLLButton.Construct(this, MainSplitContainer.Panel2);
-                ViewHTMLReadmeLLButton.Show();
+                ViewHTMLReadmeLLButton.Show(this);
             }
             else
             {

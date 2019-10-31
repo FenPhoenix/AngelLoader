@@ -10,29 +10,6 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
         private static bool _constructed;
         private static Button? Button;
 
-        internal static void Construct(MainForm form, Control container)
-        {
-            if (_constructed) return;
-
-            Button = new Button();
-            container.Controls.Add(Button);
-            Button.Anchor = AnchorStyles.None;
-            Button.AutoSize = true;
-            // This thing gets centered later so no location is specified here
-            Button.Padding = new Padding(6, 0, 6, 0);
-            Button.Height = 23;
-            Button.TabIndex = 49;
-            Button.UseVisualStyleBackColor = true;
-            Button.Visible = false;
-            Button.Click += form.ViewHTMLReadmeButton_Click;
-            Button.MouseLeave += form.ReadmeArea_MouseLeave;
-
-            _constructed = true;
-
-            Localize();
-            Button.CenterHV(container);
-        }
-
         internal static void Localize()
         {
             if (_constructed) Button!.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
@@ -50,6 +27,32 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             if (_constructed) Button!.Hide();
         }
 
-        internal static void Show() => Button!.Show();
+        internal static void Show(MainForm owner)
+        {
+            if (!_constructed)
+            {
+                var container = owner.MainSplitContainer.Panel2;
+
+                Button = new Button();
+                container.Controls.Add(Button);
+                Button.Anchor = AnchorStyles.None;
+                Button.AutoSize = true;
+                // This thing gets centered later so no location is specified here
+                Button.Padding = new Padding(6, 0, 6, 0);
+                Button.Height = 23;
+                Button.TabIndex = 49;
+                Button.UseVisualStyleBackColor = true;
+                Button.Visible = false;
+                Button.Click += owner.ViewHTMLReadmeButton_Click;
+                Button.MouseLeave += owner.ReadmeArea_MouseLeave;
+
+                _constructed = true;
+
+                Localize();
+                Button.CenterHV(container);
+            }
+
+            Button!.Show();
+        }
     }
 }
