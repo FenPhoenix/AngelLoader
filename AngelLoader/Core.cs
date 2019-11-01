@@ -538,7 +538,7 @@ namespace AngelLoader
 
         #region Get FM install paths
 
-        private static (string FMsPath, string FMLanguage, bool FMLanguageForced, List<string> FMSelectorLines)
+        internal static (string FMsPath, string FMLanguage, bool FMLanguageForced, List<string> FMSelectorLines)
         GetInfoFromCamModIni(string gamePath, out Error error)
         {
             static string CreateAndReturnFMsPath(string fmsPath)

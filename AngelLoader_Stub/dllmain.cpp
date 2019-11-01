@@ -27,7 +27,7 @@
  2019/10/10:
  We now use the stub at all times again, due to wanting to pass language stuff. Steam support also requires the
  stub.
-  
+
  2019/9/28:
  This stub is now in C++ to avoid DLLExport incompatibilities and general hackiness with the .NET version.
 
@@ -92,9 +92,12 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     // data->sLanguage / data->bForceLanguage:
     // Might use if it will help with multi-language stuff
 
-    string fm_name, disabled_mods;
     bool play_original_game = false;
     bool play_original_game_key_found = false;
+    string fm_name;
+    string disabled_mods;
+    string language;
+    string force_language;
 
     // Note: We can't make this into a char* right here, because of pointer and scope weirdness. We have to convert
     // each time later. Probably a better way to do it but whatever. C# cowboy learning the ropes.
@@ -106,6 +109,10 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     const unsigned int fm_name_eq_len = fm_name_eq.length();
     const string disabled_mods_eq = "DisabledMods=";
     const unsigned int disabled_mods_eq_len = disabled_mods_eq.length();
+    const string language_eq = "Language=";
+    const unsigned int language_eq_len = language_eq.length();
+    const string force_language_eq = "ForceLanguage=";
+    const unsigned int force_language_eq_len = force_language_eq.length();
 
     // Note: using ifstream instead of fopen bloats the dll up by 10k, but I can't get fopen to work. Reads the
     // encoding wrong I'm guessing, I don't frickin' know. At least this works, and I can come back and shrink it
@@ -139,6 +146,16 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
         {
             disabled_mods = line.substr(disabled_mods_eq_len, string::npos);
         }
+        else if (line.length() > language_eq_len&&
+            line.substr(0, language_eq_len) == language_eq)
+        {
+            language = line.substr(language_eq_len, string::npos);
+        }
+        else if (line.length() > force_language_eq_len&&
+            line.substr(0, force_language_eq_len) == force_language_eq)
+        {
+            force_language = line.substr(force_language_eq_len, string::npos);
+        }
     }
 
     ifs.close();
@@ -163,6 +180,10 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 
     if (data->nMaxNameLen > 0) strncpy_s(data->sName, data->nMaxNameLen, fm_name.c_str(), data->nMaxNameLen);
     if (data->nMaxModExcludeLen > 0) strncpy_s(data->sModExcludePaths, data->nMaxModExcludeLen, disabled_mods.c_str(), data->nMaxModExcludeLen);
+
+    // Leave whatever was in there before if we haven't got a value
+    if (!language.empty() && data->nLanguageLen > 0) strncpy_s(data->sLanguage, data->nLanguageLen, language.c_str(), data->nLanguageLen);
+    if (!force_language.empty()) data->bForceLanguage = equals_i(force_language, "true") ? 1 : 0;
 
     // Never call us back; we're standalone and don't need it
     data->bRunAfterGame = 0;

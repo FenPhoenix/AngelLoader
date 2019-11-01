@@ -258,6 +258,51 @@ namespace AngelLoader
                 g_pFMSelData->bForceLanguage = FALSE;
             }
             */
+
+            string sLanguage = "";
+            bool bForceLanguage = false;
+
+            if (false && // switch it off till it's in fully
+                fm != null)
+            {
+                GameIndex game = GameToGameIndex(fm.Game);
+
+                //string fmLang = Config.GetPerGameFMLanguage(game);
+
+                string gamePath = Path.GetDirectoryName(Config.GetGameExe(game));
+                var (_, fmLanguage, fmLanguageForced, _) = Core.GetInfoFromCamModIni(gamePath, out _);
+
+                // bForceLanguage gets set to something specific in every possible case, effectively meaning the
+                // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
+                if (GameIsDark(game) && !fmLanguage.IsEmpty())
+                {
+                    // fmsel doesn't set this because it's already getting it from the game meaning it's set
+                    // already, but we have to set it ourselves because we're getting it manually
+
+                    // temp, this will be a list of the FM's langs from its lang folders
+                    var fmSupportedLangs = new List<string>(); // GetFMLanguagesFromFolders()
+                    if (fmSupportedLangs.ContainsI(fmLanguage))
+                    {
+                        sLanguage = fmLanguage;
+                        bForceLanguage = true;
+                    }
+                    else
+                    {
+                        // language not supported, use fallback
+                        sLanguage = fmSupportedLangs.Count > 0 ? fmSupportedLangs[0] : "";
+                        bForceLanguage = false;
+                    }
+                }
+                else
+                {
+                    // fmsel's comment:
+                    // determine FM default language (used if the FM doesn't support the language set in dark by the "language" cfg var)
+                    string fallbackLang = ""; // GetFallbackLanguage()
+                    sLanguage = !fallbackLang.IsEmpty() ? fallbackLang : "";
+                    bForceLanguage = false;
+                }
+            }
+
             try
             {
                 // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
@@ -267,6 +312,8 @@ namespace AngelLoader
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
                     sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                    sw.WriteLine("Language=" + sLanguage);
+                    sw.WriteLine("ForceLanguage=" + bForceLanguage);
                 }
             }
             catch (Exception ex)
