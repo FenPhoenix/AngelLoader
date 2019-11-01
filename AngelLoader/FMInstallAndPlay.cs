@@ -228,7 +228,7 @@ namespace AngelLoader
 
         //}
 
-        private static void WriteStubCommFile(FanMission fm, bool playOriginalGame)
+        private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
         {
             // BUG: TODO: AngelLoader doesn't handle languages correctly. Here's the FMSel code. Port this asap!
             /*
@@ -269,8 +269,11 @@ namespace AngelLoader
                 // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
                 using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default);
                 sw.WriteLine("PlayOriginalGame=" + playOriginalGame);
-                sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                if (fm != null)
+                {
+                    sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+                    sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
+                }
             }
             catch (Exception ex)
             {
@@ -366,11 +369,11 @@ namespace AngelLoader
 
         private static void SetUsAsSelector(GameIndex game, string gameExe, string gamePath)
         {
-            bool success = GameIsDark(game) ? SetDarkFMSelector(game, gameExe, gamePath) : SetUsAsT3FMSelector();
+            bool success = GameIsDark(game) ? SetDarkFMSelector(game, gameExe, gamePath) : SetT3FMSelector();
             if (!success)
             {
                 Log("Unable to set us as the selector for " + gameExe + " (" +
-                    (GameIsDark(game) ? nameof(SetDarkFMSelector) : nameof(SetUsAsT3FMSelector)) +
+                    (GameIsDark(game) ? nameof(SetDarkFMSelector) : nameof(SetT3FMSelector)) +
                     " returned false)", stackTrace: true);
             }
         }
@@ -621,7 +624,7 @@ namespace AngelLoader
         // If only you could do this with a command-line switch. You can say -fm to always start with the loader,
         // and you can say -fm=name to always start with the named FM, but you can't specify WHICH loader to use
         // on the command line. Only way to do it is through a file. Meh.
-        private static bool SetUsAsT3FMSelector()
+        internal static bool SetT3FMSelector(bool resetSelector = false)
         {
             const string externSelectorKey = "ExternSelector=";
             const string alwaysShowKey = "AlwaysShow=";
@@ -648,8 +651,45 @@ namespace AngelLoader
                 return false;
             }
 
-            // Confirmed SU can read this with both forward and backward slashes
+            // Confirmed SU can read the selector value with both forward and backward slashes
+
             var stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
+
+            string selectorPath;
+
+            #region Reset loader
+
+            if (resetSelector)
+            {
+                var startupFMSelectorLines = Config.GetStartupFMSelectorLines(GameIndex.Thief3);
+                var t3Data = Core.GetInfoFromT3();
+                // If loader is not us, leave it be
+                if (!t3Data.PrevFMSelectorValue.ToBackSlashes().EqualsI(stubPath) &&
+                    !(startupFMSelectorLines.Count > 0 &&
+                     startupFMSelectorLines[0].EqualsI(Paths.StubFileName)))
+                {
+                    return true;
+                }
+                else if (startupFMSelectorLines.Count > 0 &&
+                    startupFMSelectorLines[0].EqualsI(Paths.StubFileName) ||
+                    t3Data.PrevFMSelectorValue.IsEmpty())
+                {
+                    selectorPath = "fmsel.dll";
+                }
+                else
+                {
+                    selectorPath = startupFMSelectorLines.Count == 0 ||
+                                   !startupFMSelectorLines[0].ToBackSlashes().EqualsI(stubPath)
+                        ? startupFMSelectorLines[0]
+                        : "fmsel.dll";
+                }
+            }
+            else
+            {
+                selectorPath = stubPath;
+            }
+
+            #endregion
 
             for (var i = 0; i < lines.Count; i++)
             {
@@ -662,7 +702,7 @@ namespace AngelLoader
                     if (!existingExternSelectorKeyOverwritten &&
                         lt.StartsWithI(externSelectorKey))
                     {
-                        lines[i + 1] = externSelectorKey + stubPath;
+                        lines[i + 1] = externSelectorKey + selectorPath;
                         existingExternSelectorKeyOverwritten = true;
                     }
                     else if (!existingAlwaysShowKeyOverwritten &&
@@ -686,7 +726,7 @@ namespace AngelLoader
 
             if (!existingExternSelectorKeyOverwritten && insertLineIndex > -1)
             {
-                lines.Insert(insertLineIndex, externSelectorKey + stubPath);
+                lines.Insert(insertLineIndex, externSelectorKey + selectorPath);
             }
 
             if (!existingAlwaysShowKeyOverwritten && insertLineIndex > -1)

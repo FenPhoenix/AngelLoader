@@ -247,35 +247,11 @@ namespace AngelLoader
             // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
             //       being thrown here.
 
-            // @GENGAMES
-            // Thief 1
-            SetGameData(Thief1, storeFMSelectorLines: gamePathsChanged);
-
-            // Thief 2
-            var t2_Exe_Specified = SetGameData(Thief2, storeFMSelectorLines: gamePathsChanged);
-            Config.T2MPDetected = t2_Exe_Specified && !GetT2MultiplayerExe().IsEmpty();
-
-            #region Thief 3
-
-            // TODO: Look into how or if languages are supported in Thief 3
-            if (!Config.GetGameExe(Thief3).IsWhiteSpace())
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                var (error, useCentralSaves, t3FMInstPath) = GetInstFMsPathFromT3();
-                if (error == Error.None)
-                {
-                    Config.SetFMInstallPath(Thief3, t3FMInstPath);
-                    Config.T3UseCentralSaves = useCentralSaves;
-                }
+                bool exe_Specified = SetGameData((GameIndex)i, storeFMSelectorLines: gamePathsChanged);
+                if ((GameIndex)i == Thief2) Config.T2MPDetected = exe_Specified && !GetT2MultiplayerExe().IsEmpty();
             }
-            else
-            {
-                Config.SetFMInstallPath(Thief3, "");
-            }
-
-            #endregion
-
-            // SS2
-            SetGameData(SS2, storeFMSelectorLines: gamePathsChanged);
 
             #endregion
 
@@ -440,28 +416,65 @@ namespace AngelLoader
             #endregion
         }
 
-        private static bool SetGameData(GameIndex gameIndex, bool storeFMSelectorLines)
+        private static bool SetGameData(GameIndex game, bool storeFMSelectorLines)
         {
             (string fmsPath, string fmLanguage, bool fmLanguageForced, List<string> fmSelectorLines)
                 data = ("", "", false, new List<string>());
+            bool game_Exe_Specified = !Config.GetGameExe(game).IsWhiteSpace();
 
-            bool game_Exe_Specified = !Config.GetGameExe(gameIndex).IsWhiteSpace();
-
-            if (game_Exe_Specified) { data = GetInfoFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(gameIndex)), out Error _); }
-
-            Config.SetFMInstallPath(gameIndex, data.fmsPath);
-            Config.SetGameEditorDetected(gameIndex, game_Exe_Specified && !GetEditorExe(gameIndex).IsEmpty());
-            Config.SetPerGameFMLanguage(gameIndex, data.fmLanguage);
-            Config.SetPerGameFMForcedLanguage(gameIndex, data.fmLanguageForced);
-            if (storeFMSelectorLines)
+            if (GameIsDark(game))
             {
                 if (game_Exe_Specified)
                 {
-                    Config.SetStartupFMSelectorLines(gameIndex, data.fmSelectorLines);
+                    data = GetInfoFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(game)), out Error _);
+                }
+
+                Config.SetFMInstallPath(game, data.fmsPath);
+                Config.SetGameEditorDetected(game, game_Exe_Specified && !GetEditorExe(game).IsEmpty());
+                Config.SetPerGameFMLanguage(game, data.fmLanguage);
+                Config.SetPerGameFMForcedLanguage(game, data.fmLanguageForced);
+
+                if (storeFMSelectorLines)
+                {
+                    if (game_Exe_Specified)
+                    {
+                        Config.SetStartupFMSelectorLines(game, data.fmSelectorLines);
+                    }
+                    else
+                    {
+                        Config.GetStartupFMSelectorLines(game).Clear();
+                    }
+                }
+            }
+            else
+            {
+                // TODO: Look into how or if languages are supported in Thief 3
+                if (game_Exe_Specified)
+                {
+                    var t3Data = GetInfoFromT3();
+                    if (t3Data.Error == Error.None)
+                    {
+                        Config.SetFMInstallPath(Thief3, t3Data.FMInstallPath);
+                        Config.T3UseCentralSaves = t3Data.UseCentralSaves;
+                    }
+                    else
+                    {
+                        Config.SetFMInstallPath(Thief3, "");
+                    }
+                    // Do this even if there was an error, because we could still have a valid selector line
+                    if (storeFMSelectorLines)
+                    {
+                        Config.GetStartupFMSelectorLines(Thief3).Clear();
+                        if (!t3Data.PrevFMSelectorValue.IsEmpty())
+                        {
+                            Config.GetStartupFMSelectorLines(Thief3).Add(t3Data.PrevFMSelectorValue);
+                        }
+                    }
                 }
                 else
                 {
-                    Config.GetStartupFMSelectorLines(gameIndex).Clear();
+                    Config.SetFMInstallPath(Thief3, "");
+                    Config.GetStartupFMSelectorLines(Thief3).Clear();
                 }
             }
 
@@ -513,21 +526,8 @@ namespace AngelLoader
             {
                 string gameExe = Config.GetGameExe((GameIndex)i);
                 gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
+                if (gameExeExists[i]) SetGameData((GameIndex)i, storeFMSelectorLines: true);
             }
-
-            // @GENGAMES
-            if (gameExeExists[(int)Thief1]) SetGameData(Thief1, storeFMSelectorLines: true);
-            if (gameExeExists[(int)Thief2]) SetGameData(Thief2, storeFMSelectorLines: true);
-            if (gameExeExists[(int)Thief3])
-            {
-                var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
-                if (error == Error.None)
-                {
-                    Config.SetFMInstallPath(Thief3, path);
-                    Config.T3UseCentralSaves = useCentralSaves;
-                }
-            }
-            if (gameExeExists[(int)SS2]) SetGameData(SS2, storeFMSelectorLines: true);
 
             return
                 // Must be first, otherwise other stuff overrides it and then we don't act on it
@@ -635,8 +635,8 @@ namespace AngelLoader
                 fm_language, fm_language_forced, fmSelectorLines);
         }
 
-        private static (Error Error, bool UseCentralSaves, string Path)
-        GetInstFMsPathFromT3()
+        internal static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue)
+        GetInfoFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();
             var soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
@@ -644,14 +644,16 @@ namespace AngelLoader
             {
                 // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
                 MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (soError, false, "");
+                return (soError, false, "", "");
             }
 
             bool ignoreSavesKeyFound = false;
             bool ignoreSavesKey = true;
+            bool externSelectorFound = false;
 
             bool fmInstPathFound = false;
             string fmInstPath = "";
+            string prevFMSelectorValue = "";
 
             var lines = File.ReadAllLines(soIni);
             for (var i = 0; i < lines.Length; i++)
@@ -683,6 +685,12 @@ namespace AngelLoader
                             fmInstPath = lt.Substring(lt.IndexOf('=') + 1).Trim();
                             fmInstPathFound = true;
                         }
+                        else if (!externSelectorFound &&
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("ExternSelector="))
+                        {
+                            prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
+                            externSelectorFound = true;
+                        }
                         else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -697,8 +705,8 @@ namespace AngelLoader
             }
 
             return fmInstPathFound
-                ? (Error.None, !ignoreSavesKey, fmInstPath)
-                : (Error.T3FMInstPathNotFound, false, "");
+                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue)
+                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue);
         }
 
         #endregion
@@ -1459,13 +1467,22 @@ namespace AngelLoader
             // happening when they go and start the game exe manually
             try
             {
-                var t1Exe = Config.GetGameExe(Thief1);
-                if (!t1Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Thief1, t1Exe, Path.GetDirectoryName(t1Exe), resetSelector: true);
-                var t2Exe = Config.GetGameExe(Thief2);
-                if (!t2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Thief2, t2Exe, Path.GetDirectoryName(t2Exe), resetSelector: true);
-                var ss2Exe = Config.GetGameExe(SS2);
-                if (!ss2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(SS2, ss2Exe, Path.GetDirectoryName(ss2Exe), resetSelector: true);
-                // TODO: Put Thief 3 in here later
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    var exe = Config.GetGameExe((GameIndex)i);
+                    if (!exe.IsEmpty())
+                    {
+                        var game = (GameIndex)i;
+                        if (GameIsDark(game))
+                        {
+                            FMInstallAndPlay.SetDarkFMSelector(game, exe, Path.GetDirectoryName(exe), resetSelector: true);
+                        }
+                        else
+                        {
+                            FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {

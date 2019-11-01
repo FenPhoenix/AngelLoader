@@ -33,24 +33,18 @@
  .NET version.
 */
 
-//#undef switch_flip_courteous_behavior
-#define switch_flip_courteous_behavior
-
 #include "AngelLoader_Stub.h"
 #include <string>
 #include <fstream>
 #include <filesystem>
 #include <cstdio>
-#ifdef  switch_flip_courteous_behavior
 #include <algorithm>
 #include <windows.h>
 #define MB_OK 0x00000000L
 #define MB_ICONINFORMATION 0x00000040L
-#endif
 using std::string;
 namespace fs = std::filesystem;
 
-#ifdef  switch_flip_courteous_behavior
 bool equals_i(string s1, string s2)
 {
     std::transform(s1.begin(), s1.end(), s1.begin(), toupper);
@@ -60,10 +54,15 @@ bool equals_i(string s1, string s2)
 
 int show_loader_alert()
 {
-    MessageBoxA(nullptr, "AngelLoader is set as the loader for this game. To use a different loader, please open cam_mod.ini in your game folder for instructions on how to do so.", "AngelLoader", MB_OK | MB_ICONINFORMATION);
+    const string msg1 =
+        "AngelLoader is set as the loader for this game.\r\n\r\n";
+    const string msg2 =
+        "To use a different loader for Thief 1, Thief 2, or System Shock 2, please open cam_mod.ini in your game folder for instructions on how to do so.\r\n\r\n";
+    const string msg3 =
+        "To use a different loader for Thief 3, please open Sneaky Tweaker and choose another loader in the \"Sneaky Upgrade -> FM Loading\" section.";
+    MessageBoxA(nullptr, (msg1 + msg2 + msg3).c_str(), "AngelLoader", MB_OK | MB_ICONINFORMATION);
     return kSelFMRet_ExitGame;
 }
-#endif
 
 extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 {
@@ -123,11 +122,9 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
         if (line.length() > play_original_game_eq_len&&
             line.substr(0, play_original_game_eq_len) == play_original_game_eq)
         {
-#ifdef  switch_flip_courteous_behavior
             play_original_game_key_found = true;
             string val = line.substr(play_original_game_eq_len, string::npos);
             play_original_game = equals_i(val, "true");
-#endif
         }
         else if (line.length() > fm_name_eq_len&&
             line.substr(0, fm_name_eq_len) == fm_name_eq)
