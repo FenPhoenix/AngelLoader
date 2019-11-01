@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
+using AngelLoader.Ini;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
 using static AngelLoader.Common.Common;
@@ -365,9 +366,7 @@ namespace AngelLoader
 
         private static void SetUsAsSelector(GameIndex game, string gameExe, string gamePath)
         {
-            bool success = GameIsDark(game)
-                ? SetDarkFMSelector(Selector.AngelLoader, gameExe, gamePath)
-                : SetUsAsT3FMSelector();
+            bool success = GameIsDark(game) ? SetDarkFMSelector(game, gameExe, gamePath) : SetUsAsT3FMSelector();
             if (!success)
             {
                 Log("Unable to set us as the selector for " + gameExe + " (" +
@@ -376,11 +375,87 @@ namespace AngelLoader
             }
         }
 
+        private static string FindPreviousLoader(List<string> lines, string fmSelectorKey, string stubPath,
+            string gamePath)
+        {
+            // Handle relative paths
+            // TODO: Duplicate code
+            static string GetFullPath(string _gamePath, string path)
+            {
+                if (!path.IsEmpty() &&
+                    (path.StartsWithFast_NoNullChecks(".\\") || path.StartsWithFast_NoNullChecks("..\\") ||
+                     path.StartsWithFast_NoNullChecks("./") || path.StartsWithFast_NoNullChecks("../")))
+                {
+                    try
+                    {
+                        return Paths.RelativeToAbsolute(_gamePath, path);
+                    }
+                    catch (Exception)
+                    {
+                        return "";
+                    }
+                }
+
+                return path;
+            }
+
+            string TryGetOtherSelectorSpecifier(string line)
+            {
+                string selectorFileName;
+                string selFullPath;
+                // try-catch cause of Path.Combine() maybe trying to combine invalid-for-path strings
+                // In .NET Core, we could use Path.Join() to avoid throwing
+                try
+                {
+                    return (line.StartsWithI(fmSelectorKey) && line.Length > fmSelectorKey.Length &&
+                            char.IsWhiteSpace(line[fmSelectorKey.Length]) &&
+                            (selectorFileName = line.Substring(fmSelectorKey.Length + 1).ToBackSlashes()).EndsWithI(".dll") &&
+                            !selectorFileName.EqualsI(stubPath) &&
+                            !(selFullPath = GetFullPath(gamePath, selectorFileName)).IsEmpty() &&
+                            File.Exists(Path.Combine(gamePath, selectorFileName)))
+                        ? selectorFileName
+                        : "";
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+
+            var selectorsList = new List<string>();
+            var commentedSelectorsList = new List<string>();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+
+                string selectorFileName;
+                if (lt.Length > 0 && lt[0] == ';')
+                {
+                    do { lt = lt.TrimStart(';').Trim(); } while (lt.Length > 0 && lt[0] == ';');
+
+                    if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
+                    {
+                        if (!commentedSelectorsList.ContainsI(selectorFileName)) commentedSelectorsList.Add(selectorFileName);
+                    }
+                }
+                else if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
+                {
+                    if (!selectorsList.ContainsI(selectorFileName)) selectorsList.Add(selectorFileName);
+                }
+            }
+
+            return
+                selectorsList.Count > 0 ? selectorsList[selectorsList.Count - 1] :
+                commentedSelectorsList.Count > 0 ? commentedSelectorsList[commentedSelectorsList.Count - 1] :
+                "fmsel.dll";
+        }
+
         // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
         // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
 
         // TODO: Make AngelLoader detect if there's only ONE other commented fm_selector line; if there is, then reset to that one. Otherwise, just reset to fmsel.dll.
-        internal static bool SetDarkFMSelector(Selector selector, string gameExe, string gamePath)
+        internal static bool SetDarkFMSelector(GameIndex game, string gameExe, string gamePath, bool resetSelector = false)
         {
             const string fmSelectorKey = "fm_selector";
             const string fmCommentLine = "always start the FM Selector (if one is present)";
@@ -403,13 +478,40 @@ namespace AngelLoader
                 return false;
             }
 
-            // Confirmed NewDark can read this with both forward and backward slashes
-            var stubPath = selector switch
+            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName).ToBackSlashes();
+
+            if (resetSelector)
             {
-                Selector.FMSel => "fmsel.dll",
-                Selector.NewDarkLoader => "NewDarkLoader.dll",
-                Selector.AngelLoader => Path.Combine(Paths.Startup, Paths.StubFileName)
-            };
+                // If the loader is now something other than us, then leave it be and don't change anything
+                var tempSelectorsList = new List<string>();
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string lt = lines[i].Trim();
+
+                    string selectorFileName;
+                    if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
+                        char.IsWhiteSpace(lt[fmSelectorKey.Length]) &&
+                        (selectorFileName = lt.Substring(fmSelectorKey.Length + 1).ToBackSlashes()).EndsWithI(".dll"))
+                    {
+                        if (!tempSelectorsList.ContainsI(selectorFileName)) tempSelectorsList.Add(selectorFileName);
+                    }
+                }
+
+                if (tempSelectorsList.Count > 0 &&
+                   !tempSelectorsList[tempSelectorsList.Count - 1].EqualsI(stubPath))
+                {
+                    return true;
+                }
+            }
+
+            // Confirmed NewDark can read fm_selector values with both forward and backward slashes
+
+            // The loader is us, so use our saved previous loader or lacking that, make a best-effort guess
+            var startupFMSelectorLines = Config.GetStartupFMSelectorLines(game);
+            string selectorPath = resetSelector
+                ? FindPreviousLoader(startupFMSelectorLines.Count > 0 ? startupFMSelectorLines : lines,
+                    fmSelectorKey, stubPath, gamePath)
+                : stubPath;
 
             /*
              Conforms to the way NewDark reads it:
@@ -452,7 +554,7 @@ namespace AngelLoader
                 if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
                     char.IsWhiteSpace(lt[fmSelectorKey.Length]) && lt
                         .Substring(fmSelectorKey.Length + 1).TrimStart().ToBackSlashes()
-                        .EqualsI(stubPath.ToBackSlashes()))
+                        .EqualsI(selectorPath.ToBackSlashes()))
                 {
                     if (loaderIsAlreadyUs)
                     {
@@ -462,7 +564,7 @@ namespace AngelLoader
                     }
                     else
                     {
-                        lines[i] = fmSelectorKey + " " + stubPath;
+                        lines[i] = fmSelectorKey + " " + selectorPath;
                         loaderIsAlreadyUs = true;
                     }
                     continue;
@@ -481,11 +583,11 @@ namespace AngelLoader
             {
                 if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
                 {
-                    lines.Add(fmSelectorKey + " " + stubPath);
+                    lines.Add(fmSelectorKey + " " + selectorPath);
                 }
                 else
                 {
-                    lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + stubPath);
+                    lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + selectorPath);
                 }
             }
 

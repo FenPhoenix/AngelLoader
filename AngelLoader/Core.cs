@@ -249,10 +249,10 @@ namespace AngelLoader
 
             // @GENGAMES
             // Thief 1
-            SetGameData(Thief1);
+            SetGameData(Thief1, storeFMSelectorLines: gamePathsChanged);
 
             // Thief 2
-            var t2_Exe_Specified = SetGameData(Thief2);
+            var t2_Exe_Specified = SetGameData(Thief2, storeFMSelectorLines: gamePathsChanged);
             Config.T2MPDetected = t2_Exe_Specified && !GetT2MultiplayerExe().IsEmpty();
 
             #region Thief 3
@@ -275,7 +275,7 @@ namespace AngelLoader
             #endregion
 
             // SS2
-            SetGameData(SS2);
+            SetGameData(SS2, storeFMSelectorLines: gamePathsChanged);
 
             #endregion
 
@@ -440,17 +440,30 @@ namespace AngelLoader
             #endregion
         }
 
-        private static bool SetGameData(GameIndex gameIndex)
+        private static bool SetGameData(GameIndex gameIndex, bool storeFMSelectorLines)
         {
-            (string fmsPath, string fmLanguage, bool fmLanguageForced) data = ("", "", false);
+            (string fmsPath, string fmLanguage, bool fmLanguageForced, List<string> fmSelectorLines)
+                data = ("", "", false, new List<string>());
+
             bool game_Exe_Specified = !Config.GetGameExe(gameIndex).IsWhiteSpace();
 
-            if (game_Exe_Specified) data = GetInfoFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(gameIndex)), out Error _);
+            if (game_Exe_Specified) { data = GetInfoFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(gameIndex)), out Error _); }
 
             Config.SetFMInstallPath(gameIndex, data.fmsPath);
             Config.SetGameEditorDetected(gameIndex, game_Exe_Specified && !GetEditorExe(gameIndex).IsEmpty());
             Config.SetPerGameFMLanguage(gameIndex, data.fmLanguage);
             Config.SetPerGameFMForcedLanguage(gameIndex, data.fmLanguageForced);
+            if (storeFMSelectorLines)
+            {
+                if (game_Exe_Specified)
+                {
+                    Config.SetStartupFMSelectorLines(gameIndex, data.fmSelectorLines);
+                }
+                else
+                {
+                    Config.GetStartupFMSelectorLines(gameIndex).Clear();
+                }
+            }
 
             return game_Exe_Specified;
         }
@@ -503,8 +516,8 @@ namespace AngelLoader
             }
 
             // @GENGAMES
-            if (gameExeExists[(int)Thief1]) SetGameData(Thief1);
-            if (gameExeExists[(int)Thief2]) SetGameData(Thief2);
+            if (gameExeExists[(int)Thief1]) SetGameData(Thief1, storeFMSelectorLines: true);
+            if (gameExeExists[(int)Thief2]) SetGameData(Thief2, storeFMSelectorLines: true);
             if (gameExeExists[(int)Thief3])
             {
                 var (error, useCentralSaves, path) = GetInstFMsPathFromT3();
@@ -514,7 +527,7 @@ namespace AngelLoader
                     Config.T3UseCentralSaves = useCentralSaves;
                 }
             }
-            if (gameExeExists[(int)SS2]) SetGameData(SS2);
+            if (gameExeExists[(int)SS2]) SetGameData(SS2, storeFMSelectorLines: true);
 
             return
                 // Must be first, otherwise other stuff overrides it and then we don't act on it
@@ -525,7 +538,7 @@ namespace AngelLoader
 
         #region Get FM install paths
 
-        private static (string FMsPath, string FMLanguage, bool FMLanguageForced)
+        private static (string FMsPath, string FMLanguage, bool FMLanguageForced, List<string> FMSelectorLines)
         GetInfoFromCamModIni(string gamePath, out Error error)
         {
             static string CreateAndReturnFMsPath(string fmsPath)
@@ -544,11 +557,13 @@ namespace AngelLoader
 
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
 
+            var fmSelectorLines = new List<string>();
+
             if (!File.Exists(camModIni))
             {
                 //error = Error.CamModIniNotFound;
                 error = Error.None;
-                return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), "", false);
+                return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), "", false, fmSelectorLines);
             }
 
             string path = "";
@@ -572,6 +587,9 @@ namespace AngelLoader
                     if (line.IsEmpty()) continue;
 
                     line = line.TrimStart();
+
+                    // Quick check; these lines will be checked more thoroughly when we go to use them
+                    if (line.ContainsI("fm_selector")) fmSelectorLines.Add(line);
 
                     if (line.IsEmpty() || line[0] == ';') continue;
 
@@ -608,14 +626,13 @@ namespace AngelLoader
                 catch (Exception)
                 {
                     error = Error.None;
-                    return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), fm_language, fm_language_forced);
+                    return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), fm_language, fm_language_forced, fmSelectorLines);
                 }
             }
 
             error = Error.None;
-            return Directory.Exists(path)
-                ? (path, fm_language, fm_language_forced)
-                : (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), fm_language, fm_language_forced);
+            return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")),
+                fm_language, fm_language_forced, fmSelectorLines);
         }
 
         private static (Error Error, bool UseCentralSaves, string Path)
@@ -1443,11 +1460,11 @@ namespace AngelLoader
             try
             {
                 var t1Exe = Config.GetGameExe(Thief1);
-                if (!t1Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Selector.FMSel, t1Exe, Path.GetDirectoryName(t1Exe));
+                if (!t1Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Thief1, t1Exe, Path.GetDirectoryName(t1Exe), resetSelector: true);
                 var t2Exe = Config.GetGameExe(Thief2);
-                if (!t2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Selector.FMSel, t2Exe, Path.GetDirectoryName(t2Exe));
+                if (!t2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Thief2, t2Exe, Path.GetDirectoryName(t2Exe), resetSelector: true);
                 var ss2Exe = Config.GetGameExe(SS2);
-                if (!ss2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(Selector.FMSel, ss2Exe, Path.GetDirectoryName(ss2Exe));
+                if (!ss2Exe.IsEmpty()) FMInstallAndPlay.SetDarkFMSelector(SS2, ss2Exe, Path.GetDirectoryName(ss2Exe), resetSelector: true);
                 // TODO: Put Thief 3 in here later
             }
             catch (Exception ex)

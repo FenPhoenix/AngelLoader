@@ -21,6 +21,7 @@ namespace AngelLoader.Common.DataClasses
             FMForcedLanguages = new bool[SupportedGameCount];
             GameEditorDetected = new bool[SupportedGameCount];
             UseSteamSwitches = new bool[SupportedGameCount];
+            StartupFMSelectorLines = new List<string>[SupportedGameCount];
 
             // We want them empty strings, not null, for safety
             for (int i = 0; i < SupportedGameCount; i++)
@@ -31,8 +32,26 @@ namespace AngelLoader.Common.DataClasses
                 FMInstallPaths[i] = "";
                 FMLanguages[i] = "";
                 UseSteamSwitches[i] = true;
+                StartupFMSelectorLines[i] = new List<string>();
             }
         }
+
+        #region Startup fm_selector lines
+
+        internal readonly List<string>[] StartupFMSelectorLines;
+
+        internal List<string> GetStartupFMSelectorLines(GameIndex index) => StartupFMSelectorLines[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal List<string> GetStartupFMSelectorLinesUnsafe(Game game) => StartupFMSelectorLines[(uint)GameToGameIndex(game)];
+
+        internal void SetStartupFMSelectorLines(GameIndex index, List<string> value) => StartupFMSelectorLines[(uint)index] = value;
+
+        #endregion
 
         #region Paths
 
