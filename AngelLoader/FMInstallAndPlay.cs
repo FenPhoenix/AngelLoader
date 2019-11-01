@@ -216,11 +216,20 @@ namespace AngelLoader
         // It also looks like it's picking the first language it finds as a fallback. That doesn't sound right.
         // Have to look at it more closely...
 
-        //private static (bool bForceLanguage, string sLanguage)
-        //GetFMLanguage(FanMission fm)
-        //{
+        private static List<string>
+        GetFMLanguagesFromFolders(FanMission fm, int depth = 0)
+        {
+            var ret = new List<string>();
 
-        //}
+            // code:
+            // -recurse through FM installed folder looking for language-named dirs.
+            // -if we find any dir named "english", early-out and return
+            // -add any lang dirs we find to a list, rejecting duplicates
+            // -don't recurse inside lang dirs
+            // -return list of langs found
+
+            return ret;
+        }
 
         private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
         {

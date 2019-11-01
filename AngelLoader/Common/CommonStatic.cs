@@ -68,5 +68,21 @@ namespace AngelLoader.Common
         // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for null games.
         // This will contain indexes into FMDataIniList (not FMViewList!)
         internal static readonly List<int> ViewListGamesNull = new List<int>();
+
+        // This is for passing to the game via the stub to match FMSel's behavior
+        internal static string[] FMSupportedLanguages =
+        {
+            "english", // must be first
+            "czech",
+            "dutch",
+            "french",
+            "german",
+            "hungarian",
+            "italian",
+            "japanese",
+            "polish",
+            "russian",
+            "spanish"
+        };
     }
 }
