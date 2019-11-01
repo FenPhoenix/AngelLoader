@@ -133,28 +133,28 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
             line.substr(0, play_original_game_eq_len) == play_original_game_eq)
         {
             play_original_game_key_found = true;
-            string val = line.substr(play_original_game_eq_len, string::npos);
+            string val = line.substr(play_original_game_eq_len);
             play_original_game = equals_i(val, "true");
         }
         else if (line.length() > fm_name_eq_len&&
             line.substr(0, fm_name_eq_len) == fm_name_eq)
         {
-            fm_name = line.substr(fm_name_eq_len, string::npos);
+            fm_name = line.substr(fm_name_eq_len);
         }
         else if (line.length() > disabled_mods_eq_len&&
             line.substr(0, disabled_mods_eq_len) == disabled_mods_eq)
         {
-            disabled_mods = line.substr(disabled_mods_eq_len, string::npos);
+            disabled_mods = line.substr(disabled_mods_eq_len);
         }
         else if (line.length() > language_eq_len&&
             line.substr(0, language_eq_len) == language_eq)
         {
-            language = line.substr(language_eq_len, string::npos);
+            language = line.substr(language_eq_len);
         }
         else if (line.length() > force_language_eq_len&&
             line.substr(0, force_language_eq_len) == force_language_eq)
         {
-            force_language = line.substr(force_language_eq_len, string::npos);
+            force_language = line.substr(force_language_eq_len);
         }
     }
 
