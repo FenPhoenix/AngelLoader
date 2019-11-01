@@ -2481,7 +2481,7 @@ namespace AngelLoader.Forms
         {
             var item = (ToolStripMenuItem)sender;
 
-            var game =
+            GameIndex game =
                 item == PlayOriginalGameLLMenu.Thief1MenuItem ? Thief1 :
                 item == PlayOriginalGameLLMenu.Thief2MenuItem || item == PlayOriginalGameLLMenu.Thief2MPMenuItem ? Thief2 :
                 item == PlayOriginalGameLLMenu.Thief3MenuItem ? Thief3 :
