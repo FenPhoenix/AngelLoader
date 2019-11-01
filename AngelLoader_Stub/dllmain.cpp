@@ -3,8 +3,6 @@
 // I can always come back in here if I ever get more to grips with what I'm doing when it comes to C++ strings
 // and squash this junk down some. Till then, meh.
 
-// TODO: Decide what to do about the explicit play-original stuff and alerting the user etc.
-
 /*
  We have NewDark executables call out to this stub program, which provides the NewDark game with data that has
  been passed to it by AngelLoader via a temp file. We do it this way in order to support AngelLoader being
@@ -26,12 +24,17 @@
 
  Or at least no other command-line options are listed anywhere that I can find.
 
- UPDATE: As of 2019/3/31, we only use this stub if we actually need to pass mod excludes. Otherwise, we just call
- the game and pass it the FM on the command line, as that's much cleaner.
+ 2019/10/10:
+ We now use the stub at all times again, due to wanting to pass language stuff. Steam support also requires the
+ stub.
+  
+ 2019/9/28:
+ This stub is now in C++ to avoid DLLExport incompatibilities and general hackiness with the .NET version.
 
- UPDATE 2019/9/28: This stub is now in C++ to avoid DLLExport incompatibilities and general hackiness with the
- .NET version.
-*/
+ 2019/3/31:
+ As of this date, we only use this stub if we actually need to pass mod excludes. Otherwise, we just call the
+ game and pass it the FM on the command line, as that's much cleaner.
+ */
 
 #include "AngelLoader_Stub.h"
 #include <string>
