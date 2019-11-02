@@ -1,4 +1,6 @@
-﻿using System;
+﻿// TODO: @IO_SAFETY: @Robustness: Check paths and exes for conflicts, duplicates, disallowed locations, etc.
+
+using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
