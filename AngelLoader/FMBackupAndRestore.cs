@@ -106,9 +106,8 @@ namespace AngelLoader
                     {
                         savesAndScreensFiles.AddRange(Directory.GetFiles(ss2CurrentPath, "*", SearchOption.AllDirectories));
 
-                        var ss2SaveDirs = Directory.GetDirectories(
-                            Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*",
-                            SearchOption.TopDirectoryOnly);
+                        var ss2SaveDirs = FastIO.GetDirsTopOnly(
+                            Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*");
 
                         foreach (var dir in ss2SaveDirs)
                         {

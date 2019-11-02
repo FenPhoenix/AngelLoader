@@ -99,7 +99,7 @@ namespace AngelLoader
                 {
                     try
                     {
-                        foreach (var d in Directory.GetDirectories(instPath, "*", SearchOption.TopDirectoryOnly))
+                        foreach (var d in FastIO.GetDirsTopOnly(instPath, "*", initListCapacityLarge: true))
                         {
                             var dirName = d.GetTopmostDirName();
                             if (!dirName.EqualsI(".fmsel.cache")) perGameInstFMDirsList[i].Add(dirName);

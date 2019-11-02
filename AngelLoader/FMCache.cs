@@ -74,20 +74,12 @@ namespace AngelLoader
             {
                 try
                 {
-                    foreach (var f in FastIO.GetFilesTopOnly(fmCachePath, "*"))
-                    {
-                        File.Delete(f);
-                    }
-
-                    foreach (var d in Directory.EnumerateDirectories(fmCachePath, "*", SearchOption.TopDirectoryOnly))
-                    {
-                        Directory.Delete(d, recursive: true);
-                    }
+                    foreach (var f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
+                    foreach (var d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception enumerating files or directories in cache for " + fm.Archive + " / " +
-                        fm.InstalledDir, ex);
+                    Log("Exception clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
                 }
             }
         }

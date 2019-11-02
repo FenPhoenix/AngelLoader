@@ -165,15 +165,8 @@ namespace AngelLoader.Common
             {
                 try
                 {
-                    foreach (var f in FastIO.GetFilesTopOnly(path, "*"))
-                    {
-                        File.Delete(f);
-                    }
-
-                    foreach (var d in Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly))
-                    {
-                        Directory.Delete(d, recursive: true);
-                    }
+                    foreach (var f in FastIO.GetFilesTopOnly(path, "*")) File.Delete(f);
+                    foreach (var d in FastIO.GetDirsTopOnly(path, "*")) Directory.Delete(d, recursive: true);
                 }
                 catch (Exception ex)
                 {

@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using AngelLoader.Common.Utility;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
 
@@ -17,6 +18,12 @@ namespace AngelLoader.WinAPI
         private const int FILE_ATTRIBUTE_DIRECTORY = 16;
         private const int FIND_FIRST_EX_LARGE_FETCH = 2;
         private const int ERROR_FILE_NOT_FOUND = 2;
+
+        private enum FileType
+        {
+            Files,
+            Directories
+        }
 
         #endregion
 
@@ -99,17 +106,29 @@ namespace AngelLoader.WinAPI
                 "search pattern: " + searchPattern + "\r\n");
         }
 
-        // ~2.4x faster than GetFiles() - huge boost to cold startup time
+        internal static List<string> GetDirsTopOnly(string path, string searchPattern, bool initListCapacityLarge = false)
+        {
+            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Directories);
+        }
+
         internal static List<string> GetFilesTopOnly(string path, string searchPattern, bool initListCapacityLarge = false)
+        {
+            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Files);
+        }
+
+        // ~2.4x faster than GetFiles() - huge boost to cold startup time
+        private static List<string> GetFilesTopOnlyInternal(string path, string searchPattern,
+            bool initListCapacityLarge, FileType fileType)
         {
             if (string.IsNullOrEmpty(searchPattern))
             {
                 throw new ArgumentException(nameof(searchPattern) + @" was null or empty", nameof(searchPattern));
             }
 
-            path = path.TrimEnd('\\');
+            // Vital, path must not have a trailing separator
+            path = path.TrimEnd('\\', '/');
 
-            if (string.IsNullOrWhiteSpace(path) || Path.GetInvalidPathChars().Any(path.Contains))
+            if (string.IsNullOrWhiteSpace(path) || Path.GetInvalidPathChars().Any(path.Contains<char>))
             {
                 throw new ArgumentException("The path '" + path + "' is empty, consists only of whitespace, or contains invalid characters.");
             }
@@ -123,7 +142,7 @@ namespace AngelLoader.WinAPI
             //const int ERROR_REM_NOT_LIST = 0x33;
             //const int ERROR_BAD_NETPATH = 0x35;
 
-            using var findHandle = FindFirstFileEx(@"\\?\" + path.TrimEnd('\\') + '\\' + searchPattern,
+            using var findHandle = FindFirstFileEx(@"\\?\" + path + "\\" + searchPattern,
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,
                 FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
 
@@ -139,13 +158,65 @@ namespace AngelLoader.WinAPI
             }
             do
             {
-                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
+                if (((fileType == FileType.Files &&
+                      (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY) ||
+                     (fileType == FileType.Directories &&
+                      (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)) &&
                     findData.cFileName != "." && findData.cFileName != "..")
                 {
                     // Exception could occur here
                     var fullName = Path.Combine(path, findData.cFileName);
 
                     ret.Add(fullName);
+                }
+            } while (FindNextFileW(findHandle, out findData));
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Fast, specific function to search an FM's directory structure for lang dirs, matching FMSel's behavior.
+        /// Checks kept to a minimum for speed and because we know all the parameters already.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        internal static List<string> GetFMSupportedLanguages(string path)
+        {
+            // Vital, path must not have a trailing separator
+            path = path.TrimEnd('\\', '/');
+
+            var ret = new List<string>(Common.Common.FMSupportedLanguages.Length);
+
+            // TODO: Make this go through the whole structure (non-recursive walk)
+
+            // Other relevant errors (though we don't use them specifically at the moment)
+            //const int ERROR_PATH_NOT_FOUND = 0x3;
+            //const int ERROR_REM_NOT_LIST = 0x33;
+            //const int ERROR_BAD_NETPATH = 0x35;
+
+            using var findHandle = FindFirstFileEx(@"\\?\" + path + "\\*",
+                FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,
+                FINDEX_SEARCH_OPS.FindExSearchNameMatch, IntPtr.Zero, FIND_FIRST_EX_LARGE_FETCH);
+
+            if (findHandle.IsInvalid)
+            {
+                var err = Marshal.GetLastWin32Error();
+                if (err == ERROR_FILE_NOT_FOUND) return new List<string>();
+
+                // Since the framework isn't here to save us, we should blanket-catch and throw on every
+                // possible error other than file-not-found (as that's an intended scenario, obviously).
+                // This isn't as nice as you'd get from a framework method call, but it gets the job done.
+                ThrowException("*", err, path);
+            }
+            do
+            {
+                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
+                    findData.cFileName != "." && findData.cFileName != ".." &&
+                    Common.Common.FMSupportedLanguages.ContainsI(findData.cFileName))
+                {
+                    if (!ret.ContainsI(findData.cFileName)) ret.Add(findData.cFileName);
+                    // Matching FMSel behavior: early-out on English
+                    if (findData.cFileName.EqualsI("english")) return ret;
                 }
             } while (FindNextFileW(findHandle, out findData));
 
