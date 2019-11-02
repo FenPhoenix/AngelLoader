@@ -3,6 +3,10 @@
 // For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
 // if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
 // every time we write
+// TODO: @Robustness: Move away from the "hide errors, fail silently, I'm scared to know" and towards failing clearly and fast with dialogs
+// This will need a lot of extra localization strings. So also put more comments in the lang files. To do this,
+// finish implementing the custom FenGen code that can read actual comments to make it easier for me to comment
+// the fields.
 
 using System;
 using System.Collections.Generic;
