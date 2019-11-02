@@ -14,7 +14,7 @@ namespace AngelLoader.WinAPI
     {
         #region Fields
 
-        private const int fileAttributeDirectory = 16;
+        private const int FILE_ATTRIBUTE_DIRECTORY = 16;
         private const int FIND_FIRST_EX_LARGE_FETCH = 2;
         private const int ERROR_FILE_NOT_FOUND = 2;
 
@@ -72,7 +72,7 @@ namespace AngelLoader.WinAPI
 
         #region P/Invoke definitions
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern SafeSearchHandle FindFirstFileEx(
             string lpFileName,
             FINDEX_INFO_LEVELS fInfoLevelId,
@@ -99,9 +99,8 @@ namespace AngelLoader.WinAPI
                 "search pattern: " + searchPattern + "\r\n");
         }
 
-        [SuppressMessage("ReSharper", "InconsistentNaming")]
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
-        internal static List<string> GetFilesTopOnly(string path, string searchPattern)
+        internal static List<string> GetFilesTopOnly(string path, string searchPattern, bool initListCapacityLarge = false)
         {
             if (string.IsNullOrEmpty(searchPattern))
             {
@@ -117,7 +116,7 @@ namespace AngelLoader.WinAPI
 
             // PERF: We can't know how many files we're going to find, so make the initial list capacity large
             // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
-            var ret = new List<string>(2000);
+            var ret = initListCapacityLarge ? new List<string>(2000) : new List<string>(16);
 
             // Other relevant errors (though we don't use them specifically at the moment)
             //const int ERROR_PATH_NOT_FOUND = 0x3;
@@ -140,7 +139,7 @@ namespace AngelLoader.WinAPI
             }
             do
             {
-                if ((findData.dwFileAttributes & fileAttributeDirectory) != fileAttributeDirectory &&
+                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
                     findData.cFileName != "." && findData.cFileName != "..")
                 {
                     // Exception could occur here

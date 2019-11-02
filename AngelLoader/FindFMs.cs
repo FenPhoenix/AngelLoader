@@ -122,7 +122,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    var files = FastIO.GetFilesTopOnly(path, "*");
+                    var files = FastIO.GetFilesTopOnly(path, "*", initListCapacityLarge: true);
                     foreach (var f in files)
                     {
                         if (!fmArchives.ContainsI(f.GetFileNameFast()) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
