@@ -1,4 +1,8 @@
 ﻿// TODO: Idea: We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
+// TODO: @IO_SAFETY: Make a system where files get temp-copied and then if writes fail, we copy the old file back (FMSel does this)
+// For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
+// if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
+// every time we write
 
 using System;
 using System.Collections.Generic;
