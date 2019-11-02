@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using AngelLoader.Common.Utility;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Common
 {
@@ -14,7 +15,8 @@ namespace AngelLoader.Common
 
         #region Interop
 
-        internal struct SYSTEMTIME
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+        private struct SYSTEMTIME
         {
             internal ushort wYear;
             internal ushort wMonth;
@@ -103,6 +105,7 @@ namespace AngelLoader.Common
             }
         }
 
+        // TODO: Consider how to make the log not clear every startup and still have it be feasible for people to "post their log"
         internal static void Log(string message, Exception? ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
@@ -130,9 +133,9 @@ namespace AngelLoader.Common
             try
             {
                 Lock.EnterWriteLock();
-                
+
                 using var sw = new StreamWriter(Paths.LogFile, append: true);
-                
+
                 var methodNameStr = methodName ? callerMemberName + "\r\n" : "";
                 sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
                 if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
