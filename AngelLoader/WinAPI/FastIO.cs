@@ -15,9 +15,14 @@ namespace AngelLoader.WinAPI
     {
         #region Fields
 
-        private const int FILE_ATTRIBUTE_DIRECTORY = 16;
-        private const int FIND_FIRST_EX_LARGE_FETCH = 2;
-        private const int ERROR_FILE_NOT_FOUND = 2;
+        private const int FILE_ATTRIBUTE_DIRECTORY = 0x10;
+        private const int FIND_FIRST_EX_LARGE_FETCH = 0x2;
+        private const int ERROR_FILE_NOT_FOUND = 0x2;
+        private const int FILE_ATTRIBUTE_REPARSE_POINT = 0x400;
+        // The docs specify this as something FindNextFile* can return, but say nothing about it regarding
+        // FindFirstFile*. But the .NET Framework reference source checks for this along with ERROR_FILE_NOT_FOUND
+        // so I guess I will too, though it seems never to have been a problem before(?)
+        private const int ERROR_NO_MORE_FILES = 0x12;
 
         private enum FileType
         {
@@ -149,7 +154,7 @@ namespace AngelLoader.WinAPI
             if (findHandle.IsInvalid)
             {
                 var err = Marshal.GetLastWin32Error();
-                if (err == ERROR_FILE_NOT_FOUND) return ret;
+                if (err == ERROR_FILE_NOT_FOUND || err == ERROR_NO_MORE_FILES) return ret;
 
                 // Since the framework isn't here to save us, we should blanket-catch and throw on every
                 // possible error other than file-not-found (as that's an intended scenario, obviously).
@@ -173,6 +178,8 @@ namespace AngelLoader.WinAPI
 
             return ret;
         }
+
+        // TODO: Handle reparse points here too! Or at least do like FMSel and stop recursion at 100 or something
 
         /// <summary>
         /// Fast, specific function to search an FM's directory structure for lang dirs, matching FMSel's behavior.
