@@ -11,6 +11,9 @@
 // TODO: Maybe delete the stub comm file on exit, but:
 // Don't do it for Steam because Steam could start without running a game and/or give the user time to maybe exit
 // AngelLoader and then the FM wouldn't load. Also it may be too aggressive in general, but it's an idea.
+// TODO: Switch from Has*=True|False in ini to just HasResources=Map,Automap,Creatures f.ex. but still support the old
+// This will allow a lot of compaction in the file, at the expensive of being slightly slower to read it. Maybe
+// not worth it? My FMData.ini is 776k, but I have 1573 FMs and hundreds of those are duplicates. Test and profile.
 
 using System;
 using System.Collections.Generic;
