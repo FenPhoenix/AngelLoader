@@ -16,7 +16,7 @@ namespace FMScanner.FastZipReader
     // The disposable fields that this class owns get disposed when the ZipArchive it belongs to gets disposed
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     [PublicAPI]
-    internal class ZipArchiveEntry
+    public class ZipArchiveEntry
     {
         #region Fields
 
@@ -68,47 +68,47 @@ namespace FMScanner.FastZipReader
         /// <summary>
         /// The ZipArchive that this entry belongs to.
         /// </summary>
-        private ZipArchive Archive { get; }
+        private ZipArchiveFast Archive { get; }
 
-        internal uint Crc32 { get; }
+        public uint Crc32 { get; }
 
         /// <summary>
         /// The compressed size of the entry.
         /// </summary>
-        internal long CompressedLength { get; }
+        public long CompressedLength { get; }
 
         /// <summary>
         /// OS and Application specific file attributes.
         /// </summary>
-        internal int ExternalAttributes { get; }
+        public int ExternalAttributes { get; }
 
         /// <summary>
         /// The last write time of the entry as stored in the Zip archive. To convert to a DateTime object, use
         /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
         /// </summary>
-        internal uint LastWriteTime { get; }
+        public uint LastWriteTime { get; }
 
         /// <summary>
         /// The uncompressed size of the entry.
         /// </summary>
-        internal long Length { get; }
+        public long Length { get; }
 
         /// <summary>
         /// The relative path of the entry as stored in the Zip archive. Note that Zip archives allow any string
         /// to be the path of the entry, including invalid and absolute paths.
         /// </summary>
-        internal string FullName { get; }
+        public string FullName { get; }
 
         /// <summary>
         /// The filename of the entry. This is equivalent to the substring of <see cref="FullName"/> that follows
         /// the final directory separator character.
         /// </summary>
-        internal string Name { get; }
+        public string Name { get; }
 
         #endregion
 
         // Initializes, attaches it to archive
-        internal ZipArchiveEntry(ZipArchive archive, ZipCentralDirectoryFileHeader cd)
+        internal ZipArchiveEntry(ZipArchiveFast archive, ZipCentralDirectoryFileHeader cd)
         {
             Archive = archive;
 
@@ -176,7 +176,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="ObjectDisposedException">
         /// The ZipArchive that this entry belongs to has been disposed.
         /// </exception>
-        internal Stream Open()
+        public Stream Open()
         {
             Archive.ThrowIfDisposed();
 

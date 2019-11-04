@@ -13,7 +13,7 @@ using System.Text;
 
 namespace FMScanner.FastZipReader
 {
-    internal class ZipArchive : IDisposable
+    public sealed class ZipArchiveFast : IDisposable
     {
         private List<ZipArchiveEntry> _entries;
         private ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
@@ -78,7 +78,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="ArgumentNullException">The stream is null.</exception>
         /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip archive.</exception>
         /// <param name="stream">The stream containing the archive to be read.</param>
-        internal ZipArchive(Stream stream) : this(stream, leaveOpen: false, entryNameEncoding: null) { }
+        public ZipArchiveFast(Stream stream) : this(stream, leaveOpen: false, entryNameEncoding: null) { }
 
         /// <summary>
         /// Initializes a new instance of ZipArchive on the given stream, specifying whether to leave the stream open.
@@ -88,7 +88,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
         /// <param name="stream">The input or output stream.</param>
         /// <param name="leaveOpen">true to leave the stream open upon disposing the ZipArchive, otherwise false.</param>
-        internal ZipArchive(Stream stream, bool leaveOpen) : this(stream, leaveOpen, entryNameEncoding: null) { }
+        public ZipArchiveFast(Stream stream, bool leaveOpen) : this(stream, leaveOpen, entryNameEncoding: null) { }
 
         /// <summary>
         /// Initializes a new instance of ZipArchive on the given stream, specifying whether to leave the stream open.
@@ -122,7 +122,7 @@ namespace FMScanner.FastZipReader
         ///     otherwise an <see cref="ArgumentException"/> is thrown.</para>
         /// </param>
         /// <exception cref="ArgumentException">If a Unicode encoding other than UTF-8 is specified for the <code>entryNameEncoding</code>.</exception>
-        internal ZipArchive(Stream stream, bool leaveOpen, Encoding entryNameEncoding)
+        public ZipArchiveFast(Stream stream, bool leaveOpen, Encoding entryNameEncoding)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
@@ -175,7 +175,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="NotSupportedException">The ZipArchive does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
         /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
-        internal ReadOnlyCollection<ZipArchiveEntry> Entries
+        public ReadOnlyCollection<ZipArchiveEntry> Entries
         {
             get
             {
@@ -196,7 +196,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
         /// <param name="entryName">A path relative to the root of the archive, identifying the desired entry.</param>
         /// <returns>A wrapper for the file entry in the archive. If no entry in the archive exists with the specified name, null will be returned.</returns>
-        internal ZipArchiveEntry GetEntry(string entryName)
+        public ZipArchiveEntry GetEntry(string entryName)
         {
             if (entryName == null)
                 throw new ArgumentNullException(nameof(entryName));
@@ -368,7 +368,7 @@ namespace FMScanner.FastZipReader
         /// Releases the unmanaged resources used by ZipArchive and optionally finishes writing the archive and releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to finish writing the archive and release unmanaged and managed resources, false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (disposing && !_isDisposed)
             {

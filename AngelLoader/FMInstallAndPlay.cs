@@ -289,7 +289,7 @@ namespace AngelLoader
             string[] SLangsFSPrefixed = new string[FMSupportedLanguages.Length];
             for (int i = 0; i < FMSupportedLanguages.Length; i++) SLangsFSPrefixed[i] = "/" + FMSupportedLanguages[i];
 
-            ZipArchive? zipArchive = null;
+            FMScanner.FastZipReader.ZipArchiveFast? zipArchive = null;
             SevenZipExtractor? sevenZipArchive = null;
             try
             {
@@ -301,8 +301,8 @@ namespace AngelLoader
 
                 if (fmIsZip)
                 {
-                    zipArchive = new ZipArchive(new FileStream(archivePath, FileMode.Open, FileAccess.Read),
-                        ZipArchiveMode.Read, leaveOpen: false);
+                    zipArchive = new FMScanner.FastZipReader.ZipArchiveFast(
+                        new FileStream(archivePath, FileMode.Open, FileAccess.Read), leaveOpen: false);
                 }
                 else
                 {

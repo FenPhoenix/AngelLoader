@@ -76,7 +76,7 @@ namespace FMScanner
 
         #region Disposable
 
-        private ZipArchive Archive { get; set; }
+        private ZipArchiveFast Archive { get; set; }
 
         #endregion
 
@@ -363,7 +363,7 @@ namespace FMScanner
                 {
                     try
                     {
-                        Archive = new ZipArchive(new FileStream(ArchivePath, FileMode.Open, FileAccess.Read),
+                        Archive = new ZipArchiveFast(new FileStream(ArchivePath, FileMode.Open, FileAccess.Read),
                             leaveOpen: false, ZipEntryNameEncoding);
 
                         // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
