@@ -217,7 +217,7 @@ namespace AngelLoader
         // It also looks like it's picking the first language it finds as a fallback. That doesn't sound right.
         // Have to look at it more closely...
 
-        internal static List<string> GetFMSupportedLanguages(string fmInstPath, bool earlyOutOnEnglish)
+        internal static List<string> GetFMSupportedLanguagesFromInstDir(string fmInstPath, bool earlyOutOnEnglish)
         {
             // Get initial list of base FM dirs the normal way: we don't want to count these as lang dirs even if
             // they're named such (matching FMSel behavior)
@@ -274,7 +274,94 @@ namespace AngelLoader
             return ret;
         }
 
-        // TODO: Write archive (zip, 7z) searchers (should be way, way easier)
+        internal static (bool Success, List<string> Languages)
+        GetFMSupportedLanguagesFromArchive(string archiveName, bool earlyOutOnEnglish)
+        {
+            (bool, List<string>) failed = (false, new List<string>());
+
+            var archivePath = FindFMArchive(archiveName);
+            if (archivePath.IsEmpty()) return failed;
+
+            var ret = new List<string>();
+
+            bool[] FoundLangInArchive = new bool[FMSupportedLanguages.Length];
+            // Pre-concat each string only once for perf
+            string[] SLangsFSPrefixed = new string[FMSupportedLanguages.Length];
+            for (int i = 0; i < FMSupportedLanguages.Length; i++) SLangsFSPrefixed[i] = "/" + FMSupportedLanguages[i];
+
+            ZipArchive? zipArchive = null;
+            SevenZipExtractor? sevenZipArchive = null;
+            try
+            {
+                // TODO: If I wanted, I could pull out the fast zip reader from FMScanner for this.
+                // Maybe even make another custom version that just gets the names, nothing else.
+                // A custom IndexOf() similar to StartsWithOrEndsWithIFast() would probably shave more time off.
+
+                bool fmIsZip = archivePath.ExtIsZip();
+
+                if (fmIsZip)
+                {
+                    zipArchive = new ZipArchive(new FileStream(archivePath, FileMode.Open, FileAccess.Read),
+                        ZipArchiveMode.Read, leaveOpen: false);
+                }
+                else
+                {
+                    sevenZipArchive = new SevenZipExtractor(archivePath);
+                }
+
+                for (int i = 0; i < (fmIsZip ? zipArchive!.Entries.Count : (int)sevenZipArchive!.FilesCount); i++)
+                {
+                    string fn = fmIsZip
+                        ? zipArchive!.Entries[i].FullName
+                        // For some reason ArchiveFileData[i].FileName is like 20x faster than ArchiveFileNames[i]
+                        : sevenZipArchive!.ArchiveFileData[i].FileName.ToForwardSlashes();
+
+                    for (int j = 0; j < FMSupportedLanguages.Length; j++)
+                    {
+                        var sl = FMSupportedLanguages[j];
+                        if (!FoundLangInArchive[j])
+                        {
+                            // Do as few string operations as humanly possible
+                            var index = fn.IndexOf(SLangsFSPrefixed[j], StringComparison.OrdinalIgnoreCase);
+                            if (index < 1) continue;
+
+                            if ((fn.Length > index + sl.Length + 1 && fn[index + sl.Length + 1] == '/') ||
+                                (index == (fn.Length - sl.Length) - 1))
+                            {
+                                if (earlyOutOnEnglish && j == 0) return (true, new List<string> { "English" });
+                                ret.Add(sl);
+                                FoundLangInArchive[j] = true;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log("Scanning archive '" + archivePath + "' for languages failed.", ex);
+                return (false, new List<string>());
+            }
+            finally
+            {
+                zipArchive?.Dispose();
+                sevenZipArchive?.Dispose();
+            }
+
+            return (true, ret);
+        }
+
+        // Per FMSel behavior, check the archive first, then installed dir.
+        // They kind of switch places in speed depending if the cache is warm or cold, but...
+        // TODO: @Robustness (FM languages archives vs. installed dirs)
+        // IMO the installed dir should be considered the definitive version for our purposes here, as its language
+        // dirs may in theory be different from the archive. I'm imagining someone unzipping a lang zip in their
+        // installed folder but the game is looking at the archive and so doesn't use it. I may want to just get
+        // rid of the archive scan fast-paths later and just eat the cost of the dir scan.
+        private static List<string> GetFMSupportedLanguages(string archive, string fmInstPath, bool earlyOutOnEnglish)
+        {
+            var (Success, Languages) = GetFMSupportedLanguagesFromArchive(archive, earlyOutOnEnglish);
+            return Success ? Languages : GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish);
+        }
 
         private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
         {
@@ -301,12 +388,11 @@ namespace AngelLoader
 
                 // bForceLanguage gets set to something specific in every possible case, effectively meaning the
                 // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
-                // TODO: Verify FMSel 1.27's code is the same (I'm looking at 1.26 right now)
+                // NOTE: Although I'm using FMSel from ND 1.26 as a reference, ND 1.27's is exactly the same.
                 var fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fm.InstalledDir);
                 if (!fmLanguage.IsEmpty())
                 {
-
-                    var fmSupportedLangs = GetFMSupportedLanguages(fmInstPath, earlyOutOnEnglish: false);
+                    var fmSupportedLangs = GetFMSupportedLanguages(fm.Archive, fmInstPath, earlyOutOnEnglish: false);
                     if (fmSupportedLangs.ContainsI(fmLanguage))
                     {
                         // FMSel doesn't set this because it's already getting it from the game meaning it's set
@@ -326,11 +412,11 @@ namespace AngelLoader
                 {
                     /*
                      So, if I'm reading the API notes right, it looks like NewDark actually picks the right
-                     language automatically if it can find it in DARKINST.CFG. We set sLanguage either:
-                     -to force that language to be used if it's available (otherwise we use the below crappily-
+                     language automatically if it can find it in DARKINST.CFG. We set sLanguage to either:
+                     -force that language to be used if it's available (otherwise we use the below crappily-
                       guessed fallback), or
-                     -to give it a crappily-guessed fallback value so that if NewDark can't find a language, we
-                      at least have SOMETHING to give it so text won't be blank, even though it's likely it'll be
+                     -give it a crappily-guessed fallback value so that if NewDark can't find a language, we at
+                      least have SOMETHING to give it so text won't be blank, even though it's likely it'll be
                       the wrong language if it isn't English.
                     */
                     // TODO: If I wanted, I could easily make a power-user option to pick the language to play the FM with
@@ -344,7 +430,7 @@ namespace AngelLoader
                     // if english is not among them then pick another, if no languages are found then no fallback language will
                     // be defined
 
-                    var langs = GetFMSupportedLanguages(fmInstPath, earlyOutOnEnglish: true);
+                    var langs = GetFMSupportedLanguages(fm.Archive, fmInstPath, earlyOutOnEnglish: true);
 
                     // Use first available language (which will be English if English is available)
                     sLanguage = langs.Count == 0 ? "" : langs[0];
