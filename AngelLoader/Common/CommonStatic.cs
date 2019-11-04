@@ -70,7 +70,7 @@ namespace AngelLoader.Common
         internal static readonly List<int> ViewListGamesNull = new List<int>();
 
         // This is for passing to the game via the stub to match FMSel's behavior
-        internal static string[] FMSupportedLanguages =
+        internal static readonly string[] FMSupportedLanguages =
         {
             "english", // must be first
             "czech",

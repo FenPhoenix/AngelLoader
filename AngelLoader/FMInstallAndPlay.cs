@@ -11,6 +11,7 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Ini;
+using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
 using static AngelLoader.Common.Common;
@@ -216,20 +217,65 @@ namespace AngelLoader
         // It also looks like it's picking the first language it finds as a fallback. That doesn't sound right.
         // Have to look at it more closely...
 
-        private static List<string>
-        GetFMLanguagesFromFolders(FanMission fm, int depth = 0)
+        internal static List<string> GetFMSupportedLanguages(string fmInstPath)
         {
+            // Get initial list of base FM dirs the normal way: we don't want to count these as lang dirs even if
+            // they're named such (matching FMSel behavior)
+            var searchList = FastIO.GetDirsTopOnly(fmInstPath, "*", ignoreReparsePoints: true);
+            if (searchList.Count == 0) return new List<string>();
+
+            #region Move key dirs to end of list (priority)
+
+            // Searching folders is horrendously slow, so prioritize folders most likely to contain lang dirs so
+            // if we find English, we end up earlying-out much faster
+
+            for (int i = 0; i < 3; i++)
+            {
+                var keyDir = i switch { 0 => "books", 1 => "intrface", _ => "strings" };
+
+                for (int j = 0; j < searchList.Count; j++)
+                {
+                    if (j < searchList.Count - 1 && searchList[j].EndsWithI(Path.DirectorySeparatorChar + keyDir))
+                    {
+                        var item = searchList[j];
+                        searchList.RemoveAt(j);
+                        searchList.Add(item);
+                        break;
+                    }
+                }
+            }
+
+            #endregion
+
+            var langsFoundList = new List<string>(FMSupportedLanguages.Length);
+
+            while (searchList.Count > 0)
+            {
+                string bdPath = searchList[searchList.Count - 1];
+                searchList.RemoveAt(searchList.Count - 1);
+                bool englishFound = FastIO.SearchDirForLanguages(bdPath, searchList, langsFoundList);
+                // Matching FMSel behavior: early-out on English
+                if (englishFound) return new List<string> { "English" };
+            }
+
             var ret = new List<string>();
 
-            // code:
-            // -recurse through FM installed folder looking for language-named dirs.
-            // -if we find any dir named "english", early-out and return
-            // -add any lang dirs we find to a list, rejecting duplicates
-            // -don't recurse inside lang dirs
-            // -return list of langs found
+            // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
+            // (matching FMSel behavior)
+            if (langsFoundList.Count > 0)
+            {
+                for (int i = 0; i < FMSupportedLanguages.Length; i++)
+                {
+                    string sl = FMSupportedLanguages[i];
+                    if (langsFoundList.ContainsI(sl)) ret.Add(sl);
+                }
+            }
 
             return ret;
         }
+
+        // TODO: Write GetFallbackLanguage()
+        // TODO: Write archive (zip, 7z) searchers (should be way, way easier)
 
         private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
         {
@@ -287,9 +333,10 @@ namespace AngelLoader
                 {
                     // fmsel doesn't set this because it's already getting it from the game meaning it's set
                     // already, but we have to set it ourselves because we're getting it manually
+                    var fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fm.InstalledDir);
 
                     // temp, this will be a list of the FM's langs from its lang folders
-                    var fmSupportedLangs = new List<string>(); // GetFMLanguagesFromFolders()
+                    var fmSupportedLangs = GetFMSupportedLanguages(fmInstPath);
                     if (fmSupportedLangs.ContainsI(fmLanguage))
                     {
                         sLanguage = fmLanguage;
