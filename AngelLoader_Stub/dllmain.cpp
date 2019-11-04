@@ -41,19 +41,11 @@
 #include <fstream>
 #include <filesystem>
 #include <cstdio>
-#include <algorithm>
 #include <windows.h>
 #define MB_OK 0x00000000L
 #define MB_ICONINFORMATION 0x00000040L
 using std::string;
 namespace fs = std::filesystem;
-
-bool equals_i(string s1, string s2)
-{
-    std::transform(s1.begin(), s1.end(), s1.begin(), toupper);
-    std::transform(s2.begin(), s2.end(), s2.begin(), toupper);
-    return s1 == s2;
-}
 
 int show_loader_alert()
 {
@@ -69,6 +61,7 @@ int show_loader_alert()
 
 extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 {
+    // This shouldn't ever happen, should it?
     if (!data || static_cast<unsigned int>(data->nStructSize) < sizeof(sFMSelectorData))
     {
         return kSelFMRet_Cancel;
@@ -134,7 +127,7 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
         {
             play_original_game_key_found = true;
             string val = line.substr(play_original_game_eq_len);
-            play_original_game = equals_i(val, "true");
+            play_original_game = !_stricmp(val.c_str(), "true");
         }
         else if (line.length() > fm_name_eq_len&&
             line.substr(0, fm_name_eq_len) == fm_name_eq)
@@ -183,7 +176,7 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 
     // Leave whatever was in there before if we haven't got a value
     if (!language.empty() && data->nLanguageLen > 0) strncpy_s(data->sLanguage, data->nLanguageLen, language.c_str(), data->nLanguageLen);
-    if (!force_language.empty()) data->bForceLanguage = equals_i(force_language, "true") ? 1 : 0;
+    if (!force_language.empty()) data->bForceLanguage = !_stricmp(force_language.c_str(), "true") ? 1 : 0;
 
     // Never call us back; we're standalone and don't need it
     data->bRunAfterGame = 0;
