@@ -188,8 +188,10 @@ namespace AngelLoader.WinAPI
         /// <param name="path"></param>
         /// <param name="searchList"></param>
         /// <param name="retList"></param>
+        /// <param name="earlyOutOnEnglish"></param>
         /// <returns><see langword="true"/> if English was found and we quit the search early</returns>
-        internal static bool SearchDirForLanguages(string path, List<string> searchList, List<string> retList)
+        internal static bool SearchDirForLanguages(string path, List<string> searchList, List<string> retList,
+            bool earlyOutOnEnglish)
         {
             // Always do this
             path = path.TrimEnd('\\', '/');
@@ -217,7 +219,7 @@ namespace AngelLoader.WinAPI
                         // dirs (matching FMSel behavior)
                         if (!retList.ContainsI(findData.cFileName)) retList.Add(findData.cFileName);
                         // Matching FMSel behavior: early-out on English
-                        if (findData.cFileName.EqualsI("english")) return true;
+                        if (earlyOutOnEnglish && findData.cFileName.EqualsI("english")) return true;
                     }
                     else
                     {
