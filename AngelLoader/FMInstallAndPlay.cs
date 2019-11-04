@@ -312,7 +312,8 @@ namespace AngelLoader
                 for (int i = 0; i < (fmIsZip ? zipArchive!.Entries.Count : (int)sevenZipArchive!.FilesCount); i++)
                 {
                     string fn = fmIsZip
-                        ? zipArchive!.Entries[i].FullName.ToForwardSlashes()
+                        // ZipArchiveFast guarantees full names to never contain backslashes
+                        ? zipArchive!.Entries[i].FullName
                         // For some reason ArchiveFileData[i].FileName is like 20x faster than ArchiveFileNames[i]
                         : sevenZipArchive!.ArchiveFileData[i].FileName.ToForwardSlashes();
 
