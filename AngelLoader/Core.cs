@@ -657,7 +657,7 @@ namespace AngelLoader
                 fm_language, fm_language_forced, fmSelectorLines);
         }
 
-        internal static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue)
+        internal static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue, List<string> LanguagePriority)
         GetInfoFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();
@@ -666,16 +666,21 @@ namespace AngelLoader
             {
                 // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
                 MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (soError, false, "", "");
+                return (soError, false, "", "", new List<string>());
             }
 
             bool ignoreSavesKeyFound = false;
             bool ignoreSavesKey = true;
-            bool externSelectorFound = false;
 
             bool fmInstPathFound = false;
             string fmInstPath = "";
+
+            bool externSelectorFound = false;
             string prevFMSelectorValue = "";
+
+            bool langPriorityKeyFound = false;
+            var langPriority = new List<string>();
+
 
             var lines = File.ReadAllLines(soIni);
             for (var i = 0; i < lines.Length; i++)
@@ -713,12 +718,30 @@ namespace AngelLoader
                             prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
                             externSelectorFound = true;
                         }
+                        else if (!langPriorityKeyFound &&
+                                !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("LanguagePriority="))
+                        {
+                            var val = lt.Substring(lt.IndexOf('=') + 1).Trim();
+                            // Slow, lazy
+                            langPriority = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                            langPriorityKeyFound = true;
+                        }
                         else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
 
-                        if (ignoreSavesKeyFound && fmInstPathFound) break;
+                        // TODO: @Robustness: Easy to forget to add stuff here, and I don't think we need this really
+                        // as long as we're only in the Loader section, it doesn't really give a speedup I don't
+                        // think
+                        if (ignoreSavesKeyFound &&
+                            fmInstPathFound &&
+                            externSelectorFound &&
+                            langPriorityKeyFound)
+                        {
+                            break;
+                        }
 
                         i++;
                     }
@@ -727,8 +750,8 @@ namespace AngelLoader
             }
 
             return fmInstPathFound
-                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue)
-                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue);
+                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, langPriority)
+                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, langPriority);
         }
 
         #endregion
