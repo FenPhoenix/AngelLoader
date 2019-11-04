@@ -2,7 +2,9 @@
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Forms;
-#pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
+// Switch expression doesn't handle all possible inputs
+//@R#_FALSE_POSITIVE? Don't put a comment at the end of this line for warning 8509
+#pragma warning disable 8509
 
 namespace AngelLoader.CustomControls.Static_LazyLoaded
 {

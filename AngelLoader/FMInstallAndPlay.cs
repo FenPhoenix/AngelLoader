@@ -19,7 +19,10 @@ using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.FMBackupAndRestore;
-#pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
+// Switch expression doesn't handle all possible inputs
+// Comments can't come at the end of this line or ReSharper breaks?!
+// @R#_FALSE_POSITIVE?
+#pragma warning disable CS8509
 
 namespace AngelLoader
 {
@@ -210,14 +213,9 @@ namespace AngelLoader
 
         #region Helpers
 
-        // So, we need to search the FM installed dir for language dirs no matter what we end up doing.
-        // FMSel's code is hard to make out some of the details, but it looks like it may just be searching every
-        // subfolder for any folder named after a language, then adding them to a list, earlying-out if it finds
-        // English.
-        // It also looks like it's picking the first language it finds as a fallback. That doesn't sound right.
-        // Have to look at it more closely...
+        #region Find FM's supported languages
 
-        internal static List<string> GetFMSupportedLanguagesFromInstDir(string fmInstPath, bool earlyOutOnEnglish)
+        private static List<string> GetFMSupportedLanguagesFromInstDir(string fmInstPath, bool earlyOutOnEnglish)
         {
             // Get initial list of base FM dirs the normal way: we don't want to count these as lang dirs even if
             // they're named such (matching FMSel behavior)
@@ -274,7 +272,7 @@ namespace AngelLoader
             return ret;
         }
 
-        internal static (bool Success, List<string> Languages)
+        private static (bool Success, List<string> Languages)
         GetFMSupportedLanguagesFromArchive(string archiveName, bool earlyOutOnEnglish)
         {
             (bool, List<string>) failed = (false, new List<string>());
@@ -362,89 +360,85 @@ namespace AngelLoader
             return Success ? Languages : GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish);
         }
 
-        private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
+        private static (string Language, bool ForceLanguage)
+        GetDarkFMLanguage(GameIndex game, string fmArchive, string fmInstalledDir)
         {
-            // BUG: TODO: AngelLoader doesn't handle languages correctly. See FMSel code. Port this behavior asap!
+            string sLanguage;
+            bool bForceLanguage;
 
-            string sLanguage = "";
-            bool bForceLanguage = false;
+            string gamePath = Path.GetDirectoryName(Config.GetGameExe(game));
+            var (_, fmLanguage, _, _) = Core.GetInfoFromCamModIni(gamePath, out _);
 
-            /*
-             TODO: Sneaky Tweaker has a UI option to change the language priority.
-             Read that value out of SneakyOptions.ini and use that instead of FMSupportedLanguages order. But note
-             there's only 7: English, German, Italian, French, Russian, Polish, Spanish.
-             So it's missing Czech, Dutch, Hungarian, Japanese. Neither here nor there, but good to note.
-             SU's FMSel is closed-source so I don't know if it's doing a full-dir-structure scan like ND's FMsel,
-             or if it's just looking in Books or something, but a full search would probably be okay(?)
-             Or does the priorities list negate the need for that? I dunno, I'm tired. Check into this later.
-             TODO: Do a comprehensive manual look at all folder names in all T3 FMs to try and suss this out.
-            */
-            if (fm != null)
+            // bForceLanguage gets set to something specific in every possible case, effectively meaning the
+            // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
+            // NOTE: Although I'm using FMSel from ND 1.26 as a reference, ND 1.27's is exactly the same.
+            var fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fmInstalledDir);
+            if (!fmLanguage.IsEmpty())
             {
-                // We already know the game is known and supported, or we couldn't get here
-                GameIndex game = GameToGameIndex(fm.Game);
-                if (GameIsDark(game))
+                var fmSupportedLangs =
+                    GetFMSupportedLanguages(fmArchive, fmInstPath, earlyOutOnEnglish: false);
+                if (fmSupportedLangs.ContainsI(fmLanguage))
                 {
-                    string gamePath = Path.GetDirectoryName(Config.GetGameExe(game));
-                    var (_, fmLanguage, fmLanguageForced, _) = Core.GetInfoFromCamModIni(gamePath, out _);
+                    // FMSel doesn't set this because it's already getting it from the game meaning it's set
+                    // already, but we have to set it ourselves because we're getting it manually
+                    sLanguage = fmLanguage;
 
-                    // bForceLanguage gets set to something specific in every possible case, effectively meaning the
-                    // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
-                    // NOTE: Although I'm using FMSel from ND 1.26 as a reference, ND 1.27's is exactly the same.
-                    var fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fm.InstalledDir);
-                    if (!fmLanguage.IsEmpty())
-                    {
-                        var fmSupportedLangs = GetFMSupportedLanguages(fm.Archive, fmInstPath, earlyOutOnEnglish: false);
-                        if (fmSupportedLangs.ContainsI(fmLanguage))
-                        {
-                            // FMSel doesn't set this because it's already getting it from the game meaning it's set
-                            // already, but we have to set it ourselves because we're getting it manually
-                            sLanguage = fmLanguage;
-
-                            bForceLanguage = true;
-                        }
-                        else
-                        {
-                            // language not supported, use fallback
-                            sLanguage = fmSupportedLangs.Count > 0 ? fmSupportedLangs[0] : "";
-                            bForceLanguage = false;
-                        }
-                    }
-                    else
-                    {
-                        /*
-                         So, if I'm reading the API notes right, it looks like NewDark actually picks the right
-                         language automatically if it can find it in DARKINST.CFG. We set sLanguage to either:
-                         -force that language to be used if it's available (otherwise we use the below crappily-
-                          guessed fallback), or
-                         -give it a crappily-guessed fallback value so that if NewDark can't find a language, we at
-                          least have SOMETHING to give it so text won't be blank, even though it's likely it'll be
-                          the wrong language if it isn't English.
-                        */
-                        // TODO: If I wanted, I could easily make a power-user option to pick the language to play the FM with
-                        // ---
-
-                        // FMSel's comment:
-                        // determine FM default language (used if the FM doesn't support the language set in dark by the "language" cfg var)
-
-                        // FMSel's comment:
-                        // determine if FM has languages defined, if it does and english is among them, then english is the fallback
-                        // if english is not among them then pick another, if no languages are found then no fallback language will
-                        // be defined
-
-                        var langs = GetFMSupportedLanguages(fm.Archive, fmInstPath, earlyOutOnEnglish: true);
-
-                        // Use first available language (which will be English if English is available)
-                        sLanguage = langs.Count == 0 ? "" : langs[0];
-                        bForceLanguage = false;
-                    }
+                    bForceLanguage = true;
                 }
-                else if (game == GameIndex.Thief3)
+                else
                 {
-                    var (error, _, fmInstallPath, _, languagePriority) = Core.GetInfoFromT3();
-                    // TODO: Do Thief 3 lang stuff here
+                    // language not supported, use fallback
+                    sLanguage = fmSupportedLangs.Count > 0 ? fmSupportedLangs[0] : "";
+                    bForceLanguage = false;
                 }
             }
+            else
+            {
+                /*
+                 So, if I'm reading the API notes right, it looks like NewDark actually picks the right
+                 language automatically if it can find it in DARKINST.CFG. We set sLanguage to either:
+                 -force that language to be used if it's available (otherwise we use the below crappily-
+                  guessed fallback), or
+                 -give it a crappily-guessed fallback value so that if NewDark can't find a language, we at
+                  least have SOMETHING to give it so text won't be blank, even though it's likely it'll be
+                  the wrong language if it isn't English.
+                */
+                // TODO: If I wanted, I could easily make a power-user option to pick the language to play the FM with
+                // ---
+
+                // FMSel's comment:
+                // determine FM default language (used if the FM doesn't support the language set in dark by the "language" cfg var)
+
+                // FMSel's comment:
+                // determine if FM has languages defined, if it does and english is among them, then english is the fallback
+                // if english is not among them then pick another, if no languages are found then no fallback language will
+                // be defined
+
+                var langs = GetFMSupportedLanguages(fmArchive, fmInstPath, earlyOutOnEnglish: true);
+
+                // Use first available language (which will be English if English is available)
+                sLanguage = langs.Count == 0 ? "" : langs[0];
+                bForceLanguage = false;
+            }
+
+            return (sLanguage, bForceLanguage);
+        }
+
+        #endregion
+        private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
+        {
+            string sLanguage = "";
+            bool? bForceLanguage = null;
+            if (fm != null && GameIsDark(fm.Game))
+            {
+                // For Dark, we have to do this semi-manual stuff.
+                (sLanguage, bForceLanguage) = GetDarkFMLanguage(GameToGameIndex(fm.Game), fm.Archive, fm.InstalledDir);
+            }
+
+            // For Thief 3, Sneaky Upgrade does the entire language thing for me, Builder bless snobel once again.
+            // I just can't tell you how much I appreciate how much work SU does for me, even right down to handling
+            // the "All The World's a Stage" custom sound extract thing.
+            // So, I don't have to do anything whatsoever here, just pass blank and carry on. Awesome!
 
             try
             {
@@ -455,8 +449,9 @@ namespace AngelLoader
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
                     sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
-                    sw.WriteLine("Language=" + sLanguage);
-                    sw.WriteLine("ForceLanguage=" + bForceLanguage);
+                    // Pass blank if we have nothing, so the stub will leave whatever was in there before
+                    if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
+                    if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + bForceLanguage);
                 }
             }
             catch (Exception ex)

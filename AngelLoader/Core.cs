@@ -657,7 +657,7 @@ namespace AngelLoader
                 fm_language, fm_language_forced, fmSelectorLines);
         }
 
-        internal static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue, List<string> LanguagePriority)
+        internal static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue)
         GetInfoFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();
@@ -666,7 +666,7 @@ namespace AngelLoader
             {
                 // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
                 MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (soError, false, "", "", new List<string>());
+                return (soError, false, "", "");
             }
 
             bool ignoreSavesKeyFound = false;
@@ -677,10 +677,6 @@ namespace AngelLoader
 
             bool externSelectorFound = false;
             string prevFMSelectorValue = "";
-
-            bool langPriorityKeyFound = false;
-            var langPriority = new List<string>();
-
 
             var lines = File.ReadAllLines(soIni);
             for (var i = 0; i < lines.Length; i++)
@@ -718,15 +714,6 @@ namespace AngelLoader
                             prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
                             externSelectorFound = true;
                         }
-                        else if (!langPriorityKeyFound &&
-                                !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("LanguagePriority="))
-                        {
-                            var val = lt.Substring(lt.IndexOf('=') + 1).Trim();
-                            // Slow, lazy
-                            langPriority = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-                            langPriorityKeyFound = true;
-                        }
                         else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -737,8 +724,7 @@ namespace AngelLoader
                         // think
                         if (ignoreSavesKeyFound &&
                             fmInstPathFound &&
-                            externSelectorFound &&
-                            langPriorityKeyFound)
+                            externSelectorFound)
                         {
                             break;
                         }
@@ -750,8 +736,8 @@ namespace AngelLoader
             }
 
             return fmInstPathFound
-                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, langPriority)
-                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, langPriority);
+                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue)
+                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue);
         }
 
         #endregion

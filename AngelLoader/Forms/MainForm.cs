@@ -73,26 +73,26 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            Trace.WriteLine("*** Find language in archive:");
+            //Trace.WriteLine("*** Find language in archive:");
 
-            var t = new Stopwatch();
-            t.Start();
+            //var t = new Stopwatch();
+            //t.Start();
 
-            var (Success, Langs) = FMInstallAndPlay.GetFMSupportedLanguagesFromArchive(FMsDGV.GetSelectedFM().Archive, earlyOutOnEnglish: false);
+            //var (Success, Langs) = FMInstallAndPlay.GetFMSupportedLanguagesFromArchive(FMsDGV.GetSelectedFM().Archive, earlyOutOnEnglish: true);
 
-            t.Stop();
+            //t.Stop();
 
-            if (!Success)
-            {
-                Trace.WriteLine("*** failed");
-                return;
-            }
+            //if (!Success)
+            //{
+            //    Trace.WriteLine("*** failed");
+            //    return;
+            //}
 
-            foreach (var item in Langs)
-            {
-                Trace.WriteLine(item);
-            }
-            Trace.WriteLine(t.Elapsed);
+            //foreach (var item in Langs)
+            //{
+            //    Trace.WriteLine(item);
+            //}
+            //Trace.WriteLine(t.Elapsed);
         }
 
         private void Test2Button_Click(object sender, EventArgs e)

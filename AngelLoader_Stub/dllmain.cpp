@@ -163,7 +163,7 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     if (data->nMaxNameLen > 0) strncpy_s(data->sName, data->nMaxNameLen, fm_name.c_str(), data->nMaxNameLen);
     if (data->nMaxModExcludeLen > 0) strncpy_s(data->sModExcludePaths, data->nMaxModExcludeLen, disabled_mods.c_str(), data->nMaxModExcludeLen);
 
-    // Leave whatever was in there before if we haven't got a value
+    // Leave whatever was in there before if we haven't got a value. Don't ever overwrite defaults with our blanks.
     if (!language.empty() && data->nLanguageLen > 0) strncpy_s(data->sLanguage, data->nLanguageLen, language.c_str(), data->nLanguageLen);
     if (!force_language.empty()) data->bForceLanguage = !_stricmp(force_language.c_str(), "true") ? 1 : 0;
 
