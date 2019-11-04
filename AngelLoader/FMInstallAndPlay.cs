@@ -357,7 +357,15 @@ namespace AngelLoader
         private static List<string> GetFMSupportedLanguages(string archive, string fmInstPath, bool earlyOutOnEnglish)
         {
             var (Success, Languages) = GetFMSupportedLanguagesFromArchive(archive, earlyOutOnEnglish);
-            return Success ? Languages : GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish);
+            try
+            {
+                return Success ? Languages : GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in " + nameof(GetFMSupportedLanguagesFromInstDir) + ". Unable to run the language selection; language may be wrong.", ex);
+                return new List<string>();
+            }
         }
 
         private static (string Language, bool ForceLanguage)
