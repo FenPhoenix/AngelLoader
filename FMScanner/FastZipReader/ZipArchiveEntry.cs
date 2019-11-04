@@ -130,7 +130,9 @@ namespace FMScanner.FastZipReader
 
             Crc32 = cd.Crc32;
 
-            FullName = DecodeEntryName(cd.Filename) ?? throw new ArgumentNullException(nameof(FullName));
+            // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
+            // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
+            FullName = DecodeEntryName(cd.Filename)?.Replace('\\', '/') ?? throw new ArgumentNullException(nameof(FullName));
             Name = ParseFileName(FullName, (ZipVersionMadeByPlatform)cd.VersionMadeByCompatibility);
         }
 
