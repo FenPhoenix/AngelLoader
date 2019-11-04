@@ -405,7 +405,6 @@ namespace AngelLoader
 
                     if (indexesList.Count == 0) return;
 
-
                     extractor.Extracting += (sender, e) =>
                     {
                         view.InvokeAsync(new Action(() => view.ReportCachingProgress(e.PercentDone)));

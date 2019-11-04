@@ -1,4 +1,4 @@
-// TODO: This stub is now 195k because of statically linking the stuff.
+// TODO: This stub is now ~200k because of statically linking the stuff.
 // I don't like it, but whatever. It's not really of any consequence, I just like minimalism.
 // I can always come back in here if I ever get more to grips with what I'm doing when it comes to C++ strings
 // and squash this junk down some. Till then, meh.
@@ -42,8 +42,6 @@
 #include <filesystem>
 #include <cstdio>
 #include <windows.h>
-#define MB_OK 0x00000000L
-#define MB_ICONINFORMATION 0x00000040L
 using std::string;
 namespace fs = std::filesystem;
 
@@ -67,10 +65,6 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
         return kSelFMRet_Cancel;
     }
 
-    //string test_msg = string("bForceLanguage: ") + string(data->bForceLanguage == 1 ? "1" : "0") + string("\r\n");
-    //test_msg += string("sLanguage: ") + string(data->sLanguage != NULL ? string(data->sLanguage) : "<null>");
-    //MessageBoxA(nullptr, test_msg.c_str(), "Test", MB_OK);
-
     // data->sGameVersion:
     // Might eventually use
     // Note: actually don't think this is of any use, since we already know what game we're running.
@@ -81,9 +75,6 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     // If AngelLoader was running by being called directly into by the game as intended, then this would
     // be a really useful way to not have to scan cam_mod.ini for the FM installed path. But as it stands
     // we need to know that path long before even getting here, so it's not very useful.
-
-    // data->sLanguage / data->bForceLanguage:
-    // Might use if it will help with multi-language stuff
 
     bool play_original_game = false;
     bool play_original_game_key_found = false;
@@ -116,7 +107,6 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     {
         ifs.close();
         return show_loader_alert();
-        //return kSelFMRet_Cancel;
     }
 
     string line;
@@ -155,7 +145,6 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 
     std::remove(args_file.string().c_str());
 
-    // If no FM folder specified, play the original game
     if (play_original_game_key_found && play_original_game)
     {
         return kSelFMRet_Cancel;
