@@ -95,7 +95,6 @@ namespace AngelLoader
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, gamePath, args) = sv;
 
-            // TODO: Decide what to do about explicit play-original etc.
             WriteStubCommFile(null, playOriginalGame: true);
 
             StartExe(gameExe, gamePath, args);
@@ -105,9 +104,7 @@ namespace AngelLoader
 
         private static bool PlayFM(FanMission fm, bool playMP = false)
         {
-            if (!GameIsKnownAndSupported(fm.Game)) return false;
-
-            if (fm.Game == Game.Null)
+            if (!GameIsKnownAndSupported(fm.Game))
             {
                 Core.View.ShowAlert(LText.AlertMessages.Play_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
@@ -161,19 +158,18 @@ namespace AngelLoader
         {
             #region Checks (specific to DromEd)
 
-            if (!GameIsDark(fm.Game))
+            if (!GameIsKnownAndSupported(fm.Game))
             {
                 Log("Game is not Dark, is unknown, or is unsupported for FM " + (!fm.Archive.IsEmpty() ? fm.Archive : fm.InstalledDir) + "\r\n" +
                     "fm.Game was: " + fm.Game, stackTrace: true);
-                return false;
-            }
-
-            // TODO: This doesn't get hit anymore on account of the GameIsDark() check above
-            if (fm.Game == Game.Null)
-            {
                 Core.View.ShowAlert(LText.AlertMessages.DromEd_UnknownGameType, LText.AlertMessages.Alert);
                 return false;
             }
+
+            // This is different from the above: The above is just checking if the game is known, while this is
+            // checking if it's Dark specifically, because we don't support Thief 3 for editor opening.
+            // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
+            if (!GameIsDark(fm.Game)) return false;
 
             var game = GameToGameIndex(fm.Game);
 
@@ -201,6 +197,7 @@ namespace AngelLoader
             // Just in case, and for consistency
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
+            // TODO: We don't need to do this here, right?
             SetUsAsSelector(game, gameExe, gamePath);
 
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
@@ -433,6 +430,7 @@ namespace AngelLoader
         }
 
         #endregion
+
         private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
         {
             string sLanguage = "";
@@ -565,7 +563,7 @@ namespace AngelLoader
             }
         }
 
-        private static string FindPreviousLoader(List<string> lines, string fmSelectorKey, string stubPath,
+        private static string FindPreviousSelector(List<string> lines, string fmSelectorKey, string stubPath,
             string gamePath)
         {
             // Handle relative paths
@@ -644,7 +642,6 @@ namespace AngelLoader
         // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
         // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
 
-        // TODO: Make AngelLoader detect if there's only ONE other commented fm_selector line; if there is, then reset to that one. Otherwise, just reset to fmsel.dll.
         internal static bool SetDarkFMSelector(GameIndex game, string gameExe, string gamePath, bool resetSelector = false)
         {
             const string fmSelectorKey = "fm_selector";
@@ -699,7 +696,7 @@ namespace AngelLoader
             // The loader is us, so use our saved previous loader or lacking that, make a best-effort guess
             var startupFMSelectorLines = Config.GetStartupFMSelectorLines(game);
             string selectorPath = resetSelector
-                ? FindPreviousLoader(startupFMSelectorLines.Count > 0 ? startupFMSelectorLines : lines,
+                ? FindPreviousSelector(startupFMSelectorLines.Count > 0 ? startupFMSelectorLines : lines,
                     fmSelectorKey, stubPath, gamePath)
                 : stubPath;
 
@@ -849,9 +846,9 @@ namespace AngelLoader
             if (resetSelector)
             {
                 var startupFMSelectorLines = Config.GetStartupFMSelectorLines(GameIndex.Thief3);
-                var t3Data = Core.GetInfoFromT3();
+                var (_, _, _, prevFMSelectorValue) = Core.GetInfoFromT3();
                 // If loader is not us, leave it be
-                if (!t3Data.PrevFMSelectorValue.ToBackSlashes().EqualsI(stubPath) &&
+                if (!prevFMSelectorValue.ToBackSlashes().EqualsI(stubPath) &&
                     !(startupFMSelectorLines.Count > 0 &&
                      startupFMSelectorLines[0].EqualsI(Paths.StubFileName)))
                 {
@@ -859,7 +856,7 @@ namespace AngelLoader
                 }
                 else if (startupFMSelectorLines.Count > 0 &&
                     startupFMSelectorLines[0].EqualsI(Paths.StubFileName) ||
-                    t3Data.PrevFMSelectorValue.IsEmpty())
+                    prevFMSelectorValue.IsEmpty())
                 {
                     selectorPath = "fmsel.dll";
                 }
