@@ -504,6 +504,18 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        protected override void WndProc(ref Message m)
+        {
+            // A second instance has been started and told us to show ourselves, so do it here (nicer UX).
+            // This has to be in WndProc, not PreFilterMessage(). Shrug.
+            if (m.Msg == InteropMisc.WM_SHOWFIRSTINSTANCE)
+            {
+                if (WindowState == FormWindowState.Minimized) WindowState = NominalWindowState;
+                Activate();
+            }
+            base.WndProc(ref m);
+        }
+
         // Keeping this for the mousewheel functionality because it passes on the message directly and so allows
         // any pressed keys to also be passed along to the control (allows Ctrl+Mousewheel for rtfbox zoom f.ex.)
         public bool PreFilterMessage(ref Message m)

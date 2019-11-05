@@ -5,6 +5,8 @@ namespace AngelLoader.Common
 {
     internal static class Common
     {
+        internal const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
+
         internal static readonly ConfigData Config = new ConfigData();
 
         // These are the FMSel preset tags. Conforming to standards here.

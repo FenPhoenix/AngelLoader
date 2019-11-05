@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
+using AngelLoader.WinAPI;
+using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
 
 namespace AngelLoader
@@ -18,13 +20,13 @@ namespace AngelLoader
         private static void Main()
         {
             // Make this a single-instance application
-            var mutex = new Mutex(true, "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader", out bool firstInstance);
+            var mutex = new Mutex(true, AppGuid, out bool firstInstance);
             if (!firstInstance)
             {
-                // TODO: Command line args check for multi-instance start
-                // Send value to previous instance, where it will do something to handle the request
-                // For FM download / play request test
-
+                // Tell first instance to show itself
+                InteropMisc.SendMessage((IntPtr)InteropMisc.HWND_BROADCAST, InteropMisc.WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero);
+                // If it fails, oh well, then it's just the old behavior where the window doesn't activate but
+                // it's still a single instance. Good enough.
                 return;
             }
 
