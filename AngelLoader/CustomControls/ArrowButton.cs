@@ -9,8 +9,9 @@ namespace AngelLoader.CustomControls
     {
         private Direction _arrowDirection;
 
+        // Public for the designer
         [Browsable(true)]
-        internal Direction ArrowDirection
+        public Direction ArrowDirection
         {
             get => _arrowDirection;
             set
