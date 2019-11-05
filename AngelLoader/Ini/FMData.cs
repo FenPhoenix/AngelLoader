@@ -1,5 +1,7 @@
 #define FenGen_FMDataDest
 
+#undef write_old_resources_style
+
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -27,7 +29,7 @@ namespace AngelLoader.Ini
 
             foreach (var line in iniLines)
             {
-                var lineT = line.TrimStart();
+                var lineT = line.Trim();
 
                 if (lineT.Length > 0 && lineT[0] == '[')
                 {
@@ -184,7 +186,6 @@ namespace AngelLoader.Ini
                     var val = lineT.Substring(13);
                     fm.ResourcesScanned = !val.EqualsI("NotScanned");
                     FillFMHasXFields(fm, val);
-                    //fm.ResourcesScanned = val.EqualsTrue();
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasMap="))
                 {
@@ -266,7 +267,7 @@ namespace AngelLoader.Ini
             // Averaged over the 1573 FMs in my FMData.ini file
             const int averageFMEntryCharCount = 390;
             var sb = new StringBuilder(averageFMEntryCharCount * fmDataList.Count);
-            
+
             foreach (var fm in fmDataList)
             {
                 sb.AppendLine("[FM]");
@@ -390,54 +391,51 @@ namespace AngelLoader.Ini
                     sb.Append("DisableAllMods=");
                     sb.AppendLine(fm.DisableAllMods.ToString());
                 }
-                if (true)
+#if write_old_resources_style
+                if (fm.ResourcesScanned)
                 {
-                    sb.Append("HasResources=");
-                    if (fm.ResourcesScanned)
                     {
-                        CommaCombineHasXFields(fm, sb);
+                        sb.AppendLine("HasMap=" + fm.HasMap.ToString());
                     }
-                    else
                     {
-                        sb.AppendLine("NotScanned");
+                        sb.AppendLine("HasAutomap=" + fm.HasAutomap.ToString());
                     }
+                    {
+                        sb.AppendLine("HasScripts=" + fm.HasScripts.ToString());
+                    }
+                    {
+                        sb.AppendLine("HasTextures=" + fm.HasTextures.ToString());
+                    }
+                    {
+                        sb.AppendLine("HasSounds=" + fm.HasSounds.ToString());
+                    }
+                    {
+                        sb.AppendLine("HasObjects=" + fm.HasObjects.ToString());
+                    }
+                    {
+                        sb.AppendLine("HasCreatures=" + fm.HasCreatures.ToString());
+                    }
+                    {
+                        sb.AppendLine("HasMotions=" + fm.HasMotions.ToString());
+                    }
+                    {
+                        sb.AppendLine("HasMovies=" + fm.HasMovies.ToString());
+                    }
+                    {
+                        sb.AppendLine("HasSubtitles=" + fm.HasSubtitles.ToString());
+                    }
+                }
+#else
+                sb.Append("HasResources=");
+                if (fm.ResourcesScanned)
+                {
+                    CommaCombineHasXFields(fm, sb);
                 }
                 else
                 {
-                    if (fm.ResourcesScanned)
-                    {
-                        {
-                            sb.AppendLine("HasMap=" + fm.HasMap.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasAutomap=" + fm.HasAutomap.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasScripts=" + fm.HasScripts.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasTextures=" + fm.HasTextures.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasSounds=" + fm.HasSounds.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasObjects=" + fm.HasObjects.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasCreatures=" + fm.HasCreatures.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasMotions=" + fm.HasMotions.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasMovies=" + fm.HasMovies.ToString());
-                        }
-                        {
-                            sb.AppendLine("HasSubtitles=" + fm.HasSubtitles.ToString());
-                        }
-                    }
+                    sb.AppendLine("NotScanned");
                 }
+#endif
                 if (!string.IsNullOrEmpty(fm.LanguagesString))
                 {
                     sb.Append("LanguagesString=");
@@ -450,10 +448,8 @@ namespace AngelLoader.Ini
                 }
             }
 
-            using (var sw = new StreamWriter(fileName, false, Encoding.UTF8))
-            {
-                sw.Write(sb.ToString());
-            }
+            using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
+            sw.Write(sb.ToString());
         }
     }
 }

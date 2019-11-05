@@ -128,20 +128,6 @@ namespace AngelLoader.Ini
             }
         }
 
-        private static void ClearFMHasXFields(FanMission fm)
-        {
-            fm.HasMap = false;
-            fm.HasAutomap = false;
-            fm.HasScripts = false;
-            fm.HasTextures = false;
-            fm.HasSounds = false;
-            fm.HasObjects = false;
-            fm.HasCreatures = false;
-            fm.HasMotions = false;
-            fm.HasMovies = false;
-            fm.HasSubtitles = false;
-        }
-
         private static void FillFMHasXFields(FanMission fm, string fieldsString)
         {
             string[] fields = fieldsString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -162,6 +148,9 @@ namespace AngelLoader.Ini
             for (int i = 0; i < fields.Length; i++)
             {
                 var field = fields[i];
+
+                // Need this if block, because we're not iterating through all fields, so can't just have a flat
+                // block of fm.HasX = field.EqualsI(X);
                 if (field.EqualsI("Map"))
                 {
                     fm.HasMap = true;
