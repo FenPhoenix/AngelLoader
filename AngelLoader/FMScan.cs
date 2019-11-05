@@ -206,16 +206,24 @@ namespace AngelLoader
                     }
                     if (scanOptions.ScanCustomResources)
                     {
-                        sel.HasMap = gameSup ? scannedFM.HasMap : null;
-                        sel.HasAutomap = gameSup ? scannedFM.HasAutomap : null;
-                        sel.HasScripts = gameSup ? scannedFM.HasCustomScripts : null;
-                        sel.HasTextures = gameSup ? scannedFM.HasCustomTextures : null;
-                        sel.HasSounds = gameSup ? scannedFM.HasCustomSounds : null;
-                        sel.HasObjects = gameSup ? scannedFM.HasCustomObjects : null;
-                        sel.HasCreatures = gameSup ? scannedFM.HasCustomCreatures : null;
-                        sel.HasMotions = gameSup ? scannedFM.HasCustomMotions : null;
-                        sel.HasMovies = gameSup ? scannedFM.HasMovies : null;
-                        sel.HasSubtitles = gameSup ? scannedFM.HasCustomSubtitles : null;
+                        if (gameSup)
+                        {
+                            sel.HasMap = scannedFM.HasMap == true;
+                            sel.HasAutomap = scannedFM.HasAutomap == true;
+                            sel.HasScripts = scannedFM.HasCustomScripts == true;
+                            sel.HasTextures = scannedFM.HasCustomTextures == true;
+                            sel.HasSounds = scannedFM.HasCustomSounds == true;
+                            sel.HasObjects = scannedFM.HasCustomObjects == true;
+                            sel.HasCreatures = scannedFM.HasCustomCreatures == true;
+                            sel.HasMotions = scannedFM.HasCustomMotions == true;
+                            sel.HasMovies = scannedFM.HasMovies == true;
+                            sel.HasSubtitles = scannedFM.HasCustomSubtitles == true;
+                            sel.ResourcesScanned = true;
+                        }
+                        else
+                        {
+                            sel.ResourcesScanned = false;
+                        }
                     }
 
                     if (scanOptions.ScanAuthor)

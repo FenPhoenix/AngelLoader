@@ -47,10 +47,12 @@ namespace AngelLoader.Ini
                 while ((line = sr.ReadLine()) != null)
                 {
                     var lineT = line.Trim();
-                    if (inMeta && lineT.StartsWithFast_NoNullChecks(nameof(LText.Meta.TranslatedLanguageName) + "="))
+                    if (inMeta && lineT.StartsWithFast_NoNullChecks(
+                            nameof(LText.Meta.TranslatedLanguageName) + "="))
                     {
                         var key = file.GetFileNameFast().RemoveExtension();
-                        var value = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
+                        var value = line.TrimStart()
+                            .Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
                         Config.LanguageNames[key] = value;
                         return;
                     }
@@ -74,7 +76,7 @@ namespace AngelLoader.Ini
             }
         }
 
-        internal static DateTime? ReadNullableHexDate(string hexDate)
+        private static DateTime? ReadNullableHexDate(string hexDate)
         {
             var success = long.TryParse(
                 hexDate,
@@ -100,6 +102,7 @@ namespace AngelLoader.Ini
         }
 
         private static readonly ReaderWriterLockSlim FMDataIniRWLock = new ReaderWriterLockSlim();
+
         internal static void WriteFullFMDataIni()
         {
             try
@@ -119,9 +122,170 @@ namespace AngelLoader.Ini
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(FMDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
+                    Log("Exception exiting " + nameof(FMDataIniRWLock) + " in " + nameof(WriteFullFMDataIni),
+                        ex);
                 }
             }
+        }
+
+        private static void ClearFMHasXFields(FanMission fm)
+        {
+            fm.HasMap = false;
+            fm.HasAutomap = false;
+            fm.HasScripts = false;
+            fm.HasTextures = false;
+            fm.HasSounds = false;
+            fm.HasObjects = false;
+            fm.HasCreatures = false;
+            fm.HasMotions = false;
+            fm.HasMovies = false;
+            fm.HasSubtitles = false;
+        }
+
+        private static void FillFMHasXFields(FanMission fm, string fieldsString)
+        {
+            string[] fields = fieldsString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            fm.HasMap = false;
+            fm.HasAutomap = false;
+            fm.HasScripts = false;
+            fm.HasTextures = false;
+            fm.HasSounds = false;
+            fm.HasObjects = false;
+            fm.HasCreatures = false;
+            fm.HasMotions = false;
+            fm.HasMovies = false;
+            fm.HasSubtitles = false;
+
+            if (fields.Length > 0 && fields[0].EqualsI("None")) return;
+
+            for (int i = 0; i < fields.Length; i++)
+            {
+                var field = fields[i];
+                if (field.EqualsI(nameof(fm.HasMap)))
+                {
+                    fm.HasMap = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasAutomap)))
+                {
+                    fm.HasAutomap = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasScripts)))
+                {
+                    fm.HasScripts = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasTextures)))
+                {
+                    fm.HasTextures = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasSounds)))
+                {
+                    fm.HasSounds = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasObjects)))
+                {
+                    fm.HasObjects = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasCreatures)))
+                {
+                    fm.HasCreatures = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasMotions)))
+                {
+                    fm.HasMotions = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasMovies)))
+                {
+                    fm.HasMovies = true;
+                }
+                else if (field.EqualsI(nameof(fm.HasSubtitles)))
+                {
+                    fm.HasSubtitles = true;
+                }
+            }
+        }
+
+        private static string CommaCombineHasXFields(FanMission fm)
+        {
+            string ret = "";
+
+            // Hmm... doesn't make for good code, but fast...
+            bool notEmpty = false;
+
+            if (fm.HasMap == false &&
+                fm.HasAutomap == false &&
+                fm.HasScripts == false &&
+                fm.HasTextures == false &&
+                fm.HasSounds == false &&
+                fm.HasObjects == false &&
+                fm.HasCreatures == false &&
+                fm.HasMotions == false &&
+                fm.HasMovies == false &&
+                fm.HasSubtitles == false)
+            {
+                return "None";
+            }
+
+            if (fm.HasMap == true)
+            {
+                ret += nameof(fm.HasMap);
+                notEmpty = true;
+            }
+            if (fm.HasAutomap == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasAutomap);
+                notEmpty = true;
+            }
+            if (fm.HasScripts == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasScripts);
+                notEmpty = true;
+            }
+            if (fm.HasTextures == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasTextures);
+                notEmpty = true;
+            }
+            if (fm.HasSounds == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasSounds);
+                notEmpty = true;
+            }
+            if (fm.HasObjects == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasObjects);
+                notEmpty = true;
+            }
+            if (fm.HasCreatures == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasCreatures);
+                notEmpty = true;
+            }
+            if (fm.HasMotions == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasMotions);
+                notEmpty = true;
+            }
+            if (fm.HasMovies == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasMovies);
+                notEmpty = true;
+            }
+            if (fm.HasSubtitles == true)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(fm.HasSubtitles);
+            }
+
+            return ret;
         }
     }
 }

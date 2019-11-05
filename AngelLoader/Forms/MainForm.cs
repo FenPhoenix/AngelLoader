@@ -1239,7 +1239,7 @@ namespace AngelLoader.Forms
                 CustomResourcesLabel.Text =
                     selFM == null ? LText.StatisticsTab.NoFMSelected :
                     selFM.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
-                    FMCustomResourcesScanned(selFM) ? LText.StatisticsTab.CustomResources :
+                    selFM.ResourcesScanned ? LText.StatisticsTab.CustomResources :
                     LText.StatisticsTab.CustomResourcesNotScanned;
 
                 CR_MapCheckBox.Text = LText.StatisticsTab.Map;
@@ -3035,7 +3035,7 @@ namespace AngelLoader.Forms
                 BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotSupportedForThief3);
                 StatsScanCustomResourcesButton.Hide();
             }
-            else if (!FMCustomResourcesScanned(fm))
+            else if (!fm.ResourcesScanned)
             {
                 BlankStatsPanelWithMessage(LText.StatisticsTab.CustomResourcesNotScanned);
                 StatsScanCustomResourcesButton.Show();

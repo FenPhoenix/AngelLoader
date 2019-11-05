@@ -88,6 +88,22 @@ namespace AngelLoader.DataClasses
 
     [Flags] internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
+    [Flags]
+    internal enum CustomResources
+    {
+        None = 0,
+        Map = 1,
+        HasAutomap = 2,
+        HasScripts = 4,
+        HasTextures = 8,
+        HasSounds = 16,
+        HasObjects = 32,
+        HasCreatures = 64,
+        HasMotions = 128,
+        HasMovies = 256,
+        HasSubtitles = 512
+    }
+
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
     #region Top-right tabs

@@ -420,6 +420,8 @@ namespace FenGen
 
             foreach (var l in topLines) sw.WriteLine(l);
 
+            bool wroteHasXFields = false;
+
             for (var i = 0; i < Fields.Count; i++)
             {
                 var field = Fields[i];
@@ -540,6 +542,19 @@ namespace FenGen
                 }
                 else if (field.Type == "bool?")
                 {
+                    if (field.Name.StartsWith("Has"))
+                    {
+                        if (!wroteHasXFields)
+                        {
+                            sw.WriteLine(Indent(5) + "if (!string.IsNullOrEmpty(val))\r\n" +
+                                         Indent(5) + "{\r\n" +
+                                         Indent(6) + "FillFMHasXFields(fm, val);\r\n" +
+                                         Indent(5) + "}");
+                            wroteHasXFields = true;
+                        }
+                    }
+
+                    // Also still do this, cause we need to still read these for backward compatibility
                     sw.WriteLine(Indent(5) + objDotField + " =\r\n" +
                                  Indent(6) + "!string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;");
                 }
@@ -654,6 +669,8 @@ namespace FenGen
 
             foreach (var l in WriteFMDataIniTopLines) sw.WriteLine(l);
 
+            bool wroteHasXValues = false;
+
             foreach (var field in Fields)
             {
                 var objDotField = obj + "." + field.Name;
@@ -723,18 +740,40 @@ namespace FenGen
                 }
                 else if (field.Type == "bool?")
                 {
-                    if (Fields.WriteEmptyValues)
+                    // Dumb special-case for the moment
+                    if (fieldWriteName.StartsWith("Has"))
                     {
-                        sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".ToString());");
+                        if (!wroteHasXValues)
+                        {
+                            sw.WriteLine(
+                                Indent(5) + "if (Misc.FMCustomResourcesScanned(fm))\r\n" +
+                                Indent(5) + "{\r\n" +
+                                Indent(6) + "sw.WriteLine(\"HasResources=\" + CommaCombineHasXFields(fm));\r\n" +
+                                Indent(5) + "}\r\n" +
+                                Indent(5) + "else\r\n" +
+                                Indent(5) + "{\r\n" +
+                                Indent(6) + "sw.WriteLine(\"HasResources=None\");\r\n" +
+                                Indent(5) + "}");
+                            wroteHasXValues = true;
+                        }
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (" + objDotField + " != null)\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".ToString());\r\n" +
-                            Indent(5) + "}");
+                        if (Fields.WriteEmptyValues)
+                        {
+                            sw.WriteLine(
+                                Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                                ".ToString());");
+                        }
+                        else
+                        {
+                            sw.WriteLine(
+                                Indent(5) + "if (" + objDotField + " != null)\r\n" +
+                                Indent(5) + "{\r\n" +
+                                Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                                ".ToString());\r\n" +
+                                Indent(5) + "}");
+                        }
                     }
                 }
                 else if (NumericTypes.Contains(field.Type))

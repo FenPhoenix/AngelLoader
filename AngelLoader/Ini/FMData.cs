@@ -36,6 +36,8 @@ namespace AngelLoader.Ini
 
                 if (fmsListIsEmpty) continue;
 
+                bool resourcesFound = false;
+
                 // Comment chars (;) and blank lines will be rejected implicitly.
                 // Since they're rare cases, checking for them would only slow us down.
 
@@ -171,65 +173,70 @@ namespace AngelLoader.Ini
                     var val = lineT.Substring(15);
                     fm.DisableAllMods = val.EqualsTrue();
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("ResourcesScanned="))
+                {
+                    var val = lineT.Substring(17);
+                    fm.ResourcesScanned = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("HasMap="))
                 {
                     var val = lineT.Substring(7);
-                    fm.HasMap =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasMap = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasAutomap="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasAutomap =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasAutomap = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasScripts="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasScripts =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasScripts = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasTextures="))
                 {
                     var val = lineT.Substring(12);
-                    fm.HasTextures =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasTextures = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasSounds="))
                 {
                     var val = lineT.Substring(10);
-                    fm.HasSounds =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasSounds = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasObjects="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasObjects =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasObjects = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasCreatures="))
                 {
                     var val = lineT.Substring(13);
-                    fm.HasCreatures =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasCreatures = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasMotions="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasMotions =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasMotions = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasMovies="))
                 {
                     var val = lineT.Substring(10);
-                    fm.HasMovies =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasMovies = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasSubtitles="))
                 {
                     var val = lineT.Substring(13);
-                    fm.HasSubtitles =
-                        !string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;
+                    fm.HasSubtitles = val.EqualsTrue();
+                    resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("LanguagesString="))
                 {
@@ -241,6 +248,7 @@ namespace AngelLoader.Ini
                     var val = lineT.Substring(11);
                     fm.TagsString = val;
                 }
+                if (resourcesFound) fm.ResourcesScanned = true;
             }
         }
 
@@ -333,45 +341,88 @@ namespace AngelLoader.Ini
                     {
                         sw.WriteLine("DisableAllMods=" + fm.DisableAllMods.ToString());
                     }
-                    if (fm.HasMap != null)
+                    if (true)
                     {
-                        sw.WriteLine("HasMap=" + fm.HasMap.ToString());
+                        sw.WriteLine("ResourcesScanned=" + fm.ResourcesScanned.ToString());
+                        if (fm.ResourcesScanned)
+                        {
+                            if (fm.HasMap)
+                            {
+                                sw.WriteLine("HasMap=" + fm.HasMap.ToString());
+                            }
+                            if (fm.HasAutomap)
+                            {
+                                sw.WriteLine("HasAutomap=" + fm.HasAutomap.ToString());
+                            }
+                            if (fm.HasScripts)
+                            {
+                                sw.WriteLine("HasScripts=" + fm.HasScripts.ToString());
+                            }
+                            if (fm.HasTextures)
+                            {
+                                sw.WriteLine("HasTextures=" + fm.HasTextures.ToString());
+                            }
+                            if (fm.HasSounds)
+                            {
+                                sw.WriteLine("HasSounds=" + fm.HasSounds.ToString());
+                            }
+                            if (fm.HasObjects)
+                            {
+                                sw.WriteLine("HasObjects=" + fm.HasObjects.ToString());
+                            }
+                            if (fm.HasCreatures)
+                            {
+                                sw.WriteLine("HasCreatures=" + fm.HasCreatures.ToString());
+                            }
+                            if (fm.HasMotions)
+                            {
+                                sw.WriteLine("HasMotions=" + fm.HasMotions.ToString());
+                            }
+                            if (fm.HasMovies)
+                            {
+                                sw.WriteLine("HasMovies=" + fm.HasMovies.ToString());
+                            }
+                            if (fm.HasSubtitles)
+                            {
+                                sw.WriteLine("HasSubtitles=" + fm.HasSubtitles.ToString());
+                            }
+                        }
                     }
-                    if (fm.HasAutomap != null)
+                    else
                     {
-                        sw.WriteLine("HasAutomap=" + fm.HasAutomap.ToString());
-                    }
-                    if (fm.HasScripts != null)
-                    {
-                        sw.WriteLine("HasScripts=" + fm.HasScripts.ToString());
-                    }
-                    if (fm.HasTextures != null)
-                    {
-                        sw.WriteLine("HasTextures=" + fm.HasTextures.ToString());
-                    }
-                    if (fm.HasSounds != null)
-                    {
-                        sw.WriteLine("HasSounds=" + fm.HasSounds.ToString());
-                    }
-                    if (fm.HasObjects != null)
-                    {
-                        sw.WriteLine("HasObjects=" + fm.HasObjects.ToString());
-                    }
-                    if (fm.HasCreatures != null)
-                    {
-                        sw.WriteLine("HasCreatures=" + fm.HasCreatures.ToString());
-                    }
-                    if (fm.HasMotions != null)
-                    {
-                        sw.WriteLine("HasMotions=" + fm.HasMotions.ToString());
-                    }
-                    if (fm.HasMovies != null)
-                    {
-                        sw.WriteLine("HasMovies=" + fm.HasMovies.ToString());
-                    }
-                    if (fm.HasSubtitles != null)
-                    {
-                        sw.WriteLine("HasSubtitles=" + fm.HasSubtitles.ToString());
+                        if (fm.ResourcesScanned)
+                        {
+                            {
+                                sw.WriteLine("HasMap=" + fm.HasMap.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasAutomap=" + fm.HasAutomap.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasScripts=" + fm.HasScripts.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasTextures=" + fm.HasTextures.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasSounds=" + fm.HasSounds.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasObjects=" + fm.HasObjects.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasCreatures=" + fm.HasCreatures.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasMotions=" + fm.HasMotions.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasMovies=" + fm.HasMovies.ToString());
+                            }
+                            {
+                                sw.WriteLine("HasSubtitles=" + fm.HasSubtitles.ToString());
+                            }
+                        }
                     }
                     if (!string.IsNullOrEmpty(fm.LanguagesString))
                     {

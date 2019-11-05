@@ -212,18 +212,6 @@ namespace AngelLoader
             scanReleaseDate: true,
             scanTags: true);
 
-        internal static bool FMCustomResourcesScanned(FanMission fm) =>
-            fm.HasMap != null &&
-            fm.HasAutomap != null &&
-            fm.HasScripts != null &&
-            fm.HasTextures != null &&
-            fm.HasSounds != null &&
-            fm.HasObjects != null &&
-            fm.HasCreatures != null &&
-            fm.HasMotions != null &&
-            fm.HasMovies != null &&
-            fm.HasSubtitles != null;
-
         internal static bool FMIsReallyInstalled(FanMission fm)
         {
             if (!GameIsKnownAndSupported(fm.Game)) return false;

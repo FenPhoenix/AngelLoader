@@ -67,16 +67,18 @@ namespace AngelLoader.DataClasses
         internal string DisabledMods = "";
         internal bool DisableAllMods;
 
-        internal bool? HasMap;
-        internal bool? HasAutomap;
-        internal bool? HasScripts;
-        internal bool? HasTextures;
-        internal bool? HasSounds;
-        internal bool? HasObjects;
-        internal bool? HasCreatures;
-        internal bool? HasMotions;
-        internal bool? HasMovies;
-        internal bool? HasSubtitles;
+        // [FenGen:DoNotSerialize]
+        internal bool ResourcesScanned;
+        internal bool HasMap;
+        internal bool HasAutomap;
+        internal bool HasScripts;
+        internal bool HasTextures;
+        internal bool HasSounds;
+        internal bool HasObjects;
+        internal bool HasCreatures;
+        internal bool HasMotions;
+        internal bool HasMovies;
+        internal bool HasSubtitles;
 
         // not using for now, but add DoNotSerialize attribute here if I ever do
         // internal string[] Languages;
