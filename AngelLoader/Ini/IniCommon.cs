@@ -162,52 +162,52 @@ namespace AngelLoader.Ini
             for (int i = 0; i < fields.Length; i++)
             {
                 var field = fields[i];
-                if (field.EqualsI(nameof(fm.HasMap)))
+                if (field.EqualsI("Map"))
                 {
                     fm.HasMap = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasAutomap)))
+                else if (field.EqualsI("Automap"))
                 {
                     fm.HasAutomap = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasScripts)))
+                else if (field.EqualsI("Scripts"))
                 {
                     fm.HasScripts = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasTextures)))
+                else if (field.EqualsI("Textures"))
                 {
                     fm.HasTextures = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasSounds)))
+                else if (field.EqualsI("Sounds"))
                 {
                     fm.HasSounds = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasObjects)))
+                else if (field.EqualsI("Objects"))
                 {
                     fm.HasObjects = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasCreatures)))
+                else if (field.EqualsI("Creatures"))
                 {
                     fm.HasCreatures = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasMotions)))
+                else if (field.EqualsI("Motions"))
                 {
                     fm.HasMotions = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasMovies)))
+                else if (field.EqualsI("Movies"))
                 {
                     fm.HasMovies = true;
                 }
-                else if (field.EqualsI(nameof(fm.HasSubtitles)))
+                else if (field.EqualsI("Subtitles"))
                 {
                     fm.HasSubtitles = true;
                 }
             }
         }
 
-        private static string CommaCombineHasXFields(FanMission fm)
+        private static void CommaCombineHasXFields(FanMission fm, StringBuilder sb)
         {
-            string ret = "";
+            //string ret = "";
 
             // Hmm... doesn't make for good code, but fast...
             bool notEmpty = false;
@@ -223,69 +223,70 @@ namespace AngelLoader.Ini
                 fm.HasMovies == false &&
                 fm.HasSubtitles == false)
             {
-                return "None";
+                sb.AppendLine("None");
+                return;
             }
 
-            if (fm.HasMap == true)
+            if (fm.HasMap)
             {
-                ret += nameof(fm.HasMap);
+                sb.Append("Map");
                 notEmpty = true;
             }
-            if (fm.HasAutomap == true)
+            if (fm.HasAutomap)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasAutomap);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Automap");
                 notEmpty = true;
             }
-            if (fm.HasScripts == true)
+            if (fm.HasScripts)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasScripts);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Scripts");
                 notEmpty = true;
             }
-            if (fm.HasTextures == true)
+            if (fm.HasTextures)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasTextures);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Textures");
                 notEmpty = true;
             }
-            if (fm.HasSounds == true)
+            if (fm.HasSounds)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasSounds);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Sounds");
                 notEmpty = true;
             }
-            if (fm.HasObjects == true)
+            if (fm.HasObjects)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasObjects);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Objects");
                 notEmpty = true;
             }
-            if (fm.HasCreatures == true)
+            if (fm.HasCreatures)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasCreatures);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Creatures");
                 notEmpty = true;
             }
-            if (fm.HasMotions == true)
+            if (fm.HasMotions)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasMotions);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Motions");
                 notEmpty = true;
             }
-            if (fm.HasMovies == true)
+            if (fm.HasMovies)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasMovies);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Movies");
                 notEmpty = true;
             }
-            if (fm.HasSubtitles == true)
+            if (fm.HasSubtitles)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(fm.HasSubtitles);
+                if (notEmpty) sb.Append(",");
+                sb.Append("Subtitles");
             }
 
-            return ret;
+            sb.AppendLine();
         }
     }
 }

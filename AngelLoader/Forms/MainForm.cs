@@ -39,6 +39,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -68,6 +69,9 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
+            var text = File.ReadAllText(Paths.FMDataIni, Encoding.UTF8);
+            Trace.WriteLine("******: " + text.Length.ToString());
+
             //Trace.WriteLine("*** Find language in archive:");
 
             //var t = new Stopwatch();
