@@ -7,14 +7,14 @@ namespace AngelLoader
 {
     public static partial class Misc
     {
+        internal const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
+
         // Perf: so we only have to get it once
         internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
 
-        #region From CommonStatic (temp till organize)
-
-        internal const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
-
         internal static readonly ConfigData Config = new ConfigData();
+
+        #region Categories and tags
 
         // These are the FMSel preset tags. Conforming to standards here.
         internal static readonly GlobalCatAndTagsList PresetTags = new GlobalCatAndTagsList(6)
@@ -71,6 +71,10 @@ namespace AngelLoader
         // copied later.
         internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList();
 
+        #endregion
+
+        #region FMs lists
+
         internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
         internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
 
@@ -78,23 +82,9 @@ namespace AngelLoader
         // This will contain indexes into FMDataIniList (not FMViewList!)
         internal static readonly List<int> ViewListGamesNull = new List<int>();
 
-        // This is for passing to the game via the stub to match FMSel's behavior
-        internal static readonly string[] FMSupportedLanguages =
-        {
-            "english", // must be first
-            "czech",
-            "dutch",
-            "french",
-            "german",
-            "hungarian",
-            "italian",
-            "japanese",
-            "polish",
-            "russian",
-            "spanish"
-        };
-
         #endregion
+
+        #region Enums and enum-like
 
         // Class instead of enum so we don't have to keep casting its fields
         [PublicAPI]
@@ -128,6 +118,24 @@ namespace AngelLoader
 
         public enum Direction { Left, Right, Up, Down }
 
+        #endregion
+
+        // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
+        internal static readonly string[] FMSupportedLanguages =
+        {
+            "english", // must be first
+            "czech",
+            "dutch",
+            "french",
+            "german",
+            "hungarian",
+            "italian",
+            "japanese",
+            "polish",
+            "russian",
+            "spanish"
+        };
+
         internal static class Defaults
         {
             internal const int MainWindowX = 50;
@@ -147,6 +155,8 @@ namespace AngelLoader
             //internal static ConfigVar CV_ForceNewMantle = new ConfigVar { Command = "+new_mantle" };
         }
 
+        #region FM cache (readmes etc.)
+
         // We might want to add other things (thumbnails etc.) later, so it's a class
         internal class CacheData
         {
@@ -156,6 +166,10 @@ namespace AngelLoader
         }
 
         internal enum ReadmeType { PlainText, RichText, HTML, GLML }
+
+        #endregion
+
+        #region Interfaces
 
         #region DisableEvents
 
@@ -225,9 +239,7 @@ namespace AngelLoader
             void Localize();
         }
 
-        //internal static class Regexes
-        //{
-        //    // Uh, nothing in here at the moment.
-        //}
+        #endregion
+
     }
 }
