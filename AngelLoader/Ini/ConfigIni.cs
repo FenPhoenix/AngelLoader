@@ -14,6 +14,7 @@ using AngelLoader.Common.Utility;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.Ini
 {

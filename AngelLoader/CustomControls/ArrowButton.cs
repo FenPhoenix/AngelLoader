@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Common;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.CustomControls
 {
@@ -10,7 +10,7 @@ namespace AngelLoader.CustomControls
         private Direction _arrowDirection;
 
         [Browsable(true)]
-        public Direction ArrowDirection
+        internal Direction ArrowDirection
         {
             get => _arrowDirection;
             set

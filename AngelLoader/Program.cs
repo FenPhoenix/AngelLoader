@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.Common;
 using AngelLoader.WinAPI;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader
 {

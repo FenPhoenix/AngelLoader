@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using AngelLoader.Common.Utility;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
-using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.WinAPI
 {

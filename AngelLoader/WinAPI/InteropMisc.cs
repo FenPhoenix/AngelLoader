@@ -16,9 +16,9 @@ namespace AngelLoader.WinAPI
         internal const int WM_SETREDRAW = 11;
 
         internal const int HWND_BROADCAST = 0xffff;
-        
+
         internal const int EN_LINK = 0x070b;
-        
+
         #region Scrollbar
 
         internal const int WM_SCROLL = 276;
@@ -108,8 +108,7 @@ namespace AngelLoader.WinAPI
         #endregion
 
         // Second-instance telling first instance to show itself junk
-        public static readonly int WM_SHOWFIRSTINSTANCE =
-            RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Common.Common.AppGuid);
+        public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Common.Misc.AppGuid);
 
         [DllImport("user32")]
         internal static extern int RegisterWindowMessage(string message);

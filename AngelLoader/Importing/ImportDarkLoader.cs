@@ -10,6 +10,7 @@ using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI;
 using FMScanner;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.Importing
 {
@@ -360,7 +361,7 @@ namespace AngelLoader.Importing
                     string savesPath = Path.Combine(i == 0 ? t1Dir : t2Dir, "allsaves");
                     if (!Directory.Exists(savesPath)) continue;
 
-                    var convertedPath = Path.Combine(Common.Common.Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+                    var convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
                     Directory.CreateDirectory(convertedPath);
 
                     // Converting takes too long, so just copy them to our backup folder and they'll be handled

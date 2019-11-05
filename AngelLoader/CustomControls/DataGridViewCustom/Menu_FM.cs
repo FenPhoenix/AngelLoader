@@ -5,8 +5,8 @@ using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.CustomControls
 {

@@ -14,9 +14,9 @@ using AngelLoader.Ini;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.FMBackupAndRestore;
 // Switch expression doesn't handle all possible inputs

@@ -52,11 +52,11 @@ using AngelLoader.Importing;
 using AngelLoader.Properties;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader.Forms

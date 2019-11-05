@@ -8,9 +8,9 @@ using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.Common.Utility.Methods;
 
 namespace AngelLoader

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.Importing
 {

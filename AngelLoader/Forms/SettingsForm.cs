@@ -17,6 +17,7 @@ using AngelLoader.CustomControls.SettingsPages;
 using AngelLoader.WinAPI.Dialogs;
 using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.CustomControls.SettingsPages.Interfaces;
 
 namespace AngelLoader.Forms

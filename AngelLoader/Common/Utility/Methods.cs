@@ -9,10 +9,10 @@ using AngelLoader.Common.DataClasses;
 using FMScanner;
 using JetBrains.Annotations;
 using SevenZip;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.Common.Utility

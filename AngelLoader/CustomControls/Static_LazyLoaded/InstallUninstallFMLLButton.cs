@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
-using static AngelLoader.Common.Common;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.CustomControls.Static_LazyLoaded
 {

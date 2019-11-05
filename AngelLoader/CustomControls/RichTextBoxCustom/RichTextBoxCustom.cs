@@ -4,8 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.Common.Utility;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.CustomControls
@@ -46,7 +46,7 @@ namespace AngelLoader.CustomControls
                 _contentIsPlainText = value;
                 if (_contentIsPlainText)
                 {
-                    SetFontTypeInternal(Common.Common.Config.ReadmeUseFixedWidthFont, false);
+                    SetFontTypeInternal(Config.ReadmeUseFixedWidthFont, false);
                 }
                 else
                 {

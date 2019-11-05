@@ -7,6 +7,7 @@ using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using FMScanner;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.Ini.Ini;
 
 namespace AngelLoader.Importing

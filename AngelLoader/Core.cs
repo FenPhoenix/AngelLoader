@@ -39,11 +39,11 @@ using AngelLoader.Forms;
 using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
-using static AngelLoader.Common.Common;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.GameSupport;
 using static AngelLoader.Common.GameSupport.GameIndex;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.Ini.Ini;
 

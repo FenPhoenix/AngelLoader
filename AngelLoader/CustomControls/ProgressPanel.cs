@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.Common.DataClasses;
 using AngelLoader.Common.Utility;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI.Taskbar;
 using static AngelLoader.Common.Logger;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.CustomControls
 {

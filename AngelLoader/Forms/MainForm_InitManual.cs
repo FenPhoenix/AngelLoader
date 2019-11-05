@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.CustomControls;
 using AngelLoader.Properties;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.Forms
 {

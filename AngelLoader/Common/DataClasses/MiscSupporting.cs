@@ -5,6 +5,7 @@ using System.Diagnostics;
 using AngelLoader.Common.Utility;
 using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
 using static AngelLoader.Common.GameSupport;
+using static AngelLoader.Common.Misc;
 
 namespace AngelLoader.Common.DataClasses
 {

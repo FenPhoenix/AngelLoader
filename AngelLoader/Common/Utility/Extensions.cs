@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using AngelLoader.Common.DataClasses;
 using JetBrains.Annotations;
+using static AngelLoader.Common.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.Common.Utility
