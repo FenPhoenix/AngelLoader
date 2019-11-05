@@ -222,6 +222,8 @@ namespace FenGen
                         }
                         break;
                     case "-fmdata":
+                        // Switched this off due to the extensive manual edits for new HasResources format
+                        break;
                         if (!GenTasks.Contains(GenType.FMData))
                         {
                             GenTasks.Add(GenType.FMData);
