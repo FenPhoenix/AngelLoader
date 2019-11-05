@@ -1,6 +1,6 @@
 #define FenGen_FMDataDest
 
-#undef write_old_resources_style
+//#define write_old_resources_style
 
 using System.Collections.Generic;
 using System.IO;

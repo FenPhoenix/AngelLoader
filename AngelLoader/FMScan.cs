@@ -206,7 +206,9 @@ namespace AngelLoader
                     }
                     if (scanOptions.ScanCustomResources)
                     {
-                        if (gameSup)
+                        #region This exact setup is needed to get identical results to the old method. Don't change.
+                        // We don't scan custom resources for Thief 3, so they should never be set in that case.
+                        if (gameSup && scannedFM.Game != FMScanner.Game.Thief3)
                         {
                             sel.HasMap = scannedFM.HasMap == true;
                             sel.HasAutomap = scannedFM.HasAutomap == true;
@@ -224,6 +226,7 @@ namespace AngelLoader
                         {
                             sel.ResourcesScanned = false;
                         }
+                        #endregion
                     }
 
                     if (scanOptions.ScanAuthor)
