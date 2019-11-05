@@ -504,6 +504,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Message handling
+
         protected override void WndProc(ref Message m)
         {
             // A second instance has been started and told us to show ourselves, so do it here (nicer UX).
@@ -663,6 +665,8 @@ namespace AngelLoader.Forms
 
             return PassMessageOn;
         }
+
+        #endregion
 
         #region Init / load / show
 
