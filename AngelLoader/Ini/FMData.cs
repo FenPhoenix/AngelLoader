@@ -363,7 +363,8 @@ namespace AngelLoader.Ini
                     sb.Append("LastPlayed=");
                     sb.AppendLine(fm.LastPlayed.UnixDateString);
                 }
-                // TODO: This is also an enum
+                // NOTE: This is not in itself an enum, it's a uint, so it's fast. We just cast it to an enum
+                // later on, but no worries here.
                 if (fm.FinishedOn != 0)
                 {
                     sb.Append("FinishedOn=");
@@ -400,51 +401,6 @@ namespace AngelLoader.Ini
                     {
                         sb.AppendLine("NotScanned");
                     }
-                    /*
-                    if (fm.ResourcesScanned)
-                    {
-                        if (fm.HasMap)
-                        {
-                            sb.AppendLine("HasMap=" + fm.HasMap.ToString());
-                        }
-                        if (fm.HasAutomap)
-                        {
-                            sb.AppendLine("HasAutomap=" + fm.HasAutomap.ToString());
-                        }
-                        if (fm.HasScripts)
-                        {
-                            sb.AppendLine("HasScripts=" + fm.HasScripts.ToString());
-                        }
-                        if (fm.HasTextures)
-                        {
-                            sb.AppendLine("HasTextures=" + fm.HasTextures.ToString());
-                        }
-                        if (fm.HasSounds)
-                        {
-                            sb.AppendLine("HasSounds=" + fm.HasSounds.ToString());
-                        }
-                        if (fm.HasObjects)
-                        {
-                            sb.AppendLine("HasObjects=" + fm.HasObjects.ToString());
-                        }
-                        if (fm.HasCreatures)
-                        {
-                            sb.AppendLine("HasCreatures=" + fm.HasCreatures.ToString());
-                        }
-                        if (fm.HasMotions)
-                        {
-                            sb.AppendLine("HasMotions=" + fm.HasMotions.ToString());
-                        }
-                        if (fm.HasMovies)
-                        {
-                            sb.AppendLine("HasMovies=" + fm.HasMovies.ToString());
-                        }
-                        if (fm.HasSubtitles)
-                        {
-                            sb.AppendLine("HasSubtitles=" + fm.HasSubtitles.ToString());
-                        }
-                    }
-                    */
                 }
                 else
                 {
