@@ -19,6 +19,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
     {
         private static readonly bool[] _constructed = new bool[3];
 
+        // Inits to null, don't worry
         private static readonly ToolStripLabel[] _labels = new ToolStripLabel[3];
 
         internal static void Show(MainForm owner, Lazy_ToolStripLabel label, string text)

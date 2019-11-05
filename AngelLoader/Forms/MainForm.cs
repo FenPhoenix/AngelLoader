@@ -27,7 +27,6 @@
  TODO: Things to lazy load:
  -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
   controls on each tab page (in case the tabs are visible but not selected on startup)
- -FMs list zoom buttons
  -Game buttons and game tabs (one or the other will be invisible on startup)
  -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
  */
@@ -189,9 +188,7 @@ namespace AngelLoader.Forms
 
         public void ShowFMsListZoomButtons(bool visible)
         {
-            FMsListZoomInButton.Visible = visible;
-            FMsListZoomOutButton.Visible = visible;
-            FMsListResetZoomButton.Visible = visible;
+            Lazy_FMsListZoomButtons.SetVisible(this, visible);
             FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
         }
 
@@ -1203,9 +1200,7 @@ namespace AngelLoader.Forms
 
                 FMsDGV.Localize();
 
-                FMsListZoomInButton.ToolTipText = LText.FMsList.ZoomInToolTip;
-                FMsListZoomOutButton.ToolTipText = LText.FMsList.ZoomOutToolTip;
-                FMsListResetZoomButton.ToolTipText = LText.FMsList.ResetZoomToolTip;
+                Lazy_FMsListZoomButtons.Localize();
 
                 #region Columns
 
@@ -4142,11 +4137,11 @@ namespace AngelLoader.Forms
 
         #region Filter bar right-hand controls
 
-        private void FMsListZoomInButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
+        internal void FMsListZoomInButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomIn);
 
-        private void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
+        internal void FMsListZoomOutButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ZoomOut);
 
-        private void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
+        internal void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
 
         private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await RefreshFromDisk();
 

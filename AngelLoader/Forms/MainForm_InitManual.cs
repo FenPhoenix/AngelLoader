@@ -87,9 +87,6 @@ namespace AngelLoader.Forms
             FilterByRatingButton = new ToolStripButtonCustom();
             FilterShowUnsupportedButton = new ToolStripButtonCustom();
             RefreshAreaToolStrip = new ToolStripCustom();
-            FMsListZoomInButton = new ToolStripButtonCustom();
-            FMsListZoomOutButton = new ToolStripButtonCustom();
-            FMsListResetZoomButton = new ToolStripButtonCustom();
             RefreshFromDiskButton = new ToolStripButtonCustom();
             RefreshFiltersButton = new ToolStripButtonCustom();
             ClearFiltersButton = new ToolStripButtonCustom();
@@ -745,9 +742,6 @@ namespace AngelLoader.Forms
             RefreshAreaToolStrip.GripStyle = ToolStripGripStyle.Hidden;
             RefreshAreaToolStrip.ImageScalingSize = new Size(22, 22);
             RefreshAreaToolStrip.Items.AddRange(new ToolStripItem[] {
-            FMsListZoomInButton,
-            FMsListZoomOutButton,
-            FMsListResetZoomButton,
             RefreshFromDiskButton,
             RefreshFiltersButton,
             ClearFiltersButton});
@@ -756,33 +750,6 @@ namespace AngelLoader.Forms
             RefreshAreaToolStrip.Size = new Size(166, 26);
             RefreshAreaToolStrip.TabIndex = 12;
             RefreshAreaToolStrip.Paint += RefreshAreaToolStrip_Paint;
-            // 
-            // FMsListZoomInButton
-            // 
-            FMsListZoomInButton.AutoSize = false;
-            FMsListZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FMsListZoomInButton.Image = Images.ZoomIn;
-            FMsListZoomInButton.Margin = new Padding(0);
-            FMsListZoomInButton.Size = new Size(25, 25);
-            FMsListZoomInButton.Click += FMsListZoomInButton_Click;
-            // 
-            // FMsListZoomOutButton
-            // 
-            FMsListZoomOutButton.AutoSize = false;
-            FMsListZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FMsListZoomOutButton.Image = Images.ZoomOut;
-            FMsListZoomOutButton.Margin = new Padding(0);
-            FMsListZoomOutButton.Size = new Size(25, 25);
-            FMsListZoomOutButton.Click += FMsListZoomOutButton_Click;
-            // 
-            // FMsListResetZoomButton
-            // 
-            FMsListResetZoomButton.AutoSize = false;
-            FMsListResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FMsListResetZoomButton.Image = Images.ZoomReset;
-            FMsListResetZoomButton.Margin = new Padding(0);
-            FMsListResetZoomButton.Size = new Size(25, 25);
-            FMsListResetZoomButton.Click += FMsListResetZoomButton_Click;
             // 
             // RefreshFromDiskButton
             // 

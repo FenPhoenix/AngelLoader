@@ -85,9 +85,6 @@
             this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterShowUnsupportedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshAreaToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
-            this.FMsListZoomInButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FMsListZoomOutButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.FMsListResetZoomButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshFromDiskButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.ClearFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
@@ -888,9 +885,6 @@
             this.RefreshAreaToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.RefreshAreaToolStrip.ImageScalingSize = new System.Drawing.Size(22, 22);
             this.RefreshAreaToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FMsListZoomInButton,
-            this.FMsListZoomOutButton,
-            this.FMsListResetZoomButton,
             this.RefreshFromDiskButton,
             this.RefreshFiltersButton,
             this.ClearFiltersButton});
@@ -901,42 +895,6 @@
             this.RefreshAreaToolStrip.Size = new System.Drawing.Size(166, 26);
             this.RefreshAreaToolStrip.TabIndex = 12;
             this.RefreshAreaToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.RefreshAreaToolStrip_Paint);
-            // 
-            // FMsListZoomInButton
-            // 
-            this.FMsListZoomInButton.AutoSize = false;
-            this.FMsListZoomInButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FMsListZoomInButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FMsListZoomInButton.Image = global::AngelLoader.Properties.Resources.ZoomIn;
-            this.FMsListZoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FMsListZoomInButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FMsListZoomInButton.Name = "FMsListZoomInButton";
-            this.FMsListZoomInButton.Size = new System.Drawing.Size(25, 25);
-            this.FMsListZoomInButton.Click += new System.EventHandler(this.FMsListZoomInButton_Click);
-            // 
-            // FMsListZoomOutButton
-            // 
-            this.FMsListZoomOutButton.AutoSize = false;
-            this.FMsListZoomOutButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FMsListZoomOutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FMsListZoomOutButton.Image = global::AngelLoader.Properties.Resources.ZoomOut;
-            this.FMsListZoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FMsListZoomOutButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FMsListZoomOutButton.Name = "FMsListZoomOutButton";
-            this.FMsListZoomOutButton.Size = new System.Drawing.Size(25, 25);
-            this.FMsListZoomOutButton.Click += new System.EventHandler(this.FMsListZoomOutButton_Click);
-            // 
-            // FMsListResetZoomButton
-            // 
-            this.FMsListResetZoomButton.AutoSize = false;
-            this.FMsListResetZoomButton.BackColor = System.Drawing.SystemColors.Control;
-            this.FMsListResetZoomButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FMsListResetZoomButton.Image = global::AngelLoader.Properties.Resources.ZoomReset;
-            this.FMsListResetZoomButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FMsListResetZoomButton.Margin = new System.Windows.Forms.Padding(0);
-            this.FMsListResetZoomButton.Name = "FMsListResetZoomButton";
-            this.FMsListResetZoomButton.Size = new System.Drawing.Size(25, 25);
-            this.FMsListResetZoomButton.Click += new System.EventHandler(this.FMsListResetZoomButton_Click);
             // 
             // RefreshFromDiskButton
             // 
@@ -2012,9 +1970,6 @@
         internal System.Windows.Forms.Button PatchOpenFMFolderButton;
         internal AngelLoader.CustomControls.ArrowButton TopRightCollapseButton;
         internal CustomControls.ToolStripButtonCustom RefreshFromDiskButton;
-        internal CustomControls.ToolStripButtonCustom FMsListZoomInButton;
-        internal CustomControls.ToolStripButtonCustom FMsListZoomOutButton;
-        internal CustomControls.ToolStripButtonCustom FMsListResetZoomButton;
         internal System.Windows.Forms.DataGridViewImageColumn GameTypeColumn;
         internal System.Windows.Forms.DataGridViewImageColumn InstalledColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn TitleColumn;
