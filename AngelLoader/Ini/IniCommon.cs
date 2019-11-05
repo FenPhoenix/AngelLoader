@@ -134,6 +134,7 @@ namespace AngelLoader.Ini
         {
             string[] fields = fieldsString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
+            // These must be set to false here
             fm.HasMap = false;
             fm.HasAutomap = false;
             fm.HasScripts = false;
@@ -198,11 +199,7 @@ namespace AngelLoader.Ini
 
         private static void CommaCombineHasXFields(FanMission fm, StringBuilder sb)
         {
-            //string ret = "";
-
-            // Hmm... doesn't make for good code, but fast...
-            bool notEmpty = false;
-
+            // We don't have a bool for this condition, so we have to check it manually
             if (fm.HasMap == false &&
                 fm.HasAutomap == false &&
                 fm.HasScripts == false &&
@@ -218,6 +215,8 @@ namespace AngelLoader.Ini
                 return;
             }
 
+            // Hmm... doesn't make for good code, but fast...
+            bool notEmpty = false;
             if (fm.HasMap)
             {
                 sb.Append("Map");

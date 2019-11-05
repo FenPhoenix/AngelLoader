@@ -8,12 +8,6 @@ using System.Text;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 
-// PERF_TODO: Notes for the writer:
-// -Enum.ToString() is very expensive. Probably faster to do it manually with an if statement and nameof(value)
-// -All the WriteLine()s take up a lot of time (most of which is GC). Using a StringBuilder would probably be
-//  much faster.
-// -The reader is lightning fast still. No need to do anything to it.
-
 namespace AngelLoader.Ini
 {
     internal static partial class Ini
@@ -307,27 +301,25 @@ namespace AngelLoader.Ini
                     sb.Append("Author=");
                     sb.AppendLine(fm.Author);
                 }
-                // Don't write Game.Null
-                // Much faster to do this than Enum.ToString()
-                if (fm.Game == Game.Thief1)
+                switch (fm.Game)
                 {
-                    sb.AppendLine("Game=Thief1");
-                }
-                else if (fm.Game == Game.Thief2)
-                {
-                    sb.AppendLine("Game=Thief2");
-                }
-                else if (fm.Game == Game.Thief3)
-                {
-                    sb.AppendLine("Game=Thief3");
-                }
-                else if (fm.Game == Game.SS2)
-                {
-                    sb.AppendLine("Game=SS2");
-                }
-                else if (fm.Game == Game.Unsupported)
-                {
-                    sb.AppendLine("Game=Unsupported");
+                    // Much faster to do this than Enum.ToString()
+                    case Game.Thief1:
+                        sb.AppendLine("Game=Thief1");
+                        break;
+                    case Game.Thief2:
+                        sb.AppendLine("Game=Thief2");
+                        break;
+                    case Game.Thief3:
+                        sb.AppendLine("Game=Thief3");
+                        break;
+                    case Game.SS2:
+                        sb.AppendLine("Game=SS2");
+                        break;
+                    case Game.Unsupported:
+                        sb.AppendLine("Game=Unsupported");
+                        break;
+                        // Don't handle Game.Null because we don't want to write out defaults
                 }
                 if (fm.Installed)
                 {
