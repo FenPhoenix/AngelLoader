@@ -43,7 +43,6 @@ namespace AngelLoader.CustomControls
         //  in a loop)
         internal bool Filtered = false;
 
-        // PERF_TODO: This could be new'd and capacity-set later to FMsViewList.Count, if we're really hardcore
         internal readonly List<int> FilterShownIndexList = new List<int>();
 
         #endregion
