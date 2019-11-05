@@ -6,6 +6,12 @@ using System.Text;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 
+// PERF_TODO: Notes for the writer:
+// -Enum.ToString() is very expensive. Probably faster to do it manually with an if statement and nameof(value)
+// -All the WriteLine()s take up a lot of time (most of which is GC). Using a StringBuilder would probably be
+//  much faster.
+// -The reader is lightning fast still. No need to do anything to it.
+
 namespace AngelLoader.Ini
 {
     internal static partial class Ini
