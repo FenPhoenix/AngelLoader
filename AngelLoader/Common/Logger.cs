@@ -4,11 +4,10 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using AngelLoader.Common.Utility;
 using JetBrains.Annotations;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Misc;
 
-namespace AngelLoader.Common
+namespace AngelLoader
 {
     internal static class Logger
     {

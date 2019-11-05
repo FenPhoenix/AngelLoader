@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using static AngelLoader.Common.Utility.Extensions;
 
 namespace AngelLoader.CustomControls
 {

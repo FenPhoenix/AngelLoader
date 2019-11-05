@@ -9,16 +9,14 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
 using AngelLoader.CustomControls.SettingsPages;
+using AngelLoader.DataClasses;
 using AngelLoader.WinAPI.Dialogs;
-using static AngelLoader.Common.GameSupport.GameIndex;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
 using static AngelLoader.CustomControls.SettingsPages.Interfaces;
+using static AngelLoader.GameSupport.GameIndex;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {

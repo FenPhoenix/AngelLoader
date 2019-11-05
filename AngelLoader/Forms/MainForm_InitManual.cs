@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.CustomControls;
 using AngelLoader.Properties;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {

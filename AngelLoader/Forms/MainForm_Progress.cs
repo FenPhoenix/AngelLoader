@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using AngelLoader.CustomControls;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {

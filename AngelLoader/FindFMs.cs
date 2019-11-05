@@ -4,14 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
-using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader
 {

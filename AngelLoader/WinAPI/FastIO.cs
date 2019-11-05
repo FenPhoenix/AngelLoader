@@ -5,10 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using AngelLoader.Common.Utility;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.WinAPI
 {

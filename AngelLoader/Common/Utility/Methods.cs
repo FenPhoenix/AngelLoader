@@ -5,19 +5,18 @@ using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Text;
-using AngelLoader.Common.DataClasses;
+using AngelLoader.DataClasses;
 using FMScanner;
 using JetBrains.Annotations;
 using SevenZip;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.GameSupport.GameIndex;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.GameSupport;
+using static AngelLoader.GameSupport.GameIndex;
+using static AngelLoader.Logger;
 using static AngelLoader.WinAPI.InteropMisc;
 
-namespace AngelLoader.Common.Utility
+namespace AngelLoader
 {
-    internal static class Methods
+    public static partial class Misc
     {
         #region Process.Start with UseShellExecute on
 

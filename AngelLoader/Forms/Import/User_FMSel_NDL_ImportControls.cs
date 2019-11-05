@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.Importing;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.Import
 {

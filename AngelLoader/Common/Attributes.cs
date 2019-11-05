@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Common
+namespace AngelLoader
 {
     internal static class Attributes
     {

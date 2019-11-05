@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AngelLoader.Common
+namespace AngelLoader.DataClasses
 {
     internal sealed class CatAndTags
     {

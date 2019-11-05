@@ -1,8 +1,8 @@
 ﻿#define FenGen_LocalizationSource
 
-using static AngelLoader.Common.Attributes;
+using static AngelLoader.Attributes;
 
-namespace AngelLoader.Common.DataClasses
+namespace AngelLoader.DataClasses
 {
     // NOTE:
     // Articles can't really be localized because they need to apply to an FM's title and most are in English.

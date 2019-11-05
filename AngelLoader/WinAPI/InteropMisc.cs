@@ -108,7 +108,7 @@ namespace AngelLoader.WinAPI
         #endregion
 
         // Second-instance telling first instance to show itself junk
-        public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Common.Misc.AppGuid);
+        public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE|" + Misc.AppGuid);
 
         [DllImport("user32")]
         internal static extern int RegisterWindowMessage(string message);

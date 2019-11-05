@@ -3,10 +3,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
 using AngelLoader.CustomControls;
+using AngelLoader.DataClasses;
 
 namespace AngelLoader.Forms
 {

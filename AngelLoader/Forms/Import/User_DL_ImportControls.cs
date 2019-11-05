@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Logger;
+using AngelLoader.DataClasses;
+using static AngelLoader.Logger;
 
 namespace AngelLoader.Forms.Import
 {

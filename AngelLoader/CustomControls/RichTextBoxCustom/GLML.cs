@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using AngelLoader.Common.Utility;
 
 namespace AngelLoader.CustomControls
 {
@@ -256,7 +255,7 @@ namespace AngelLoader.CustomControls
                             {
                                 var name = subSB.ToString();
 
-                                if (Common.HTMLNamedEntities.Entities.TryGetValue(name, out string value))
+                                if (HTMLNamedEntities.Entities.TryGetValue(name, out string value))
                                 {
                                     sb.Append(@"\u" + value + "?");
                                 }

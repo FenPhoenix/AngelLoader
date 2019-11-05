@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using AngelLoader.Common.DataClasses;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Common
+namespace AngelLoader
 {
-    public static class Misc
+    public static partial class Misc
     {
+        // Perf: so we only have to get it once
+        internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
+
         #region From CommonStatic (temp till organize)
 
         internal const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";

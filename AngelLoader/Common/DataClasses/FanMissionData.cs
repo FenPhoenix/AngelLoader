@@ -1,10 +1,9 @@
 ﻿#define FenGen_FMDataSource
 
 using System.Collections.Generic;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.GameSupport;
+using static AngelLoader.GameSupport;
 
-namespace AngelLoader.Common.DataClasses
+namespace AngelLoader.DataClasses
 {
     // FenGen reads this and outputs fast ini read and write methods.
     // TODO: Version-header ini files right from the start, in case I have to change the format after release

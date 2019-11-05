@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace AngelLoader.Common
+namespace AngelLoader
 {
     [PublicAPI]
     internal enum Error

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Misc;
-using static AngelLoader.Common.SortStatic;
+using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
+using static AngelLoader.SortStatic;
 
-namespace AngelLoader.Common
+namespace AngelLoader
 {
     #region FM list sorting
 
@@ -249,7 +248,7 @@ namespace AngelLoader.Common
                     // @R#_FALSE_POSITIVE
                     !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
                     x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
-                    (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
+                        (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
                         ? TitleCompare(x, y) :
                     x.FinishedOn < y.FinishedOn ? -1 : 1;
             }

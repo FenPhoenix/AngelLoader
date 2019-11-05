@@ -3,9 +3,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.GameSupport;
+using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
 
 namespace AngelLoader.Ini
 {

@@ -4,8 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader.CustomControls

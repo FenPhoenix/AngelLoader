@@ -8,13 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.GameSupport.GameIndex;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
+using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
+using static AngelLoader.GameSupport.GameIndex;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Ini
 {

@@ -4,11 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
 
-namespace AngelLoader.Common.DataClasses
+namespace AngelLoader.DataClasses
 {
     // TODO: @FenGen: Get rid of WinForms type and other unsavory type stuff in here
     internal sealed class ConfigData

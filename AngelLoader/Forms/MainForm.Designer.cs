@@ -436,7 +436,7 @@
             // 
             // FilterBarScrollRightButton
             // 
-            this.FilterBarScrollRightButton.ArrowDirection = AngelLoader.Common.Misc.Direction.Right;
+            this.FilterBarScrollRightButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
             this.FilterBarScrollRightButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.FilterBarScrollRightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.FilterBarScrollRightButton.Location = new System.Drawing.Point(1088, 56);
@@ -453,7 +453,7 @@
             // 
             // FilterBarScrollLeftButton
             // 
-            this.FilterBarScrollLeftButton.ArrowDirection = AngelLoader.Common.Misc.Direction.Left;
+            this.FilterBarScrollLeftButton.ArrowDirection = AngelLoader.Misc.Direction.Left;
             this.FilterBarScrollLeftButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.FilterBarScrollLeftButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.FilterBarScrollLeftButton.Location = new System.Drawing.Point(1072, 56);
@@ -1056,7 +1056,7 @@
             // 
             this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TopRightCollapseButton.ArrowDirection = AngelLoader.Common.Misc.Direction.Right;
+            this.TopRightCollapseButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
             this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
             this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1325,7 +1325,7 @@
             // EditFMAltTitlesArrowButton
             // 
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Common.Misc.Direction.Down;
+            this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
             this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(477, 23);
             this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);

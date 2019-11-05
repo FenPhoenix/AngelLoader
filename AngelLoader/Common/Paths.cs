@@ -2,12 +2,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.Security;
-using AngelLoader.Common.Utility;
 using AngelLoader.WinAPI;
 using Microsoft.Win32;
-using static AngelLoader.Common.Logger;
+using static AngelLoader.Logger;
 
-namespace AngelLoader.Common
+namespace AngelLoader
 {
     internal static class Paths
     {

@@ -7,12 +7,12 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 
-namespace AngelLoader.Common.Utility
+namespace AngelLoader
 {
     internal static class Extensions
     {

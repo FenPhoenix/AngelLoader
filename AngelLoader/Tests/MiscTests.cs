@@ -4,9 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using Xunit;
 
 namespace AngelLoader.Tests

@@ -2,8 +2,8 @@
 
 using System.IO;
 using System.Text;
-using AngelLoader.Common.DataClasses;
-using static AngelLoader.Common.Attributes;
+using AngelLoader.DataClasses;
+using static AngelLoader.Attributes;
 
 namespace AngelLoader.Ini
 {

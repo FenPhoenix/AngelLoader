@@ -5,16 +5,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI;
 using SevenZip;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
-using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader
 {

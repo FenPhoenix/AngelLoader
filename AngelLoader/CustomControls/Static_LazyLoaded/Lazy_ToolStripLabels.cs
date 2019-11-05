@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 // Switch expression doesn't handle all possible inputs
 //@R#_FALSE_POSITIVE? Don't put a comment at the end of this line for warning 8509

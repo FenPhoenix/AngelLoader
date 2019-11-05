@@ -1,5 +1,4 @@
 ﻿using System.Windows.Forms;
-using AngelLoader.Common.Utility;
 using JetBrains.Annotations;
 
 namespace AngelLoader.CustomControls.SettingsPages

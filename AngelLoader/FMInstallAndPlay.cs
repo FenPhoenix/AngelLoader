@@ -7,18 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.Ini;
 using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
-using static AngelLoader.Common.Utility.Methods;
 using static AngelLoader.FMBackupAndRestore;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 // Switch expression doesn't handle all possible inputs
 // Comments can't come at the end of this line or ReSharper breaks?!
 // @R#_FALSE_POSITIVE?

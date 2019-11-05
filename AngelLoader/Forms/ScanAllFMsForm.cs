@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using FMScanner;
 
 namespace AngelLoader.Forms

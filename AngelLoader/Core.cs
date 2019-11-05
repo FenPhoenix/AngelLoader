@@ -32,20 +32,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
-using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.GameSupport.GameIndex;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
-using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.GameSupport;
+using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Ini.Ini;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader
 {

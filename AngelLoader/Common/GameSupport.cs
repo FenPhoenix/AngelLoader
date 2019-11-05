@@ -1,10 +1,10 @@
 ﻿#define FenGen_TypeSource
 
 using System;
-using AngelLoader.Common.DataClasses;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
-namespace AngelLoader.Common
+namespace AngelLoader
 {
     // @GENGAMES: The main location to add games
     [PublicAPI]

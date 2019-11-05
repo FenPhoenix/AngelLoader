@@ -4,13 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.WinAPI;
 using FMScanner;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Importing
 {

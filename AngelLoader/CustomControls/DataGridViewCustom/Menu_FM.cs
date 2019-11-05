@@ -3,10 +3,9 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Misc;
+using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.CustomControls
 {

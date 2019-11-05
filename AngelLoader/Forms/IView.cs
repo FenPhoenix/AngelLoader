@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
+using AngelLoader.DataClasses;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using JetBrains.Annotations;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {

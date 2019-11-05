@@ -2,12 +2,10 @@
 
 using System;
 using System.Diagnostics;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.DataClasses.TopRightTabEnumStatic;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
 
-namespace AngelLoader.Common.DataClasses
+namespace AngelLoader.DataClasses
 {
     //internal sealed class ConfigVar
     //{
@@ -34,7 +32,7 @@ namespace AngelLoader.Common.DataClasses
                 }
                 else
                 {
-                    _dateTime = Methods.ExpandDateTime(UnixDateString);
+                    _dateTime = ExpandDateTime(UnixDateString);
                     _expanded = true;
                     return _dateTime;
                 }
@@ -93,12 +91,6 @@ namespace AngelLoader.Common.DataClasses
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
     #region Top-right tabs
-
-    // Dopey, but for perf so we only have to get it once
-    internal static class TopRightTabEnumStatic
-    {
-        internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
-    }
 
     internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch }
 

@@ -6,16 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.Ini;
 using AngelLoader.WinAPI;
 using SevenZip;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
-using static AngelLoader.Common.Utility.Methods;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace AngelLoader

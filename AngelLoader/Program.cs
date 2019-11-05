@@ -4,10 +4,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AngelLoader.Common;
 using AngelLoader.WinAPI;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader
 {

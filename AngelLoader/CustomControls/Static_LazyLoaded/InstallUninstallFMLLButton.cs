@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms;
-using static AngelLoader.Common.Misc;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.CustomControls.Static_LazyLoaded
 {

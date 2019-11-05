@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
+using AngelLoader.DataClasses;
 using FMScanner;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
 using static AngelLoader.Ini.Ini;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Importing
 {

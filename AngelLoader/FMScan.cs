@@ -4,13 +4,10 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AngelLoader.Common;
-using AngelLoader.Common.DataClasses;
-using AngelLoader.Common.Utility;
-using static AngelLoader.Common.GameSupport;
-using static AngelLoader.Common.Logger;
-using static AngelLoader.Common.Misc;
-using static AngelLoader.Common.Utility.Methods;
+using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
+using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
