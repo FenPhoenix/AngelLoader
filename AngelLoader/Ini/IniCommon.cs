@@ -128,6 +128,8 @@ namespace AngelLoader.Ini
             }
         }
 
+        #region FM custom resource work
+
         private static void FillFMHasXFields(FanMission fm, string fieldsString)
         {
             string[] fields = fieldsString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -277,5 +279,7 @@ namespace AngelLoader.Ini
 
             sb.AppendLine();
         }
+
+        #endregion
     }
 }
