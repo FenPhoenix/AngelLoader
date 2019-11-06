@@ -286,6 +286,24 @@ namespace AngelLoader
 
             #region Game exes
 
+            // BUG: @CourteousBehavior: When a game switches out, restore the loader on the old game path before reading the data from the new one
+            // TODO: Test this!
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                var game = (GameIndex)i;
+                if (individualGamePathsChanged[i])
+                {
+                    if (GameIsDark(game))
+                    {
+                        FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
+                    }
+                    else
+                    {
+                        FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
+                    }
+                }
+            }
+
             for (int i = 0; i < Config.GameExes.Length; i++)
             {
                 Config.GameExes[i] = sf.OutConfig.GameExes[i];
