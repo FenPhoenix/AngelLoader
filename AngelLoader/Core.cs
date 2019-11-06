@@ -291,7 +291,10 @@ namespace AngelLoader
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 var game = (GameIndex)i;
-                if (individualGamePathsChanged[i])
+                var gameExe = Config.GetGameExe(game);
+                // Only try to reset the loader on the old game if the old game was actually specified, obviously
+                // TODO: For Thief 3, we actually just want to know if SneakyOptions.ini exists... code for that?
+                if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace() && File.Exists(gameExe))
                 {
                     if (GameIsDark(game))
                     {
