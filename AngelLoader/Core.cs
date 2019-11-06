@@ -288,24 +288,27 @@ namespace AngelLoader
 
             // Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to
             // the old ones.
-            for (int i = 0; i < SupportedGameCount; i++)
+            if (gamePathsChanged)
             {
-                var game = (GameIndex)i;
-                var gameExe = Config.GetGameExe(game);
-                // Only try to reset the loader on the old game if the old game was actually specified, obviously
-                if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace())
+                for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    // For Dark, we need to know if the game exe itself actually exists.
-                    if (GameIsDark(game) && File.Exists(gameExe))
+                    var game = (GameIndex)i;
+                    var gameExe = Config.GetGameExe(game);
+                    // Only try to reset the loader on the old game if the old game was actually specified, obviously
+                    if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace())
                     {
-                        FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
-                    }
-                    else
-                    {
-                        // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game itself
-                        // existing is not technically a requirement.
-                        string soIni = Paths.GetSneakyOptionsIni();
-                        if (!soIni.IsEmpty() && File.Exists(soIni)) FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
+                        // For Dark, we need to know if the game exe itself actually exists.
+                        if (GameIsDark(game) && File.Exists(gameExe))
+                        {
+                            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
+                        }
+                        else
+                        {
+                            // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game itself
+                            // existing is not technically a requirement.
+                            string soIni = Paths.GetSneakyOptionsIni();
+                            if (!soIni.IsEmpty() && File.Exists(soIni)) FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
+                        }
                     }
                 }
             }
