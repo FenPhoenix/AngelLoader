@@ -88,21 +88,23 @@ namespace AngelLoader.DataClasses
 
     [Flags] internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
+#if false
     [Flags]
     internal enum CustomResources
     {
         None = 0,
         Map = 1,
-        HasAutomap = 2,
-        HasScripts = 4,
-        HasTextures = 8,
-        HasSounds = 16,
-        HasObjects = 32,
-        HasCreatures = 64,
-        HasMotions = 128,
-        HasMovies = 256,
-        HasSubtitles = 512
+        Automap = 2,
+        Scripts = 4,
+        Textures = 8,
+        Sounds = 16,
+        Objects = 32,
+        Creatures = 64,
+        Motions = 128,
+        Movies = 256,
+        Subtitles = 512
     }
+#endif
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 
@@ -238,21 +240,37 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
-        #region Release date
-
-        internal void SetReleaseDateFromAndTo(DateTime? from, DateTime? to)
+        internal void SetDateFromAndTo(bool lastPlayed, DateTime? from, DateTime? to)
         {
             if (from != null && to != null && from.Value.CompareTo(to) > 0)
             {
-                ReleaseDateFrom = to;
-                ReleaseDateTo = from;
+                if (lastPlayed)
+                {
+                    LastPlayedFrom = to;
+                    LastPlayedTo = from;
+                }
+                else
+                {
+                    ReleaseDateFrom = to;
+                    ReleaseDateTo = from;
+                }
             }
             else
             {
-                ReleaseDateFrom = from;
-                ReleaseDateTo = to;
+                if (lastPlayed)
+                {
+                    LastPlayedFrom = from;
+                    LastPlayedTo = to;
+                }
+                else
+                {
+                    ReleaseDateFrom = from;
+                    ReleaseDateTo = to;
+                }
             }
         }
+
+        #region Release date
 
         private DateTime? _releaseDateFrom;
         internal DateTime? ReleaseDateFrom
@@ -270,20 +288,6 @@ namespace AngelLoader.DataClasses
         #endregion
 
         #region Last played
-
-        internal void SetLastPlayedFromAndTo(DateTime? from, DateTime? to)
-        {
-            if (from != null && to != null && from.Value.CompareTo(to) > 0)
-            {
-                LastPlayedFrom = to;
-                LastPlayedTo = from;
-            }
-            else
-            {
-                LastPlayedFrom = from;
-                LastPlayedTo = to;
-            }
-        }
 
         private DateTime? _lastPlayedFrom;
         internal DateTime? LastPlayedFrom
@@ -312,27 +316,9 @@ namespace AngelLoader.DataClasses
             dest.SetRatingFromAndTo(RatingFrom, RatingTo);
             dest.ShowUnsupported = ShowUnsupported;
 
-            var relFrom = ReleaseDateFrom == null
-                ? (DateTime?)null
-                : new DateTime(ReleaseDateFrom.Value.Year, ReleaseDateFrom.Value.Month,
-                    ReleaseDateFrom.Value.Day, 0, 0, 0, ReleaseDateFrom.Value.Kind);
-            var relTo = ReleaseDateTo == null
-                ? (DateTime?)null
-                : new DateTime(ReleaseDateTo.Value.Year, ReleaseDateTo.Value.Month,
-                    ReleaseDateTo.Value.Day, 0, 0, 0, ReleaseDateTo.Value.Kind);
-
-            dest.SetReleaseDateFromAndTo(relFrom, relTo);
-
-            var lpFrom = LastPlayedFrom == null
-                ? (DateTime?)null
-                : new DateTime(LastPlayedFrom.Value.Year, LastPlayedFrom.Value.Month,
-                    LastPlayedFrom.Value.Day, 0, 0, 0, LastPlayedFrom.Value.Kind);
-            var lpTo = LastPlayedTo == null
-                ? (DateTime?)null
-                : new DateTime(LastPlayedTo.Value.Year, LastPlayedTo.Value.Month,
-                    LastPlayedTo.Value.Day, 0, 0, 0, LastPlayedTo.Value.Kind);
-
-            dest.SetLastPlayedFromAndTo(lpFrom, lpTo);
+            // DateTime is a struct (value type), so we can just assign and it copies. Phew.
+            dest.SetDateFromAndTo(lastPlayed: false, ReleaseDateFrom, ReleaseDateTo);
+            dest.SetDateFromAndTo(lastPlayed: true, LastPlayedFrom, LastPlayedTo);
 
             dest.Finished = Finished;
             dest.Games = Games;

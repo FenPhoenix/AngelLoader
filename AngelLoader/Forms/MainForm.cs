@@ -4041,14 +4041,7 @@ namespace AngelLoader.Forms
 
                 if (f.ShowDialog() != DialogResult.OK) return;
 
-                if (lastPlayed)
-                {
-                    FMsDGV.Filter.SetLastPlayedFromAndTo(f.DateFrom, f.DateTo);
-                }
-                else
-                {
-                    FMsDGV.Filter.SetReleaseDateFromAndTo(f.DateFrom, f.DateTo);
-                }
+                FMsDGV.Filter.SetDateFromAndTo(lastPlayed, f.DateFrom, f.DateTo);
 
                 button.Checked = f.DateFrom != null || f.DateTo != null;
             }
