@@ -134,19 +134,10 @@ namespace AngelLoader.Ini
         {
             string[] fields = fieldsString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // These must be set to false here
-            fm.HasMap = false;
-            fm.HasAutomap = false;
-            fm.HasScripts = false;
-            fm.HasTextures = false;
-            fm.HasSounds = false;
-            fm.HasObjects = false;
-            fm.HasCreatures = false;
-            fm.HasMotions = false;
-            fm.HasMovies = false;
-            fm.HasSubtitles = false;
+            // Resources must be cleared here
+            fm.Resources = CustomResources.None;
 
-            if (fields.Length > 0 && fields[0].EqualsI("None")) return;
+            if (fields.Length > 0 && fields[0].EqualsI(nameof(CustomResources.None))) return;
 
             for (int i = 0; i < fields.Length; i++)
             {
@@ -154,126 +145,115 @@ namespace AngelLoader.Ini
 
                 // Need this if block, because we're not iterating through all fields, so can't just have a flat
                 // block of fm.HasX = field.EqualsI(X);
-                if (field.EqualsI("Map"))
+                if (field.EqualsI(nameof(CustomResources.Map)))
                 {
-                    fm.HasMap = true;
+                    SetFMResource(fm, CustomResources.Map, true);
                 }
-                else if (field.EqualsI("Automap"))
+                else if (field.EqualsI(nameof(CustomResources.Automap)))
                 {
-                    fm.HasAutomap = true;
+                    SetFMResource(fm, CustomResources.Automap, true);
                 }
-                else if (field.EqualsI("Scripts"))
+                else if (field.EqualsI(nameof(CustomResources.Scripts)))
                 {
-                    fm.HasScripts = true;
+                    SetFMResource(fm, CustomResources.Scripts, true);
                 }
-                else if (field.EqualsI("Textures"))
+                else if (field.EqualsI(nameof(CustomResources.Textures)))
                 {
-                    fm.HasTextures = true;
+                    SetFMResource(fm, CustomResources.Textures, true);
                 }
-                else if (field.EqualsI("Sounds"))
+                else if (field.EqualsI(nameof(CustomResources.Sounds)))
                 {
-                    fm.HasSounds = true;
+                    SetFMResource(fm, CustomResources.Sounds, true);
                 }
-                else if (field.EqualsI("Objects"))
+                else if (field.EqualsI(nameof(CustomResources.Objects)))
                 {
-                    fm.HasObjects = true;
+                    SetFMResource(fm, CustomResources.Objects, true);
                 }
-                else if (field.EqualsI("Creatures"))
+                else if (field.EqualsI(nameof(CustomResources.Creatures)))
                 {
-                    fm.HasCreatures = true;
+                    SetFMResource(fm, CustomResources.Creatures, true);
                 }
-                else if (field.EqualsI("Motions"))
+                else if (field.EqualsI(nameof(CustomResources.Motions)))
                 {
-                    fm.HasMotions = true;
+                    SetFMResource(fm, CustomResources.Motions, true);
                 }
-                else if (field.EqualsI("Movies"))
+                else if (field.EqualsI(nameof(CustomResources.Movies)))
                 {
-                    fm.HasMovies = true;
+                    SetFMResource(fm, CustomResources.Movies, true);
                 }
-                else if (field.EqualsI("Subtitles"))
+                else if (field.EqualsI(nameof(CustomResources.Subtitles)))
                 {
-                    fm.HasSubtitles = true;
+                    SetFMResource(fm, CustomResources.Subtitles, true);
                 }
             }
         }
 
         private static void CommaCombineHasXFields(FanMission fm, StringBuilder sb)
         {
-            // We don't have a bool for this condition, so we have to check it manually
-            if (fm.HasMap == false &&
-                fm.HasAutomap == false &&
-                fm.HasScripts == false &&
-                fm.HasTextures == false &&
-                fm.HasSounds == false &&
-                fm.HasObjects == false &&
-                fm.HasCreatures == false &&
-                fm.HasMotions == false &&
-                fm.HasMovies == false &&
-                fm.HasSubtitles == false)
+            if (fm.Resources == CustomResources.None)
             {
-                sb.AppendLine("None");
+                sb.AppendLine(nameof(CustomResources.None));
                 return;
             }
-
             // Hmm... doesn't make for good code, but fast...
             bool notEmpty = false;
-            if (fm.HasMap)
+            if (FMHasResource(fm, CustomResources.Map))
             {
-                sb.Append("Map");
+                sb.Append(nameof(CustomResources.Map));
                 notEmpty = true;
             }
-            if (fm.HasAutomap)
+            if (FMHasResource(fm, CustomResources.Automap))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Automap");
+                sb.Append(nameof(CustomResources.Automap));
                 notEmpty = true;
             }
-            if (fm.HasScripts)
+            if (FMHasResource(fm, CustomResources.Scripts))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Scripts");
+                sb.Append(nameof(CustomResources.Scripts));
                 notEmpty = true;
             }
-            if (fm.HasTextures)
+            if (FMHasResource(fm, CustomResources.Textures))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Textures");
+                sb.Append(nameof(CustomResources.Textures));
                 notEmpty = true;
             }
-            if (fm.HasSounds)
+            if (FMHasResource(fm, CustomResources.Sounds))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Sounds");
+                sb.Append(nameof(CustomResources.Sounds));
                 notEmpty = true;
             }
-            if (fm.HasObjects)
+            if (FMHasResource(fm, CustomResources.Objects))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Objects");
+                sb.Append(nameof(CustomResources.Objects));
                 notEmpty = true;
             }
-            if (fm.HasCreatures)
+            if (FMHasResource(fm, CustomResources.Creatures))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Creatures");
+                sb.Append(nameof(CustomResources.Creatures));
                 notEmpty = true;
             }
-            if (fm.HasMotions)
+            if (FMHasResource(fm, CustomResources.Motions))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Motions");
+                sb.Append(nameof(CustomResources.Motions));
                 notEmpty = true;
             }
-            if (fm.HasMovies)
+            if (FMHasResource(fm, CustomResources.Movies))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Movies");
+                sb.Append(nameof(CustomResources.Movies));
                 notEmpty = true;
             }
-            if (fm.HasSubtitles)
+            if (FMHasResource(fm, CustomResources.Subtitles))
             {
                 if (notEmpty) sb.Append(",");
-                sb.Append("Subtitles");
+                sb.Append(nameof(CustomResources.Subtitles));
             }
 
             sb.AppendLine();

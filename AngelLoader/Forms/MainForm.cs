@@ -3025,16 +3025,16 @@ namespace AngelLoader.Forms
             {
                 CustomResourcesLabel.Text = LText.StatisticsTab.CustomResources;
 
-                CR_MapCheckBox.Checked = fm.HasMap == true;
-                CR_AutomapCheckBox.Checked = fm.HasAutomap == true;
-                CR_ScriptsCheckBox.Checked = fm.HasScripts == true;
-                CR_TexturesCheckBox.Checked = fm.HasTextures == true;
-                CR_SoundsCheckBox.Checked = fm.HasSounds == true;
-                CR_ObjectsCheckBox.Checked = fm.HasObjects == true;
-                CR_CreaturesCheckBox.Checked = fm.HasCreatures == true;
-                CR_MotionsCheckBox.Checked = fm.HasMotions == true;
-                CR_MoviesCheckBox.Checked = fm.HasMovies == true;
-                CR_SubtitlesCheckBox.Checked = fm.HasSubtitles == true;
+                CR_MapCheckBox.Checked = FMHasResource(fm, CustomResources.Map);
+                CR_AutomapCheckBox.Checked = FMHasResource(fm, CustomResources.Automap);
+                CR_ScriptsCheckBox.Checked = FMHasResource(fm, CustomResources.Scripts);
+                CR_TexturesCheckBox.Checked = FMHasResource(fm, CustomResources.Textures);
+                CR_SoundsCheckBox.Checked = FMHasResource(fm, CustomResources.Sounds);
+                CR_ObjectsCheckBox.Checked = FMHasResource(fm, CustomResources.Objects);
+                CR_CreaturesCheckBox.Checked = FMHasResource(fm, CustomResources.Creatures);
+                CR_MotionsCheckBox.Checked = FMHasResource(fm, CustomResources.Motions);
+                CR_MoviesCheckBox.Checked = FMHasResource(fm, CustomResources.Movies);
+                CR_SubtitlesCheckBox.Checked = FMHasResource(fm, CustomResources.Subtitles);
 
                 StatsCheckBoxesPanel.Show();
                 StatsScanCustomResourcesButton.Show();

@@ -171,6 +171,13 @@ namespace AngelLoader
 
         #endregion
 
+        internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)
+        {
+            if (value) { fm.Resources |= resource; } else { fm.Resources &= ~resource; }
+        }
+
+        internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) == resource;
+
         // Here so ExpandableDate objects don't have to carry it around
         internal static DateTime? ExpandDateTime(string unixDate)
         {

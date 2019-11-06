@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Ini
 {
@@ -181,66 +182,68 @@ namespace AngelLoader.Ini
                     fm.ResourcesScanned = !val.EqualsI("NotScanned");
                     FillFMHasXFields(fm, val);
                 }
+                #region Old resource format - backward compatibility, we still have to be able to read it
                 else if (lineT.StartsWithFast_NoNullChecks("HasMap="))
                 {
                     var val = lineT.Substring(7);
-                    fm.HasMap = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Map, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasAutomap="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasAutomap = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Automap, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasScripts="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasScripts = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Scripts, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasTextures="))
                 {
                     var val = lineT.Substring(12);
-                    fm.HasTextures = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Textures, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasSounds="))
                 {
                     var val = lineT.Substring(10);
-                    fm.HasSounds = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Sounds, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasObjects="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasObjects = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Objects, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasCreatures="))
                 {
                     var val = lineT.Substring(13);
-                    fm.HasCreatures = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Creatures, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasMotions="))
                 {
                     var val = lineT.Substring(11);
-                    fm.HasMotions = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Motions, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasMovies="))
                 {
                     var val = lineT.Substring(10);
-                    fm.HasMovies = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Movies, val.EqualsTrue());
                     resourcesFound = true;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("HasSubtitles="))
                 {
                     var val = lineT.Substring(13);
-                    fm.HasSubtitles = val.EqualsTrue();
+                    SetFMResource(fm, CustomResources.Subtitles, val.EqualsTrue());
                     resourcesFound = true;
                 }
+                #endregion
                 else if (lineT.StartsWithFast_NoNullChecks("LanguagesString="))
                 {
                     var val = lineT.Substring(16);
@@ -386,36 +389,16 @@ namespace AngelLoader.Ini
 #if write_old_resources_style
                 if (fm.ResourcesScanned)
                 {
-                    {
-                        sb.AppendLine("HasMap=" + fm.HasMap.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasAutomap=" + fm.HasAutomap.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasScripts=" + fm.HasScripts.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasTextures=" + fm.HasTextures.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasSounds=" + fm.HasSounds.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasObjects=" + fm.HasObjects.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasCreatures=" + fm.HasCreatures.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasMotions=" + fm.HasMotions.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasMovies=" + fm.HasMovies.ToString());
-                    }
-                    {
-                        sb.AppendLine("HasSubtitles=" + fm.HasSubtitles.ToString());
-                    }
+                    sb.AppendLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
+                    sb.AppendLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
+                    sb.AppendLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
+                    sb.AppendLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
+                    sb.AppendLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
+                    sb.AppendLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
+                    sb.AppendLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
+                    sb.AppendLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
+                    sb.AppendLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
+                    sb.AppendLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
                 }
 #else
                 sb.Append("HasResources=");

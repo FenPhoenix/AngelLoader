@@ -88,7 +88,7 @@ namespace AngelLoader.DataClasses
 
     [Flags] internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
-#if false
+    // IMPORTANT: Do not rename or compatibility will break!
     [Flags]
     internal enum CustomResources
     {
@@ -104,7 +104,6 @@ namespace AngelLoader.DataClasses
         Movies = 256,
         Subtitles = 512
     }
-#endif
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
 

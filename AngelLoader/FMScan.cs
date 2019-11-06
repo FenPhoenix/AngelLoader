@@ -210,16 +210,16 @@ namespace AngelLoader
                         // We don't scan custom resources for Thief 3, so they should never be set in that case.
                         if (gameSup && scannedFM.Game != FMScanner.Game.Thief3)
                         {
-                            sel.HasMap = scannedFM.HasMap == true;
-                            sel.HasAutomap = scannedFM.HasAutomap == true;
-                            sel.HasScripts = scannedFM.HasCustomScripts == true;
-                            sel.HasTextures = scannedFM.HasCustomTextures == true;
-                            sel.HasSounds = scannedFM.HasCustomSounds == true;
-                            sel.HasObjects = scannedFM.HasCustomObjects == true;
-                            sel.HasCreatures = scannedFM.HasCustomCreatures == true;
-                            sel.HasMotions = scannedFM.HasCustomMotions == true;
-                            sel.HasMovies = scannedFM.HasMovies == true;
-                            sel.HasSubtitles = scannedFM.HasCustomSubtitles == true;
+                            SetFMResource(sel, CustomResources.Map, scannedFM.HasMap == true);
+                            SetFMResource(sel, CustomResources.Automap, scannedFM.HasAutomap == true);
+                            SetFMResource(sel, CustomResources.Scripts, scannedFM.HasCustomScripts == true);
+                            SetFMResource(sel, CustomResources.Textures, scannedFM.HasCustomTextures == true);
+                            SetFMResource(sel, CustomResources.Sounds, scannedFM.HasCustomSounds == true);
+                            SetFMResource(sel, CustomResources.Objects, scannedFM.HasCustomObjects == true);
+                            SetFMResource(sel, CustomResources.Creatures, scannedFM.HasCustomCreatures == true);
+                            SetFMResource(sel, CustomResources.Motions, scannedFM.HasCustomMotions == true);
+                            SetFMResource(sel, CustomResources.Movies, scannedFM.HasMovies == true);
+                            SetFMResource(sel, CustomResources.Subtitles, scannedFM.HasCustomSubtitles == true);
                             sel.ResourcesScanned = true;
                         }
                         else
