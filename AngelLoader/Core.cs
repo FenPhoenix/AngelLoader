@@ -483,8 +483,10 @@ namespace AngelLoader
 
                 Config.SetFMInstallPath(game, data.FMsPath);
                 Config.SetGameEditorDetected(game, game_Exe_Specified && !GetEditorExe(game).IsEmpty());
+#if false
                 Config.SetPerGameFMLanguage(game, data.FMLanguage);
                 Config.SetPerGameFMForcedLanguage(game, data.FMLanguageForced);
+#endif
 
                 if (storeFMSelectorLines)
                 {
@@ -572,11 +574,11 @@ namespace AngelLoader
         #region Get FM install paths
 
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced, List<string> FMSelectorLines)
-        GetInfoFromCamModIni(string gamePath, out Error error)
+        GetInfoFromCamModIni(string gamePath, out Error error, bool langOnly = false)
         {
-            static string CreateAndReturnFMsPath(string _gamePath)
+            string CreateAndReturnFMsPath()
             {
-                string fmsPath = Path.Combine(_gamePath, "FMs");
+                string fmsPath = Path.Combine(gamePath, "FMs");
                 try
                 {
                     Directory.CreateDirectory(fmsPath);
@@ -597,7 +599,7 @@ namespace AngelLoader
             {
                 //error = Error.CamModIniNotFound;
                 error = Error.None;
-                return (CreateAndReturnFMsPath(gamePath), "", false, fmSelectorLines);
+                return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines);
             }
 
             string path = "";
@@ -623,11 +625,11 @@ namespace AngelLoader
                     line = line.TrimStart();
 
                     // Quick check; these lines will be checked more thoroughly when we go to use them
-                    if (line.ContainsI("fm_selector")) fmSelectorLines.Add(line);
+                    if (!langOnly && line.ContainsI("fm_selector")) fmSelectorLines.Add(line);
 
                     if (line.IsEmpty() || line[0] == ';') continue;
 
-                    if (line.StartsWithI(@"fm_path") && line.Length > 7 && char.IsWhiteSpace(line[7]))
+                    if (!langOnly && line.StartsWithI(@"fm_path") && line.Length > 7 && char.IsWhiteSpace(line[7]))
                     {
                         path = line.Substring(7).Trim();
                     }
@@ -649,6 +651,12 @@ namespace AngelLoader
                 }
             }
 
+            if (langOnly)
+            {
+                error = Error.None;
+                return ("", fm_language, fm_language_forced, new List<string>());
+            }
+
             if (!path.IsEmpty() &&
                 (path.StartsWithFast_NoNullChecks(".\\") || path.StartsWithFast_NoNullChecks("..\\") ||
                 path.StartsWithFast_NoNullChecks("./") || path.StartsWithFast_NoNullChecks("../")))
@@ -660,16 +668,16 @@ namespace AngelLoader
                 catch (Exception)
                 {
                     error = Error.None;
-                    return (CreateAndReturnFMsPath(gamePath), fm_language, fm_language_forced, fmSelectorLines);
+                    return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines);
                 }
             }
 
             error = Error.None;
-            return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(gamePath),
+            return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(),
                 fm_language, fm_language_forced, fmSelectorLines);
         }
 
-        internal static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue)
+        private static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue)
         GetInfoFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();

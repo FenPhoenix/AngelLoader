@@ -18,8 +18,11 @@ namespace AngelLoader.DataClasses
             GameExes = new string[SupportedGameCount];
             GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
+            // TODO: We don't use these currently because we grab them from cam_mod.ini right when we need them
+#if false
             FMLanguages = new string[SupportedGameCount];
             FMForcedLanguages = new bool[SupportedGameCount];
+#endif
             GameEditorDetected = new bool[SupportedGameCount];
             UseSteamSwitches = new bool[SupportedGameCount];
             StartupFMSelectorLines = new List<string>[SupportedGameCount];
@@ -32,7 +35,9 @@ namespace AngelLoader.DataClasses
                 GameExes[i] = "";
                 GamePaths[i] = "";
                 FMInstallPaths[i] = "";
+#if false
                 FMLanguages[i] = "";
+#endif
                 UseSteamSwitches[i] = true;
                 StartupFMSelectorLines[i] = new List<string>();
             }
@@ -40,16 +45,9 @@ namespace AngelLoader.DataClasses
 
         #region Startup fm_selector lines
 
-        internal readonly List<string>[] StartupFMSelectorLines;
+        private readonly List<string>[] StartupFMSelectorLines;
 
         internal List<string> GetStartupFMSelectorLines(GameIndex index) => StartupFMSelectorLines[(uint)index];
-
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal List<string> GetStartupFMSelectorLinesUnsafe(Game game) => StartupFMSelectorLines[(uint)GameToGameIndex(game)];
 
         internal void SetStartupFMSelectorLines(GameIndex index, List<string> value) => StartupFMSelectorLines[(uint)index] = value;
 
@@ -80,16 +78,9 @@ namespace AngelLoader.DataClasses
 
         #region Game exe paths
 
-        internal readonly string[] GamePaths;
+        private readonly string[] GamePaths;
 
         internal string GetGamePath(GameIndex index) => GamePaths[(uint)index];
-
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal string GetGamePathUnsafe(Game game) => GamePaths[(uint)GameToGameIndex(game)];
 
         internal void SetGamePath(GameIndex index, string value) => GamePaths[(uint)index] = value;
 
@@ -113,6 +104,8 @@ namespace AngelLoader.DataClasses
         #endregion
 
         #region FM language and forced-language
+
+#if false
 
         internal readonly string[] FMLanguages;
 
@@ -139,6 +132,8 @@ namespace AngelLoader.DataClasses
         internal bool GetPerGameFMForcedLanguageUnsafe(Game game) => FMForcedLanguages[(uint)GameToGameIndex(game)];
 
         internal void SetPerGameFMForcedLanguage(GameIndex index, bool value) => FMForcedLanguages[(uint)index] = value;
+
+#endif
 
         #endregion
 

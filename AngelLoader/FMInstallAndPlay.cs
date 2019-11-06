@@ -360,7 +360,7 @@ namespace AngelLoader
             string sLanguage;
             bool bForceLanguage;
 
-            var (_, fmLanguage, _, _) = Core.GetInfoFromCamModIni(Config.GetGamePath(game), out _);
+            var (_, fmLanguage, _, _) = Core.GetInfoFromCamModIni(Config.GetGamePath(game), out _, langOnly: true);
 
             // bForceLanguage gets set to something specific in every possible case, effectively meaning the
             // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
@@ -662,6 +662,9 @@ namespace AngelLoader
 
             if (resetSelector)
             {
+                // NOTE: We're reading cam_mod.ini right here to grab these new values, that's why we're not
+                // calling the regular cam_mod.ini reader method. Don't panic.
+
                 // If the loader is now something other than us, then leave it be and don't change anything
                 var tempSelectorsList = new List<string>();
                 for (int i = 0; i < lines.Count; i++)
@@ -835,11 +838,40 @@ namespace AngelLoader
             string selectorPath;
 
             #region Reset loader
-
+            // TODO: @CourteousBehavior: We need to also save and restore the AlwaysShow value to be truly polite
+            // And maybe even the "fm" (same deal) value for Dark games?
+            // We also remove any specific "start with FM" lines too... I guess we should save+restore those as well?
             if (resetSelector)
             {
                 var startupFMSelectorLines = Config.GetStartupFMSelectorLines(GameIndex.Thief3);
-                var (_, _, _, prevFMSelectorValue) = Core.GetInfoFromT3();
+                string prevFMSelectorValue = "";
+
+                #region Read the previous loader value
+
+                for (var i = 0; i < lines.Count; i++)
+                {
+                    if (!lines[i].Trim().EqualsI("[Loader]")) continue;
+
+                    while (i < lines.Count - 1)
+                    {
+                        var lt = lines[i + 1].Trim();
+                        if (lt.StartsWithI(externSelectorKey))
+                        {
+                            prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1);
+                            break;
+                        }
+                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+
+                        i++;
+                    }
+                    break;
+                }
+
+                #endregion
+
                 // If loader is not us, leave it be
                 if (!prevFMSelectorValue.ToBackSlashes().EqualsI(stubPath) &&
                     !(startupFMSelectorLines.Count > 0 &&
