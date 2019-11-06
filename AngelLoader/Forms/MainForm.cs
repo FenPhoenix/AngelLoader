@@ -69,7 +69,7 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-        }
+ }
 
         private void Test2Button_Click(object sender, EventArgs e)
         {
@@ -376,7 +376,7 @@ namespace AngelLoader.Forms
         private Bitmap? RedQuestionMarkIcon;
 
         private Bitmap[]? StarIcons;
-        private Dictionary<FinishedOn, Bitmap>? FinishedOnIcons;
+        private Bitmap[]? FinishedOnIcons;
         private Bitmap? FinishedOnUnknownIcon;
 
         #endregion
@@ -2095,8 +2095,8 @@ namespace AngelLoader.Forms
 
             // Lazy-load these in an attempt to save some kind of startup time
             // TODO: Try lazy-loading these at a more granular level
-            // The array and dictionary are obstacles to lazy-loading, but see if we still get good scrolling
-            // perf when we look them up and load the individual images as needed, rather than all at once here
+            // The arrays are obstacles to lazy-loading, but see if we still get good scrolling perf when we look
+            // them up and load the individual images as needed, rather than all at once here
 
             // TODO: @GENGAMES: Put these into an array
             Thief1Icon = Images.Thief1_21;
@@ -2124,72 +2124,26 @@ namespace AngelLoader.Forms
                 Resources.Stars5
             };
 
-            FinishedOnIcons = new Dictionary<FinishedOn, Bitmap>
+            // IMPORTANT: These must be in this exact order, as it matches FinishedOn flags.
+            // Any other order and it will pick the wrong image.
+            FinishedOnIcons = new[]
             {
-                {
-                    FinishedOn.None,
-                    BlankIcon
-                },
-                {
-                    FinishedOn.Normal,
-                    Resources.Finished_Normal
-                },
-                {
-                    FinishedOn.Normal | FinishedOn.Hard,
-                    Resources.Finished_Normal_Hard
-                },
-                {
-                    FinishedOn.Normal | FinishedOn.Hard | FinishedOn.Expert,
-                    Resources.Finished_Normal_Hard_Expert
-                },
-                {
-                    FinishedOn.Normal | FinishedOn.Hard | FinishedOn.Extreme,
-                    Resources.Finished_Normal_Hard_Extreme
-                },
-                {
-                    FinishedOn.Normal | FinishedOn.Hard | FinishedOn.Expert | FinishedOn.Extreme,
-                    Resources.Finished_Normal_Hard_Expert_Extreme
-                },
-                {
-                    FinishedOn.Normal | FinishedOn.Expert,
-                    Resources.Finished_Normal_Expert
-                },
-                {
-                    FinishedOn.Normal | FinishedOn.Expert | FinishedOn.Extreme,
-                    Resources.Finished_Normal_Expert_Extreme
-                },
-                {
-                    FinishedOn.Normal | FinishedOn.Extreme,
-                    Resources.Finished_Normal_Extreme
-                },
-                {
-                    FinishedOn.Hard,
-                    Resources.Finished_Hard
-                },
-                {
-                    FinishedOn.Hard | FinishedOn.Expert,
-                    Resources.Finished_Hard_Expert
-                },
-                {
-                    FinishedOn.Hard | FinishedOn.Expert | FinishedOn.Extreme,
-                    Resources.Finished_Hard_Expert_Extreme
-                },
-                {
-                    FinishedOn.Hard | FinishedOn.Extreme,
-                    Resources.Finished_Hard_Extreme
-                },
-                {
-                    FinishedOn.Expert,
-                    Resources.Finished_Expert
-                },
-                {
-                    FinishedOn.Expert | FinishedOn.Extreme,
-                    Resources.Finished_Expert_Extreme
-                },
-                {
-                    FinishedOn.Extreme,
-                    Resources.Finished_Extreme
-                }
+                BlankIcon,
+                Resources.Finished_Normal,
+                Resources.Finished_Hard,
+                Resources.Finished_Normal_Hard,
+                Resources.Finished_Expert,
+                Resources.Finished_Normal_Expert,
+                Resources.Finished_Hard_Expert,
+                Resources.Finished_Normal_Hard_Expert,
+                Resources.Finished_Extreme,
+                Resources.Finished_Normal_Extreme,
+                Resources.Finished_Hard_Extreme,
+                Resources.Finished_Normal_Hard_Extreme,
+                Resources.Finished_Expert_Extreme,
+                Resources.Finished_Normal_Expert_Extreme,
+                Resources.Finished_Hard_Expert_Extreme,
+                Resources.Finished_Normal_Hard_Expert_Extreme
             };
             FinishedOnUnknownIcon = Resources.Finished_Unknown;
 
@@ -2292,7 +2246,7 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.Finished:
-                    e.Value = fm.FinishedOnUnknown ? FinishedOnUnknownIcon : FinishedOnIcons![(FinishedOn)fm.FinishedOn];
+                    e.Value = fm.FinishedOnUnknown ? FinishedOnUnknownIcon : FinishedOnIcons![fm.FinishedOn];
                     break;
 
                 case Column.ReleaseDate:
