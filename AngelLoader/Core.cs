@@ -286,23 +286,26 @@ namespace AngelLoader
 
             #region Game exes
 
-            // BUG: @CourteousBehavior: When a game switches out, restore the loader on the old game path before reading the data from the new one
-            // TODO: Test this!
+            // Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to
+            // the old ones.
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 var game = (GameIndex)i;
                 var gameExe = Config.GetGameExe(game);
                 // Only try to reset the loader on the old game if the old game was actually specified, obviously
-                // TODO: For Thief 3, we actually just want to know if SneakyOptions.ini exists... code for that?
-                if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace() && File.Exists(gameExe))
+                if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace())
                 {
-                    if (GameIsDark(game))
+                    // For Dark, we need to know if the game exe itself actually exists.
+                    if (GameIsDark(game) && File.Exists(gameExe))
                     {
                         FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
                     }
                     else
                     {
-                        FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
+                        // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game itself
+                        // existing is not technically a requirement.
+                        string soIni = Paths.GetSneakyOptionsIni();
+                        if (!soIni.IsEmpty() && File.Exists(soIni)) FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
                     }
                 }
             }
