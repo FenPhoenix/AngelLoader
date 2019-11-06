@@ -88,7 +88,7 @@ namespace AngelLoader.DataClasses
 
     [Flags] internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
-    // IMPORTANT: Do not rename or compatibility will break!
+    // IMPORTANT: Do not rename elements or compatibility will break!
     [Flags]
     internal enum CustomResources
     {
