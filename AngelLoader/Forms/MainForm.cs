@@ -2093,6 +2093,12 @@ namespace AngelLoader.Forms
         {
             if (CellValueNeededDisabled) return;
 
+            // @LAZYLOAD notes for DGV images:
+            // -If we're going to lazy-load, we should go full-bore and draw the icons onto bitmaps as needed,
+            //  so we can get rid of all the duplicate pre-baked images we have now.
+            // -Until we do that, we should leave this alone. It also might be okay to just keep these like they
+            //  are, being loaded in advance, because then the scrolling is guaranteed not to have any hiccups.
+
             // Lazy-load these in an attempt to save some kind of startup time
             // TODO: Try lazy-loading these at a more granular level
             // The arrays are obstacles to lazy-loading, but see if we still get good scrolling perf when we look
