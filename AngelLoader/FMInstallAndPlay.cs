@@ -660,6 +660,8 @@ namespace AngelLoader
 
             string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName).ToBackSlashes();
 
+            bool changeLoaderIfResetting = true;
+
             if (resetSelector)
             {
                 // NOTE: We're reading cam_mod.ini right here to grab these new values, that's why we're not
@@ -683,7 +685,7 @@ namespace AngelLoader
                 if (tempSelectorsList.Count > 0 &&
                    !tempSelectorsList[tempSelectorsList.Count - 1].EqualsI(stubPath))
                 {
-                    return true;
+                    changeLoaderIfResetting = false;
                 }
             }
 
@@ -749,44 +751,49 @@ namespace AngelLoader
                     }
                     fmLineLastIndex = i;
                 }
-
-                if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
-                    char.IsWhiteSpace(lt[fmSelectorKey.Length]) && lt
-                        .Substring(fmSelectorKey.Length + 1).TrimStart().ToBackSlashes()
-                        .EqualsI(selectorPath.ToBackSlashes()))
+                if (!resetSelector || changeLoaderIfResetting)
                 {
-                    if (loaderIsAlreadyUs)
+                    if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
+                        char.IsWhiteSpace(lt[fmSelectorKey.Length]) && lt
+                            .Substring(fmSelectorKey.Length + 1).TrimStart().ToBackSlashes()
+                            .EqualsI(selectorPath.ToBackSlashes()))
                     {
-                        lines.RemoveAt(i);
-                        i--;
-                        lastSelKeyIndex = (lastSelKeyIndex - 1).Clamp(-1, int.MaxValue);
+                        if (loaderIsAlreadyUs)
+                        {
+                            lines.RemoveAt(i);
+                            i--;
+                            lastSelKeyIndex = (lastSelKeyIndex - 1).Clamp(-1, int.MaxValue);
+                        }
+                        else
+                        {
+                            lines[i] = fmSelectorKey + " " + selectorPath;
+                            loaderIsAlreadyUs = true;
+                        }
+                        continue;
                     }
-                    else
-                    {
-                        lines[i] = fmSelectorKey + " " + selectorPath;
-                        loaderIsAlreadyUs = true;
-                    }
-                    continue;
-                }
 
-                if (lt.EqualsI(fmSelectorKey) ||
-                    (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
-                    char.IsWhiteSpace(lt[fmSelectorKey.Length])))
-                {
-                    if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";" + lines[i];
-                    lastSelKeyIndex = i;
+                    if (lt.EqualsI(fmSelectorKey) ||
+                        (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
+                        char.IsWhiteSpace(lt[fmSelectorKey.Length])))
+                    {
+                        if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";" + lines[i];
+                        lastSelKeyIndex = i;
+                    }
                 }
             }
 
-            if (!loaderIsAlreadyUs)
+            if (!resetSelector || changeLoaderIfResetting)
             {
-                if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
+                if (!loaderIsAlreadyUs)
                 {
-                    lines.Add(fmSelectorKey + " " + selectorPath);
-                }
-                else
-                {
-                    lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + selectorPath);
+                    if (lastSelKeyIndex == -1 || lastSelKeyIndex == lines.Count - 1)
+                    {
+                        lines.Add(fmSelectorKey + " " + selectorPath);
+                    }
+                    else
+                    {
+                        lines.Insert(lastSelKeyIndex + 1, fmSelectorKey + " " + selectorPath);
+                    }
                 }
             }
 
@@ -867,6 +874,8 @@ namespace AngelLoader
 
             string selectorPath;
 
+            bool changeLoaderIfResetting = true;
+
             #region Reset loader
             // TODO: @CourteousBehavior: Save and restore the "always start with FM" line(s)
             // Probably nobody uses this feature, but maybe we should do it for completeness?
@@ -906,7 +915,8 @@ namespace AngelLoader
                     !(startupFMSelectorLines.Count > 0 &&
                      startupFMSelectorLines[0].EqualsI(Paths.StubFileName)))
                 {
-                    return true;
+                    selectorPath = "";
+                    changeLoaderIfResetting = false;
                 }
                 else if (startupFMSelectorLines.Count > 0 &&
                     startupFMSelectorLines[0].EqualsI(Paths.StubFileName) ||
@@ -939,7 +949,8 @@ namespace AngelLoader
                 while (i < lines.Count - 1)
                 {
                     var lt = lines[i + 1].Trim();
-                    if (!existingExternSelectorKeyOverwritten &&
+                    if ((!resetSelector || changeLoaderIfResetting) &&
+                        !existingExternSelectorKeyOverwritten &&
                         lt.StartsWithI(externSelectorKey))
                     {
                         lines[i + 1] = externSelectorKey + selectorPath;
@@ -964,7 +975,8 @@ namespace AngelLoader
                 break;
             }
 
-            if (!existingExternSelectorKeyOverwritten && insertLineIndex > -1)
+            if ((!resetSelector || changeLoaderIfResetting) &&
+                !existingExternSelectorKeyOverwritten && insertLineIndex > -1)
             {
                 lines.Insert(insertLineIndex, externSelectorKey + selectorPath);
             }

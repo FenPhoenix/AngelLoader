@@ -324,10 +324,6 @@ namespace AngelLoader
                 Config.Language = sf.OutConfig.Language;
 
                 // We don't need to set the paths again, because we've already done so above
-#if DEBUG
-                var checkPaths = SetPaths();
-                Debug.Assert(checkPaths == Error.None, "checkPaths returned an error the second time");
-#endif
 
                 WriteConfigIni(Config, Paths.ConfigIni);
 
