@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
@@ -111,20 +110,23 @@ namespace AngelLoader.WinAPI
                 "search pattern: " + searchPattern + "\r\n");
         }
 
-        internal static List<string> GetDirsTopOnly(string path, string searchPattern, bool initListCapacityLarge = false,
-            bool ignoreReparsePoints = false)
+        internal static List<string> GetDirsTopOnly(string path, string searchPattern,
+            bool initListCapacityLarge = false, bool ignoreReparsePoints = false, bool pathIsKnownValid = false)
         {
-            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Directories, ignoreReparsePoints);
+            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Directories,
+                ignoreReparsePoints, pathIsKnownValid);
         }
 
-        internal static List<string> GetFilesTopOnly(string path, string searchPattern, bool initListCapacityLarge = false)
+        internal static List<string> GetFilesTopOnly(string path, string searchPattern,
+            bool initListCapacityLarge = false, bool pathIsKnownValid = false)
         {
-            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Files, false);
+            return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Files, false,
+                pathIsKnownValid);
         }
 
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
         private static List<string> GetFilesTopOnlyInternal(string path, string searchPattern,
-            bool initListCapacityLarge, FileType fileType, bool ignoreReparsePoints)
+            bool initListCapacityLarge, FileType fileType, bool ignoreReparsePoints, bool pathIsKnownValid)
         {
             if (string.IsNullOrEmpty(searchPattern))
             {
@@ -134,9 +136,25 @@ namespace AngelLoader.WinAPI
             // Vital, path must not have a trailing separator
             path = path.TrimEnd('\\', '/');
 
-            if (string.IsNullOrWhiteSpace(path) || Path.GetInvalidPathChars().Any(path.Contains<char>))
+            if (!pathIsKnownValid)
             {
-                throw new ArgumentException("The path '" + path + "' is empty, consists only of whitespace, or contains invalid characters.");
+                bool pathContainsInvalidChars = false;
+                char[] invalidChars = Path.GetInvalidPathChars();
+
+                // Dumb loop to avoid LINQ.
+                for (int i = 0; i < invalidChars.Length; i++)
+                {
+                    if (path.Contains(invalidChars[i]))
+                    {
+                        pathContainsInvalidChars = true;
+                        break;
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(path) || pathContainsInvalidChars)
+                {
+                    throw new ArgumentException("The path '" + path + "' is empty, consists only of whitespace, or contains invalid characters.");
+                }
             }
 
             // PERF: We can't know how many files we're going to find, so make the initial list capacity large
