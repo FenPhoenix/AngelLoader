@@ -5,6 +5,9 @@ namespace AngelLoader.Forms
 {
     public partial class MainForm
     {
+        // Anything in MainForm doesn't need to be disposed because close = app exit
+#pragma warning disable IDE0069 // Disposable fields should be disposed
+
         #region Separators
 
         // It's ridiculous to instantiate two controls (a ToolStrip and a ToolStripSeparator contained within it)

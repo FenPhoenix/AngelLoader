@@ -4170,7 +4170,5 @@ namespace AngelLoader.Forms
         private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons((Button)sender, e);
 
         #endregion
-
-#pragma warning restore IDE0069 // Disposable fields should be disposed
     }
 }

@@ -19,7 +19,8 @@ namespace AngelLoader
         private static void Main()
         {
             // Make this a single-instance application
-            var mutex = new Mutex(true, AppGuid, out bool firstInstance);
+            using var mutex = new Mutex(true, AppGuid, out bool firstInstance);
+
             if (!firstInstance)
             {
                 // Tell first instance to show itself
