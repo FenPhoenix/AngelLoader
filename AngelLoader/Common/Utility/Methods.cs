@@ -151,10 +151,9 @@ namespace AngelLoader
 
         internal static string GetEditorExe(GameIndex game)
         {
-            var gameExe = Config.GetGameExe(game);
-            if (gameExe.IsEmpty()) return "";
+            if (!GameIsDark(game)) return "";
 
-            var gamePath = Path.GetDirectoryName(gameExe);
+            string gamePath = Config.GetGamePath(game);
             if (gamePath.IsEmpty()) return "";
 
             var edExe = Path.Combine(gamePath, game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe);
@@ -163,9 +162,7 @@ namespace AngelLoader
 
         internal static string GetT2MultiplayerExe()
         {
-            if (Config.GetGameExe(Thief2).IsEmpty()) return "";
-
-            var gamePath = Path.GetDirectoryName(Config.GetGameExe(Thief2));
+            string gamePath = Config.GetGamePath(Thief2);
             if (gamePath.IsEmpty()) return "";
 
             var t2MPExe = Path.Combine(gamePath, Paths.T2MPExe);
@@ -249,7 +246,7 @@ namespace AngelLoader
             {
                 if (!t2MPExe.IsEmpty()) return t2MPExe;
                 if (Config.GetGameExe(Thief2).IsEmpty()) return "";
-                var t2Path = Path.GetDirectoryName(Config.GetGameExe(Thief2));
+                string t2Path = Config.GetGamePath(Thief2);
                 return t2MPExe = t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe);
             }
 

@@ -75,26 +75,20 @@ namespace AngelLoader
 
         internal static bool PlayOriginalGame(GameIndex game, bool playMP = false)
         {
-            var (success, gameExe, gamePath) = GetGameExeAndPath(game, LText.AlertMessages.Play_ExecutableNotFound);
+            var (success, gameExe, gamePath) = CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: true, playMP);
             if (!success) return false;
-
-            // Even though we're not actually loading an FM, we still want to set us as the selector so that our
-            // stub can explicitly tell Thief to play without an FM. Otherwise, if another selector was specified,
-            // then that selector would start upon running of the game exe, which would be bad.
-            SetUsAsSelector(game, gameExe, gamePath);
-
-            // When the stub finds nothing in the stub comm folder, it will just start the game with no FM
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
+            SetUsAsSelector(game, gamePath);
 
             string args = "";
+            string workingPath = Config.GetGamePath(game);
             var sv = GetSteamValues(game, playMP);
-            if (sv.Success) (_, gameExe, gamePath, args) = sv;
+            if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
             WriteStubCommFile(null, playOriginalGame: true);
 
-            StartExe(gameExe, gamePath, args);
+            StartExe(gameExe, workingPath, args);
 
             return true;
         }
@@ -109,17 +103,18 @@ namespace AngelLoader
 
             var game = GameToGameIndex(fm.Game);
 
-            var (success, gameExe, gamePath) = GetGameExeAndPath(game, LText.AlertMessages.Play_ExecutableNotFoundFM, playMP);
+            var (success, gameExe, gamePath) = CheckAndReturnFinalGameExeAndGamePath(game, playingOriginalGame: false, playMP);
             if (!success) return false;
 
             // Always do this for robustness, see below
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
-            SetUsAsSelector(game, gameExe, gamePath);
+            SetUsAsSelector(game, gamePath);
 
             string steamArgs = "";
+            string workingPath = Config.GetGamePath(game);
             var sv = GetSteamValues(game, playMP);
-            if (sv.Success) (_, gameExe, gamePath, steamArgs) = sv;
+            if (sv.Success) (_, gameExe, workingPath, steamArgs) = sv;
 
             // 2019-10-31: Always use the stub now, in prep for matching FMSel's language stuff
 
@@ -143,7 +138,7 @@ namespace AngelLoader
 
             WriteStubCommFile(fm, playOriginalGame: false);
 
-            StartExe(gameExe, gamePath, args);
+            StartExe(gameExe, workingPath, args);
 
             // Don't clear the temp folder here, because the stub program will need to read from it. It will
             // delete the temp file itself after it's done with it.
@@ -170,10 +165,10 @@ namespace AngelLoader
 
             var game = GameToGameIndex(fm.Game);
 
-            var gameExe = Config.GetGameExe(game);
-            if (gameExe.IsEmpty())
+            string gamePath = Config.GetGamePath(game);
+            if (gamePath.IsEmpty())
             {
-                Log("gameExe is empty for " + fm.Game, stackTrace: true);
+                Log("Game path is empty for " + fm.Game, stackTrace: true);
                 return false;
             }
 
@@ -186,16 +181,13 @@ namespace AngelLoader
                 return false;
             }
 
-            var gamePath = Path.GetDirectoryName(gameExe);
-            if (gamePath.IsEmpty()) return false;
-
             #endregion
 
             // Just in case, and for consistency
             Paths.CreateOrClearTempPath(Paths.StubCommTemp);
 
             // TODO: We don't need to do this here, right?
-            SetUsAsSelector(game, gameExe, gamePath);
+            SetUsAsSelector(game, gamePath);
 
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
             StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
@@ -368,8 +360,7 @@ namespace AngelLoader
             string sLanguage;
             bool bForceLanguage;
 
-            string gamePath = Path.GetDirectoryName(Config.GetGameExe(game));
-            var (_, fmLanguage, _, _) = Core.GetInfoFromCamModIni(gamePath, out _);
+            var (_, fmLanguage, _, _) = Core.GetInfoFromCamModIni(Config.GetGamePath(game), out _);
 
             // bForceLanguage gets set to something specific in every possible case, effectively meaning the
             // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
@@ -482,19 +473,36 @@ namespace AngelLoader
             }
         }
 
-        private static (bool Success, string gameExe, string gamePath)
-        GetGameExeAndPath(GameIndex gameIndex, string exeNotFoundMessage, bool playMP = false)
+        private static (bool Success, string GameExe, string GamePath)
+        CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP = false)
         {
-            (bool, string, string) failed = (false, "", "");
+            var failed = (Success: false, GameExe: "", GamePath: "");
 
-            var gameExe = Config.GetGameExe(gameIndex);
+            string gameName = GetGameNameFromGameType(gameIndex);
+
+            string gameExe = Config.GetGameExe(gameIndex);
+
+            #region Fail if game path is blank
+
+            string gamePath = Config.GetGamePath(gameIndex);
+            if (gamePath.IsEmpty())
+            {
+                Core.View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
+                    LText.AlertMessages.Alert);
+                return failed;
+            }
+
+            #endregion
+
+            if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
             #region Exe: Fail if blank or not found
 
-            var gameName = GetGameNameFromGameType(gameIndex);
-
             if (gameExe.IsEmpty() || !File.Exists(gameExe))
             {
+                string exeNotFoundMessage = playingOriginalGame
+                    ? LText.AlertMessages.Play_ExecutableNotFound
+                    : LText.AlertMessages.Play_ExecutableNotFoundFM;
                 Core.View.ShowAlert(gameName + ":\r\n" + exeNotFoundMessage, LText.AlertMessages.Alert);
                 return failed;
             }
@@ -511,20 +519,10 @@ namespace AngelLoader
 
             #endregion
 
-            var gamePath = Path.GetDirectoryName(gameExe);
-            if (gamePath.IsEmpty())
-            {
-                Core.View.ShowAlert(gameName + ":\r\n" + LText.AlertMessages.Play_GamePathNotFound,
-                    LText.AlertMessages.Alert);
-                return failed;
-            }
-
-            if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
-
             return (true, gameExe, gamePath);
         }
 
-        private static (bool Success, string GameExe, string GamePath, string Args)
+        private static (bool Success, string SteamExe, string SteamWorkingPath, string Args)
         GetSteamValues(GameIndex game, bool playMP)
         {
             // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
@@ -533,11 +531,10 @@ namespace AngelLoader
                 !GetGameSteamId(game).IsEmpty() && Config.GetUseSteamSwitch(game) &&
                 Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe))
             {
-                string gameExe = Config.SteamExe;
-                string gamePath = Path.GetDirectoryName(Config.SteamExe);
+                string workingPath = Path.GetDirectoryName(Config.SteamExe);
                 string args = "-applaunch " + GetGameSteamId(game);
 
-                return (true, gameExe, gamePath, args);
+                return (true, Config.SteamExe, workingPath, args);
             }
             else
             {
@@ -549,12 +546,12 @@ namespace AngelLoader
 
         #region Set us as selector
 
-        private static void SetUsAsSelector(GameIndex game, string gameExe, string gamePath)
+        private static void SetUsAsSelector(GameIndex game, string gamePath)
         {
-            bool success = GameIsDark(game) ? SetDarkFMSelector(game, gameExe, gamePath) : SetT3FMSelector();
+            bool success = GameIsDark(game) ? SetDarkFMSelector(game, gamePath) : SetT3FMSelector();
             if (!success)
             {
-                Log("Unable to set us as the selector for " + gameExe + " (" +
+                Log("Unable to set us as the selector for " + Config.GetGameExe(game) + " (" +
                     (GameIsDark(game) ? nameof(SetDarkFMSelector) : nameof(SetT3FMSelector)) +
                     " returned false)", stackTrace: true);
             }
@@ -587,17 +584,16 @@ namespace AngelLoader
             string TryGetOtherSelectorSpecifier(string line)
             {
                 string selectorFileName;
-                string selFullPath;
                 // try-catch cause of Path.Combine() maybe trying to combine invalid-for-path strings
                 // In .NET Core, we could use Path.Join() to avoid throwing
                 try
                 {
-                    return (line.StartsWithI(fmSelectorKey) && line.Length > fmSelectorKey.Length &&
-                            char.IsWhiteSpace(line[fmSelectorKey.Length]) &&
-                            (selectorFileName = line.Substring(fmSelectorKey.Length + 1).ToBackSlashes()).EndsWithI(".dll") &&
-                            !selectorFileName.EqualsI(stubPath) &&
-                            !(selFullPath = GetFullPath(gamePath, selectorFileName)).IsEmpty() &&
-                            File.Exists(Path.Combine(gamePath, selectorFileName)))
+                    return line.StartsWithI(fmSelectorKey) && line.Length > fmSelectorKey.Length &&
+                           char.IsWhiteSpace(line[fmSelectorKey.Length]) &&
+                           (selectorFileName = line.Substring(fmSelectorKey.Length + 1).ToBackSlashes()).EndsWithI(".dll") &&
+                           !selectorFileName.EqualsI(stubPath) &&
+                           !GetFullPath(gamePath, selectorFileName).IsEmpty() &&
+                           File.Exists(Path.Combine(gamePath, selectorFileName))
                         ? selectorFileName
                         : "";
                 }
@@ -639,7 +635,7 @@ namespace AngelLoader
         // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
         // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
 
-        internal static bool SetDarkFMSelector(GameIndex game, string gameExe, string gamePath, bool resetSelector = false)
+        internal static bool SetDarkFMSelector(GameIndex game, string gamePath, bool resetSelector = false)
         {
             const string fmSelectorKey = "fm_selector";
             const string fmCommentLine = "always start the FM Selector (if one is present)";
@@ -647,7 +643,7 @@ namespace AngelLoader
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
             if (!File.Exists(camModIni))
             {
-                Log("cam_mod.ini not found for " + gameExe, stackTrace: true);
+                Log("cam_mod.ini not found for " + Config.GetGameExe(game), stackTrace: true);
                 return false;
             }
 
@@ -658,7 +654,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception reading cam_mod.ini for " + gameExe, ex);
+                Log("Exception reading cam_mod.ini for " + Config.GetGameExe(game), ex);
                 return false;
             }
 
@@ -795,7 +791,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing cam_mod.ini for " + gameExe, ex);
+                Log("Exception writing cam_mod.ini for " + Config.GetGameExe(game), ex);
                 return false;
             }
 

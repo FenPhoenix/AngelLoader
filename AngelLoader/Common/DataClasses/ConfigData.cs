@@ -16,6 +16,7 @@ namespace AngelLoader.DataClasses
         {
             // Automatically set the correct length based on our actual supported game count
             GameExes = new string[SupportedGameCount];
+            GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
             FMLanguages = new string[SupportedGameCount];
             FMForcedLanguages = new bool[SupportedGameCount];
@@ -29,6 +30,7 @@ namespace AngelLoader.DataClasses
                 // bool[]s are initialized to false by default, so in that case we don't need to do anything here
 
                 GameExes[i] = "";
+                GamePaths[i] = "";
                 FMInstallPaths[i] = "";
                 FMLanguages[i] = "";
                 UseSteamSwitches[i] = true;
@@ -73,6 +75,23 @@ namespace AngelLoader.DataClasses
         internal string GetGameExeUnsafe(Game game) => GameExes[(uint)GameToGameIndex(game)];
 
         internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
+
+        #endregion
+
+        #region Game exe paths
+
+        internal readonly string[] GamePaths;
+
+        internal string GetGamePath(GameIndex index) => GamePaths[(uint)index];
+
+        /// <summary>
+        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal string GetGamePathUnsafe(Game game) => GamePaths[(uint)GameToGameIndex(game)];
+
+        internal void SetGamePath(GameIndex index, string value) => GamePaths[(uint)index] = value;
 
         #endregion
 

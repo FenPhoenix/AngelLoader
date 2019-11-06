@@ -80,7 +80,27 @@ namespace AngelLoader
                     try
                     {
                         ReadConfigIni(Paths.ConfigIni, Config);
-                        openSettings = SetPaths() == Error.BackupPathNotSpecified;
+
+                        #region Set paths
+
+                        // PERF: 9ms, but it's mostly IO. Darn.
+                        bool[] gameExeExists = new bool[SupportedGameCount];
+                        for (int i = 0; i < SupportedGameCount; i++)
+                        {
+                            string gameExe = Config.GetGameExe((GameIndex)i);
+                            gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
+                            if (gameExeExists[i]) SetGameData((GameIndex)i, storeFMSelectorLines: true);
+                        }
+
+                        Error error =
+                            // Must be first, otherwise other stuff overrides it and then we don't act on it
+                            !Directory.Exists(Config.FMsBackupPath) ? Error.BackupPathNotSpecified :
+                            gameExeExists.All(x => false) ? Error.NoGamesSpecified :
+                            Error.None;
+
+                        #endregion
+
+                        openSettings = error == Error.BackupPathNotSpecified;
                     }
                     catch (Exception ex)
                     {
@@ -436,27 +456,41 @@ namespace AngelLoader
 
         private static bool SetGameData(GameIndex game, bool storeFMSelectorLines)
         {
-            (string fmsPath, string fmLanguage, bool fmLanguageForced, List<string> fmSelectorLines)
-                data = ("", "", false, new List<string>());
-            bool game_Exe_Specified = !Config.GetGameExe(game).IsWhiteSpace();
+            string gameExe = Config.GetGameExe(game);
+            bool game_Exe_Specified = !gameExe.IsWhiteSpace();
+
+            string gamePath = "";
+            if (game_Exe_Specified)
+            {
+                try
+                {
+                    gamePath = Path.GetDirectoryName(gameExe);
+                }
+                catch
+                {
+                    // ignore for now
+                }
+            }
+
+            // This must come first, so below methods can use it
+            Config.SetGamePath(game, gamePath);
 
             if (GameIsDark(game))
             {
-                if (game_Exe_Specified)
-                {
-                    data = GetInfoFromCamModIni(Path.GetDirectoryName(Config.GetGameExe(game)), out Error _);
-                }
+                var data = game_Exe_Specified
+                    ? GetInfoFromCamModIni(gamePath, out Error _)
+                    : (FMsPath: "", FMLanguage: "", FMLanguageForced: false, FMSelectorLines: new List<string>());
 
-                Config.SetFMInstallPath(game, data.fmsPath);
+                Config.SetFMInstallPath(game, data.FMsPath);
                 Config.SetGameEditorDetected(game, game_Exe_Specified && !GetEditorExe(game).IsEmpty());
-                Config.SetPerGameFMLanguage(game, data.fmLanguage);
-                Config.SetPerGameFMForcedLanguage(game, data.fmLanguageForced);
+                Config.SetPerGameFMLanguage(game, data.FMLanguage);
+                Config.SetPerGameFMForcedLanguage(game, data.FMLanguageForced);
 
                 if (storeFMSelectorLines)
                 {
                     if (game_Exe_Specified)
                     {
-                        Config.SetStartupFMSelectorLines(game, data.fmSelectorLines);
+                        Config.SetStartupFMSelectorLines(game, data.FMSelectorLines);
                     }
                     else
                     {
@@ -493,6 +527,7 @@ namespace AngelLoader
                 {
                     Config.SetFMInstallPath(Thief3, "");
                     Config.GetStartupFMSelectorLines(Thief3).Clear();
+                    Config.T3UseCentralSaves = false;
                 }
             }
 
@@ -534,33 +569,14 @@ namespace AngelLoader
             FMsViewList.Sort(comparer);
         }
 
-        private static Error SetPaths()
-        {
-            // TODO: These single-error returns don't work, change to something else
-
-            // PERF: 9ms, but it's mostly IO. Darn.
-            bool[] gameExeExists = new bool[SupportedGameCount];
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                string gameExe = Config.GetGameExe((GameIndex)i);
-                gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                if (gameExeExists[i]) SetGameData((GameIndex)i, storeFMSelectorLines: true);
-            }
-
-            return
-                // Must be first, otherwise other stuff overrides it and then we don't act on it
-                !Directory.Exists(Config.FMsBackupPath) ? Error.BackupPathNotSpecified :
-                gameExeExists.All(x => false) ? Error.NoGamesSpecified :
-                Error.None;
-        }
-
         #region Get FM install paths
 
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced, List<string> FMSelectorLines)
         GetInfoFromCamModIni(string gamePath, out Error error)
         {
-            static string CreateAndReturnFMsPath(string fmsPath)
+            static string CreateAndReturnFMsPath(string _gamePath)
             {
+                string fmsPath = Path.Combine(_gamePath, "FMs");
                 try
                 {
                     Directory.CreateDirectory(fmsPath);
@@ -581,7 +597,7 @@ namespace AngelLoader
             {
                 //error = Error.CamModIniNotFound;
                 error = Error.None;
-                return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), "", false, fmSelectorLines);
+                return (CreateAndReturnFMsPath(gamePath), "", false, fmSelectorLines);
             }
 
             string path = "";
@@ -644,12 +660,12 @@ namespace AngelLoader
                 catch (Exception)
                 {
                     error = Error.None;
-                    return (CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")), fm_language, fm_language_forced, fmSelectorLines);
+                    return (CreateAndReturnFMsPath(gamePath), fm_language, fm_language_forced, fmSelectorLines);
                 }
             }
 
             error = Error.None;
-            return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(Path.Combine(gamePath, "FMs")),
+            return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(gamePath),
                 fm_language, fm_language_forced, fmSelectorLines);
         }
 
@@ -1502,7 +1518,7 @@ namespace AngelLoader
                         var game = (GameIndex)i;
                         if (GameIsDark(game))
                         {
-                            FMInstallAndPlay.SetDarkFMSelector(game, exe, Path.GetDirectoryName(exe), resetSelector: true);
+                            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
                         }
                         else
                         {

@@ -463,9 +463,9 @@ namespace AngelLoader
             if (!GameIsKnownAndSupported(fm.Game)) return null;
 
             // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
-            var gamePath = fmInstPaths[(int)GameToGameIndex(fm.Game)];
+            string fmInstPath = fmInstPaths[(int)GameToGameIndex(fm.Game)];
 
-            return gamePath.IsEmpty() ? null : Path.Combine(gamePath, fm.InstalledDir, Paths.FMSelInf);
+            return fmInstPath.IsEmpty() ? null : Path.Combine(fmInstPath, fm.InstalledDir, Paths.FMSelInf);
         }
 
         private static void WriteFMSelInf(FanMission fm, string path, string archiveName)
