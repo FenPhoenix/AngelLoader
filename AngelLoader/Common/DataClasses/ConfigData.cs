@@ -26,6 +26,7 @@ namespace AngelLoader.DataClasses
             GameEditorDetected = new bool[SupportedGameCount];
             UseSteamSwitches = new bool[SupportedGameCount];
             StartupFMSelectorLines = new List<string>[SupportedGameCount];
+            StartupAlwaysStartSelector = new bool[SupportedGameCount];
 
             // We want them empty strings, not null, for safety
             for (int i = 0; i < SupportedGameCount; i++)
@@ -43,13 +44,27 @@ namespace AngelLoader.DataClasses
             }
         }
 
-        #region Startup fm_selector lines
+        #region Saved-on-startup loader config values
+
+        #region fm_selector lines
 
         private readonly List<string>[] StartupFMSelectorLines;
 
         internal List<string> GetStartupFMSelectorLines(GameIndex index) => StartupFMSelectorLines[(uint)index];
 
         internal void SetStartupFMSelectorLines(GameIndex index, List<string> value) => StartupFMSelectorLines[(uint)index] = value;
+
+        #endregion
+
+        #region "Always start selector" values
+
+        private readonly bool[] StartupAlwaysStartSelector;
+
+        internal bool GetStartupAlwaysStartSelector(GameIndex index) => StartupAlwaysStartSelector[(uint)index];
+
+        internal void SetStartupAlwaysStartSelector(GameIndex index, bool value) => StartupAlwaysStartSelector[(uint)index] = value;
+
+        #endregion
 
         #endregion
 

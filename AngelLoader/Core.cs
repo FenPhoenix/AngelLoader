@@ -89,7 +89,7 @@ namespace AngelLoader
                         {
                             string gameExe = Config.GetGameExe((GameIndex)i);
                             gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                            if (gameExeExists[i]) SetGameData((GameIndex)i, storeFMSelectorLines: true);
+                            if (gameExeExists[i]) SetGameData((GameIndex)i, storeConfigInfo: true);
                         }
 
                         Error error =
@@ -235,8 +235,18 @@ namespace AngelLoader
                 (!Config.FMArchivePaths.SequenceEqual(sf.OutConfig.FMArchivePaths, StringComparer.OrdinalIgnoreCase) ||
                  Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
 
-            bool gamePathsChanged = !startup &&
-                               !Config.GameExes.SequenceEqual(sf.OutConfig.GameExes, StringComparer.OrdinalIgnoreCase);
+            bool gamePathsChanged =
+                !startup &&
+                !Config.GameExes.SequenceEqual(sf.OutConfig.GameExes, StringComparer.OrdinalIgnoreCase);
+
+            // We need these in order to decide which, if any, startup config infos to re-read
+            bool[] individualGamePathsChanged = new bool[SupportedGameCount];
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                individualGamePathsChanged[i] =
+                    !startup && !Config.GetGameExe((GameIndex)i).EqualsI(sf.OutConfig.GetGameExe((GameIndex)i));
+            }
 
             bool gameOrganizationChanged =
                 !startup && Config.GameOrganization != sf.OutConfig.GameOrganization;
@@ -287,7 +297,7 @@ namespace AngelLoader
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                bool exe_Specified = SetGameData((GameIndex)i, storeFMSelectorLines: gamePathsChanged);
+                bool exe_Specified = SetGameData((GameIndex)i, storeConfigInfo: startup || individualGamePathsChanged[i]);
                 if ((GameIndex)i == Thief2) Config.T2MPDetected = exe_Specified && !GetT2MultiplayerExe().IsEmpty();
             }
 
@@ -454,7 +464,7 @@ namespace AngelLoader
             #endregion
         }
 
-        private static bool SetGameData(GameIndex game, bool storeFMSelectorLines)
+        private static bool SetGameData(GameIndex game, bool storeConfigInfo)
         {
             string gameExe = Config.GetGameExe(game);
             bool game_Exe_Specified = !gameExe.IsWhiteSpace();
@@ -474,12 +484,12 @@ namespace AngelLoader
 
             // This must come first, so below methods can use it
             Config.SetGamePath(game, gamePath);
-
             if (GameIsDark(game))
             {
                 var data = game_Exe_Specified
                     ? GetInfoFromCamModIni(gamePath, out Error _)
-                    : (FMsPath: "", FMLanguage: "", FMLanguageForced: false, FMSelectorLines: new List<string>());
+                    : (FMsPath: "", FMLanguage: "", FMLanguageForced: false, FMSelectorLines: new List<string>(),
+                        AlwaysShowLoader: false);
 
                 Config.SetFMInstallPath(game, data.FMsPath);
                 Config.SetGameEditorDetected(game, game_Exe_Specified && !GetEditorExe(game).IsEmpty());
@@ -488,21 +498,22 @@ namespace AngelLoader
                 Config.SetPerGameFMForcedLanguage(game, data.FMLanguageForced);
 #endif
 
-                if (storeFMSelectorLines)
+                if (storeConfigInfo)
                 {
                     if (game_Exe_Specified)
                     {
                         Config.SetStartupFMSelectorLines(game, data.FMSelectorLines);
+                        Config.SetStartupAlwaysStartSelector(game, data.AlwaysShowLoader);
                     }
                     else
                     {
                         Config.GetStartupFMSelectorLines(game).Clear();
+                        Config.SetStartupAlwaysStartSelector(game, false);
                     }
                 }
             }
             else
             {
-                // TODO: Look into how or if languages are supported in Thief 3
                 if (game_Exe_Specified)
                 {
                     var t3Data = GetInfoFromT3();
@@ -516,19 +527,24 @@ namespace AngelLoader
                         Config.SetFMInstallPath(Thief3, "");
                     }
                     // Do this even if there was an error, because we could still have a valid selector line
-                    if (storeFMSelectorLines)
+                    if (storeConfigInfo)
                     {
                         Config.GetStartupFMSelectorLines(Thief3).Clear();
                         if (!t3Data.PrevFMSelectorValue.IsEmpty())
                         {
                             Config.GetStartupFMSelectorLines(Thief3).Add(t3Data.PrevFMSelectorValue);
                         }
+                        Config.SetStartupAlwaysStartSelector(Thief3, t3Data.AlwaysShowLoader);
                     }
                 }
                 else
                 {
                     Config.SetFMInstallPath(Thief3, "");
-                    Config.GetStartupFMSelectorLines(Thief3).Clear();
+                    if (storeConfigInfo)
+                    {
+                        Config.GetStartupFMSelectorLines(Thief3).Clear();
+                        Config.SetStartupAlwaysStartSelector(Thief3, false);
+                    }
                     Config.T3UseCentralSaves = false;
                 }
             }
@@ -573,7 +589,8 @@ namespace AngelLoader
 
         #region Get FM install paths
 
-        internal static (string FMsPath, string FMLanguage, bool FMLanguageForced, List<string> FMSelectorLines)
+        internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
+            List<string> FMSelectorLines, bool AlwaysShowLoader)
         GetInfoFromCamModIni(string gamePath, out Error error, bool langOnly = false)
         {
             string CreateAndReturnFMsPath()
@@ -594,12 +611,13 @@ namespace AngelLoader
             var camModIni = Path.Combine(gamePath, "cam_mod.ini");
 
             var fmSelectorLines = new List<string>();
+            bool alwaysShowLoader = false;
 
             if (!File.Exists(camModIni))
             {
                 //error = Error.CamModIniNotFound;
                 error = Error.None;
-                return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines);
+                return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false);
             }
 
             string path = "";
@@ -626,6 +644,7 @@ namespace AngelLoader
 
                     // Quick check; these lines will be checked more thoroughly when we go to use them
                     if (!langOnly && line.ContainsI("fm_selector")) fmSelectorLines.Add(line);
+                    if (!langOnly && line.Trim().EqualsI("fm")) alwaysShowLoader = true;
 
                     if (line.IsEmpty() || line[0] == ';') continue;
 
@@ -654,7 +673,7 @@ namespace AngelLoader
             if (langOnly)
             {
                 error = Error.None;
-                return ("", fm_language, fm_language_forced, new List<string>());
+                return ("", fm_language, fm_language_forced, new List<string>(), false);
             }
 
             if (!path.IsEmpty() &&
@@ -668,16 +687,17 @@ namespace AngelLoader
                 catch (Exception)
                 {
                     error = Error.None;
-                    return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines);
+                    return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
                 }
             }
 
             error = Error.None;
             return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(),
-                fm_language, fm_language_forced, fmSelectorLines);
+                fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
         }
 
-        private static (Error Error, bool UseCentralSaves, string FMInstallPath, string PrevFMSelectorValue)
+        private static (Error Error, bool UseCentralSaves, string FMInstallPath,
+            string PrevFMSelectorValue, bool AlwaysShowLoader)
         GetInfoFromT3()
         {
             var soIni = Paths.GetSneakyOptionsIni();
@@ -686,7 +706,7 @@ namespace AngelLoader
             {
                 // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
                 MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (soError, false, "", "");
+                return (soError, false, "", "", false);
             }
 
             bool ignoreSavesKeyFound = false;
@@ -697,6 +717,9 @@ namespace AngelLoader
 
             bool externSelectorFound = false;
             string prevFMSelectorValue = "";
+
+            bool alwaysShowLoaderFound = false;
+            bool alwaysShowLoader = false;
 
             var lines = File.ReadAllLines(soIni);
             for (var i = 0; i < lines.Length; i++)
@@ -734,6 +757,12 @@ namespace AngelLoader
                             prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
                             externSelectorFound = true;
                         }
+                        else if (!alwaysShowLoaderFound &&
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("AlwaysShow="))
+                        {
+                            alwaysShowLoader = lt.Substring(lt.IndexOf('=') + 1).Trim().EqualsTrue();
+                            alwaysShowLoaderFound = true;
+                        }
                         else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -756,8 +785,8 @@ namespace AngelLoader
             }
 
             return fmInstPathFound
-                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue)
-                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue);
+                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
+                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, alwaysShowLoader);
         }
 
         #endregion

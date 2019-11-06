@@ -360,7 +360,7 @@ namespace AngelLoader
             string sLanguage;
             bool bForceLanguage;
 
-            var (_, fmLanguage, _, _) = Core.GetInfoFromCamModIni(Config.GetGamePath(game), out _, langOnly: true);
+            var (_, fmLanguage, _, _, _) = Core.GetInfoFromCamModIni(Config.GetGamePath(game), out _, langOnly: true);
 
             // bForceLanguage gets set to something specific in every possible case, effectively meaning the
             // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
@@ -696,6 +696,8 @@ namespace AngelLoader
                     fmSelectorKey, stubPath, gamePath)
                 : stubPath;
 
+            bool prevAlwaysLoadSelector = Config.GetStartupAlwaysStartSelector(game);
+
             /*
              Conforms to the way NewDark reads it:
              - Zero or more whitespace characters allowed at the start of the line (before the key)
@@ -706,7 +708,7 @@ namespace AngelLoader
              - No section headers
             */
             int lastSelKeyIndex = -1;
-            bool fmLineFound = false;
+            int fmLineLastIndex = -1;
             int fmCommentLineIndex = -1;
             bool loaderIsAlreadyUs = false;
             for (int i = 0; i < lines.Count; i++)
@@ -728,10 +730,24 @@ namespace AngelLoader
 
                 if (fmCommentLineIndex == -1 && lt.EqualsI(fmCommentLine)) fmCommentLineIndex = i;
 
-                if (!fmLineFound && lt.EqualsI("fm"))
+                if (fmLineLastIndex == -1 && lt.EqualsI("fm"))
                 {
-                    if (lines[i].TrimStart().StartsWith(";")) lines[i] = "fm";
-                    fmLineFound = true;
+                    if (!resetSelector)
+                    {
+                        if (lines[i].TrimStart().StartsWith(";")) lines[i] = "fm";
+                    }
+                    else
+                    {
+                        if (prevAlwaysLoadSelector)
+                        {
+                            if (lines[i].TrimStart().StartsWith(";")) lines[i] = "fm";
+                        }
+                        else
+                        {
+                            if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";fm";
+                        }
+                    }
+                    fmLineLastIndex = i;
                 }
 
                 if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
@@ -774,17 +790,31 @@ namespace AngelLoader
                 }
             }
 
-            if (!fmLineFound)
+            if (fmLineLastIndex == -1)
             {
                 if (fmCommentLineIndex == -1 || fmCommentLineIndex == lines.Count - 1)
                 {
                     lines.Add("");
                     lines.Add("; " + fmCommentLine);
-                    lines.Add("fm");
+                    if (!resetSelector)
+                    {
+                        lines.Add("fm");
+                    }
+                    else
+                    {
+                        lines.Add(prevAlwaysLoadSelector ? "fm" : ";fm");
+                    }
                 }
                 else
                 {
-                    lines.Insert(fmCommentLineIndex + 1, "fm");
+                    if (!resetSelector)
+                    {
+                        lines.Insert(fmCommentLineIndex + 1, "fm");
+                    }
+                    else
+                    {
+                        lines.Insert(fmCommentLineIndex + 1, prevAlwaysLoadSelector ? "fm" : ";fm");
+                    }
                 }
             }
 
@@ -838,9 +868,8 @@ namespace AngelLoader
             string selectorPath;
 
             #region Reset loader
-            // TODO: @CourteousBehavior: We need to also save and restore the AlwaysShow value to be truly polite
-            // And maybe even the "fm" (same deal) value for Dark games?
-            // We also remove any specific "start with FM" lines too... I guess we should save+restore those as well?
+            // TODO: @CourteousBehavior: Save and restore the "always start with FM" line(s)
+            // Probably nobody uses this feature, but maybe we should do it for completeness?
             if (resetSelector)
             {
                 var startupFMSelectorLines = Config.GetStartupFMSelectorLines(GameIndex.Thief3);
@@ -900,6 +929,8 @@ namespace AngelLoader
 
             #endregion
 
+            bool prevAlwaysShowValue = Config.GetStartupAlwaysStartSelector(GameIndex.Thief3);
+
             for (var i = 0; i < lines.Count; i++)
             {
                 if (!lines[i].Trim().EqualsI("[Loader]")) continue;
@@ -917,7 +948,7 @@ namespace AngelLoader
                     else if (!existingAlwaysShowKeyOverwritten &&
                         lt.StartsWithI(alwaysShowKey))
                     {
-                        lines[i + 1] = alwaysShowKey + "true";
+                        lines[i + 1] = alwaysShowKey + (resetSelector && !prevAlwaysShowValue ? "false" : "true");
                         existingAlwaysShowKeyOverwritten = true;
                     }
                     // Steam robustness: get rid of any fan mission specifiers in here
