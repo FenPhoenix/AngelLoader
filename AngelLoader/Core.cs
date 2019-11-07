@@ -1171,8 +1171,9 @@ namespace AngelLoader
 
             try
             {
-                var dmlFiles = FastIO.GetFilesTopOnly(Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir), "*.dml");
-                for (int i = 0; i < dmlFiles.Count; i++) dmlFiles[i] = dmlFiles[i].GetFileNameFast();
+                var dmlFiles = FastIO.GetFilesTopOnly(
+                    Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir), "*.dml",
+                    returnFullPaths: false);
                 return (true, dmlFiles);
             }
             catch (Exception ex)

@@ -336,8 +336,10 @@ namespace AngelLoader
                 {
                     try
                     {
-                        foreach (var dir in Directory.GetDirectories(path, "*", SearchOption.AllDirectories))
+                        var dirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
+                        for (int di = 0; di < dirs.Length; di++)
                         {
+                            string dir = dirs[di];
                             if (!dir.GetDirNameFast().EqualsI(".fix") &&
                                 !dir.ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
                             {

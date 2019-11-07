@@ -84,22 +84,21 @@ namespace AngelLoader
             // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
             var perGameInstFMDirsList = new List<List<string>>(gameCount);
 
-            for (int i = 0; i < gameCount; i++)
+            for (int gi = 0; gi < gameCount; gi++)
             {
                 // NOTE! Make sure this list ends up with gameCount items in it. Just in case I change the loop
                 // or something.
                 perGameInstFMDirsList.Add(new List<string>());
 
-                var instPath = fmInstPaths[i];
+                var instPath = fmInstPaths[gi];
 
                 if (Directory.Exists(instPath))
                 {
                     try
                     {
-                        foreach (var d in FastIO.GetDirsTopOnly(instPath, "*", initListCapacityLarge: true))
+                        foreach (var d in FastIO.GetDirsTopOnly(instPath, "*", initListCapacityLarge: true, returnFullPaths: false))
                         {
-                            var dirName = d.GetTopmostDirName();
-                            if (!dirName.EqualsI(".fmsel.cache")) perGameInstFMDirsList[i].Add(dirName);
+                            if (!d.EqualsI(".fmsel.cache")) perGameInstFMDirsList[gi].Add(d);
                         }
                     }
                     catch (Exception ex)
@@ -115,22 +114,27 @@ namespace AngelLoader
 
             var fmArchives = new List<string>();
 
-            foreach (var path in GetFMArchivePaths())
+            var archivePaths = GetFMArchivePaths();
+            bool onlyOnePath = archivePaths.Count == 1;
+            for (int ai = 0; ai < archivePaths.Count; ai++)
             {
                 try
                 {
-                    var files = FastIO.GetFilesTopOnly(path, "*", initListCapacityLarge: true);
-                    foreach (var f in files)
+                    var files = FastIO.GetFilesTopOnly(archivePaths[ai], "*", initListCapacityLarge: true, returnFullPaths: false);
+                    for (int fi = 0; fi < files.Count; fi++)
                     {
-                        if (!fmArchives.ContainsI(f.GetFileNameFast()) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
+                        string f = files[fi];
+                        // Only do .ContainsI() if we're searching multiple directories. Otherwise we're guaranteed
+                        // no duplicates and can avoid the expensive lookup.
+                        if ((onlyOnePath || !fmArchives.ContainsI(f)) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
                         {
-                            fmArchives.Add(f.GetFileNameFast());
+                            fmArchives.Add(f);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception getting files in " + path, ex);
+                    Log("Exception getting files in " + archivePaths[ai], ex);
                 }
             }
 
@@ -140,14 +144,19 @@ namespace AngelLoader
 
             var perGameFMsList = new List<List<FanMission>>(gameCount);
 
-            for (int i = 0; i < gameCount; i++)
+            for (int gi = 0; gi < gameCount; gi++)
             {
                 // NOTE! List must have gameCount items in it
                 perGameFMsList.Add(new List<FanMission>());
 
-                foreach (var item in perGameInstFMDirsList[i])
+                for (int di = 0; di < perGameInstFMDirsList[gi].Count; di++)
                 {
-                    perGameFMsList[i].Add(new FanMission { InstalledDir = item, Game = GameIndexToGame((GameIndex)i), Installed = true });
+                    perGameFMsList[gi].Add(new FanMission
+                    {
+                        InstalledDir = perGameInstFMDirsList[gi][di],
+                        Game = GameIndexToGame((GameIndex)gi),
+                        Installed = true
+                    });
                 }
             }
 

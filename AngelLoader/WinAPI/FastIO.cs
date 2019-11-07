@@ -111,22 +111,24 @@ namespace AngelLoader.WinAPI
         }
 
         internal static List<string> GetDirsTopOnly(string path, string searchPattern,
-            bool initListCapacityLarge = false, bool ignoreReparsePoints = false, bool pathIsKnownValid = false)
+            bool initListCapacityLarge = false, bool ignoreReparsePoints = false, bool pathIsKnownValid = false,
+            bool returnFullPaths = true)
         {
             return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Directories,
-                ignoreReparsePoints, pathIsKnownValid);
+                ignoreReparsePoints, pathIsKnownValid, returnFullPaths);
         }
 
         internal static List<string> GetFilesTopOnly(string path, string searchPattern,
-            bool initListCapacityLarge = false, bool pathIsKnownValid = false)
+            bool initListCapacityLarge = false, bool pathIsKnownValid = false, bool returnFullPaths = true)
         {
             return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge, FileType.Files, false,
-                pathIsKnownValid);
+                pathIsKnownValid, returnFullPaths);
         }
 
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
         private static List<string> GetFilesTopOnlyInternal(string path, string searchPattern,
-            bool initListCapacityLarge, FileType fileType, bool ignoreReparsePoints, bool pathIsKnownValid)
+            bool initListCapacityLarge, FileType fileType, bool ignoreReparsePoints, bool pathIsKnownValid,
+            bool returnFullPaths)
         {
             if (string.IsNullOrEmpty(searchPattern))
             {
@@ -189,8 +191,10 @@ namespace AngelLoader.WinAPI
                      (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT))) &&
                     findData.cFileName != "." && findData.cFileName != "..")
                 {
-                    // Exception could occur here
-                    var fullName = Path.Combine(path, findData.cFileName);
+                    string fullName = returnFullPaths
+                        // Exception could occur here
+                        ? Path.Combine(path, findData.cFileName)
+                        : findData.cFileName;
 
                     ret.Add(fullName);
                 }
