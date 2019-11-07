@@ -1,4 +1,4 @@
-// TODO: This stub is now ~200k because of statically linking the stuff.
+﻿// TODO: This stub is now ~200k because of statically linking the stuff.
 // I don't like it, but whatever. It's not really of any consequence, I just like minimalism.
 // I can always come back in here if I ever get more to grips with what I'm doing when it comes to C++ strings
 // and squash this junk down some. Till then, meh.
@@ -42,20 +42,53 @@
 #include <filesystem>
 #include <cstdio>
 #include <windows.h>
+//#include <shlwapi.h> // add shlwapi.lib to Additional Dependencies
+//#include <tchar.h>
 using std::string;
+using std::wstring;
 namespace fs = std::filesystem;
 
 int show_loader_alert()
 {
-    const string msg1 =
-        "AngelLoader is set as the loader for this game.\r\n\r\n";
-    const string msg2 =
-        "To use a different loader for Thief 1, Thief 2, or System Shock 2, please open cam_mod.ini in your game folder for instructions on how to do so.\r\n\r\n";
-    const string msg3 =
-        "To use a different loader for Thief 3, please open Sneaky Tweaker and choose another loader in the \"Sneaky Upgrade -> FM Loading\" section.";
-    MessageBoxA(nullptr, (msg1 + msg2 + msg3).c_str(), "AngelLoader", MB_OK | MB_ICONINFORMATION);
+    const wstring msg1 =
+        L"AngelLoader is set as the loader for this game.\r\n\r\n";
+    const wstring msg2 =
+        L"To use a different loader for Thief 1, Thief 2, or System Shock 2, please open cam_mod.ini in your game folder for instructions on how to do so.\r\n\r\n";
+    const wstring msg3 =
+        L"To use a different loader for Thief 3, please open Sneaky Tweaker and choose another loader in the \"Sneaky Upgrade -> FM Loading\" section.";
+
+    MessageBoxW(nullptr, (msg1 + msg2 + msg3).c_str(), L"AngelLoader", MB_OK | MB_ICONINFORMATION);
     return kSelFMRet_ExitGame;
 }
+// Disabled for now because I'm not sure I want to go to all this work for a message people will hopefully never
+// see. It's gotta have linebreaks in it too, which I guess means multiple lines in the lang ini... meh!
+/*
+wstring get_loader_alert_message()
+{
+    TCHAR path[MAX_PATH];
+    HMODULE hModule = nullptr;
+
+    if (!GetModuleHandleExW(
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        (LPCWSTR)&SelectFM, &hModule))
+    {
+        return L"";
+    }
+
+    if (!GetModuleFileNameW(hModule, path, sizeof(path)))
+    {
+        return L"";
+    }
+
+    PathRemoveFileSpecW(path);
+
+    const wstring data_path = fs::path(fs::path(path) / "Data" / "Config.ini").wstring();
+
+    MessageBoxW(nullptr, data_path.c_str(), L"Test", MB_OK | MB_ICONINFORMATION);
+
+    return L"";
+}
+*/
 
 extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
 {
@@ -64,6 +97,8 @@ extern "C" int FMSELAPI SelectFM(sFMSelectorData * data)
     {
         return kSelFMRet_Cancel;
     }
+
+    //wstring localized_alert_message = get_loader_alert_message();
 
     // data->sGameVersion:
     // Might eventually use
