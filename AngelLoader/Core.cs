@@ -539,7 +539,7 @@ namespace AngelLoader
             {
                 if (game_Exe_Specified)
                 {
-                    var t3Data = GetInfoFromT3();
+                    var t3Data = GetInfoFromSneakyOptionsIni();
                     if (t3Data.Error == Error.None)
                     {
                         Config.SetFMInstallPath(Thief3, t3Data.FMInstallPath);
@@ -610,7 +610,7 @@ namespace AngelLoader
             FMsViewList.Sort(comparer);
         }
 
-        #region Get FM install paths
+        #region Get info from game config files
 
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
             List<string> FMSelectorLines, bool AlwaysShowLoader)
@@ -721,7 +721,7 @@ namespace AngelLoader
 
         private static (Error Error, bool UseCentralSaves, string FMInstallPath,
             string PrevFMSelectorValue, bool AlwaysShowLoader)
-        GetInfoFromT3()
+        GetInfoFromSneakyOptionsIni()
         {
             var soIni = Paths.GetSneakyOptionsIni();
             var soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
@@ -1566,8 +1566,9 @@ namespace AngelLoader
 
         private static void DoShutdownTasks()
         {
-            // Set FMSel back to being the default loader on exit, that way people will at least get something
-            // happening when they go and start the game exe manually
+            // Restore previous loader (or FMSel if all else fails) on shutdown.
+            // If it fails, oh well. It's no worse than before, we just end up with ourselves as the loader,
+            // and the user will get a message about that if they start the game later.
             try
             {
                 for (int i = 0; i < SupportedGameCount; i++)
