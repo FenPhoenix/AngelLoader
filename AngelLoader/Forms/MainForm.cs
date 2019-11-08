@@ -39,7 +39,6 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -69,7 +68,7 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
- }
+        }
 
         private void Test2Button_Click(object sender, EventArgs e)
         {

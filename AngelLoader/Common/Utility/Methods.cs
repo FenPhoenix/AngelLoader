@@ -171,6 +171,11 @@ namespace AngelLoader
 
         #endregion
 
+        internal static bool PathIsRelative(string path) =>
+            path.Length > 1 && path[0] == '.' &&
+            (path[1] == '/' || path[1] == '\\' ||
+             (path[1] == '.' && path.Length > 2 && (path[2] == '/' || path[2] == '\\')));
+
         internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)
         {
             if (value) { fm.Resources |= resource; } else { fm.Resources &= ~resource; }

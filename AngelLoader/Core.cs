@@ -11,16 +11,6 @@
 // TODO: Maybe delete the stub comm file on exit, but:
 // Don't do it for Steam because Steam could start without running a game and/or give the user time to maybe exit
 // AngelLoader and then the FM wouldn't load. Also it may be too aggressive in general, but it's an idea.
-// TODO: Switch from Has*=True|False in ini to just HasResources=Map,Automap,Creatures f.ex. but still support the old
-// This will allow a lot of compaction in the file, at the expensive of being slightly slower to read it. Maybe
-// not worth it? My FMData.ini is 776k, but I have 1573 FMs and hundreds of those are duplicates. Test and profile.
-// Note on the above: Right now they're always written out whether true or false (wasting a ton of space), because
-// they can also be null (not scanned). But they're either all scanned or none scanned, so we could just have one
-// extra field saying "ResourcesScanned=True|False" and that way, if true, any present Has* value is true and any
-// not present is false, and if ResourcesScanned=False, then we ignore and throw away any Has* values we come across.
-// We even don't have to add the field to the FanMission class, because we could say if we found the ResourcesScanned
-// value, we just set all Has* fields in the FanMission object to null, and otherwise, we just set them as we find
-// them. Then just do the reverse for the writeout.
 
 using System;
 using System.Collections.Generic;
@@ -699,9 +689,7 @@ namespace AngelLoader
                 return ("", fm_language, fm_language_forced, new List<string>(), false);
             }
 
-            if (!path.IsEmpty() &&
-                (path.StartsWithFast_NoNullChecks(".\\") || path.StartsWithFast_NoNullChecks("..\\") ||
-                path.StartsWithFast_NoNullChecks("./") || path.StartsWithFast_NoNullChecks("../")))
+            if (PathIsRelative(path))
             {
                 try
                 {

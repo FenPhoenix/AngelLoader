@@ -564,9 +564,7 @@ namespace AngelLoader
             // TODO: Duplicate code
             static string GetFullPath(string _gamePath, string path)
             {
-                if (!path.IsEmpty() &&
-                    (path.StartsWithFast_NoNullChecks(".\\") || path.StartsWithFast_NoNullChecks("..\\") ||
-                     path.StartsWithFast_NoNullChecks("./") || path.StartsWithFast_NoNullChecks("../")))
+                if (PathIsRelative(path))
                 {
                     try
                     {
