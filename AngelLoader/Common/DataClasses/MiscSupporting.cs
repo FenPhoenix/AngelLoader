@@ -241,7 +241,7 @@ namespace AngelLoader.DataClasses
 
         internal void SetDateFromAndTo(bool lastPlayed, DateTime? from, DateTime? to)
         {
-            if (from != null && to != null && from.Value.CompareTo(to) > 0)
+            if (from != null && to != null && from.Value.CompareTo((DateTime)to) > 0)
             {
                 if (lastPlayed)
                 {

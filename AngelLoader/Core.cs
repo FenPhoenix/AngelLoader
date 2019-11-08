@@ -1213,54 +1213,53 @@ namespace AngelLoader
 
             #region Local functions
 
-            static string StripPunctuation(string str)
-            {
-                return str.Replace(" ", "").Replace("-", "").Replace("_", "").Replace(".", "").Replace(",", "")
-                    .Replace(";", "").Replace("'", "");
-            }
+            static string StripPunctuation(string str) => str
+                .Replace(" ", "")
+                .Replace("-", "")
+                .Replace("_", "")
+                .Replace(".", "")
+                .Replace(",", "")
+                .Replace(";", "")
+                .Replace("'", "");
 
             static string FirstByPreferredFormat(List<string> files)
             {
                 // Don't use IsValidReadme(), because we want a specific search order
-                return
-                    files.FirstOrDefault(x => x.ExtIsGlml()) ??
-                    files.FirstOrDefault(x => x.ExtIsRtf()) ??
-                    files.FirstOrDefault(x => x.ExtIsTxt()) ??
-                    files.FirstOrDefault(x => x.ExtIsWri()) ??
-                    files.FirstOrDefault(x => x.ExtIsHtml()) ?? "";
+                foreach (string x in files) if (x.ExtIsGlml()) return x;
+                foreach (string x in files) if (x.ExtIsRtf()) return x;
+                foreach (string x in files) if (x.ExtIsTxt()) return x;
+                foreach (string x in files) if (x.ExtIsWri()) return x;
+                foreach (string x in files) if (x.ExtIsHtml()) return x;
+                return "";
             }
 
-            static bool ContainsUnsafePhrase(string str)
-            {
-                return str.ContainsI("loot") ||
-                       str.ContainsI("walkthrough") ||
-                       str.ContainsI("walkthru") ||
-                       str.ContainsI("secret") ||
-                       str.ContainsI("spoiler") ||
-                       str.ContainsI("tips") ||
-                       str.ContainsI("convo") ||
-                       str.ContainsI("conversation") ||
-                       str.ContainsI("cheat") ||
-                       str.ContainsI("notes");
-            }
+            static bool ContainsUnsafePhrase(string str) =>
+                str.ContainsI("loot") ||
+                str.ContainsI("walkthrough") ||
+                str.ContainsI("walkthru") ||
+                str.ContainsI("secret") ||
+                str.ContainsI("spoiler") ||
+                str.ContainsI("tips") ||
+                str.ContainsI("convo") ||
+                str.ContainsI("conversation") ||
+                str.ContainsI("cheat") ||
+                str.ContainsI("notes");
 
-            static bool ContainsUnsafeOrJunkPhrase(string str)
-            {
-                return ContainsUnsafePhrase(str) ||
-                       str.EqualsI("scripts") ||
-                       str.ContainsI("copyright") ||
-                       str.ContainsI("install") ||
-                       str.ContainsI("update") ||
-                       str.ContainsI("patch") ||
-                       str.ContainsI("nvscript") ||
-                       str.ContainsI("tnhscript") ||
-                       str.ContainsI("GayleSaver") ||
-                       str.ContainsI("changelog") ||
-                       str.ContainsI("changes") ||
-                       str.ContainsI("credits") ||
-                       str.ContainsI("objectives") ||
-                       str.ContainsI("hint");
-            }
+            static bool ContainsUnsafeOrJunkPhrase(string str) =>
+                ContainsUnsafePhrase(str) ||
+                str.EqualsI("scripts") ||
+                str.ContainsI("copyright") ||
+                str.ContainsI("install") ||
+                str.ContainsI("update") ||
+                str.ContainsI("patch") ||
+                str.ContainsI("nvscript") ||
+                str.ContainsI("tnhscript") ||
+                str.ContainsI("GayleSaver") ||
+                str.ContainsI("changelog") ||
+                str.ContainsI("changes") ||
+                str.ContainsI("credits") ||
+                str.ContainsI("objectives") ||
+                str.ContainsI("hint");
 
             #endregion
 
@@ -1283,9 +1282,9 @@ namespace AngelLoader
             else
             {
                 var safeReadmes = new List<string>();
-                foreach (var rf in readmeFiles)
+                foreach (string rf in readmeFiles)
                 {
-                    var fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
+                    string fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
 
                     if (fn.EqualsI("Readme") || fn.EqualsI("ReadmeEn") || fn.EqualsI("ReadmeEng") ||
                         fn.EqualsI("FMInfo") || fn.EqualsI("FMInfoEn") || fn.EqualsI("FMInfoEng") ||
@@ -1307,22 +1306,27 @@ namespace AngelLoader
                 {
                     safeReadmes.Sort(new FileNameNoExtComparer());
 
-                    string? eng = safeReadmes.FirstOrDefault(
-                        x => Path.GetFileNameWithoutExtension(x).EndsWithI("en") ||
-                             Path.GetFileNameWithoutExtension(x).EndsWithI("eng"));
-                    foreach (var item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
+                    foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                     {
-                        string? str = safeReadmes.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).EqualsI(item));
-                        if (str != null)
+                        foreach (string sr in safeReadmes)
                         {
-                            safeReadmes.Remove(str);
-                            safeReadmes.Insert(0, str);
+                            if (Path.GetFileNameWithoutExtension(sr).EqualsI(item))
+                            {
+                                safeReadmes.Remove(sr);
+                                safeReadmes.Insert(0, sr);
+                                break;
+                            }
                         }
                     }
-                    if (eng != null)
+                    foreach (string sr in safeReadmes)
                     {
-                        safeReadmes.Remove(eng);
-                        safeReadmes.Insert(0, eng);
+                        string srNoExt = Path.GetFileNameWithoutExtension(sr);
+                        if (srNoExt.EndsWithI("en") || srNoExt.EndsWithI("eng"))
+                        {
+                            safeReadmes.Remove(sr);
+                            safeReadmes.Insert(0, sr);
+                            break;
+                        }
                     }
                     safeReadme = FirstByPreferredFormat(safeReadmes);
                 }
@@ -1334,7 +1338,7 @@ namespace AngelLoader
                 int safeIndex = -1;
                 for (int i = 0; i < readmeFiles.Count; i++)
                 {
-                    var rf = readmeFiles[i];
+                    string rf = readmeFiles[i];
 
                     var fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
                     if (!ContainsUnsafeOrJunkPhrase(fn))
