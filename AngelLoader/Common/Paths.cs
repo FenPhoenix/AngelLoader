@@ -36,6 +36,10 @@ namespace AngelLoader
 
         #endregion
 
+        #region Game config files
+
+        internal const string CamModIni = "cam_mod.ini";
+
         internal static string GetSneakyOptionsIni()
         {
             try
@@ -107,6 +111,8 @@ namespace AngelLoader
 
             return "";
         }
+
+        #endregion
 
         internal const string StubFileName = "AngelLoader_Stub.dll";
 

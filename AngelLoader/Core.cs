@@ -631,7 +631,7 @@ namespace AngelLoader
                 return fmsPath;
             }
 
-            var camModIni = Path.Combine(gamePath, "cam_mod.ini");
+            var camModIni = Path.Combine(gamePath, Paths.CamModIni);
 
             var fmSelectorLines = new List<string>();
             bool alwaysShowLoader = false;

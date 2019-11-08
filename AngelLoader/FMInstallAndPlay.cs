@@ -640,10 +640,10 @@ namespace AngelLoader
             const string fmSelectorKey = "fm_selector";
             const string fmCommentLine = "always start the FM Selector (if one is present)";
 
-            var camModIni = Path.Combine(gamePath, "cam_mod.ini");
+            var camModIni = Path.Combine(gamePath, Paths.CamModIni);
             if (!File.Exists(camModIni))
             {
-                Log("cam_mod.ini not found for " + Config.GetGameExe(game), stackTrace: true);
+                Log(Paths.CamModIni + " not found for " + Config.GetGameExe(game), stackTrace: true);
                 return false;
             }
 
@@ -654,7 +654,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception reading cam_mod.ini for " + Config.GetGameExe(game), ex);
+                Log("Exception reading " + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
                 return false;
             }
 
@@ -831,7 +831,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception writing cam_mod.ini for " + Config.GetGameExe(game), ex);
+                Log("Exception writing " + Paths.CamModIni + " for " + Config.GetGameExe(game), ex);
                 return false;
             }
 
