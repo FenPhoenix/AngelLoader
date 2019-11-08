@@ -388,13 +388,13 @@ namespace AngelLoader
             else
             {
                 /*
-                 So, if I'm reading the API notes right, it looks like NewDark actually picks the right
-                 language automatically if it can find it in DARKINST.CFG. We set sLanguage to either:
-                 -force that language to be used if it's available (otherwise we use the below crappily-
-                  guessed fallback), or
-                 -give it a crappily-guessed fallback value so that if NewDark can't find a language, we at
-                  least have SOMETHING to give it so text won't be blank, even though it's likely it'll be
-                  the wrong language if it isn't English.
+                 So, if I'm reading the API notes right, it looks like NewDark actually picks the right language
+                 automatically if it can find it in DARKINST.CFG. We set sLanguage to either:
+                 -force that language to be used if it's available (otherwise we use the below crappily-guessed
+                 fallback), or
+                 -give it a crappily-guessed fallback value so that if NewDark can't find a language, we at least
+                 have SOMETHING to give it so text won't be blank, even though it's likely it'll be the wrong
+                 language if it isn't English.
                 */
                 // TODO: If I wanted, I could easily make a power-user option to pick the language to play the FM with
                 // ---
@@ -877,6 +877,7 @@ namespace AngelLoader
             bool changeLoaderIfResetting = true;
 
             #region Reset loader
+
             // TODO: @CourteousBehavior: Save and restore the "always start with FM" line(s)
             // Probably nobody uses this feature, but maybe we should do it for completeness?
             if (resetSelector)
