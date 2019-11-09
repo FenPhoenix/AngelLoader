@@ -713,19 +713,16 @@ namespace AngelLoader
             bool loaderIsAlreadyUs = false;
             for (int i = 0; i < lines.Count; i++)
             {
-                var lt = lines[i].TrimStart();
+                string lt = lines[i].TrimStart();
 
-                do
-                {
-                    lt = lt.TrimStart(';').Trim();
-                } while (lt.Length > 0 && lt[0] == ';');
+                do { lt = lt.TrimStart(';').Trim(); } while (lt.Length > 0 && lt[0] == ';');
 
                 // Steam robustness: get rid of any fan mission specifiers in here
                 // line is "fm BrokenTriad_1_0" for example
                 if (lt.StartsWithI("fm") && lt.Length > 2 && char.IsWhiteSpace(lt[2]) &&
                     lt.Substring(2).Trim().Length > 0)
                 {
-                    if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";" + lines[i];
+                    if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
                 }
 
                 if (fmCommentLineIndex == -1 && lt.EqualsI(fmCommentLine)) fmCommentLineIndex = i;
@@ -734,17 +731,17 @@ namespace AngelLoader
                 {
                     if (!resetSelector)
                     {
-                        if (lines[i].TrimStart().StartsWith(";")) lines[i] = "fm";
+                        if (lines[i].TrimStart()[0] == ';') lines[i] = "fm";
                     }
                     else
                     {
                         if (prevAlwaysLoadSelector)
                         {
-                            if (lines[i].TrimStart().StartsWith(";")) lines[i] = "fm";
+                            if (lines[i].TrimStart()[0] == ';') lines[i] = "fm";
                         }
                         else
                         {
-                            if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";fm";
+                            if (lines[i].TrimStart()[0] != ';') lines[i] = ";fm";
                         }
                     }
                     fmLineLastIndex = i;
@@ -774,7 +771,7 @@ namespace AngelLoader
                         (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
                         char.IsWhiteSpace(lt[fmSelectorKey.Length])))
                     {
-                        if (!lines[i].TrimStart().StartsWith(";")) lines[i] = ";" + lines[i];
+                        if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
                         lastSelKeyIndex = i;
                     }
                 }
