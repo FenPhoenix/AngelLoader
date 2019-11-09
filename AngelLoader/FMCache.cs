@@ -38,7 +38,7 @@ namespace AngelLoader
 
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
-        internal static async Task<CacheData> GetCacheableData(FanMission fm, IView view, bool refreshCache)
+        internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)
         {
             if (fm.Game == Game.Unsupported)
             {
@@ -53,7 +53,7 @@ namespace AngelLoader
             {
                 return FMIsReallyInstalled(fm)
                     ? GetCacheableDataInFMInstalledDir(fm)
-                    : await GetCacheableDataInFMCacheDir(fm, view, refreshCache);
+                    : await GetCacheableDataInFMCacheDir(fm, refreshCache);
             }
             catch (Exception ex)
             {
@@ -125,7 +125,7 @@ namespace AngelLoader
             return new CacheData(readmes);
         }
 
-        private static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, IView view, bool refreshCache)
+        private static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, bool refreshCache)
         {
             var readmes = new List<string>();
 
@@ -211,7 +211,7 @@ namespace AngelLoader
             }
             else
             {
-                await SevenZipExtract(fmArchivePath, fmCachePath, readmes, view);
+                await SevenZipExtract(fmArchivePath, fmCachePath, readmes);
             }
 
             fm.NoReadmes = readmes.Count == 0;
@@ -362,13 +362,12 @@ namespace AngelLoader
             }
         }
 
-        private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes,
-            IView view)
+        private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
             Log(nameof(SevenZipExtract) + ": about to show progress box and extract", methodName: false);
 
             // Critical
-            view.ShowOnly();
+            Core.View.ShowOnly();
 
             await Task.Run(() =>
             {
@@ -376,7 +375,7 @@ namespace AngelLoader
                 {
                     // Block the view immediately after starting another thread, because otherwise we could end
                     // up allowing multiple of these to be called and all that insanity...
-                    view.InvokeAsync(new Action(() => view.ShowProgressBox(ProgressTasks.CacheFM)));
+                    Core.View.InvokeAsync(new Action(() => Core.View.ShowProgressBox(ProgressTasks.CacheFM)));
 
                     Directory.CreateDirectory(fmCachePath);
 
@@ -404,7 +403,7 @@ namespace AngelLoader
 
                     extractor.Extracting += (sender, e) =>
                     {
-                        view.InvokeAsync(new Action(() => view.ReportCachingProgress(e.PercentDone)));
+                        Core.View.InvokeAsync(new Action(() => Core.View.ReportCachingProgress(e.PercentDone)));
                     };
 
                     extractor.FileExtractionFinished += (sender, e) =>
@@ -432,7 +431,7 @@ namespace AngelLoader
                 }
                 finally
                 {
-                    view.InvokeAsync(new Action(view.HideProgressBox));
+                    Core.View.InvokeAsync(new Action(Core.View.HideProgressBox));
                 }
             });
         }

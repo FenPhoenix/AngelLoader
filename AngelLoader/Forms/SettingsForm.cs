@@ -77,6 +77,7 @@ namespace AngelLoader.Forms
         private readonly OtherPage OtherPage;
 #pragma warning restore IDE0069 // Disposable fields should be disposed
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup)
         {
             InitializeComponent();

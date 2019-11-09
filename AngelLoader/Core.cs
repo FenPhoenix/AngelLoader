@@ -37,6 +37,8 @@ namespace AngelLoader
 {
     internal static class Core
     {
+        // TODO: Remove these pragmas and get null notification on this so we don't accidentally access it when it's null.
+        // TODO: But if we check it from another thread there'll be a race condition. Use a locking construct of some kind.
 #pragma warning disable CS8618
         internal static IView View;
 #pragma warning restore CS8618
@@ -190,6 +192,7 @@ namespace AngelLoader
             }
         }
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         public static async Task OpenSettings(bool startup = false)
         {
             using var sf = new SettingsForm(View, Config, startup);
@@ -1551,12 +1554,14 @@ namespace AngelLoader
             Application.Exit();
         }
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void EnvironmentExitDoShutdownTasks(int exitCode)
         {
             DoShutdownTasks();
             Environment.Exit(exitCode);
         }
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         private static void DoShutdownTasks()
         {
             // Restore previous loader (or FMSel if all else fails) on shutdown.

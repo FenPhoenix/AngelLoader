@@ -3052,7 +3052,7 @@ namespace AngelLoader.Forms
 
             if (!refreshReadme) return;
 
-            var cacheData = await FMCache.GetCacheableData(fm, this, refreshCache);
+            var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
 
             #region Readme
 

@@ -16,6 +16,7 @@ namespace AngelLoader
     {
         // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void Find(string[] fmInstPaths, bool startup = false)
         {
             int gameCount = fmInstPaths.Length;

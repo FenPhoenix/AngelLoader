@@ -557,6 +557,7 @@ namespace AngelLoader
             }
         }
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         private static string FindPreviousSelector(List<string> lines, string fmSelectorKey, string stubPath,
             string gamePath)
         {
@@ -633,6 +634,7 @@ namespace AngelLoader
         // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
         // line. This is to support Steam launching, because Steam can't take game-specific command line arguments.
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static bool SetDarkFMSelector(GameIndex game, string gamePath, bool resetSelector = false)
         {
             const string fmSelectorKey = "fm_selector";
@@ -833,9 +835,7 @@ namespace AngelLoader
             return true;
         }
 
-        // If only you could do this with a command-line switch. You can say -fm to always start with the loader,
-        // and you can say -fm=name to always start with the named FM, but you can't specify WHICH loader to use
-        // on the command line. Only way to do it is through a file. Meh.
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static bool SetT3FMSelector(bool resetSelector = false)
         {
             const string externSelectorKey = "ExternSelector=";
