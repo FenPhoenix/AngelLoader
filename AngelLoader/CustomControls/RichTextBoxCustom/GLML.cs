@@ -65,6 +65,7 @@ namespace AngelLoader.CustomControls
             // ReSharper restore StringLiteralTypo
 
             var sb = new StringBuilder();
+            var subSB = new StringBuilder();
 
             sb.Append(RtfHeader);
 
@@ -80,7 +81,7 @@ namespace AngelLoader.CustomControls
             bool lastTagWasLineBreak = false;
             for (int i = 0; i < text.Length; i++)
             {
-                var c = text[i];
+                char c = text[i];
                 if (c == '[')
                 {
                     // In the unlikely event that a tag is escaped, just ignore it
@@ -94,12 +95,12 @@ namespace AngelLoader.CustomControls
                     // Opening tags
                     if (i < text.Length - 5 && text[i + 1] == 'G' && text[i + 2] == 'L')
                     {
-                        var subSB = new StringBuilder();
+                        subSB.Clear();
                         for (int j = i + 3; j < Math.Min(i + 33, text.Length); j++)
                         {
                             if (text[j] == ']')
                             {
-                                var tag = subSB.ToString();
+                                string tag = subSB.ToString();
                                 if (tag == "TITLE")
                                 {
                                     sb.Append(@"\fs36\b ");
@@ -158,12 +159,12 @@ namespace AngelLoader.CustomControls
                     else if (i < text.Length - 6 &&
                              text[i + 1] == '/' && text[i + 2] == 'G' && text[i + 3] == 'L')
                     {
-                        var subSB = new StringBuilder();
+                        subSB.Clear();
                         for (int j = i + 4; j < Math.Min(i + 34, text.Length); j++)
                         {
                             if (text[j] == ']')
                             {
-                                var tag = subSB.ToString();
+                                string tag = subSB.ToString();
                                 if (tag == "TITLE")
                                 {
                                     sb.Append(@"\b0\fs24 ");
@@ -206,12 +207,12 @@ namespace AngelLoader.CustomControls
                 }
                 else if (c == '&')
                 {
-                    var subSB = new StringBuilder();
+                    subSB.Clear();
 
                     // HTML Unicode numeric character references
                     if (i < text.Length - 4 && text[i + 1] == '#')
                     {
-                        var end = Math.Min(i + 12, text.Length);
+                        int end = Math.Min(i + 12, text.Length);
                         for (int j = i + 2; i < end; j++)
                         {
                             if (j == i + 2 && text[j] == 'x')
@@ -221,9 +222,9 @@ namespace AngelLoader.CustomControls
                             }
                             else if (text[j] == ';')
                             {
-                                var num = subSB.ToString();
+                                string num = subSB.ToString();
 
-                                var success = num.Length > 0 && num[0] == 'x'
+                                bool success = num.Length > 0 && num[0] == 'x'
                                     ? int.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
                                     : int.TryParse(num, out result);
 
@@ -253,7 +254,7 @@ namespace AngelLoader.CustomControls
                         {
                             if (text[j] == ';')
                             {
-                                var name = subSB.ToString();
+                                string name = subSB.ToString();
 
                                 if (HTMLNamedEntities.Entities.TryGetValue(name, out string value))
                                 {

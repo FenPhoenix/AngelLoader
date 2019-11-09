@@ -144,7 +144,7 @@ namespace AngelLoader
         internal static void UpdateFMTagsString(FanMission fm)
         {
             var intermediateList = new List<string>();
-            foreach (var item in fm.Tags)
+            foreach (CatAndTags item in fm.Tags)
             {
                 if (item.Tags.Count == 0)
                 {
@@ -152,7 +152,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    foreach (var tag in item.Tags)
+                    foreach (string tag in item.Tags)
                     {
                         intermediateList.Add(item.Category + ":" + tag);
                     }
@@ -177,7 +177,7 @@ namespace AngelLoader
 
             var tagsArray = tagsToAdd.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (var item in tagsArray)
+            foreach (string item in tagsArray)
             {
                 string cat, tag;
 
@@ -188,7 +188,7 @@ namespace AngelLoader
 
                 if (colonCount == 1)
                 {
-                    var index = item.IndexOf(':');
+                    int index = item.IndexOf(':');
                     cat = item.Substring(0, index).Trim().ToLowerInvariant();
                     tag = item.Substring(index + 1).Trim();
                     if (cat.IsEmpty() || tag.IsEmpty()) continue;

@@ -273,15 +273,17 @@ namespace AngelLoader
                 return false;
             }
 
-            static string GetProcessPath(int procId)
+            static string GetProcessPath(int procId, StringBuilder _buffer)
             {
+                // Recycle the buffer - avoids GC house party
+                _buffer.Clear();
+
                 using (var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId))
                 {
                     if (!hProc.IsInvalid)
                     {
-                        var buffer = new StringBuilder(1024);
-                        int size = buffer.Capacity;
-                        if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer.ToString();
+                        int size = _buffer.Capacity;
+                        if (QueryFullProcessImageName(hProc, 0, _buffer, ref size)) return _buffer.ToString();
                     }
                 }
                 return "";
@@ -289,13 +291,15 @@ namespace AngelLoader
 
             #endregion
 
+            var buffer = new StringBuilder(1024);
+
             // We're doing this whole rigamarole because the game might have been started by someone other than
             // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
             foreach (var proc in Process.GetProcesses())
             {
                 try
                 {
-                    var fn = GetProcessPath(proc.Id);
+                    string fn = GetProcessPath(proc.Id, buffer);
                     //Log.Info("Process filename: " + fn);
                     if (!fn.IsEmpty())
                     {
@@ -306,7 +310,7 @@ namespace AngelLoader
                             (!checkAllGames &&
                              (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
                         {
-                            var logExe = checkAllGames ? "a game exe" : gameExe;
+                            string logExe = checkAllGames ? "a game exe" : gameExe;
 
                             Log("Found " + logExe + " running: " + fn +
                                 "\r\nReturning true, game should be blocked from starting");
