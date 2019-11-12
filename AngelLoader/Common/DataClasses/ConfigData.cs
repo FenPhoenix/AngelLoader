@@ -156,9 +156,7 @@ namespace AngelLoader.DataClasses
 
         // Session-only; don't write these out
 
-        internal readonly bool[] GameEditorDetected;
-
-        internal bool GetGameEditorDetected(GameIndex index) => GameEditorDetected[(uint)index];
+        private readonly bool[] GameEditorDetected;
 
         /// <summary>
         /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
@@ -179,13 +177,6 @@ namespace AngelLoader.DataClasses
         internal readonly bool[] UseSteamSwitches;
 
         internal bool GetUseSteamSwitch(GameIndex index) => UseSteamSwitches[(uint)index];
-
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal bool GetUseSteamSwitchUnsafe(Game game) => UseSteamSwitches[(uint)GameToGameIndex(game)];
 
         internal void SetUseSteamSwitch(GameIndex index, bool value) => UseSteamSwitches[(uint)index] = value;
 

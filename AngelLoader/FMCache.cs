@@ -6,7 +6,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using AngelLoader.WinAPI;
 using SevenZip;
 using static AngelLoader.GameSupport;

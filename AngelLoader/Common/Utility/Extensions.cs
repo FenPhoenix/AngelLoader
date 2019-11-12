@@ -388,21 +388,6 @@ namespace AngelLoader
             return path.Substring(Math.Max(i1, i2) + 1);
         }
 
-        internal static string GetTopmostDirName(this string path)
-        {
-            var i = path.LastIndexOf('\\');
-            if (i == -1) return path;
-
-            var end = path.Length;
-            if (i == path.Length - 1)
-            {
-                end--;
-                i = path.LastIndexOf('\\', end);
-            }
-
-            return path.Substring(i + 1, end - (i + 1));
-        }
-
         #endregion
 
         internal static string ToSingleLineComment(this string value, int maxLength)

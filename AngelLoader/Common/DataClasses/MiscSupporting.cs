@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -84,9 +85,11 @@ namespace AngelLoader.DataClasses
 
     internal enum DateFormat { CurrentCultureShort, CurrentCultureLong, Custom }
 
-    [Flags] internal enum FinishedState : uint { Null = 0, Finished = 1, Unfinished = 2 }
+    [Flags, PublicAPI]
+    internal enum FinishedState : uint { Null = 0, Finished = 1, Unfinished = 2 }
 
-    [Flags] internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
+    [Flags, PublicAPI]
+    internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
     // IMPORTANT: Do not rename elements or compatibility will break!
     [Flags]
@@ -392,36 +395,17 @@ namespace AngelLoader.DataClasses
 
         #region Selected FMs
 
-        internal readonly SelectedFM[] SelectedFMs;
+        private readonly SelectedFM[] SelectedFMs;
 
         internal SelectedFM GetSelectedFM(GameIndex index) => SelectedFMs[(uint)index];
-
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal SelectedFM GetSelectedFMUnsafe(Game game) => SelectedFMs[(uint)GameToGameIndex(game)];
-
-        internal void SetSelectedFM(GameIndex index, SelectedFM value) => SelectedFMs[(uint)index] = value;
 
         #endregion
 
         #region Filters
 
-        // Filter
-        internal readonly Filter[] Filters;
+        private readonly Filter[] Filters;
 
         internal Filter GetFilter(GameIndex index) => Filters[(uint)index];
-
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal Filter GetFilterUnsafe(Game game) => Filters[(uint)GameToGameIndex(game)];
-
-        internal void SetFilter(GameIndex index, Filter value) => Filters[(uint)index] = value;
 
         #endregion
 

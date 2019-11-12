@@ -1269,7 +1269,7 @@ namespace AngelLoader.Forms
         private void LocalizeOwnerForm()
         {
             try { OwnerForm!.Localize(); }
-            catch (Exception ex) { Log("OwnerForm might be uninitialized or somethin' again - not supposed to happen", ex); }
+            catch (Exception ex) { Log(nameof(OwnerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex); }
         }
     }
 }

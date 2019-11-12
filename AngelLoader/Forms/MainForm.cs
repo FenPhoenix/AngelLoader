@@ -964,7 +964,11 @@ namespace AngelLoader.Forms
             Application.AddMessageFilter(this);
         }
 
+#if DEBUG
         private void MainForm_Shown(object sender, EventArgs e)
+#else
+        private static void MainForm_Shown(object sender, EventArgs e)
+#endif
         {
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
@@ -2519,7 +2523,12 @@ namespace AngelLoader.Forms
         }
 #endif
 
-        private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
+#if DEBUG
+        private async void SettingsButton_Click(object sender, EventArgs e)
+#else
+        private static async void SettingsButton_Click(object sender, EventArgs e)
+#endif
+            => await Core.OpenSettings();
 
         #endregion
 
@@ -3852,7 +3861,12 @@ namespace AngelLoader.Forms
             if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
         }
 
-        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
+#if DEBUG
+        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) 
+#else
+        private static void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+#endif
+            => Core.OpenLink(e.LinkText);
 
         private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
@@ -4119,7 +4133,12 @@ namespace AngelLoader.Forms
 
         private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton, e);
 
-        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons((Button)sender, e);
+#if DEBUG
+        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) 
+#else
+        private static void ScanIconButtons_Paint(object sender, PaintEventArgs e)
+#endif
+            => ButtonPainter.PaintScanSmallButtons((Button)sender, e);
 
         #endregion
     }

@@ -1178,12 +1178,10 @@ namespace AngelLoader
 
         #region Readme
 
-        private static string GetReadmeFileFullPath(FanMission fm)
-        {
-            return FMIsReallyInstalled(fm)
+        private static string GetReadmeFileFullPath(FanMission fm) =>
+            FMIsReallyInstalled(fm)
                 ? Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir, fm.SelectedReadme)
                 : Path.Combine(Paths.FMsCache, fm.InstalledDir, fm.SelectedReadme);
-        }
 
         internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
