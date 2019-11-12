@@ -75,7 +75,7 @@ namespace AngelLoader
                 var savesDir = fm.Game == Game.Thief3 ? T3SavesDir : DarkSavesDir;
                 var savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
                 var netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, DarkNetSavesDir);
-                // Screenshots directory name is the same for T1/T2/T3
+                // Screenshots directory name is the same for T1/T2/T3/SS2
                 var screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, ScreensDir);
                 var ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, SS2CurrentDir);
 

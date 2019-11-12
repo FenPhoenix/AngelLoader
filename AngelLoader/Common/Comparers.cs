@@ -14,12 +14,12 @@ namespace AngelLoader
 
     internal static class SortStatic
     {
-        private static int TitleOrFallback(string t1, string t2, FanMission fm1, FanMission fm2, bool compareTitles = true)
+        private static int TitleOrFallback(string title1, string title2, FanMission fm1, FanMission fm2, bool compareTitles = true)
         {
             int ret;
             if (compareTitles)
             {
-                ret = string.Compare(t1, t2, StringComparison.InvariantCultureIgnoreCase);
+                ret = string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase);
                 if (ret != 0) return ret;
             }
 

@@ -483,10 +483,10 @@ namespace AngelLoader
         private static bool SetGameData(GameIndex game, bool storeConfigInfo)
         {
             string gameExe = Config.GetGameExe(game);
-            bool game_Exe_Specified = !gameExe.IsWhiteSpace();
+            bool gameExeSpecified = !gameExe.IsWhiteSpace();
 
             string gamePath = "";
-            if (game_Exe_Specified)
+            if (gameExeSpecified)
             {
                 try
                 {
@@ -502,13 +502,13 @@ namespace AngelLoader
             Config.SetGamePath(game, gamePath);
             if (GameIsDark(game))
             {
-                var data = game_Exe_Specified
+                var data = gameExeSpecified
                     ? GetInfoFromCamModIni(gamePath, out Error _)
                     : (FMsPath: "", FMLanguage: "", FMLanguageForced: false, FMSelectorLines: new List<string>(),
                         AlwaysShowLoader: false);
 
                 Config.SetFMInstallPath(game, data.FMsPath);
-                Config.SetGameEditorDetected(game, game_Exe_Specified && !GetEditorExe(game).IsEmpty());
+                Config.SetGameEditorDetected(game, gameExeSpecified && !GetEditorExe(game).IsEmpty());
 #if false
                 Config.SetPerGameFMLanguage(game, data.FMLanguage);
                 Config.SetPerGameFMForcedLanguage(game, data.FMLanguageForced);
@@ -516,7 +516,7 @@ namespace AngelLoader
 
                 if (storeConfigInfo)
                 {
-                    if (game_Exe_Specified)
+                    if (gameExeSpecified)
                     {
                         Config.SetStartupFMSelectorLines(game, data.FMSelectorLines);
                         Config.SetStartupAlwaysStartSelector(game, data.AlwaysShowLoader);
@@ -530,7 +530,7 @@ namespace AngelLoader
             }
             else
             {
-                if (game_Exe_Specified)
+                if (gameExeSpecified)
                 {
                     var t3Data = GetInfoFromSneakyOptionsIni();
                     if (t3Data.Error == Error.None)
@@ -565,7 +565,7 @@ namespace AngelLoader
                 }
             }
 
-            return game_Exe_Specified;
+            return gameExeSpecified;
         }
 
         // Future use

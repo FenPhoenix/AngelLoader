@@ -11,6 +11,7 @@ namespace AngelLoader
         CamModIniNotFound,
         T1CamModIniNotFound,
         T2CamModIniNotFound,
+        SS2CamModIniNotFound,
         SneakyOptionsNoRegKey,
         SneakyOptionsNotFound,
         T3FMInstPathNotFound

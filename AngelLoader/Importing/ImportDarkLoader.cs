@@ -309,22 +309,24 @@ namespace AngelLoader.Importing
         private static async Task<bool>
         ImportSaves(string[] lines)
         {
-            var t1Dir = "";
-            var t2Dir = "";
-            var t1DirRead = false;
-            var t2DirRead = false;
+            string t1Dir = "";
+            string t2Dir = "";
+            string ss2Dir = "";
+            bool t1DirRead = false;
+            bool t2DirRead = false;
+            bool ss2DirRead = false;
 
             for (var i = 0; i < lines.Length; i++)
             {
-                var line = lines[i];
-                var lineTS = line.TrimStart();
-                var lineTB = lineTS.TrimEnd();
+                string line = lines[i];
+                string lineTS = line.TrimStart();
+                string lineTB = lineTS.TrimEnd();
 
                 if (lineTB == "[options]")
                 {
                     while (i < lines.Length - 1)
                     {
-                        var lt = lines[i + 1].Trim();
+                        string lt = lines[i + 1].Trim();
                         if (lt.StartsWithI("thief1dir="))
                         {
                             t1Dir = lt.Substring(10).Trim();
@@ -335,11 +337,16 @@ namespace AngelLoader.Importing
                             t2Dir = lt.Substring(10).Trim();
                             t2DirRead = true;
                         }
+                        else if (lt.StartsWithI("shock2dir="))
+                        {
+                            ss2Dir = lt.Substring(10).Trim();
+                            ss2DirRead = true;
+                        }
                         else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
-                        if (t1DirRead && t2DirRead) goto breakout;
+                        if (t1DirRead && t2DirRead && ss2DirRead) goto breakout;
                         i++;
                     }
                 }
@@ -347,16 +354,17 @@ namespace AngelLoader.Importing
 
             breakout:
 
-            if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace()) return true;
+            if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 
             await Task.Run(() =>
             {
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     if (i == 0 && t1Dir.IsEmpty()) continue;
                     if (i == 1 && t2Dir.IsEmpty()) continue;
+                    if (i == 2 && ss2Dir.IsEmpty()) continue;
 
-                    string savesPath = Path.Combine(i == 0 ? t1Dir : t2Dir, "allsaves");
+                    string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
                     if (!Directory.Exists(savesPath)) continue;
 
                     var convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);

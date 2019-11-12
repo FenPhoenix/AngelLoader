@@ -152,7 +152,7 @@ namespace AngelLoader.Forms.Import
 
         but we should ignore this and scan for the type ourselves, because:
         a) DarkLoader gets the type wrong with NewDark (marks Thief1 as Thief2), and
-        b) we don't want to pollute our own list with archive types we don't support (T2x, SS2)
+        b) we don't want to pollute our own list with archive types we don't support (T2X? we support SS2 now)
 
         comment=(string)
         Looks like this:

@@ -4,6 +4,7 @@ using AngelLoader.Properties;
 namespace AngelLoader.Forms
 {
     // This class and everything accessible inside it needs to be public for the designers to recognize it
+    // @GENGAMES: There's game-related stuff in here
     public static class Images
     {
         private static Bitmap? _Thief1_16;

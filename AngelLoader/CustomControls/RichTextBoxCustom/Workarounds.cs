@@ -14,7 +14,7 @@ namespace AngelLoader.CustomControls
 
         private SCROLLINFO _scrollInfo;
 
-        private readonly Timer tmrAutoScroll = new Timer { Interval = 10 };
+        private readonly Timer AutoScrollTimer = new Timer { Interval = 10 };
         private int scrollIncrementY;
         // No picture is used currently
         private readonly PictureBox pbGlyph = new PictureBox { Size = new Size(26, 26), Visible = false };
@@ -32,7 +32,7 @@ namespace AngelLoader.CustomControls
 
         private void InitReaderMode()
         {
-            tmrAutoScroll.Tick += tmrAutoScroll_Tick;
+            AutoScrollTimer.Tick += AutoScrollTimer_Tick;
             Controls.Add(pbGlyph);
         }
 
@@ -178,7 +178,7 @@ namespace AngelLoader.CustomControls
             pbGlyph.Location = Point.Subtract(PointToClient(MousePosition), new Size(pbGlyph.Width / 2, pbGlyph.Height / 2));
 
             SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
-            tmrAutoScroll.Start();
+            AutoScrollTimer.Start();
             endOnMouseUp = false;
 
             // bounds to get the scrolling sensitivity			
@@ -209,7 +209,7 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        private void tmrAutoScroll_Tick(object sender, EventArgs e)
+        private void AutoScrollTimer_Tick(object sender, EventArgs e)
         {
             if (scrollIncrementY != 0) BetterScroll(Handle, scrollIncrementY);
         }
@@ -227,7 +227,7 @@ namespace AngelLoader.CustomControls
             if (isMouseDown || (endOnMouseUp && (msg.Msg == WM_MBUTTONUP)))
             {
                 // exit reader mode
-                tmrAutoScroll.Stop();
+                AutoScrollTimer.Stop();
             }
 
             if ((!endOnMouseUp && (msg.Msg == WM_MBUTTONUP)) || (msg.Msg == WM_MOUSELEAVE))

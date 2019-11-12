@@ -352,7 +352,7 @@ namespace AngelLoader.CustomControls
         {
             if (disposing)
             {
-                tmrAutoScroll?.Dispose();
+                AutoScrollTimer?.Dispose();
                 pbGlyph?.Dispose();
                 _monospaceFont?.Dispose();
             }

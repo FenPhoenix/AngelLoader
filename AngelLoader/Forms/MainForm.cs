@@ -2448,6 +2448,7 @@ namespace AngelLoader.Forms
             ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
 
+        // @GENGAMES
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
             var item = (ToolStripMenuItem)sender;

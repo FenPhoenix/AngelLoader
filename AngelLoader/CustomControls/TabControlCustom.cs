@@ -14,14 +14,14 @@ namespace AngelLoader.CustomControls
         }
 
         private TabPage? DragTab;
-        private readonly List<BackingTab> BackingTabList = new List<BackingTab>();
+        private readonly List<BackingTab> BackingTabList = new List<BackingTab>(Misc.TopRightTabsCount);
 
         public TabControlCustom()
         {
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
         }
 
-        internal void AddTabsFull(IEnumerable<TabPage> tabPages)
+        internal void AddTabsFull(List<TabPage> tabPages)
         {
             BackingTabList.Clear();
 

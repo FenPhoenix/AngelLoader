@@ -3,11 +3,17 @@ using System.Windows.Forms;
 
 namespace AngelLoader.CustomControls
 {
-    public class TransparentPanel : Panel
+    public sealed class TransparentPanel : Panel
     {
         private const int WS_EX_TRANSPARENT = 0x20;
 
-        public TransparentPanel() => SetStyle(ControlStyles.Opaque, true);
+        private readonly SolidBrush TransparentBrush;
+
+        public TransparentPanel()
+        {
+            SetStyle(ControlStyles.Opaque, true);
+            TransparentBrush = new SolidBrush(Color.FromArgb(0, BackColor));
+        }
 
         protected override CreateParams CreateParams
         {
@@ -22,10 +28,7 @@ namespace AngelLoader.CustomControls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            using (var brush = new SolidBrush(Color.FromArgb(0, BackColor)))
-            {
-                e.Graphics.FillRectangle(brush, ClientRectangle);
-            }
+            e.Graphics.FillRectangle(TransparentBrush, ClientRectangle);
             base.OnPaint(e);
         }
     }

@@ -31,6 +31,7 @@ namespace AngelLoader.Forms
     -Page ctors - lazy-loading these would be a giant headache - not really worth it
     */
 
+    // @GENGAMES: There's game stuff in here of course
     internal sealed partial class SettingsForm : Form, IEventDisabler
     {
         #region Private fields

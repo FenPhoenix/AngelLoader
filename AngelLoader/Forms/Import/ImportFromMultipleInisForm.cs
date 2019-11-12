@@ -58,6 +58,7 @@ namespace AngelLoader.Forms.Import
         {
             if (DialogResult != DialogResult.OK) return;
 
+            // TODO: @GENGAMES: Put these into an array
             IniFiles = new List<string>
             {
                 ImportControls.Thief1IniFile.Trim(),

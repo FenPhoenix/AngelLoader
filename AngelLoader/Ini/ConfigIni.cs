@@ -170,7 +170,7 @@ namespace AngelLoader.Ini
                     config.Columns.Add(col);
                 }
                 #region Filter
-
+                // @GENGAMES
                 else if (lineT.StartsWithFast_NoNullChecks("FilterTitle="))
                 {
                     config.Filter.Title = val;
@@ -888,6 +888,7 @@ namespace AngelLoader.Ini
         }
 
         // This is faster with reflection removed.
+        // @GENGAMES
         internal static void WriteConfigIni(ConfigData config, string fileName)
         {
             // @R#_FALSE_POSITIVE: notnull is a valid C# 8 keyword

@@ -237,6 +237,7 @@ namespace AngelLoader
                     if (scanOptions.ScanGameType)
                     {
                         // @GENGAMES: Do a hard convert at the API boundary, even though these now match the ordering
+                        // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
                         sel.Game = scannedFM.Game switch
                         {
                             FMScanner.Game.Unsupported => Game.Unsupported,
