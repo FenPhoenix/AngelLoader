@@ -342,5 +342,10 @@ namespace AngelLoader.DataClasses
         internal bool UseShortGameTabNames = false;
 
         //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
+
+#if !ReleaseBeta && !ReleasePublic
+        // TODO: Quick-n-dirty session-only var for now
+        internal bool ForceWindowed = false;
+#endif
     }
 }

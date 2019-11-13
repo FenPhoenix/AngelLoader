@@ -80,7 +80,11 @@ namespace AngelLoader
 
             SetUsAsSelector(game, gamePath);
 
+#if !ReleaseBeta && !ReleasePublic
+            string args = Config.ForceWindowed ? "+force_windowed" : "";
+#else
             string args = "";
+#endif
             string workingPath = Config.GetGamePath(game);
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, workingPath, args) = sv;
@@ -133,7 +137,11 @@ namespace AngelLoader
             // I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
             // works and one that doesn't, so I can test both paths.
 
-            var args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
+#if !ReleaseBeta && !ReleasePublic
+            string args = Config.ForceWindowed ? "+force_windowed -fm" : "-fm";
+#else
+            string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
+#endif
 
             WriteStubCommFile(fm, playOriginalGame: false);
 

@@ -62,7 +62,15 @@ namespace AngelLoader.Forms
         // Windows will dispose it all anyway
 #pragma warning disable IDE0069 // Disposable fields should be disposed
 
+#if !ReleaseBeta && !ReleasePublic
+        private readonly CheckBox ForceWindowedCheckBox;
+#endif
+
         #region Test / debug
+
+#if !ReleaseBeta && !ReleasePublic
+        private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
+#endif
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 
@@ -658,6 +666,14 @@ namespace AngelLoader.Forms
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
 
             InitComponentManual();
+
+#if !ReleaseBeta && !ReleasePublic
+            ForceWindowedCheckBox = new CheckBox();
+            BottomRightButtonsFLP.Controls.Add(ForceWindowedCheckBox);
+            ForceWindowedCheckBox.Dock = DockStyle.Fill;
+            ForceWindowedCheckBox.Text = @"Force windowed";
+            ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
+#endif
 
 #if Release_Testing && !RT_StartupOnly
             #region Init debug-only controls
