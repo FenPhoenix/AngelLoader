@@ -14,7 +14,11 @@ namespace AngelLoader
         SS2CamModIniNotFound,
         SneakyOptionsNoRegKey,
         SneakyOptionsNotFound,
-        T3FMInstPathNotFound
+        T3FMInstPathNotFound,
+        GameExeNotSpecified,
+        GameExeNotFound,
+        ExeIsLargerThanInt,
+        GameVersionNotFound
     }
 
     [PublicAPI]

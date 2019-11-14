@@ -3879,7 +3879,7 @@ namespace AngelLoader.Forms
         }
 
 #if DEBUG
-        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) 
+        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
 #else
         private static void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
 #endif
@@ -4151,7 +4151,7 @@ namespace AngelLoader.Forms
         private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton, e);
 
 #if DEBUG
-        private void ScanIconButtons_Paint(object sender, PaintEventArgs e) 
+        private void ScanIconButtons_Paint(object sender, PaintEventArgs e)
 #else
         private static void ScanIconButtons_Paint(object sender, PaintEventArgs e)
 #endif

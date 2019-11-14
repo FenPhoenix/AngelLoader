@@ -172,6 +172,53 @@ namespace AngelLoader
 
         #endregion
 
+        internal static Error TryGetGameVersion(GameIndex game, out string version)
+        {
+            version = "";
+
+            string gameExe = Config.GetGameExe(game);
+
+            if (gameExe.IsWhiteSpace()) return Error.GameExeNotSpecified;
+            if (!File.Exists(gameExe)) return Error.GameExeNotFound;
+
+            using var br = new BinaryReader(new FileStream(gameExe, FileMode.Open, FileAccess.Read), Encoding.ASCII,
+                leaveOpen: false);
+
+            long streamLen = br.BaseStream.Length;
+
+            if (streamLen > int.MaxValue) return Error.ExeIsLargerThanInt;
+
+            // Search starting at 88% through the file: 91% (average location) plus some wiggle room (fastest)
+            long pos = (long)((88.0d / 100) * streamLen);
+            var byteCount = streamLen - pos;
+            br.BaseStream.Position = pos;
+            byte[] bytes = new byte[byteCount];
+            br.Read(bytes, 0, (int)byteCount);
+            int verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
+
+            // Fallback: search the whole file - still fast, but not as fast
+            if (verIndex == -1)
+            {
+                br.BaseStream.Position = 0;
+                bytes = new byte[streamLen];
+                br.Read(bytes, 0, (int)streamLen);
+                verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
+                if (verIndex == -1) return Error.GameVersionNotFound;
+            }
+
+            // Init with non-null values so we don't start out with two nulls and early-out before we do anything
+            byte[] null2 = { 255, 255 };
+            for (int i = verIndex + ProductVersionBytes.Length; i < bytes.Length; i++)
+            {
+                if (null2[0] == '\0' && null2[1] == '\0') break;
+                null2[0] = null2[1];
+                null2[1] = bytes[i];
+                if (bytes[i] > 0) version += ((char)bytes[i]).ToString();
+            }
+
+            return Error.None;
+        }
+
         internal static bool PathIsRelative(string path) =>
             path.Length > 1 && path[0] == '.' &&
             (path[1] == '/' || path[1] == '\\' ||

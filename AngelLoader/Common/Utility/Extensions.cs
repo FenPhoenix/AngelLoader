@@ -35,6 +35,29 @@ namespace AngelLoader
 
         #region Contains
 
+        internal static int ContainsByteSequence(this byte[] input, byte[] pattern)
+        {
+            var firstByte = pattern[0];
+            int index = Array.IndexOf(input, firstByte);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (index + i >= input.Length) return -1;
+                    if (pattern[i] != input[index + i])
+                    {
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return -1;
+                        break;
+                    }
+
+                    if (i == pattern.Length - 1) return index;
+                }
+            }
+
+            return index;
+        }
+
         [PublicAPI]
         internal static bool Contains(this string value, string substring, StringComparison comparison)
         {

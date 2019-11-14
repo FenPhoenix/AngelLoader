@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
@@ -13,6 +14,13 @@ namespace AngelLoader
         internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
 
         internal static readonly ConfigData Config = new ConfigData();
+
+        // Used for detecting NewDark version of NewDark executables
+        private static readonly byte[] ProductVersionBytes = Encoding.ASCII.GetBytes(new[]
+        {
+            'P', '\0', 'r', '\0', 'o', '\0', 'd', '\0', 'u', '\0', 'c', '\0', 't', '\0',
+            'V', '\0', 'e', '\0', 'r', '\0', 's', '\0', 'i', '\0', 'o', '\0', 'n', '\0', '\0', '\0'
+        });
 
         #region Categories and tags
 
