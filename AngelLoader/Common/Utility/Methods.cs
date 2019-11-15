@@ -172,8 +172,6 @@ namespace AngelLoader
 
         #endregion
 
-        // TODO: Disabled for a quick bugfix release
-
         internal static string CreateTitle()
         {
             string ret = "";
