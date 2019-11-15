@@ -393,7 +393,6 @@ namespace AngelLoader.Forms
 
                 OtherPage.HideUninstallButtonCheckBox.Checked = config.HideUninstallButton;
                 OtherPage.HideFMListZoomButtonsCheckBox.Checked = config.HideFMListZoomButtons;
-                OtherPage.ShowGameVersionsInTitleBarCheckBox.Checked = config.ShowGameVersionsInTitleBar;
 
                 #endregion
 
@@ -857,7 +856,6 @@ namespace AngelLoader.Forms
 
                 OutConfig.HideUninstallButton = OtherPage.HideUninstallButtonCheckBox.Checked;
                 OutConfig.HideFMListZoomButtons = OtherPage.HideFMListZoomButtonsCheckBox.Checked;
-                OutConfig.ShowGameVersionsInTitleBar = OtherPage.ShowGameVersionsInTitleBarCheckBox.Checked;
 
                 #endregion
 
