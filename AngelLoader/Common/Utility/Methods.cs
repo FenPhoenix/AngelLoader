@@ -222,7 +222,7 @@ namespace AngelLoader
                 br.BaseStream.Position = pos;
                 byte[] bytes = new byte[byteCount];
                 br.Read(bytes, 0, (int)byteCount);
-                int verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
+                int verIndex = bytes.IndexOfByteSequence(ProductVersionBytes);
 
                 // Fallback: search the whole file - still fast, but not as fast
                 if (verIndex == -1)
@@ -230,7 +230,7 @@ namespace AngelLoader
                     br.BaseStream.Position = 0;
                     bytes = new byte[streamLen];
                     br.Read(bytes, 0, (int)streamLen);
-                    verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
+                    verIndex = bytes.IndexOfByteSequence(ProductVersionBytes);
                     if (verIndex == -1) return Error.GameVersionNotFound;
                 }
 

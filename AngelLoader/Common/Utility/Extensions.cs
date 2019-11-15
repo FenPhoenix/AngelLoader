@@ -35,7 +35,7 @@ namespace AngelLoader
 
         #region Contains
 
-        internal static int ContainsByteSequence(this byte[] input, byte[] pattern)
+        internal static int IndexOfByteSequence(this byte[] input, byte[] pattern)
         {
             var firstByte = pattern[0];
             int index = Array.IndexOf(input, firstByte);
