@@ -34,6 +34,7 @@
             this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
             this.LaunchTheseGamesThroughSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.T1UseSteamCheckBox = new System.Windows.Forms.CheckBox();
+            this.SS2UseSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.T3UseSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.T2UseSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.SteamExeLabel = new System.Windows.Forms.Label();
@@ -42,12 +43,15 @@
             this.PathsToGameExesGroupBox = new System.Windows.Forms.GroupBox();
             this.GameRequirementsPanel = new System.Windows.Forms.Panel();
             this.GameRequirementsLabel = new System.Windows.Forms.Label();
+            this.SS2ExePathLabel = new System.Windows.Forms.Label();
             this.Thief3ExePathLabel = new System.Windows.Forms.Label();
             this.Thief2ExePathLabel = new System.Windows.Forms.Label();
             this.Thief1ExePathLabel = new System.Windows.Forms.Label();
+            this.SS2ExePathBrowseButton = new System.Windows.Forms.Button();
             this.Thief3ExePathBrowseButton = new System.Windows.Forms.Button();
             this.Thief2ExePathBrowseButton = new System.Windows.Forms.Button();
             this.Thief1ExePathBrowseButton = new System.Windows.Forms.Button();
+            this.SS2ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief3ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief2ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
@@ -61,10 +65,6 @@
             this.BackupPathBrowseButton = new System.Windows.Forms.Button();
             this.BackupPathTextBox = new System.Windows.Forms.TextBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
-            this.SS2ExePathTextBox = new System.Windows.Forms.TextBox();
-            this.SS2ExePathBrowseButton = new System.Windows.Forms.Button();
-            this.SS2ExePathLabel = new System.Windows.Forms.Label();
-            this.SS2UseSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
             this.SteamOptionsGroupBox.SuspendLayout();
@@ -136,7 +136,7 @@
             this.LaunchTheseGamesThroughSteamCheckBox.Location = new System.Drawing.Point(0, 0);
             this.LaunchTheseGamesThroughSteamCheckBox.Name = "LaunchTheseGamesThroughSteamCheckBox";
             this.LaunchTheseGamesThroughSteamCheckBox.Size = new System.Drawing.Size(238, 17);
-            this.LaunchTheseGamesThroughSteamCheckBox.TabIndex = 7;
+            this.LaunchTheseGamesThroughSteamCheckBox.TabIndex = 0;
             this.LaunchTheseGamesThroughSteamCheckBox.Text = "If Steam exists, use it to launch these games:";
             this.LaunchTheseGamesThroughSteamCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -148,9 +148,21 @@
             this.T1UseSteamCheckBox.Location = new System.Drawing.Point(8, 24);
             this.T1UseSteamCheckBox.Name = "T1UseSteamCheckBox";
             this.T1UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T1UseSteamCheckBox.TabIndex = 4;
+            this.T1UseSteamCheckBox.TabIndex = 1;
             this.T1UseSteamCheckBox.Text = "Thief 1";
             this.T1UseSteamCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // SS2UseSteamCheckBox
+            // 
+            this.SS2UseSteamCheckBox.AutoSize = true;
+            this.SS2UseSteamCheckBox.Checked = true;
+            this.SS2UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SS2UseSteamCheckBox.Location = new System.Drawing.Point(8, 72);
+            this.SS2UseSteamCheckBox.Name = "SS2UseSteamCheckBox";
+            this.SS2UseSteamCheckBox.Size = new System.Drawing.Size(103, 17);
+            this.SS2UseSteamCheckBox.TabIndex = 4;
+            this.SS2UseSteamCheckBox.Text = "System Shock 2";
+            this.SS2UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
             // T3UseSteamCheckBox
             // 
@@ -160,7 +172,7 @@
             this.T3UseSteamCheckBox.Location = new System.Drawing.Point(8, 56);
             this.T3UseSteamCheckBox.Name = "T3UseSteamCheckBox";
             this.T3UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T3UseSteamCheckBox.TabIndex = 6;
+            this.T3UseSteamCheckBox.TabIndex = 3;
             this.T3UseSteamCheckBox.Text = "Thief 3";
             this.T3UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -172,7 +184,7 @@
             this.T2UseSteamCheckBox.Location = new System.Drawing.Point(8, 40);
             this.T2UseSteamCheckBox.Name = "T2UseSteamCheckBox";
             this.T2UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T2UseSteamCheckBox.TabIndex = 5;
+            this.T2UseSteamCheckBox.TabIndex = 2;
             this.T2UseSteamCheckBox.Text = "Thief 2";
             this.T2UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -240,7 +252,7 @@
             this.GameRequirementsPanel.Location = new System.Drawing.Point(16, 192);
             this.GameRequirementsPanel.Name = "GameRequirementsPanel";
             this.GameRequirementsPanel.Size = new System.Drawing.Size(392, 32);
-            this.GameRequirementsPanel.TabIndex = 9;
+            this.GameRequirementsPanel.TabIndex = 12;
             // 
             // GameRequirementsLabel
             // 
@@ -248,10 +260,19 @@
             this.GameRequirementsLabel.Location = new System.Drawing.Point(0, 0);
             this.GameRequirementsLabel.Name = "GameRequirementsLabel";
             this.GameRequirementsLabel.Size = new System.Drawing.Size(273, 26);
-            this.GameRequirementsLabel.TabIndex = 1;
+            this.GameRequirementsLabel.TabIndex = 0;
             this.GameRequirementsLabel.Text = "* Thief 1, Thief 2 and System Shock 2 require NewDark.\r\n* Thief 3 requires the Sn" +
     "eaky Upgrade 1.1.9.1 or above.";
             this.GameRequirementsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // SS2ExePathLabel
+            // 
+            this.SS2ExePathLabel.AutoSize = true;
+            this.SS2ExePathLabel.Location = new System.Drawing.Point(16, 144);
+            this.SS2ExePathLabel.Name = "SS2ExePathLabel";
+            this.SS2ExePathLabel.Size = new System.Drawing.Size(87, 13);
+            this.SS2ExePathLabel.TabIndex = 9;
+            this.SS2ExePathLabel.Text = "System Shock 2:";
             // 
             // Thief3ExePathLabel
             // 
@@ -259,7 +280,7 @@
             this.Thief3ExePathLabel.Location = new System.Drawing.Point(16, 104);
             this.Thief3ExePathLabel.Name = "Thief3ExePathLabel";
             this.Thief3ExePathLabel.Size = new System.Drawing.Size(43, 13);
-            this.Thief3ExePathLabel.TabIndex = 8;
+            this.Thief3ExePathLabel.TabIndex = 6;
             this.Thief3ExePathLabel.Text = "Thief 3:";
             // 
             // Thief2ExePathLabel
@@ -268,7 +289,7 @@
             this.Thief2ExePathLabel.Location = new System.Drawing.Point(16, 64);
             this.Thief2ExePathLabel.Name = "Thief2ExePathLabel";
             this.Thief2ExePathLabel.Size = new System.Drawing.Size(43, 13);
-            this.Thief2ExePathLabel.TabIndex = 4;
+            this.Thief2ExePathLabel.TabIndex = 3;
             this.Thief2ExePathLabel.Text = "Thief 2:";
             // 
             // Thief1ExePathLabel
@@ -280,6 +301,18 @@
             this.Thief1ExePathLabel.TabIndex = 0;
             this.Thief1ExePathLabel.Text = "Thief 1:";
             // 
+            // SS2ExePathBrowseButton
+            // 
+            this.SS2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SS2ExePathBrowseButton.AutoSize = true;
+            this.SS2ExePathBrowseButton.Location = new System.Drawing.Point(336, 159);
+            this.SS2ExePathBrowseButton.Name = "SS2ExePathBrowseButton";
+            this.SS2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.SS2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.SS2ExePathBrowseButton.TabIndex = 11;
+            this.SS2ExePathBrowseButton.Text = "Browse...";
+            this.SS2ExePathBrowseButton.UseVisualStyleBackColor = true;
+            // 
             // Thief3ExePathBrowseButton
             // 
             this.Thief3ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -288,7 +321,7 @@
             this.Thief3ExePathBrowseButton.Name = "Thief3ExePathBrowseButton";
             this.Thief3ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief3ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.Thief3ExePathBrowseButton.TabIndex = 6;
+            this.Thief3ExePathBrowseButton.TabIndex = 8;
             this.Thief3ExePathBrowseButton.Text = "Browse...";
             this.Thief3ExePathBrowseButton.UseVisualStyleBackColor = true;
             // 
@@ -300,7 +333,7 @@
             this.Thief2ExePathBrowseButton.Name = "Thief2ExePathBrowseButton";
             this.Thief2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Thief2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.Thief2ExePathBrowseButton.TabIndex = 4;
+            this.Thief2ExePathBrowseButton.TabIndex = 5;
             this.Thief2ExePathBrowseButton.Text = "Browse...";
             this.Thief2ExePathBrowseButton.UseVisualStyleBackColor = true;
             // 
@@ -316,6 +349,15 @@
             this.Thief1ExePathBrowseButton.Text = "Browse...";
             this.Thief1ExePathBrowseButton.UseVisualStyleBackColor = true;
             // 
+            // SS2ExePathTextBox
+            // 
+            this.SS2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.SS2ExePathTextBox.Location = new System.Drawing.Point(16, 160);
+            this.SS2ExePathTextBox.Name = "SS2ExePathTextBox";
+            this.SS2ExePathTextBox.Size = new System.Drawing.Size(320, 20);
+            this.SS2ExePathTextBox.TabIndex = 10;
+            // 
             // Thief3ExePathTextBox
             // 
             this.Thief3ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -323,7 +365,7 @@
             this.Thief3ExePathTextBox.Location = new System.Drawing.Point(16, 120);
             this.Thief3ExePathTextBox.Name = "Thief3ExePathTextBox";
             this.Thief3ExePathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.Thief3ExePathTextBox.TabIndex = 5;
+            this.Thief3ExePathTextBox.TabIndex = 7;
             // 
             // Thief2ExePathTextBox
             // 
@@ -332,7 +374,7 @@
             this.Thief2ExePathTextBox.Location = new System.Drawing.Point(16, 80);
             this.Thief2ExePathTextBox.Name = "Thief2ExePathTextBox";
             this.Thief2ExePathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.Thief2ExePathTextBox.TabIndex = 3;
+            this.Thief2ExePathTextBox.TabIndex = 4;
             // 
             // Thief1ExePathTextBox
             // 
@@ -451,48 +493,6 @@
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
             this.DummyAutoScrollPanel.TabIndex = 13;
-            // 
-            // SS2ExePathTextBox
-            // 
-            this.SS2ExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SS2ExePathTextBox.Location = new System.Drawing.Point(16, 160);
-            this.SS2ExePathTextBox.Name = "SS2ExePathTextBox";
-            this.SS2ExePathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.SS2ExePathTextBox.TabIndex = 5;
-            // 
-            // SS2ExePathBrowseButton
-            // 
-            this.SS2ExePathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SS2ExePathBrowseButton.AutoSize = true;
-            this.SS2ExePathBrowseButton.Location = new System.Drawing.Point(336, 159);
-            this.SS2ExePathBrowseButton.Name = "SS2ExePathBrowseButton";
-            this.SS2ExePathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.SS2ExePathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.SS2ExePathBrowseButton.TabIndex = 6;
-            this.SS2ExePathBrowseButton.Text = "Browse...";
-            this.SS2ExePathBrowseButton.UseVisualStyleBackColor = true;
-            // 
-            // SS2ExePathLabel
-            // 
-            this.SS2ExePathLabel.AutoSize = true;
-            this.SS2ExePathLabel.Location = new System.Drawing.Point(16, 144);
-            this.SS2ExePathLabel.Name = "SS2ExePathLabel";
-            this.SS2ExePathLabel.Size = new System.Drawing.Size(87, 13);
-            this.SS2ExePathLabel.TabIndex = 8;
-            this.SS2ExePathLabel.Text = "System Shock 2:";
-            // 
-            // SS2UseSteamCheckBox
-            // 
-            this.SS2UseSteamCheckBox.AutoSize = true;
-            this.SS2UseSteamCheckBox.Checked = true;
-            this.SS2UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.SS2UseSteamCheckBox.Location = new System.Drawing.Point(8, 72);
-            this.SS2UseSteamCheckBox.Name = "SS2UseSteamCheckBox";
-            this.SS2UseSteamCheckBox.Size = new System.Drawing.Size(103, 17);
-            this.SS2UseSteamCheckBox.TabIndex = 6;
-            this.SS2UseSteamCheckBox.Text = "System Shock 2";
-            this.SS2UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
             // PathsPage
             // 

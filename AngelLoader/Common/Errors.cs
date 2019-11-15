@@ -18,7 +18,8 @@ namespace AngelLoader
         GameExeNotSpecified,
         GameExeNotFound,
         ExeIsLargerThanInt,
-        GameVersionNotFound
+        GameVersionNotFound,
+        GameExeReadFailed
     }
 
     [PublicAPI]

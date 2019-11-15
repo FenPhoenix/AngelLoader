@@ -161,7 +161,7 @@
             this.PreviewDateLabel.Location = new System.Drawing.Point(386, 0);
             this.PreviewDateLabel.Name = "PreviewDateLabel";
             this.PreviewDateLabel.Size = new System.Drawing.Size(75, 13);
-            this.PreviewDateLabel.TabIndex = 20;
+            this.PreviewDateLabel.TabIndex = 0;
             this.PreviewDateLabel.Text = "[Preview date]";
             // 
             // DateCustomFormatPanel
@@ -336,7 +336,7 @@
             this.UseShortGameTabNamesCheckBox.Location = new System.Drawing.Point(40, 56);
             this.UseShortGameTabNamesCheckBox.Name = "UseShortGameTabNamesCheckBox";
             this.UseShortGameTabNamesCheckBox.Size = new System.Drawing.Size(172, 17);
-            this.UseShortGameTabNamesCheckBox.TabIndex = 2;
+            this.UseShortGameTabNamesCheckBox.TabIndex = 1;
             this.UseShortGameTabNamesCheckBox.Text = "Use short names on game tabs";
             this.UseShortGameTabNamesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -359,7 +359,7 @@
             this.OrganizeGamesInOneListRadioButton.Location = new System.Drawing.Point(16, 80);
             this.OrganizeGamesInOneListRadioButton.Name = "OrganizeGamesInOneListRadioButton";
             this.OrganizeGamesInOneListRadioButton.Size = new System.Drawing.Size(456, 32);
-            this.OrganizeGamesInOneListRadioButton.TabIndex = 1;
+            this.OrganizeGamesInOneListRadioButton.TabIndex = 2;
             this.OrganizeGamesInOneListRadioButton.TabStop = true;
             this.OrganizeGamesInOneListRadioButton.Text = "Everything in one list, and games are filters";
             this.OrganizeGamesInOneListRadioButton.UseVisualStyleBackColor = true;
@@ -383,7 +383,6 @@
             this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 128);
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
-            this.DummyAutoScrollPanel.TabIndex = 8;
             // 
             // FMDisplayPage
             // 

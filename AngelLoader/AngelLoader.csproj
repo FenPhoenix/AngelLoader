@@ -104,9 +104,6 @@
 
   <ItemGroup>
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\ProgressPanel.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\FMDisplayPage.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\OtherPage.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\SettingsPages\PathsPage.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx" />

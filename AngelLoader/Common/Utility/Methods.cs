@@ -172,48 +172,88 @@ namespace AngelLoader
 
         #endregion
 
+        internal static string CreateTitle()
+        {
+            string ret = "";
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                string gameExe = Config.GetGameExe((GameIndex)i);
+                if (!gameExe.IsWhiteSpace() && File.Exists(gameExe))
+                {
+                    if (ret.Length > 0) ret += ", ";
+                    ret += i switch
+                    {
+                        0 => "T1: ",
+                        1 => "T2: ",
+                        2 => "T3: ",
+                        _ => "SS2: "
+                    };
+                    Error error = TryGetGameVersion((GameIndex)i, out string version);
+                    ret += error == Error.None ? version : "unknown";
+                }
+            }
+
+            return ret;
+        }
+
         internal static Error TryGetGameVersion(GameIndex game, out string version)
         {
             version = "";
 
-            string gameExe = Config.GetGameExe(game);
+            string gameExe = GameIsDark(game) ? Config.GetGameExe(game) : Path.Combine(Config.GetGamePath(Thief3), "Sneaky.dll");
 
             if (gameExe.IsWhiteSpace()) return Error.GameExeNotSpecified;
             if (!File.Exists(gameExe)) return Error.GameExeNotFound;
 
-            using var br = new BinaryReader(new FileStream(gameExe, FileMode.Open, FileAccess.Read), Encoding.ASCII,
-                leaveOpen: false);
-
-            long streamLen = br.BaseStream.Length;
-
-            if (streamLen > int.MaxValue) return Error.ExeIsLargerThanInt;
-
-            // Search starting at 88% through the file: 91% (average location) plus some wiggle room (fastest)
-            long pos = (long)((88.0d / 100) * streamLen);
-            var byteCount = streamLen - pos;
-            br.BaseStream.Position = pos;
-            byte[] bytes = new byte[byteCount];
-            br.Read(bytes, 0, (int)byteCount);
-            int verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
-
-            // Fallback: search the whole file - still fast, but not as fast
-            if (verIndex == -1)
+            FileStream? fs = null;
+            BinaryReader? br = null;
+            try
             {
-                br.BaseStream.Position = 0;
-                bytes = new byte[streamLen];
-                br.Read(bytes, 0, (int)streamLen);
-                verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
-                if (verIndex == -1) return Error.GameVersionNotFound;
+                fs = new FileStream(gameExe, FileMode.Open, FileAccess.Read);
+                br = new BinaryReader(fs, Encoding.ASCII, leaveOpen: false);
+
+                long streamLen = br.BaseStream.Length;
+
+                if (streamLen > int.MaxValue) return Error.ExeIsLargerThanInt;
+
+                // Search starting at 88% through the file: 91% (average location) plus some wiggle room (fastest)
+                long pos = (long)((88.0d / 100) * streamLen);
+                var byteCount = streamLen - pos;
+                br.BaseStream.Position = pos;
+                byte[] bytes = new byte[byteCount];
+                br.Read(bytes, 0, (int)byteCount);
+                int verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
+
+                // Fallback: search the whole file - still fast, but not as fast
+                if (verIndex == -1)
+                {
+                    br.BaseStream.Position = 0;
+                    bytes = new byte[streamLen];
+                    br.Read(bytes, 0, (int)streamLen);
+                    verIndex = bytes.ContainsByteSequence(ProductVersionBytes);
+                    if (verIndex == -1) return Error.GameVersionNotFound;
+                }
+
+                // Init with non-null values so we don't start out with two nulls and early-out before we do anything
+                byte[] null2 = { 255, 255 };
+                for (int i = verIndex + ProductVersionBytes.Length; i < bytes.Length; i++)
+                {
+                    if (null2[0] == '\0' && null2[1] == '\0') break;
+                    null2[0] = null2[1];
+                    null2[1] = bytes[i];
+                    if (bytes[i] > 0) version += ((char)bytes[i]).ToString();
+                }
             }
-
-            // Init with non-null values so we don't start out with two nulls and early-out before we do anything
-            byte[] null2 = { 255, 255 };
-            for (int i = verIndex + ProductVersionBytes.Length; i < bytes.Length; i++)
+            catch (Exception ex)
             {
-                if (null2[0] == '\0' && null2[1] == '\0') break;
-                null2[0] = null2[1];
-                null2[1] = bytes[i];
-                if (bytes[i] > 0) version += ((char)bytes[i]).ToString();
+                Log("Exception reading/searching game exe for version string", ex);
+                version = "";
+                return Error.GameExeReadFailed;
+            }
+            finally
+            {
+                br?.Dispose();
+                fs?.Dispose();
             }
 
             return Error.None;
