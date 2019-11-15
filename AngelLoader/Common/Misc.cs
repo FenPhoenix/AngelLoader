@@ -15,12 +15,14 @@ namespace AngelLoader
 
         internal static readonly ConfigData Config = new ConfigData();
 
+#if false
         // Used for detecting NewDark version of NewDark executables
         private static readonly byte[] ProductVersionBytes = Encoding.ASCII.GetBytes(new[]
         {
             'P', '\0', 'r', '\0', 'o', '\0', 'd', '\0', 'u', '\0', 'c', '\0', 't', '\0',
             'V', '\0', 'e', '\0', 'r', '\0', 's', '\0', 'i', '\0', 'o', '\0', 'n', '\0', '\0', '\0'
         });
+#endif
 
         #region Categories and tags
 

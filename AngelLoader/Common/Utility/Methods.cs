@@ -172,6 +172,8 @@ namespace AngelLoader
 
         #endregion
 
+        // TODO: Disabled for a quick bugfix release
+#if false
         internal static string CreateTitle()
         {
             string ret = "";
@@ -258,6 +260,7 @@ namespace AngelLoader
 
             return Error.None;
         }
+#endif
 
         internal static bool PathIsRelative(string path) =>
             path.Length > 1 && path[0] == '.' &&

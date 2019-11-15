@@ -35,6 +35,7 @@ namespace AngelLoader
 
         #region Contains
 
+#if false
         internal static int ContainsByteSequence(this byte[] input, byte[] pattern)
         {
             var firstByte = pattern[0];
@@ -57,6 +58,7 @@ namespace AngelLoader
 
             return index;
         }
+#endif
 
         [PublicAPI]
         internal static bool Contains(this string value, string substring, StringComparison comparison)
