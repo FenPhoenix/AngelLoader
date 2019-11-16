@@ -664,16 +664,7 @@ namespace AngelLoader.Forms
             // The fast path - a custom method where I generate the code by copying from the designer-generated
             // method and tweaking as I see fit for speed and lazy-loading support.
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
-
             InitComponentManual();
-
-#if !ReleaseBeta && !ReleasePublic
-            ForceWindowedCheckBox = new CheckBox();
-            BottomRightButtonsFLP.Controls.Add(ForceWindowedCheckBox);
-            ForceWindowedCheckBox.Dock = DockStyle.Fill;
-            ForceWindowedCheckBox.Text = @"Force windowed";
-            ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
-#endif
 
 #if Release_Testing && !RT_StartupOnly
             #region Init debug-only controls
@@ -716,6 +707,14 @@ namespace AngelLoader.Forms
 
             #endregion
 #endif
+#endif
+
+#if !ReleaseBeta && !ReleasePublic
+            ForceWindowedCheckBox = new CheckBox();
+            BottomRightButtonsFLP.Controls.Add(ForceWindowedCheckBox);
+            ForceWindowedCheckBox.Dock = DockStyle.Fill;
+            ForceWindowedCheckBox.Text = @"Force windowed";
+            ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
 #endif
 
             // -------- New games go here!
