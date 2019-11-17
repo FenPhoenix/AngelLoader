@@ -147,7 +147,7 @@ namespace AngelLoader
                 {
                     #region Parallel load
 
-                    using Task findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true));
+                    using Task findFMsTask = Task.Run(() => FindFMs.Find(startup: true));
 
                     // It's safe to overlap this with Find(), but not with MainForm.ctor()
                     configTask.Wait();
@@ -348,7 +348,7 @@ namespace AngelLoader
                 WriteConfigIni(Config, Paths.ConfigIni);
 
                 // We have to do this here because we won't have before
-                using (Task findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true)))
+                using (Task findFMsTask = Task.Run(() => FindFMs.Find(startup: true)))
                 {
                     // Have to do the full View init sequence here, because we skipped them all before
                     View = new MainForm();
@@ -430,7 +430,7 @@ namespace AngelLoader
 
             if (archivePathsChanged || gamePathsChanged)
             {
-                FindFMs.Find(Config.FMInstallPaths);
+                FindFMs.Find();
             }
             if (gameOrganizationChanged)
             {

@@ -17,11 +17,8 @@ namespace AngelLoader
         // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal static void Find(string[] fmInstPaths, bool startup = false)
+        internal static void Find(bool startup = false)
         {
-            // TODO: We can just use SupportedGameCount
-            int gameCount = fmInstPaths.Length;
-
             if (!startup)
             {
                 // Make sure we don't lose anything when we re-find!
@@ -84,15 +81,15 @@ namespace AngelLoader
 
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
             // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
-            var perGameInstFMDirsList = new List<List<string>>(gameCount);
+            var perGameInstFMDirsList = new List<List<string>>(SupportedGameCount);
 
-            for (int gi = 0; gi < gameCount; gi++)
+            for (int gi = 0; gi < SupportedGameCount; gi++)
             {
-                // NOTE! Make sure this list ends up with gameCount items in it. Just in case I change the loop
-                // or something.
+                // NOTE! Make sure this list ends up with SupportedGameCount items in it. Just in case I change
+                // the loop or something.
                 perGameInstFMDirsList.Add(new List<string>());
 
-                string instPath = fmInstPaths[gi];
+                string instPath = Config.FMInstallPaths[gi];
 
                 if (Directory.Exists(instPath))
                 {
@@ -144,11 +141,11 @@ namespace AngelLoader
 
             #region Build FanMission objects from installed dirs
 
-            var perGameFMsList = new List<List<FanMission>>(gameCount);
+            var perGameFMsList = new List<List<FanMission>>(SupportedGameCount);
 
-            for (int gi = 0; gi < gameCount; gi++)
+            for (int gi = 0; gi < SupportedGameCount; gi++)
             {
-                // NOTE! List must have gameCount items in it
+                // NOTE! List must have SupportedGameCount items in it
                 perGameFMsList.Add(new List<FanMission>());
 
                 for (int di = 0; di < perGameInstFMDirsList[gi].Count; di++)
@@ -164,20 +161,20 @@ namespace AngelLoader
 
             #endregion
 
-            MergeNewArchiveFMs(fmArchives, fmInstPaths);
+            MergeNewArchiveFMs(fmArchives);
 
             int instInitCount = FMDataIniList.Count;
-            for (int i = 0; i < gameCount; i++)
+            for (int i = 0; i < SupportedGameCount; i++)
             {
                 var curGameInstFMsList = perGameFMsList[i];
                 if (curGameInstFMsList.Count > 0) MergeNewInstalledFMs(curGameInstFMsList, instInitCount);
             }
 
-            SetArchiveNames(fmInstPaths, fmArchives);
+            SetArchiveNames(fmArchives);
 
             SetInstalledNames();
 
-            BuildViewList(fmArchives, perGameInstFMDirsList, gameCount);
+            BuildViewList(fmArchives, perGameInstFMDirsList);
 
             /*
              TODO: There's an extreme corner case where duplicate FMs can appear in the list
@@ -195,7 +192,7 @@ namespace AngelLoader
 
         #region Set names
 
-        private static void SetArchiveNames(string[] fmInstPaths, List<string> fmArchives)
+        private static void SetArchiveNames(List<string> fmArchives)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
             for (int i = 0; i < FMDataIniList.Count; i++)
@@ -216,7 +213,7 @@ namespace AngelLoader
                     // Skip the expensive archive name search if we're marked as having no archive
                     if (!fm.NoArchive)
                     {
-                        archiveName = GetArchiveNameFromInstalledDir(fmInstPaths, fm, fmArchives);
+                        archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives);
                     }
                     if (archiveName.IsEmpty()) continue;
 
@@ -236,7 +233,7 @@ namespace AngelLoader
                         fm.Archive = archiveName;
                         if (fm.NoArchive)
                         {
-                            string? fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+                            string? fmselInf = GetFMSelInfPath(fm);
                             if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archiveName);
                         }
                         fm.NoArchive = false;
@@ -283,7 +280,7 @@ namespace AngelLoader
 
         #region Merge
 
-        private static void MergeNewArchiveFMs(List<string> fmArchives, string[] fmInstPaths)
+        private static void MergeNewArchiveFMs(List<string> fmArchives)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = FMDataIniList.Count;
@@ -319,7 +316,7 @@ namespace AngelLoader
                         fm.Archive = archive;
                         if (fm.NoArchive)
                         {
-                            string? fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+                            string? fmselInf = GetFMSelInfPath(fm);
                             if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archive);
                         }
                         fm.NoArchive = false;
@@ -389,7 +386,7 @@ namespace AngelLoader
         #endregion
 
         // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
-        private static string? GetArchiveNameFromInstalledDir(string[] fmInstPaths, FanMission fm, List<string> archives)
+        private static string? GetArchiveNameFromInstalledDir(FanMission fm, List<string> archives)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -400,7 +397,7 @@ namespace AngelLoader
             // Note: It looks like this is handled below with a return on empty anyway, so in release mode there's
             // no bug. But we're more explicit now.
 
-            string? fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+            string? fmselInf = GetFMSelInfPath(fm);
 
             string? FixUp()
             {
@@ -469,12 +466,12 @@ namespace AngelLoader
             return archiveName;
         }
 
-        private static string? GetFMSelInfPath(FanMission fm, string[] fmInstPaths)
+        private static string? GetFMSelInfPath(FanMission fm)
         {
             if (!GameIsKnownAndSupported(fm.Game)) return null;
 
             // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
-            string fmInstPath = fmInstPaths[(int)GameToGameIndex(fm.Game)];
+            string fmInstPath = Config.FMInstallPaths[(int)GameToGameIndex(fm.Game)];
 
             return fmInstPath.IsEmpty() ? null : Path.Combine(fmInstPath, fm.InstalledDir, Paths.FMSelInf);
         }
@@ -493,13 +490,12 @@ namespace AngelLoader
             }
         }
 
-        private static void BuildViewList(List<string> fmArchives, List<List<string>> perGameInstalledFMDirsList,
-            int gameCount)
+        private static void BuildViewList(List<string> fmArchives, List<List<string>> perGameInstalledFMDirsList)
         {
             ViewListGamesNull.Clear();
 
-            var boolsList = new List<bool?>(gameCount);
-            for (int i = 0; i < gameCount; i++) boolsList.Add(null);
+            var boolsList = new List<bool?>(SupportedGameCount);
+            for (int i = 0; i < SupportedGameCount; i++) boolsList.Add(null);
 
             static bool NotInPerGameList(int gCount, FanMission fm, List<bool?> notInList, List<List<string>> list, bool useBool)
             {
@@ -544,7 +540,7 @@ namespace AngelLoader
                 for (int ti = 0; ti < boolsList.Count; ti++) boolsList[ti] = null;
 
                 if (fm.Installed &&
-                    NotInPerGameList(gameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: false))
+                    NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: false))
                 {
                     fm.Installed = false;
                 }
@@ -555,7 +551,7 @@ namespace AngelLoader
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
                 // Good enough?
                 if ((!fm.Installed ||
-                     NotInPerGameList(gameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true)) &&
+                     NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true)) &&
                     // Shrink the list as we get matches so we can reduce our search time as we go
                     !fmArchives.ContainsIRemoveFirstHit(fm.Archive))
                 {

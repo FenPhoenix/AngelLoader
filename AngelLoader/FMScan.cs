@@ -335,7 +335,7 @@ namespace AngelLoader
 
         internal static async Task FindNewFMsAndScanForGameType()
         {
-            FindFMs.Find(Config.FMInstallPaths);
+            FindFMs.Find();
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
             if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
         }
@@ -347,7 +347,7 @@ namespace AngelLoader
             await ScanFMs(fms, scanOptions);
             // TODO: Why am I doing a find after a scan?!?!?! WTF use is this?
             // Note: I might be doing it to get rid of any duplicates or bad data that may have been imported?
-            FindFMs.Find(Config.FMInstallPaths);
+            FindFMs.Find();
         }
 
         #endregion
