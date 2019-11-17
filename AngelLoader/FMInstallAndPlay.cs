@@ -862,7 +862,7 @@ namespace AngelLoader
             List<string> lines;
             try
             {
-                lines = File.ReadAllLines(soIni, Encoding.Default).ToList();
+                lines = File.ReadAllLines(soIni).ToList();
             }
             catch (Exception ex)
             {
