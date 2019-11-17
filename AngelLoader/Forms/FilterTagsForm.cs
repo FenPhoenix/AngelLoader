@@ -12,12 +12,14 @@ namespace AngelLoader.Forms
     {
         private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
 
-        private readonly GlobalCatAndTagsList SourceTags = new GlobalCatAndTagsList();
+        private readonly GlobalCatAndTagsList SourceTags;
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
         internal FilterTagsForm(GlobalCatAndTagsList sourceTags, TagsFilter tagsFilter)
         {
             InitializeComponent();
+
+            SourceTags = new GlobalCatAndTagsList(sourceTags.Count);
 
             #region Arrow buttons setup
 

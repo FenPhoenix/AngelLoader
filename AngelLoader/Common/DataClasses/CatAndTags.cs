@@ -55,8 +55,6 @@ namespace AngelLoader.DataClasses
 
     internal class GlobalCatAndTagsList : List<GlobalCatAndTags>
     {
-        public GlobalCatAndTagsList() { }
-        // TODO: Use this once more
         public GlobalCatAndTagsList(int capacity) : base(capacity) { }
 
         internal void DeepCopyTo(GlobalCatAndTagsList dest)
