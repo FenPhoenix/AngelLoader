@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using FMScanner;
@@ -64,7 +63,17 @@ namespace AngelLoader.Forms
         {
             if (DialogResult != DialogResult.OK) return;
 
-            if (CheckBoxes.All(x => !x.Checked))
+            bool noneChecked = true;
+            for (int i = 0; i < CheckBoxes.Length; i++)
+            {
+                if (CheckBoxes[i].Checked)
+                {
+                    noneChecked = false;
+                    break;
+                }
+            }
+
+            if (noneChecked)
             {
                 NoneSelected = true;
             }
