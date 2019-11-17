@@ -10,6 +10,70 @@ using static AngelLoader.SortStatic;
 
 namespace AngelLoader
 {
+    internal static class Comparers
+    {
+        #region Misc comparers
+
+        private static FileNameNoExtComparer? _fileNameNoExtComparer;
+        internal static FileNameNoExtComparer FileNameNoExtComparer => _fileNameNoExtComparer ??= new FileNameNoExtComparer();
+
+        private static CategoryComparer? _categoryComparer;
+        internal static CategoryComparer CategoryComparer => _categoryComparer ??= new CategoryComparer();
+
+        private static CategoryComparerGlobal? _categoryComparerGlobal;
+        internal static CategoryComparerGlobal CategoryComparerGlobal => _categoryComparerGlobal ??= new CategoryComparerGlobal();
+
+        private static CatItemComparer? _catItemComparer;
+        internal static CatItemComparer CatItemComparer => _catItemComparer ??= new CatItemComparer();
+
+        #endregion
+
+        #region FM column comparers
+
+        private static FMTitleComparer? _fmTitleComparer;
+        internal static IDirectionalSortFMComparer FMTitleComparer => _fmTitleComparer ??= new FMTitleComparer();
+
+        private static FMGameComparer? _fmGameComparer;
+        internal static IDirectionalSortFMComparer FMGameComparer => _fmGameComparer ??= new FMGameComparer();
+
+        private static FMInstalledComparer? _fmInstalledComparer;
+        internal static IDirectionalSortFMComparer FMInstalledComparer => _fmInstalledComparer ??= new FMInstalledComparer();
+
+        private static FMArchiveComparer? _fmArchiveComparer;
+        internal static IDirectionalSortFMComparer FMArchiveComparer => _fmArchiveComparer ??= new FMArchiveComparer();
+
+        private static FMAuthorComparer? _fmAuthorComparer;
+        internal static IDirectionalSortFMComparer FMAuthorComparer => _fmAuthorComparer ??= new FMAuthorComparer();
+
+        private static FMSizeComparer? _fmSizeComparer;
+        internal static IDirectionalSortFMComparer FMSizeComparer => _fmSizeComparer ??= new FMSizeComparer();
+
+        private static FMRatingComparer? _fmRatingComparer;
+        internal static IDirectionalSortFMComparer FMRatingComparer => _fmRatingComparer ??= new FMRatingComparer();
+
+        private static FMFinishedComparer? _fmFinishedComparer;
+        internal static IDirectionalSortFMComparer FMFinishedComparer => _fmFinishedComparer ??= new FMFinishedComparer();
+
+        private static FMReleaseDateComparer? _fmReleaseDateComparer;
+        internal static IDirectionalSortFMComparer FMReleaseDateComparer => _fmReleaseDateComparer ??= new FMReleaseDateComparer();
+
+        private static FMLastPlayedComparer? _fmLastPlayedComparer;
+        internal static IDirectionalSortFMComparer FMLastPlayedComparer => _fmLastPlayedComparer ??= new FMLastPlayedComparer();
+
+        private static FMDisabledModsComparer? _fmDisabledModsComparer;
+        internal static IDirectionalSortFMComparer FMDisabledModsComparer => _fmDisabledModsComparer ??= new FMDisabledModsComparer();
+
+        private static FMCommentComparer? _fmCommentComparer;
+        internal static IDirectionalSortFMComparer FMCommentComparer => _fmCommentComparer ??= new FMCommentComparer();
+
+        #endregion
+    }
+
+    internal interface IDirectionalSortFMComparer : IComparer<FanMission>
+    {
+        SortOrder SortOrder { set; }
+    }
+
     #region FM list sorting
 
     internal static class SortStatic
@@ -77,24 +141,20 @@ namespace AngelLoader
 
     // These are separated out for performance reasons, so we don't have to use LINQ OrderBy() etc.
 
-    internal sealed class FMTitleComparer : IComparer<FanMission>
+    internal sealed class FMTitleComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMTitleComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
             int ret = TitleCompare(x, y);
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMGameComparer : IComparer<FanMission>
+    internal sealed class FMGameComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMGameComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -105,15 +165,13 @@ namespace AngelLoader
                 y.Game == Game.Null ? 1 :
                 x.Game < y.Game ? -1 : 1;
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMInstalledComparer : IComparer<FanMission>
+    internal sealed class FMInstalledComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMInstalledComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -123,15 +181,13 @@ namespace AngelLoader
                 // Installed goes on top, non-installed (blank icon) goes on bottom
                 x.Installed && !y.Installed ? -1 : 1;
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMArchiveComparer : IComparer<FanMission>
+    internal sealed class FMArchiveComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMArchiveComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -141,15 +197,13 @@ namespace AngelLoader
                 y.Archive.IsEmpty() ? 1 :
                 string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMAuthorComparer : IComparer<FanMission>
+    internal sealed class FMAuthorComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMAuthorComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -160,15 +214,13 @@ namespace AngelLoader
                 y.Author.IsEmpty() ? 1 :
                 string.Compare(x.Author, y.Author, StringComparison.InvariantCultureIgnoreCase);
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMSizeComparer : IComparer<FanMission>
+    internal sealed class FMSizeComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMSizeComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -179,15 +231,13 @@ namespace AngelLoader
                 y.SizeBytes == 0 ? 1 :
                 x.SizeBytes < y.SizeBytes ? -1 : 1;
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMRatingComparer : IComparer<FanMission>
+    internal sealed class FMRatingComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMRatingComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -215,15 +265,13 @@ namespace AngelLoader
                     x.Rating < y.Rating ? -1 : 1;
             }
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMFinishedComparer : IComparer<FanMission>
+    internal sealed class FMFinishedComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMFinishedComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -254,15 +302,13 @@ namespace AngelLoader
             }
 
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMReleaseDateComparer : IComparer<FanMission>
+    internal sealed class FMReleaseDateComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMReleaseDateComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -289,15 +335,13 @@ namespace AngelLoader
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMLastPlayedComparer : IComparer<FanMission>
+    internal sealed class FMLastPlayedComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMLastPlayedComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -323,15 +367,13 @@ namespace AngelLoader
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMDisabledModsComparer : IComparer<FanMission>
+    internal sealed class FMDisabledModsComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMDisabledModsComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -345,15 +387,13 @@ namespace AngelLoader
                 y.DisabledMods.IsEmpty() ? -1 :
                 string.Compare(x.DisabledMods, y.DisabledMods, StringComparison.InvariantCultureIgnoreCase);
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 
-    internal sealed class FMCommentComparer : IComparer<FanMission>
+    internal sealed class FMCommentComparer : IDirectionalSortFMComparer
     {
-        private readonly SortOrder _sortOrder;
-
-        public FMCommentComparer(SortOrder sortOrder) => _sortOrder = sortOrder;
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -365,7 +405,7 @@ namespace AngelLoader
                 y.CommentSingleLine.IsEmpty() ? -1 :
                 string.Compare(x.CommentSingleLine, y.CommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
 
-            return _sortOrder == SortOrder.Ascending ? ret : -ret;
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
         }
     }
 

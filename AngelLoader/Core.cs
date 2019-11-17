@@ -581,24 +581,27 @@ namespace AngelLoader
         {
             var comparer = column switch
             {
-                Column.Game => new FMGameComparer(sortDirection),
-                Column.Installed => new FMInstalledComparer(sortDirection),
-                Column.Title => new FMTitleComparer(sortDirection),
-                Column.Archive => new FMArchiveComparer(sortDirection),
-                Column.Author => new FMAuthorComparer(sortDirection),
-                Column.Size => new FMSizeComparer(sortDirection),
-                Column.Rating => new FMRatingComparer(sortDirection),
-                Column.Finished => new FMFinishedComparer(sortDirection),
-                Column.ReleaseDate => new FMReleaseDateComparer(sortDirection),
-                Column.LastPlayed => new FMLastPlayedComparer(sortDirection),
-                Column.DisabledMods => new FMDisabledModsComparer(sortDirection),
-                Column.Comment => new FMCommentComparer(sortDirection),
+                Column.Game => Comparers.FMGameComparer,
+                Column.Installed => Comparers.FMInstalledComparer,
+                Column.Title => Comparers.FMTitleComparer,
+                Column.Archive => Comparers.FMArchiveComparer,
+                Column.Author => Comparers.FMAuthorComparer,
+                Column.Size => Comparers.FMSizeComparer,
+                Column.Rating => Comparers.FMRatingComparer,
+                Column.Finished => Comparers.FMFinishedComparer,
+                Column.ReleaseDate => Comparers.FMReleaseDateComparer,
+                Column.LastPlayed => Comparers.FMLastPlayedComparer,
+                Column.DisabledMods => Comparers.FMDisabledModsComparer,
+                Column.Comment => Comparers.FMCommentComparer,
                 // NULL_TODO: Null only so I can run the assert below
                 // For if I ever need to add something here and forget... not likely
-                _ => (IComparer<FanMission>?)null
+                _ => null
             };
 
             Debug.Assert(comparer != null, nameof(comparer) + "==null: column not being handled");
+
+            // @R#_FALSE_POSITIVE
+            comparer!.SortOrder = sortDirection;
 
             FMsViewList.Sort(comparer);
         }
@@ -1305,7 +1308,7 @@ namespace AngelLoader
 
                 if (safeReadmes.Count > 0)
                 {
-                    safeReadmes.Sort(new FileNameNoExtComparer());
+                    safeReadmes.Sort(Comparers.FileNameNoExtComparer);
 
                     foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                     {

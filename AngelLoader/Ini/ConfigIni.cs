@@ -164,9 +164,14 @@ namespace AngelLoader.Ini
                     if (col == null) continue;
 
                     col.Id = (Column)field.GetValue(null);
-                    if (config.Columns.Any(x => x.Id == col.Id)) continue;
 
-                    config.Columns.Add(col);
+                    static bool ContainsColWithId(ConfigData _config, ColumnData _col)
+                    {
+                        foreach (var x in _config.Columns) if (x.Id == _col.Id) return true;
+                        return false;
+                    }
+
+                    if (!ContainsColWithId(config, col)) config.Columns.Add(col);
                 }
                 #region Filter
                 // @GENGAMES
