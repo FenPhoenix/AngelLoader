@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AngelLoader.DataClasses
 {
@@ -35,6 +36,7 @@ namespace AngelLoader.DataClasses
             if (Count == 0) return;
 
             Sort(new CategoryComparer());
+            foreach (var item in this) item.Tags.Sort(StringComparer.OrdinalIgnoreCase);
 
             if (this[Count - 1].Category == "misc") return;
 
@@ -93,6 +95,8 @@ namespace AngelLoader.DataClasses
             if (Count == 0) return;
 
             Sort(new CategoryComparerGlobal());
+            var catItemComparer = new CatItemComparer();
+            foreach (var item in this) item.Tags.Sort(catItemComparer);
 
             if (this[Count - 1].Category.Name == "misc") return;
 

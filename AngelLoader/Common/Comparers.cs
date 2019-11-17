@@ -398,13 +398,8 @@ namespace AngelLoader
             Debug.Assert(x.Category.ToLowerInvariant() == x.Category, "CategoryComparer: x.Name is not lowercase");
             Debug.Assert(y.Category.ToLowerInvariant() == y.Category, "CategoryComparer: y.Name is not lowercase");
 
-            // @R#_FALSE_POSITIVE
-            x.Tags.Sort(StringComparer.OrdinalIgnoreCase);
-            y.Tags.Sort(StringComparer.OrdinalIgnoreCase);
-
             // Category names are supposed to always be lowercase, so don't waste time checking
             return string.Compare(x.Category, y.Category, StringComparison.Ordinal);
-
         }
     }
 
@@ -418,23 +413,15 @@ namespace AngelLoader
             Debug.Assert(x.Category.Name.ToLowerInvariant() == x.Category.Name, "CategoryComparer: x.Name is not lowercase");
             Debug.Assert(y.Category.Name.ToLowerInvariant() == y.Category.Name, "CategoryComparer: y.Name is not lowercase");
 
-            // @R#_FALSE_POSITIVE
-            x.Tags.Sort(new CatItemComparer());
-            y.Tags.Sort(new CatItemComparer());
-
             // Category names are supposed to always be lowercase, so don't waste time checking
             return string.Compare(x.Category.Name, y.Category.Name, StringComparison.Ordinal);
-
         }
     }
 
     internal sealed class CatItemComparer : IComparer<GlobalCatOrTag>
     {
-        public int Compare(GlobalCatOrTag x, GlobalCatOrTag y)
-        {
-            // @R#_FALSE_POSITIVE
-            return string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
-        }
+        // @R#_FALSE_POSITIVE
+        public int Compare(GlobalCatOrTag x, GlobalCatOrTag y) => string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
     }
 
     #endregion
