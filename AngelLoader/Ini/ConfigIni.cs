@@ -212,83 +212,83 @@ namespace AngelLoader.Ini
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateFrom="))
                 {
-                    config.Filter.ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.Filter.ReleaseDateFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.GetFilter(Thief1).ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).ReleaseDateFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.GetFilter(Thief2).ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).ReleaseDateFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.GetFilter(Thief3).ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).ReleaseDateFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterReleaseDateFrom="))
                 {
-                    config.GameTabsState.GetFilter(SS2).ReleaseDateFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).ReleaseDateFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterReleaseDateTo="))
                 {
-                    config.Filter.ReleaseDateTo = ReadNullableHexDate(val);
+                    config.Filter.ReleaseDateTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.GetFilter(Thief1).ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).ReleaseDateTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.GetFilter(Thief2).ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).ReleaseDateTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.GetFilter(Thief3).ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).ReleaseDateTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterReleaseDateTo="))
                 {
-                    config.GameTabsState.GetFilter(SS2).ReleaseDateTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).ReleaseDateTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedFrom="))
                 {
-                    config.Filter.LastPlayedFrom = ReadNullableHexDate(val);
+                    config.Filter.LastPlayedFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.GetFilter(Thief1).LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).LastPlayedFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.GetFilter(Thief2).LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).LastPlayedFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.GetFilter(Thief3).LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).LastPlayedFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterLastPlayedFrom="))
                 {
-                    config.GameTabsState.GetFilter(SS2).LastPlayedFrom = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).LastPlayedFrom = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterLastPlayedTo="))
                 {
-                    config.Filter.LastPlayedTo = ReadNullableHexDate(val);
+                    config.Filter.LastPlayedTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T1FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.GetFilter(Thief1).LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief1).LastPlayedTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T2FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.GetFilter(Thief2).LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief2).LastPlayedTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("T3FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.GetFilter(Thief3).LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(Thief3).LastPlayedTo = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("SS2FilterLastPlayedTo="))
                 {
-                    config.GameTabsState.GetFilter(SS2).LastPlayedTo = ReadNullableHexDate(val);
+                    config.GameTabsState.GetFilter(SS2).LastPlayedTo = ConvertHexUnixDateToDateTime(val);
                 }
                 // Note: These lines can't index past the end, because we won't get here unless the line contains
                 // '=' and since there are no '=' chars in the checked strings, we know the length must be at least

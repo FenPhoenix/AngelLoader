@@ -271,8 +271,12 @@ namespace AngelLoader
 
         internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) == resource;
 
-        // Here so ExpandableDate objects don't have to carry it around
-        internal static DateTime? ExpandDateTime(string unixDate)
+        /// <summary>
+        /// Converts a 32-bit or 64-bit Unix date string in hex format to a nullable DateTime object.
+        /// </summary>
+        /// <param name="unixDate"></param>
+        /// <returns>A DateTime object, or null if the string couldn't be converted to a valid date for any reason.</returns>
+        internal static DateTime? ConvertHexUnixDateToDateTime(string unixDate)
         {
             bool success = long.TryParse(
                 unixDate,
@@ -294,10 +298,8 @@ namespace AngelLoader
                     return null;
                 }
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         internal static ScanOptions GetDefaultScanOptions() => ScanOptions.FalseDefault(

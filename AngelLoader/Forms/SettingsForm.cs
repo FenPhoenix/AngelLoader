@@ -784,30 +784,13 @@ namespace AngelLoader.Forms
                 OutConfig.DateCustomSeparator3 = FMDisplayPage.DateSeparator3TextBox.Text;
                 OutConfig.DateCustomFormat4 = FMDisplayPage.Date4ComboBox.SelectedItem.ToString();
 
-                string formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
-                                      FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
-                                      FMDisplayPage.Date2ComboBox.SelectedItem +
-                                      FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
-                                      FMDisplayPage.Date3ComboBox.SelectedItem +
-                                      FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
-                                      FMDisplayPage.Date4ComboBox.SelectedItem;
-
-                try
+                bool customDateSuccess = FormatAndTestDate(out string customDateString, out _);
+                if (customDateSuccess)
                 {
-                    _ = _exampleDate.ToString(formatString);
-                    OutConfig.DateCustomFormatString = formatString;
+                    OutConfig.DateCustomFormatString = customDateString;
                 }
-                catch (FormatException)
+                else
                 {
-                    MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat, LText.AlertMessages.Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Cancel = true;
-                    return;
-                }
-                catch (ArgumentOutOfRangeException)
-                {
-                    MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange, LText.AlertMessages.Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     e.Cancel = true;
                     return;
                 }
@@ -1123,34 +1106,49 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Date display
-
-        private void UpdateCustomExampleDate()
+        private bool FormatAndTestDate(out string formatString, out string exampleDateString)
         {
-            // TODO: Duplicate code?
-            string formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
-                                  FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
-                                  FMDisplayPage.Date2ComboBox.SelectedItem +
-                                  FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
-                                  FMDisplayPage.Date3ComboBox.SelectedItem +
-                                  FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
-                                  FMDisplayPage.Date4ComboBox.SelectedItem;
+            formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
+                           FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
+                           FMDisplayPage.Date2ComboBox.SelectedItem +
+                           FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
+                           FMDisplayPage.Date3ComboBox.SelectedItem +
+                           FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
+                           FMDisplayPage.Date4ComboBox.SelectedItem;
 
+            // TODO: Date error checking:
+            // It's impossible to get an ArgumentOutOfRangeException as long as our readonly example date is valid.
+            // It's probably impossible to get a FormatException too (because we handle invalid formats in the
+            // config reader and reset to default if they aren't valid) but not 100% certain.
             try
             {
-                FMDisplayPage.PreviewDateLabel.Text = _exampleDate.ToString(formatString);
+                exampleDateString = _exampleDate.ToString(formatString);
+                return true;
             }
             catch (FormatException)
             {
                 MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
+                formatString = "";
+                exampleDateString = "";
+                return false;
             }
             catch (ArgumentOutOfRangeException)
             {
                 MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange, LText.AlertMessages.Error,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                formatString = "";
+                exampleDateString = "";
+                return false;
             }
+        }
+
+        #region Date display
+
+        private void UpdateCustomExampleDate()
+        {
+            bool success = FormatAndTestDate(out _, out string formattedExampleDate);
+            if (success) FMDisplayPage.PreviewDateLabel.Text = formattedExampleDate;
         }
 
         private void DateShortAndLongRadioButtons_CheckedChanged(object sender, EventArgs e)

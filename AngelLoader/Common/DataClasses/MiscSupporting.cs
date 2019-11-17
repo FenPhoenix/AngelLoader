@@ -33,7 +33,7 @@ namespace AngelLoader.DataClasses
                 }
                 else
                 {
-                    _dateTime = ExpandDateTime(UnixDateString);
+                    _dateTime = ConvertHexUnixDateToDateTime(UnixDateString);
                     _expanded = true;
                     return _dateTime;
                 }

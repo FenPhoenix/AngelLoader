@@ -75,32 +75,6 @@ namespace AngelLoader.Ini
             }
         }
 
-        // TODO: Is this duplicated with ExpandDate()?
-        private static DateTime? ReadNullableHexDate(string hexDate)
-        {
-            bool success = long.TryParse(
-                hexDate,
-                NumberStyles.HexNumber,
-                DateTimeFormatInfo.InvariantInfo,
-                out long result);
-
-            if (!success) return null;
-
-            try
-            {
-                DateTime dateTime = DateTimeOffset
-                    .FromUnixTimeSeconds(result)
-                    .DateTime
-                    .ToLocalTime();
-
-                return dateTime;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return null;
-            }
-        }
-
         private static readonly ReaderWriterLockSlim FMDataIniRWLock = new ReaderWriterLockSlim();
 
         internal static void WriteFullFMDataIni()
