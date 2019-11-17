@@ -24,7 +24,7 @@ namespace AngelLoader.Forms
             // Because this form isn't loading on startup, I'm being lazy here and just creating a bitmap
             using (var g = Graphics.FromImage(_arrowRightBmp))
             {
-                var arrowPolygon = new[]
+                Point[] arrowPolygon =
                 {
                     // -1 works?! (and for some reason is needed?!)
                     new Point(2, -1),
@@ -58,8 +58,8 @@ namespace AngelLoader.Forms
             {
                 #region Set i-dependent values
 
-                var c1b = i switch { 0 => RemoveSelectedAndButton, 1 => RemoveSelectedOrButton, _ => RemoveSelectedNotButton };
-                var cab = i switch { 0 => RemoveAllAndButton, 1 => RemoveAllOrButton, _ => RemoveAllNotButton };
+                Button c1b = i switch { 0 => RemoveSelectedAndButton, 1 => RemoveSelectedOrButton, _ => RemoveSelectedNotButton };
+                Button cab = i switch { 0 => RemoveAllAndButton, 1 => RemoveAllOrButton, _ => RemoveAllNotButton };
 
                 #endregion
 
@@ -71,10 +71,10 @@ namespace AngelLoader.Forms
             AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll, AndButton.Width);
             OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny, OrButton.Width);
             NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude, NotButton.Width);
-            var newWidthAll = Math.Max(Math.Max(AndButton.Width, OrButton.Width), NotButton.Width);
+            int newWidthAll = Math.Max(Math.Max(AndButton.Width, OrButton.Width), NotButton.Width);
             for (int i = 0; i < 3; i++)
             {
-                var button = i switch { 0 => AndButton, 1 => OrButton, _ => NotButton };
+                Button button = i switch { 0 => AndButton, 1 => OrButton, _ => NotButton };
 
                 button.Width = newWidthAll;
                 button.CenterH(MoveButtonsPanel);
@@ -117,15 +117,15 @@ namespace AngelLoader.Forms
             return null;
         }
 
-        private static TreeNode? FindFirstCatAndTagStartingWithText(TreeView tv, string tag, string cat)
+        private static TreeNode? FindFirstCatAndTagStartingWithText(TreeView tv, string cat, string tag)
         {
             foreach (TreeNode node in tv.Nodes)
             {
-                if (node.Text == tag && node.Nodes.Count > 0)
+                if (node.Text == cat && node.Nodes.Count > 0)
                 {
                     foreach (TreeNode tagNode in node.Nodes)
                     {
-                        if (tagNode.Text.StartsWithI(cat)) return tagNode;
+                        if (tagNode.Text.StartsWithI(tag)) return tagNode;
                     }
                 }
             }
@@ -134,19 +134,19 @@ namespace AngelLoader.Forms
 
         private void FindTagTextBox_TextChanged(object sender, EventArgs e)
         {
-            var text = FindTagTextBox.Text.Replace(" ", "").Replace("\t", "");
+            string text = FindTagTextBox.Text.Replace(" ", "").Replace("\t", "");
             if (!text.Contains(':'))
             {
-                var node = FindFirstCatNodeStartingWithText(OriginTreeView, text);
+                TreeNode? node = FindFirstCatNodeStartingWithText(OriginTreeView, text);
                 if (node != null) OriginTreeView.SelectedNode = node;
             }
             else
             {
-                var index = text.IndexOf(':');
+                int index = text.IndexOf(':');
                 if (index > 0)
                 {
                     string cat = text.Substring(0, index), tag = text.Substring(index + 1);
-                    var node = FindFirstCatAndTagStartingWithText(OriginTreeView, cat, tag);
+                    TreeNode? node = FindFirstCatAndTagStartingWithText(OriginTreeView, cat, tag);
                     if (node != null) OriginTreeView.SelectedNode = node;
                 }
             }
@@ -166,7 +166,6 @@ namespace AngelLoader.Forms
             foreach (var catAndTags in tags)
             {
                 tv.Nodes.Add(catAndTags.Category);
-                //tv.Nodes.Add(new TreeNode { BackColor = SystemColors.Highlight, Text = catAndTags.Category });
                 var last = tv.Nodes[tv.Nodes.Count - 1];
                 foreach (var tag in catAndTags.Tags) last.Nodes.Add(tag);
             }
@@ -190,7 +189,7 @@ namespace AngelLoader.Forms
 
             // Parent node = category, child node = tag
             bool isCategory = o.SelectedNode.Parent == null;
-            var cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
+            string cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
 
             CatAndTags? match = null;
             for (int i = 0; i < filteredTags.Count; i++)
@@ -214,7 +213,7 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    var tag = o.SelectedNode.Text;
+                    string tag = o.SelectedNode.Text;
                     if (!match.Tags.ContainsI(tag)) match.Tags.Add(tag);
                 }
             }
@@ -287,7 +286,7 @@ namespace AngelLoader.Forms
 
             // Parent node = category, child node = tag
             bool isCategory = o.SelectedNode.Parent == null;
-            var cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
+            string cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
 
             bool tagInAny = false;
 

@@ -29,7 +29,7 @@ namespace AngelLoader.WinAPI.Dialogs
                 {
                     DirectoryName = d.DirectoryName;
                     DirectoryNames.Clear();
-                    foreach (var dir in d.DirectoryNames) DirectoryNames.Add(dir);
+                    foreach (string dir in d.DirectoryNames) DirectoryNames.Add(dir);
                     result = DialogResult.OK;
                 }
                 else
@@ -159,7 +159,7 @@ namespace AngelLoader.WinAPI.Dialogs
 
                 SetDialogProperties(dialog);
 
-                var result = dialog.Show(hwndOwner);
+                HResult result = dialog.Show(hwndOwner);
                 if (result != HResult.Ok)
                 {
                     if (result == HResult.Canceled)
@@ -212,7 +212,7 @@ namespace AngelLoader.WinAPI.Dialogs
 
                 var guid = new Guid(Guids.IShellItem);
 
-                var result = NativeMethods.SHCreateItemFromParsingName(
+                HResult result = NativeMethods.SHCreateItemFromParsingName(
                     InitialDirectory,
                     IntPtr.Zero,
                     ref guid,
@@ -233,7 +233,7 @@ namespace AngelLoader.WinAPI.Dialogs
             resultsArray.GetCount(out uint count);
             for (uint i = 0; i < count; i++)
             {
-                resultsArray.GetItemAt(i, out var result);
+                resultsArray.GetItemAt(i, out IShellItem result);
 
                 HResult hr = result.GetDisplayName(NativeMethods.SIGDN.SIGDN_DESKTOPABSOLUTEPARSING, out IntPtr ppszName);
 

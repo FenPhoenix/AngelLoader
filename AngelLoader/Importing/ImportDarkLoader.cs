@@ -119,9 +119,9 @@ namespace AngelLoader.Importing
                     {
                         for (int i = 0; i < lines.Length; i++)
                         {
-                            var line = lines[i];
-                            var lineTS = line.TrimStart();
-                            var lineTB = lineTS.TrimEnd();
+                            string line = lines[i];
+                            string lineTS = line.TrimStart();
+                            string lineTB = lineTS.TrimEnd();
 
                             #region Read archive directories
 
@@ -131,7 +131,7 @@ namespace AngelLoader.Importing
                             {
                                 while (i < lines.Length - 1)
                                 {
-                                    var lt = lines[i + 1].Trim();
+                                    string lt = lines[i + 1].Trim();
                                     if (!lt.IsEmpty() && lt[0] != '[' && lt.EndsWith("=1"))
                                     {
                                         archiveDirs.Add(lt.Substring(0, lt.Length - 2));
@@ -165,19 +165,19 @@ namespace AngelLoader.Importing
                                 lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
                                 DarkLoaderFMRegex.Match(lineTB).Success)
                             {
-                                var lastIndexDot = lineTB.LastIndexOf('.');
-                                var archive = lineTB.Substring(1, lastIndexDot - 1);
-                                var size = lineTB.Substring(lastIndexDot + 1, lineTB.Length - lastIndexDot - 2);
+                                int lastIndexDot = lineTB.LastIndexOf('.');
+                                string archive = lineTB.Substring(1, lastIndexDot - 1);
+                                string size = lineTB.Substring(lastIndexDot + 1, lineTB.Length - lastIndexDot - 2);
 
-                                foreach (var dir in archiveDirs)
+                                foreach (string dir in archiveDirs)
                                 {
                                     if (!Directory.Exists(dir)) continue;
                                     try
                                     {
                                         // DarkLoader only does zip format
-                                        foreach (var f in FastIO.GetFilesTopOnly(dir, "*.zip"))
+                                        foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
                                         {
-                                            var fn = Path.GetFileNameWithoutExtension(f);
+                                            string fn = Path.GetFileNameWithoutExtension(f);
                                             if (RemoveDLArchiveBadChars(fn).EqualsI(archive))
                                             {
                                                 archive = fn;
@@ -213,12 +213,12 @@ namespace AngelLoader.Importing
 
                                 while (i < lines.Length - 1)
                                 {
-                                    var lts = lines[i + 1].TrimStart();
-                                    var ltb = lts.TrimEnd();
+                                    string lts = lines[i + 1].TrimStart();
+                                    string ltb = lts.TrimEnd();
 
                                     if (lts.StartsWith("comment=\""))
                                     {
-                                        var comment = ltb.Substring(9);
+                                        string comment = ltb.Substring(9);
                                         if (comment.Length >= 2 && comment[comment.Length - 1] == '\"')
                                         {
                                             comment = comment.Substring(0, comment.Length - 1);
@@ -227,7 +227,7 @@ namespace AngelLoader.Importing
                                     }
                                     else if (lts.StartsWith("title=\""))
                                     {
-                                        var title = ltb.Substring(7);
+                                        string title = ltb.Substring(7);
                                         if (title.Length >= 2 && title[title.Length - 1] == '\"')
                                         {
                                             title = title.Substring(0, title.Length - 1);
@@ -316,7 +316,7 @@ namespace AngelLoader.Importing
             bool t2DirRead = false;
             bool ss2DirRead = false;
 
-            for (var i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
                 string lineTS = line.TrimStart();
@@ -367,14 +367,14 @@ namespace AngelLoader.Importing
                     string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
                     if (!Directory.Exists(savesPath)) continue;
 
-                    var convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+                    string convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
                     Directory.CreateDirectory(convertedPath);
 
                     // Converting takes too long, so just copy them to our backup folder and they'll be handled
                     // appropriately next time the user installs an FM
-                    foreach (var f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
+                    foreach (string f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
                     {
-                        var dest = Path.Combine(convertedPath, f.GetFileNameFast());
+                        string dest = Path.Combine(convertedPath, f.GetFileNameFast());
                         File.Copy(f, dest, overwrite: true);
                     }
                 }

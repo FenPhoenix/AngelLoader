@@ -174,7 +174,7 @@ namespace AngelLoader.WinAPI
 
             if (findHandle.IsInvalid)
             {
-                var err = Marshal.GetLastWin32Error();
+                int err = Marshal.GetLastWin32Error();
                 if (err == ERROR_FILE_NOT_FOUND || err == ERROR_NO_MORE_FILES) return ret;
 
                 // Since the framework isn't here to save us, we should blanket-catch and throw on every

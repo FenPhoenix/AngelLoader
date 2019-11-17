@@ -57,7 +57,7 @@ namespace AngelLoader.Forms.Import
         {
             if (DialogResult != DialogResult.OK) return;
 
-            var file = ImportControls.DarkLoaderIniText;
+            string file = ImportControls.DarkLoaderIniText;
 
             bool fileNameIsDLIni;
             try
@@ -79,7 +79,7 @@ namespace AngelLoader.Forms.Import
                 return;
             }
 
-            var iniFileExists = File.Exists(file);
+            bool iniFileExists = File.Exists(file);
             if (!iniFileExists)
             {
                 MessageBox.Show(LText.Importing.DarkLoader_SelectedDarkLoaderIniWasNotFound);

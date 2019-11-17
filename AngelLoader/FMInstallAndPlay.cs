@@ -179,7 +179,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var editorExe = GetEditorExe(game);
+            string editorExe = GetEditorExe(game);
             if (editorExe.IsEmpty())
             {
                 Core.View.ShowAlert(fm.Game == Game.SS2
@@ -222,13 +222,13 @@ namespace AngelLoader
 
             for (int i = 0; i < 3; i++)
             {
-                var keyDir = i switch { 0 => "books", 1 => "intrface", _ => "strings" };
+                string keyDir = i switch { 0 => "books", 1 => "intrface", _ => "strings" };
 
                 for (int j = 0; j < searchList.Count; j++)
                 {
                     if (j < searchList.Count - 1 && searchList[j].EndsWithI(Path.DirectorySeparatorChar + keyDir))
                     {
-                        var item = searchList[j];
+                        string item = searchList[j];
                         searchList.RemoveAt(j);
                         searchList.Add(item);
                         break;
@@ -270,7 +270,7 @@ namespace AngelLoader
         {
             (bool, List<string>) failed = (false, new List<string>());
 
-            var archivePath = FindFMArchive(archiveName);
+            string archivePath = FindFMArchive(archiveName);
             if (archivePath.IsEmpty()) return failed;
 
             var ret = new List<string>();
@@ -308,11 +308,11 @@ namespace AngelLoader
 
                     for (int j = 0; j < FMSupportedLanguages.Length; j++)
                     {
-                        var sl = FMSupportedLanguages[j];
+                        string sl = FMSupportedLanguages[j];
                         if (!FoundLangInArchive[j])
                         {
                             // Do as few string operations as humanly possible
-                            var index = fn.IndexOf(SLangsFSPrefixed[j], StringComparison.OrdinalIgnoreCase);
+                            int index = fn.IndexOf(SLangsFSPrefixed[j], StringComparison.OrdinalIgnoreCase);
                             if (index < 1) continue;
 
                             if ((fn.Length > index + sl.Length + 1 && fn[index + sl.Length + 1] == '/') ||
@@ -372,7 +372,7 @@ namespace AngelLoader
             // bForceLanguage gets set to something specific in every possible case, effectively meaning the
             // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
             // NOTE: Although I'm using FMSel from ND 1.26 as a reference, ND 1.27's is exactly the same.
-            var fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fmInstalledDir);
+            string fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fmInstalledDir);
             if (!fmLanguage.IsEmpty())
             {
                 var fmSupportedLangs =
@@ -647,7 +647,7 @@ namespace AngelLoader
             const string fmSelectorKey = "fm_selector";
             const string fmCommentLine = "always start the FM Selector (if one is present)";
 
-            var camModIni = Path.Combine(gamePath, Paths.CamModIni);
+            string camModIni = Path.Combine(gamePath, Paths.CamModIni);
             if (!File.Exists(camModIni))
             {
                 Log(Paths.CamModIni + " not found for " + Config.GetGameExe(game), stackTrace: true);
@@ -852,8 +852,8 @@ namespace AngelLoader
             bool existingAlwaysShowKeyOverwritten = false;
             int insertLineIndex = -1;
 
-            var ini = Paths.GetSneakyOptionsIni();
-            if (ini.IsEmpty())
+            string soIni = Paths.GetSneakyOptionsIni();
+            if (soIni.IsEmpty())
             {
                 Log("Couldn't set us as the loader for Thief: Deadly Shadows because SneakyOptions.ini could not be found", stackTrace: true);
                 return false;
@@ -862,7 +862,7 @@ namespace AngelLoader
             List<string> lines;
             try
             {
-                lines = File.ReadAllLines(ini, Encoding.Default).ToList();
+                lines = File.ReadAllLines(soIni, Encoding.Default).ToList();
             }
             catch (Exception ex)
             {
@@ -872,7 +872,7 @@ namespace AngelLoader
 
             // Confirmed SU can read the selector value with both forward and backward slashes
 
-            var stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
+            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
 
             string selectorPath;
 
@@ -889,13 +889,13 @@ namespace AngelLoader
 
                 #region Read the previous loader value
 
-                for (var i = 0; i < lines.Count; i++)
+                for (int i = 0; i < lines.Count; i++)
                 {
                     if (!lines[i].Trim().EqualsI("[Loader]")) continue;
 
                     while (i < lines.Count - 1)
                     {
-                        var lt = lines[i + 1].Trim();
+                        string lt = lines[i + 1].Trim();
                         if (lt.StartsWithI(externSelectorKey))
                         {
                             prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1);
@@ -944,14 +944,14 @@ namespace AngelLoader
 
             bool prevAlwaysShowValue = Config.GetStartupAlwaysStartSelector(GameIndex.Thief3);
 
-            for (var i = 0; i < lines.Count; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 if (!lines[i].Trim().EqualsI("[Loader]")) continue;
 
                 insertLineIndex = i + 1;
                 while (i < lines.Count - 1)
                 {
-                    var lt = lines[i + 1].Trim();
+                    string lt = lines[i + 1].Trim();
                     if ((!resetSelector || changeLoaderIfResetting) &&
                         !existingExternSelectorKeyOverwritten &&
                         lt.StartsWithI(externSelectorKey))
@@ -991,7 +991,7 @@ namespace AngelLoader
 
             try
             {
-                File.WriteAllLines(ini, lines, Encoding.Default);
+                File.WriteAllLines(soIni, lines, Encoding.Default);
             }
             catch (Exception ex)
             {
@@ -1024,7 +1024,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var fmArchivePath = FindFMArchive(fm.Archive);
+            string fmArchivePath = FindFMArchive(fm.Archive);
 
             if (fmArchivePath.IsEmpty())
             {
@@ -1034,8 +1034,8 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var gameExe = Config.GetGameExeUnsafe(fm.Game);
-            var gameName = GetGameNameFromGameType(fm.Game);
+            string gameExe = Config.GetGameExeUnsafe(fm.Game);
+            string gameName = GetGameNameFromGameType(fm.Game);
             if (!File.Exists(gameExe))
             {
                 Core.View.ShowAlert(gameName + ":\r\n" +
@@ -1043,7 +1043,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var instBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+            string instBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
 
             if (!Directory.Exists(instBasePath))
             {
@@ -1060,7 +1060,7 @@ namespace AngelLoader
 
             #endregion
 
-            var fmInstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
+            string fmInstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
 
             ExtractCts = new CancellationTokenSource();
 
@@ -1156,11 +1156,11 @@ namespace AngelLoader
                     using var archive = new ZipArchive(fs, ZipArchiveMode.Read, leaveOpen: false);
 
                     int filesCount = archive.Entries.Count;
-                    for (var i = 0; i < filesCount; i++)
+                    for (int i = 0; i < filesCount; i++)
                     {
                         var entry = archive.Entries[i];
 
-                        var fileName = entry.FullName.ToBackSlashes();
+                        string fileName = entry.FullName.ToBackSlashes();
 
                         if (fileName[fileName.Length - 1] == '\\') continue;
 
@@ -1170,7 +1170,7 @@ namespace AngelLoader
                                 fileName.Substring(0, fileName.LastIndexOf('\\'))));
                         }
 
-                        var extractedName = Path.Combine(fmInstalledPath, fileName);
+                        string extractedName = Path.Combine(fmInstalledPath, fileName);
                         entry.ExtractToFile(extractedName, overwrite: true);
 
                         UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
@@ -1287,8 +1287,8 @@ namespace AngelLoader
                 Config.ConfirmUninstall = !dontAskAgain;
             }
 
-            var gameExe = Config.GetGameExeUnsafe(fm.Game);
-            var gameName = GetGameNameFromGameType(fm.Game);
+            string gameExe = Config.GetGameExeUnsafe(fm.Game);
+            string gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
                 Core.View.ShowAlert(
@@ -1300,12 +1300,12 @@ namespace AngelLoader
 
             try
             {
-                var fmInstalledPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
+                string fmInstalledPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
 
-                var fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
+                bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
                 if (!fmDirExists)
                 {
-                    var yes = Core.View.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
+                    bool yes = Core.View.AskToContinue(LText.AlertMessages.Uninstall_FMAlreadyUninstalled,
                         LText.AlertMessages.Alert);
                     if (yes)
                     {
@@ -1315,7 +1315,7 @@ namespace AngelLoader
                     return;
                 }
 
-                var fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive));
+                string fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive));
 
                 if (fmArchivePath.IsEmpty())
                 {
@@ -1344,7 +1344,7 @@ namespace AngelLoader
 
                 if (Config.BackupAlwaysAsk)
                 {
-                    var message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
+                    string message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
                         ? LText.AlertMessages.Uninstall_BackupSavesAndScreenshots
                         : LText.AlertMessages.Uninstall_BackupAllData;
                     var (cancel, cont, dontAskAgain) =
@@ -1400,7 +1400,7 @@ namespace AngelLoader
         {
             return await Task.Run(() =>
             {
-                var triedReadOnlyRemove = false;
+                bool triedReadOnlyRemove = false;
 
                 // Failsafe cause this is nasty
                 for (int i = 0; i < 2; i++)
@@ -1418,12 +1418,12 @@ namespace AngelLoader
 
                             // FMs installed by us will not have any readonly attributes set, so we work on the
                             // assumption that this is the rarer case and only do this extra work if we need to.
-                            foreach (var f in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+                            foreach (string f in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
                             {
                                 new FileInfo(f).IsReadOnly = false;
                             }
 
-                            foreach (var d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                            foreach (string d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
                             {
                                 new DirectoryInfo(d).Attributes = FileAttributes.Normal;
                             }

@@ -1021,7 +1021,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <returns></returns>
         public TaskDialogButton ShowDialog(IWin32Window owner)
         {
-            var ownerHandle = owner?.Handle ?? NativeMethods.GetActiveWindow();
+            IntPtr ownerHandle = owner?.Handle ?? NativeMethods.GetActiveWindow();
             return ShowDialog(ownerHandle);
         }
 

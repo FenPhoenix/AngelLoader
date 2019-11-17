@@ -91,9 +91,9 @@ namespace AngelLoader.CustomControls
         */
         private static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
         {
-            var firstByte = pattern[0];
+            byte firstByte = pattern[0];
             int index = Array.IndexOf(input, firstByte);
-            var pLen = pattern.Length;
+            int pLen = pattern.Length;
 
             while (index > -1)
             {
@@ -165,7 +165,7 @@ namespace AngelLoader.CustomControls
 
                 Font = useFixed ? MonospaceFont : DefaultFont;
 
-                var savedText = Text;
+                string savedText = Text;
 
                 if (outsideCall)
                 {
@@ -287,14 +287,14 @@ namespace AngelLoader.CustomControls
                 switch (fileType)
                 {
                     case ReadmeType.GLML:
-                        var text = File.ReadAllText(path);
+                        string text = File.ReadAllText(path);
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
                         ContentIsPlainText = false;
                         Rtf = GLMLToRTF(text);
                         break;
                     case ReadmeType.RichText:
                         // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower
-                        var bytes = File.ReadAllBytes(path);
+                        byte[] bytes = File.ReadAllBytes(path);
 
                         ReplaceByteSequence(bytes, shppict, shppictBlanked);
                         ReplaceByteSequence(bytes, nonshppict, nonshppictBlanked);

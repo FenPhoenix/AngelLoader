@@ -46,7 +46,7 @@ namespace AngelLoader.Forms.Import
         private static string AutodetectDarkLoaderIni()
         {
             // Common locations. Don't go overboard and search the whole filesystem; that would take forever.
-            var dlLocations = new[]
+            string[] dlLocations =
             {
                 @"DarkLoader",
                 @"Games\DarkLoader"
@@ -63,15 +63,15 @@ namespace AngelLoader.Forms.Import
                 return "";
             }
 
-            foreach (var drive in drives)
+            foreach (DriveInfo drive in drives)
             {
                 if (!drive.IsReady || drive.DriveType != DriveType.Fixed) continue;
 
                 try
                 {
-                    foreach (var loc in dlLocations)
+                    foreach (string loc in dlLocations)
                     {
-                        var dlIni = Path.Combine(drive.Name, loc, Paths.DarkLoaderIni);
+                        string dlIni = Path.Combine(drive.Name, loc, Paths.DarkLoaderIni);
                         if (File.Exists(dlIni)) return dlIni;
                     }
                 }

@@ -96,7 +96,7 @@ namespace AngelLoader
                     }
                     catch (Exception ex)
                     {
-                        var message = Paths.ConfigIni + " exists but there was an error while reading it.";
+                        string message = Paths.ConfigIni + " exists but there was an error while reading it.";
                         Log(message, ex);
                         openSettings = true;
                     }
@@ -121,8 +121,8 @@ namespace AngelLoader
 
                 for (int i = 0; i < langFiles.Count; i++)
                 {
-                    var f = langFiles[i];
-                    var fn = f.GetFileNameFast().RemoveExtension();
+                    string f = langFiles[i];
+                    string fn = f.GetFileNameFast().RemoveExtension();
                     if (!selFound && fn.EqualsI(Config.Language))
                     {
                         try
@@ -147,7 +147,7 @@ namespace AngelLoader
                 {
                     #region Parallel load
 
-                    using var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true));
+                    using Task findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true));
 
                     // It's safe to overlap this with Find(), but not with MainForm.ctor()
                     configTask.Wait();
@@ -286,7 +286,7 @@ namespace AngelLoader
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     var game = (GameIndex)i;
-                    var gameExe = Config.GetGameExe(game);
+                    string gameExe = Config.GetGameExe(game);
                     // Only try to reset the loader on the old game if the old game was actually specified, obviously
                     if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace())
                     {
@@ -348,7 +348,7 @@ namespace AngelLoader
                 WriteConfigIni(Config, Paths.ConfigIni);
 
                 // We have to do this here because we won't have before
-                using (var findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true)))
+                using (Task findFMsTask = Task.Run(() => FindFMs.Find(Config.FMInstallPaths, startup: true)))
                 {
                     // Have to do the full View init sequence here, because we skipped them all before
                     View = new MainForm();
@@ -624,7 +624,7 @@ namespace AngelLoader
                 return fmsPath;
             }
 
-            var camModIni = Path.Combine(gamePath, Paths.CamModIni);
+            string camModIni = Path.Combine(gamePath, Paths.CamModIni);
 
             var fmSelectorLines = new List<string>();
             bool alwaysShowLoader = false;
@@ -714,8 +714,8 @@ namespace AngelLoader
             string PrevFMSelectorValue, bool AlwaysShowLoader)
         GetInfoFromSneakyOptionsIni()
         {
-            var soIni = Paths.GetSneakyOptionsIni();
-            var soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
+            string soIni = Paths.GetSneakyOptionsIni();
+            Error soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
             if (soError != Error.None)
             {
                 // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
@@ -735,10 +735,10 @@ namespace AngelLoader
             bool alwaysShowLoaderFound = false;
             bool alwaysShowLoader = false;
 
-            var lines = File.ReadAllLines(soIni);
-            for (var i = 0; i < lines.Length; i++)
+            string[] lines = File.ReadAllLines(soIni);
+            for (int i = 0; i < lines.Length; i++)
             {
-                var lineT = lines[i].Trim();
+                string lineT = lines[i].Trim();
                 if (lineT.EqualsI("[Loader]"))
                 {
                     /*
@@ -752,7 +752,7 @@ namespace AngelLoader
                     */
                     while (i < lines.Length - 1)
                     {
-                        var lt = lines[i + 1].Trim();
+                        string lt = lines[i + 1].Trim();
                         if (!ignoreSavesKeyFound &&
                             !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSavesKey="))
                         {
@@ -875,7 +875,7 @@ namespace AngelLoader
             using (var f = new ImportFromMultipleInisForm(importType))
             {
                 if (f.ShowDialog() != DialogResult.OK) return;
-                foreach (var file in f.IniFiles) iniFiles.Add(file);
+                foreach (string file in f.IniFiles) iniFiles.Add(file);
                 importTitle = f.ImportTitle;
                 importReleaseDate = f.ImportReleaseDate;
                 importLastPlayed = f.ImportLastPlayed;
@@ -915,7 +915,7 @@ namespace AngelLoader
                 Size = importSize
             };
 
-            foreach (var file in iniFiles)
+            foreach (string file in iniFiles)
             {
                 if (file.IsWhiteSpace()) continue;
 
@@ -1105,10 +1105,10 @@ namespace AngelLoader
                 return false;
             }
 
-            var installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
+            string installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             try
             {
-                var dmlFile = Path.GetFileName(sourceDMLPath);
+                string dmlFile = Path.GetFileName(sourceDMLPath);
                 if (dmlFile.IsEmpty()) return false;
                 File.Copy(sourceDMLPath, Path.Combine(installedFMPath, dmlFile), overwrite: true);
             }
@@ -1136,7 +1136,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
+            string installedFMPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             try
             {
                 File.Delete(Path.Combine(installedFMPath, dmlFile));
@@ -1186,12 +1186,12 @@ namespace AngelLoader
         internal static (string ReadmePath, ReadmeType ReadmeType)
         GetReadmeFileAndType(FanMission fm)
         {
-            var readmeOnDisk = GetReadmeFileFullPath(fm);
+            string readmeOnDisk = GetReadmeFileFullPath(fm);
 
             if (fm.SelectedReadme.ExtIsHtml()) return (readmeOnDisk, ReadmeType.HTML);
             if (fm.SelectedReadme.ExtIsGlml()) return (readmeOnDisk, ReadmeType.GLML);
 
-            var rtfHeader = new char[6];
+            char[] rtfHeader = new char[6];
 
             // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
             using (var sr = new StreamReader(readmeOnDisk, Encoding.ASCII)) sr.ReadBlock(rtfHeader, 0, 6);
@@ -1341,7 +1341,7 @@ namespace AngelLoader
                 {
                     string rf = readmeFiles[i];
 
-                    var fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
+                    string fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
                     if (!ContainsUnsafeOrJunkPhrase(fn))
                     {
                         numSafe++;
@@ -1367,7 +1367,7 @@ namespace AngelLoader
                 return;
             }
 
-            var installsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+            string installsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
             string fmDir;
             if (installsBasePath.IsEmpty() || !Directory.Exists(fmDir = Path.Combine(installsBasePath, fm.InstalledDir)))
             {
@@ -1387,12 +1387,12 @@ namespace AngelLoader
 
         internal static void OpenWebSearchUrl(string fmTitle)
         {
-            var url = Config.WebSearchUrl;
+            string url = Config.WebSearchUrl;
             if (url.IsWhiteSpace() || url.Length > 32766) return;
 
-            var index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
+            int index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
 
-            var finalUrl = Uri.EscapeUriString(index == -1
+            string finalUrl = Uri.EscapeUriString(index == -1
                 ? url
                 : url.Substring(0, index) + fmTitle + url.Substring(index + "$TITLE$".Length));
 
@@ -1569,7 +1569,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    var exe = Config.GetGameExe((GameIndex)i);
+                    string exe = Config.GetGameExe((GameIndex)i);
                     if (!exe.IsEmpty())
                     {
                         var game = (GameIndex)i;

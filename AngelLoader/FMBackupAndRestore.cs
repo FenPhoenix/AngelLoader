@@ -71,15 +71,15 @@ namespace AngelLoader
             {
                 if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
-                var thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
-                var savesDir = fm.Game == Game.Thief3 ? T3SavesDir : DarkSavesDir;
-                var savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
-                var netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, DarkNetSavesDir);
+                string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+                string savesDir = fm.Game == Game.Thief3 ? T3SavesDir : DarkSavesDir;
+                string savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
+                string netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, DarkNetSavesDir);
                 // Screenshots directory name is the same for T1/T2/T3/SS2
-                var screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, ScreensDir);
-                var ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, SS2CurrentDir);
+                string screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, ScreensDir);
+                string ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, SS2CurrentDir);
 
-                var bakFile = Path.Combine(Config.FMsBackupPath,
+                string bakFile = Path.Combine(Config.FMsBackupPath,
                     (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
                     Paths.FMBackupSuffix);
 
@@ -106,7 +106,7 @@ namespace AngelLoader
                         var ss2SaveDirs = FastIO.GetDirsTopOnly(
                             Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*");
 
-                        foreach (var dir in ss2SaveDirs)
+                        foreach (string dir in ss2SaveDirs)
                         {
                             if (SS2SaveDirsOnDiskRegex.IsMatch(dir))
                             {
@@ -120,9 +120,9 @@ namespace AngelLoader
                     using var archive =
                         new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
                             ZipArchiveMode.Create);
-                    foreach (var f in savesAndScreensFiles)
+                    foreach (string f in savesAndScreensFiles)
                     {
-                        var fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
+                        string fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
                         AddEntry(archive, f, fn);
                     }
 
@@ -148,9 +148,9 @@ namespace AngelLoader
                     using var archive = new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
                         ZipArchiveMode.Create);
 
-                    foreach (var f in installedFMFiles)
+                    foreach (string f in installedFMFiles)
                     {
-                        var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
+                        string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
                         if (IsSaveOrScreenshot(fn, fm.Game) ||
                             (!fn.EqualsI(Paths.FMSelInf) && (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
                         {
@@ -158,10 +158,10 @@ namespace AngelLoader
                         }
                     }
 
-                    var fmSelInfString = "";
-                    for (var i = 0; i < fullList.Count; i++)
+                    string fmSelInfString = "";
+                    for (int i = 0; i < fullList.Count; i++)
                     {
-                        var f = fullList[i];
+                        string f = fullList[i];
                         if (!installedFMFiles.ContainsI(
                             Path.Combine(fmInstalledPath, f).Replace('/', Path.DirectorySeparatorChar)))
                         {
@@ -216,10 +216,10 @@ namespace AngelLoader
                 using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
                     ZipArchiveMode.Read, leaveOpen: false);
 
-                for (var i = 0; i < archive.Entries.Count; i++)
+                for (int i = 0; i < archive.Entries.Count; i++)
                 {
                     var entry = archive.Entries[i];
-                    var efn = entry.FullName.ToForwardSlashes();
+                    string efn = entry.FullName.ToForwardSlashes();
 
                     if (efn.EqualsI(Paths.FMSelInf) ||
                         (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
@@ -230,7 +230,7 @@ namespace AngelLoader
 
                     fullList.Add(entry.FullName);
 
-                    var fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
                     if (installedFMFiles.ContainsI(fileInInstalledDir.Replace('/', Path.DirectorySeparatorChar)))
                     {
                         try
@@ -265,9 +265,9 @@ namespace AngelLoader
                         }
                     }
                 }
-                foreach (var f in installedFMFiles)
+                foreach (string f in installedFMFiles)
                 {
-                    var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
+                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
 
                     if (fn.EqualsI(Paths.FMSelInf) || IsSaveOrScreenshot(fn, game))
                     {
@@ -275,7 +275,7 @@ namespace AngelLoader
                     }
 
                     bool found = false;
-                    for (var i = 0; i < archive.Entries.Count; i++)
+                    for (int i = 0; i < archive.Entries.Count; i++)
                     {
                         if (archive.Entries[i].FullName.EqualsI(fn))
                         {
@@ -290,10 +290,10 @@ namespace AngelLoader
             {
                 using var archive = new SevenZipExtractor(fmArchivePath);
 
-                for (var i = 0; i < archive.ArchiveFileData.Count; i++)
+                for (int i = 0; i < archive.ArchiveFileData.Count; i++)
                 {
                     var entry = archive.ArchiveFileData[i];
-                    var efn = entry.FileName.ToForwardSlashes();
+                    string efn = entry.FileName.ToForwardSlashes();
 
                     if (efn.EqualsI(Paths.FMSelInf) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
@@ -305,7 +305,7 @@ namespace AngelLoader
 
                     fullList.Add(efn);
 
-                    var fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
                     if (File.Exists(fileInInstalledDir))
                     {
                         try
@@ -333,17 +333,17 @@ namespace AngelLoader
                         }
                     }
                 }
-                foreach (var f in installedFMFiles)
+                foreach (string f in installedFMFiles)
                 {
                     if (Path.GetFileName(f).EqualsI(Paths.FMSelInf)) continue;
 
-                    var fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
+                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
 
                     bool found = false;
-                    for (var i = 0; i < archive.ArchiveFileData.Count; i++)
+                    for (int i = 0; i < archive.ArchiveFileData.Count; i++)
                     {
                         var entry = archive.ArchiveFileData[i];
-                        var efn = entry.FileName.ToForwardSlashes();
+                        string efn = entry.FileName.ToForwardSlashes();
                         if (!entry.IsDirectory && efn.EqualsI(fn))
                         {
                             found = true;
@@ -379,13 +379,13 @@ namespace AngelLoader
 
                 if (Directory.Exists(dlBakDir))
                 {
-                    foreach (var f in FastIO.GetFilesTopOnly(dlBakDir, "*.zip"))
+                    foreach (string f in FastIO.GetFilesTopOnly(dlBakDir, "*.zip"))
                     {
-                        var fn = f.GetFileNameFast();
+                        string fn = f.GetFileNameFast();
                         int index = fn.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
                         if (index == -1) continue;
 
-                        var an = fn.Substring(0, index).Trim();
+                        string an = fn.Substring(0, index).Trim();
                         // Account for the fact that DarkLoader trims archive names for save backup zips
                         // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
                         // way, so whatever.
@@ -409,8 +409,8 @@ namespace AngelLoader
                     {
                         for (int i = 0; i < 2; i++)
                         {
-                            var fNoExt = i == 0 ? fm.Archive.RemoveExtension() : fm.InstalledDir;
-                            var bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
+                            string fNoExt = i == 0 ? fm.Archive.RemoveExtension() : fm.InstalledDir;
+                            string bakFile = Path.Combine(path, fNoExt + Paths.FMBackupSuffix);
                             if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
                         }
                     }
@@ -431,7 +431,7 @@ namespace AngelLoader
                     // (for automatic use of FMSel/NDL saves)
                     if (fileToUse.Name.IsEmpty())
                     {
-                        foreach (var path in GetFMArchivePaths()) AddBakFilesFrom(path);
+                        foreach (string path in GetFMArchivePaths()) AddBakFilesFrom(path);
 
                         if (bakFiles.Count == 0) return;
 
@@ -444,19 +444,19 @@ namespace AngelLoader
 
                 var excludes = new List<string>();
 
-                var thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
-                var fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
+                string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+                string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
                 using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),
                     ZipArchiveMode.Read))
                 {
-                    var filesCount = archive.Entries.Count;
+                    int filesCount = archive.Entries.Count;
                     if (fileToUse.DarkLoader)
                     {
-                        for (var i = 0; i < filesCount; i++)
+                        for (int i = 0; i < filesCount; i++)
                         {
                             var entry = archive.Entries[i];
-                            var fn = entry.FullName.ToForwardSlashes();
+                            string fn = entry.FullName.ToForwardSlashes();
                             if (!fn.Contains('/'))
                             {
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, DarkSavesDir));
@@ -471,13 +471,13 @@ namespace AngelLoader
                     }
                     else
                     {
-                        var savesDir = fmIsT3 ? T3SavesDir : DarkSavesDir;
+                        string savesDir = fmIsT3 ? T3SavesDir : DarkSavesDir;
                         if (restoreSavesAndScreensOnly)
                         {
-                            for (var i = 0; i < filesCount; i++)
+                            for (int i = 0; i < filesCount; i++)
                             {
                                 var entry = archive.Entries[i];
-                                var fn = entry.FullName.ToForwardSlashes();
+                                string fn = entry.FullName.ToForwardSlashes();
 
                                 if (fn.Length > 0 && fn[fn.Length - 1] != '/' &&
                                     (fn.StartsWithI(savesDir + "/") ||
@@ -507,7 +507,7 @@ namespace AngelLoader
                                 {
                                     if (!line.StartsWithFast_NoNullChecks(RemoveFileEq)) continue;
 
-                                    var val = line.Substring(11).ToForwardSlashes().Trim();
+                                    string val = line.Substring(11).ToForwardSlashes().Trim();
                                     if (!val.StartsWithI(savesDir + "/") &&
                                         !val.StartsWithI(DarkNetSavesDir + "/") &&
                                         !val.StartsWithI(ScreensDir + "/") &&
@@ -526,10 +526,10 @@ namespace AngelLoader
                                 }
                             }
 
-                            for (var i = 0; i < filesCount; i++)
+                            for (int i = 0; i < filesCount; i++)
                             {
                                 var f = archive.Entries[i];
-                                var fn = f.FullName.ToForwardSlashes();
+                                string fn = f.FullName.ToForwardSlashes();
 
                                 if (fn.EqualsI(Paths.FMSelInf) ||
                                     (fn.Length > 0 && fn[fn.Length - 1] == '/') ||
@@ -551,7 +551,7 @@ namespace AngelLoader
 
                 if (!restoreSavesAndScreensOnly)
                 {
-                    foreach (var f in Directory.EnumerateFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    foreach (string f in Directory.EnumerateFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
                         if (excludes.ContainsI(f.Substring(fmInstalledPath.Length).Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
                         {
@@ -562,7 +562,7 @@ namespace AngelLoader
 
                 if (fileToUse.DarkLoader)
                 {
-                    var dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
+                    string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
                     Directory.CreateDirectory(dlOrigBakDir);
                     File.Move(fileToUse.Name, Path.Combine(dlOrigBakDir, fileToUse.Name.GetFileNameFast()));
                 }

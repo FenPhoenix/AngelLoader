@@ -215,7 +215,7 @@ namespace AngelLoader.CustomControls
                     if (MouseOverCrossSection) Cursor.Current = Cursors.SizeAll;
 
                     // SuspendDrawing() / ResumeDrawing() reduces visual artifacts
-                    var axis = IsMain() ? e.Y : e.X;
+                    int axis = IsMain() ? e.Y : e.X;
 
                     // Things need to happen in different orders depending on who we are, in order to avoid
                     // flickering. We could also Suspend/Resume them one at a time, but that's perceptibly

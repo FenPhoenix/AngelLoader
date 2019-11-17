@@ -49,7 +49,7 @@ namespace AngelLoader
 
                 // We're not x64 currently, but this check lets us be compatible for an easy switch if we decide
                 // to do so in the future.
-                var regKey = Registry.GetValue(
+                object regKey = Registry.GetValue(
                     !Environment.Is64BitProcess
                         // If we're x86 Win/x86 app OR x64 Win/x86 app, then this is the right path. On x86 Win,
                         // this is the actual registry path, and on x64 Win/x86 app, this will redirect to the
@@ -68,7 +68,7 @@ namespace AngelLoader
                 }
                 else
                 {
-                    var regKeyStr = regKey.ToString();
+                    string regKeyStr = regKey.ToString();
                     string soIni = "";
                     try
                     {
@@ -160,7 +160,7 @@ namespace AngelLoader
             #region Safety check
 
             // Make sure we never delete any paths that are not safely tucked in our temp folder
-            var baseTemp = _baseTemp.TrimEnd('\\', '/', ' ');
+            string baseTemp = _baseTemp.TrimEnd('\\', '/', ' ');
 
             if (!path.StartsWithI(baseTemp + "\\") && !path.StartsWithI(baseTemp + "/")) return;
 
@@ -170,8 +170,8 @@ namespace AngelLoader
             {
                 try
                 {
-                    foreach (var f in FastIO.GetFilesTopOnly(path, "*")) File.Delete(f);
-                    foreach (var d in FastIO.GetDirsTopOnly(path, "*")) Directory.Delete(d, recursive: true);
+                    foreach (string f in FastIO.GetFilesTopOnly(path, "*")) File.Delete(f);
+                    foreach (string d in FastIO.GetDirsTopOnly(path, "*")) Directory.Delete(d, recursive: true);
                 }
                 catch (Exception ex)
                 {

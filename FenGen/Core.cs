@@ -107,15 +107,15 @@ namespace FenGen
         {
             "        internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)",
             "        {",
-            "            var iniLines = File.ReadAllLines(fileName, Encoding.UTF8);",
+            "            string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);",
             "",
             "            if (fmsList.Count > 0) fmsList.Clear();",
             "",
             "            bool fmsListIsEmpty = true;",
             "",
-            "            foreach (var line in iniLines)",
+            "            foreach (string line in iniLines)",
             "            {",
-            "                var lineT = line.TrimStart();",
+            "                string lineT = line.TrimStart();",
             "",
             "                if (lineT.Length > 0 && lineT[0] == '[')",
             "                {",
@@ -133,7 +133,7 @@ namespace FenGen
             "                // Comment chars (;) and blank lines will be rejected implicitly.",
             "                // Since they're rare cases, checking for them would only slow us down.",
             "",
-            "                var fm = fmsList[fmsList.Count - 1];",
+            "                FanMission fm = fmsList[fmsList.Count - 1];",
             ""
         };
 
@@ -144,11 +144,11 @@ namespace FenGen
             "        {",
             "            var config = new ConfigData();",
             "",
-            "            var iniLines = File.ReadAllLines(fileName, Encoding.UTF8);",
+            "            string[] iniLines = File.ReadAllLines(fileName, Encoding.UTF8);",
             "",
-            "            foreach (var line in iniLines)",
+            "            foreach (string line in iniLines)",
             "            {",
-            "                var lineT = line.TrimStart();",
+            "                string lineT = line.TrimStart();",
             ""
         };
 #endif
@@ -159,7 +159,7 @@ namespace FenGen
             "        {",
             "            using (var sw = new StreamWriter(fileName, false, Encoding.UTF8))",
             "            {",
-            "                foreach (var fm in fmDataList)",
+            "                foreach (FanMission fm in fmDataList)",
             "                {",
             "                    sw.WriteLine(\"[FM]\");",
             ""
@@ -209,7 +209,7 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.Version))
                         {
                             GenTasks.Add(GenType.Version);
-                            var sourceFile = Path.Combine(ALProjectPath, @"Properties\AssemblyInfo.cs");
+                            string sourceFile = Path.Combine(ALProjectPath, @"Properties\AssemblyInfo.cs");
                             VersionIncrement.Generate(sourceFile, VersionType.Beta);
                         }
                         break;
@@ -217,7 +217,7 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.Version))
                         {
                             GenTasks.Add(GenType.Version);
-                            var sourceFile = Path.Combine(ALProjectPath, @"Properties\AssemblyInfo.cs");
+                            string sourceFile = Path.Combine(ALProjectPath, @"Properties\AssemblyInfo.cs");
                             VersionIncrement.Generate(sourceFile, VersionType.PublicRelease);
                         }
                         break;
@@ -227,8 +227,8 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.FMData))
                         {
                             GenTasks.Add(GenType.FMData);
-                            var sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
-                            var destFile = Path.Combine(ALProjectPath, @"Ini\FMData.cs");
+                            string sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
+                            string destFile = Path.Combine(ALProjectPath, @"Ini\FMData.cs");
                             GenerateFMData(sourceFile, destFile);
                         }
                         break;
@@ -239,7 +239,7 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.Language))
                         {
                             GenTasks.Add(GenType.Language);
-                            var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
+                            string langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
                             LanguageGen.Generate(langFile);
                         }
                         break;
@@ -247,7 +247,7 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.Language))
                         {
                             GenTasks.Add(GenType.Language);
-                            var langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
+                            string langFile = Path.Combine(ALProjectPath, @"Languages\English.ini");
                             StateVars.WriteTestLangFile = true;
                             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
                             LanguageGen.Generate(langFile);
@@ -267,8 +267,8 @@ namespace FenGen
             //GenType = GenType.Language;
 #endif
 
-            //var className = GenType == GenType.FMData ? "FanMission" : "ConfigData";
-            var className = "FanMission";
+            //string className = GenType == GenType.FMData ? "FanMission" : "ConfigData";
+            const string className = "FanMission";
             ReadSourceFields(className, sourceFile);
 
             using (var sr = new StreamReader(destFile))
@@ -279,10 +279,10 @@ namespace FenGen
                 bool inWriterKeepBlock = false;
                 while (!sr.EndOfStream)
                 {
-                    var line = sr.ReadLine();
+                    string line = sr.ReadLine();
                     if (line == null) continue;
 
-                    var lineT = line.Trim();
+                    string lineT = line.Trim();
 
                     if (!inClass)
                     {
@@ -296,7 +296,7 @@ namespace FenGen
                     {
                         if (lineT.StartsWith("//"))
                         {
-                            var attr = lineT.Substring(2).Trim();
+                            string attr = lineT.Substring(2).Trim();
                             switch (attr)
                             {
                                 case "[FenGen:EndReaderKeepBlock]":
@@ -336,7 +336,7 @@ namespace FenGen
 
                     if (lineT.StartsWith("//"))
                     {
-                        var attr = lineT.Substring(2).Trim();
+                        string attr = lineT.Substring(2).Trim();
                         switch (attr)
                         {
                             case "[FenGen:BeginReaderKeepBlock]":
@@ -354,9 +354,9 @@ namespace FenGen
 
             using var sw = new StreamWriter(destFile, append: false);
 
-            foreach (var l in DestTopLines) sw.WriteLine(l);
+            foreach (string l in DestTopLines) sw.WriteLine(l);
 
-            //var obj = GenType == GenType.FMData ? "fm" : "config";
+            //string obj = GenType == GenType.FMData ? "fm" : "config";
             const string obj = "fm";
 
             WriteReader(sw, obj);
@@ -377,7 +377,7 @@ namespace FenGen
             if (TopCodeLines.Length > 0)
             {
                 sw.WriteLine(Indent(2) + TopCodeMessage);
-                foreach (var l in TopCodeLines) sw.WriteLine(l);
+                foreach (string l in TopCodeLines) sw.WriteLine(l);
             }
 
             sw.WriteLine(Indent(2) + AutogeneratedMessage);
@@ -386,7 +386,7 @@ namespace FenGen
             //    ? ReadFMDataIniTopLines
             //    : ReadConfigIniTopLines).ToList();
 
-            var topLines = ReadFMDataIniTopLines;
+            string[] topLines = ReadFMDataIniTopLines;
 
             //if (topLines.SequenceEqual(ReadFMDataIniTopLines.ToList()))
             //{
@@ -420,25 +420,25 @@ namespace FenGen
             //    }
             //}
 
-            foreach (var l in topLines) sw.WriteLine(l);
+            foreach (string l in topLines) sw.WriteLine(l);
 
             bool wroteHasXFields = false;
 
-            for (var i = 0; i < Fields.Count; i++)
+            for (int i = 0; i < Fields.Count; i++)
             {
                 var field = Fields[i];
-                var objDotField = obj + "." + field.Name;
+                string objDotField = obj + "." + field.Name;
 
                 string optElse = i > 0 ? "else " : "";
 
-                var fieldWriteName = field.WriteName.IsEmpty() ? field.Name : field.WriteName;
+                string fieldWriteName = field.WriteName.IsEmpty() ? field.Name : field.WriteName;
 
                 sw.WriteLine(
                     Indent(4) +
                     optElse +
                     "if (lineT.StartsWithFast_NoNullChecks(\"" + fieldWriteName + "=\"))\r\n" +
                     Indent(4) + "{\r\n" +
-                    Indent(5) + "var val = lineT.Substring(" + (fieldWriteName.Length + 1) + ");");
+                    Indent(5) + "string val = lineT.Substring(" + (fieldWriteName.Length + 1) + ");");
 
                 //sw.WriteLine(
                 //    Indent(4) +
@@ -446,15 +446,15 @@ namespace FenGen
                 //    "if (!" + field.Name + "Read && lineT.StartsWithFast_NoNullChecks(\"" + fieldWriteName + "=\"))\r\n" +
                 //    Indent(4) + "{\r\n" +
                 //    Indent(5) + field.Name + "Read = true;\r\n" +
-                //    Indent(5) + "var val = lineT.Substring(" + (fieldWriteName.Length + 1) + ");");
+                //    Indent(5) + "string val = lineT.Substring(" + (fieldWriteName.Length + 1) + ");");
 
                 if (field.Type.StartsWith("List<"))
                 {
-                    var listType = field.Type.Substring(field.Type.IndexOf('<')).TrimStart('<').TrimEnd('>');
+                    string listType = field.Type.Substring(field.Type.IndexOf('<')).TrimStart('<').TrimEnd('>');
 
                     var ldt = field.ListDistinctType;
 
-                    var varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
+                    string varToAdd = listType == "string" && field.ListType == ListType.MultipleLines
                         ? "val"
                         : "result";
 
@@ -494,10 +494,10 @@ namespace FenGen
                         {
                             sw.WriteLine(
                                 Indent(5) + objDotField + ".Clear();\r\n" +
-                                Indent(5) + "var items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);\r\n" +
-                                Indent(5) + "for (var a = 0; a < items.Length; a++)\r\n" +
+                                Indent(5) + "string[] items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);\r\n" +
+                                Indent(5) + "for (int a = 0; a < items.Length; a++)\r\n" +
                                 Indent(5) + "{\r\n" +
-                                Indent(6) + "var result = items[a].Trim();\r\n" +
+                                Indent(6) + "string result = items[a].Trim();\r\n" +
                                 Indent(6) + objListSet + "\r\n" +
                                 Indent(5) + "}");
                         }
@@ -521,8 +521,8 @@ namespace FenGen
                         {
                             sw.WriteLine(
                                 Indent(5) + objDotField + ".Clear();\r\n" +
-                                Indent(5) + "var items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);\r\n" +
-                                Indent(5) + "for (var a = 0; a < items.Length; a++)\r\n" +
+                                Indent(5) + "string[] items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);\r\n" +
+                                Indent(5) + "for (int a = 0; a < items.Length; a++)\r\n" +
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + "items[a] = items[a].Trim();\r\n" +
                                 Indent(6) + "bool success = " + listType + ".TryParse(items[a], out " + listType + " result);\r\n" +
@@ -576,8 +576,8 @@ namespace FenGen
                 else if (field.Type[field.Type.Length - 1] == '?' &&
                         NumericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
-                    var ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                    sw.WriteLine(Indent(5) + "var success = " + ftNonNull + ".TryParse(val, out " + ftNonNull + " result);\r\n" +
+                    string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
+                    sw.WriteLine(Indent(5) + "bool success = " + ftNonNull + ".TryParse(val, out " + ftNonNull + " result);\r\n" +
                                  Indent(5) + "if (success)\r\n" +
                                  Indent(5) + "{\r\n" +
                                  Indent(6) + objDotField + " = result;\r\n" +
@@ -624,7 +624,7 @@ namespace FenGen
                 }
                 else if (field.Type == "DateTime?")
                 {
-                    sw.WriteLine(Indent(5) + "var success = long.TryParse(\r\n" +
+                    sw.WriteLine(Indent(5) + "bool success = long.TryParse(\r\n" +
                                  Indent(6) + "val,\r\n" +
                                  Indent(6) + "NumberStyles.HexNumber,\r\n" +
                                  Indent(6) + "DateTimeFormatInfo.InvariantInfo,\r\n" +
@@ -656,7 +656,7 @@ namespace FenGen
                 sw.WriteLine(Indent(4) + "}");
             }
 
-            foreach (var line in ReaderKeepLines) sw.WriteLine(line);
+            foreach (string line in ReaderKeepLines) sw.WriteLine(line);
 
             // for
             sw.WriteLine(Indent(3) + "}");
@@ -669,15 +669,15 @@ namespace FenGen
         {
             sw.WriteLine(Indent(2) + AutogeneratedMessage);
 
-            foreach (var l in WriteFMDataIniTopLines) sw.WriteLine(l);
+            foreach (string l in WriteFMDataIniTopLines) sw.WriteLine(l);
 
             bool wroteHasXValues = false;
 
             foreach (var field in Fields)
             {
-                var objDotField = obj + "." + field.Name;
+                string objDotField = obj + "." + field.Name;
 
-                var fieldWriteName = field.WriteName.IsEmpty() ? field.Name : field.WriteName;
+                string fieldWriteName = field.WriteName.IsEmpty() ? field.Name : field.WriteName;
 
                 //if (field.Type == "List<string>")
                 if (field.Type.StartsWith("List<"))
@@ -780,7 +780,7 @@ namespace FenGen
                 }
                 else if (NumericTypes.Contains(field.Type))
                 {
-                    var optCulture = field.Type == "float" || field.Type == "double" || field.Type == "decimal"
+                    string optCulture = field.Type == "float" || field.Type == "double" || field.Type == "decimal"
                         ? "CultureInfo.InvariantCulture"
                         : "";
 
@@ -801,7 +801,7 @@ namespace FenGen
                 else if (field.Type[field.Type.Length - 1] == '?' &&
                          NumericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
-                    var optCulture = field.Type == "float" || field.Type == "double" || field.Type == "decimal"
+                    string optCulture = field.Type == "float" || field.Type == "double" || field.Type == "decimal"
                         ? "CultureInfo.InvariantCulture"
                         : "";
 
@@ -875,7 +875,7 @@ namespace FenGen
                 }
             }
 
-            foreach (var line in WriterKeepLines) sw.WriteLine(line);
+            foreach (string line in WriterKeepLines) sw.WriteLine(line);
 
             // for
             sw.WriteLine(Indent(4) + "}");
@@ -889,7 +889,7 @@ namespace FenGen
 
         private static void ReadSourceFields(string className, string sourceFile)
         {
-            var sourceLines = File.ReadAllLines(sourceFile);
+            string[] sourceLines = File.ReadAllLines(sourceFile);
 
             bool inClass = false;
 
@@ -902,26 +902,26 @@ namespace FenGen
             var enumValuesForThisField = new List<string>();
             long? numericEmptyForThisField = null;
 
-            for (var i = 0; i < sourceLines.Length; i++)
+            for (int i = 0; i < sourceLines.Length; i++)
             {
-                var line = sourceLines[i].Trim();
+                string line = sourceLines[i].Trim();
 
                 if (!inClass)
                 {
-                    var lineIsClassDef = line.EndsWith("class " + className);
+                    bool lineIsClassDef = line.EndsWith("class " + className);
 
                     if (i > 0 && lineIsClassDef)
                     {
-                        var prevLine = sourceLines[i - 1].Trim();
+                        string prevLine = sourceLines[i - 1].Trim();
                         if (prevLine.StartsWith("//") && prevLine.Substring(2).Trim().StartsWith("[FenGen:") &&
                             prevLine[prevLine.Length - 1] == ']')
                         {
                             int ind;
-                            var kvp = prevLine.Substring(ind = prevLine.IndexOf(':') + 1, prevLine.Length - ind - 1);
+                            string kvp = prevLine.Substring(ind = prevLine.IndexOf(':') + 1, prevLine.Length - ind - 1);
                             if (kvp.Contains("="))
                             {
-                                var key = kvp.Substring(0, kvp.IndexOf('=')).Trim();
-                                var val = kvp.Substring(kvp.IndexOf('=') + 1).Trim();
+                                string key = kvp.Substring(0, kvp.IndexOf('=')).Trim();
+                                string val = kvp.Substring(kvp.IndexOf('=') + 1).Trim();
                                 if (key == "WriteEmptyValues")
                                 {
                                     Fields.WriteEmptyValues = val.EqualsTrue();
@@ -945,7 +945,7 @@ namespace FenGen
 
                 if (line.StartsWith("//"))
                 {
-                    var attr = line.Substring(2).Trim();
+                    string attr = line.Substring(2).Trim();
                     if (attr.StartsWith("[FenGen:"))
                     {
                         if (attr == "[FenGen:DoNotSerialize]")
@@ -956,11 +956,11 @@ namespace FenGen
 
                         if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("EnumValues="))
                         {
-                            var valString = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
-                            var valArray = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                            for (var li = 0; li < valArray.Length; li++)
+                            string valString = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
+                            string[] valArray = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                            for (int li = 0; li < valArray.Length; li++)
                             {
-                                var item = valArray[i];
+                                string item = valArray[i];
                                 item = item.Trim();
                                 if (!enumValuesForThisField.Contains(item))
                                 {
@@ -974,16 +974,16 @@ namespace FenGen
                         int ind;
                         if (attr.Substring(ind = attr.IndexOf(':') + 1).StartsWith("EnumMap:"))
                         {
-                            var kvpString = attr.Substring(attr.IndexOf(':', ind) + 1).TrimEnd(']');
-                            var kvpArray = kvpString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                            for (var li = 0; li < kvpArray.Length; li++)
+                            string kvpString = attr.Substring(attr.IndexOf(':', ind) + 1).TrimEnd(']');
+                            string[] kvpArray = kvpString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                            for (int li = 0; li < kvpArray.Length; li++)
                             {
-                                var item = kvpArray[li];
+                                string item = kvpArray[li];
                                 item = item.Trim();
                                 if (item.Contains('='))
                                 {
-                                    var key = item.Substring(0, item.IndexOf('=')).Trim();
-                                    var val = item.Substring(item.IndexOf('=') + 1).Trim();
+                                    string key = item.Substring(0, item.IndexOf('=')).Trim();
+                                    string val = item.Substring(item.IndexOf('=') + 1).Trim();
                                     enumMapForThisField[key] = val;
                                 }
                             }
@@ -993,16 +993,16 @@ namespace FenGen
 
                         if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("NumericEmpty="))
                         {
-                            var val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
+                            string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
                             if (long.TryParse(val, out long result)) numericEmptyForThisField = result;
                             continue;
                         }
 
-                        var kvp = attr.Substring(ind = attr.IndexOf(':') + 1, attr.Length - ind - 1);
+                        string kvp = attr.Substring(ind = attr.IndexOf(':') + 1, attr.Length - ind - 1);
                         if (kvp.Contains("="))
                         {
-                            var key = kvp.Substring(0, kvp.IndexOf('=')).Trim();
-                            var val = kvp.Substring(kvp.IndexOf('=') + 1).Trim();
+                            string key = kvp.Substring(0, kvp.IndexOf('=')).Trim();
+                            string val = kvp.Substring(kvp.IndexOf('=') + 1).Trim();
 
                             switch (key)
                             {
@@ -1031,12 +1031,12 @@ namespace FenGen
                     continue;
                 }
 
-                var index = line.IndexOf('{');
+                int index = line.IndexOf('{');
                 if (index == -1) index = line.IndexOf('=');
                 if (index == -1) index = line.IndexOf(';');
                 if (index == -1) continue;
 
-                var line2 = line.Substring(0, index).Trim();
+                string line2 = line.Substring(0, index).Trim();
 
                 index = line2.LastIndexOf(' ');
                 if (index == -1) continue;
@@ -1077,7 +1077,7 @@ namespace FenGen
 
                 last.Name = line2.Substring(index + 1).Trim();
 
-                var temp = StripPrefixes(line2);
+                string temp = StripPrefixes(line2);
 
                 last.Type = temp.Substring(0, temp.LastIndexOf(' '));
             }

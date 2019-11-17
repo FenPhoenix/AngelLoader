@@ -65,13 +65,13 @@ namespace AngelLoader
 
         private static void ClearCacheDir(FanMission fm)
         {
-            var fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
+            string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
             if (!fmCachePath.TrimEnd('\\').EqualsI(Paths.FMsCache.TrimEnd('\\')) && Directory.Exists(fmCachePath))
             {
                 try
                 {
-                    foreach (var f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
-                    foreach (var d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
+                    foreach (string f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
+                    foreach (string d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
                 }
                 catch (Exception ex)
                 {
@@ -100,12 +100,12 @@ namespace AngelLoader
         {
             Debug.Assert(fm.Installed, "fm.Installed is false when it should be true");
 
-            var thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+            string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
 
-            var path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
+            string path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
             var files = FastIO.GetFilesTopOnly(path, "*");
-            var t3ReadmePath1 = Path.Combine(path, Paths.T3ReadmeDir1);
-            var t3ReadmePath2 = Path.Combine(path, Paths.T3ReadmeDir2);
+            string t3ReadmePath1 = Path.Combine(path, Paths.T3ReadmeDir1);
+            string t3ReadmePath2 = Path.Combine(path, Paths.T3ReadmeDir2);
             if (Directory.Exists(t3ReadmePath1)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath1, "*"));
             if (Directory.Exists(t3ReadmePath2)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath2, "*"));
 
@@ -113,7 +113,7 @@ namespace AngelLoader
 
             var readmes = new List<string>(files.Count);
 
-            foreach (var f in files)
+            foreach (string f in files)
             {
                 if (f.IsValidReadme())
                 {
@@ -130,11 +130,11 @@ namespace AngelLoader
 
             Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
-            var fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
+            string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
 
             if (Directory.Exists(fmCachePath))
             {
-                foreach (var fn in FastIO.GetFilesTopOnly(fmCachePath, "*"))
+                foreach (string fn in FastIO.GetFilesTopOnly(fmCachePath, "*"))
                 {
                     if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
                     {
@@ -144,11 +144,11 @@ namespace AngelLoader
 
                 for (int i = 0; i < 2; i++)
                 {
-                    var t3ReadmePath = Path.Combine(fmCachePath, i == 0 ? Paths.T3ReadmeDir1 : Paths.T3ReadmeDir2);
+                    string t3ReadmePath = Path.Combine(fmCachePath, i == 0 ? Paths.T3ReadmeDir1 : Paths.T3ReadmeDir2);
 
                     if (Directory.Exists(t3ReadmePath))
                     {
-                        foreach (var fn in FastIO.GetFilesTopOnly(t3ReadmePath, "*"))
+                        foreach (string fn in FastIO.GetFilesTopOnly(t3ReadmePath, "*"))
                         {
                             if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
                             {
@@ -171,7 +171,7 @@ namespace AngelLoader
             readmes.Clear();
             ClearCacheDir(fm);
 
-            var fmArchivePath = FindFMArchive(fm.Archive);
+            string fmArchivePath = FindFMArchive(fm.Archive);
 
             // In weird situations this could be true, so just say none and at least don't crash
             if (fmArchivePath.IsEmpty()) return new CacheData();
@@ -231,11 +231,11 @@ namespace AngelLoader
             using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
                 ZipArchiveMode.Read, leaveOpen: false);
 
-            foreach (var f in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.AllDirectories))
+            foreach (string f in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
                 if (!f.ExtIsHtml()) continue;
 
-                var html = File.ReadAllText(f);
+                string html = File.ReadAllText(f);
 
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
@@ -259,9 +259,9 @@ namespace AngelLoader
 
             if (htmlRefFiles.Count > 0)
             {
-                for (var ri = 0; ri < htmlRefFiles.Count; ri++)
+                for (int ri = 0; ri < htmlRefFiles.Count; ri++)
                 {
-                    var f = htmlRefFiles[ri];
+                    NameAndIndex f = htmlRefFiles[ri];
                     if (HTMLRefExcludes.Any(f.Name.EndsWithI) ||
                         ImageFileExtensions.Any(f.Name.EndsWithI))
                     {
@@ -280,17 +280,17 @@ namespace AngelLoader
                         content = sr.ReadToEnd();
                     }
 
-                    for (int eI = 0; eI < archive.Entries.Count; eI++)
+                    for (int ei = 0; ei < archive.Entries.Count; ei++)
                     {
-                        var e = archive.Entries[eI];
+                        var e = archive.Entries[ei];
                         if (e.Name.IsEmpty() || !e.Name.Contains('.') || HTMLRefExcludes.Any(e.Name.EndsWithI))
                         {
                             continue;
                         }
 
-                        if (content.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != eI))
+                        if (content.ContainsI(e.Name) && htmlRefFiles.All(x => x.Index != ei))
                         {
-                            htmlRefFiles.Add(new NameAndIndex { Index = eI, Name = e.FullName });
+                            htmlRefFiles.Add(new NameAndIndex { Index = ei, Name = e.FullName });
                         }
                     }
                 }
@@ -298,9 +298,9 @@ namespace AngelLoader
 
             if (htmlRefFiles.Count > 0)
             {
-                foreach (var f in htmlRefFiles)
+                foreach (NameAndIndex f in htmlRefFiles)
                 {
-                    var path = Path.GetDirectoryName(f.Name);
+                    string path = Path.GetDirectoryName(f.Name);
                     if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
                     archive.Entries[f.Index].ExtractToFile(Path.Combine(fmCachePath, f.Name), overwrite: true);
                 }
@@ -317,10 +317,10 @@ namespace AngelLoader
                 using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
                     ZipArchiveMode.Read, leaveOpen: false);
 
-                for (var i = 0; i < archive.Entries.Count; i++)
+                for (int i = 0; i < archive.Entries.Count; i++)
                 {
                     var entry = archive.Entries[i];
-                    var fn = entry.FullName;
+                    string fn = entry.FullName;
                     if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
                     string? t3ReadmeDir = null;
@@ -350,7 +350,7 @@ namespace AngelLoader
                         ? Path.Combine(fmCachePath, t3ReadmeDir)
                         : fmCachePath);
 
-                    var fileNameFull = Path.Combine(fmCachePath, fn);
+                    string fileNameFull = Path.Combine(fmCachePath, fn);
                     entry.ExtractToFile(fileNameFull, overwrite: true);
                     readmes.Add(fn);
                 }
@@ -381,10 +381,10 @@ namespace AngelLoader
                     using var extractor = new SevenZipExtractor(fmArchivePath);
 
                     var indexesList = new List<int>();
-                    for (var i = 0; i < extractor.FilesCount; i++)
+                    for (int i = 0; i < extractor.FilesCount; i++)
                     {
                         var entry = extractor.ArchiveFileData[i];
-                        var fn = entry.FileName;
+                        string fn = entry.FileName;
                         if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
                             ((fn.CountChars('/') + fn.CountChars('\\') == 1 &&
                               (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||

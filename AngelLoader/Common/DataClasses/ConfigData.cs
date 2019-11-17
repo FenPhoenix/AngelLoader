@@ -233,7 +233,7 @@ namespace AngelLoader.DataClasses
             get => _fMsListFontSizeInPoints;
             set
             {
-                var val = value;
+                float val = value;
                 if (val < Math.Round(1.00f, 2)) val = 1.00f;
                 if (val > Math.Round(41.25f, 2)) val = 41.25f;
                 val = (float)Math.Round(val, 2);

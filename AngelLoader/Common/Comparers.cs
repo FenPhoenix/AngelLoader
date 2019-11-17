@@ -34,8 +34,8 @@ namespace AngelLoader
         internal static int TitleCompare(FanMission x, FanMission y)
         {
             // Important: these get modified, so don't use the originals!
-            var xTitle = x.Title;
-            var yTitle = y.Title;
+            string xTitle = x.Title;
+            string yTitle = y.Title;
 
             // null for perf: don't create a new List<string> just to signify empty
             var articles = Config.EnableArticles ? Config.Articles : null;
@@ -52,7 +52,7 @@ namespace AngelLoader
             bool xArticleSet = false;
             bool yArticleSet = false;
 
-            foreach (var a in articles)
+            foreach (string a in articles)
             {
                 int aLen = a.Length;
 

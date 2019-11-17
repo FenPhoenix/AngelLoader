@@ -32,9 +32,9 @@ namespace AngelLoader.CustomControls
 
         internal static void PaintExButton(Button button, PaintEventArgs e)
         {
-            var wh = button.ClientRectangle.Width / 2;
-            var hh = button.ClientRectangle.Height / 2;
-            var ps = new[]
+            int wh = button.ClientRectangle.Width / 2;
+            int hh = button.ClientRectangle.Height / 2;
+            Point[] ps =
             {
                 // top
                 new Point(wh - 3, hh - 4),
@@ -86,7 +86,7 @@ namespace AngelLoader.CustomControls
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
-            var pen = button.Enabled ? webSearchCirclePen : webSearchCircleDisabledPen;
+            Pen pen = button.Enabled ? webSearchCirclePen : webSearchCircleDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 10, 6, 23, 23);
             e.Graphics.DrawEllipse(pen, 17, 6, 9, 23);
@@ -131,7 +131,7 @@ namespace AngelLoader.CustomControls
         };
         internal static void PaintReadmeFullScreenButton(Button button, PaintEventArgs e)
         {
-            var brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
+            Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
 
             e.Graphics.FillPolygon(brush, readmeFullScreenTopLeft);
             e.Graphics.FillPolygon(brush, readmeFullScreenTopRight);
@@ -143,7 +143,7 @@ namespace AngelLoader.CustomControls
         private static readonly Pen resetLayoutPenDisabled = new Pen(SystemColors.ControlDark, 2);
         internal static void PaintResetLayoutButton(Button button, PaintEventArgs e)
         {
-            var pen = button.Enabled ? resetLayoutPen : resetLayoutPenDisabled;
+            Pen pen = button.Enabled ? resetLayoutPen : resetLayoutPenDisabled;
             e.Graphics.DrawRectangle(pen, 3, 3, 16, 16);
             e.Graphics.DrawLine(pen, 13, 2, 13, 10);
             e.Graphics.DrawLine(pen, 2, 11, 18, 11);
@@ -165,7 +165,7 @@ namespace AngelLoader.CustomControls
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
-            var pen = button.Enabled ? scanPen : scanDisabledPen;
+            Pen pen = button.Enabled ? scanPen : scanDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 11, 7, 18, 18);
             e.Graphics.FillPolygon(pen.Brush, scanPoints);
@@ -184,8 +184,8 @@ namespace AngelLoader.CustomControls
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
-            var pen = button.Enabled ? scanSmallCirclePen : scanSmallCircleDisabledPen;
-            var hPen = button.Enabled ? scanSmallHandlePen : scanSmallHandleDisabledPen;
+            Pen pen = button.Enabled ? scanSmallCirclePen : scanSmallCircleDisabledPen;
+            Pen hPen = button.Enabled ? scanSmallHandlePen : scanSmallHandleDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 4.25f, 4.25f, 10.6f, 10.6f);
 

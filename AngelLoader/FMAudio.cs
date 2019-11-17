@@ -45,12 +45,12 @@ namespace AngelLoader
                     using var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
                     using var br = new BinaryReader(fs, Encoding.ASCII);
 
-                    var riff = Encoding.ASCII.GetString(br.ReadBytes(4));
+                    string riff = Encoding.ASCII.GetString(br.ReadBytes(4));
                     if (riff != "RIFF") return -1;
                     br.ReadBytes(4);
-                    var wave = Encoding.ASCII.GetString(br.ReadBytes(4));
+                    string wave = Encoding.ASCII.GetString(br.ReadBytes(4));
                     if (wave != "WAVE") return 0;
-                    var fmt = Encoding.ASCII.GetString(br.ReadBytes(4));
+                    string fmt = Encoding.ASCII.GetString(br.ReadBytes(4));
                     if (fmt != "fmt ") return 0;
                     br.ReadBytes(18);
                     ushort bits = br.ReadUInt16();
@@ -120,14 +120,14 @@ namespace AngelLoader
                     try
                     {
                         var fmSndPaths = GetFMSoundPathsByGame(fm);
-                        foreach (var fmSndPath in fmSndPaths)
+                        foreach (string fmSndPath in fmSndPaths)
                         {
                             if (!Directory.Exists(fmSndPath)) return;
 
                             _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
 
                             var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
-                            foreach (var f in wavFiles)
+                            foreach (string f in wavFiles)
                             {
                                 UnSetReadOnly(f);
 
@@ -203,8 +203,8 @@ namespace AngelLoader
         {
             if (!fm.Installed || !GameIsDark(fm.Game)) return (false, false);
 
-            var gameExe = Config.GetGameExeUnsafe(fm.Game);
-            var gameName = GetGameNameFromGameType(fm.Game);
+            string gameExe = Config.GetGameExeUnsafe(fm.Game);
+            string gameName = GetGameNameFromGameType(fm.Game);
             if (GameIsRunning(gameExe))
             {
                 Core.View.ShowAlert(
@@ -216,7 +216,7 @@ namespace AngelLoader
 
             if (!FMIsReallyInstalled(fm))
             {
-                var yes = Core.View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
+                bool yes = Core.View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
                     LText.AlertMessages.Alert);
                 if (yes) fm.Installed = false;
 
@@ -239,7 +239,7 @@ namespace AngelLoader
                 try
                 {
                     var fmSndPaths = GetFMSoundPathsByGame(fm);
-                    foreach (var fmSndPath in fmSndPaths)
+                    foreach (string fmSndPath in fmSndPaths)
                     {
                         if (!Directory.Exists(fmSndPath)) return;
 
@@ -263,7 +263,7 @@ namespace AngelLoader
                             return;
                         }
 
-                        foreach (var f in files)
+                        foreach (string f in files)
                         {
                             UnSetReadOnly(f);
 
@@ -300,8 +300,8 @@ namespace AngelLoader
             // Guard for the below unsafe Game conversion
             if (!GameIsDark(fm.Game)) return new List<string>();
 
-            var instPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
-            var sndPath = Path.Combine(instPath, "snd");
+            string instPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
+            string sndPath = Path.Combine(instPath, "snd");
             return
                 fm.Game == Game.SS2 ? new List<string> { sndPath, Path.Combine(instPath, "snd2") } :
                 GameIsDark(fm.Game) ? new List<string> { sndPath } :

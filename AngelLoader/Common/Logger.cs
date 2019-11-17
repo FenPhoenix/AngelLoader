@@ -136,7 +136,7 @@ namespace AngelLoader
 
                 using var sw = new StreamWriter(Paths.LogFile, append: true);
 
-                var methodNameStr = methodName ? callerMemberName + "\r\n" : "";
+                string methodNameStr = methodName ? callerMemberName + "\r\n" : "";
                 sw.WriteLine(GetDateTimeStringFast() + " " + methodNameStr + message);
                 if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
                 if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);

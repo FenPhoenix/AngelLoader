@@ -23,7 +23,7 @@ namespace AngelLoader.CustomControls
             // last
             var rect1 = new Rectangle(0, 0, Items[0].Bounds.X-Items[0].Margin.Left, Height);
             var last = Items[Items.Count - 1];
-            var rect2Start = last.Bounds.X + last.Bounds.Width + last.Margin.Right;
+            int rect2Start = last.Bounds.X + last.Bounds.Width + last.Margin.Right;
             var rect2 = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
 
             e.Graphics.FillRectangle(SystemBrushes.Control, rect1);

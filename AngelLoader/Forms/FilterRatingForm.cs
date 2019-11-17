@@ -21,7 +21,7 @@ namespace AngelLoader.Forms
 
             FromComboBox.Items.Add(LText.Global.Unrated);
             for (int i = 0; i <= 10; i++) FromComboBox.Items.Add((outOfFive ? i / 2.0 : i).ToString(CultureInfo.CurrentCulture));
-            foreach (var item in FromComboBox.Items) ToComboBox.Items.Add(item);
+            foreach (object item in FromComboBox.Items) ToComboBox.Items.Add(item);
 
             using (new DisableEvents(this))
             {
@@ -61,8 +61,8 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             if (ToComboBox.SelectedIndex < FromComboBox.SelectedIndex)
             {
-                var fi = ToComboBox.SelectedIndex;
-                var ti = FromComboBox.SelectedIndex;
+                int fi = ToComboBox.SelectedIndex;
+                int ti = FromComboBox.SelectedIndex;
                 using (new DisableEvents(this))
                 {
                     FromComboBox.SelectedIndex = fi;

@@ -46,13 +46,12 @@ namespace AngelLoader.Ini
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    var lineT = line.Trim();
+                    string lineT = line.Trim();
                     if (inMeta && lineT.StartsWithFast_NoNullChecks(
                             nameof(LText.Meta.TranslatedLanguageName) + "="))
                     {
-                        var key = file.GetFileNameFast().RemoveExtension();
-                        var value = line.TrimStart()
-                            .Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
+                        string key = file.GetFileNameFast().RemoveExtension();
+                        string value = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
                         Config.LanguageNames[key] = value;
                         return;
                     }
@@ -76,9 +75,10 @@ namespace AngelLoader.Ini
             }
         }
 
+        // TODO: Is this duplicated with ExpandDate()?
         private static DateTime? ReadNullableHexDate(string hexDate)
         {
-            var success = long.TryParse(
+            bool success = long.TryParse(
                 hexDate,
                 NumberStyles.HexNumber,
                 DateTimeFormatInfo.InvariantInfo,
@@ -88,7 +88,7 @@ namespace AngelLoader.Ini
 
             try
             {
-                var dateTime = DateTimeOffset
+                DateTime dateTime = DateTimeOffset
                     .FromUnixTimeSeconds(result)
                     .DateTime
                     .ToLocalTime();
@@ -141,7 +141,7 @@ namespace AngelLoader.Ini
 
             for (int i = 0; i < fields.Length; i++)
             {
-                var field = fields[i];
+                string field = fields[i];
 
                 // Need this if block, because we're not iterating through all fields, so can't just have a flat
                 // block of fm.HasX = field.EqualsI(X);

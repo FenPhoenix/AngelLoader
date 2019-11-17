@@ -55,7 +55,7 @@ namespace AngelLoader.CustomControls
 
             private static void ResetPropertyOnAllColumns(ColumnProperties property)
             {
-                for (var i = 0; i < Owner.Columns.Count; i++)
+                for (int i = 0; i < Owner.Columns.Count; i++)
                 {
                     DataGridViewColumn c = Owner.Columns[i];
                     switch (property)

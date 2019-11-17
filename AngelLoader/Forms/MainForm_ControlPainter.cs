@@ -26,7 +26,7 @@ namespace AngelLoader.Forms
             // behavior, which I'm sure must be algorithmic (ie, background color + something?) because its colors
             // are always slightly off from the closest framework-defined color. But close enough is close enough.
             // Most people probably wouldn't even test or care about classic mode in the first place, so hey.
-            var s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
             {
                 int bx = ScanAllFMsButton.Location.X;
                 int by = ScanAllFMsButton.Location.Y;
@@ -50,7 +50,7 @@ namespace AngelLoader.Forms
 
         private void PaintFilterBarFLP(PaintEventArgs e)
         {
-            var s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
             const int y1 = 5;
             const int y2 = 20;
             {
@@ -72,7 +72,7 @@ namespace AngelLoader.Forms
 
         private void PaintFilterIconButtonsToolStrip(PaintEventArgs e)
         {
-            var s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
             const int y1 = 5;
             const int y2 = 20;
 
@@ -127,7 +127,7 @@ namespace AngelLoader.Forms
 
         private void PaintRefreshAreaToolStrip(PaintEventArgs e)
         {
-            var s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? sep1Pen : sep1PenC;
             const int y1 = 5;
             const int y2 = 20;
 

@@ -357,6 +357,7 @@ namespace AngelLoader.DataClasses
 
     internal enum SettingsTab { Paths, FMDisplay, Other }
 
+    // TODO: This name is confusing, it sounds like it refers to an entire FanMission object or something
     public sealed class SelectedFM
     {
         internal void DeepCopyTo(SelectedFM dest)

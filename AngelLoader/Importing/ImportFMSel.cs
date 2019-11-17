@@ -51,17 +51,17 @@ namespace AngelLoader.Importing
             {
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    var line = lines[i];
+                    string line = lines[i];
 
                     if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
                     {
-                        var instName = line.Substring(4, line.Length - 5);
+                        string instName = line.Substring(4, line.Length - 5);
 
                         var fm = new FanMission { InstalledDir = instName };
 
                         while (i < lines.Length - 1)
                         {
-                            var lineFM = lines[i + 1];
+                            string lineFM = lines[i + 1];
                             if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
                             {
                                 fm.Title = lineFM.Substring(9);
@@ -95,7 +95,7 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
                             {
-                                var val = lineFM.Substring(11);
+                                string val = lineFM.Substring(11);
                                 if (val == "*")
                                 {
                                     fm.DisableAllMods = true;

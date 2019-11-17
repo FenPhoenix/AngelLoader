@@ -34,11 +34,10 @@ namespace AngelLoader.Ini
 
             // DisplayIndex,Width,Visible
             // 0,100,True
-            var commas = str.CountChars(',');
 
-            if (commas == 0) return null;
+            if (str.CountChars(',') == 0) return null;
 
-            var cProps = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] cProps = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (cProps.Length == 0) return null;
 
             var ret = new ColumnData();
@@ -75,20 +74,20 @@ namespace AngelLoader.Ini
                 line.StartsWithFast_NoNullChecks(prefix + "FilterTagsNot=") ? filter.Tags.NotTags :
                 null;
 
-            var val = line.Substring(line.IndexOf('=') + 1);
+            string val = line.Substring(line.IndexOf('=') + 1);
 
             if (tagsList == null || val.IsWhiteSpace()) return;
 
-            var tagsArray = val.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] tagsArray = val.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (var item in tagsArray)
+            foreach (string item in tagsArray)
             {
                 string cat, tag;
-                var colonCount = item.CountChars(':');
+                int colonCount = item.CountChars(':');
                 if (colonCount > 1) continue;
                 if (colonCount == 1)
                 {
-                    var index = item.IndexOf(':');
+                    int index = item.IndexOf(':');
                     cat = item.Substring(0, index).Trim().ToLowerInvariant();
                     tag = item.Substring(index + 1).Trim();
                     if (cat.IsEmpty()) continue;
@@ -125,7 +124,7 @@ namespace AngelLoader.Ini
             var list = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
-            foreach (var finishedState in list)
+            foreach (string finishedState in list)
             {
                 switch (finishedState.Trim())
                 {
@@ -144,24 +143,24 @@ namespace AngelLoader.Ini
         {
             var iniLines = File.ReadAllLines(path);
 
-            foreach (var line in iniLines)
+            foreach (string line in iniLines)
             {
                 if (!line.Contains('=')) continue;
 
-                var lineT = line.TrimStart();
+                string lineT = line.TrimStart();
 
                 if (lineT.Length > 0 && (lineT[0] == ';' || lineT[0] == '[')) continue;
 
-                var val = lineT.Substring(lineT.IndexOf('=') + 1);
+                string val = lineT.Substring(lineT.IndexOf('=') + 1);
 
                 if (lineT.StartsWithFast_NoNullChecks("Column") && line[6] != '=')
                 {
-                    var colName = lineT.Substring(6, lineT.IndexOf('=') - 6);
+                    string colName = lineT.Substring(6, lineT.IndexOf('=') - 6);
 
                     var field = typeof(Column).GetField(colName, BFlagsEnum);
                     if (field == null) continue;
 
-                    var col = ConvertStringToColumnData(val);
+                    ColumnData? col = ConvertStringToColumnData(val);
                     if (col == null) continue;
 
                     col.Id = (Column)field.GetValue(null);
@@ -319,7 +318,7 @@ namespace AngelLoader.Ini
                     var list = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
-                    foreach (var game in list)
+                    foreach (string game in list)
                     {
                         // TODO: @GENGAMES: Faster to do it manually
                         switch (game.Trim())
@@ -428,7 +427,7 @@ namespace AngelLoader.Ini
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.Articles) + "="))
                 {
                     var articles = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    for (var a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
+                    for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
                     config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase));
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.MoveArticlesToEnd) + "="))
@@ -494,8 +493,8 @@ namespace AngelLoader.Ini
                     if (!val.Contains(',')) continue;
 
                     var values = val.Split(',').ToList();
-                    var widthExists = int.TryParse(values[0].Trim(), out var width);
-                    var heightExists = int.TryParse(values[1].Trim(), out var height);
+                    bool widthExists = int.TryParse(values[0].Trim(), out var width);
+                    bool heightExists = int.TryParse(values[1].Trim(), out var height);
 
                     if (widthExists && heightExists)
                     {
@@ -725,8 +724,8 @@ namespace AngelLoader.Ini
                     if (!val.Contains(',')) continue;
 
                     var values = val.Split(',').ToList();
-                    var widthExists = int.TryParse(values[0].Trim(), out var width);
-                    var heightExists = int.TryParse(values[1].Trim(), out var height);
+                    bool widthExists = int.TryParse(values[0].Trim(), out int width);
+                    bool heightExists = int.TryParse(values[1].Trim(), out int height);
 
                     if (widthExists && heightExists)
                     {
@@ -738,8 +737,8 @@ namespace AngelLoader.Ini
                     if (!val.Contains(',')) continue;
 
                     var values = val.Split(',').ToList();
-                    var xExists = int.TryParse(values[0].Trim(), out var x);
-                    var yExists = int.TryParse(values[1].Trim(), out var y);
+                    bool xExists = int.TryParse(values[0].Trim(), out int x);
+                    bool yExists = int.TryParse(values[1].Trim(), out int y);
 
                     if (xExists && yExists)
                     {
@@ -858,11 +857,11 @@ namespace AngelLoader.Ini
             // Vital, don't remove
             config.TopRightTabsData.EnsureValidity();
 
-            var sep1 = config.DateCustomSeparator1.EscapeAllChars();
-            var sep2 = config.DateCustomSeparator2.EscapeAllChars();
-            var sep3 = config.DateCustomSeparator3.EscapeAllChars();
+            string sep1 = config.DateCustomSeparator1.EscapeAllChars();
+            string sep2 = config.DateCustomSeparator2.EscapeAllChars();
+            string sep3 = config.DateCustomSeparator3.EscapeAllChars();
 
-            var formatString = config.DateCustomFormat1 +
+            string formatString = config.DateCustomFormat1 +
                                sep1 +
                                config.DateCustomFormat2 +
                                sep2 +
@@ -894,8 +893,8 @@ namespace AngelLoader.Ini
             // @R#_FALSE_POSITIVE: notnull is a valid C# 8 keyword
             static string commaCombine<T>(List<T> list) where T : notnull
             {
-                var ret = "";
-                for (var i = 0; i < list.Count; i++)
+                string ret = "";
+                for (int i = 0; i < list.Count; i++)
                 {
                     if (i > 0) ret += ",";
                     ret += list[i].ToString();
@@ -910,7 +909,7 @@ namespace AngelLoader.Ini
 
             static string commaCombineGameFlags(Game games)
             {
-                var ret = "";
+                string ret = "";
 
                 // Hmm... doesn't make for good code, but fast...
                 bool notEmpty = false;
@@ -943,7 +942,7 @@ namespace AngelLoader.Ini
 
             static string commaCombineFinishedStates(FinishedState finished)
             {
-                var ret = "";
+                string ret = "";
 
                 bool notEmpty = false;
 
@@ -1045,7 +1044,8 @@ namespace AngelLoader.Ini
                 {
                     #region Set i-dependent values
 
-                    var filter = fi switch
+                    // @GENGAMES: Manual because we need a 0th option for just the global filter
+                    Filter filter = fi switch
                     {
                         0 => config.Filter,
                         1 => config.GameTabsState.GetFilter(Thief1),
@@ -1054,7 +1054,7 @@ namespace AngelLoader.Ini
                         _ => config.GameTabsState.GetFilter(SS2)
                     };
 
-                    var p = fi switch { 0 => "", 1 => "T1", 2 => "T2", 3 => "T3", _ => "SS2" };
+                    string p = fi switch { 0 => "", 1 => "T1", 2 => "T2", 3 => "T3", _ => "SS2" };
 
                     #endregion
 
@@ -1081,17 +1081,17 @@ namespace AngelLoader.Ini
                     static string TagsToString(CatAndTagsList tagsList)
                     {
                         var intermediateTagsList = new List<string>();
-                        foreach (var catAndTag in tagsList)
+                        foreach (var catAndTags in tagsList)
                         {
-                            if (catAndTag.Tags.Count == 0)
+                            if (catAndTags.Tags.Count == 0)
                             {
-                                intermediateTagsList.Add(catAndTag.Category + ":");
+                                intermediateTagsList.Add(catAndTags.Category + ":");
                             }
                             else
                             {
-                                foreach (var tag in catAndTag.Tags)
+                                foreach (string tag in catAndTags.Tags)
                                 {
-                                    intermediateTagsList.Add(catAndTag.Category + ":" + tag);
+                                    intermediateTagsList.Add(catAndTags.Category + ":" + tag);
                                 }
                             }
                         }
@@ -1121,7 +1121,7 @@ namespace AngelLoader.Ini
                 sw.WriteLine(nameof(config.SortDirection) + "=" + config.SortDirection);
                 sw.WriteLine(nameof(config.FMsListFontSizeInPoints) + "=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
-                foreach (var col in config.Columns)
+                foreach (ColumnData col in config.Columns)
                 {
                     sw.WriteLine("Column" + col.Id + "=" + col.DisplayIndex + "," + col.Width + "," + col.Visible);
                 }

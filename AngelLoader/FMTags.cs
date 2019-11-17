@@ -25,7 +25,7 @@ namespace AngelLoader
             {
                 // TODO: These messageboxes are annoying, but they prevent accidental deletion.
                 // Figure out something better.
-                var cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
+                bool cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveCategory, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
                 CatAndTags? cat = fm.Tags.FirstOrDefault(x => x.Category == tagText);
@@ -46,7 +46,7 @@ namespace AngelLoader
             // Child node (tag)
             else
             {
-                var cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
+                bool cont = Core.View.AskToContinue(LText.TagsTab.AskRemoveTag, LText.TagsTab.TabText, true);
                 if (!cont) return false;
 
                 CatAndTags? cat = fm.Tags.FirstOrDefault(x => x.Category == catText);
@@ -80,7 +80,7 @@ namespace AngelLoader
 
             (string First, string Second) text;
 
-            var index = searchText.IndexOf(':');
+            int index = searchText.IndexOf(':');
             if (index > -1)
             {
                 text.First = searchText.Substring(0, index).Trim();
@@ -175,13 +175,13 @@ namespace AngelLoader
         {
             if (tagsToAdd.IsEmpty()) return;
 
-            var tagsArray = tagsToAdd.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] tagsArray = tagsToAdd.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string item in tagsArray)
             {
                 string cat, tag;
 
-                var colonCount = item.CountChars(':');
+                int colonCount = item.CountChars(':');
 
                 // No way josé
                 if (colonCount > 1) continue;

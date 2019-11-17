@@ -52,9 +52,9 @@ namespace AngelLoader.CustomControls
             // appears fully on-screen
             if (m.Msg == WM_CTLCOLORLISTBOX)
             {
-                var p = PointToScreen(new Point(0, Height));
+                Point p = PointToScreen(new Point(0, Height));
 
-                var screenWidth = Screen.FromControl(this).Bounds.Width;
+                int screenWidth = Screen.FromControl(this).Bounds.Width;
                 bool alignRight = p.X + DropDownWidth > screenWidth;
 
                 int x = alignRight ? p.X - (DropDownWidth - Math.Min(Width, screenWidth - p.X)) : p.X;
@@ -80,7 +80,7 @@ namespace AngelLoader.CustomControls
         {
             // Autosize dropdown to accomodate the longest item
             int finalWidth = 0;
-            foreach (var item in Items)
+            foreach (object item in Items)
             {
                 if (!(item is string itemStr)) continue;
 

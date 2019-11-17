@@ -47,14 +47,14 @@ namespace AngelLoader.Importing
             var lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
 
-            var error = await Task.Run(() =>
+            ImportError error = await Task.Run(() =>
             {
                 bool archiveDirRead = false;
                 string archiveDir = "";
 
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    var line = lines[i];
+                    string line = lines[i];
 
                     #region Read archive directory
 
@@ -62,7 +62,7 @@ namespace AngelLoader.Importing
                     {
                         while (i < lines.Length - 1)
                         {
-                            var lc = lines[i + 1];
+                            string lc = lines[i + 1];
                             if (lc.StartsWithFast_NoNullChecks("ArchiveRoot="))
                             {
                                 archiveDir = lc.Substring(12).Trim();
@@ -96,7 +96,7 @@ namespace AngelLoader.Importing
                         // it gets read and all [ and ] chars are removed
                         // it gets written back out like [FM=CoolMission1]
                         // Rare I guess, so just ignore?
-                        var instName = line.Substring(4, line.Length - 5);
+                        string instName = line.Substring(4, line.Length - 5);
 
                         var fm = new FanMission { InstalledDir = instName };
 
@@ -105,13 +105,11 @@ namespace AngelLoader.Importing
                         try
                         {
                             // NDL always searches subdirectories as well
-                            foreach (var f in Directory.EnumerateFiles(archiveDir, "*",
-                                SearchOption.AllDirectories))
+                            foreach (string f in Directory.EnumerateFiles(archiveDir, "*", SearchOption.AllDirectories))
                             {
-                                if (!f.ContainsI(Path.DirectorySeparatorChar + ".fix" +
-                                                 Path.DirectorySeparatorChar))
+                                if (!f.ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
                                 {
-                                    var fn = Path.GetFileNameWithoutExtension(f);
+                                    string fn = Path.GetFileNameWithoutExtension(f);
                                     if (fn.ToInstDirNameNDL().EqualsI(instName) || fn.EqualsI(instName))
                                     {
                                         fm.Archive = Path.GetFileName(f);
@@ -127,7 +125,7 @@ namespace AngelLoader.Importing
 
                         while (i < lines.Length - 1)
                         {
-                            var lineFM = lines[i + 1];
+                            string lineFM = lines[i + 1];
                             if (lineFM.StartsWithFast_NoNullChecks("NiceName="))
                             {
                                 fm.Title = lineFM.Substring(9);
@@ -156,7 +154,7 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("ModExclude="))
                             {
-                                var val = lineFM.Substring(11);
+                                string val = lineFM.Substring(11);
                                 if (val == "*")
                                 {
                                     fm.DisableAllMods = true;
@@ -168,7 +166,7 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
                             {
-                                var val = lineFM.Substring(5);
+                                string val = lineFM.Substring(5);
                                 if (!val.IsEmpty() && val != "[none]") fm.TagsString = val;
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))

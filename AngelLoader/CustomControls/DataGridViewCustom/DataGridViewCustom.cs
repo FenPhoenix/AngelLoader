@@ -139,12 +139,12 @@ namespace AngelLoader.CustomControls
                     {
                         for (int j = i; j < FMsViewList.Count; j++)
                         {
-                            var index = FilterShownIndexList.IndexOf(j);
+                            int index = FilterShownIndexList.IndexOf(j);
                             if (index > -1) return index;
                         }
                         for (int j = i; j > 0; j--)
                         {
-                            var index = FilterShownIndexList.IndexOf(j);
+                            int index = FilterShownIndexList.IndexOf(j);
                             if (index > -1) return index;
                         }
                         break;
@@ -245,9 +245,9 @@ namespace AngelLoader.CustomControls
 
             #endregion
 
-            foreach (var colData in columnDataList)
+            foreach (ColumnData colData in columnDataList)
             {
-                var col = Columns[(int)colData.Id];
+                DataGridViewColumn col = Columns[(int)colData.Id];
 
                 col.DisplayIndex = colData.DisplayIndex;
                 if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;

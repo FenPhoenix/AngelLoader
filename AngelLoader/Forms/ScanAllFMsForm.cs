@@ -57,7 +57,7 @@ namespace AngelLoader.Forms
 
         private void SetCheckBoxValues(bool enabled)
         {
-            foreach (var cb in CheckBoxes) cb.Checked = enabled;
+            foreach (CheckBox cb in CheckBoxes) cb.Checked = enabled;
         }
 
         private void ScanAllFMs_FormClosing(object sender, FormClosingEventArgs e)

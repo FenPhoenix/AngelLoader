@@ -56,16 +56,16 @@ namespace AngelLoader.Forms.Import
 
         private void AutodetectGameIni(GameIndex game, TextBox textBox)
         {
-            var iniFile = ImportType == ImportType.NewDarkLoader ? "NewDarkLoader.ini" : "fmsel.ini";
+            string iniFile = ImportType == ImportType.NewDarkLoader ? "NewDarkLoader.ini" : "fmsel.ini";
 
-            var fmsPath = Config.GetFMInstallPath(game);
+            string fmsPath = Config.GetFMInstallPath(game);
             if (fmsPath.IsWhiteSpace())
             {
                 textBox.Text = "";
             }
             else
             {
-                var iniFileFull = Path.Combine(fmsPath, iniFile);
+                string iniFileFull = Path.Combine(fmsPath, iniFile);
                 textBox.Text = File.Exists(iniFileFull) ? iniFileFull : "";
             }
         }

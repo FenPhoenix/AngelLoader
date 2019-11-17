@@ -19,6 +19,7 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void Find(string[] fmInstPaths, bool startup = false)
         {
+            // TODO: We can just use SupportedGameCount
             int gameCount = fmInstPaths.Length;
 
             if (!startup)
@@ -42,15 +43,15 @@ namespace AngelLoader
             // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
             // up with a blank or incomplete list and then glibly save it out later.
             var backupList = new List<FanMission>();
-            foreach (var fm in FMDataIniList) backupList.Add(fm);
+            foreach (FanMission fm in FMDataIniList) backupList.Add(fm);
 
             var viewBackupList = new List<FanMission>();
-            foreach (var fm in FMsViewList) viewBackupList.Add(fm);
+            foreach (FanMission fm in FMsViewList) viewBackupList.Add(fm);
 
             FMDataIniList.Clear();
             FMsViewList.Clear();
 
-            var fmDataIniExists = File.Exists(Paths.FMDataIni);
+            bool fmDataIniExists = File.Exists(Paths.FMDataIni);
 
             if (fmDataIniExists)
             {
@@ -91,13 +92,13 @@ namespace AngelLoader
                 // or something.
                 perGameInstFMDirsList.Add(new List<string>());
 
-                var instPath = fmInstPaths[gi];
+                string instPath = fmInstPaths[gi];
 
                 if (Directory.Exists(instPath))
                 {
                     try
                     {
-                        foreach (var d in FastIO.GetDirsTopOnly(instPath, "*", initListCapacityLarge: true, returnFullPaths: false))
+                        foreach (string d in FastIO.GetDirsTopOnly(instPath, "*", initListCapacityLarge: true, returnFullPaths: false))
                         {
                             if (!d.EqualsI(".fmsel.cache")) perGameInstFMDirsList[gi].Add(d);
                         }
@@ -197,9 +198,9 @@ namespace AngelLoader
         private static void SetArchiveNames(string[] fmInstPaths, List<string> fmArchives)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
-            for (var i = 0; i < FMDataIniList.Count; i++)
+            for (int i = 0; i < FMDataIniList.Count; i++)
             {
-                var fm = FMDataIniList[i];
+                FanMission fm = FMDataIniList[i];
 
                 if (fm.Archive.IsEmpty())
                 {
@@ -235,7 +236,7 @@ namespace AngelLoader
                         fm.Archive = archiveName;
                         if (fm.NoArchive)
                         {
-                            var fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+                            string? fmselInf = GetFMSelInfPath(fm, fmInstPaths);
                             if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archiveName);
                         }
                         fm.NoArchive = false;
@@ -247,12 +248,12 @@ namespace AngelLoader
         private static void SetInstalledNames()
         {
             // Fill in empty installed dir names, making sure to check for and handle truncated name collisions
-            foreach (var fm in FMDataIniList)
+            foreach (FanMission fm in FMDataIniList)
             {
                 if (fm.InstalledDir.IsEmpty())
                 {
-                    var truncate = fm.Game != Game.Thief3;
-                    var instDir = fm.Archive.ToInstDirNameFMSel(truncate);
+                    bool truncate = fm.Game != Game.Thief3;
+                    string instDir = fm.Archive.ToInstDirNameFMSel(truncate);
                     int i = 0;
 
                     // Again, an exponential search, but again, we only do it once to correct the list and then
@@ -263,7 +264,7 @@ namespace AngelLoader
                         if (i > 999) break;
 
                         // Conform to FMSel's numbering format
-                        var numStr = (i + 2).ToString();
+                        string numStr = (i + 2).ToString();
                         instDir = instDir.Substring(0, (instDir.Length - 2) - numStr.Length) + "(" + numStr + ")";
 
                         Debug.Assert(truncate && instDir.Length == 30,
@@ -290,7 +291,7 @@ namespace AngelLoader
 
             for (int ai = 0; ai < fmArchives.Count; ai++)
             {
-                var archive = fmArchives[ai];
+                string archive = fmArchives[ai];
 
                 // perf perf blah
                 string? aRemoveExt = null;
@@ -318,7 +319,7 @@ namespace AngelLoader
                         fm.Archive = archive;
                         if (fm.NoArchive)
                         {
-                            var fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+                            string? fmselInf = GetFMSelInfPath(fm, fmInstPaths);
                             if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archive);
                         }
                         fm.NoArchive = false;
@@ -399,7 +400,7 @@ namespace AngelLoader
             // Note: It looks like this is handled below with a return on empty anyway, so in release mode there's
             // no bug. But we're more explicit now.
 
-            var fmselInf = GetFMSelInfPath(fm, fmInstPaths);
+            string? fmselInf = GetFMSelInfPath(fm, fmInstPaths);
 
             string? FixUp()
             {
@@ -453,13 +454,13 @@ namespace AngelLoader
                 return FixUp();
             }
 
-            var installedName = lines[0].Substring(lines[0].IndexOf('=') + 1).Trim();
+            string installedName = lines[0].Substring(lines[0].IndexOf('=') + 1).Trim();
             if (!installedName.EqualsI(fm.InstalledDir))
             {
                 return FixUp();
             }
 
-            var archiveName = lines[1].Substring(lines[1].IndexOf('=') + 1).Trim();
+            string archiveName = lines[1].Substring(lines[1].IndexOf('=') + 1).Trim();
             if (archiveName.IsEmpty())
             {
                 return FixUp();
@@ -533,19 +534,19 @@ namespace AngelLoader
                 }
             }
 
-            for (var i = 0; i < FMDataIniList.Count; i++)
+            for (int i = 0; i < FMDataIniList.Count; i++)
             {
-                var item = FMDataIniList[i];
+                FanMission fm = FMDataIniList[i];
 
                 #region Checks
 
                 // Attempt to avoid re-searching lists
                 for (int ti = 0; ti < boolsList.Count; ti++) boolsList[ti] = null;
 
-                if (item.Installed &&
-                    NotInPerGameList(gameCount, item, boolsList, perGameInstalledFMDirsList, useBool: false))
+                if (fm.Installed &&
+                    NotInPerGameList(gameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: false))
                 {
-                    item.Installed = false;
+                    fm.Installed = false;
                 }
 
                 // NOTE: Old data
@@ -553,10 +554,10 @@ namespace AngelLoader
                 // Archive dirs: Thief1(personal)+Thief2(personal)
                 // Total time taken running this for all FMs in FMDataIniList: 3~7ms
                 // Good enough?
-                if ((!item.Installed ||
-                     NotInPerGameList(gameCount, item, boolsList, perGameInstalledFMDirsList, useBool: true)) &&
+                if ((!fm.Installed ||
+                     NotInPerGameList(gameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true)) &&
                     // Shrink the list as we get matches so we can reduce our search time as we go
-                    !fmArchives.ContainsIRemoveFirstHit(item.Archive))
+                    !fmArchives.ContainsIRemoveFirstHit(fm.Archive))
                 {
                     continue;
                 }
@@ -564,16 +565,16 @@ namespace AngelLoader
                 #endregion
 
                 // Perf so we don't have to iterate the list again later
-                if (item.Game == Game.Null) ViewListGamesNull.Add(i);
+                if (fm.Game == Game.Null) ViewListGamesNull.Add(i);
 
-                item.Title =
-                    !item.Title.IsEmpty() ? item.Title :
-                    !item.Archive.IsEmpty() ? item.Archive.RemoveExtension() :
-                    item.InstalledDir;
-                item.CommentSingleLine = item.Comment.FromRNEscapes().ToSingleLineComment(100);
-                FMTags.AddTagsToFMAndGlobalList(item.TagsString, item.Tags);
+                fm.Title =
+                    !fm.Title.IsEmpty() ? fm.Title :
+                    !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
+                    fm.InstalledDir;
+                fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
+                FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
 
-                FMsViewList.Add(item);
+                FMsViewList.Add(fm);
             }
         }
     }

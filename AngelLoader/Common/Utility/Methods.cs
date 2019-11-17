@@ -157,7 +157,7 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(game);
             if (gamePath.IsEmpty()) return "";
 
-            var edExe = Path.Combine(gamePath, game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe);
+            string edExe = Path.Combine(gamePath, game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe);
             return File.Exists(edExe) ? edExe : "";
         }
 
@@ -166,7 +166,7 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(Thief2);
             if (gamePath.IsEmpty()) return "";
 
-            var t2MPExe = Path.Combine(gamePath, Paths.T2MPExe);
+            string t2MPExe = Path.Combine(gamePath, Paths.T2MPExe);
             return File.Exists(t2MPExe) ? t2MPExe : "";
         }
 
@@ -218,7 +218,7 @@ namespace AngelLoader
 
                 // Search starting at 88% through the file: 91% (average location) plus some wiggle room (fastest)
                 long pos = (long)((88.0d / 100) * streamLen);
-                var byteCount = streamLen - pos;
+                long byteCount = streamLen - pos;
                 br.BaseStream.Position = pos;
                 byte[] bytes = new byte[byteCount];
                 br.Read(bytes, 0, (int)byteCount);
@@ -274,7 +274,7 @@ namespace AngelLoader
         // Here so ExpandableDate objects don't have to carry it around
         internal static DateTime? ExpandDateTime(string unixDate)
         {
-            var success = long.TryParse(
+            bool success = long.TryParse(
                 unixDate,
                 NumberStyles.HexNumber,
                 DateTimeFormatInfo.InvariantInfo,
@@ -315,7 +315,7 @@ namespace AngelLoader
 
             if (fm.Installed)
             {
-                var instPath = Config.GetFMInstallPathUnsafe(fm.Game);
+                string instPath = Config.GetFMInstallPathUnsafe(fm.Game);
                 if (instPath.IsEmpty()) return false;
 
                 string path;
@@ -354,7 +354,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < Config.GameExes.Length; i++)
                 {
-                    var exe = Config.GetGameExe((GameIndex)i);
+                    string exe = Config.GetGameExe((GameIndex)i);
                     if (!exe.IsEmpty() && fnb.EqualsI(exe.ToBackSlashes())) return true;
                 }
 
@@ -383,7 +383,7 @@ namespace AngelLoader
 
             // We're doing this whole rigamarole because the game might have been started by someone other than
             // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
-            foreach (var proc in Process.GetProcesses())
+            foreach (Process proc in Process.GetProcesses())
             {
                 try
                 {
@@ -391,7 +391,7 @@ namespace AngelLoader
                     //Log.Info("Process filename: " + fn);
                     if (!fn.IsEmpty())
                     {
-                        var fnb = fn.ToBackSlashes();
+                        string fnb = fn.ToBackSlashes();
                         if ((checkAllGames &&
                              (AnyGameRunning(fnb) ||
                               (!T2MPExe().IsEmpty() && fnb.EqualsI(T2MPExe().ToBackSlashes())))) ||
@@ -426,7 +426,7 @@ namespace AngelLoader
         internal static List<string> GetFMArchivePaths()
         {
             var paths = new List<string>();
-            foreach (var path in Config.FMArchivePaths)
+            foreach (string path in Config.FMArchivePaths)
             {
                 paths.Add(path);
                 if (Config.FMArchivePathsIncludeSubfolders)
@@ -458,9 +458,9 @@ namespace AngelLoader
         {
             if (fmArchive.IsEmpty()) return "";
 
-            foreach (var path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
+            foreach (string path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
             {
-                var f = Path.Combine(path, fmArchive);
+                string f = Path.Combine(path, fmArchive);
                 if (File.Exists(f)) return f;
             }
 

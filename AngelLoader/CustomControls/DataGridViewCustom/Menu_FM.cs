@@ -307,7 +307,7 @@ namespace AngelLoader.CustomControls
 
             // Some menu items' text depends on FM state. Because this could be run after startup, we need to
             // make sure those items' text is set correctly.
-            var selFM = SelectedRows.Count > 0 ? GetSelectedFM() : null;
+            FanMission? selFM = SelectedRows.Count > 0 ? GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
             bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
 

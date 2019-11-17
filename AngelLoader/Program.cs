@@ -60,7 +60,7 @@ namespace AngelLoader
 
             // Catching this early, because otherwise it just gets loaded whenever and could throw (or just fail)
             // at any time
-            var sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
+            string sevenZipDllLocation = Path.Combine(Paths.Startup, "7z.dll");
             if (!File.Exists(sevenZipDllLocation))
             {
                 // NOTE: Not localizable because we don't want to do anything until we've checked this, and getting

@@ -35,7 +35,7 @@ namespace AngelLoader
                 return false;
             }
 
-            var scanningOne = fmsToScan.Count == 1;
+            bool scanningOne = fmsToScan.Count == 1;
 
             try
             {
@@ -69,8 +69,7 @@ namespace AngelLoader
 
                 static void ReportProgress(FMScanner.ProgressReport pr)
                 {
-                    var fmIsZip = pr.FMName.ExtIsArchive();
-                    var name = fmIsZip ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
+                    string name = pr.FMName.ExtIsArchive() ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
                     Core.View.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
                 }
 
@@ -95,10 +94,10 @@ namespace AngelLoader
                 // Safety net to guarantee that the in and out lists will have the same count and order
                 var fmsToScanFiltered = new List<FanMission>();
 
-                for (var i = 0; i < fmsToScan.Count; i++)
+                for (int i = 0; i < fmsToScan.Count; i++)
                 {
                     var fm = fmsToScan[i];
-                    var fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive, archivePaths));
+                    string fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive, archivePaths));
                     if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                     {
                         fmsToScanFiltered.Add(fm);
@@ -106,7 +105,7 @@ namespace AngelLoader
                     }
                     else if (GameIsKnownAndSupported(fm.Game))
                     {
-                        var fmInstalledPath = Config.GetFMInstallPathUnsafe(fm.Game);
+                        string fmInstalledPath = Config.GetFMInstallPathUnsafe(fm.Game);
                         if (!fmInstalledPath.IsEmpty())
                         {
                             fmsToScanFiltered.Add(fm);
@@ -142,9 +141,9 @@ namespace AngelLoader
 
                 #region Copy scanned data to FMs
 
-                for (var i = 0; i < fmsToScanFiltered.Count; i++)
+                for (int i = 0; i < fmsToScanFiltered.Count; i++)
                 {
-                    var scannedFM = fmDataList[i];
+                    FMScanner.ScannedFMData scannedFM = fmDataList[i];
 
                     #region Checks
 
@@ -163,7 +162,7 @@ namespace AngelLoader
                         continue;
                     }
 
-                    var sel = fmsToScanFiltered[i];
+                    FanMission sel = fmsToScanFiltered[i];
                     // NULL_TODO: Yeah pretty sure we don't need this anymore
                     if (sel == null)
                     {
@@ -176,7 +175,7 @@ namespace AngelLoader
 
                     #region Set FM fields
 
-                    var gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
+                    bool gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
 
                     if (scanOptions.ScanTitle)
                     {
@@ -279,7 +278,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception in ScanFMs", ex);
-                var message = scanningOne
+                string message = scanningOne
                     ? LText.AlertMessages.Scan_ExceptionInScanOne
                     : LText.AlertMessages.Scan_ExceptionInScanMultiple;
                 Core.View.ShowAlert(message, LText.AlertMessages.Error);
@@ -305,7 +304,7 @@ namespace AngelLoader
             {
                 // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
                 // (not FMsViewList)
-                foreach (var index in ViewListGamesNull) fmsToScan.Add(FMDataIniList[index]);
+                foreach (int index in ViewListGamesNull) fmsToScan.Add(FMDataIniList[index]);
             }
             catch
             {
@@ -313,7 +312,7 @@ namespace AngelLoader
                 fmsToScan.Clear();
                 // Since we're doing it manually here, we can pull from FMsViewList for perf (it'll be the same
                 // size or smaller than FMDataIniList)
-                foreach (var fm in FMsViewList) if (fm.Game == Game.Null) fmsToScan.Add(fm);
+                foreach (FanMission fm in FMsViewList) if (fm.Game == Game.Null) fmsToScan.Add(fm);
             }
             finally
             {

@@ -30,7 +30,7 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
         internal static void Construct(MainForm owner)
         {
             if (Constructed) return;
-
+            
             var container = owner.BottomLeftButtonsFLP;
 
             Button = new Button { Visible = false };
@@ -67,11 +67,11 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             // Have to call this to get its layout working
             Button!.Show();
 
-            var instString = LText.MainButtons.InstallFM;
-            var uninstString = LText.MainButtons.UninstallFM;
-            var instStringWidth = TextRenderer.MeasureText(instString, Button.Font).Width;
-            var uninstStringWidth = TextRenderer.MeasureText(uninstString, Button.Font).Width;
-            var longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
+            string instString = LText.MainButtons.InstallFM;
+            string uninstString = LText.MainButtons.UninstallFM;
+            int instStringWidth = TextRenderer.MeasureText(instString, Button.Font).Width;
+            int uninstStringWidth = TextRenderer.MeasureText(uninstString, Button.Font).Width;
+            string longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
 
             Button.SetTextAutoSize(longestString, preserveHeight: true);
 

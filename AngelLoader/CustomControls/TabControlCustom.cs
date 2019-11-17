@@ -37,9 +37,9 @@ namespace AngelLoader.CustomControls
         {
             for (int i = 0, vi = 0; i < BackingTabList.Count; i++)
             {
-                var bt = BackingTabList[i];
+                BackingTab bt = BackingTabList[i];
                 if (indexVisibleOnly && bt.Visible) vi++;
-                if (bt?.Tab == tab) return (indexVisibleOnly ? vi : i, bt);
+                if (bt.Tab == tab) return (indexVisibleOnly ? vi : i, bt);
             }
 
             if (!DesignMode)
@@ -89,9 +89,9 @@ namespace AngelLoader.CustomControls
             var dragTabRect = GetTabRect(dragTabIndex);
 
             // Special-case for if there's 2 tabs. This is not the most readable thing, but hey... it works.
-            var rightNotYet = dragTabIndex < TabCount - 1 &&
+            bool rightNotYet = dragTabIndex < TabCount - 1 &&
                               e.Location.X < dragTabRect.Left + GetTabRect(dragTabIndex + 1).Width;
-            var leftNotYet = dragTabIndex > 0 &&
+            bool leftNotYet = dragTabIndex > 0 &&
                              e.Location.X > GetTabRect(dragTabIndex - 1).Left + dragTabRect.Width;
             if ((TabCount == 2 && (rightNotYet || leftNotYet)) || (rightNotYet && leftNotYet))
             {

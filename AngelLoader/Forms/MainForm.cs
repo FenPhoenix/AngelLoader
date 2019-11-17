@@ -255,9 +255,9 @@ namespace AngelLoader.Forms
             d.Buttons.Add(noButton);
             d.Buttons.Add(cancelButton);
             var buttonClicked = d.ShowDialog();
-            var cancel = buttonClicked == null || buttonClicked == cancelButton;
-            var cont = buttonClicked == yesButton;
-            var dontAskAgain = d.IsVerificationChecked;
+            bool cancel = buttonClicked == null || buttonClicked == cancelButton;
+            bool cont = buttonClicked == yesButton;
+            bool dontAskAgain = d.IsVerificationChecked;
             return (cancel, cont, dontAskAgain);
         }
 
@@ -280,9 +280,9 @@ namespace AngelLoader.Forms
             d.Buttons.Add(noButton);
             d.Buttons.Add(cancelButton);
             var buttonClicked = d.ShowDialog();
-            var canceled = buttonClicked == null || buttonClicked == cancelButton;
-            var cont = buttonClicked == yesButton;
-            var dontAskAgain = d.IsVerificationChecked;
+            bool canceled = buttonClicked == null || buttonClicked == cancelButton;
+            bool cont = buttonClicked == yesButton;
+            bool dontAskAgain = d.IsVerificationChecked;
             return (canceled, cont, dontAskAgain);
         }
 
@@ -303,8 +303,8 @@ namespace AngelLoader.Forms
             d.Buttons.Add(yesButton);
             d.Buttons.Add(noButton);
             var buttonClicked = d.ShowDialog();
-            var cancel = buttonClicked != yesButton;
-            var dontAskAgain = d.IsVerificationChecked;
+            bool cancel = buttonClicked != yesButton;
+            bool dontAskAgain = d.IsVerificationChecked;
             return (cancel, dontAskAgain);
         }
 
@@ -416,7 +416,7 @@ namespace AngelLoader.Forms
                 ? 0
                 : control.Height;
 
-            var dir =
+            var direction =
                 pos == MenuPos.LeftUp || pos == MenuPos.TopLeft ? ToolStripDropDownDirection.AboveLeft :
                 pos == MenuPos.RightUp || pos == MenuPos.TopRight ? ToolStripDropDownDirection.AboveRight :
                 pos == MenuPos.LeftDown || pos == MenuPos.BottomLeft ? ToolStripDropDownDirection.BelowLeft :
@@ -430,7 +430,7 @@ namespace AngelLoader.Forms
                 menu.Hide();
             }
 
-            menu.Show(control, new Point(x, y), dir);
+            menu.Show(control, new Point(x, y), direction);
         }
 
         #endregion
@@ -560,7 +560,7 @@ namespace AngelLoader.Forms
                 #region Temp hack (see above)
 
                 var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
-                var hWnd = InteropMisc.WindowFromPoint(pos);
+                IntPtr hWnd = InteropMisc.WindowFromPoint(pos);
                 if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
 
                 #endregion
@@ -1112,7 +1112,7 @@ namespace AngelLoader.Forms
         {
             // Certain controls' text depends on FM state. Because this could be run after startup, we need to
             // make sure those controls' text is set correctly.
-            var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+            FanMission? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
             if (!startup)
             {
@@ -1431,7 +1431,7 @@ namespace AngelLoader.Forms
             {
                 GamesTabControl.Hide();
                 // Don't inline this var - it stores the X value to persist it through a change
-                var plusWidth = FilterBarFLP.Location.X;
+                int plusWidth = FilterBarFLP.Location.X;
                 FilterBarFLP.Location = new Point(0, FilterBarFLP.Location.Y);
                 FilterBarFLP.Width += plusWidth;
                 FilterGameButtonsToolStrip.Show();
@@ -1464,7 +1464,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            var selectedFM = FMsDGV.GetSelectedFMPosInfo();
+            SelectedFM selectedFM = FMsDGV.GetSelectedFMPosInfo();
 
             var topRightTabs = new TopRightTabsData
             {
@@ -1479,9 +1479,9 @@ namespace AngelLoader.Forms
 
             #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
 
-            var nominalState = NominalWindowState;
+            FormWindowState nominalState = NominalWindowState;
 
-            var minimized = false;
+            bool minimized = false;
             if (WindowState == FormWindowState.Minimized)
             {
                 minimized = true;
@@ -1538,9 +1538,9 @@ namespace AngelLoader.Forms
             if (!control.Visible || !control.Enabled) return false;
 
             // Don't create eleventy billion Rectangle objects per second
-            var rpt = PointToClient(control.PointToScreen(new Point(0, 0)));
-            var rcs = fullArea ? control.Size : control.ClientSize;
-            var ptc = PointToClient(Cursor.Position);
+            Point rpt = PointToClient(control.PointToScreen(new Point(0, 0)));
+            Size rcs = fullArea ? control.Size : control.ClientSize;
+            Point ptc = PointToClient(Cursor.Position);
             return ptc.X >= rpt.X && ptc.X < rpt.X + rcs.Width &&
                    ptc.Y >= rpt.Y && ptc.Y < rpt.Y + rcs.Height;
         }
@@ -1559,10 +1559,10 @@ namespace AngelLoader.Forms
 
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
-            var f = FMsDGV.DefaultCellStyle.Font;
+            Font f = FMsDGV.DefaultCellStyle.Font;
 
             // Set zoom level
-            var fontSize =
+            float fontSize =
                 type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
                 type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
                 type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
@@ -1575,20 +1575,20 @@ namespace AngelLoader.Forms
             fontSize = (float)Math.Round(fontSize, 2);
 
             // Set new font size
-            var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+            Font newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
 
             // Set row height based on font plus some padding
-            var rowHeight = type == ZoomFMsDGVType.ResetZoom ? FMsListDefaultRowHeight : newF.Height + 9;
+            int rowHeight = type == ZoomFMsDGVType.ResetZoom ? FMsListDefaultRowHeight : newF.Height + 9;
 
             // If we're on startup, then the widths will already have been restored (to zoomed size) from the
             // config
-            var heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
+            bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
 
             // Must be done first, else we get wrong values
             List<double> widthMul = new List<double>();
             foreach (DataGridViewColumn c in FMsDGV.Columns)
             {
-                var size = c.HeaderCell.Size;
+                Size size = c.HeaderCell.Size;
                 widthMul.Add((double)size.Width / size.Height);
             }
 
@@ -1618,13 +1618,13 @@ namespace AngelLoader.Forms
                 }
 
                 // Set column widths (keeping ratio to height)
-                for (var i = 0; i < FMsDGV.Columns.Count; i++)
+                for (int i = 0; i < FMsDGV.Columns.Count; i++)
                 {
                     DataGridViewColumn c = FMsDGV.Columns[i];
 
                     // Complicated gobbledegook for handling different options and also special-casing the
                     // non-resizable columns
-                    var reset = type == ZoomFMsDGVType.ResetZoom;
+                    bool reset = type == ZoomFMsDGVType.ResetZoom;
                     if (c != RatingImageColumn && c != FinishedColumn)
                     {
                         c.MinimumWidth = reset ? Defaults.MinColumnWidth : rowHeight + 3;
@@ -1689,7 +1689,7 @@ namespace AngelLoader.Forms
         public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
             bool keepSelection = true, bool gameTabSwitch = false)
         {
-            var oldSelectedFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
+            FanMission? oldSelectedFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
             if (selectedFM == null)
             {
@@ -1743,7 +1743,7 @@ namespace AngelLoader.Forms
         private void SetFilter()
         {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-            DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out var result) ? (result + 1).ToString() : "1";
+            DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out int result) ? (result + 1).ToString() : "1";
 #endif
 
             #region Set filters that are stored in control state
@@ -1769,7 +1769,7 @@ namespace AngelLoader.Forms
 
             // This one gets checked in a loop, so cache it. Others are only checked twice at most, so leave them
             // be.
-            var titleIsWhitespace = FMsDGV.Filter.Title.IsWhiteSpace();
+            bool titleIsWhitespace = FMsDGV.Filter.Title.IsWhiteSpace();
 
             #region Early out
 
@@ -1819,8 +1819,7 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmAuthor = FMsViewList[FMsDGV.FilterShownIndexList[i]].Author;
-
+                    string fmAuthor = FMsViewList[FMsDGV.FilterShownIndexList[i]].Author;
                     if (!fmAuthor.ContainsI(FMsDGV.Filter.Author))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
@@ -1837,8 +1836,8 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (fm.Game == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
+                    Game fmGame = FMsViewList[FMsDGV.FilterShownIndexList[i]].Game;
+                    if (fmGame == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -1854,8 +1853,8 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (GameIsKnownAndSupported(fm.Game) && (FMsDGV.Filter.Games & fm.Game) != fm.Game)
+                    Game fmGame = FMsViewList[FMsDGV.FilterShownIndexList[i]].Game;
+                    if (GameIsKnownAndSupported(fmGame) && (FMsDGV.Filter.Games & fmGame) != fmGame)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -1903,7 +1902,7 @@ namespace AngelLoader.Forms
 
                             if (andTag.Tags.Count > 0)
                             {
-                                foreach (var andTagTag in andTag.Tags)
+                                foreach (string andTagTag in andTag.Tags)
                                 {
                                     if (match.Tags.FirstOrDefault(x => x == andTagTag) == null)
                                     {
@@ -1938,7 +1937,7 @@ namespace AngelLoader.Forms
 
                             if (orTag.Tags.Count > 0)
                             {
-                                foreach (var orTagTag in orTag.Tags)
+                                foreach (string orTagTag in orTag.Tags)
                                 {
                                     if (match.Tags.FirstOrDefault(x => x == orTagTag) != null)
                                     {
@@ -1983,7 +1982,7 @@ namespace AngelLoader.Forms
 
                             if (notTag.Tags.Count > 0)
                             {
-                                foreach (var notTagTag in notTag.Tags)
+                                foreach (string notTagTag in notTag.Tags)
                                 {
                                     if (match.Tags.FirstOrDefault(x => x == notTagTag) != null)
                                     {
@@ -2014,13 +2013,12 @@ namespace AngelLoader.Forms
 
             if (!(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10))
             {
-                var rf = FMsDGV.Filter.RatingFrom;
-                var rt = FMsDGV.Filter.RatingTo;
+                int rf = FMsDGV.Filter.RatingFrom;
+                int rt = FMsDGV.Filter.RatingTo;
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmRating = FMsViewList[FMsDGV.FilterShownIndexList[i]].Rating;
-
+                    int fmRating = FMsViewList[FMsDGV.FilterShownIndexList[i]].Rating;
                     if (fmRating < rf || fmRating > rt)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
@@ -2035,13 +2033,12 @@ namespace AngelLoader.Forms
 
             if (FMsDGV.Filter.ReleaseDateFrom != null || FMsDGV.Filter.ReleaseDateTo != null)
             {
-                var rdf = FMsDGV.Filter.ReleaseDateFrom;
-                var rdt = FMsDGV.Filter.ReleaseDateTo;
+                DateTime? rdf = FMsDGV.Filter.ReleaseDateFrom;
+                DateTime? rdt = FMsDGV.Filter.ReleaseDateTo;
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmRelDate = FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate.DateTime;
-
+                    DateTime? fmRelDate = FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate.DateTime;
                     if (fmRelDate == null ||
                         (rdf != null &&
                          fmRelDate.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
@@ -2060,13 +2057,12 @@ namespace AngelLoader.Forms
 
             if (FMsDGV.Filter.LastPlayedFrom != null || FMsDGV.Filter.LastPlayedTo != null)
             {
-                var lpdf = FMsDGV.Filter.LastPlayedFrom;
-                var lpdt = FMsDGV.Filter.LastPlayedTo;
+                DateTime? lpdf = FMsDGV.Filter.LastPlayedFrom;
+                DateTime? lpdt = FMsDGV.Filter.LastPlayedTo;
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmLastPlayed = FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed.DateTime;
-
+                    DateTime? fmLastPlayed = FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed.DateTime;
                     if (fmLastPlayed == null ||
                         (lpdf != null &&
                          fmLastPlayed.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
@@ -2088,8 +2084,8 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
                     var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    var fmFinished = fm.FinishedOn;
-                    var fmFinishedOnUnknown = fm.FinishedOnUnknown;
+                    uint fmFinished = fm.FinishedOn;
+                    bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
                     if (((fmFinished > 0 || fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
                         (fmFinished == 0 && !fmFinishedOnUnknown && (FMsDGV.Filter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished))
@@ -2222,7 +2218,7 @@ namespace AngelLoader.Forms
                         string title = fm.Title;
                         for (int i = 0; i < Config.Articles.Count; i++)
                         {
-                            var a = Config.Articles[i];
+                            string a = Config.Articles[i];
                             if (fm.Title.StartsWithI(a + " "))
                             {
                                 // Take the actual article from the name so as to preserve casing
@@ -2295,7 +2291,7 @@ namespace AngelLoader.Forms
         {
             if (e.Button != MouseButtons.Left) return;
 
-            var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+            SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
             var newSortDirection =
                 e.ColumnIndex == FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
@@ -2431,7 +2427,7 @@ namespace AngelLoader.Forms
 
         private async Task RefreshFromDisk()
         {
-            var selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
+            SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
             using (new DisableEvents(this)) await FMScan.FindNewFMsAndScanForGameType();
             await SortAndSetFilter(selFM, forceDisplayFM: true);
         }
@@ -2512,7 +2508,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            var success = await FMScan.ScanFMs(FMsViewList, scanOptions!);
+            bool success = await FMScan.ScanFMs(FMsViewList, scanOptions!);
             if (success) await SortAndSetFilter(forceDisplayFM: true);
         }
 
@@ -2634,13 +2630,13 @@ namespace AngelLoader.Forms
             {
                 if (FilterByRatingButton.Checked)
                 {
-                    var ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
-                    var rFrom = FMsDGV.Filter.RatingFrom;
-                    var rTo = FMsDGV.Filter.RatingTo;
+                    bool ndl = Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader;
+                    int rFrom = FMsDGV.Filter.RatingFrom;
+                    int rTo = FMsDGV.Filter.RatingTo;
                     var curCulture = CultureInfo.CurrentCulture;
 
-                    var from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
-                    var to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
+                    string from = rFrom == -1 ? LText.Global.None : (ndl ? rFrom : rFrom / 2.0).ToString(curCulture);
+                    string to = rTo == -1 ? LText.Global.None : (ndl ? rTo : rTo / 2.0).ToString(curCulture);
 
                     Lazy_ToolStripLabels.Show(this, Lazy_ToolStripLabel.FilterByRating, from + @" - " + to);
                 }
@@ -2727,8 +2723,8 @@ namespace AngelLoader.Forms
                     }
                     else
                     {
-                        var selFM = selectedFM ?? FMsDGV.CurrentSelFM;
-                        var findNearest = keepSelection == KeepSel.TrueNearest && selectedFM != null;
+                        SelectedFM selFM = selectedFM ?? FMsDGV.CurrentSelFM;
+                        bool findNearest = keepSelection == KeepSel.TrueNearest && selectedFM != null;
                         row = FMsDGV.GetIndexFromInstalledName(selFM.InstalledName, findNearest).ClampToZero();
                         try
                         {
@@ -2764,7 +2760,7 @@ namespace AngelLoader.Forms
         {
             if (FMsDGV.RowCount == 0) return;
 
-            var selectedRow = FMsDGV.SelectedRows[0].Index;
+            int selectedRow = FMsDGV.SelectedRows[0].Index;
 
             using (new DisableEvents(this))
             {
@@ -2785,8 +2781,8 @@ namespace AngelLoader.Forms
 
             // Perf: doing it this way is significantly faster than the old method of indiscriminately setting
             // all columns to None and then setting the current one back to the CurrentSortDirection glyph again
-            var intCol = (int)column;
-            for (var i = 0; i < FMsDGV.Columns.Count; i++)
+            int intCol = (int)column;
+            for (int i = 0; i < FMsDGV.Columns.Count; i++)
             {
                 DataGridViewColumn c = FMsDGV.Columns[i];
                 if (i == intCol && c.HeaderCell.SortGlyphDirection != FMsDGV.CurrentSortDirection)
@@ -2931,7 +2927,7 @@ namespace AngelLoader.Forms
             FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme);
             // FinishedOnUnknownMenuItem text stays the same
 
-            var installable = GameIsKnownAndSupported(fm.Game);
+            bool installable = GameIsKnownAndSupported(fm.Game);
 
             FMsDGV.SetInstallUninstallMenuItemEnabled(installable);
             FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
@@ -3063,7 +3059,7 @@ namespace AngelLoader.Forms
                     var (success, dmlFiles) = Core.GetDMLFiles(fm);
                     if (success)
                     {
-                        foreach (var f in dmlFiles)
+                        foreach (string f in dmlFiles)
                         {
                             if (!f.IsEmpty()) PatchDMLsListBox.Items.Add(f);
                         }
@@ -3114,7 +3110,7 @@ namespace AngelLoader.Forms
                 }
                 else if (readmeFiles.Count > 1)
                 {
-                    var safeReadme = Core.DetectSafeReadme(readmeFiles, fm.Title);
+                    string safeReadme = Core.DetectSafeReadme(readmeFiles, fm.Title);
 
                     if (!safeReadme.IsEmpty())
                     {
@@ -3129,7 +3125,7 @@ namespace AngelLoader.Forms
                         ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
 
                         ChooseReadmeLLPanel.ListBox.ClearFullItems();
-                        foreach (var f in readmeFiles) ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFastBothDSC());
+                        foreach (string f in readmeFiles) ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFastBothDSC());
 
                         ShowReadmeControls(false);
 
@@ -3157,7 +3153,7 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                foreach (var f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f, f.GetFileNameFastBothDSC());
+                foreach (string f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f, f.GetFileNameFastBothDSC());
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
             }
         }
@@ -3172,7 +3168,7 @@ namespace AngelLoader.Forms
                 // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
                 // due to performance concerns.
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-                DebugLabel.Text = int.TryParse(DebugLabel.Text, out var result) ? (result + 1).ToString() : "1";
+                DebugLabel.Text = int.TryParse(DebugLabel.Text, out int result) ? (result + 1).ToString() : "1";
 #endif
 
                 #endregion
@@ -3215,9 +3211,9 @@ namespace AngelLoader.Forms
             else
             {
                 List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>();
-                foreach (var t in fmAltTitles)
+                foreach (string altTitle in fmAltTitles)
                 {
-                    var item = new ToolStripMenuItem { Text = t };
+                    var item = new ToolStripMenuItem { Text = altTitle };
                     item.Click += EditFMAltTitlesMenuItems_Click;
                     altTitlesMenuItems.Add(item);
                 }
@@ -3244,7 +3240,7 @@ namespace AngelLoader.Forms
                 {
                     tv.Nodes.Add(item.Category);
                     var last = tv.Nodes[tv.Nodes.Count - 1];
-                    foreach (var tag in item.Tags) last.Nodes.Add(tag);
+                    foreach (string tag in item.Tags) last.Nodes.Add(tag);
                 }
 
                 tv.ExpandAll();
@@ -3297,7 +3293,7 @@ namespace AngelLoader.Forms
         private void SaveCurrentTabSelectedFM(TabPage tabPage)
         {
             var (gameSelFM, gameFilter) = GetGameSelFMAndFilter(tabPage);
-            var selFM = FMsDGV.GetSelectedFMPosInfo();
+            SelectedFM selFM = FMsDGV.GetSelectedFMPosInfo();
             selFM.DeepCopyTo(gameSelFM);
             FMsDGV.Filter.DeepCopyTo(gameFilter);
         }
@@ -3570,7 +3566,7 @@ namespace AngelLoader.Forms
                     e.Handled = true;
                     break;
                 case Keys.Enter:
-                    var catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem.ToString();
+                    string catAndTag = box.SelectedIndex == -1 ? AddTagTextBox.Text : box.SelectedItem.ToString();
                     AddTagOperation(FMsDGV.GetSelectedFM(), catAndTag);
                     break;
                 default:
@@ -3598,7 +3594,7 @@ namespace AngelLoader.Forms
             var fm = FMsDGV.GetSelectedFM();
             var tv = TagsTreeView;
 
-            var success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode?.Parent?.Text ?? "", tv.SelectedNode?.Text ?? "");
+            bool success = FMTags.RemoveTagFromFM(fm, tv.SelectedNode?.Parent?.Text ?? "", tv.SelectedNode?.Text ?? "");
             if (!success) return;
 
             DisplayFMTags(fm.Tags);
@@ -3744,17 +3740,17 @@ namespace AngelLoader.Forms
                 dmlFiles.AddRange(d.FileNames);
             }
 
-            foreach (var f in dmlFiles)
+            foreach (string f in dmlFiles)
             {
                 if (f.IsEmpty()) continue;
 
                 bool success = Core.AddDML(FMsDGV.GetSelectedFM(), f);
                 if (!success) return;
 
-                var dml = Path.GetFileName(f);
-                if (!lb.Items.Cast<string>().ToArray().ContainsI(dml))
+                string dmlFileName = Path.GetFileName(f);
+                if (!lb.Items.Cast<string>().ToArray().ContainsI(dmlFileName))
                 {
-                    lb.Items.Add(Path.GetFileName(f));
+                    lb.Items.Add(dmlFileName);
                 }
             }
         }
@@ -3771,7 +3767,7 @@ namespace AngelLoader.Forms
 
         private void SetTopRightCollapsedState()
         {
-            var collapsed = TopSplitContainer.FullScreen;
+            bool collapsed = TopSplitContainer.FullScreen;
             TopRightTabControl.Enabled = !collapsed;
             TopRightCollapseButton.ArrowDirection = collapsed ? Direction.Left : Direction.Right;
         }
@@ -3873,7 +3869,7 @@ namespace AngelLoader.Forms
         // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
         internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
         {
-            var hWnd = InteropMisc.WindowFromPoint(Cursor.Position);
+            IntPtr hWnd = InteropMisc.WindowFromPoint(Cursor.Position);
             if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
         }
 
@@ -4018,9 +4014,9 @@ namespace AngelLoader.Forms
         private async Task OpenDateFilter(bool lastPlayed)
         {
             var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
-            var fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
-            var toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
-            var title = lastPlayed ? LText.DateFilterBox.LastPlayedTitleText : LText.DateFilterBox.ReleaseDateTitleText;
+            DateTime? fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
+            DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
+            string title = lastPlayed ? LText.DateFilterBox.LastPlayedTitleText : LText.DateFilterBox.ReleaseDateTitleText;
 
             using (var f = new FilterDateForm(title, fromDate, toDate))
             {
@@ -4042,8 +4038,8 @@ namespace AngelLoader.Forms
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
         {
             var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
-            var fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
-            var toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
+            DateTime? fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
+            DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
 
             // Normally you can see the re-layout kind of "sequentially happen", this stops that and makes it
             // snappy
@@ -4075,7 +4071,7 @@ namespace AngelLoader.Forms
 
         private async Task OpenRatingFilter()
         {
-            var outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
+            bool outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
             using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
             {
                 f.Location =

@@ -241,7 +241,7 @@ namespace AngelLoader.Forms
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
 
             PathsPage.FMArchivePathsListBox.Items.Clear();
-            foreach (var path in config.FMArchivePaths) PathsPage.FMArchivePathsListBox.Items.Add(path);
+            foreach (string path in config.FMArchivePaths) PathsPage.FMArchivePathsListBox.Items.Add(path);
 
             PathsPage.IncludeSubfoldersCheckBox.Checked = config.FMArchivePathsIncludeSubfolders;
 
@@ -273,9 +273,9 @@ namespace AngelLoader.Forms
 
                 FMDisplayPage.EnableIgnoreArticlesCheckBox.Checked = config.EnableArticles;
 
-                for (var i = 0; i < config.Articles.Count; i++)
+                for (int i = 0; i < config.Articles.Count; i++)
                 {
-                    var article = config.Articles[i];
+                    string article = config.Articles[i];
                     if (i > 0) FMDisplayPage.ArticlesTextBox.Text += @", ";
                     FMDisplayPage.ArticlesTextBox.Text += article;
                 }
@@ -294,13 +294,13 @@ namespace AngelLoader.Forms
                 FMDisplayPage.Date3ComboBox.Items.AddRange(dateFormatList);
                 FMDisplayPage.Date4ComboBox.Items.AddRange(dateFormatList);
 
-                var d1 = config.DateCustomFormat1;
-                var s1 = config.DateCustomSeparator1;
-                var d2 = config.DateCustomFormat2;
-                var s2 = config.DateCustomSeparator2;
-                var d3 = config.DateCustomFormat3;
-                var s3 = config.DateCustomSeparator3;
-                var d4 = config.DateCustomFormat4;
+                string d1 = config.DateCustomFormat1;
+                string s1 = config.DateCustomSeparator1;
+                string d2 = config.DateCustomFormat2;
+                string s2 = config.DateCustomSeparator2;
+                string d3 = config.DateCustomFormat3;
+                string s3 = config.DateCustomSeparator3;
+                string d4 = config.DateCustomFormat4;
 
                 FMDisplayPage.Date1ComboBox.SelectedItem = !d1.IsEmpty() && FMDisplayPage.Date1ComboBox.Items.Contains(d1) ? d1 : "dd";
                 FMDisplayPage.DateSeparator1TextBox.Text = !s1.IsEmpty() ? s1 : "/";
@@ -754,7 +754,7 @@ namespace AngelLoader.Forms
                     .ToList();
 
                 // Just in case
-                for (var i = 0; i < retArticles.Count; i++)
+                for (int i = 0; i < retArticles.Count; i++)
                 {
                     if (retArticles[i].IsWhiteSpace())
                     {
@@ -784,13 +784,13 @@ namespace AngelLoader.Forms
                 OutConfig.DateCustomSeparator3 = FMDisplayPage.DateSeparator3TextBox.Text;
                 OutConfig.DateCustomFormat4 = FMDisplayPage.Date4ComboBox.SelectedItem.ToString();
 
-                var formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
-                                   FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
-                                   FMDisplayPage.Date2ComboBox.SelectedItem +
-                                   FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
-                                   FMDisplayPage.Date3ComboBox.SelectedItem +
-                                   FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
-                                   FMDisplayPage.Date4ComboBox.SelectedItem;
+                string formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
+                                      FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
+                                      FMDisplayPage.Date2ComboBox.SelectedItem +
+                                      FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
+                                      FMDisplayPage.Date3ComboBox.SelectedItem +
+                                      FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
+                                      FMDisplayPage.Date4ComboBox.SelectedItem;
 
                 try
                 {
@@ -1022,7 +1022,7 @@ namespace AngelLoader.Forms
 
         private bool FMArchivePathExistsInBox(string path)
         {
-            foreach (var item in PathsPage.FMArchivePathsListBox.Items)
+            foreach (object item in PathsPage.FMArchivePathsListBox.Items)
             {
                 if (item.ToString().EqualsI(path)) return true;
             }
@@ -1035,7 +1035,7 @@ namespace AngelLoader.Forms
             using var d = new AutoFolderBrowserDialog();
 
             var lb = PathsPage.FMArchivePathsListBox;
-            var initDir =
+            string initDir =
                 lb.SelectedIndex > -1 ? lb.SelectedItem.ToString() :
                 lb.Items.Count > 0 ? lb.Items[lb.Items.Count - 1].ToString() :
                 "";
@@ -1053,7 +1053,7 @@ namespace AngelLoader.Forms
             d.MultiSelect = true;
             if (d.ShowDialog() == DialogResult.OK)
             {
-                foreach (var dir in d.DirectoryNames)
+                foreach (string dir in d.DirectoryNames)
                 {
                     if (!FMArchivePathExistsInBox(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
                 }
@@ -1087,7 +1087,7 @@ namespace AngelLoader.Forms
 
         private void FormatArticles()
         {
-            var articles = FMDisplayPage.ArticlesTextBox.Text;
+            string articles = FMDisplayPage.ArticlesTextBox.Text;
 
             // Copied wholesale from Autovid, ridiculous looking, but works
 
@@ -1109,10 +1109,10 @@ namespace AngelLoader.Forms
             // Remove commas from start and end
             articles = articles.Trim(',');
 
-            var articlesArray = articles.Split(',', ' ').Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
+            string[] articlesArray = articles.Split(',', ' ').Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
 
             articles = "";
-            for (var i = 0; i < articlesArray.Length; i++)
+            for (int i = 0; i < articlesArray.Length; i++)
             {
                 if (i > 0) articles += ", ";
                 articles += articlesArray[i];
@@ -1127,14 +1127,14 @@ namespace AngelLoader.Forms
 
         private void UpdateCustomExampleDate()
         {
-
-            var formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
-                               FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
-                               FMDisplayPage.Date2ComboBox.SelectedItem +
-                               FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
-                               FMDisplayPage.Date3ComboBox.SelectedItem +
-                               FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
-                               FMDisplayPage.Date4ComboBox.SelectedItem;
+            // TODO: Duplicate code?
+            string formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
+                                  FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
+                                  FMDisplayPage.Date2ComboBox.SelectedItem +
+                                  FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
+                                  FMDisplayPage.Date3ComboBox.SelectedItem +
+                                  FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
+                                  FMDisplayPage.Date4ComboBox.SelectedItem;
 
             try
             {

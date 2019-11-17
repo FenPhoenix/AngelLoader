@@ -105,9 +105,9 @@ namespace AngelLoader.CustomControls
         internal void ReportScanProgress(int fmNumber, int fmsTotal, int percent, string fmName)
         {
             ProgressBar.SetValueInstant(percent.Clamp(0, 100));
-            var first = LText.ProgressBox.ReportScanningFirst;
-            var between = LText.ProgressBox.ReportScanningBetweenNumAndTotal;
-            var last = LText.ProgressBox.ReportScanningLast;
+            string first = LText.ProgressBox.ReportScanningFirst;
+            string between = LText.ProgressBox.ReportScanningBetweenNumAndTotal;
+            string last = LText.ProgressBox.ReportScanningLast;
             ProgressMessageLabel.Text = first + fmNumber + between + fmsTotal + last;
             CurrentThingLabel.Text = fmName;
             ProgressPercentLabel.Text = percent + @"%";

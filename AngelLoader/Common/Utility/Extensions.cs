@@ -37,7 +37,7 @@ namespace AngelLoader
 
         internal static int IndexOfByteSequence(this byte[] input, byte[] pattern)
         {
-            var firstByte = pattern[0];
+            byte firstByte = pattern[0];
             int index = Array.IndexOf(input, firstByte);
 
             while (index > -1)
@@ -226,9 +226,9 @@ namespace AngelLoader
             // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
             // subtracting 32.
 
-            var start = startOrEnd == StartOrEnd.Start;
-            var siStart = start ? 0 : str.Length - value.Length;
-            var siEnd = start ? value.Length : str.Length;
+            bool start = startOrEnd == StartOrEnd.Start;
+            int siStart = start ? 0 : str.Length - value.Length;
+            int siEnd = start ? value.Length : str.Length;
 
             for (int si = siStart, vi = 0; si < siEnd; si++, vi++)
             {
@@ -340,7 +340,7 @@ namespace AngelLoader
         private static readonly StringBuilder ToInstDirNameSB = new StringBuilder();
         private static string ToInstDirName(string archiveName, string illegalChars, bool truncate)
         {
-            var count = archiveName.LastIndexOf('.');
+            int count = archiveName.LastIndexOf('.');
             if (truncate)
             {
                 if (count == -1 || count > 30) count = Math.Min(archiveName.Length, 30);
@@ -352,7 +352,7 @@ namespace AngelLoader
 
             ToInstDirNameSB.Clear();
             ToInstDirNameSB.Append(archiveName);
-            for (var i = 0; i < illegalChars.Length; i++) ToInstDirNameSB.Replace(illegalChars[i], '_', 0, count);
+            for (int i = 0; i < illegalChars.Length; i++) ToInstDirNameSB.Replace(illegalChars[i], '_', 0, count);
 
             return ToInstDirNameSB.ToString(0, count);
         }
@@ -417,7 +417,7 @@ namespace AngelLoader
         {
             if (value.IsEmpty()) return "";
 
-            var linebreakIndex = value.IndexOf("\r\n", StringComparison.InvariantCulture);
+            int linebreakIndex = value.IndexOf("\r\n", StringComparison.InvariantCulture);
 
             return linebreakIndex > -1 && linebreakIndex <= maxLength
                 ? value.Substring(0, linebreakIndex)
@@ -447,7 +447,7 @@ namespace AngelLoader
             // Don't remove this freaking null check, or Config reading might fail
             if (value.IsEmpty()) return "";
 
-            var ret = "";
+            string ret = "";
             foreach (char c in value) ret += '\\' + c.ToString();
 
             return ret;
@@ -533,8 +533,8 @@ namespace AngelLoader
         [PublicAPI]
         internal static void CenterHV(this Control control, Control parent, bool clientSize = false)
         {
-            var pWidth = clientSize ? parent.ClientSize.Width : parent.Width;
-            var pHeight = clientSize ? parent.ClientSize.Height : parent.Height;
+            int pWidth = clientSize ? parent.ClientSize.Width : parent.Width;
+            int pHeight = clientSize ? parent.ClientSize.Height : parent.Height;
             control.Location = new Point((pWidth / 2) - (control.Width / 2), (pHeight / 2) - (control.Height / 2));
         }
 
@@ -579,7 +579,7 @@ namespace AngelLoader
             // If this becomes a problem, come up with a better solution here.
             button.Parent.ResumeLayout();
 
-            var oldAnchor = button.Anchor;
+            AnchorStyles oldAnchor = button.Anchor;
             button.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
             int oldWidth = button.Width;
@@ -603,7 +603,7 @@ namespace AngelLoader
         {
             if (listBox.SelectedIndex == -1) return;
 
-            var oldSelectedIndex = listBox.SelectedIndex;
+            int oldSelectedIndex = listBox.SelectedIndex;
 
             listBox.Items.RemoveAt(listBox.SelectedIndex);
 

@@ -39,9 +39,9 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
             Construct(owner);
             
             ListBox.Items.Clear();
-            foreach (var item in list) ListBox.Items.Add(item);
+            foreach (string item in list) ListBox.Items.Add(item);
 
-            var p = owner.PointToClient(owner.AddTagTextBox.PointToScreen(new Point(0, 0)));
+            Point p = owner.PointToClient(owner.AddTagTextBox.PointToScreen(new Point(0, 0)));
             ListBox.Location = new Point(p.X, p.Y + owner.AddTagTextBox.Height);
             ListBox.Size = new Size(Math.Max(owner.AddTagTextBox.Width, 256), 225);
 

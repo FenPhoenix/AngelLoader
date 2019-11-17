@@ -66,7 +66,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                     // directory
 
                     // TODO: Fen's note: This looks sketchy. Step through and see if this works on Core 3...
-                    var assemblyLoc = typeof(object).Assembly.Location;
+                    string assemblyLoc = typeof(object).Assembly.Location;
 
                     string manifestLoc = null;
                     string installDir = null;

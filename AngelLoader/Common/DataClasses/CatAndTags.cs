@@ -22,10 +22,10 @@ namespace AngelLoader.DataClasses
 
             if (Count == 0) return;
 
-            for (var i = 0; i < Count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var item = new CatAndTags { Category = this[i].Category };
-                for (var j = 0; j < this[i].Tags.Count; j++) item.Tags.Add(this[i].Tags[j]);
+                for (int j = 0; j < this[i].Tags.Count; j++) item.Tags.Add(this[i].Tags[j]);
                 dest.Add(item);
             }
         }
@@ -38,9 +38,9 @@ namespace AngelLoader.DataClasses
 
             if (this[Count - 1].Category == "misc") return;
 
-            for (var i = 0; i < Count; i++)
+            for (int i = 0; i < Count; i++)
             {
-                var item = this[i];
+                CatAndTags item = this[i];
                 if (this[i].Category == "misc")
                 {
                     Remove(item);
@@ -54,7 +54,7 @@ namespace AngelLoader.DataClasses
     internal class GlobalCatAndTagsList : List<GlobalCatAndTags>
     {
         public GlobalCatAndTagsList() { }
-
+        // TODO: Use this once more
         public GlobalCatAndTagsList(int capacity) : base(capacity) { }
 
         internal void DeepCopyTo(GlobalCatAndTagsList dest)
@@ -63,7 +63,7 @@ namespace AngelLoader.DataClasses
 
             if (Count == 0) return;
 
-            for (var i = 0; i < Count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var item = new GlobalCatAndTags
                 {
@@ -74,7 +74,7 @@ namespace AngelLoader.DataClasses
                         UsedCount = this[i].Category.UsedCount
                     }
                 };
-                for (var j = 0; j < this[i].Tags.Count; j++)
+                for (int j = 0; j < this[i].Tags.Count; j++)
                 {
                     item.Tags.Add(new GlobalCatOrTag
                     {
@@ -96,9 +96,9 @@ namespace AngelLoader.DataClasses
 
             if (this[Count - 1].Category.Name == "misc") return;
 
-            for (var i = 0; i < Count; i++)
+            for (int i = 0; i < Count; i++)
             {
-                var item = this[i];
+                GlobalCatAndTags item = this[i];
                 if (this[i].Category.Name == "misc")
                 {
                     Remove(item);
