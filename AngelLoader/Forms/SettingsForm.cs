@@ -68,15 +68,12 @@ namespace AngelLoader.Forms
 
         public bool EventsDisabled { get; set; }
 
-#pragma warning disable IDE0069 // Disposable fields should be disposed
-        // They'll be disposed automatically like any other control
         private readonly ComboBoxCustom LangComboBox;
 
         private readonly GroupBox LangGroupBox;
         private readonly PathsPage PathsPage;
         private readonly FMDisplayPage FMDisplayPage;
         private readonly OtherPage OtherPage;
-#pragma warning restore IDE0069 // Disposable fields should be disposed
 
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup)
@@ -1269,6 +1266,24 @@ namespace AngelLoader.Forms
         {
             try { OwnerForm!.Localize(); }
             catch (Exception ex) { Log(nameof(OwnerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex); }
+        }
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                components?.Dispose();
+                // If we're on startup, only PathsPage will have been added, so others must be manually disposed.
+                // Just dispose them all if they need it, to be thorough.
+                PathsPage?.Dispose();
+                FMDisplayPage?.Dispose();
+                OtherPage?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
