@@ -443,8 +443,11 @@ namespace AngelLoader
 
             try
             {
-                // IMPORTANT: Encoding MUST be set to Default, otherwise the C++ stub won't read it properly
-                using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, Encoding.Default);
+                // IMPORTANT:
+                // Encoding MUST be "new UTF8Encoding(false, true)" or the C++ stub won't read it (it doesn't
+                // handle the byte order mark).
+                using var sw = new StreamWriter(Paths.StubCommFilePath, append: false,
+                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
                 sw.WriteLine("PlayOriginalGame=" + playOriginalGame);
                 if (fm != null)
                 {
@@ -991,7 +994,7 @@ namespace AngelLoader
 
             try
             {
-                File.WriteAllLines(soIni, lines, Encoding.Default);
+                File.WriteAllLines(soIni, lines);
             }
             catch (Exception ex)
             {
