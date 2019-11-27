@@ -76,7 +76,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.2.231" />
-    <PackageReference Include="xFFmpeg.NET" Version="3.3.3" />
+    <PackageReference Include="xFFmpeg.NET" Version="3.4.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
