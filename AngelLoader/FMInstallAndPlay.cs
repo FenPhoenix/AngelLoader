@@ -1154,9 +1154,8 @@ namespace AngelLoader
                 {
                     Directory.CreateDirectory(fmInstalledPath);
 
-                    var fs = new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read);
-
-                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read, leaveOpen: false);
+                    using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                        ZipArchiveMode.Read, leaveOpen: false);
 
                     int filesCount = archive.Entries.Count;
                     for (int i = 0; i < filesCount; i++)

@@ -117,9 +117,9 @@ namespace AngelLoader
 
                     if (savesAndScreensFiles.Count == 0) return;
 
-                    using var archive =
-                        new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
-                            ZipArchiveMode.Create);
+                    using var archive = new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
+                            ZipArchiveMode.Create, leaveOpen: false);
+
                     foreach (string f in savesAndScreensFiles)
                     {
                         string fn = f.Substring(fmInstalledPath.Length).Trim(Path.DirectorySeparatorChar);
@@ -146,7 +146,7 @@ namespace AngelLoader
                 try
                 {
                     using var archive = new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
-                        ZipArchiveMode.Create);
+                        ZipArchiveMode.Create, leaveOpen: false);
 
                     foreach (string f in installedFMFiles)
                     {
@@ -448,7 +448,7 @@ namespace AngelLoader
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
                 using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read))
+                    ZipArchiveMode.Read, leaveOpen: false))
                 {
                     int filesCount = archive.Entries.Count;
                     if (fileToUse.DarkLoader)
