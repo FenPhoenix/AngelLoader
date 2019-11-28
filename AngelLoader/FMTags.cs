@@ -13,7 +13,7 @@ namespace AngelLoader
         {
             AddTagsToFMAndGlobalList(catAndTag, fm.Tags);
             UpdateFMTagsString(fm);
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         internal static bool RemoveTagFromFM(FanMission fm, string catText, string tagText)
@@ -68,7 +68,7 @@ namespace AngelLoader
                 }
             }
 
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
 
             return true;
         }

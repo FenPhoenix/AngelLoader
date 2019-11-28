@@ -637,7 +637,7 @@ namespace AngelLoader.Forms
                 {
                     try
                     {
-                        Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, _inLanguage + ".ini"));
+                        Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, _inLanguage + ".ini"));
                         LocalizeOwnerForm();
                     }
                     catch (Exception ex)
@@ -1216,7 +1216,7 @@ namespace AngelLoader.Forms
             var s = LangComboBox;
             try
             {
-                Ini.Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
+                Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
                 Localize();
                 if (!Startup) LocalizeOwnerForm();
             }

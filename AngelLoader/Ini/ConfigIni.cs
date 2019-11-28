@@ -14,7 +14,7 @@ using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Ini
+namespace AngelLoader
 {
     // TODO: Maybe make this file have sections, cause it's getting pretty giant-blob-like
 

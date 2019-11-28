@@ -1094,7 +1094,7 @@ namespace AngelLoader
 
             fm.Installed = true;
 
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
 
             try
             {
@@ -1384,7 +1384,7 @@ namespace AngelLoader
                     fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(truncate: false);
                 }
 
-                Ini.Ini.WriteFullFMDataIni();
+                Ini.WriteFullFMDataIni();
                 await Core.View.RefreshSelectedFM(refreshReadme: false);
             }
             catch (Exception ex)

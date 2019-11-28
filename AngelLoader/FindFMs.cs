@@ -22,7 +22,7 @@ namespace AngelLoader
             if (!startup)
             {
                 // Make sure we don't lose anything when we re-find!
-                Ini.Ini.WriteFullFMDataIni();
+                Ini.WriteFullFMDataIni();
 
                 // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from
                 // the list when it's in an indeterminate state (which can cause a selection change (bad) and/or
@@ -54,7 +54,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    Ini.Ini.ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
+                    Ini.ReadFMDataIni(Paths.FMDataIni, FMDataIniList);
                 }
                 catch (Exception ex)
                 {

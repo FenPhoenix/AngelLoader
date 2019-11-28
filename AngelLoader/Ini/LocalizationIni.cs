@@ -5,7 +5,7 @@ using System.Text;
 using AngelLoader.DataClasses;
 using static AngelLoader.Attributes;
 
-namespace AngelLoader.Ini
+namespace AngelLoader
 {
     [FenGenLocalizationReadWriteClass]
     internal static partial class Ini

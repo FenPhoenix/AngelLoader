@@ -273,7 +273,7 @@ namespace AngelLoader
 
                 #endregion
 
-                Ini.Ini.WriteFullFMDataIni();
+                Ini.WriteFullFMDataIni();
             }
             catch (Exception ex)
             {

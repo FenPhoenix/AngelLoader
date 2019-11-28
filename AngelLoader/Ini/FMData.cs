@@ -9,7 +9,7 @@ using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Ini
+namespace AngelLoader
 {
     internal static partial class Ini
     {

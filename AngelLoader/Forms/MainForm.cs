@@ -3355,7 +3355,7 @@ namespace AngelLoader.Forms
         private void EditFMAltTitlesMenuItems_Click(object sender, EventArgs e)
         {
             EditFMTitleTextBox.Text = ((ToolStripMenuItem)sender).Text;
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMTitleTextBox_TextChanged(object sender, EventArgs e)
@@ -3368,7 +3368,7 @@ namespace AngelLoader.Forms
         private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMAuthorTextBox_TextChanged(object sender, EventArgs e)
@@ -3381,7 +3381,7 @@ namespace AngelLoader.Forms
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMReleaseDateCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3394,7 +3394,7 @@ namespace AngelLoader.Forms
                 : (DateTime?)null;
 
             RefreshSelectedFMRowOnly();
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMReleaseDateDateTimePicker_ValueChanged(object sender, EventArgs e)
@@ -3402,7 +3402,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
             RefreshSelectedFMRowOnly();
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMLastPlayedCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3415,7 +3415,7 @@ namespace AngelLoader.Forms
                 : (DateTime?)null;
 
             RefreshSelectedFMRowOnly();
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMLastPlayedDateTimePicker_ValueChanged(object sender, EventArgs e)
@@ -3423,7 +3423,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
             RefreshSelectedFMRowOnly();
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMDisabledModsTextBox_TextChanged(object sender, EventArgs e)
@@ -3436,7 +3436,7 @@ namespace AngelLoader.Forms
         private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMDisableAllModsCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -3446,7 +3446,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
             RefreshSelectedFMRowOnly();
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMRatingComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -3456,7 +3456,7 @@ namespace AngelLoader.Forms
             FMsDGV.GetSelectedFM().Rating = rating;
             FMsDGV.SetRatingMenuItemChecked(rating);
             RefreshSelectedFMRowOnly();
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
@@ -3481,7 +3481,7 @@ namespace AngelLoader.Forms
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
         {
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
             await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
         }
 
@@ -3511,7 +3511,7 @@ namespace AngelLoader.Forms
         private void CommentTextBox_Leave(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            Ini.Ini.WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
         }
 
         #endregion

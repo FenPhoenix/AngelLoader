@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using AngelLoader.Ini;
 using FFmpeg.NET;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;

@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using FMScanner;
-using static AngelLoader.Ini.Ini;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 

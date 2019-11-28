@@ -7,7 +7,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using AngelLoader.Ini;
 using AngelLoader.WinAPI;
 using SevenZip;
 using static AngelLoader.GameSupport;

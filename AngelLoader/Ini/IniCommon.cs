@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -8,7 +7,7 @@ using AngelLoader.DataClasses;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.Ini
+namespace AngelLoader
 {
     internal static partial class Ini
     {

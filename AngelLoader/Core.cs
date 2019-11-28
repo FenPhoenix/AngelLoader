@@ -29,7 +29,6 @@ using AngelLoader.Importing;
 using AngelLoader.WinAPI;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
-using static AngelLoader.Ini.Ini;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -71,7 +70,7 @@ namespace AngelLoader
                 {
                     try
                     {
-                        ReadConfigIni(Paths.ConfigIni, Config);
+                        Ini.ReadConfigIni(Paths.ConfigIni, Config);
 
                         #region Set paths
 
@@ -127,7 +126,7 @@ namespace AngelLoader
                     {
                         try
                         {
-                            ReadLocalizationIni(f);
+                            Ini.ReadLocalizationIni(f);
                             selFound = true;
                         }
                         catch (Exception ex)
@@ -135,7 +134,7 @@ namespace AngelLoader
                             Log("There was an error while reading " + f + ".", ex);
                         }
                     }
-                    ReadTranslatedLanguageName(f);
+                    Ini.ReadTranslatedLanguageName(f);
 
                     // These need to be set after language read. Slightly awkward but oh well.
                     //SetDefaultConfigVarNamesToLocalized();
@@ -345,7 +344,7 @@ namespace AngelLoader
 
                 // We don't need to set the paths again, because we've already done so above
 
-                WriteConfigIni(Config, Paths.ConfigIni);
+                Ini.WriteConfigIni(Config, Paths.ConfigIni);
 
                 // We have to do this here because we won't have before
                 using (Task findFMsTask = Task.Run(() => FindFMs.Find(startup: true)))
@@ -1541,14 +1540,14 @@ namespace AngelLoader
         {
             try
             {
-                WriteConfigIni(Config, Paths.ConfigIni);
+                Ini.WriteConfigIni(Config, Paths.ConfigIni);
             }
             catch (Exception ex)
             {
                 Log("Exception writing config ini", ex);
             }
 
-            WriteFullFMDataIni();
+            Ini.WriteFullFMDataIni();
 
             DoShutdownTasks();
 
