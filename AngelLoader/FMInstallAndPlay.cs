@@ -15,10 +15,7 @@ using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
-// Switch expression doesn't handle all possible inputs
-// Comments can't come at the end of this line or ReSharper breaks?!
-// @R#_FALSE_POSITIVE?
-#pragma warning disable CS8509
+#pragma warning disable CS8509 // Switch expression doesn't handle all possible inputs
 
 namespace AngelLoader
 {

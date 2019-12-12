@@ -895,7 +895,6 @@ namespace AngelLoader
         // @GENGAMES
         internal static void WriteConfigIni(ConfigData config, string fileName)
         {
-            // @R#_FALSE_POSITIVE: notnull is a valid C# 8 keyword
             static string commaCombine<T>(List<T> list) where T : notnull
             {
                 string ret = "";
@@ -1010,7 +1009,6 @@ namespace AngelLoader
                 sw.WriteLine(nameof(config.UseShortGameTabNames) + "=" + config.UseShortGameTabNames);
 
                 sw.WriteLine(nameof(config.EnableArticles) + "=" + config.EnableArticles);
-                // @R#_FALSE_POSITIVE: See commaCombine() above
                 sw.WriteLine(nameof(config.Articles) + "=" + commaCombine(config.Articles));
                 sw.WriteLine(nameof(config.MoveArticlesToEnd) + "=" + config.MoveArticlesToEnd);
 
