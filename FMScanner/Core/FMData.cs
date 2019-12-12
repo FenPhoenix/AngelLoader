@@ -41,9 +41,8 @@ namespace FMScanner
             bool scanAuthor = false, bool scanVersion = false, bool scanLanguages = false,
             bool scanGameType = false, bool scanNewDarkRequired = false, bool scanNewDarkMinimumVersion = false,
             bool scanCustomResources = false, bool scanSize = false, bool scanReleaseDate = false,
-            bool scanTags = false)
-        {
-            return new ScanOptions
+            bool scanTags = false) =>
+            new ScanOptions
             {
                 ScanTitle = scanTitle,
                 ScanCampaignMissionNames = scanCampaignMissionNames,
@@ -58,7 +57,6 @@ namespace FMScanner
                 ScanReleaseDate = scanReleaseDate,
                 ScanTags = scanTags
             };
-        }
 
         /// <summary>
         /// <see langword="true"/> to detect the mission's title.
@@ -170,18 +168,8 @@ namespace FMScanner
         public DateTime? LastUpdateDate
         {
             get => _lastUpdateDate;
-            internal set
-            {
-                // Future years will eventually stop being rejected once the current date passes them, but eh
-                if (value != null && ((DateTime)value).Year > DateTime.Now.Year)
-                {
-                    _lastUpdateDate = null;
-                }
-                else
-                {
-                    _lastUpdateDate = value;
-                }
-            }
+            // Future years will eventually stop being rejected once the current date passes them, but eh
+            internal set => _lastUpdateDate = value != null && ((DateTime)value).Year > DateTime.Now.Year ? null : value;
         }
 
         public bool? HasCustomScripts { get; internal set; }

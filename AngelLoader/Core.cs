@@ -789,7 +789,8 @@ namespace AngelLoader
                         // think
                         if (ignoreSavesKeyFound &&
                             fmInstPathFound &&
-                            externSelectorFound)
+                            externSelectorFound &&
+                            alwaysShowLoaderFound)
                         {
                             break;
                         }

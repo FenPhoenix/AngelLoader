@@ -31,28 +31,20 @@ namespace FMScanner
             dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
 
             // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-            var match = DaySuffixesRegex.Match(dateString);
+            Match match = DaySuffixesRegex.Match(dateString);
             if (match.Success)
             {
-                var suffix = match.Groups["Suffix"];
+                Group suffix = match.Groups["Suffix"];
                 dateString = dateString.Substring(0, suffix.Index) +
                              dateString.Substring(suffix.Index + suffix.Length);
             }
 
             // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
             // want to fail, and not assume the current year.
-            var success = DateTime.TryParseExact(dateString, FMConstants.DateFormats,
-                DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out var result);
-            if (success)
-            {
-                dateTime = result;
-                return true;
-            }
-            else
-            {
-                dateTime = new DateTime();
-                return false;
-            }
+            bool success = DateTime.TryParseExact(dateString, FMConstants.DateFormats,
+                DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result);
+            dateTime = success ? result : new DateTime();
+            return success;
         }
 
         #region ReadAllLines / ReadAllText
@@ -112,7 +104,6 @@ namespace FMScanner
         internal static string[] ReadAllLinesE(string file)
         {
             var enc = FileEncoding.DetectFileEncoding(file);
-
             return File.ReadAllLines(file, enc ?? Encoding.GetEncoding(1252));
         }
 
