@@ -15,6 +15,8 @@ namespace AngelLoader
 
         internal static readonly ConfigData Config = new ConfigData();
 
+#if false
+
         // Used for detecting NewDark version of NewDark executables
         private static readonly byte[] ProductVersionBytes = Encoding.ASCII.GetBytes(new[]
         {
@@ -22,7 +24,9 @@ namespace AngelLoader
             'V', '\0', 'e', '\0', 'r', '\0', 's', '\0', 'i', '\0', 'o', '\0', 'n', '\0', '\0', '\0'
         });
 
-        #region Categories and tags
+#endif
+
+#region Categories and tags
 
         // These are the FMSel preset tags. Conforming to standards here.
         internal static readonly GlobalCatAndTagsList PresetTags = new GlobalCatAndTagsList(6)
@@ -79,9 +83,9 @@ namespace AngelLoader
         // copied later.
         internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList(6);
 
-        #endregion
+#endregion
 
-        #region FMs lists
+#region FMs lists
 
         internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
         internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
@@ -90,9 +94,9 @@ namespace AngelLoader
         // This will contain indexes into FMDataIniList (not FMViewList!)
         internal static readonly List<int> ViewListGamesNull = new List<int>();
 
-        #endregion
+#endregion
 
-        #region Enums and enum-like
+#region Enums and enum-like
 
         // Class instead of enum so we don't have to keep casting its fields
         [PublicAPI]
@@ -126,7 +130,7 @@ namespace AngelLoader
 
         public enum Direction { Left, Right, Up, Down }
 
-        #endregion
+#endregion
 
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
         internal static readonly string[] FMSupportedLanguages =
@@ -163,7 +167,7 @@ namespace AngelLoader
             //internal static ConfigVar CV_ForceNewMantle = new ConfigVar { Command = "+new_mantle" };
         }
 
-        #region FM cache (readmes etc.)
+#region FM cache (readmes etc.)
 
         // We might want to add other things (thumbnails etc.) later, so it's a class
         internal class CacheData
@@ -175,11 +179,11 @@ namespace AngelLoader
 
         internal enum ReadmeType { PlainText, RichText, HTML, GLML }
 
-        #endregion
+#endregion
 
-        #region Interfaces
+#region Interfaces
 
-        #region DisableEvents
+#region DisableEvents
 
         /*
          Implement the interface on your form, and put guard clauses on all your event handlers that you want to be
@@ -217,9 +221,9 @@ namespace AngelLoader
             public void Dispose() => Obj.EventsDisabled = false;
         }
 
-        #endregion
+#endregion
 
-        #region DisableKeyPresses
+#region DisableKeyPresses
 
         [PublicAPI]
         internal interface IKeyPressDisabler
@@ -240,13 +244,13 @@ namespace AngelLoader
             public void Dispose() => Obj.KeyPressesDisabled = false;
         }
 
-        #endregion
+#endregion
 
         internal interface ILocalizable
         {
             void Localize();
         }
 
-        #endregion
+#endregion
     }
 }
