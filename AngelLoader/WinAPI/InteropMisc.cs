@@ -120,6 +120,9 @@ namespace AngelLoader.WinAPI
         internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
+        internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
         internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
 
         //[DllImport("user32.dll")]
