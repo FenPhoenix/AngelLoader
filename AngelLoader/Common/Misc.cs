@@ -91,7 +91,7 @@ namespace AngelLoader
         internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
 
         // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for null games.
-        // This will contain indexes into FMDataIniList (not FMViewList!)
+        // This will contain indexes into FMDataIniList (not FMsViewList!)
         internal static readonly List<int> ViewListGamesNull = new List<int>();
 
 #endregion
