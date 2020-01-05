@@ -499,8 +499,6 @@ namespace AngelLoader.Forms
             base.WndProc(ref m);
         }
 
-        // Keeping this for the mousewheel functionality because it passes on the message directly and so allows
-        // any pressed keys to also be passed along to the control (allows Ctrl+Mousewheel for rtfbox zoom f.ex.)
         public bool PreFilterMessage(ref Message m)
         {
             // So I don't forget what the return values do
@@ -559,7 +557,7 @@ namespace AngelLoader.Forms
             {
                 #region Temp hack (see above)
 
-                var pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+                Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
                 IntPtr hWnd = InteropMisc.WindowFromPoint(pos);
                 if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
 

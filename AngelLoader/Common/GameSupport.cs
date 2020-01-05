@@ -84,7 +84,7 @@ namespace AngelLoader
             GameIndex.Thief1 => Game.Thief1,
             GameIndex.Thief2 => Game.Thief2,
             GameIndex.Thief3 => Game.Thief3,
-            _ => Game.SS2,
+            _ => Game.SS2
         };
 
         #endregion
