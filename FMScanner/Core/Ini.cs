@@ -1,7 +1,7 @@
 ﻿/*
 FMScanner - A fast, thorough, accurate scanner for Thief 1 and Thief 2 fan missions.
 
-Written in 2017-2019 by FenPhoenix.
+Written in 2017-2020 by FenPhoenix.
 
 To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights
 to this software to the public domain worldwide. This software is distributed without any warranty.
