@@ -129,9 +129,9 @@ namespace AngelLoader
             return false;
         }
 
-#endregion
+        #endregion
 
-#region Equals
+        #region Equals
 
         /// <summary>
         /// Case-insensitive Equals.
@@ -143,9 +143,9 @@ namespace AngelLoader
 
         internal static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, StringComparison.OrdinalIgnoreCase);
 
-#endregion
+        #endregion
 
-#region Filename extension checks
+        #region Filename extension checks
 
         internal static bool IsValidReadme(this string value)
         {
@@ -159,7 +159,7 @@ namespace AngelLoader
                    value.EndsWithI(".htm");
         }
 
-#region Baked-in extension checks
+        #region Baked-in extension checks
         // TODO: Just passthroughs now because EndsWithI turned out to be faster(?!)
 
         internal static bool ExtIsTxt(this string value) => value.EndsWithI(".txt");
@@ -178,11 +178,11 @@ namespace AngelLoader
 
         internal static bool ExtIs7z(this string value) => value.EndsWithI(".7z");
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Empty / whitespace checks
+        #region Empty / whitespace checks
 
         /// <summary>
         /// Returns true if <paramref name="value"/> is null or empty.
@@ -200,9 +200,9 @@ namespace AngelLoader
         [ContractAnnotation("null => true")]
         internal static bool IsWhiteSpace([NotNullWhen(false)] this string? value) => string.IsNullOrWhiteSpace(value);
 
-#endregion
+        #endregion
 
-#region StartsWith and EndsWith
+        #region StartsWith and EndsWith
 
         private enum StartOrEnd { Start, End }
 
@@ -266,13 +266,13 @@ namespace AngelLoader
             return true;
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Modifications
+        #region Modifications
 
-#region Clear and add
+        #region Clear and add
 
         internal static void ClearAndAdd<T>(this List<T> list, params T[] items)
         {
@@ -286,9 +286,9 @@ namespace AngelLoader
             list.AddRange(items);
         }
 
-#endregion
+        #endregion
 
-#region Clamping
+        #region Clamping
 
         /// <summary>
         /// Clamps a number to between min and max.
@@ -310,7 +310,7 @@ namespace AngelLoader
         /// <returns></returns>
         internal static int ClampToZero(this int value) => Math.Max(value, 0);
 
-#endregion
+        #endregion
 
         internal static string ConvertSize(this ulong size)
         {
@@ -323,7 +323,7 @@ namespace AngelLoader
                  : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
         }
 
-#region FM installed name conversion
+        #region FM installed name conversion
 
         /// <summary>
         /// Format an FM archive name to conform to NewDarkLoader's FM install directory name requirements.
@@ -361,7 +361,7 @@ namespace AngelLoader
             return ToInstDirNameSB.ToString(0, count);
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Just removes the extension from a filename, without the rather large overhead of
@@ -375,7 +375,7 @@ namespace AngelLoader
             return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
         }
 
-#region Get file / dir names
+        #region Get file / dir names
 
         /// <summary>
         /// Strips the path from the filename, taking into account only the current OS's directory separator char.
@@ -415,7 +415,7 @@ namespace AngelLoader
             return path.Substring(Math.Max(i1, i2) + 1);
         }
 
-#endregion
+        #endregion
 
         internal static string ToSingleLineComment(this string value, int maxLength)
         {
@@ -428,7 +428,7 @@ namespace AngelLoader
                 : value.Substring(0, Math.Min(value.Length, maxLength));
         }
 
-#region Escaping
+        #region Escaping
 
         internal static string FromRNEscapes(this string value) => value.Replace(@"\r\n", "\r\n").Replace(@"\\", "\\");
 
@@ -457,21 +457,21 @@ namespace AngelLoader
             return ret;
         }
 
-#endregion
+        #endregion
 
-#region Forward/backslash conversion
+        #region Forward/backslash conversion
 
         internal static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
 
         internal static string ToBackSlashes(this string value) => value.Replace('/', '\\');
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Control hacks
+        #region Control hacks
 
-#region Suspend/resume drawing
+        #region Suspend/resume drawing
 
         internal static void SuspendDrawing(this Control control)
         {
@@ -486,7 +486,7 @@ namespace AngelLoader
             control.Refresh();
         }
 
-#endregion
+        #endregion
 
         // NOTE: Blocking a window causes ding sounds if you interact with it (if you have Windows sounds enabled...)
         // Currently using a transparent panel hack, along with suppressing keys/mouse.
@@ -520,7 +520,7 @@ namespace AngelLoader
             }
         }
 
-#region Centering
+        #region Centering
 
         [PublicAPI]
         internal static void CenterH(this Control control, Control parent)
@@ -542,9 +542,9 @@ namespace AngelLoader
             control.Location = new Point((pWidth / 2) - (control.Width / 2), (pHeight / 2) - (control.Height / 2));
         }
 
-#endregion
+        #endregion
 
-#region Autosizing
+        #region Autosizing
 
         // PERF_TODO: These are relatively expensive operations (10ms to make 3 calls from SettingsForm)
         // See if we can manually calculate some or all of this and end up with the same result as if we let the
@@ -601,7 +601,7 @@ namespace AngelLoader
             button.Anchor = oldAnchor;
         }
 
-#endregion
+        #endregion
 
         internal static void RemoveAndSelectNearest(this ListBox listBox)
         {
@@ -625,7 +625,7 @@ namespace AngelLoader
             }
         }
 
-#endregion
+        #endregion
 
         internal static void CancelIfNotDisposed(this CancellationTokenSource value)
         {
