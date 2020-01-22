@@ -624,14 +624,14 @@ namespace AngelLoader.Forms
 
                 if (KeyPressesDisabled || ViewBlocked ||
                     (FMsDGV.Focused &&
-                    ((wParam == InteropMisc.VK_PAGEUP ||
-                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_HOME) ||
-                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_UP)) &&
-                     FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
-                    ((wParam == InteropMisc.VK_PAGEDOWN ||
-                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_END) ||
-                      (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_DOWN)) &&
-                     FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)))
+                     ((wParam == InteropMisc.VK_PAGEUP ||
+                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_HOME) ||
+                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_UP)) &&
+                      FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
+                     ((wParam == InteropMisc.VK_PAGEDOWN ||
+                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_END) ||
+                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_DOWN)) &&
+                      FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)))
                 {
                     return BlockMessage;
                 }

@@ -1589,7 +1589,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log("Exception trying to write to config files to unset AngelLoader_Stub.dll as the loader on shutdown", ex);
+                Log("Exception trying to write to config files to unset " + Paths.StubFileName + " as the loader on shutdown", ex);
             }
         }
     }
