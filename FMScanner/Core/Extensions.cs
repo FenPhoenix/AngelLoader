@@ -34,8 +34,8 @@ namespace FMScanner
             if (string1.Length == 0) return 0;
             if (string2.Length == 0) return 0;
 
-            var vec1 = new int[string2.Length + 1];
-            var vec2 = new int[string2.Length + 1];
+            int[] vec1 = new int[string2.Length + 1];
+            int[] vec2 = new int[string2.Length + 1];
 
             for (int i = 0; i < vec1.Length; i++) vec1[i] = i;
 
@@ -45,9 +45,9 @@ namespace FMScanner
 
                 for (int j = 0; j < string2.Length; j++)
                 {
-                    var delCost = vec1[j + 1] + 1;
-                    var insCost = vec2[j] + 1;
-                    var substCost =
+                    int delCost = vec1[j + 1] + 1;
+                    int insCost = vec2[j] + 1;
+                    int substCost =
                         string1[i].ToString().Equals(string2[j].ToString(), stringComparison) ? 0 : 1;
                     vec2[j + 1] = Math.Min(insCost, Math.Min(delCost, vec1[j] + substCost));
                 }
@@ -60,7 +60,7 @@ namespace FMScanner
 
         internal static bool IsEnglishReadme(this string value)
         {
-            var rNoExt = value.RemoveExtension();
+            string rNoExt = value.RemoveExtension();
             if (string.IsNullOrEmpty(rNoExt)) return false;
 
             return rNoExt.EqualsI("fminfo-en") ||
@@ -91,7 +91,7 @@ namespace FMScanner
         // Or maybe I just don't know what I'm doing. Either way.
         internal static bool Contains(this byte[] input, byte[] pattern)
         {
-            var firstByte = pattern[0];
+            byte firstByte = pattern[0];
             int index = Array.IndexOf(input, firstByte);
 
             while (index > -1)
@@ -115,7 +115,7 @@ namespace FMScanner
         // Exact duplicate except for the array type, but there's nothing I can do if I want to be fast :/
         internal static bool Contains(this char[] input, char[] pattern)
         {
-            var firstChar = pattern[0];
+            char firstChar = pattern[0];
             int index = Array.IndexOf(input, firstChar);
 
             while (index > -1)
@@ -193,7 +193,7 @@ namespace FMScanner
         /// <returns></returns>
         internal static bool HasFileExtension(this string value)
         {
-            var lastDotIndex = value.LastIndexOf('.');
+            int lastDotIndex = value.LastIndexOf('.');
             return lastDotIndex > value.LastIndexOf('/') ||
                    lastDotIndex > value.LastIndexOf('\\');
         }
@@ -215,7 +215,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'T' || value[len - 3] == 't') &&
@@ -227,7 +227,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'R' || value[len - 3] == 'r') &&
@@ -239,7 +239,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'W' || value[len - 3] == 'w') &&
@@ -251,7 +251,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return (len > 4 &&
                     value[len - 4] == '.' &&
                     (value[len - 3] == 'H' || value[len - 3] == 'h') &&
@@ -269,7 +269,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 5 &&
                    value[len - 5] == '.' &&
                    (value[len - 4] == 'G' || value[len - 4] == 'g') &&
@@ -282,7 +282,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'Z' || value[len - 3] == 'z') &&
@@ -294,7 +294,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 3 &&
                    value[len - 3] == '.' &&
                    value[len - 2] == '7' &&
@@ -305,7 +305,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'R' || value[len - 3] == 'r') &&
@@ -317,7 +317,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'I' || value[len - 3] == 'i') &&
@@ -329,7 +329,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'C' || value[len - 3] == 'c') &&
@@ -341,7 +341,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'G' || value[len - 3] == 'g') &&
@@ -353,7 +353,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'N' || value[len - 3] == 'n') &&
@@ -365,7 +365,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'U' || value[len - 3] == 'u') &&
@@ -377,7 +377,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 6 &&
                    (value[len - 6] == 'R' || value[len - 6] == 'r') &&
                    (value[len - 5] == 'A' || value[len - 5] == 'a') &&
@@ -391,7 +391,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'B' || value[len - 3] == 'b') &&
@@ -403,7 +403,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'S' || value[len - 3] == 's') &&
@@ -415,7 +415,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'M' || value[len - 3] == 'm') &&
@@ -427,7 +427,7 @@ namespace FMScanner
         {
             if (value == null) return false;
 
-            var len = value.Length;
+            int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
                    (value[len - 3] == 'G' || value[len - 3] == 'g') &&
@@ -508,9 +508,9 @@ namespace FMScanner
             // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
             // subtracting 32.
 
-            var start = startOrEnd == StartOrEnd.Start;
-            var siStart = start ? 0 : str.Length - value.Length;
-            var siEnd = start ? value.Length : str.Length;
+            bool start = startOrEnd == StartOrEnd.Start;
+            int siStart = start ? 0 : str.Length - value.Length;
+            int siEnd = start ? value.Length : str.Length;
 
             for (int si = siStart, vi = 0; si < siEnd; si++, vi++)
             {

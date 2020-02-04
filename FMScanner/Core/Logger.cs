@@ -63,7 +63,7 @@ namespace FMScanner
                 using (var sw = new StreamWriter(logFile, append: true))
                 {
                     var st = new StackTrace(1);
-                    var methodNameStr = methodName ? callerMemberName + "\r\n" : "";
+                    string methodNameStr = methodName ? callerMemberName + "\r\n" : "";
                     sw.WriteLine(
                         DateTime.Now.ToString(CultureInfo.InvariantCulture) + " " +
                         methodNameStr + message);

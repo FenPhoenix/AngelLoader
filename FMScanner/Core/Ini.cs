@@ -18,10 +18,10 @@ namespace FMScanner
         {
             var fmIni = new FMIniData();
 
-            var inDescr = false;
+            bool inDescr = false;
 
             // Quick n dirty, works fine and is fast
-            foreach (var line in lines)
+            foreach (string line in lines)
             {
                 if (line.StartsWithI(nameof(fmIni.NiceName) + "="))
                 {

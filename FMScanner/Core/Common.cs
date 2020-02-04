@@ -388,9 +388,9 @@ namespace FMScanner
             if (string.IsNullOrEmpty(y)) return 1;
 
             int xIndex1;
-            var xNum = x.Substring(xIndex1 = x.IndexOf('_') + 1, x.IndexOf(':') - xIndex1);
+            string xNum = x.Substring(xIndex1 = x.IndexOf('_') + 1, x.IndexOf(':') - xIndex1);
             int yIndex1;
-            var yNum = y.Substring(yIndex1 = y.IndexOf('_') + 1, y.IndexOf(':') - yIndex1);
+            string yNum = y.Substring(yIndex1 = y.IndexOf('_') + 1, y.IndexOf(':') - yIndex1);
 
             while (xNum.Length < yNum.Length) xNum = '0' + xNum;
             while (yNum.Length < xNum.Length) yNum = '0' + yNum;

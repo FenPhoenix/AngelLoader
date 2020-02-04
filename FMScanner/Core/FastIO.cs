@@ -83,14 +83,14 @@ namespace FMScanner
 
         private static void ThrowException(string[] searchPatterns, int err, string path, string pattern, int loop)
         {
-            var spString = "";
+            string spString = "";
             for (int i = 0; i < searchPatterns.Length; i++)
             {
                 if (i > 0) spString += ",";
                 spString += searchPatterns[i];
             }
 
-            var whichLoop = loop == 0 ? "First loop" : "Second loop";
+            string whichLoop = loop == 0 ? "First loop" : "Second loop";
 
             var ex = new Win32Exception(err);
             throw new Win32Exception(err,
@@ -128,13 +128,13 @@ namespace FMScanner
 
             if (searchOption != FastIOSearchOption.AllDirectoriesSkipTop)
             {
-                foreach (var p in searchPatterns)
+                foreach (string p in searchPatterns)
                 {
                     using var findHandle = FindFirstFileW(@"\\?\" + path.TrimEnd('\\') + '\\' + p, out findData);
 
                     if (findHandle.IsInvalid)
                     {
-                        var err = Marshal.GetLastWin32Error();
+                        int err = Marshal.GetLastWin32Error();
                         if (err == ERROR_FILE_NOT_FOUND) continue;
 
                         // Since the framework isn't here to save us, we should blanket-catch and throw on every
@@ -159,7 +159,7 @@ namespace FMScanner
             {
                 if (findHandle.IsInvalid)
                 {
-                    var err = Marshal.GetLastWin32Error();
+                    int err = Marshal.GetLastWin32Error();
                     if (err != ERROR_FILE_NOT_FOUND)
                     {
                         ThrowException(searchPatterns, err, path, @"\* [looking for all directories]", 1);
