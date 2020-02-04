@@ -46,6 +46,9 @@ namespace FMScanner
         internal DateTime LastModifiedDate { get; set; }
     }
 
+    /// <summary>
+    /// Stores a filename/index pair for quick lookups into a zip file.
+    /// </summary>
     internal sealed class NameAndIndex
     {
         internal string Name { get; set; }
