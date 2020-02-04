@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="7z.Libs" Version="19.0.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
-    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.2.231" />
+    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.2.242" />
     <PackageReference Include="Ude.NetStandard" Version="1.2.0" />
   </ItemGroup>
 
