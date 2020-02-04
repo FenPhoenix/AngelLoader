@@ -27,7 +27,6 @@ using System.Xml;
 using FMScanner.FastZipReader;
 using JetBrains.Annotations;
 using SevenZip;
-using static System.IO.Path;
 using static System.StringComparison;
 using static FMScanner.Constants;
 using static FMScanner.FMConstants;
@@ -236,7 +235,7 @@ namespace FMScanner
                             ArchivePath = fm;
                             try
                             {
-                                FmWorkingPath = Path.Combine(tempPath, GetFileNameWithoutExtension(ArchivePath).Trim());
+                                FmWorkingPath = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(ArchivePath).Trim());
                             }
                             catch (Exception ex)
                             {
@@ -319,7 +318,7 @@ namespace FMScanner
 
             static ScannedFMData UnsupportedZip(string archivePath) => new ScannedFMData
             {
-                ArchiveName = GetFileName(archivePath),
+                ArchiveName = Path.GetFileName(archivePath),
                 Game = Game.Unsupported
             };
 
@@ -395,7 +394,7 @@ namespace FMScanner
             var fmData = new ScannedFMData
             {
                 ArchiveName = FmIsZip || fmIsSevenZip
-                    ? GetFileName(ArchivePath)
+                    ? Path.GetFileName(ArchivePath)
                     : new DirectoryInfo(FmWorkingPath).Name
             };
 
@@ -1042,7 +1041,7 @@ namespace FMScanner
 
                 foreach (var f in EnumFiles("*", SearchOption.TopDirectoryOnly))
                 {
-                    baseDirFiles.Add(new NameAndIndex { Name = GetFileName(f) });
+                    baseDirFiles.Add(new NameAndIndex { Name = Path.GetFileName(f) });
                 }
 
                 if (t3Found)
@@ -1130,7 +1129,7 @@ namespace FMScanner
                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Mesh), "*.bin");
 
                         fmd.HasCustomScripts =
-                            baseDirFiles.Any(x => ScriptFileExtensions.ContainsI(GetExtension(x.Name))) ||
+                            baseDirFiles.Any(x => ScriptFileExtensions.ContainsI(Path.GetExtension(x.Name))) ||
                             (baseDirFolders.ContainsI(FMDirs.Scripts) &&
                              FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Scripts), "*"));
 
@@ -1159,7 +1158,7 @@ namespace FMScanner
                 var f = baseDirFiles[i];
                 if (f.Name.ExtIsMis())
                 {
-                    misFiles.Add(new NameAndIndex { Name = GetFileName(f.Name), Index = f.Index });
+                    misFiles.Add(new NameAndIndex { Name = Path.GetFileName(f.Name), Index = f.Index });
                 }
             }
 
