@@ -419,7 +419,7 @@ namespace FMScanner
                     else
                     {
                         long size = 0;
-                        foreach (var fi in FmDirFiles) size += fi.Length;
+                        foreach (FileInfo fi in FmDirFiles) size += fi.Length;
                         fmData.Size = size;
                     }
                 }
@@ -504,7 +504,7 @@ namespace FMScanner
                 if (ScanOptions.ScanTitle || ScanOptions.ScanAuthor || ScanOptions.ScanVersion ||
                     ScanOptions.ScanReleaseDate || ScanOptions.ScanTags)
                 {
-                    var fmInfoXml = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.FMInfoXml));
+                    NameAndIndex fmInfoXml = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.FMInfoXml));
                     if (fmInfoXml != null)
                     {
                         var t = ReadFmInfoXml(fmInfoXml);
@@ -517,7 +517,7 @@ namespace FMScanner
                 // I think we need to always scan fm.ini even if we're not returning any of its fields, because
                 // of tags, I think for some reason we're needing to read tags always?
                 {
-                    var fmIni = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.FMIni));
+                    NameAndIndex fmIni = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.FMIni));
                     if (fmIni != null)
                     {
                         var t = ReadFmIni(fmIni);
@@ -532,7 +532,7 @@ namespace FMScanner
                 {
                     // SS2 file
                     // TODO: If we wanted to be sticklers, we could skip this for non-SS2 FMs
-                    var modIni = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.ModIni));
+                    NameAndIndex modIni = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.ModIni));
                     if (modIni != null)
                     {
                         var t = ReadModIni(modIni);
@@ -548,12 +548,9 @@ namespace FMScanner
 
             var readmeDirFiles = new List<NameAndIndex>();
 
-            foreach (var f in baseDirFiles) readmeDirFiles.Add(f);
+            foreach (NameAndIndex f in baseDirFiles) readmeDirFiles.Add(f);
 
-            if (fmIsT3)
-            {
-                foreach (var f in t3FMExtrasDirFiles) readmeDirFiles.Add(f);
-            }
+            if (fmIsT3) foreach (NameAndIndex f in t3FMExtrasDirFiles) readmeDirFiles.Add(f);
 
             ReadAndCacheReadmeFiles(readmeDirFiles, rtfBox);
 
@@ -657,7 +654,7 @@ namespace FMScanner
                 if (!fmData.Author.IsEmpty())
                 {
                     // Remove email addresses from the end of author names
-                    var match = AuthorEmailRegex.Match(fmData.Author);
+                    Match match = AuthorEmailRegex.Match(fmData.Author);
                     if (match.Success)
                     {
                         fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
@@ -772,7 +769,7 @@ namespace FMScanner
                 {
                     if (ScanOptions.ScanSize && FmDirFiles.Count > 0)
                     {
-                        var misFile = FmDirFiles.First(x => x.FullName.EqualsI(FmWorkingPath + usedMisFiles[0].Name));
+                        FileInfo misFile = FmDirFiles.First(x => x.FullName.EqualsI(FmWorkingPath + usedMisFiles[0].Name));
                         misFileDate = new DateTimeOffset(misFile.LastWriteTime).DateTime;
                     }
                     else
@@ -811,7 +808,7 @@ namespace FMScanner
                 }
 
                 // PERF: 5ms over the whole 1098 set, whatever
-                var match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, RegexOptions.IgnoreCase);
+                Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, RegexOptions.IgnoreCase);
                 if (match.Success) continue;
 
                 if (fmData.TagsString != "") fmData.TagsString += ", ";
@@ -1083,12 +1080,12 @@ namespace FMScanner
                     {
                         // TODO: I already have baseDirFiles; see if this EnumerateDirectories can be removed
                         // Even a janky scan through baseDirFiles would probably be faster than hitting the disk
-                        var baseDirFolders = (
+                        string[] baseDirFolders = (
                             from f in Directory.EnumerateDirectories(FmWorkingPath, "*",
                                 SearchOption.TopDirectoryOnly)
                             select f.Substring(f.LastIndexOf(dsc) + 1)).ToArray();
 
-                        foreach (var f in intrfaceDirFiles)
+                        foreach (NameAndIndex f in intrfaceDirFiles)
                         {
                             if (fmd.HasAutomap == null &&
                                 f.Name.StartsWithI(FMDirs.IntrfaceS(dsc)) &&
@@ -1158,7 +1155,7 @@ namespace FMScanner
 
             for (int i = 0; i < baseDirFiles.Count; i++)
             {
-                var f = baseDirFiles[i];
+                NameAndIndex f = baseDirFiles[i];
                 if (f.Name.ExtIsMis())
                 {
                     misFiles.Add(new NameAndIndex { Name = Path.GetFileName(f.Name), Index = f.Index });
@@ -1202,7 +1199,7 @@ namespace FMScanner
 
                 for (int i = 0; i < misFiles.Count; i++)
                 {
-                    var mf = misFiles[i];
+                    NameAndIndex mf = misFiles[i];
                     string mfNoExt = mf.Name.RemoveExtension();
                     if (mfNoExt.StartsWithI("miss") && mfNoExt.Length > 4)
                     {
@@ -1307,7 +1304,7 @@ namespace FMScanner
 
             if (iniLines == null || iniLines.Length == 0) return (null, null, null, null, null);
 
-            var fmIni = Ini.DeserializeFmIniLines(iniLines);
+            FMIniData fmIni = Ini.DeserializeFmIniLines(iniLines);
 
             #endregion
 
@@ -1355,7 +1352,7 @@ namespace FMScanner
             {
                 if (fmIni.Tags != null)
                 {
-                    var tagsList = fmIni.Tags.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] tagsList = fmIni.Tags.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
                     var authors = tagsList.Where(x => x.StartsWithI("author:"));
 
@@ -1552,7 +1549,7 @@ namespace FMScanner
             // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
             // Treat 'em like plaintext and see how it goes.
 
-            foreach (var readmeFile in readmeDirFiles)
+            foreach (NameAndIndex readmeFile in readmeDirFiles)
             {
                 if (!readmeFile.Name.IsValidReadme()) continue;
 
@@ -1585,7 +1582,7 @@ namespace FMScanner
                 else
                 {
                     readmeFileOnDisk = Path.Combine(FmWorkingPath, readmeFile.Name);
-                    var fi = readmeFI ?? new FileInfo(readmeFileOnDisk);
+                    FileInfo fi = readmeFI ?? new FileInfo(readmeFileOnDisk);
                     fileName = fi.Name;
                     lastModifiedDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
                     readmeSize = fi.Length;
@@ -1615,7 +1612,7 @@ namespace FMScanner
 
                     // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by
                     // header alone.
-                    var rtfHeader = new char[6];
+                    char[] rtfHeader = new char[6];
                     using (var sr = FmIsZip
                         ? new StreamReader(readmeStream, Encoding.ASCII, false, 6, true)
                         : new StreamReader(readmeFileOnDisk, Encoding.ASCII, false, 6))
@@ -1639,14 +1636,14 @@ namespace FMScanner
 
                         if (success)
                         {
-                            var last = ReadmeFiles[ReadmeFiles.Count - 1];
+                            ReadmeInternal last = ReadmeFiles[ReadmeFiles.Count - 1];
                             last.Lines = rtfBox.Lines;
                             last.Text = rtfBox.Text;
                         }
                     }
                     else
                     {
-                        var last = ReadmeFiles[ReadmeFiles.Count - 1];
+                        ReadmeInternal last = ReadmeFiles[ReadmeFiles.Count - 1];
                         last.Lines = FmIsZip
                             ? ReadAllLinesE(readmeStream, readmeFileLen, streamIsSeekable: true)
                             : ReadAllLinesE(readmeFileOnDisk);
@@ -1699,7 +1696,7 @@ namespace FMScanner
 
             foreach (string titlesFileLocation in titlesStrDirs)
             {
-                var titlesFile = FmIsZip
+                NameAndIndex titlesFile = FmIsZip
                     ? stringsDirFiles.FirstOrDefault(x => x.Name.EqualsI(titlesFileLocation))
                     : new NameAndIndex { Name = Path.Combine(FmWorkingPath, titlesFileLocation) };
 
@@ -1828,7 +1825,7 @@ namespace FMScanner
 
             if (ReadmeFiles == null || ReadmeFiles.Count == 0) return ret;
 
-            foreach (var r in readmes)
+            foreach (ReadmeInternal r in readmes)
             {
                 if (r.FileName.ExtIsHtml() || r.Lines == null || r.Lines.Length == 0) continue;
 
@@ -1879,7 +1876,7 @@ namespace FMScanner
         {
             string ret = null;
 
-            foreach (var file in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+            foreach (ReadmeInternal file in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
             {
                 if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
                 {
@@ -1930,7 +1927,7 @@ namespace FMScanner
                 // Finds eg.
                 // Author:
                 //      GORT (Shaun M.D. Morin)
-                foreach (var file in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+                foreach (ReadmeInternal file in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
                 {
                     ret = GetValueFromLines(SpecialLogic.AuthorNextLine, null, file.Lines);
                     if (!string.IsNullOrEmpty(ret)) return ret;
@@ -2137,7 +2134,7 @@ namespace FMScanner
             for (int i = 0; i < lines.Length; i++)
             {
                 string lineT = lines[i].Trim();
-                var match = NewGameStrTitleRegex.Match(lineT);
+                Match match = NewGameStrTitleRegex.Match(lineT);
                 if (match.Success)
                 {
                     string title = match.Groups["Title"].Value.Trim();
@@ -2172,7 +2169,7 @@ namespace FMScanner
             {
                 if (value.Contains("  "))
                 {
-                    var titleWords = value.Split(new[] { "  " }, StringSplitOptions.None);
+                    string[] titleWords = value.Split(new[] { "  " }, StringSplitOptions.None);
                     for (int i = 0; i < titleWords.Length; i++)
                     {
                         titleWords[i] = titleWords[i].Replace(" ", "");
@@ -2233,7 +2230,7 @@ namespace FMScanner
                 }
                 else
                 {
-                    var m = AuthorGeneralCopyrightRegex.Match(lineT);
+                    Match m = AuthorGeneralCopyrightRegex.Match(lineT);
                     if (!m.Success) continue;
 
                     string author = CleanupCopyrightAuthor(m.Groups["Author"].Value);
@@ -2250,7 +2247,7 @@ namespace FMScanner
 
             for (int i = 0; i < AuthorRegexes.Length; i++)
             {
-                var match = AuthorRegexes[i].Match(text);
+                Match match = AuthorRegexes[i].Match(text);
                 if (match.Success)
                 {
                     author = match.Groups["Author"].Value;
@@ -2282,7 +2279,7 @@ namespace FMScanner
 
             // We DON'T just check the first five lines, because there might be another language section first
             // and this kind of author string might well be buried down in the file.
-            foreach (var rf in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+            foreach (ReadmeInternal rf in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
             {
                 foreach (string line in rf.Lines)
                 {
@@ -2305,7 +2302,7 @@ namespace FMScanner
 
                     string secondHalf = lineT.Substring(lineT.IndexOf(" by", OrdinalIgnoreCase));
 
-                    var match = titleByAuthorRegex.Match(secondHalf);
+                    Match match = titleByAuthorRegex.Match(secondHalf);
                     if (match.Success)
                     {
                         return match.Groups["Author"].Value;
@@ -2322,7 +2319,7 @@ namespace FMScanner
             {
                 for (int i = 0; i < AuthorMissionCopyrightRegexes.Length; i++)
                 {
-                    var match = AuthorMissionCopyrightRegexes[i].Match(line);
+                    Match match = AuthorMissionCopyrightRegexes[i].Match(line);
                     if (match.Success) return match.Groups["Author"].Value;
                 }
                 return null;
@@ -2332,7 +2329,7 @@ namespace FMScanner
 
             bool foundAuthor = false;
 
-            foreach (var rf in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+            foreach (ReadmeInternal rf in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
             {
                 bool inCopyrightSection = false;
                 bool pastFirstLineOfCopyrightSection = false;
@@ -2345,7 +2342,7 @@ namespace FMScanner
                     {
                         // This whole nonsense is just to support the use of @ as a copyright symbol (used by some
                         // Theker missions); we want to be very specific about when we decide that "@" means "©".
-                        var m = !pastFirstLineOfCopyrightSection
+                        Match m = !pastFirstLineOfCopyrightSection
                             ? AuthorGeneralCopyrightIncludeAtSymbolRegex.Match(line)
                             : AuthorGeneralCopyrightRegex.Match(line);
                         if (m.Success)
@@ -2392,7 +2389,7 @@ namespace FMScanner
             index = author.IndexOf(". ", Ordinal);
             if (index > -1) author = author.Substring(0, index);
 
-            var yearMatch = CopyrightAuthorYearRegex.Match(author);
+            Match yearMatch = CopyrightAuthorYearRegex.Match(author);
             if (yearMatch.Success) author = author.Substring(0, yearMatch.Index);
 
             if ("!@#$%^&*".Any(x => author[author.Length - 1] == x) &&
@@ -2433,7 +2430,7 @@ namespace FMScanner
             else // Starts with non-numbers
             {
                 // Find index of the first numeric character
-                var match = VersionFirstNumberRegex.Match(version);
+                Match match = VersionFirstNumberRegex.Match(version);
                 if (match.Success)
                 {
                     version = version.Substring(match.Index);
@@ -2477,10 +2474,10 @@ namespace FMScanner
 
                 for (int langIndex = 0; langIndex < Languages.Length; langIndex++)
                 {
-                    var lang = Languages[langIndex];
+                    string lang = Languages[langIndex];
                     for (int dfIndex = 0; dfIndex < dirFiles.Count; dfIndex++)
                     {
-                        var df = dirFiles[dfIndex];
+                        NameAndIndex df = dirFiles[dfIndex];
                         if (df.Name.HasFileExtension() &&
                             (df.Name.ContainsI(dsc + lang + dsc) ||
                              df.Name.ContainsI(dsc + lang + " Language" + dsc)))
@@ -2548,7 +2545,7 @@ namespace FMScanner
 
             if (langs.Count > 0)
             {
-                var langsD = langs.Distinct().ToArray();
+                string[] langsD = langs.Distinct().ToArray();
                 Array.Sort(langsD);
                 return (langsD, uncertainLangs.ToArray());
             }
@@ -2565,7 +2562,7 @@ namespace FMScanner
 
             #region Choose smallest .gam file
 
-            var gamFiles = baseDirFiles.Where(x => x.Name.ExtIsGam()).ToArray();
+            NameAndIndex[] gamFiles = baseDirFiles.Where(x => x.Name.ExtIsGam()).ToArray();
             bool gamFileExists = gamFiles.Length > 0;
 
             var gamSizeList = new List<(string Name, int Index, long Size)>();
@@ -2579,7 +2576,7 @@ namespace FMScanner
                 }
                 else
                 {
-                    foreach (var gam in gamFiles)
+                    foreach (NameAndIndex gam in gamFiles)
                     {
                         long length;
                         if (FmIsZip)
@@ -2588,7 +2585,7 @@ namespace FMScanner
                         }
                         else
                         {
-                            var gamFI = FmDirFiles.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(FmWorkingPath, gam.Name)));
+                            FileInfo gamFI = FmDirFiles.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(FmWorkingPath, gam.Name)));
                             length = gamFI?.Length ?? new FileInfo(Path.Combine(FmWorkingPath, gam.Name)).Length;
                         }
                         gamSizeList.Add((gam.Name, gam.Index, length));
@@ -2612,7 +2609,7 @@ namespace FMScanner
             }
             else if (usedMisFiles.Count > 1)
             {
-                foreach (var mis in usedMisFiles)
+                foreach (NameAndIndex mis in usedMisFiles)
                 {
                     long length;
                     if (FmIsZip)
@@ -2621,7 +2618,7 @@ namespace FMScanner
                     }
                     else
                     {
-                        var misFI = FmDirFiles.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(FmWorkingPath, mis.Name)));
+                        FileInfo misFI = FmDirFiles.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(FmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(Path.Combine(FmWorkingPath, mis.Name)).Length;
                     }
                     misSizeList.Add((mis.Name, mis.Index, length));
@@ -2706,7 +2703,7 @@ namespace FMScanner
             bool foundAtOldDarkThief2Location = false;
 
             char[] zipBuf = null;
-            var dirBuf = new char[locationBytesToRead];
+            char[] dirBuf = new char[locationBytesToRead];
 
             using (var sr = FmIsZip
                 ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
@@ -2776,7 +2773,7 @@ namespace FMScanner
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
                 using var zipEntryStream = gamFileExists ? gamFileZipEntry.Open() : misFileZipEntry.Open();
-                var identString = gamFileExists
+                byte[] identString = gamFileExists
                     ? MisFileStrings.Thief2UniqueStringGam
                     : MisFileStrings.Thief2UniqueStringMis;
 
@@ -2785,7 +2782,7 @@ namespace FMScanner
                 // kind of quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
                 int boundaryLen = identString.Length;
                 const int bufSize = 81_920;
-                var chunk = new byte[boundaryLen + bufSize];
+                byte[] chunk = new byte[boundaryLen + bufSize];
 
                 while (zipEntryStream.Read(chunk, boundaryLen, bufSize) != 0)
                 {
@@ -2841,7 +2838,7 @@ namespace FMScanner
 
             for (int i = 0; i < NewDarkVersionRegexes.Length; i++)
             {
-                var match = NewDarkVersionRegexes[i].Match(text);
+                Match match = NewDarkVersionRegexes[i].Match(text);
                 if (match.Success)
                 {
                     version = match.Groups["Version"].Value;

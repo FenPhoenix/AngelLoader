@@ -130,7 +130,7 @@ namespace FMScanner
             {
                 foreach (string p in searchPatterns)
                 {
-                    using var findHandle = FindFirstFileW(@"\\?\" + path.TrimEnd('\\') + '\\' + p, out findData);
+                    using SafeSearchHandle findHandle = FindFirstFileW(@"\\?\" + path.TrimEnd('\\') + '\\' + p, out findData);
 
                     if (findHandle.IsInvalid)
                     {
@@ -155,7 +155,7 @@ namespace FMScanner
                 }
             }
 
-            using (var findHandle = FindFirstFileW(@"\\?\" + path.TrimEnd('\\') + @"\*", out findData))
+            using (SafeSearchHandle findHandle = FindFirstFileW(@"\\?\" + path.TrimEnd('\\') + @"\*", out findData))
             {
                 if (findHandle.IsInvalid)
                 {

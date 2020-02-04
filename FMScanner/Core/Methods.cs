@@ -67,7 +67,7 @@ namespace FMScanner
             {
                 stream.Position = 0;
 
-                var enc = FileEncoding.DetectFileEncoding(stream);
+                Encoding enc = FileEncoding.DetectFileEncoding(stream);
 
                 stream.Position = 0;
 
@@ -84,7 +84,7 @@ namespace FMScanner
                 stream.CopyTo(memStream);
                 stream.Dispose();
                 memStream.Position = 0;
-                var enc = FileEncoding.DetectFileEncoding(memStream);
+                Encoding enc = FileEncoding.DetectFileEncoding(memStream);
                 memStream.Position = 0;
 
                 using var sr = new StreamReader(memStream, enc ?? Encoding.GetEncoding(1252), false);
@@ -103,7 +103,7 @@ namespace FMScanner
         /// <returns></returns>
         internal static string[] ReadAllLinesE(string file)
         {
-            var enc = FileEncoding.DetectFileEncoding(file);
+            Encoding enc = FileEncoding.DetectFileEncoding(file);
             return File.ReadAllLines(file, enc ?? Encoding.GetEncoding(1252));
         }
 

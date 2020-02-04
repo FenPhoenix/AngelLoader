@@ -182,7 +182,7 @@ namespace FMScanner.FastZipReader
         {
             Archive.ThrowIfDisposed();
 
-            if (!IsOpenable(out var message)) throw new InvalidDataException(message);
+            if (!IsOpenable(out string message)) throw new InvalidDataException(message);
 
             // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
             Debug.Assert(_storedOffsetOfCompressedData != null, nameof(_storedOffsetOfCompressedData) + " != null");
