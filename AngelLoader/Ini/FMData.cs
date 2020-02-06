@@ -294,7 +294,7 @@ namespace AngelLoader
                     sb.Append("Title=");
                     sb.AppendLine(fm.Title);
                 }
-                foreach (var s in fm.AltTitles)
+                foreach (string s in fm.AltTitles)
                 {
                     sb.Append("AltTitles=");
                     sb.AppendLine(s);

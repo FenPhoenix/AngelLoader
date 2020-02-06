@@ -93,11 +93,11 @@ namespace AngelLoader.Forms
 
             SourceTags.SortAndMoveMiscToEnd();
 
-            foreach (var catAndTags in SourceTags)
+            foreach (GlobalCatAndTags catAndTags in SourceTags)
             {
                 tv.Nodes.Add(catAndTags.Category.Name);
                 var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (var tag in catAndTags.Tags) last.Nodes.Add(tag.Name);
+                foreach (GlobalCatOrTag tag in catAndTags.Tags) last.Nodes.Add(tag.Name);
             }
 
             tv.ExpandAll();
@@ -165,11 +165,11 @@ namespace AngelLoader.Forms
 
             tv.SuspendDrawing();
             tv.Nodes.Clear();
-            foreach (var catAndTags in tags)
+            foreach (CatAndTags catAndTags in tags)
             {
                 tv.Nodes.Add(catAndTags.Category);
                 var last = tv.Nodes[tv.Nodes.Count - 1];
-                foreach (var tag in catAndTags.Tags) last.Nodes.Add(tag);
+                foreach (string tag in catAndTags.Tags) last.Nodes.Add(tag);
             }
 
             tv.ExpandAll();
@@ -184,7 +184,7 @@ namespace AngelLoader.Forms
 
             if (o.SelectedNode == null) return;
 
-            var filteredTags =
+            CatAndTagsList filteredTags =
                 sender == AndButton ? TagsFilter.AndTags :
                 sender == OrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -203,7 +203,7 @@ namespace AngelLoader.Forms
                 filteredTags.Add(new CatAndTags { Category = cat });
                 if (!isCategory)
                 {
-                    var last = filteredTags[filteredTags.Count - 1];
+                    CatAndTags last = filteredTags[filteredTags.Count - 1];
                     last.Tags.Add(o.SelectedNode.Text);
                 }
             }
@@ -225,7 +225,7 @@ namespace AngelLoader.Forms
 
         private void RemoveSelectedButtons_Click(object sender, EventArgs e)
         {
-            var tags =
+            CatAndTagsList tags =
                 sender == RemoveSelectedAndButton ? TagsFilter.AndTags :
                 sender == RemoveSelectedOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -260,7 +260,7 @@ namespace AngelLoader.Forms
 
         private void RemoveAllButtons_Click(object sender, EventArgs e)
         {
-            var tags =
+            CatAndTagsList tags =
                 sender == RemoveAllAndButton ? TagsFilter.AndTags :
                 sender == RemoveAllOrButton ? TagsFilter.OrTags :
                 TagsFilter.NotTags;
@@ -294,7 +294,7 @@ namespace AngelLoader.Forms
 
             for (int t = 0; t < 3; t++)
             {
-                var filteredTags = t switch
+                CatAndTagsList filteredTags = t switch
                 {
                     0 => TagsFilter.AndTags,
                     1 => TagsFilter.OrTags,

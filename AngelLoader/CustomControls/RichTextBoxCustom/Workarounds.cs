@@ -86,7 +86,7 @@ namespace AngelLoader.CustomControls
 
         private async Task SetScrollPositionToCorrect()
         {
-            var si = _scrollInfo;
+            SCROLLINFO si = _scrollInfo;
 
             this.SuspendDrawing();
             try
@@ -113,7 +113,7 @@ namespace AngelLoader.CustomControls
         {
             if (pixels == 0) return;
 
-            var si = GetCurrentScrollInfo(handle);
+            SCROLLINFO si = GetCurrentScrollInfo(handle);
 
             si.nPos += pixels;
 

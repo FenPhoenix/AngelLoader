@@ -1696,7 +1696,7 @@ namespace AngelLoader.Forms
                     : null;
             }
 
-            var keepSel =
+            KeepSel keepSel =
                 selectedFM != null ? KeepSel.TrueNearest :
                 keepSelection || gameTabSwitch ? KeepSel.True : KeepSel.False;
 
@@ -1868,13 +1868,13 @@ namespace AngelLoader.Forms
                 FMsDGV.Filter.Tags.OrTags.Count > 0 ||
                 FMsDGV.Filter.Tags.NotTags.Count > 0)
             {
-                var andTags = FMsDGV.Filter.Tags.AndTags;
-                var orTags = FMsDGV.Filter.Tags.OrTags;
-                var notTags = FMsDGV.Filter.Tags.NotTags;
+                CatAndTagsList andTags = FMsDGV.Filter.Tags.AndTags;
+                CatAndTagsList orTags = FMsDGV.Filter.Tags.OrTags;
+                CatAndTagsList notTags = FMsDGV.Filter.Tags.NotTags;
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    var fmTags = FMsViewList[FMsDGV.FilterShownIndexList[i]].Tags;
+                    CatAndTagsList fmTags = FMsViewList[FMsDGV.FilterShownIndexList[i]].Tags;
                     if (fmTags.Count == 0 && notTags.Count == 0)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
@@ -1889,7 +1889,7 @@ namespace AngelLoader.Forms
                     if (andTags.Count > 0)
                     {
                         bool andPass = true;
-                        foreach (var andTag in andTags)
+                        foreach (CatAndTags andTag in andTags)
                         {
                             CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == andTag.Category);
                             if (match == null)
@@ -1928,7 +1928,7 @@ namespace AngelLoader.Forms
                     if (orTags.Count > 0)
                     {
                         bool orPass = false;
-                        foreach (var orTag in orTags)
+                        foreach (CatAndTags orTag in orTags)
                         {
                             CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == orTag.Category);
                             if (match == null) continue;
@@ -1967,7 +1967,7 @@ namespace AngelLoader.Forms
                     if (notTags.Count > 0)
                     {
                         bool notPass = true;
-                        foreach (var notTag in notTags)
+                        foreach (CatAndTags notTag in notTags)
                         {
                             CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == notTag.Category);
                             if (match == null) continue;
@@ -3234,7 +3234,7 @@ namespace AngelLoader.Forms
 
                 fmTags.SortAndMoveMiscToEnd();
 
-                foreach (var item in fmTags)
+                foreach (CatAndTags item in fmTags)
                 {
                     tv.Nodes.Add(item.Category);
                     var last = tv.Nodes[tv.Nodes.Count - 1];
@@ -3630,7 +3630,7 @@ namespace AngelLoader.Forms
             AddTagLLMenu.Menu.Items.Clear();
 
             var addTagMenuItems = new List<ToolStripItem>();
-            foreach (var catAndTag in GlobalTags)
+            foreach (GlobalCatAndTags catAndTag in GlobalTags)
             {
                 if (catAndTag.Tags.Count == 0)
                 {
@@ -3653,7 +3653,7 @@ namespace AngelLoader.Forms
                         ((ToolStripMenuItem)last).DropDownItems.Add(new ToolStripSeparator());
                     }
 
-                    foreach (var tag in catAndTag.Tags)
+                    foreach (GlobalCatOrTag tag in catAndTag.Tags)
                     {
                         var tagItem = new ToolStripMenuItem(tag.Name);
 

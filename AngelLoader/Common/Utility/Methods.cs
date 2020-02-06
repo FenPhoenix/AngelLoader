@@ -439,7 +439,7 @@ namespace AngelLoader
                 {
                     try
                     {
-                        var dirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
+                        string[] dirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
                         for (int di = 0; di < dirs.Length; di++)
                         {
                             string dir = dirs[di];

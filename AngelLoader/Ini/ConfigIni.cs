@@ -68,7 +68,7 @@ namespace AngelLoader
 
         private static void ReadTags(string line, Filter filter, string prefix)
         {
-            var tagsList =
+            CatAndTagsList? tagsList =
                 line.StartsWithFast_NoNullChecks(prefix + "FilterTagsAnd=") ? filter.Tags.AndTags :
                 line.StartsWithFast_NoNullChecks(prefix + "FilterTagsOr=") ? filter.Tags.OrTags :
                 line.StartsWithFast_NoNullChecks(prefix + "FilterTagsNot=") ? filter.Tags.NotTags :
@@ -141,7 +141,7 @@ namespace AngelLoader
         // I tried removing the reflection in this one and it measured no faster, so leaving it as is.
         internal static void ReadConfigIni(string path, ConfigData config)
         {
-            var iniLines = File.ReadAllLines(path);
+            string[] iniLines = File.ReadAllLines(path);
 
             foreach (string line in iniLines)
             {
@@ -167,7 +167,7 @@ namespace AngelLoader
 
                     static bool ContainsColWithId(ConfigData _config, ColumnData _col)
                     {
-                        foreach (var x in _config.Columns) if (x.Id == _col.Id) return true;
+                        foreach (ColumnData x in _config.Columns) if (x.Id == _col.Id) return true;
                         return false;
                     }
 
@@ -431,7 +431,7 @@ namespace AngelLoader
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.Articles) + "="))
                 {
-                    var articles = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] articles = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                     for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
                     config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase));
                 }
@@ -498,8 +498,8 @@ namespace AngelLoader
                     if (!val.Contains(',')) continue;
 
                     string[] values = val.Split(',');
-                    bool widthExists = int.TryParse(values[0].Trim(), out var width);
-                    bool heightExists = int.TryParse(values[1].Trim(), out var height);
+                    bool widthExists = int.TryParse(values[0].Trim(), out int width);
+                    bool heightExists = int.TryParse(values[1].Trim(), out int height);
 
                     if (widthExists && heightExists)
                     {
@@ -1084,7 +1084,7 @@ namespace AngelLoader
                     static string TagsToString(CatAndTagsList tagsList)
                     {
                         var intermediateTagsList = new List<string>();
-                        foreach (var catAndTags in tagsList)
+                        foreach (CatAndTags catAndTags in tagsList)
                         {
                             if (catAndTags.Tags.Count == 0)
                             {

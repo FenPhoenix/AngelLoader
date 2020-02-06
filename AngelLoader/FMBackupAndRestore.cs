@@ -128,7 +128,7 @@ namespace AngelLoader
                     return;
                 }
 
-                var installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories);
+                string[] installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories);
 
                 var (changedList, addedList, fullList) =
                     GetFMDiff(installedFMFiles, fmInstalledPath, fmArchivePath, fm.Game);
@@ -245,8 +245,8 @@ namespace AngelLoader
                                 continue;
                             }
 
-                            var fiDT = fi.LastWriteTime.ToUniversalTime();
-                            var eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
+                            DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
+                            DateTime eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
                             // Zip format timestamps have a resolution of 2 seconds, so consider anything +/- 2s as the same
                             if ((fiDT == eDT ||
                                  (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||

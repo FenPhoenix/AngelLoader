@@ -103,7 +103,7 @@ namespace AngelLoader.Importing
         ImportInternal(string iniFile, bool importFMData, bool importSaves, bool returnUnmergedFMsList = false,
             FieldsToImport? fields = null)
         {
-            var lines = await Task.Run(() => File.ReadAllLines(iniFile));
+            string[] lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
 
             var error = ImportError.None;

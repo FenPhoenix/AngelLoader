@@ -36,7 +36,7 @@ namespace AngelLoader.DataClasses
             if (Count == 0) return;
 
             Sort(Comparers.CategoryComparer);
-            foreach (var item in this) item.Tags.Sort(StringComparer.OrdinalIgnoreCase);
+            foreach (CatAndTags item in this) item.Tags.Sort(StringComparer.OrdinalIgnoreCase);
 
             if (this[Count - 1].Category == "misc") return;
 
@@ -93,7 +93,7 @@ namespace AngelLoader.DataClasses
             if (Count == 0) return;
 
             Sort(Comparers.CategoryComparerGlobal);
-            foreach (var item in this) item.Tags.Sort(Comparers.CatItemComparer);
+            foreach (GlobalCatAndTags item in this) item.Tags.Sort(Comparers.CatItemComparer);
 
             if (this[Count - 1].Category.Name == "misc") return;
 
