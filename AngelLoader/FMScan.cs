@@ -13,8 +13,6 @@ namespace AngelLoader
 {
     internal static class FMScan
     {
-        #region Scan
-
         private static CancellationTokenSource ScanCts = new CancellationTokenSource();
 
         internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions? scanOptions = null)
@@ -349,7 +347,5 @@ namespace AngelLoader
             // Note: I might be doing it to get rid of any duplicates or bad data that may have been imported?
             FindFMs.Find();
         }
-
-        #endregion
     }
 }
