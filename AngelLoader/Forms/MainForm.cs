@@ -2242,7 +2242,7 @@ namespace AngelLoader.Forms
 
                 case Column.Size:
                     // This conversion takes like 1ms over the entire 1545 set, so no problem
-                    e.Value = fm.SizeBytes.ConvertSize();
+                    e.Value = fm.SizeBytes.FormatSize();
                     break;
 
                 case Column.Rating:

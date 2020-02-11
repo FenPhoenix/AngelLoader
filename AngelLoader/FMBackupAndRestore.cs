@@ -35,6 +35,8 @@ namespace AngelLoader
 
     internal static class FMBackupAndRestore
     {
+        #region Private fields
+
         private const string T3SavesDir = "SaveGames";
         private const string DarkSavesDir = "saves";
         private const string SS2CurrentDir = "current";
@@ -49,10 +51,7 @@ namespace AngelLoader
         private static readonly Regex SS2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0123456789]{1,2}[/\\]?$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private static string ToSystemDirSep(this string str)
-        {
-            return str.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
-        }
+        #endregion
 
         internal static async Task BackupFM(FanMission fm, string fmInstalledPath, string fmArchivePath)
         {
@@ -164,7 +163,7 @@ namespace AngelLoader
                         if (!installedFMFiles.ContainsI(
                             Path.Combine(fmInstalledPath, f).Replace('/', Path.DirectorySeparatorChar)))
                         {
-                            fmSelInfString += RemoveFileEq + f.ToSystemDirSep() + "\r\n";
+                            fmSelInfString += RemoveFileEq + f.ToSystemDirSeps() + "\r\n";
                         }
                     }
 
@@ -183,180 +182,7 @@ namespace AngelLoader
             });
         }
 
-        private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName,
-            CompressionLevel compressionLevel = CompressionLevel.Fastest)
-        {
-            var entry = archive.CreateEntry(entryFileName, compressionLevel);
-            entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
-            using var fs = new FileStream(fileNameOnDisk, FileMode.Open, FileAccess.Read);
-            using var eo = entry.Open();
-            fs.CopyTo(eo);
-        }
-
-        private static bool IsSaveOrScreenshot(string path, Game game)
-        {
-            return path.StartsWithI(ScreensDir + "/") ||
-                   (game == Game.Thief3 && path.StartsWithI(T3SavesDir + "/")) ||
-                   (game == Game.SS2 &&
-                    (SS2SaveDirsInZipRegex.IsMatch(path) || path.StartsWithI(SS2CurrentDir + "/"))) ||
-                   (game != Game.Thief3 && (path.StartsWithI(DarkSavesDir + "/") || path.StartsWithI(DarkNetSavesDir + "/")));
-        }
-
-        private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
-        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
-        {
-            var changedList = new List<string>();
-            var addedList = new List<string>();
-            var fullList = new List<string>();
-
-            bool fmIsZip = fmArchivePath.ExtIsZip();
-            if (fmIsZip)
-            {
-                using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                    ZipArchiveMode.Read, leaveOpen: false);
-
-                for (int i = 0; i < archive.Entries.Count; i++)
-                {
-                    var entry = archive.Entries[i];
-                    string efn = entry.FullName.ToForwardSlashes();
-
-                    if (efn.EqualsI(Paths.FMSelInf) ||
-                        (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
-                        IsSaveOrScreenshot(efn, game))
-                    {
-                        continue;
-                    }
-
-                    fullList.Add(entry.FullName);
-
-                    string fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
-                    if (installedFMFiles.ContainsI(fileInInstalledDir.Replace('/', Path.DirectorySeparatorChar)))
-                    {
-                        try
-                        {
-                            var fi = new FileInfo(fileInInstalledDir);
-
-                            if (useOnlySize)
-                            {
-                                if (fi.Length != entry.Length)
-                                {
-                                    changedList.Add(entry.FullName);
-                                }
-                                continue;
-                            }
-
-                            DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
-                            DateTime eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
-                            // Zip format timestamps have a resolution of 2 seconds, so consider anything +/- 2s as the same
-                            if ((fiDT == eDT ||
-                                 (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
-                                 (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
-                                fi.Length == entry.Length)
-                            {
-                                continue;
-                            }
-
-                            changedList.Add(entry.FullName);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
-                        }
-                    }
-                }
-                foreach (string f in installedFMFiles)
-                {
-                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
-
-                    if (fn.EqualsI(Paths.FMSelInf) || IsSaveOrScreenshot(fn, game))
-                    {
-                        continue;
-                    }
-
-                    bool found = false;
-                    for (int i = 0; i < archive.Entries.Count; i++)
-                    {
-                        if (archive.Entries[i].FullName.EqualsI(fn))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) addedList.Add(fn);
-                }
-            }
-            else
-            {
-                using var archive = new SevenZipExtractor(fmArchivePath);
-
-                for (int i = 0; i < archive.ArchiveFileData.Count; i++)
-                {
-                    var entry = archive.ArchiveFileData[i];
-                    string efn = entry.FileName.ToForwardSlashes();
-
-                    if (efn.EqualsI(Paths.FMSelInf) ||
-                        // IsDirectory has been unreliable in the past, so check manually here too
-                        entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
-                        IsSaveOrScreenshot(efn, game))
-                    {
-                        continue;
-                    }
-
-                    fullList.Add(efn);
-
-                    string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
-                    if (File.Exists(fileInInstalledDir))
-                    {
-                        try
-                        {
-                            var fi = new FileInfo(fileInInstalledDir);
-
-                            if (useOnlySize)
-                            {
-                                if ((ulong)fi.Length != entry.Size)
-                                {
-                                    changedList.Add(efn);
-                                }
-                                continue;
-                            }
-
-                            if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime() ||
-                                (ulong)fi.Length != entry.Size)
-                            {
-                                changedList.Add(efn);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
-                        }
-                    }
-                }
-                foreach (string f in installedFMFiles)
-                {
-                    if (Path.GetFileName(f).EqualsI(Paths.FMSelInf)) continue;
-
-                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
-
-                    bool found = false;
-                    for (int i = 0; i < archive.ArchiveFileData.Count; i++)
-                    {
-                        var entry = archive.ArchiveFileData[i];
-                        string efn = entry.FileName.ToForwardSlashes();
-                        if (!entry.IsDirectory && efn.EqualsI(fn))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) addedList.Add(fn);
-                }
-            }
-
-            return (changedList, addedList, fullList);
-        }
-
-        internal static async Task RestoreSavesAndScreenshots(FanMission fm)
+        internal static async Task RestoreFM(FanMission fm)
         {
             if (!GameIsKnownAndSupported(fm.Game))
             {
@@ -567,5 +393,182 @@ namespace AngelLoader
                 }
             });
         }
+
+        #region Helpers / private
+
+        private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName,
+            CompressionLevel compressionLevel = CompressionLevel.Fastest)
+        {
+            var entry = archive.CreateEntry(entryFileName, compressionLevel);
+            entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
+            using var fs = new FileStream(fileNameOnDisk, FileMode.Open, FileAccess.Read);
+            using var eo = entry.Open();
+            fs.CopyTo(eo);
+        }
+
+        private static bool IsSaveOrScreenshot(string path, Game game)
+        {
+            return path.StartsWithI(ScreensDir + "/") ||
+                   (game == Game.Thief3 && path.StartsWithI(T3SavesDir + "/")) ||
+                   (game == Game.SS2 &&
+                    (SS2SaveDirsInZipRegex.IsMatch(path) || path.StartsWithI(SS2CurrentDir + "/"))) ||
+                   (game != Game.Thief3 && (path.StartsWithI(DarkSavesDir + "/") || path.StartsWithI(DarkNetSavesDir + "/")));
+        }
+
+        private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
+        GetFMDiff(string[] installedFMFiles, string fmInstalledPath, string fmArchivePath, Game game, bool useOnlySize = false)
+        {
+            var changedList = new List<string>();
+            var addedList = new List<string>();
+            var fullList = new List<string>();
+
+            bool fmIsZip = fmArchivePath.ExtIsZip();
+            if (fmIsZip)
+            {
+                using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                    ZipArchiveMode.Read, leaveOpen: false);
+
+                for (int i = 0; i < archive.Entries.Count; i++)
+                {
+                    var entry = archive.Entries[i];
+                    string efn = entry.FullName.ToForwardSlashes();
+
+                    if (efn.EqualsI(Paths.FMSelInf) ||
+                        (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
+                        IsSaveOrScreenshot(efn, game))
+                    {
+                        continue;
+                    }
+
+                    fullList.Add(entry.FullName);
+
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
+                    if (installedFMFiles.ContainsI(fileInInstalledDir.Replace('/', Path.DirectorySeparatorChar)))
+                    {
+                        try
+                        {
+                            var fi = new FileInfo(fileInInstalledDir);
+
+                            if (useOnlySize)
+                            {
+                                if (fi.Length != entry.Length)
+                                {
+                                    changedList.Add(entry.FullName);
+                                }
+                                continue;
+                            }
+
+                            DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
+                            DateTime eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
+                            // Zip format timestamps have a resolution of 2 seconds, so consider anything +/- 2s as the same
+                            if ((fiDT == eDT ||
+                                 (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
+                                 (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
+                                fi.Length == entry.Length)
+                            {
+                                continue;
+                            }
+
+                            changedList.Add(entry.FullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception in last write time compare (zip) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
+                        }
+                    }
+                }
+                foreach (string f in installedFMFiles)
+                {
+                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
+
+                    if (fn.EqualsI(Paths.FMSelInf) || IsSaveOrScreenshot(fn, game))
+                    {
+                        continue;
+                    }
+
+                    bool found = false;
+                    for (int i = 0; i < archive.Entries.Count; i++)
+                    {
+                        if (archive.Entries[i].FullName.EqualsI(fn))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) addedList.Add(fn);
+                }
+            }
+            else
+            {
+                using var archive = new SevenZipExtractor(fmArchivePath);
+
+                for (int i = 0; i < archive.ArchiveFileData.Count; i++)
+                {
+                    var entry = archive.ArchiveFileData[i];
+                    string efn = entry.FileName.ToForwardSlashes();
+
+                    if (efn.EqualsI(Paths.FMSelInf) ||
+                        // IsDirectory has been unreliable in the past, so check manually here too
+                        entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
+                        IsSaveOrScreenshot(efn, game))
+                    {
+                        continue;
+                    }
+
+                    fullList.Add(efn);
+
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
+                    if (File.Exists(fileInInstalledDir))
+                    {
+                        try
+                        {
+                            var fi = new FileInfo(fileInInstalledDir);
+
+                            if (useOnlySize)
+                            {
+                                if ((ulong)fi.Length != entry.Size)
+                                {
+                                    changedList.Add(efn);
+                                }
+                                continue;
+                            }
+
+                            if (fi.LastWriteTime.ToUniversalTime() != entry.LastWriteTime.ToUniversalTime() ||
+                                (ulong)fi.Length != entry.Size)
+                            {
+                                changedList.Add(efn);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Exception in last write time compare (7z) (" + fmArchivePath + ", " + fmInstalledPath + ", game: " + game + ")", ex);
+                        }
+                    }
+                }
+                foreach (string f in installedFMFiles)
+                {
+                    if (Path.GetFileName(f).EqualsI(Paths.FMSelInf)) continue;
+
+                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim('/');
+
+                    bool found = false;
+                    for (int i = 0; i < archive.ArchiveFileData.Count; i++)
+                    {
+                        var entry = archive.ArchiveFileData[i];
+                        string efn = entry.FileName.ToForwardSlashes();
+                        if (!entry.IsDirectory && efn.EqualsI(fn))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) addedList.Add(fn);
+                }
+            }
+
+            return (changedList, addedList, fullList);
+        }
+
+        #endregion
     }
 }

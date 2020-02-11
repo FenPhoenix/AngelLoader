@@ -1124,11 +1124,11 @@ namespace AngelLoader
             // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
             try
             {
-                await RestoreSavesAndScreenshots(fm);
+                await RestoreFM(fm);
             }
             catch (Exception ex)
             {
-                Log("Exception in " + nameof(RestoreSavesAndScreenshots), ex);
+                Log("Exception in " + nameof(RestoreFM), ex);
             }
             finally
             {

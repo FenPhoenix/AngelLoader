@@ -312,7 +312,7 @@ namespace AngelLoader
 
         #endregion
 
-        internal static string ConvertSize(this ulong size)
+        internal static string FormatSize(this ulong size)
         {
             if (size == 0) return "";
 
@@ -464,6 +464,11 @@ namespace AngelLoader
         internal static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
 
         internal static string ToBackSlashes(this string value) => value.Replace('/', '\\');
+
+        internal static string ToSystemDirSeps(this string value)
+        {
+            return value.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+        }
 
         #endregion
 
