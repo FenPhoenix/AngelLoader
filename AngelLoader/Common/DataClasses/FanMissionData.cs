@@ -53,6 +53,11 @@ namespace AngelLoader.DataClasses
 
         internal readonly ExpandableDate ReleaseDate = new ExpandableDate();
         internal readonly ExpandableDate LastPlayed = new ExpandableDate();
+        // TODO: Keep and store this value here still
+        // We get this value for free when we get the FM archives and dirs on startup, but this value is fragile:
+        // it updates whenever the user so much as moves the file or folder. We should store it here to keep it
+        // permanent even across moves, new PCs or Windows installs with file restores, etc.
+        internal readonly ExpandableDate Created = new ExpandableDate();
 
         // [FenGen:DoNotSerialize]
         private uint _finishedOn = 0;
