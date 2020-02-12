@@ -58,6 +58,23 @@ namespace FMScanner
                 ScanTags = scanTags
             };
 
+        internal ScanOptions DeepCopy() =>
+            new ScanOptions
+            {
+                ScanTitle = ScanTitle,
+                ScanCampaignMissionNames = ScanCampaignMissionNames,
+                ScanAuthor = ScanAuthor,
+                ScanVersion = ScanVersion,
+                ScanLanguages = ScanLanguages,
+                ScanGameType = ScanGameType,
+                ScanNewDarkRequired = ScanNewDarkRequired,
+                ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
+                ScanCustomResources = ScanCustomResources,
+                ScanSize = ScanSize,
+                ScanReleaseDate = ScanReleaseDate,
+                ScanTags = ScanTags
+            };
+
         /// <summary>
         /// <see langword="true"/> to detect the mission's title.
         /// </summary>
@@ -142,6 +159,13 @@ namespace FMScanner
     {
         FanMission,
         Campaign
+    }
+
+    [PublicAPI]
+    public class FMToScan
+    {
+        public string Path = "";
+        public bool ForceFullScan;
     }
 
     [PublicAPI]

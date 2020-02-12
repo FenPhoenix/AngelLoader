@@ -25,7 +25,9 @@ namespace AngelLoader
 
         internal static Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions);
 
-        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions, bool markAsScanned = true)
+        // TODO: Do the full scan for unscanned installed FMs too, since their game types will not be blank in that case
+        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions,
+            bool scanFullIfNew = false)
         {
             // NULL_TODO: Do we need this FM null check...?
             if (fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
@@ -75,7 +77,7 @@ namespace AngelLoader
 
                 ScanCts = new CancellationTokenSource();
 
-                var fms = new List<string>();
+                var fms = new List<FMScanner.FMToScan>();
 
                 Log(nameof(ScanFMs) + ": about to call " + nameof(GetFMArchivePaths) + " with subfolders=" +
                     Config.FMArchivePathsIncludeSubfolders);
@@ -99,7 +101,11 @@ namespace AngelLoader
                     if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                     {
                         fmsToScanFiltered.Add(fm);
-                        fms.Add(fmArchivePath);
+                        fms.Add(new FMScanner.FMToScan
+                        {
+                            Path = fmArchivePath,
+                            ForceFullScan = scanFullIfNew && !fm.MarkedScanned
+                        });
                     }
                     else if (GameIsKnownAndSupported(fm.Game))
                     {
@@ -107,7 +113,11 @@ namespace AngelLoader
                         if (!fmInstalledPath.IsEmpty())
                         {
                             fmsToScanFiltered.Add(fm);
-                            fms.Add(Path.Combine(fmInstalledPath, fm.InstalledDir));
+                            fms.Add(new FMScanner.FMToScan
+                            {
+                                Path = Path.Combine(fmInstalledPath, fm.InstalledDir),
+                                ForceFullScan = scanFullIfNew && !fm.MarkedScanned
+                            });
                         }
                     }
 
@@ -127,7 +137,12 @@ namespace AngelLoader
 
                     await Task.Run(() => Paths.CreateOrClearTempPath(Paths.FMScannerTemp));
 
-                    using var scanner = new FMScanner.Scanner { LogFile = Paths.ScannerLogFile, ZipEntryNameEncoding = Encoding.UTF8 };
+                    using var scanner = new FMScanner.Scanner
+                    {
+                        FullScanOptions = GetDefaultScanOptions(),
+                        LogFile = Paths.ScannerLogFile,
+                        ZipEntryNameEncoding = Encoding.UTF8
+                    };
                     fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, ScanCts.Token);
                 }
                 catch (OperationCanceledException)
@@ -175,7 +190,7 @@ namespace AngelLoader
 
                     bool gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
 
-                    if (scanOptions.ScanTitle)
+                    if (fms[i].ForceFullScan || scanOptions.ScanTitle)
                     {
                         sel.Title =
                             !scannedFM.Title.IsEmpty() ? scannedFM.Title
@@ -193,15 +208,15 @@ namespace AngelLoader
                         }
                     }
 
-                    if (scanOptions.ScanSize)
+                    if (fms[i].ForceFullScan || scanOptions.ScanSize)
                     {
                         sel.SizeBytes = (ulong)(gameSup ? scannedFM.Size ?? 0 : 0);
                     }
-                    if (scanOptions.ScanReleaseDate)
+                    if (fms[i].ForceFullScan || scanOptions.ScanReleaseDate)
                     {
                         sel.ReleaseDate.DateTime = gameSup ? scannedFM.LastUpdateDate : null;
                     }
-                    if (scanOptions.ScanCustomResources)
+                    if (fms[i].ForceFullScan || scanOptions.ScanCustomResources)
                     {
                         #region This exact setup is needed to get identical results to the old method. Don't change.
                         // We don't scan custom resources for Thief 3, so they should never be set in that case.
@@ -226,36 +241,36 @@ namespace AngelLoader
                         #endregion
                     }
 
-                    if (scanOptions.ScanAuthor)
+                    if (fms[i].ForceFullScan || scanOptions.ScanAuthor)
                     {
                         sel.Author = gameSup ? scannedFM.Author : "";
                     }
 
-                    if (scanOptions.ScanGameType)
+                    if (fms[i].ForceFullScan || scanOptions.ScanGameType)
                     {
                         // @GENGAMES: Do a hard convert at the API boundary, even though these now match the ordering
                         // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
                         sel.Game = scannedFM.Game switch
                         {
-                            FMScanner.Game.Unsupported => Game.Unsupported,
-                            FMScanner.Game.Thief1 => Game.Thief1,
-                            FMScanner.Game.Thief2 => Game.Thief2,
-                            FMScanner.Game.Thief3 => Game.Thief3,
-                            FMScanner.Game.SS2 => Game.SS2,
-                            _ => Game.Null
+                            FMScanner.Game.Unsupported => GameSupport.Game.Unsupported,
+                            FMScanner.Game.Thief1 => GameSupport.Game.Thief1,
+                            FMScanner.Game.Thief2 => GameSupport.Game.Thief2,
+                            FMScanner.Game.Thief3 => GameSupport.Game.Thief3,
+                            FMScanner.Game.SS2 => GameSupport.Game.SS2,
+                            _ => GameSupport.Game.Null
                         };
                     }
 
-                    if (scanOptions.ScanLanguages)
-                    {
-                        // TODO: Uncomment if you start using this
-                        //sel.Languages = gameSup ? scannedFM.Languages : new string[0];
-                        sel.LanguagesString = gameSup
-                            ? scannedFM.Languages != null ? string.Join(", ", scannedFM.Languages) : ""
-                            : "";
-                    }
+                    // TODO: Uncomment if you start using this
+                    //if (fms[i].ForceFullScan || scanOptions.ScanLanguages)
+                    //{
+                    //    //sel.Languages = gameSup ? scannedFM.Languages : new string[0];
+                    //    sel.LanguagesString = gameSup
+                    //        ? scannedFM.Languages != null ? string.Join(", ", scannedFM.Languages) : ""
+                    //        : "";
+                    //}
 
-                    if (scanOptions.ScanTags)
+                    if (fms[i].ForceFullScan || scanOptions.ScanTags)
                     {
                         sel.TagsString = gameSup ? scannedFM.TagsString : "";
 
@@ -264,7 +279,10 @@ namespace AngelLoader
                         if (gameSup) FMTags.AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
                     }
 
-                    sel.MarkedScanned = markAsScanned;
+                    if (!fms[i].ForceFullScan || !sel.MarkedScanned)
+                    {
+                        sel.MarkedScanned = true;
+                    }
 
                     #endregion
                 }
@@ -322,7 +340,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    await ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), markAsScanned: false);
+                    await ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), scanFullIfNew: true);
                     // TODO: Switch to just scanning the whole FM if it's new
                     // Game type is by far and away the slowest thing to scan for, so by cutting out the rest
                     // we're not really saving a huge amount of time. We might as well just scan the whole thing,

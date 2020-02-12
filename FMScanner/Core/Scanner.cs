@@ -76,6 +76,13 @@ namespace FMScanner
         [PublicAPI]
         public string LogFile { get; set; } = "";
 
+        /// <summary>
+        /// Hack to support scanning two different sets of fields depending on a bool, you pass in "full" scan
+        /// fields here and "non-full" fields in the Scan* methods, and mark each passed FM with a bool.
+        /// </summary>
+        [PublicAPI]
+        public ScanOptions FullScanOptions { get; set; } = new ScanOptions();
+
         #region Disposable
 
         private ZipArchiveFast Archive { get; set; }
@@ -112,17 +119,19 @@ namespace FMScanner
         #region Scan synchronous
 
         public ScannedFMData
-        Scan(string mission, string tempPath)
+        Scan(string mission, string tempPath, bool forceFullIfNew)
         {
-            return ScanMany(new List<string> { mission }, tempPath, this.ScanOptions, null,
-                    CancellationToken.None)[0];
+            return ScanMany(
+                new List<FMToScan> { new FMToScan { Path = mission, ForceFullScan = forceFullIfNew } },
+                tempPath, this.ScanOptions, null, CancellationToken.None)[0];
         }
 
         public ScannedFMData
-        Scan(string mission, string tempPath, ScanOptions scanOptions)
+        Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew)
         {
-            return ScanMany(new List<string> { mission }, tempPath, scanOptions, null,
-                    CancellationToken.None)[0];
+            return ScanMany(
+                new List<FMToScan> { new FMToScan { Path = mission, ForceFullScan = forceFullIfNew } },
+                tempPath, scanOptions, null, CancellationToken.None)[0];
         }
 
         // Debug - scan on UI thread so breaks will actually break where they're supposed to
@@ -130,7 +139,7 @@ namespace FMScanner
 #if DEBUG || ScanSynchronous
         [PublicAPI]
         public List<ScannedFMData>
-        Scan(List<string> missions, string tempPath, ScanOptions scanOptions,
+        Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
                 IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
             return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken);
@@ -143,7 +152,7 @@ namespace FMScanner
 
         [PublicAPI]
         public async Task<List<ScannedFMData>>
-        ScanAsync(List<string> missions, string tempPath)
+        ScanAsync(List<FMToScan> missions, string tempPath)
         {
             return await Task.Run(() =>
                 ScanMany(missions, tempPath, this.ScanOptions, null, CancellationToken.None));
@@ -151,7 +160,7 @@ namespace FMScanner
 
         [PublicAPI]
         public async Task<List<ScannedFMData>>
-        ScanAsync(List<string> missions, string tempPath, ScanOptions scanOptions)
+        ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
         {
             return await Task.Run(() =>
                 ScanMany(missions, tempPath, scanOptions, null, CancellationToken.None));
@@ -159,7 +168,7 @@ namespace FMScanner
 
         [PublicAPI]
         public async Task<List<ScannedFMData>>
-        ScanAsync(List<string> missions, string tempPath, IProgress<ProgressReport> progress,
+        ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
             CancellationToken cancellationToken)
         {
             return await Task.Run(() =>
@@ -168,7 +177,7 @@ namespace FMScanner
 
         [PublicAPI]
         public async Task<List<ScannedFMData>>
-        ScanAsync(List<string> missions, string tempPath, ScanOptions scanOptions,
+        ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
             IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
             return await Task.Run(() =>
@@ -178,7 +187,7 @@ namespace FMScanner
         #endregion
 
         private List<ScannedFMData>
-        ScanMany(List<string> missions, string tempPath, ScanOptions scanOptions,
+        ScanMany(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
             IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
             // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
@@ -194,7 +203,7 @@ namespace FMScanner
             }
 
             if (missions == null) throw new ArgumentNullException(nameof(missions));
-            if (missions.Count == 0 || (missions.Count == 1 && string.IsNullOrEmpty(missions[0])))
+            if (missions.Count == 0 || (missions.Count == 1 && string.IsNullOrEmpty(missions[0].Path)))
             {
                 Log(LogFile, nameof(ScanMany) + ": No mission(s) specified. tempPath: " + tempPath, methodName: false);
                 throw new ArgumentException("No mission(s) specified.", nameof(missions));
@@ -220,15 +229,15 @@ namespace FMScanner
 
                     #region Init
 
-                    if (missions[i].IsEmpty())
+                    if (missions[i].Path.IsEmpty())
                     {
-                        missions[i] = "";
+                        missions[i].Path = "";
                         scannedFMDataList.Add(null);
                         nullAlreadyAdded = true;
                     }
                     else
                     {
-                        string fm = missions[i].Replace('/', '\\');
+                        string fm = missions[i].Path.Replace('/', '\\');
                         FmIsZip = fm.ExtIsZip() || fm.ExtIs7z();
 
                         Archive?.Dispose();
@@ -266,7 +275,7 @@ namespace FMScanner
                     {
                         progressReport = new ProgressReport
                         {
-                            FMName = missions[i],
+                            FMName = missions[i].Path,
                             FMNumber = i + 1,
                             FMsTotal = missions.Count,
                             Percent = (100 * (i + 1)) / missions.Count,
@@ -284,15 +293,31 @@ namespace FMScanner
                     if (!nullAlreadyAdded)
                     {
                         ScannedFMData scannedFM = null;
+                        ScanOptions _tempScanOptions = null;
                         try
                         {
-                            scannedFM = ScanCurrentFM(rtfBox);
+                            if (missions[i].ForceFullScan)
+                            {
+                                _tempScanOptions = ScanOptions.DeepCopy();
+                                ScanOptions = FullScanOptions.DeepCopy();
+                            }
+                            try
+                            {
+                                scannedFM = ScanCurrentFM(rtfBox);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log(LogFile, "Exception in FM scan", ex);
+                            }
+                            scannedFMDataList.Add(scannedFM);
                         }
-                        catch (Exception ex)
+                        finally
                         {
-                            Log(LogFile, "Exception in FM scan", ex);
+                            if (missions[i].ForceFullScan)
+                            {
+                                ScanOptions = _tempScanOptions.DeepCopy();
+                            }
                         }
-                        scannedFMDataList.Add(scannedFM);
                     }
 
                     Log(LogFile, "Finished scanning " + missions[i], methodName: false);
