@@ -271,11 +271,15 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanTags)
                     {
-                        sel.TagsString = gameSup ? scannedFM.TagsString : "";
+                        string tagsString = gameSup ? scannedFM.TagsString : "";
 
                         // Don't clear the tags, because the user could have added a bunch and we should only
                         // add to those, not overwrite them
-                        if (gameSup) FMTags.AddTagsToFMAndGlobalList(sel.TagsString, sel.Tags);
+                        if (gameSup)
+                        {
+                            FMTags.AddTagsToFMAndGlobalList(tagsString, sel.Tags);
+                            FMTags.UpdateFMTagsString(sel);
+                        }
                     }
 
                     if (!fms[i].ForceFullScan || !sel.MarkedScanned)
