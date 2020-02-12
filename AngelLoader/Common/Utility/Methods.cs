@@ -6,7 +6,6 @@ using System.IO;
 using System.Security;
 using System.Text;
 using AngelLoader.DataClasses;
-using FMScanner;
 using JetBrains.Annotations;
 using SevenZip;
 using static AngelLoader.GameSupport;
@@ -275,6 +274,8 @@ namespace AngelLoader
 
         internal static bool FMHasResource(FanMission fm, CustomResources resource) => (fm.Resources & resource) == resource;
 
+        internal static bool FMNeedsScan(FanMission fm) => fm.Game == Game.Null || (fm.Game != Game.Unsupported && !fm.MarkedScanned);
+
         /// <summary>
         /// Converts a 32-bit or 64-bit Unix date string in hex format to a nullable DateTime object.
         /// </summary>
@@ -306,7 +307,7 @@ namespace AngelLoader
             return null;
         }
 
-        internal static ScanOptions GetDefaultScanOptions() => ScanOptions.FalseDefault(
+        internal static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
             scanTitle: true,
             scanAuthor: true,
             scanGameType: true,

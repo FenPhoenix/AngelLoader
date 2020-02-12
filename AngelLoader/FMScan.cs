@@ -327,7 +327,7 @@ namespace AngelLoader
                 fmsToScan.Clear();
                 // Since we're doing it manually here, we can pull from FMsViewList for perf (it'll be the same
                 // size or smaller than FMDataIniList)
-                foreach (FanMission fm in FMsViewList) if (fm.Game == Game.Null) fmsToScan.Add(fm);
+                foreach (FanMission fm in FMsViewList) if (FMNeedsScan(fm)) fmsToScan.Add(fm);
             }
             finally
             {
@@ -340,21 +340,6 @@ namespace AngelLoader
                 try
                 {
                     await ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), scanFullIfNew: true);
-                    // TODO: Switch to just scanning the whole FM if it's new
-                    // Game type is by far and away the slowest thing to scan for, so by cutting out the rest
-                    // we're not really saving a huge amount of time. We might as well just scan the whole thing,
-                    // for the below-mentioned reason.
-                    // If and only if the FM is new (ie. has no data whatsoever), then scan for everything.
-                    // If the FM has any other data, then only scan game type so we don't replace it.
-                    // That way, if a new FM gets added to the list and it's like "TSCv2.zip" it will have its
-                    // title scanned so we can search for "cascabel" or "scarlet" and it will come up, rather
-                    // than having to remember the filename and search that the first time.
-                    // NOTE: Also add a bool for calling this on import, cause we should keep the old behavior
-                    // (game type only) for that.
-                    // NOTE: We'll have to add case-by-case capability to ScanFMs (if no data and bool is true,
-                    // scan only game type for that one FM, otherwise full scan)
-
-                    //await ScanFMs(fmsToScan, GetDefaultScanOptions());
                 }
                 catch (Exception ex)
                 {

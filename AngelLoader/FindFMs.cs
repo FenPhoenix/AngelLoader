@@ -561,10 +561,7 @@ namespace AngelLoader
                 #endregion
 
                 // Perf so we don't have to iterate the list again later
-                if (fm.Game == Game.Null || (fm.Game != Game.Unsupported && !fm.MarkedScanned))
-                {
-                    ViewListUnscanned.Add(i);
-                }
+                if (FMNeedsScan(fm)) ViewListUnscanned.Add(i);
 
                 fm.Title =
                     !fm.Title.IsEmpty() ? fm.Title :
