@@ -463,7 +463,7 @@ namespace AngelLoader
             {
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    if (ViewListGamesNull.Count > 0) await FMScan.ScanNewFMsForGameType();
+                    if (ViewListUnscanned.Count > 0) await FMScan.ScanNewFMs();
                 }
 
                 // TODO: forceDisplayFM is always true so that this always works, but it could be smarter

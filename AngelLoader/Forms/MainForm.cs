@@ -913,10 +913,10 @@ namespace AngelLoader.Forms
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (ViewListGamesNull.Count > 0)
+            if (ViewListUnscanned.Count > 0)
             {
                 Show();
-                await FMScan.ScanNewFMsForGameType();
+                await FMScan.ScanNewFMs();
             }
 
             SetFilter();
@@ -2426,7 +2426,7 @@ namespace AngelLoader.Forms
         private async Task RefreshFromDisk()
         {
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
-            using (new DisableEvents(this)) await FMScan.FindNewFMsAndScanForGameType();
+            using (new DisableEvents(this)) await FMScan.FindNewFMsAndScanNew();
             await SortAndSetFilter(selFM, forceDisplayFM: true);
         }
 

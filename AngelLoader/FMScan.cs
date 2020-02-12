@@ -25,7 +25,6 @@ namespace AngelLoader
 
         internal static Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions);
 
-        // TODO: Do the full scan for unscanned installed FMs too, since their game types will not be blank in that case
         internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions,
             bool scanFullIfNew = false)
         {
@@ -312,7 +311,7 @@ namespace AngelLoader
 
         internal static void CancelScan() => ScanCts.CancelIfNotDisposed();
 
-        internal static async Task ScanNewFMsForGameType()
+        internal static async Task ScanNewFMs()
         {
             var fmsToScan = new List<FanMission>();
 
@@ -320,7 +319,7 @@ namespace AngelLoader
             {
                 // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
                 // (not FMsViewList)
-                foreach (int index in ViewListGamesNull) fmsToScan.Add(FMDataIniList[index]);
+                foreach (int index in ViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
             }
             catch
             {
@@ -333,7 +332,7 @@ namespace AngelLoader
             finally
             {
                 // Critical that this gets cleared immediately after use!
-                ViewListGamesNull.Clear();
+                ViewListUnscanned.Clear();
             }
 
             if (fmsToScan.Count > 0)
@@ -364,11 +363,11 @@ namespace AngelLoader
             }
         }
 
-        internal static async Task FindNewFMsAndScanForGameType()
+        internal static async Task FindNewFMsAndScanNew()
         {
             FindFMs.Find();
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (ViewListGamesNull.Count > 0) await ScanNewFMsForGameType();
+            if (ViewListUnscanned.Count > 0) await ScanNewFMs();
         }
 
         internal static async Task ScanAndFind(List<FanMission> fms, FMScanner.ScanOptions scanOptions)
