@@ -57,6 +57,11 @@ namespace AngelLoader.DataClasses
         // We get this value for free when we get the FM archives and dirs on startup, but this value is fragile:
         // it updates whenever the user so much as moves the file or folder. We should store it here to keep it
         // permanent even across moves, new PCs or Windows installs with file restores, etc.
+        // NOTE: What we should be doing is marking down the date when we added a given FM to the list, but we
+        // would need to have done that from the start for it to work, because now we don't know the add date for
+        // anything in the list previously. What we could do is just have a filter button "Show new FMs only" and
+        // start tracking added-dates from here on out, and just say anything that doesn't have a date is just
+        // ignored and considered not new.
         internal readonly ExpandableDate Created = new ExpandableDate();
 
         // [FenGen:DoNotSerialize]
