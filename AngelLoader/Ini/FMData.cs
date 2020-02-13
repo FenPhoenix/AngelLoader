@@ -151,11 +151,11 @@ namespace AngelLoader
                     string val = lineT.Substring(11);
                     fm.LastPlayed.UnixDateString = val;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("Created="))
+                else if (lineT.StartsWithFast_NoNullChecks("DateAdded="))
                 {
                     string val = lineT.Substring(8);
                     // PERF: Don't convert to local here; do it at display-time
-                    fm.Created = ConvertHexUnixDateToDateTime(val, convertToLocal: false);
+                    fm.DateAdded = ConvertHexUnixDateToDateTime(val, convertToLocal: false);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FinishedOn="))
                 {
@@ -366,11 +366,11 @@ namespace AngelLoader
                     sb.Append("LastPlayed=");
                     sb.AppendLine(fm.LastPlayed.UnixDateString);
                 }
-                if (fm.Created != null)
+                if (fm.DateAdded != null)
                 {
-                    sb.Append("Created=");
+                    sb.Append("DateAdded=");
                     // Again, important to convert to local time here because we don't do it on startup.
-                    sb.AppendLine(new DateTimeOffset(((DateTime)fm.Created).ToLocalTime()).ToUnixTimeSeconds().ToString("X"));
+                    sb.AppendLine(new DateTimeOffset(((DateTime)fm.DateAdded).ToLocalTime()).ToUnixTimeSeconds().ToString("X"));
                 }
                 // NOTE: This is not in itself an enum, it's a uint, so it's fast. We just cast it to an enum
                 // later on, but no worries here.

@@ -382,22 +382,22 @@ namespace AngelLoader
         {
             int ret;
             // @R#_FALSE_POSITIVE
-            if (x.Created == null && y.Created == null)
+            if (x.DateAdded == null && y.DateAdded == null)
             {
                 ret = TitleCompare(x, y);
             }
-            else if (x.Created == null)
+            else if (x.DateAdded == null)
             {
                 ret = -1;
             }
-            else if (y.Created == null)
+            else if (y.DateAdded == null)
             {
                 ret = 1;
             }
             else
             {
                 // Sorting this one by exact DateTime is the appropriate method here
-                int cmp = ((DateTime)x.Created).CompareTo((DateTime)y.Created);
+                int cmp = ((DateTime)x.DateAdded).CompareTo((DateTime)y.DateAdded);
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 

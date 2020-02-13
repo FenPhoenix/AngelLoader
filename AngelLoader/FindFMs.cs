@@ -238,7 +238,7 @@ namespace AngelLoader
                         existingFM.InstalledDir = fm.InstalledDir;
                         existingFM.Installed = true;
                         existingFM.Game = fm.Game;
-                        if (existingFM.Created == null) existingFM.Created = fm.Created;
+                        if (existingFM.DateAdded == null) existingFM.DateAdded = fm.DateAdded;
                         FMDataIniList.RemoveAt(i);
                         i--;
                     }
@@ -335,7 +335,7 @@ namespace AngelLoader
                         }
                         fm.NoArchive = false;
 
-                        if (fm.Created == null) fm.Created = dateTimes[ai];
+                        if (fm.DateAdded == null) fm.DateAdded = dateTimes[ai];
 
                         checkedArray[i] = true;
                         existingFound = true;
@@ -344,7 +344,7 @@ namespace AngelLoader
                     else if (!checkedArray[i] &&
                              !fm.Archive.IsEmpty() && fm.Archive.EqualsI(archive))
                     {
-                        if (fm.Created == null) fm.Created = dateTimes[ai];
+                        if (fm.DateAdded == null) fm.DateAdded = dateTimes[ai];
 
                         checkedArray[i] = true;
                         existingFound = true;
@@ -357,7 +357,7 @@ namespace AngelLoader
                     {
                         Archive = archive,
                         NoArchive = false,
-                        Created = dateTimes[ai]
+                        DateAdded = dateTimes[ai]
                     });
                 }
             }
@@ -389,7 +389,7 @@ namespace AngelLoader
                     {
                         fm.Game = gFM.Game;
                         fm.Installed = true;
-                        if (fm.Created == null) fm.Created = dateTimes[gFMi];
+                        if (fm.DateAdded == null) fm.DateAdded = dateTimes[gFMi];
 
                         checkedArray[i] = true;
                         existingFound = true;
@@ -403,7 +403,7 @@ namespace AngelLoader
                         InstalledDir = gFM.InstalledDir,
                         Game = gFM.Game,
                         Installed = true,
-                        Created = dateTimes[gFMi]
+                        DateAdded = dateTimes[gFMi]
                     });
                 }
             }

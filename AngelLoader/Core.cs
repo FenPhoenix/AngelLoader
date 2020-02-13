@@ -590,7 +590,7 @@ namespace AngelLoader
                 Column.Finished => Comparers.FMFinishedComparer,
                 Column.ReleaseDate => Comparers.FMReleaseDateComparer,
                 Column.LastPlayed => Comparers.FMLastPlayedComparer,
-                Column.Added => Comparers.FMAddedComparer,
+                Column.DateAdded => Comparers.FMAddedComparer,
                 Column.DisabledMods => Comparers.FMDisabledModsComparer,
                 Column.Comment => Comparers.FMCommentComparer,
                 // NULL_TODO: Null only so I can run the assert below

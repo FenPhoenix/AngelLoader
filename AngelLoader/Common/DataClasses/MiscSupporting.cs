@@ -72,7 +72,7 @@ namespace AngelLoader.DataClasses
         Finished,
         ReleaseDate,
         LastPlayed,
-        Added,
+        DateAdded,
         DisabledMods,
         Comment
     }

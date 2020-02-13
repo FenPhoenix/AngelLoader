@@ -67,7 +67,7 @@ namespace AngelLoader.Forms
             FinishedColumn = new DataGridViewImageColumn();
             ReleaseDateColumn = new DataGridViewTextBoxColumn();
             LastPlayedColumn = new DataGridViewTextBoxColumn();
-            AddedColumn = new DataGridViewTextBoxColumn();
+            DateAddedColumn = new DataGridViewTextBoxColumn();
             DisabledModsColumn = new DataGridViewTextBoxColumn();
             CommentColumn = new DataGridViewTextBoxColumn();
             FilterBarFLP = new FlowLayoutPanel();
@@ -431,7 +431,7 @@ namespace AngelLoader.Forms
                 FinishedColumn,
                 ReleaseDateColumn,
                 LastPlayedColumn,
-                AddedColumn,
+                DateAddedColumn,
                 DisabledModsColumn,
                 CommentColumn);
             FMsDGV.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
@@ -529,9 +529,9 @@ namespace AngelLoader.Forms
             //
             // AddedColumn
             // 
-            AddedColumn.MinimumWidth = 25;
-            AddedColumn.ReadOnly = true;
-            AddedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
+            DateAddedColumn.MinimumWidth = 25;
+            DateAddedColumn.ReadOnly = true;
+            DateAddedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
             // 
             // DisabledModsColumn
             // 

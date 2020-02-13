@@ -65,7 +65,7 @@
             this.FinishedColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.ReleaseDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LastPlayedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AddedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DateAddedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FilterBarFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -495,7 +495,7 @@
             this.FinishedColumn,
             this.ReleaseDateColumn,
             this.LastPlayedColumn,
-            this.AddedColumn,
+            this.DateAddedColumn,
             this.DisabledModsColumn,
             this.CommentColumn});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -1769,11 +1769,11 @@
             // 
             // AddedColumn
             // 
-            this.AddedColumn.HeaderText = "Added";
-            this.AddedColumn.MinimumWidth = 25;
-            this.AddedColumn.Name = "AddedColumn";
-            this.AddedColumn.ReadOnly = true;
-            this.AddedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.DateAddedColumn.HeaderText = "Date Added";
+            this.DateAddedColumn.MinimumWidth = 25;
+            this.DateAddedColumn.Name = "AddedColumn";
+            this.DateAddedColumn.ReadOnly = true;
+            this.DateAddedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // FilterBySS2Button
             // 
@@ -1990,7 +1990,7 @@
         internal System.Windows.Forms.DataGridViewImageColumn FinishedColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn ReleaseDateColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
-        internal System.Windows.Forms.DataGridViewTextBoxColumn AddedColumn;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn DateAddedColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
         internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
         internal CustomControls.ToolStripButtonCustom FilterShowUnsupportedButton;

@@ -46,7 +46,7 @@ namespace AngelLoader.CustomControls
             private static ToolStripMenuItem? ShowFinishedMenuItem;
             private static ToolStripMenuItem? ShowReleaseDateMenuItem;
             private static ToolStripMenuItem? ShowLastPlayedMenuItem;
-            private static ToolStripMenuItem? ShowAddedMenuItem;
+            private static ToolStripMenuItem? ShowDateAddedMenuItem;
             private static ToolStripMenuItem? ShowDisabledModsMenuItem;
             private static ToolStripMenuItem? ShowCommentMenuItem;
 
@@ -176,11 +176,11 @@ namespace AngelLoader.CustomControls
                         Name = nameof(ShowLastPlayedMenuItem),
                         Tag = Column.LastPlayed
                     },
-                    ShowAddedMenuItem = new ToolStripMenuItem
+                    ShowDateAddedMenuItem = new ToolStripMenuItem
                     {
                         CheckOnClick = true,
-                        Name = nameof(ShowAddedMenuItem),
-                        Tag = Column.Added
+                        Name = nameof(ShowDateAddedMenuItem),
+                        Tag = Column.DateAdded
                     },
                     ShowDisabledModsMenuItem = new ToolStripMenuItem
                     {
@@ -212,7 +212,7 @@ namespace AngelLoader.CustomControls
                     ShowFinishedMenuItem,
                     ShowReleaseDateMenuItem,
                     ShowLastPlayedMenuItem,
-                    ShowAddedMenuItem,
+                    ShowDateAddedMenuItem,
                     ShowDisabledModsMenuItem,
                     ShowCommentMenuItem
                 };
@@ -242,7 +242,7 @@ namespace AngelLoader.CustomControls
                     ShowFinishedMenuItem,
                     ShowReleaseDateMenuItem,
                     ShowLastPlayedMenuItem,
-                    ShowAddedMenuItem,
+                    ShowDateAddedMenuItem,
                     ShowDisabledModsMenuItem,
                     ShowCommentMenuItem
                 });
@@ -267,7 +267,7 @@ namespace AngelLoader.CustomControls
                 ShowFinishedMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowReleaseDateMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
-                ShowAddedMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowDateAddedMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
 
@@ -296,7 +296,7 @@ namespace AngelLoader.CustomControls
                 ShowFinishedMenuItem!.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
                 ShowReleaseDateMenuItem!.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
                 ShowLastPlayedMenuItem!.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
-                ShowAddedMenuItem!.Text = LText.FMsList.AddedColumn.EscapeAmpersands();
+                ShowDateAddedMenuItem!.Text = LText.FMsList.DateAddedColumn.EscapeAmpersands();
                 ShowDisabledModsMenuItem!.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
                 ShowCommentMenuItem!.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
             }
