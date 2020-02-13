@@ -369,7 +369,8 @@ namespace AngelLoader
                 if (fm.Created != null)
                 {
                     sb.Append("Created=");
-                    sb.AppendLine(new DateTimeOffset((DateTime)fm.Created).ToUnixTimeSeconds().ToString("X"));
+                    // Again, important to convert to local time here because we don't do it on startup.
+                    sb.AppendLine(new DateTimeOffset(((DateTime)fm.Created).ToLocalTime()).ToUnixTimeSeconds().ToString("X"));
                 }
                 // NOTE: This is not in itself an enum, it's a uint, so it's fast. We just cast it to an enum
                 // later on, but no worries here.

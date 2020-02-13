@@ -1212,6 +1212,7 @@ namespace AngelLoader.Forms
                 FinishedColumn.HeaderText = LText.FMsList.FinishedColumn;
                 ReleaseDateColumn.HeaderText = LText.FMsList.ReleaseDateColumn;
                 LastPlayedColumn.HeaderText = LText.FMsList.LastPlayedColumn;
+                AddedColumn.HeaderText = LText.FMsList.AddedColumn;
                 DisabledModsColumn.HeaderText = LText.FMsList.DisabledModsColumn;
                 CommentColumn.HeaderText = LText.FMsList.CommentColumn;
 
@@ -2273,6 +2274,11 @@ namespace AngelLoader.Forms
 
                 case Column.LastPlayed:
                     e.Value = fm.LastPlayed.DateTime != null ? FormattedDate((DateTime)fm.LastPlayed.DateTime) : "";
+                    break;
+
+                case Column.Added:
+                    // Convert to local time: very important. We don't do it earlier for startup perf reasons.
+                    e.Value = fm.Created != null ? FormattedDate(((DateTime)fm.Created).ToLocalTime()) : "";
                     break;
 
                 case Column.DisabledMods:

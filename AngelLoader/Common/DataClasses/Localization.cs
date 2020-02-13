@@ -188,6 +188,8 @@ namespace AngelLoader.DataClasses
             internal static string FinishedColumn = "Finished";
             internal static string ReleaseDateColumn = "Release Date";
             internal static string LastPlayedColumn = "Last Played";
+            [FenGenComment("The date an FM was added to the list. Basically means the date you downloaded it.")]
+            internal static string AddedColumn = "Added";
             internal static string DisabledModsColumn = "Disabled Mods";
             internal static string CommentColumn = "Comment";
             [FenGenBlankLine]

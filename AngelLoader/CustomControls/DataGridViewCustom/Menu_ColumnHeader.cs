@@ -13,7 +13,7 @@ namespace AngelLoader.CustomControls
 
             private static bool _constructed;
             // Internal only because of a Debug.Assert() for length and I don't wanna make a method just for that
-            internal static readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true };
+            internal static readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true, true };
 
             #endregion
 
@@ -46,6 +46,7 @@ namespace AngelLoader.CustomControls
             private static ToolStripMenuItem? ShowFinishedMenuItem;
             private static ToolStripMenuItem? ShowReleaseDateMenuItem;
             private static ToolStripMenuItem? ShowLastPlayedMenuItem;
+            private static ToolStripMenuItem? ShowAddedMenuItem;
             private static ToolStripMenuItem? ShowDisabledModsMenuItem;
             private static ToolStripMenuItem? ShowCommentMenuItem;
 
@@ -175,6 +176,12 @@ namespace AngelLoader.CustomControls
                         Name = nameof(ShowLastPlayedMenuItem),
                         Tag = Column.LastPlayed
                     },
+                    ShowAddedMenuItem = new ToolStripMenuItem
+                    {
+                        CheckOnClick = true,
+                        Name = nameof(ShowAddedMenuItem),
+                        Tag = Column.Added
+                    },
                     ShowDisabledModsMenuItem = new ToolStripMenuItem
                     {
                         CheckOnClick = true,
@@ -195,19 +202,20 @@ namespace AngelLoader.CustomControls
 
                 ColumnHeaderCheckBoxMenuItems = new[]
                 {
-                ShowGameMenuItem,
-                ShowInstalledMenuItem,
-                ShowTitleMenuItem,
-                ShowArchiveMenuItem,
-                ShowAuthorMenuItem,
-                ShowSizeMenuItem,
-                ShowRatingMenuItem,
-                ShowFinishedMenuItem,
-                ShowReleaseDateMenuItem,
-                ShowLastPlayedMenuItem,
-                ShowDisabledModsMenuItem,
-                ShowCommentMenuItem
-            };
+                    ShowGameMenuItem,
+                    ShowInstalledMenuItem,
+                    ShowTitleMenuItem,
+                    ShowArchiveMenuItem,
+                    ShowAuthorMenuItem,
+                    ShowSizeMenuItem,
+                    ShowRatingMenuItem,
+                    ShowFinishedMenuItem,
+                    ShowReleaseDateMenuItem,
+                    ShowLastPlayedMenuItem,
+                    ShowAddedMenuItem,
+                    ShowDisabledModsMenuItem,
+                    ShowCommentMenuItem
+                };
 
                 for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
                 {
@@ -220,22 +228,23 @@ namespace AngelLoader.CustomControls
 
                 ColumnHeaderContextMenu.Items.AddRange(new ToolStripItem[]
                 {
-                ResetColumnVisibilityMenuItem,
-                ResetAllColumnWidthsMenuItem,
-                ResetColumnPositionsMenuItem,
-                ColumnHeaderContextMenuSep1,
-                ShowGameMenuItem,
-                ShowInstalledMenuItem,
-                ShowTitleMenuItem,
-                ShowArchiveMenuItem,
-                ShowAuthorMenuItem,
-                ShowSizeMenuItem,
-                ShowRatingMenuItem,
-                ShowFinishedMenuItem,
-                ShowReleaseDateMenuItem,
-                ShowLastPlayedMenuItem,
-                ShowDisabledModsMenuItem,
-                ShowCommentMenuItem
+                    ResetColumnVisibilityMenuItem,
+                    ResetAllColumnWidthsMenuItem,
+                    ResetColumnPositionsMenuItem,
+                    ColumnHeaderContextMenuSep1,
+                    ShowGameMenuItem,
+                    ShowInstalledMenuItem,
+                    ShowTitleMenuItem,
+                    ShowArchiveMenuItem,
+                    ShowAuthorMenuItem,
+                    ShowSizeMenuItem,
+                    ShowRatingMenuItem,
+                    ShowFinishedMenuItem,
+                    ShowReleaseDateMenuItem,
+                    ShowLastPlayedMenuItem,
+                    ShowAddedMenuItem,
+                    ShowDisabledModsMenuItem,
+                    ShowCommentMenuItem
                 });
 
                 #endregion
@@ -258,6 +267,7 @@ namespace AngelLoader.CustomControls
                 ShowFinishedMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowReleaseDateMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowLastPlayedMenuItem.Click += CheckBoxMenuItem_Click;
+                ShowAddedMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowDisabledModsMenuItem.Click += CheckBoxMenuItem_Click;
                 ShowCommentMenuItem.Click += CheckBoxMenuItem_Click;
 
@@ -286,6 +296,7 @@ namespace AngelLoader.CustomControls
                 ShowFinishedMenuItem!.Text = LText.FMsList.FinishedColumn.EscapeAmpersands();
                 ShowReleaseDateMenuItem!.Text = LText.FMsList.ReleaseDateColumn.EscapeAmpersands();
                 ShowLastPlayedMenuItem!.Text = LText.FMsList.LastPlayedColumn.EscapeAmpersands();
+                ShowAddedMenuItem!.Text = LText.FMsList.AddedColumn.EscapeAmpersands();
                 ShowDisabledModsMenuItem!.Text = LText.FMsList.DisabledModsColumn.EscapeAmpersands();
                 ShowCommentMenuItem!.Text = LText.FMsList.CommentColumn.EscapeAmpersands();
             }

@@ -554,6 +554,10 @@ namespace AngelLoader
                         {
                             LText.FMsList.LastPlayedColumn = lt.Substring(17);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("AddedColumn="))
+                        {
+                            LText.FMsList.AddedColumn = lt.Substring(12);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("DisabledModsColumn="))
                         {
                             LText.FMsList.DisabledModsColumn = lt.Substring(19);

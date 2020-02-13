@@ -267,6 +267,9 @@ namespace AngelLoader.CustomControls
         {
             if (Rows.Count == 0 || SelectedRows.Count == 0 || Columns.Count == 0) return;
 
+            // Crappy mitigation for losing horizontal scroll position, not perfect but better than nothing
+            int blah = HorizontalScrollingOffset;
+
             for (int i = 0; i < SelectedRows[0].Cells.Count; i++)
             {
                 if (SelectedRows[0].Cells[i].Visible)
@@ -282,6 +285,8 @@ namespace AngelLoader.CustomControls
                     }
                 }
             }
+
+            HorizontalScrollingOffset = blah;
         }
 
         #endregion

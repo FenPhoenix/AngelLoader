@@ -60,6 +60,9 @@ namespace AngelLoader
         private static FMLastPlayedComparer? _fmLastPlayedComparer;
         internal static IDirectionalSortFMComparer FMLastPlayedComparer => _fmLastPlayedComparer ??= new FMLastPlayedComparer();
 
+        private static FMAddedComparer? _fmAddedComparer;
+        internal static IDirectionalSortFMComparer FMAddedComparer => _fmAddedComparer ??= new FMAddedComparer();
+
         private static FMDisabledModsComparer? _fmDisabledModsComparer;
         internal static IDirectionalSortFMComparer FMDisabledModsComparer => _fmDisabledModsComparer ??= new FMDisabledModsComparer();
 
@@ -364,6 +367,37 @@ namespace AngelLoader
                 // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
                 // second (you change it by playing it), and the user will expect precise sorting.
                 int cmp = ((DateTime)x.LastPlayed.DateTime).CompareTo((DateTime)y.LastPlayed.DateTime);
+                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
+            }
+
+            return SortOrder == SortOrder.Ascending ? ret : -ret;
+        }
+    }
+
+    internal sealed class FMAddedComparer : IDirectionalSortFMComparer
+    {
+        public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+
+        public int Compare(FanMission x, FanMission y)
+        {
+            int ret;
+            // @R#_FALSE_POSITIVE
+            if (x.Created == null && y.Created == null)
+            {
+                ret = TitleCompare(x, y);
+            }
+            else if (x.Created == null)
+            {
+                ret = -1;
+            }
+            else if (y.Created == null)
+            {
+                ret = 1;
+            }
+            else
+            {
+                // Sorting this one by exact DateTime is the appropriate method here
+                int cmp = ((DateTime)x.Created).CompareTo((DateTime)y.Created);
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 

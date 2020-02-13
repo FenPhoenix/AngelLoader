@@ -67,6 +67,7 @@ namespace AngelLoader.Forms
             FinishedColumn = new DataGridViewImageColumn();
             ReleaseDateColumn = new DataGridViewTextBoxColumn();
             LastPlayedColumn = new DataGridViewTextBoxColumn();
+            AddedColumn = new DataGridViewTextBoxColumn();
             DisabledModsColumn = new DataGridViewTextBoxColumn();
             CommentColumn = new DataGridViewTextBoxColumn();
             FilterBarFLP = new FlowLayoutPanel();
@@ -430,6 +431,7 @@ namespace AngelLoader.Forms
                 FinishedColumn,
                 ReleaseDateColumn,
                 LastPlayedColumn,
+                AddedColumn,
                 DisabledModsColumn,
                 CommentColumn);
             FMsDGV.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
@@ -524,6 +526,12 @@ namespace AngelLoader.Forms
             LastPlayedColumn.MinimumWidth = 25;
             LastPlayedColumn.ReadOnly = true;
             LastPlayedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
+            //
+            // AddedColumn
+            // 
+            AddedColumn.MinimumWidth = 25;
+            AddedColumn.ReadOnly = true;
+            AddedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
             // 
             // DisabledModsColumn
             // 
@@ -607,7 +615,7 @@ namespace AngelLoader.Forms
             FilterByThief3Button.Size = new Size(25, 25);
             FilterByThief3Button.Click += FilterByGameCheckButtons_Click;
             // 
-            // TagsTabDummyAutoScrollPanel
+            // TagsTabAutoScrollMarker
             // 
             TagsTabAutoScrollMarker.Size = new Size(240, 152);
             // 
