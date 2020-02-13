@@ -60,8 +60,8 @@ namespace AngelLoader
         private static FMLastPlayedComparer? _fmLastPlayedComparer;
         internal static IDirectionalSortFMComparer FMLastPlayedComparer => _fmLastPlayedComparer ??= new FMLastPlayedComparer();
 
-        private static FMAddedComparer? _fmAddedComparer;
-        internal static IDirectionalSortFMComparer FMAddedComparer => _fmAddedComparer ??= new FMAddedComparer();
+        private static FMDateAddedComparer? _fmDateAddedComparer;
+        internal static IDirectionalSortFMComparer FMAddedComparer => _fmDateAddedComparer ??= new FMDateAddedComparer();
 
         private static FMDisabledModsComparer? _fmDisabledModsComparer;
         internal static IDirectionalSortFMComparer FMDisabledModsComparer => _fmDisabledModsComparer ??= new FMDisabledModsComparer();
@@ -374,7 +374,7 @@ namespace AngelLoader
         }
     }
 
-    internal sealed class FMAddedComparer : IDirectionalSortFMComparer
+    internal sealed class FMDateAddedComparer : IDirectionalSortFMComparer
     {
         public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
 
