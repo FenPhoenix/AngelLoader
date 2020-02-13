@@ -82,12 +82,14 @@ namespace AngelLoader
             // Could check inside the folder for a .mis file to confirm it's really an FM folder, but that's
             // horrendously expensive. Talking like eight seconds vs. < 4ms for the 1098 set. Weird.
             var perGameInstFMDirsList = new List<List<string>>(SupportedGameCount);
+            var perGameInstFMDirsDatesList = new List<List<ExpandableDate>>(SupportedGameCount);
 
             for (int gi = 0; gi < SupportedGameCount; gi++)
             {
                 // NOTE! Make sure this list ends up with SupportedGameCount items in it. Just in case I change
                 // the loop or something.
                 perGameInstFMDirsList.Add(new List<string>());
+                perGameInstFMDirsDatesList.Add(new List<ExpandableDate>());
 
                 string instPath = Config.FMInstallPaths[gi];
 
@@ -95,9 +97,15 @@ namespace AngelLoader
                 {
                     try
                     {
-                        foreach (string d in FastIO.GetDirsTopOnly(instPath, "*", initListCapacityLarge: true, returnFullPaths: false))
+                        var dirs = FastIO.GetDirsTopOnly_FMs(instPath, "*", out List<ExpandableDate> dateTimes);
+                        for (int di = 0; di < dirs.Count; di++)
                         {
-                            if (!d.EqualsI(".fmsel.cache")) perGameInstFMDirsList[gi].Add(d);
+                            string d = dirs[di];
+                            if (!d.EqualsI(".fmsel.cache"))
+                            {
+                                perGameInstFMDirsList[gi].Add(d);
+                                perGameInstFMDirsDatesList[gi].Add(dateTimes[di]);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -112,6 +120,7 @@ namespace AngelLoader
             #region Get archives from disk
 
             var fmArchives = new List<string>();
+            var fmArchivesDates = new List<ExpandableDate>();
 
             var archivePaths = GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
@@ -119,7 +128,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    var files = FastIO.GetFilesTopOnly(archivePaths[ai], "*", initListCapacityLarge: true, returnFullPaths: false);
+                    var files = FastIO.GetFilesTopOnly_FMs(archivePaths[ai], "*", out List<ExpandableDate> dateTimes);
                     for (int fi = 0; fi < files.Count; fi++)
                     {
                         string f = files[fi];
@@ -128,6 +137,7 @@ namespace AngelLoader
                         if ((onlyOnePath || !fmArchives.ContainsI(f)) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
                         {
                             fmArchives.Add(f);
+                            fmArchivesDates.Add(dateTimes[fi]);
                         }
                     }
                 }
@@ -161,13 +171,16 @@ namespace AngelLoader
 
             #endregion
 
-            MergeNewArchiveFMs(fmArchives);
+            MergeNewArchiveFMs(fmArchives, fmArchivesDates);
 
             int instInitCount = FMDataIniList.Count;
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 var curGameInstFMsList = perGameFMsList[i];
-                if (curGameInstFMsList.Count > 0) MergeNewInstalledFMs(curGameInstFMsList, instInitCount);
+                if (curGameInstFMsList.Count > 0)
+                {
+                    MergeNewInstalledFMs(curGameInstFMsList, perGameInstFMDirsDatesList[i], instInitCount);
+                }
             }
 
             SetArchiveNames(fmArchives);
@@ -225,6 +238,10 @@ namespace AngelLoader
                         existingFM.InstalledDir = fm.InstalledDir;
                         existingFM.Installed = true;
                         existingFM.Game = fm.Game;
+                        if (existingFM.Created.UnixDateString.IsEmpty())
+                        {
+                            existingFM.Created.UnixDateString = fm.Created.UnixDateString;
+                        }
                         FMDataIniList.RemoveAt(i);
                         i--;
                     }
@@ -280,7 +297,7 @@ namespace AngelLoader
 
         #region Merge
 
-        private static void MergeNewArchiveFMs(List<string> fmArchives)
+        private static void MergeNewArchiveFMs(List<string> fmArchives, List<ExpandableDate> dateTimes)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = FMDataIniList.Count;
@@ -321,6 +338,8 @@ namespace AngelLoader
                         }
                         fm.NoArchive = false;
 
+                        if (fm.Created.UnixDateString.IsEmpty()) fm.Created.UnixDateString = dateTimes[ai].UnixDateString;
+
                         checkedArray[i] = true;
                         existingFound = true;
                         break;
@@ -328,6 +347,8 @@ namespace AngelLoader
                     else if (!checkedArray[i] &&
                              !fm.Archive.IsEmpty() && fm.Archive.EqualsI(archive))
                     {
+                        if (fm.Created.UnixDateString.IsEmpty()) fm.Created.UnixDateString = dateTimes[ai].UnixDateString;
+
                         checkedArray[i] = true;
                         existingFound = true;
                         break;
@@ -335,14 +356,16 @@ namespace AngelLoader
                 }
                 if (!existingFound)
                 {
-                    FMDataIniList.Add(new FanMission { Archive = archive, NoArchive = false });
+                    var newFM = new FanMission { Archive = archive, NoArchive = false };
+                    newFM.Created.UnixDateString = dateTimes[ai].UnixDateString;
+                    FMDataIniList.Add(newFM);
                 }
             }
         }
 
         // This takes an explicit initCount because we call this once per game, and we don't want to grow our
         // initCount with every call (we can keep it the initial size and still have this work, so it's faster)
-        private static void MergeNewInstalledFMs(List<FanMission> installedList, int initCount)
+        private static void MergeNewInstalledFMs(List<FanMission> installedList, List<ExpandableDate> dateTimes, int initCount)
         {
             bool[] checkedArray = new bool[initCount];
 
@@ -366,6 +389,8 @@ namespace AngelLoader
                     {
                         fm.Game = gFM.Game;
                         fm.Installed = true;
+                        if (fm.Created.UnixDateString.IsEmpty()) fm.Created.UnixDateString = dateTimes[gFMi].UnixDateString;
+
                         checkedArray[i] = true;
                         existingFound = true;
                         break;
@@ -373,12 +398,14 @@ namespace AngelLoader
                 }
                 if (!existingFound)
                 {
-                    FMDataIniList.Add(new FanMission
+                    var newFM = new FanMission
                     {
                         InstalledDir = gFM.InstalledDir,
                         Game = gFM.Game,
-                        Installed = true
-                    });
+                        Installed = true,
+                    };
+                    newFM.Created.UnixDateString = dateTimes[gFMi].UnixDateString;
+                    FMDataIniList.Add(newFM);
                 }
             }
         }

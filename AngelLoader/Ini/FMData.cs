@@ -150,6 +150,11 @@ namespace AngelLoader
                     string val = lineT.Substring(11);
                     fm.LastPlayed.UnixDateString = val;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("Created="))
+                {
+                    string val = lineT.Substring(8);
+                    fm.Created.UnixDateString = val;
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("FinishedOn="))
                 {
                     string val = lineT.Substring(11);
@@ -358,6 +363,11 @@ namespace AngelLoader
                 {
                     sb.Append("LastPlayed=");
                     sb.AppendLine(fm.LastPlayed.UnixDateString);
+                }
+                if (fm.Created != null)
+                {
+                    sb.Append("Created=");
+                    sb.AppendLine(fm.Created.UnixDateString);
                 }
                 // NOTE: This is not in itself an enum, it's a uint, so it's fast. We just cast it to an enum
                 // later on, but no worries here.
