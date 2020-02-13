@@ -282,10 +282,7 @@ namespace AngelLoader
                         }
                     }
 
-                    if (!fms[i].ForceFullScan || !sel.MarkedScanned)
-                    {
-                        sel.MarkedScanned = true;
-                    }
+                    sel.MarkedScanned = true;
 
                     #endregion
                 }
