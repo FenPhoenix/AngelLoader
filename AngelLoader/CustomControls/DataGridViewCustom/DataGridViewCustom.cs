@@ -263,30 +263,38 @@ namespace AngelLoader.CustomControls
         /// If you don't have an actual cell selected (indicated by its header being blue) and you try to move
         /// with the keyboard, it pops back to the top item. This fixes that, and is called wherever appropriate.
         /// </summary>
-        internal void SelectProperly()
+        internal void SelectProperly(bool suspendResume = true)
         {
             if (Rows.Count == 0 || SelectedRows.Count == 0 || Columns.Count == 0) return;
 
             // Crappy mitigation for losing horizontal scroll position, not perfect but better than nothing
-            int blah = HorizontalScrollingOffset;
+            int origHSO = HorizontalScrollingOffset;
 
-            for (int i = 0; i < SelectedRows[0].Cells.Count; i++)
+            try
             {
-                if (SelectedRows[0].Cells[i].Visible)
-                {
-                    try
-                    {
-                        SelectedRows[0].Cells[i].Selected = true;
-                        break;
-                    }
-                    catch
-                    {
-                        // It can't be selected for whatever reason. Oh well.
-                    }
-                }
+                SelectedRows[0].Cells[FirstDisplayedCell.ColumnIndex].Selected = true;
+            }
+            catch
+            {
+                // It can't be selected for whatever reason. Oh well.
             }
 
-            HorizontalScrollingOffset = blah;
+            try
+            {
+                if (suspendResume) this.SuspendDrawing();
+                if (HorizontalScrollBar.Visible && HorizontalScrollingOffset != origHSO)
+                {
+                    HorizontalScrollingOffset = origHSO;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+            finally
+            {
+                if (suspendResume) this.ResumeDrawing();
+            }
         }
 
         #endregion

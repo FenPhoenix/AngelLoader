@@ -2743,7 +2743,7 @@ namespace AngelLoader.Forms
                     // Events will be re-enabled at the end of the enclosing using block
                     if (keepSelection != KeepSel.False) EventsDisabled = true;
                     FMsDGV.Rows[row].Selected = true;
-                    FMsDGV.SelectProperly();
+                    FMsDGV.SelectProperly(suspendResume: startup);
 
                     // Resume drawing before loading the readme; that way the list will update instantly even
                     // if the readme doesn't. The user will see delays in the "right place" (the readme box)
