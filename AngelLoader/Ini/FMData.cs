@@ -2,6 +2,7 @@
 
 //#define write_old_resources_style
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -153,7 +154,7 @@ namespace AngelLoader
                 else if (lineT.StartsWithFast_NoNullChecks("Created="))
                 {
                     string val = lineT.Substring(8);
-                    fm.Created.UnixDateString = val;
+                    fm.Created = ConvertHexUnixDateToDateTime(val);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FinishedOn="))
                 {
@@ -367,7 +368,7 @@ namespace AngelLoader
                 if (fm.Created != null)
                 {
                     sb.Append("Created=");
-                    sb.AppendLine(fm.Created.UnixDateString);
+                    sb.AppendLine(new DateTimeOffset((DateTime)fm.Created).ToUnixTimeSeconds().ToString("X"));
                 }
                 // NOTE: This is not in itself an enum, it's a uint, so it's fast. We just cast it to an enum
                 // later on, but no worries here.

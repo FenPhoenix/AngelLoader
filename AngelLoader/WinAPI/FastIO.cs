@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
-using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
 using static AngelLoader.Misc;
@@ -127,7 +126,7 @@ namespace AngelLoader.WinAPI
         }
 
         internal static List<string> GetDirsTopOnly_FMs(string path, string searchPattern,
-            out List<ExpandableDate> dateTimes)
+            out List<DateTime> dateTimes)
         {
             return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge: true, FileType.Directories,
                 ignoreReparsePoints: false, pathIsKnownValid: false, returnFullPaths: false, returnDateTimes: true,
@@ -135,7 +134,7 @@ namespace AngelLoader.WinAPI
         }
 
         internal static List<string> GetFilesTopOnly_FMs(string path, string searchPattern,
-            out List<ExpandableDate> dateTimes)
+            out List<DateTime> dateTimes)
         {
             return GetFilesTopOnlyInternal(path, searchPattern, initListCapacityLarge: true, FileType.Files,
                 ignoreReparsePoints: false, pathIsKnownValid: false, returnFullPaths: false, returnDateTimes: true,
@@ -163,7 +162,7 @@ namespace AngelLoader.WinAPI
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
         private static List<string> GetFilesTopOnlyInternal(string path, string searchPattern,
             bool initListCapacityLarge, FileType fileType, bool ignoreReparsePoints, bool pathIsKnownValid,
-            bool returnFullPaths, bool returnDateTimes, out List<ExpandableDate> dateTimes)
+            bool returnFullPaths, bool returnDateTimes, out List<DateTime> dateTimes)
         {
             if (string.IsNullOrEmpty(searchPattern))
             {
@@ -198,7 +197,7 @@ namespace AngelLoader.WinAPI
             // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
             var ret = initListCapacityLarge ? new List<string>(2000) : new List<string>(16);
 
-            dateTimes = new List<ExpandableDate>();
+            dateTimes = new List<DateTime>();
 
             // Other relevant errors (though we don't use them specifically at the moment)
             //const int ERROR_PATH_NOT_FOUND = 0x3;
@@ -234,17 +233,12 @@ namespace AngelLoader.WinAPI
                         : findData.cFileName;
 
                     ret.Add(fullName);
+                    // PERF: 0.67ms over 1099 dirs (Ryzen 3950x)
+                    // Very cheap operation all things considered, but it never hurts to skip it when we don't
+                    // need it.
                     if (returnDateTimes)
                     {
-                        // PERF_TODO: This conversion is slow...
-                        // ...but not sure how to make it be fast without storing as double-uint instead of unix
-                        // time
-                        dateTimes.Add(new ExpandableDate
-                        {
-                            UnixDateString =
-                                new DateTimeOffset(DateTime.FromFileTimeUtc(findData.ftCreationTime.ToTicks())
-                                    .ToLocalTime()).ToUnixTimeMilliseconds().ToString("X")
-                        });
+                        dateTimes.Add(DateTime.FromFileTimeUtc(findData.ftCreationTime.ToTicks()).ToLocalTime());
                     }
                 }
             } while (FindNextFileW(findHandle, out findData));

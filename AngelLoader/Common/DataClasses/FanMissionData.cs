@@ -1,5 +1,6 @@
 ﻿#define FenGen_FMDataSource
 
+using System;
 using System.Collections.Generic;
 using static AngelLoader.GameSupport;
 
@@ -62,7 +63,7 @@ namespace AngelLoader.DataClasses
         // anything in the list previously. What we could do is just have a filter button "Show new FMs only" and
         // start tracking added-dates from here on out, and just say anything that doesn't have a date is just
         // ignored and considered not new.
-        internal readonly ExpandableDate Created = new ExpandableDate();
+        internal DateTime? Created = null;
 
         // [FenGen:DoNotSerialize]
         private uint _finishedOn = 0;
