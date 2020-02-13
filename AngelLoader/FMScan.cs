@@ -23,10 +23,10 @@ namespace AngelLoader
             if (success) await Core.View.RefreshSelectedFM(refreshReadme: false);
         }
 
-        internal static Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions);
+        internal static Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true);
 
         internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions,
-            bool scanFullIfNew = false)
+            bool scanFullIfNew = false, bool hideBoxIfZip = false)
         {
             // NULL_TODO: Do we need this FM null check...?
             if (fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
@@ -40,7 +40,7 @@ namespace AngelLoader
             {
                 #region Show progress box or block UI thread
 
-                if (scanningOne)
+                if (hideBoxIfZip && scanningOne)
                 {
                     Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
                     // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as

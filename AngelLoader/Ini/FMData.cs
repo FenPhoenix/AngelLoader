@@ -154,7 +154,8 @@ namespace AngelLoader
                 else if (lineT.StartsWithFast_NoNullChecks("Created="))
                 {
                     string val = lineT.Substring(8);
-                    fm.Created = ConvertHexUnixDateToDateTime(val);
+                    // PERF: Don't convert to local here; do it at display-time
+                    fm.Created = ConvertHexUnixDateToDateTime(val, convertToLocal: false);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FinishedOn="))
                 {

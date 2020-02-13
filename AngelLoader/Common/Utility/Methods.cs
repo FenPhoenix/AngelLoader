@@ -281,7 +281,7 @@ namespace AngelLoader
         /// </summary>
         /// <param name="unixDate"></param>
         /// <returns>A DateTime object, or null if the string couldn't be converted to a valid date for any reason.</returns>
-        internal static DateTime? ConvertHexUnixDateToDateTime(string unixDate)
+        internal static DateTime? ConvertHexUnixDateToDateTime(string unixDate, bool convertToLocal = true)
         {
             bool success = long.TryParse(
                 unixDate,
@@ -293,10 +293,19 @@ namespace AngelLoader
             {
                 try
                 {
-                    return DateTimeOffset
-                        .FromUnixTimeSeconds(result)
-                        .DateTime
-                        .ToLocalTime();
+                    if (convertToLocal)
+                    {
+                        return DateTimeOffset
+                            .FromUnixTimeSeconds(result)
+                            .DateTime
+                            .ToLocalTime();
+                    }
+                    else
+                    {
+                        return DateTimeOffset
+                            .FromUnixTimeSeconds(result)
+                            .DateTime;
+                    }
                 }
                 catch (ArgumentOutOfRangeException)
                 {
