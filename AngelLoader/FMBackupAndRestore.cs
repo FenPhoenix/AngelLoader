@@ -380,6 +380,9 @@ namespace AngelLoader
                     {
                         if (excludes.ContainsI(f.Substring(fmInstalledPath.Length).Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
                         {
+                            // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
+                            // If we have crf files replacing dirs, the empty dir will override the crf. We want
+                            // to store whether dirs were actually removed so we can remove them again.
                             File.Delete(f);
                         }
                     }
