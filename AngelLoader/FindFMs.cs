@@ -22,6 +22,8 @@ namespace AngelLoader
             if (!startup)
             {
                 // Make sure we don't lose anything when we re-find!
+                // NOTE: This also writes out TagsStrings and then reads them back in and syncs them with Tags.
+                // Critical that that gets done.
                 Ini.WriteFullFMDataIni();
 
                 // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from
