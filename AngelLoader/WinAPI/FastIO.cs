@@ -229,7 +229,7 @@ namespace AngelLoader.WinAPI
                 {
                     string fullName = returnFullPaths
                         // Exception could occur here
-                        ? Path.Combine(path, findData.cFileName)
+                        ? Path.Combine(path, findData.cFileName).ToSystemDirSeps()
                         : findData.cFileName;
 
                     ret.Add(fullName);

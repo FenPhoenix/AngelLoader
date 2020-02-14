@@ -454,7 +454,7 @@ namespace AngelLoader
                         {
                             string dir = dirs[di];
                             if (!dir.GetDirNameFast().EqualsI(".fix") &&
-                                !dir.ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
+                                !dir.ToSystemDirSeps().ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
                             {
                                 paths.Add(dir);
                             }

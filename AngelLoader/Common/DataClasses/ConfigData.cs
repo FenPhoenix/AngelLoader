@@ -72,7 +72,9 @@ namespace AngelLoader.DataClasses
 
         internal readonly List<string> FMArchivePaths = new List<string>();
         internal bool FMArchivePathsIncludeSubfolders = false;
-        internal string FMsBackupPath = "";
+
+        private string _fmsBackupPath = "";
+        internal string FMsBackupPath { get => _fmsBackupPath; set => _fmsBackupPath = value.ToSystemDirSeps(); }
 
         #region Game exes
 
@@ -87,7 +89,7 @@ namespace AngelLoader.DataClasses
         /// <returns></returns>
         internal string GetGameExeUnsafe(Game game) => GameExes[(uint)GameToGameIndex(game)];
 
-        internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
+        internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value.ToSystemDirSeps();
 
         #endregion
 
@@ -97,7 +99,7 @@ namespace AngelLoader.DataClasses
 
         internal string GetGamePath(GameIndex index) => GamePaths[(uint)index];
 
-        internal void SetGamePath(GameIndex index, string value) => GamePaths[(uint)index] = value;
+        internal void SetGamePath(GameIndex index, string value) => GamePaths[(uint)index] = value.ToSystemDirSeps();
 
         #endregion
 
@@ -114,7 +116,7 @@ namespace AngelLoader.DataClasses
         /// <returns></returns>
         internal string GetFMInstallPathUnsafe(Game game) => FMInstallPaths[(uint)GameToGameIndex(game)];
 
-        internal void SetFMInstallPath(GameIndex index, string value) => FMInstallPaths[(uint)index] = value;
+        internal void SetFMInstallPath(GameIndex index, string value) => FMInstallPaths[(uint)index] = value.ToSystemDirSeps();
 
         #endregion
 
@@ -182,7 +184,8 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
-        internal string SteamExe = "";
+        private string _steamExe = "";
+        internal string SteamExe { get => _steamExe; set => _steamExe = value.ToSystemDirSeps(); }
 
         // @GENGAMES: Miscellaneous game-specific stuff
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)

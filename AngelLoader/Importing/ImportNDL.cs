@@ -106,7 +106,7 @@ namespace AngelLoader.Importing
                             // NDL always searches subdirectories as well
                             foreach (string f in Directory.EnumerateFiles(archiveDir, "*", SearchOption.AllDirectories))
                             {
-                                if (!f.ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
+                                if (!f.ToSystemDirSeps().ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
                                 {
                                     string fn = Path.GetFileNameWithoutExtension(f);
                                     if (fn.ToInstDirNameNDL().EqualsI(instName) || fn.EqualsI(instName))
