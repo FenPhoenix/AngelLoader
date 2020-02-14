@@ -66,8 +66,9 @@ namespace AngelLoader
                 return;
             }
 
-            // Important for prevention of subtle bugs if there are multiple types of dir sep chars in the string
-            fmInstalledPath = fmInstalledPath.ToForwardSlashes();
+            // IMPORTANT!
+            // This MUST be converted to all system dir separators! Otherwise the diff detector breaks catastrophically!
+            fmInstalledPath = fmInstalledPath.ToSystemDirSeps();
 
             await Task.Run(() =>
             {
@@ -124,7 +125,7 @@ namespace AngelLoader
 
                     foreach (string f in savesAndScreensFiles)
                     {
-                        string fn = f.Substring(fmInstalledPath.Length).Trim(CA_ForwardSlash);
+                        string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
                         AddEntry(archive, f, fn);
                     }
 
