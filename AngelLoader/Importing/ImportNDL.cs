@@ -166,11 +166,7 @@ namespace AngelLoader.Importing
                             else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
                             {
                                 string val = lineFM.Substring(5);
-                                if (!val.IsEmpty() && val != "[none]")
-                                {
-                                    FMTags.AddTagsToFMAndGlobalList(val, fm.Tags);
-                                    FMTags.UpdateFMTagsString(fm);
-                                }
+                                if (!val.IsEmpty() && val != "[none]") fm.TagsString = val;
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
                             {
