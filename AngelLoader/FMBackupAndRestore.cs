@@ -44,6 +44,7 @@ namespace AngelLoader
         private const string DarkNetSavesDir = "netsaves";
         private const string ScreensDir = "screenshots";
         private const string RemoveFileEq = "RemoveFile=";
+        private const string RemoveDirEq = "RemoveDir=";
 
         private static readonly Regex SS2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}/",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -267,7 +268,8 @@ namespace AngelLoader
 
                 #endregion
 
-                var excludes = new List<string>();
+                var fileExcludes = new List<string>();
+                var dirExcludes = new List<string>();
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
@@ -330,9 +332,16 @@ namespace AngelLoader
                                 string line;
                                 while ((line = sr.ReadLine()) != null)
                                 {
-                                    if (!line.StartsWithFast_NoNullChecks(RemoveFileEq)) continue;
+                                    bool startsWithRemoveFile = line.StartsWithFast_NoNullChecks(RemoveFileEq);
+                                    bool startsWithRemoveDir = false;
+                                    if (!startsWithRemoveFile)
+                                    {
+                                        startsWithRemoveDir = line.StartsWithFast_NoNullChecks(RemoveDirEq);
+                                    }
 
-                                    string val = line.Substring(11).ToForwardSlashes().Trim();
+                                    if (!startsWithRemoveFile && !startsWithRemoveDir) continue;
+
+                                    string val = line.Substring(startsWithRemoveFile ? 11 : 10).ToForwardSlashes().Trim();
                                     if (!val.StartsWithI(savesDir + "/") &&
                                         !val.StartsWithI(DarkNetSavesDir + "/") &&
                                         !val.StartsWithI(ScreensDir + "/") &&
@@ -346,7 +355,14 @@ namespace AngelLoader
                                         !val.Contains(':') &&
                                         !val.Contains("./"))
                                     {
-                                        excludes.Add(val);
+                                        if (startsWithRemoveFile)
+                                        {
+                                            fileExcludes.Add(val);
+                                        }
+                                        else
+                                        {
+                                            dirExcludes.Add(val);
+                                        }
                                     }
                                 }
                             }
@@ -358,7 +374,7 @@ namespace AngelLoader
 
                                 if (fn.EqualsI(Paths.FMSelInf) ||
                                     (fn.Length > 0 && fn[fn.Length - 1] == '/') ||
-                                    excludes.Contains(fn))
+                                    fileExcludes.Contains(fn))
                                 {
                                     continue;
                                 }
@@ -376,9 +392,9 @@ namespace AngelLoader
 
                 if (!restoreSavesAndScreensOnly)
                 {
-                    foreach (string f in Directory.EnumerateFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    foreach (string f in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
-                        if (excludes.ContainsI(f.Substring(fmInstalledPath.Length).Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
+                        if (fileExcludes.ContainsI(f.Substring(fmInstalledPath.Length).Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
                         {
                             // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
                             // If we have crf files replacing dirs, the empty dir will override the crf. We want
@@ -386,8 +402,18 @@ namespace AngelLoader
                             File.Delete(f);
                         }
                     }
-                }
 
+                    // Disabled till this is working completely
+#if false
+                    foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.AllDirectories))
+                    {
+                        if (dirExcludes.ContainsI(d.Substring(fmInstalledPath.Length).Replace(Path.DirectorySeparatorChar, '/').Trim('/')))
+                        {
+                            Directory.Delete(d, recursive: true);
+                        }
+                    }
+#endif
+                }
                 if (fileToUse.DarkLoader)
                 {
                     string dlOrigBakDir = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
