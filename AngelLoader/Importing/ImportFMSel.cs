@@ -106,7 +106,9 @@ namespace AngelLoader.Importing
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("Tags="))
                             {
-                                fm.TagsString = lineFM.Substring(5);
+                                var val = lineFM.Substring(5);
+                                FMTags.AddTagsToFMAndGlobalList(val, fm.Tags);
+                                FMTags.UpdateFMTagsString(fm);
                             }
                             else if (lineFM.StartsWithFast_NoNullChecks("InfoFile="))
                             {
