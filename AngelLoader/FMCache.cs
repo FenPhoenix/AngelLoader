@@ -66,7 +66,7 @@ namespace AngelLoader
         private static void ClearCacheDir(FanMission fm)
         {
             string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
-            if (!fmCachePath.TrimEnd('\\').EqualsI(Paths.FMsCache.TrimEnd('\\')) && Directory.Exists(fmCachePath))
+            if (!fmCachePath.TrimEnd(CA_Backslash).EqualsI(Paths.FMsCache.TrimEnd(CA_Backslash)) && Directory.Exists(fmCachePath))
             {
                 try
                 {

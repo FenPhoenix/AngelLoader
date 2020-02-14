@@ -170,7 +170,7 @@ namespace AngelLoader.WinAPI
             }
 
             // Vital, path must not have a trailing separator
-            path = path.TrimEnd('\\', '/');
+            path = path.TrimEnd(CA_BS_FS);
 
             if (!pathIsKnownValid)
             {
@@ -258,7 +258,7 @@ namespace AngelLoader.WinAPI
             bool earlyOutOnEnglish)
         {
             // Always do this
-            path = path.TrimEnd('\\', '/');
+            path = path.TrimEnd(CA_BS_FS);
 
             using var findHandle = FindFirstFileEx(@"\\?\" + path + "\\*",
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,

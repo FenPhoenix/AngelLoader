@@ -30,14 +30,14 @@ namespace AngelLoader
 
         private static ColumnData? ConvertStringToColumnData(string str)
         {
-            str = str.Trim().Trim(',');
+            str = str.Trim().Trim(CA_Comma);
 
             // DisplayIndex,Width,Visible
             // 0,100,True
 
             if (str.CountChars(',') == 0) return null;
 
-            string[] cProps = str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] cProps = str.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
             if (cProps.Length == 0) return null;
 
             var ret = new ColumnData();
@@ -78,7 +78,7 @@ namespace AngelLoader
 
             if (tagsList == null || val.IsWhiteSpace()) return;
 
-            string[] tagsArray = val.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] tagsArray = val.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string item in tagsArray)
             {
@@ -121,7 +121,7 @@ namespace AngelLoader
 
         private static void ReadFinishedStates(string val, Filter filter)
         {
-            var list = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            var list = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
             foreach (string finishedState in list)
@@ -320,7 +320,7 @@ namespace AngelLoader
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterGames="))
                 {
-                    var list = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    var list = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
                         .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
                     foreach (string game in list)
@@ -431,7 +431,7 @@ namespace AngelLoader
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.Articles) + "="))
                 {
-                    string[] articles = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] articles = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
                     for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
                     config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase));
                 }
@@ -497,7 +497,7 @@ namespace AngelLoader
                 {
                     if (!val.Contains(',')) continue;
 
-                    string[] values = val.Split(',');
+                    string[] values = val.Split(CA_Comma);
                     bool widthExists = int.TryParse(values[0].Trim(), out int width);
                     bool heightExists = int.TryParse(values[1].Trim(), out int height);
 
@@ -728,7 +728,7 @@ namespace AngelLoader
                 {
                     if (!val.Contains(',')) continue;
 
-                    string[] values = val.Split(',');
+                    string[] values = val.Split(CA_Comma);
                     bool widthExists = int.TryParse(values[0].Trim(), out int width);
                     bool heightExists = int.TryParse(values[1].Trim(), out int height);
 
@@ -741,7 +741,7 @@ namespace AngelLoader
                 {
                     if (!val.Contains(',')) continue;
 
-                    string[] values = val.Split(',');
+                    string[] values = val.Split(CA_Comma);
                     bool xExists = int.TryParse(values[0].Trim(), out int x);
                     bool yExists = int.TryParse(values[1].Trim(), out int y);
 

@@ -175,7 +175,7 @@ namespace AngelLoader
         {
             if (tagsToAdd.IsEmpty()) return;
 
-            string[] tagsArray = tagsToAdd.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string item in tagsArray)
             {

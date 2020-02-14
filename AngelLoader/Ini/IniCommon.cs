@@ -104,7 +104,7 @@ namespace AngelLoader
 
         private static void FillFMHasXFields(FanMission fm, string fieldsString)
         {
-            string[] fields = fieldsString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] fields = fieldsString.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
 
             // Resources must be cleared here
             fm.Resources = CustomResources.None;

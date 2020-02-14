@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
@@ -26,7 +25,7 @@ namespace AngelLoader
 
 #endif
 
-#region Categories and tags
+        #region Categories and tags
 
         // These are the FMSel preset tags. Conforming to standards here.
         internal static readonly GlobalCatAndTagsList PresetTags = new GlobalCatAndTagsList(6)
@@ -83,9 +82,9 @@ namespace AngelLoader
         // copied later.
         internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList(6);
 
-#endregion
+        #endregion
 
-#region FMs lists
+        #region FMs lists
 
         internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
         internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
@@ -94,9 +93,9 @@ namespace AngelLoader
         // This will contain indexes into FMDataIniList (not FMsViewList!)
         internal static readonly List<int> ViewListUnscanned = new List<int>();
 
-#endregion
+        #endregion
 
-#region Enums and enum-like
+        #region Enums and enum-like
 
         // Class instead of enum so we don't have to keep casting its fields
         [PublicAPI]
@@ -130,7 +129,21 @@ namespace AngelLoader
 
         public enum Direction { Left, Right, Up, Down }
 
-#endregion
+        #endregion
+
+        #region Preset char arrays
+
+        // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time
+        internal static readonly char[] CA_Comma = { ',' };
+        internal static readonly char[] CA_Semicolon = { ';' };
+        internal static readonly char[] CA_CommaSemicolon = { ',', ';' };
+        internal static readonly char[] CA_CommaSpace = { ',', ' ' };
+        internal static readonly char[] CA_Backslash = { '\\' };
+        internal static readonly char[] CA_ForwardSlash = { '/' };
+        internal static readonly char[] CA_BS_FS = { '\\', '/' };
+        internal static readonly char[] CA_SysDirSep = { System.IO.Path.DirectorySeparatorChar };
+
+        #endregion
 
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
         internal static readonly string[] FMSupportedLanguages =
@@ -167,7 +180,7 @@ namespace AngelLoader
             //internal static ConfigVar CV_ForceNewMantle = new ConfigVar { Command = "+new_mantle" };
         }
 
-#region FM cache (readmes etc.)
+        #region FM cache (readmes etc.)
 
         // We might want to add other things (thumbnails etc.) later, so it's a class
         internal class CacheData
@@ -179,11 +192,11 @@ namespace AngelLoader
 
         internal enum ReadmeType { PlainText, RichText, HTML, GLML }
 
-#endregion
+        #endregion
 
-#region Interfaces
+        #region Interfaces
 
-#region DisableEvents
+        #region DisableEvents
 
         /*
          Implement the interface on your form, and put guard clauses on all your event handlers that you want to be
@@ -221,9 +234,9 @@ namespace AngelLoader
             public void Dispose() => Obj.EventsDisabled = false;
         }
 
-#endregion
+        #endregion
 
-#region DisableKeyPresses
+        #region DisableKeyPresses
 
         [PublicAPI]
         internal interface IKeyPressDisabler
@@ -244,13 +257,13 @@ namespace AngelLoader
             public void Dispose() => Obj.KeyPressesDisabled = false;
         }
 
-#endregion
+        #endregion
 
         internal interface ILocalizable
         {
             void Localize();
         }
 
-#endregion
+        #endregion
     }
 }

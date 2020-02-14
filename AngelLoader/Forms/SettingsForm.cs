@@ -746,7 +746,7 @@ namespace AngelLoader.Forms
 
                 var retArticles = FMDisplayPage.ArticlesTextBox.Text
                     .Replace(", ", ",")
-                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
                     .Distinct(StringComparer.InvariantCultureIgnoreCase)
                     .ToList();
 
@@ -1087,9 +1087,9 @@ namespace AngelLoader.Forms
             articles = Regex.Replace(articles, @"\,{2,}", ",");
 
             // Remove commas from start and end
-            articles = articles.Trim(',');
+            articles = articles.Trim(CA_Comma);
 
-            string[] articlesArray = articles.Split(',', ' ').Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
+            string[] articlesArray = articles.Split(CA_CommaSpace).Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
 
             articles = "";
             for (int i = 0; i < articlesArray.Length; i++)

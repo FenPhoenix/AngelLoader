@@ -619,7 +619,7 @@ namespace AngelLoader
                 string selectorFileName;
                 if (lt.Length > 0 && lt[0] == ';')
                 {
-                    do { lt = lt.TrimStart(';').Trim(); } while (lt.Length > 0 && lt[0] == ';');
+                    do { lt = lt.TrimStart(CA_Semicolon).Trim(); } while (lt.Length > 0 && lt[0] == ';');
 
                     if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
                     {
@@ -724,7 +724,7 @@ namespace AngelLoader
             {
                 string lt = lines[i].TrimStart();
 
-                do { lt = lt.TrimStart(';').Trim(); } while (lt.Length > 0 && lt[0] == ';');
+                do { lt = lt.TrimStart(CA_Semicolon).Trim(); } while (lt.Length > 0 && lt[0] == ';');
 
                 // Steam robustness: get rid of any fan mission specifiers in here
                 // line is "fm BrokenTriad_1_0" for example

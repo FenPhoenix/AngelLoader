@@ -405,7 +405,7 @@ namespace AngelLoader
 
         internal static string GetDirNameFast(this string path)
         {
-            path = path.TrimEnd('\\', '/');
+            path = path.TrimEnd(CA_BS_FS);
 
             int i1 = path.LastIndexOf('\\');
             int i2 = path.LastIndexOf('/');
