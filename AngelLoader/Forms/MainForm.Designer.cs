@@ -1767,11 +1767,11 @@
             this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
             this.TagsTabAutoScrollMarker.TabIndex = 5;
             // 
-            // AddedColumn
+            // DateAddedColumn
             // 
             this.DateAddedColumn.HeaderText = "Date Added";
             this.DateAddedColumn.MinimumWidth = 25;
-            this.DateAddedColumn.Name = "AddedColumn";
+            this.DateAddedColumn.Name = "DateAddedColumn";
             this.DateAddedColumn.ReadOnly = true;
             this.DateAddedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 

@@ -527,7 +527,7 @@ namespace AngelLoader.Forms
             LastPlayedColumn.ReadOnly = true;
             LastPlayedColumn.SortMode = DataGridViewColumnSortMode.Programmatic;
             //
-            // AddedColumn
+            // DateAddedColumn
             // 
             DateAddedColumn.MinimumWidth = 25;
             DateAddedColumn.ReadOnly = true;
