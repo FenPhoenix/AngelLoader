@@ -61,7 +61,7 @@ namespace AngelLoader
         internal static IDirectionalSortFMComparer FMLastPlayedComparer => _fmLastPlayedComparer ??= new FMLastPlayedComparer();
 
         private static FMDateAddedComparer? _fmDateAddedComparer;
-        internal static IDirectionalSortFMComparer FMAddedComparer => _fmDateAddedComparer ??= new FMDateAddedComparer();
+        internal static IDirectionalSortFMComparer FMDateAddedComparer => _fmDateAddedComparer ??= new FMDateAddedComparer();
 
         private static FMDisabledModsComparer? _fmDisabledModsComparer;
         internal static IDirectionalSortFMComparer FMDisabledModsComparer => _fmDisabledModsComparer ??= new FMDisabledModsComparer();

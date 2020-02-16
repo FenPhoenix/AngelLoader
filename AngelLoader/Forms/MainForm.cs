@@ -64,12 +64,20 @@ namespace AngelLoader.Forms
 
 #if !ReleaseBeta && !ReleasePublic
         private readonly CheckBox ForceWindowedCheckBox;
+        private readonly CheckBox ShowRecentAtTopCheckBox;
 #endif
 
         #region Test / debug
 
 #if !ReleaseBeta && !ReleasePublic
         private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
+        private async void ShowRecentAtTopCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+
+            Config.ShowRecentAtTop = ShowRecentAtTopCheckBox.Checked;
+            await SortAndSetFilter(keepSelection: false);
+        }
 #endif
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -97,6 +105,7 @@ namespace AngelLoader.Forms
 
         public int CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
         public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
+        public bool ShowRecentAtTop => ShowRecentAtTopCheckBox.Checked;
 
         public void Block(bool block)
         {
@@ -713,6 +722,12 @@ namespace AngelLoader.Forms
             ForceWindowedCheckBox.Dock = DockStyle.Fill;
             ForceWindowedCheckBox.Text = @"Force windowed";
             ForceWindowedCheckBox.CheckedChanged += ForceWindowedCheckBox_CheckedChanged;
+
+            ShowRecentAtTopCheckBox = new CheckBox();
+            BottomRightButtonsFLP.Controls.Add(ShowRecentAtTopCheckBox);
+            ShowRecentAtTopCheckBox.Dock = DockStyle.Fill;
+            ShowRecentAtTopCheckBox.Text = @"Show recent at top";
+            ShowRecentAtTopCheckBox.CheckedChanged += ShowRecentAtTopCheckBox_CheckedChanged;
 #endif
 
             // -------- New games go here!
@@ -849,6 +864,8 @@ namespace AngelLoader.Forms
             SetUIFilterValues(FMsDGV.Filter);
 
             #endregion
+
+            using (new DisableEvents(this)) ShowRecentAtTopCheckBox.Checked = Config.ShowRecentAtTop;
 
             #region Autosize menus
 
@@ -2180,6 +2197,11 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered && FMsDGV.FilterShownIndexList.Count == 0) return;
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
+
+            if (fm.MarkedRecent)
+            {
+                FMsDGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.LightGoldenrodYellow;
+            }
 
             // PERF: ~0.14ms per FM for en-US Long Date format
             // PERF_TODO: Test with custom - dt.ToString() might be slow?

@@ -590,7 +590,7 @@ namespace AngelLoader
                 Column.Finished => Comparers.FMFinishedComparer,
                 Column.ReleaseDate => Comparers.FMReleaseDateComparer,
                 Column.LastPlayed => Comparers.FMLastPlayedComparer,
-                Column.DateAdded => Comparers.FMAddedComparer,
+                Column.DateAdded => Comparers.FMDateAddedComparer,
                 Column.DisabledMods => Comparers.FMDisabledModsComparer,
                 Column.Comment => Comparers.FMCommentComparer,
                 // NULL_TODO: Null only so I can run the assert below
@@ -604,6 +604,42 @@ namespace AngelLoader
             comparer!.SortOrder = sortDirection;
 
             FMsViewList.Sort(comparer);
+
+            if (View.ShowRecentAtTop)
+            {
+                // Store it so it doesn't change
+                var dtNow = DateTime.Now;
+
+                var tempFMs = new List<FanMission>();
+
+                for (int i = 0; i < FMsViewList.Count; i++)
+                {
+                    var fm = FMsViewList[i];
+                    fm.MarkedRecent = false;
+
+                    if (fm.DateAdded != null &&
+                        ((DateTime)fm.DateAdded).CompareTo(dtNow) <= 0 &&
+                        (dtNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
+                    {
+                        FMsViewList.Remove(fm);
+                        tempFMs.Add(fm);
+                    }
+                }
+
+                Comparers.FMDateAddedComparer.SortOrder = SortOrder.Ascending;
+                tempFMs.Sort(Comparers.FMDateAddedComparer);
+
+                for (int i = 0; i < tempFMs.Count; i++)
+                {
+                    var fm = tempFMs[i];
+                    fm.MarkedRecent = true;
+                    FMsViewList.Insert(0, fm);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < FMsViewList.Count; i++) FMsViewList[i].MarkedRecent = false;
+            }
         }
 
         #region Get info from game config files
@@ -1493,6 +1529,8 @@ namespace AngelLoader
 
             Config.SortedColumn = (Column)sortedColumn;
             Config.SortDirection = sortDirection;
+
+            Config.ShowRecentAtTop = View.ShowRecentAtTop;
 
             Config.FMsListFontSizeInPoints = fmsListFontSizeInPoints;
 

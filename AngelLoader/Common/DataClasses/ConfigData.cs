@@ -344,6 +344,9 @@ namespace AngelLoader.DataClasses
 
         internal bool UseShortGameTabNames = false;
 
+        internal uint DaysRecent = 300;
+        internal bool ShowRecentAtTop;
+
         //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
 
 #if !ReleaseBeta && !ReleasePublic

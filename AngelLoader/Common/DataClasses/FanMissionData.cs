@@ -68,6 +68,10 @@ namespace AngelLoader.DataClasses
         // like 3-5ms extra on startup (for 1574 FMs), so it's good enough for now.
         internal DateTime? DateAdded = null;
 
+        // For drawing rows in "Recently-Added Yellow" color
+        // [FenGen:DoNotSerialize]
+        internal bool MarkedRecent;
+
         // [FenGen:DoNotSerialize]
         private uint _finishedOn = 0;
         // [FenGen:NumericEmpty=0]

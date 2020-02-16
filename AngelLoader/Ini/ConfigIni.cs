@@ -458,6 +458,10 @@ namespace AngelLoader
                         config.SortedColumn = (Column)field.GetValue(null);
                     }
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ShowRecentAtTop) + "="))
+                {
+                    config.ShowRecentAtTop = val.EqualsTrue();
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.FMsListFontSizeInPoints) + "="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
@@ -1122,6 +1126,7 @@ namespace AngelLoader
 
                 sw.WriteLine(nameof(config.SortedColumn) + "=" + config.SortedColumn);
                 sw.WriteLine(nameof(config.SortDirection) + "=" + config.SortDirection);
+                sw.WriteLine(nameof(config.ShowRecentAtTop) + "=" + config.ShowRecentAtTop);
                 sw.WriteLine(nameof(config.FMsListFontSizeInPoints) + "=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
                 foreach (ColumnData col in config.Columns)
