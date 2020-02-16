@@ -57,6 +57,9 @@
             this.OrganizeGamesInOneListRadioButton = new System.Windows.Forms.RadioButton();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
+            this.RecentFMsGroupBox = new System.Windows.Forms.GroupBox();
+            this.RecentFMsLabel = new System.Windows.Forms.Label();
+            this.RecentFMsNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.RatingDisplayStyleGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).BeginInit();
             this.DateFormatGroupBox.SuspendLayout();
@@ -65,6 +68,8 @@
             this.SortingGroupBox.SuspendLayout();
             this.GameOrganizationGroupBox.SuspendLayout();
             this.PagePanel.SuspendLayout();
+            this.RecentFMsGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RecentFMsNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // RatingDisplayStyleGroupBox
@@ -367,6 +372,7 @@
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
+            this.PagePanel.Controls.Add(this.RecentFMsGroupBox);
             this.PagePanel.Controls.Add(this.GameOrganizationGroupBox);
             this.PagePanel.Controls.Add(this.RatingDisplayStyleGroupBox);
             this.PagePanel.Controls.Add(this.SortingGroupBox);
@@ -375,7 +381,7 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(496, 551);
+            this.PagePanel.Size = new System.Drawing.Size(496, 640);
             this.PagePanel.TabIndex = 8;
             // 
             // DummyAutoScrollPanel
@@ -383,6 +389,49 @@
             this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 128);
             this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
+            this.DummyAutoScrollPanel.TabIndex = 8;
+            // 
+            // RecentFMsGroupBox
+            // 
+            this.RecentFMsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.RecentFMsGroupBox.Controls.Add(this.RecentFMsNumericUpDown);
+            this.RecentFMsGroupBox.Controls.Add(this.RecentFMsLabel);
+            this.RecentFMsGroupBox.Location = new System.Drawing.Point(8, 552);
+            this.RecentFMsGroupBox.MinimumSize = new System.Drawing.Size(478, 0);
+            this.RecentFMsGroupBox.Name = "RecentFMsGroupBox";
+            this.RecentFMsGroupBox.Size = new System.Drawing.Size(480, 80);
+            this.RecentFMsGroupBox.TabIndex = 9;
+            this.RecentFMsGroupBox.TabStop = false;
+            this.RecentFMsGroupBox.Text = "Recent FMs";
+            // 
+            // RecentFMsLabel
+            // 
+            this.RecentFMsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.RecentFMsLabel.Location = new System.Drawing.Point(16, 16);
+            this.RecentFMsLabel.Name = "RecentFMsLabel";
+            this.RecentFMsLabel.Size = new System.Drawing.Size(456, 32);
+            this.RecentFMsLabel.TabIndex = 0;
+            this.RecentFMsLabel.Text = "Maximum number of days to consider an FM \"recent\":";
+            this.RecentFMsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // RecentFMsNumericUpDown
+            // 
+            this.RecentFMsNumericUpDown.Location = new System.Drawing.Point(16, 48);
+            this.RecentFMsNumericUpDown.Maximum = new decimal(new int[] {
+            99999,
+            0,
+            0,
+            0});
+            this.RecentFMsNumericUpDown.Name = "RecentFMsNumericUpDown";
+            this.RecentFMsNumericUpDown.Size = new System.Drawing.Size(56, 20);
+            this.RecentFMsNumericUpDown.TabIndex = 1;
+            this.RecentFMsNumericUpDown.Value = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
             // 
             // FMDisplayPage
             // 
@@ -390,7 +439,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "FMDisplayPage";
-            this.Size = new System.Drawing.Size(496, 551);
+            this.Size = new System.Drawing.Size(496, 640);
             this.RatingDisplayStyleGroupBox.ResumeLayout(false);
             this.RatingDisplayStyleGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RatingExamplePictureBox)).EndInit();
@@ -405,6 +454,8 @@
             this.GameOrganizationGroupBox.ResumeLayout(false);
             this.GameOrganizationGroupBox.PerformLayout();
             this.PagePanel.ResumeLayout(false);
+            this.RecentFMsGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.RecentFMsNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -440,5 +491,8 @@
         private System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
         internal System.Windows.Forms.Label PreviewDateLabel;
         internal System.Windows.Forms.CheckBox UseShortGameTabNamesCheckBox;
+        internal System.Windows.Forms.GroupBox RecentFMsGroupBox;
+        internal System.Windows.Forms.NumericUpDown RecentFMsNumericUpDown;
+        internal System.Windows.Forms.Label RecentFMsLabel;
     }
 }

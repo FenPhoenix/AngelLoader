@@ -252,15 +252,18 @@ namespace AngelLoader
                  !Config.Articles.SequenceEqual(sf.OutConfig.Articles, StringComparer.InvariantCultureIgnoreCase) ||
                  Config.MoveArticlesToEnd != sf.OutConfig.MoveArticlesToEnd);
 
+            bool ratingDisplayStyleChanged =
+                !startup &&
+                (Config.RatingDisplayStyle != sf.OutConfig.RatingDisplayStyle ||
+                 Config.RatingUseStars != sf.OutConfig.RatingUseStars);
+
             bool dateFormatChanged =
                 !startup &&
                 (Config.DateFormat != sf.OutConfig.DateFormat ||
                  Config.DateCustomFormatString != sf.OutConfig.DateCustomFormatString);
 
-            bool ratingDisplayStyleChanged =
-                !startup &&
-                (Config.RatingDisplayStyle != sf.OutConfig.RatingDisplayStyle ||
-                 Config.RatingUseStars != sf.OutConfig.RatingUseStars);
+            bool daysRecentChanged =
+                !startup && Config.DaysRecent != sf.OutConfig.DaysRecent;
 
             bool languageChanged =
                 !startup && !Config.Language.EqualsI(sf.OutConfig.Language);
@@ -391,6 +394,8 @@ namespace AngelLoader
             Config.DateCustomFormat4 = sf.OutConfig.DateCustomFormat4;
             Config.DateCustomFormatString = sf.OutConfig.DateCustomFormatString;
 
+            Config.DaysRecent = sf.OutConfig.DaysRecent;
+
             #endregion
 
             #region Other tab
@@ -459,17 +464,20 @@ namespace AngelLoader
             #region Call appropriate refresh method (if applicable)
 
             // Game paths should have been checked and verified before OK was clicked, so assume they're good here
-            if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged)
+            if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged ||
+                daysRecentChanged)
             {
                 if (archivePathsChanged || gamePathsChanged)
                 {
                     if (ViewListUnscanned.Count > 0) await FMScan.ScanNewFMs();
                 }
 
+                bool keepSel = !gameOrganizationChanged;
+
                 // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
                 // If I store the selected FM up above the Find(), I can make the FM not have to reload if
                 // it's still selected
-                await View.SortAndSetFilter(keepSelection: !gameOrganizationChanged, forceDisplayFM: true);
+                await View.SortAndSetFilter(keepSelection: keepSel, forceDisplayFM: true);
             }
             else if (dateFormatChanged || languageChanged)
             {

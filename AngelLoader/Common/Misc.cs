@@ -174,6 +174,8 @@ namespace AngelLoader
 
             internal const string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
 
+            internal const uint MaxDaysRecent = 99999;
+
             //internal static ConfigVar CV_ForceFullScreen = new ConfigVar { Command = "-force_windowed" };
             //internal static ConfigVar CV_ForceWindowed = new ConfigVar { Command = "+force_windowed" };
             //internal static ConfigVar CV_ForceOldMantle = new ConfigVar { Command = "-new_mantle" };

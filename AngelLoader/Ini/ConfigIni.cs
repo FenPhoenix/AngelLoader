@@ -705,6 +705,10 @@ namespace AngelLoader
                 {
                     config.DateCustomFormat4 = val;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DaysRecent) + "="))
+                {
+                    if (uint.TryParse(val, out uint result)) config.DaysRecent = result;
+                }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.ReadmeZoomFactor) + "="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
@@ -1027,6 +1031,8 @@ namespace AngelLoader
                 sw.WriteLine(nameof(config.DateCustomFormat3) + "=" + config.DateCustomFormat3);
                 sw.WriteLine(nameof(config.DateCustomSeparator3) + "=" + config.DateCustomSeparator3);
                 sw.WriteLine(nameof(config.DateCustomFormat4) + "=" + config.DateCustomFormat4);
+
+                sw.WriteLine(nameof(config.DaysRecent) + "=" + config.DaysRecent);
 
                 sw.WriteLine(nameof(config.ConvertWAVsTo16BitOnInstall) + "=" + config.ConvertWAVsTo16BitOnInstall);
                 sw.WriteLine(nameof(config.ConvertOGGsToWAVsOnInstall) + "=" + config.ConvertOGGsToWAVsOnInstall);

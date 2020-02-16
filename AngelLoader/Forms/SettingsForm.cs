@@ -329,6 +329,13 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Recent FMs
+
+                FMDisplayPage.RecentFMsNumericUpDown.Maximum = Defaults.MaxDaysRecent;
+                FMDisplayPage.RecentFMsNumericUpDown.Value = config.DaysRecent;
+
+                #endregion
+
                 #region Rating display style
 
                 switch (config.RatingDisplayStyle)
@@ -566,6 +573,9 @@ namespace AngelLoader.Forms
                     FMDisplayPage.DateCurrentCultureLongRadioButton.Text = LText.SettingsWindow.FMDisplay_CurrentCultureLong;
                     FMDisplayPage.DateCustomRadioButton.Text = LText.SettingsWindow.FMDisplay_Custom;
 
+                    FMDisplayPage.RecentFMsGroupBox.Text = LText.SettingsWindow.FMDisplay_RecentFMs;
+                    FMDisplayPage.RecentFMsLabel.Text = LText.SettingsWindow.FMDisplay_RecentFMs_MaxDays;
+
                     #endregion
 
                     #region Other tab
@@ -766,6 +776,15 @@ namespace AngelLoader.Forms
 
                 #endregion
 
+                #region Rating display style
+
+                OutConfig.RatingDisplayStyle = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
+                    ? RatingDisplayStyle.NewDarkLoader
+                    : RatingDisplayStyle.FMSel;
+                OutConfig.RatingUseStars = FMDisplayPage.RatingUseStarsCheckBox.Checked;
+
+                #endregion
+
                 #region Date format
 
                 OutConfig.DateFormat =
@@ -794,14 +813,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                #region Rating display style
-
-                OutConfig.RatingDisplayStyle = FMDisplayPage.RatingNDLDisplayStyleRadioButton.Checked
-                    ? RatingDisplayStyle.NewDarkLoader
-                    : RatingDisplayStyle.FMSel;
-                OutConfig.RatingUseStars = FMDisplayPage.RatingUseStarsCheckBox.Checked;
-
-                #endregion
+                OutConfig.DaysRecent = (uint)FMDisplayPage.RecentFMsNumericUpDown.Value;
 
                 #endregion
 

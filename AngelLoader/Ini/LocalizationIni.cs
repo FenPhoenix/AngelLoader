@@ -1178,6 +1178,14 @@ namespace AngelLoader
                         {
                             LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange = lt.Substring(30);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RecentFMs="))
+                        {
+                            LText.SettingsWindow.FMDisplay_RecentFMs = lt.Substring(20);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RecentFMs_MaxDays="))
+                        {
+                            LText.SettingsWindow.FMDisplay_RecentFMs_MaxDays = lt.Substring(28);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Other_TabText="))
                         {
                             LText.SettingsWindow.Other_TabText = lt.Substring(14);

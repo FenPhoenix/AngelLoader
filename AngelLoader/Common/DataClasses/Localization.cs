@@ -383,6 +383,9 @@ namespace AngelLoader.DataClasses
             internal static string FMDisplay_ErrorInvalidDateFormat = "Invalid date format.";
             internal static string FMDisplay_ErrorDateOutOfRange = "The date and time is outside the range of dates supported by the calendar used by the current culture.";
             [FenGenBlankLine]
+            internal static string FMDisplay_RecentFMs = "Recent FMs";
+            internal static string FMDisplay_RecentFMs_MaxDays = "Maximum number of days to consider an FM \"recent\":";
+            [FenGenBlankLine]
             internal static string Other_TabText = "Other";
             [FenGenBlankLine]
             internal static string Other_FMFileConversion = "FM file conversion";
