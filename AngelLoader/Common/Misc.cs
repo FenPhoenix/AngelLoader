@@ -161,6 +161,23 @@ namespace AngelLoader
             "spanish"
         };
 
+        // For manual selection of language for playing an FM
+        internal static readonly Dictionary<string, string>
+            FMLangsTranslated = new Dictionary<string, string>
+            {
+                { "english", "English" },
+                { "czech", "Čeština" },
+                { "dutch", "Nederlands" },
+                { "french", "Français" },
+                { "german", "Deutsch" },
+                { "hungarian", "Magyar" },
+                { "italian", "Italiano" },
+                { "japanese", "日本語" },
+                { "polish", "Polski" },
+                { "russian", "Русский" },
+                { "spanish", "Español" }
+            };
+
         internal static class Defaults
         {
             internal const int MainWindowX = 50;
