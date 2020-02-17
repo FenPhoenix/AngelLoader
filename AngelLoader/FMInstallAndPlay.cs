@@ -205,6 +205,24 @@ namespace AngelLoader
 
         #region Find FM's supported languages
 
+        internal static List<string> SortLangsToSpec(List<string> langs)
+        {
+            var ret = new List<string>();
+
+            // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
+            // (matching FMSel behavior)
+            if (langs.Count > 0)
+            {
+                for (int i = 0; i < FMSupportedLanguages.Length; i++)
+                {
+                    string sl = FMSupportedLanguages[i];
+                    if (langs.ContainsI(sl)) ret.Add(sl);
+                }
+            }
+
+            return ret;
+        }
+
         private static List<string> GetFMSupportedLanguagesFromInstDir(string fmInstPath, bool earlyOutOnEnglish)
         {
             // Get initial list of base FM dirs the normal way: we don't want to count these as lang dirs even if
@@ -246,20 +264,7 @@ namespace AngelLoader
                 if (earlyOutOnEnglish && englishFound) return new List<string> { "English" };
             }
 
-            var ret = new List<string>();
-
-            // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
-            // (matching FMSel behavior)
-            if (langsFoundList.Count > 0)
-            {
-                for (int i = 0; i < FMSupportedLanguages.Length; i++)
-                {
-                    string sl = FMSupportedLanguages[i];
-                    if (langsFoundList.ContainsI(sl)) ret.Add(sl);
-                }
-            }
-
-            return ret;
+            return SortLangsToSpec(langsFoundList);
         }
 
         private static (bool Success, List<string> Languages)
@@ -419,6 +424,51 @@ namespace AngelLoader
             }
 
             return (sLanguage, bForceLanguage);
+        }
+
+        internal static void FillFMSupportedLangs(FanMission fm)
+        {
+            string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
+            List<string> langs = new List<string>();
+            if (FMIsReallyInstalled(fm))
+            {
+                try
+                {
+                    langs = GetFMSupportedLanguagesFromInstDir(fmInstPath, earlyOutOnEnglish: false);
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception trying to detect language folders in installed dir for fm '" +
+                        fm.Archive + "' (inst dir '" + fm.InstalledDir + "')", ex);
+                }
+            }
+            else
+            {
+                try
+                {
+                    (_, langs) = GetFMSupportedLanguagesFromArchive(fm.Archive, earlyOutOnEnglish: false);
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception trying to detect language folders in archive for fm '" +
+                        fm.Archive + "' (inst dir '" + fm.InstalledDir + "')", ex);
+                }
+            }
+
+            fm.LangDirs = "";
+            if (langs.Count > 0)
+            {
+                langs = SortLangsToSpec(langs);
+
+                if (langs[0].EqualsI("english")) langs.RemoveAt(0);
+                for (int i = 0; i < langs.Count; i++)
+                {
+                    if (i > 0) fm.LangDirs += ",";
+                    fm.LangDirs += langs[i];
+                }
+            }
+
+            fm.LangDirsScanned = true;
         }
 
         #endregion

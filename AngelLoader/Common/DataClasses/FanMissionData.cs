@@ -91,7 +91,11 @@ namespace AngelLoader.DataClasses
 
         // not using for now, but add DoNotSerialize attribute here if I ever do
         // internal string[] Languages;
+        // Storing this but not using it for anything at the moment (values from FMScanner)
         internal string LanguagesString = "";
+        
+        internal bool LangDirsScanned;
+        internal string LangDirs = "";
 
         // [FenGen:DoNotSerialize]
         internal readonly CatAndTagsList Tags = new CatAndTagsList();

@@ -256,6 +256,16 @@ namespace AngelLoader
                     string val = lineT.Substring(16);
                     fm.LanguagesString = val;
                 }
+                else if (lineT.StartsWithFast_NoNullChecks("LangDirsScanned="))
+                {
+                    string val = lineT.Substring(16);
+                    fm.LangDirsScanned = val.EqualsTrue();
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("LangDirs="))
+                {
+                    string val = lineT.Substring(9);
+                    fm.LangDirs = val;
+                }
                 else if (lineT.StartsWithFast_NoNullChecks("TagsString="))
                 {
                     string val = lineT.Substring(11);
@@ -428,6 +438,16 @@ namespace AngelLoader
                 {
                     sb.Append("LanguagesString=");
                     sb.AppendLine(fm.LanguagesString);
+                }
+                if (fm.LangDirsScanned)
+                {
+                    sb.Append("LangDirsScanned=");
+                    sb.AppendLine(fm.LangDirsScanned.ToString());
+                }
+                if (!string.IsNullOrEmpty(fm.LangDirs))
+                {
+                    sb.Append("LangDirs=");
+                    sb.AppendLine(fm.LangDirs);
                 }
                 if (!string.IsNullOrEmpty(fm.TagsString))
                 {

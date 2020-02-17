@@ -3097,6 +3097,17 @@ namespace AngelLoader.Forms
 
             #endregion
 
+            if (GameIsKnownAndSupported(fm.Game))
+            {
+                if (!fm.LangDirsScanned)
+                {
+                    FMInstallAndPlay.FillFMSupportedLangs(fm);
+                }
+
+                var langs = fm.LangDirs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
+                langs = FMInstallAndPlay.SortLangsToSpec(langs);
+            }
+
             if (!refreshReadme) return;
 
             var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
