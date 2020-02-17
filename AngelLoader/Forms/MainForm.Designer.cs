@@ -31,10 +31,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
             this.Test2Button = new System.Windows.Forms.Button();
             this.TestButton = new System.Windows.Forms.Button();
@@ -73,6 +73,7 @@
             this.FilterByThief1Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByThief2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByThief3Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterBySS2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterTitleLabel = new System.Windows.Forms.Label();
             this.FilterTitleTextBox = new AngelLoader.CustomControls.TextBoxCustom();
             this.FilterAuthorLabel = new System.Windows.Forms.Label();
@@ -94,6 +95,7 @@
             this.Thief1TabPage = new System.Windows.Forms.TabPage();
             this.Thief2TabPage = new System.Windows.Forms.TabPage();
             this.Thief3TabPage = new System.Windows.Forms.TabPage();
+            this.SS2TabPage = new System.Windows.Forms.TabPage();
             this.TopRightMenuButton = new System.Windows.Forms.Button();
             this.TopRightCollapseButton = new AngelLoader.CustomControls.ArrowButton();
             this.TopRightTabControl = new AngelLoader.CustomControls.TabControlCustom();
@@ -140,6 +142,7 @@
             this.RemoveTagButton = new System.Windows.Forms.Button();
             this.AddTagFromListButton = new System.Windows.Forms.Button();
             this.TagsTreeView = new System.Windows.Forms.TreeView();
+            this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
             this.PatchTabPage = new System.Windows.Forms.TabPage();
             this.PatchMainPanel = new System.Windows.Forms.Panel();
             this.PatchDMLsPanel = new System.Windows.Forms.Panel();
@@ -156,9 +159,7 @@
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.FilterBySS2Button = new AngelLoader.CustomControls.ToolStripButtonCustom();
-            this.TagsTabAutoScrollMarker = new System.Windows.Forms.Control();
-            this.SS2TabPage = new System.Windows.Forms.TabPage();
+            this.FMPlayLangComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -234,6 +235,7 @@
             // 
             // BottomPanel
             // 
+            this.BottomPanel.Controls.Add(this.FMPlayLangComboBox);
             this.BottomPanel.Controls.Add(this.BottomRightButtonsFLP);
             this.BottomPanel.Controls.Add(this.BottomLeftButtonsFLP);
             this.BottomPanel.Controls.Add(this.DebugLabel);
@@ -475,14 +477,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -498,26 +500,26 @@
             this.DateAddedColumn,
             this.DisabledModsColumn,
             this.CommentColumn});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -532,7 +534,7 @@
             this.FMsDGV.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FMsDGV_KeyPress);
             this.FMsDGV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FMsDGV_MouseDown);
             // 
-                        // GameTypeColumn
+            // GameTypeColumn
             // 
             this.GameTypeColumn.HeaderText = "Game";
             this.GameTypeColumn.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
@@ -578,8 +580,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -620,6 +622,14 @@
             this.LastPlayedColumn.ReadOnly = true;
             this.LastPlayedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
+            // DateAddedColumn
+            // 
+            this.DateAddedColumn.HeaderText = "Date Added";
+            this.DateAddedColumn.MinimumWidth = 25;
+            this.DateAddedColumn.Name = "DateAddedColumn";
+            this.DateAddedColumn.ReadOnly = true;
+            this.DateAddedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
             // DisabledModsColumn
             // 
             this.DisabledModsColumn.HeaderText = "Disabled Mods";
@@ -635,7 +645,7 @@
             this.CommentColumn.Name = "CommentColumn";
             this.CommentColumn.ReadOnly = true;
             this.CommentColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            //
+            // 
             // FilterBarFLP
             // 
             this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -718,6 +728,19 @@
             this.FilterByThief3Button.ToolTipText = "Thief 3";
             this.FilterByThief3Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
             // 
+            // FilterBySS2Button
+            // 
+            this.FilterBySS2Button.AutoSize = false;
+            this.FilterBySS2Button.CheckOnClick = true;
+            this.FilterBySS2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterBySS2Button.Image = global::AngelLoader.Properties.Resources.Shock2_21;
+            this.FilterBySS2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterBySS2Button.Margin = new System.Windows.Forms.Padding(0);
+            this.FilterBySS2Button.Name = "FilterBySS2Button";
+            this.FilterBySS2Button.Size = new System.Drawing.Size(25, 25);
+            this.FilterBySS2Button.ToolTipText = "System Shock 2";
+            this.FilterBySS2Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
+            // 
             // FilterTitleLabel
             // 
             this.FilterTitleLabel.AutoSize = true;
@@ -778,7 +801,7 @@
             this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(491, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
             this.FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
-            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(294, 26);
+            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(212, 26);
             this.FilterIconButtonsToolStrip.TabIndex = 3;
             this.FilterIconButtonsToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.FilterIconButtonsToolStrip_Paint);
             // 
@@ -891,10 +914,10 @@
             this.RefreshFiltersButton,
             this.ClearFiltersButton});
             this.RefreshAreaToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.RefreshAreaToolStrip.Location = new System.Drawing.Point(919, 0);
+            this.RefreshAreaToolStrip.Location = new System.Drawing.Point(994, 0);
             this.RefreshAreaToolStrip.Name = "RefreshAreaToolStrip";
             this.RefreshAreaToolStrip.PaddingDrawNudge = 0;
-            this.RefreshAreaToolStrip.Size = new System.Drawing.Size(166, 26);
+            this.RefreshAreaToolStrip.Size = new System.Drawing.Size(91, 26);
             this.RefreshAreaToolStrip.TabIndex = 12;
             this.RefreshAreaToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.RefreshAreaToolStrip_Paint);
             // 
@@ -998,6 +1021,17 @@
             this.Thief3TabPage.TabIndex = 2;
             this.Thief3TabPage.Text = "Thief 3";
             this.Thief3TabPage.UseVisualStyleBackColor = true;
+            // 
+            // SS2TabPage
+            // 
+            this.SS2TabPage.ImageIndex = 3;
+            this.SS2TabPage.Location = new System.Drawing.Point(4, 23);
+            this.SS2TabPage.Name = "SS2TabPage";
+            this.SS2TabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.SS2TabPage.Size = new System.Drawing.Size(1095, 0);
+            this.SS2TabPage.TabIndex = 3;
+            this.SS2TabPage.Text = "System Shock 2";
+            this.SS2TabPage.UseVisualStyleBackColor = true;
             // 
             // TopRightMenuButton
             // 
@@ -1568,6 +1602,13 @@
             this.TagsTreeView.Size = new System.Drawing.Size(510, 216);
             this.TagsTreeView.TabIndex = 2;
             // 
+            // TagsTabAutoScrollMarker
+            // 
+            this.TagsTabAutoScrollMarker.Location = new System.Drawing.Point(0, 0);
+            this.TagsTabAutoScrollMarker.Name = "TagsTabAutoScrollMarker";
+            this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
+            this.TagsTabAutoScrollMarker.TabIndex = 5;
+            // 
             // PatchTabPage
             // 
             this.PatchTabPage.AutoScroll = true;
@@ -1760,45 +1801,17 @@
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
-            // TagsTabAutoScrollMarker
+            // FMPlayLangComboBox
             // 
-            this.TagsTabAutoScrollMarker.Location = new System.Drawing.Point(0, 0);
-            this.TagsTabAutoScrollMarker.Name = "TagsTabAutoScrollMarker";
-            this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
-            this.TagsTabAutoScrollMarker.TabIndex = 5;
+            this.FMPlayLangComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FMPlayLangComboBox.FormattingEnabled = true;
+            this.FMPlayLangComboBox.Items.AddRange(new object[] {
+            "English"});
+            this.FMPlayLangComboBox.Location = new System.Drawing.Point(976, 8);
+            this.FMPlayLangComboBox.Name = "FMPlayLangComboBox";
+            this.FMPlayLangComboBox.Size = new System.Drawing.Size(128, 21);
+            this.FMPlayLangComboBox.TabIndex = 1000;
             // 
-            // DateAddedColumn
-            // 
-            this.DateAddedColumn.HeaderText = "Date Added";
-            this.DateAddedColumn.MinimumWidth = 25;
-            this.DateAddedColumn.Name = "DateAddedColumn";
-            this.DateAddedColumn.ReadOnly = true;
-            this.DateAddedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // FilterBySS2Button
-            // 
-            this.FilterBySS2Button.AutoSize = false;
-            this.FilterBySS2Button.CheckOnClick = true;
-            this.FilterBySS2Button.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterBySS2Button.Image = global::AngelLoader.Properties.Resources.Shock2_21;
-            this.FilterBySS2Button.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterBySS2Button.Margin = new System.Windows.Forms.Padding(0);
-            this.FilterBySS2Button.Name = "FilterBySS2Button";
-            this.FilterBySS2Button.Size = new System.Drawing.Size(25, 25);
-            this.FilterBySS2Button.ToolTipText = "System Shock 2";
-            this.FilterBySS2Button.Click += new System.EventHandler(this.FilterByGameCheckButtons_Click);
-            // 
-            // SS2TabPage
-            // 
-            this.SS2TabPage.ImageIndex = 3;
-            this.SS2TabPage.Location = new System.Drawing.Point(4, 23);
-            this.SS2TabPage.Name = "SS2TabPage";
-            this.SS2TabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SS2TabPage.Size = new System.Drawing.Size(1095, 0);
-            this.SS2TabPage.TabIndex = 3;
-            this.SS2TabPage.Text = "System Shock 2";
-            this.SS2TabPage.UseVisualStyleBackColor = true;
-            //
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -1998,5 +2011,6 @@
         internal CustomControls.ToolStripButtonCustom FilterBySS2Button;
         internal System.Windows.Forms.TabPage SS2TabPage;
         internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
+        internal CustomControls.ComboBoxCustom FMPlayLangComboBox;
     }
 }

@@ -3097,17 +3097,33 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            if (GameIsKnownAndSupported(fm.Game))
+#if Debug
+            using (new DisableEvents(this))
             {
-                if (!fm.LangDirsScanned)
+                FMPlayLangComboBox.Items.Clear();
+                FMPlayLangComboBox.Items.Add("English");
+
+                if (GameIsKnownAndSupported(fm.Game))
                 {
-                    FMInstallAndPlay.FillFMSupportedLangs(fm);
+                    if (!fm.LangDirsScanned)
+                    {
+                        FMInstallAndPlay.FillFMSupportedLangs(fm);
+                    }
+
+                    var langs = FMInstallAndPlay.SortLangsToSpec(fm.LangDirs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList());
+                    for (int i = 0; i < langs.Count; i++)
+                    {
+                        if (!langs[i].EqualsI("english"))
+                        {
+                            //FMPlayLangComboBox.Items.Add(char.ToUpperInvariant(langs[i][0]) + langs[i].Substring(1));
+                            FMPlayLangComboBox.Items.Add(FMLangsTranslated[langs[i].ToLowerInvariant()]);
+                        }
+                    }
                 }
 
-                var langs = fm.LangDirs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
-                langs = FMInstallAndPlay.SortLangsToSpec(langs);
+                FMPlayLangComboBox.SelectedIndex = 0;
             }
-
+#endif
             if (!refreshReadme) return;
 
             var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
