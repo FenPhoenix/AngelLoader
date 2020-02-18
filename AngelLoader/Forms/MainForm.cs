@@ -617,6 +617,14 @@ namespace AngelLoader.Forms
                     AddTagLLDropDown.HideAndClear();
                     return BlockMessage;
                 }
+                else if (m.Msg == InteropMisc.WM_MBUTTONDOWN && CursorOverControl(FMsDGV))
+                {
+                    FMsDGV.Focus();
+                    if (FMsDGV.RowSelected() && !FMsDGV.SelectedRows[0].Displayed)
+                    {
+                        CenterSelectedFM();
+                    }
+                }
             }
             #endregion
             #region Keys
@@ -1697,21 +1705,23 @@ namespace AngelLoader.Forms
             }
 
             // Keep selected FM in the center of the list vertically where possible (UX nicety)
-            if (selIndex > -1 && selFM != null)
-            {
-                try
-                {
-                    FMsDGV.FirstDisplayedScrollingRowIndex =
-                        (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
-                        .Clamp(0, FMsDGV.RowCount - 1);
-                }
-                catch (Exception)
-                {
-                    // no room is available to display rows
-                }
-            }
+            if (selIndex > -1 && selFM != null) CenterSelectedFM();
 
             // And that's how you do it
+        }
+
+        private void CenterSelectedFM()
+        {
+            try
+            {
+                FMsDGV.FirstDisplayedScrollingRowIndex =
+                    (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
+                    .Clamp(0, FMsDGV.RowCount - 1);
+            }
+            catch (Exception)
+            {
+                // no room is available to display rows
+            }
         }
 
         /// <summary>
