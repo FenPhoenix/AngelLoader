@@ -637,21 +637,7 @@ namespace AngelLoader.Forms
             // Any other keys have to use this.
             else if (m.Msg == InteropMisc.WM_KEYDOWN)
             {
-                int wParam = (int)m.WParam;
-
-                if (KeyPressesDisabled || ViewBlocked ||
-                    (FMsDGV.Focused &&
-                     ((wParam == InteropMisc.VK_PAGEUP ||
-                       (wParam == InteropMisc.VK_HOME) ||
-                       (wParam == InteropMisc.VK_UP)) &&
-                      FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
-                     ((wParam == InteropMisc.VK_PAGEDOWN ||
-                       (wParam == InteropMisc.VK_END) ||
-                       (wParam == InteropMisc.VK_DOWN)) &&
-                      FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)))
-                {
-                    return BlockMessage;
-                }
+                // nothing in here now, but keep for later use
             }
             else if (m.Msg == InteropMisc.WM_KEYUP)
             {
@@ -1050,6 +1036,13 @@ namespace AngelLoader.Forms
         {
             if (KeyPressesDisabled) return;
 
+            void SelectAndSuppress(int index)
+            {
+                FMsDGV.Rows[index].Selected = true;
+                FMsDGV.SelectProperly();
+                e.SuppressKeyPress = true;
+            }
+
             if (e.KeyCode == Keys.Enter)
             {
                 if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM().Game))
@@ -1064,22 +1057,48 @@ namespace AngelLoader.Forms
 
                 AddTagLLDropDown.HideAndClear();
             }
-            else if (e.KeyCode == Keys.Home)
+            else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
-                if (FMsDGV.RowCount > 0 && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    FMsDGV.Rows[0].Selected = true;
-                    FMsDGV.SelectProperly();
-                    e.SuppressKeyPress = true;
+                    SelectAndSuppress(0);
                 }
             }
-            else if (e.KeyCode == Keys.End)
+            else if (e.KeyCode == Keys.End || (e.Control && e.KeyCode == Keys.Down))
             {
-                if (FMsDGV.RowCount > 0 && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
                 {
-                    FMsDGV.Rows[FMsDGV.RowCount - 1].Selected = true;
-                    FMsDGV.SelectProperly();
-                    e.SuppressKeyPress = true;
+                    SelectAndSuppress(FMsDGV.RowCount - 1);
+                }
+            }
+            else if (e.KeyCode == Keys.PageUp || e.KeyCode == Keys.Up)
+            {
+                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                {
+                    if (FMsDGV.SelectedRows[0].Index == 0)
+                    {
+                        SelectAndSuppress(0);
+                    }
+                    else
+                    {
+                        FMsDGV.SendKeyDown(e);
+                        e.SuppressKeyPress = true;
+                    }
+                }
+            }
+            else if (e.KeyCode == Keys.PageDown || e.KeyCode == Keys.Down)
+            {
+                if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                {
+                    if (FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)
+                    {
+                        SelectAndSuppress(FMsDGV.RowCount - 1);
+                    }
+                    else
+                    {
+                        FMsDGV.SendKeyDown(e);
+                        e.SuppressKeyPress = true;
+                    }
                 }
             }
             else if (e.Control)

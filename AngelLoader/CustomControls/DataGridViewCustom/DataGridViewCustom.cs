@@ -297,6 +297,8 @@ namespace AngelLoader.CustomControls
             }
         }
 
+        internal void SendKeyDown(KeyEventArgs e) => OnKeyDown(e);
+
         #endregion
 
         #region Event overrides
