@@ -2347,7 +2347,7 @@ namespace AngelLoader.Forms
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
             if (FMsDGV.Filtered) SetFilter();
-            if (RefreshFMsList(selFM, keepSelection: KeepSel.TrueNearest))
+            if (RefreshFMsList(selFM, keepSelection: KeepSel.TrueNearest, fromColumnClick: true))
             {
                 if (selFM != null && FMsDGV.RowSelected() &&
                     selFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir)
@@ -2729,8 +2729,10 @@ namespace AngelLoader.Forms
         /// <param name="selectedFM"></param>
         /// <param name="startup"></param>
         /// <param name="keepSelection"></param>
+        /// <param name="fromColumnClick"></param>
         /// <returns></returns>
-        private bool RefreshFMsList(SelectedFM? selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False)
+        private bool RefreshFMsList(SelectedFM? selectedFM, bool startup = false, KeepSel keepSelection = KeepSel.False,
+            bool fromColumnClick = false)
         {
             using (new DisableEvents(this))
             {
@@ -2774,7 +2776,21 @@ namespace AngelLoader.Forms
                         row = FMsDGV.GetIndexFromInstalledName(selFM.InstalledName, findNearest).ClampToZero();
                         try
                         {
-                            FMsDGV.FirstDisplayedScrollingRowIndex = (row - selFM.IndexFromTop).ClampToZero();
+                            if (fromColumnClick)
+                            {
+                                if (FMsDGV.CurrentSortDirection == SortOrder.Ascending)
+                                {
+                                    FMsDGV.FirstDisplayedScrollingRowIndex = row.ClampToZero();
+                                }
+                                else if (FMsDGV.CurrentSortDirection == SortOrder.Descending)
+                                {
+                                    FMsDGV.FirstDisplayedScrollingRowIndex = (row - FMsDGV.DisplayedRowCount(true)).ClampToZero();
+                                }
+                            }
+                            else
+                            {
+                                FMsDGV.FirstDisplayedScrollingRowIndex = (row - selFM.IndexFromTop).ClampToZero();
+                            }
                         }
                         catch (Exception)
                         {
