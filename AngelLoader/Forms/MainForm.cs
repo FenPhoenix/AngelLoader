@@ -1057,6 +1057,7 @@ namespace AngelLoader.Forms
 
                 AddTagLLDropDown.HideAndClear();
             }
+            #region FMsDGV nav
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
@@ -1071,6 +1072,7 @@ namespace AngelLoader.Forms
                     SelectAndSuppress(FMsDGV.RowCount - 1);
                 }
             }
+            // The key suppression is to stop FMs being reloaded when the selection hasn't changed (perf)
             else if (e.KeyCode == Keys.PageUp || e.KeyCode == Keys.Up)
             {
                 if (FMsDGV.RowSelected() && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
@@ -1101,6 +1103,7 @@ namespace AngelLoader.Forms
                     }
                 }
             }
+            #endregion
             else if (e.Control)
             {
                 if (e.KeyCode == Keys.F)
