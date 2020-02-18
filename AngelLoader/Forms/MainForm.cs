@@ -634,12 +634,12 @@ namespace AngelLoader.Forms
                 if (KeyPressesDisabled || ViewBlocked ||
                     (FMsDGV.Focused &&
                      ((wParam == InteropMisc.VK_PAGEUP ||
-                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_HOME) ||
-                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_UP)) &&
+                       (wParam == InteropMisc.VK_HOME) ||
+                       (wParam == InteropMisc.VK_UP)) &&
                       FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == 0) ||
                      ((wParam == InteropMisc.VK_PAGEDOWN ||
-                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_END) ||
-                       (ModifierKeys == Keys.Control && wParam == InteropMisc.VK_DOWN)) &&
+                       (wParam == InteropMisc.VK_END) ||
+                       (wParam == InteropMisc.VK_DOWN)) &&
                       FMsDGV.RowSelected() && FMsDGV.SelectedRows[0].Index == FMsDGV.RowCount - 1)))
                 {
                     return BlockMessage;
@@ -1040,6 +1040,8 @@ namespace AngelLoader.Forms
 
         private async void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (KeyPressesDisabled) return;
+
             if (e.KeyCode == Keys.Enter)
             {
                 if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM().Game))
@@ -1053,6 +1055,24 @@ namespace AngelLoader.Forms
                 CancelResizables();
 
                 AddTagLLDropDown.HideAndClear();
+            }
+            else if (e.KeyCode == Keys.Home)
+            {
+                if (FMsDGV.RowCount > 0 && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                {
+                    FMsDGV.Rows[0].Selected = true;
+                    FMsDGV.SelectProperly();
+                    e.SuppressKeyPress = true;
+                }
+            }
+            else if (e.KeyCode == Keys.End)
+            {
+                if (FMsDGV.RowCount > 0 && (FMsDGV.Focused || CursorOverControl(FMsDGV)))
+                {
+                    FMsDGV.Rows[FMsDGV.RowCount - 1].Selected = true;
+                    FMsDGV.SelectProperly();
+                    e.SuppressKeyPress = true;
+                }
             }
             else if (e.Control)
             {
