@@ -1103,6 +1103,22 @@ namespace AngelLoader.Forms
                     }
                 }
             }
+            else if (e.KeyCode == Keys.F5)
+            {
+                if (FMsDGV.Focused || CursorOverControl(FMsDGV))
+                {
+                    if (e.Shift && !e.Control && !e.Alt)
+                    {
+                        await RefreshFromDisk();
+                        e.SuppressKeyPress = true;
+                    }
+                    else if (!e.Shift)
+                    {
+                        await SortAndSetFilter();
+                        e.SuppressKeyPress = true;
+                    }
+                }
+            }
             #endregion
             else if (e.Control)
             {
@@ -2469,22 +2485,12 @@ namespace AngelLoader.Forms
             }
         }
 
-        #endregion
+        #endregion    
 
-        private async void FMsDGV_KeyDown(object sender, KeyEventArgs e)
+        private void FMsDGV_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.F5)
-            {
-                if (e.Shift && !e.Control && !e.Alt)
-                {
-                    await RefreshFromDisk();
-                }
-                else if (!e.Shift)
-                {
-                    await SortAndSetFilter();
-                }
-            }
-            else if (e.KeyCode == Keys.Apps)
+            // This is in here because it doesn't really work right if we put it in MainForm_KeyDown anyway
+            if (e.KeyCode == Keys.Apps)
             {
                 FMsDGV.SetContextMenuToFM();
             }
