@@ -123,6 +123,14 @@ namespace AngelLoader.Forms
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
                 e.Graphics.DrawLine(sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
+
+            {
+                int bx = FilterShowRecentAtTopButton.Bounds.Location.X;
+                int sep1x = bx - 3;
+                int sep2x = bx - 2;
+                e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
+                e.Graphics.DrawLine(sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+            }
         }
 
         private void PaintRefreshAreaToolStrip(PaintEventArgs e)
