@@ -442,7 +442,7 @@ namespace AngelLoader
                 Config.ClearAllSelectedFMs();
                 Config.ClearAllFilters();
                 Config.GameTab = Thief1;
-                View.ClearAllUIAndInternalFilters();
+                View.ClearUIAndCurrentInternalFilter();
                 if (Config.GameOrganization == GameOrganization.ByTab) Config.Filter.Games = Game.Thief1;
                 View.ChangeGameOrganization();
             }

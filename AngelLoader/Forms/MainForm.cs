@@ -189,7 +189,7 @@ namespace AngelLoader.Forms
             FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
         }
 
-        public void ClearAllUIAndInternalFilters()
+        public void ClearUIAndCurrentInternalFilter()
         {
             using (new DisableEvents(this))
             {
@@ -4235,7 +4235,7 @@ namespace AngelLoader.Forms
 
         private async void ClearFiltersButton_Click(object sender, EventArgs e)
         {
-            ClearAllUIAndInternalFilters();
+            ClearUIAndCurrentInternalFilter();
             await SortAndSetFilter();
         }
 

@@ -27,7 +27,7 @@ namespace AngelLoader.Forms
         bool ShowRecentAtTop { get; }
         void ShowFMsListZoomButtons(bool visible);
         void ShowInstallUninstallButton(bool enabled);
-        void ClearAllUIAndInternalFilters();
+        void ClearUIAndCurrentInternalFilter();
         void ChangeGameOrganization(bool startup = false);
         void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
         /// <summary>
