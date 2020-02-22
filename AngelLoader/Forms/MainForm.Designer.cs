@@ -919,7 +919,7 @@
             this.FilterShowRecentAtTopButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.FilterShowRecentAtTopButton.Image = global::AngelLoader.Properties.Resources.FilterShowRecentAtTop;
             this.FilterShowRecentAtTopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FilterShowRecentAtTopButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
+            this.FilterShowRecentAtTopButton.Margin = new System.Windows.Forms.Padding(6, 0, 2, 0);
             this.FilterShowRecentAtTopButton.Name = "FilterShowRecentAtTopButton";
             this.FilterShowRecentAtTopButton.Size = new System.Drawing.Size(25, 25);
             this.FilterShowRecentAtTopButton.ToolTipText = "Show recent at top";

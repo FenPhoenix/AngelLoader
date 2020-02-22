@@ -748,7 +748,7 @@ namespace AngelLoader.Forms
             FilterShowRecentAtTopButton.CheckOnClick = true;
             FilterShowRecentAtTopButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterShowRecentAtTopButton.Image = Resources.FilterShowRecentAtTop;
-            FilterShowRecentAtTopButton.Margin = new Padding(6, 0, 0, 0);
+            FilterShowRecentAtTopButton.Margin = new Padding(6, 0, 2, 0);
             FilterShowRecentAtTopButton.Size = new Size(25, 25);
             FilterShowRecentAtTopButton.Click += FilterShowRecentAtTopButton_Click;
             // 

@@ -474,6 +474,10 @@ namespace AngelLoader
                         {
                             LText.FilterBar.ShowJunk = lt.Substring(9);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("ShowRecentAtTop="))
+                        {
+                            LText.FilterBar.ShowRecentAtTop = lt.Substring(16);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("RefreshFromDiskButtonToolTip="))
                         {
                             LText.FilterBar.RefreshFromDiskButtonToolTip = lt.Substring(29);

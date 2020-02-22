@@ -1250,6 +1250,7 @@ namespace AngelLoader.Forms
                 }
 
                 FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowJunk;
+                FilterShowRecentAtTopButton.ToolTipText = LText.FilterBar.ShowRecentAtTop;
 
                 #endregion
 

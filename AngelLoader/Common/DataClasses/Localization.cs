@@ -165,6 +165,7 @@ namespace AngelLoader.DataClasses
             internal static string RatingToolTip = "Rating";
             [FenGenBlankLine]
             internal static string ShowJunk = "Show FMs marked as \"unsupported game or non-FM archive\"";
+            internal static string ShowRecentAtTop = "Show recently added FMs at the top of the list";
             [FenGenBlankLine]
             internal static string RefreshFromDiskButtonToolTip = "Refresh from disk";
             internal static string RefreshFilteredListButtonToolTip = "Refresh filtered list";
