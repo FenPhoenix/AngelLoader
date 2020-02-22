@@ -208,9 +208,8 @@ namespace AngelLoader.Forms
             if (tempLangDict.Contains(engLang)) tempLangDict.Remove(engLang);
             tempLangDict.Insert(0, engLang, engLang);
 
-            for (var i = 0; i < tempLangDict.Count; i++)
+            foreach (DictionaryEntry item in tempLangDict)
             {
-                var item = (DictionaryEntry)tempLangDict[i];
                 LangComboBox.AddFullItem(item.Key.ToString(), item.Value.ToString());
             }
 
