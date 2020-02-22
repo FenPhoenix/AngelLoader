@@ -161,6 +161,29 @@ namespace AngelLoader
             "spanish"     // es
         };
 
+        internal static readonly Dictionary<string, string>
+        LangCodes = new Dictionary<string, string>
+        {
+            { "english", "en" },
+            { "czech", "cz" },
+            { "dutch", "nl" },
+            { "french", "fr" },
+            { "german", "de" },
+            { "hungarian", "hu" },
+            { "italian", "it" },
+            { "japanese", "ja" },
+            { "polish", "pl" },
+            { "russian", "ru" },
+            { "spanish", "es" }
+        };
+
+        internal static readonly Dictionary<string, string>
+        AltLangCodes = new Dictionary<string, string>
+        {
+            { "en", "eng" },
+            { "ja", "jp" }
+        };
+
         // For manual selection of language for playing an FM
         internal static readonly Dictionary<string, string>
         FMLangsTranslated = new Dictionary<string, string>

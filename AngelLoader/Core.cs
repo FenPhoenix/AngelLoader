@@ -1330,28 +1330,23 @@ namespace AngelLoader
             }
             else
             {
+                // Because there's no built-in way to tell it to find a key case-insensitively, we just convert
+                // to lowercase cause whatever. Perf doesn't really matter here.
+                string langLower = Config.Language.ToLowerInvariant();
+                // Because we allow arbitrary languages, it's theoretically possible to get one that doesn't have
+                // a language code.
+                bool langCodeExists = LangCodes.ContainsKey(langLower);
+                string langCode = langCodeExists ? LangCodes[langLower] : "";
+                bool altLangCodeExists = AltLangCodes.ContainsKey(langCode);
+                string altLangCode = altLangCodeExists ? AltLangCodes[langCode] : "";
+
                 var safeReadmes = new List<string>();
                 foreach (string rf in readmeFiles)
                 {
-                    string fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
+                    string fn_orig = Path.GetFileNameWithoutExtension(rf);
+                    string fn = StripPunctuation(fn_orig);
 
-                    // TODO: Choose readme based on Config.Language
-                    // From the DarkLoader source code main.pas:
-                    /*
-                       (***
-                        * Okay, here's the deal...
-                        * 'fminfo-xx' with the current language is the highest priority base name,
-                        * 'fminfo' is just below it, 'fminfo-xx' with some other language is below
-                        * that but higher than anything else.
-                        * A basename with the same name as the FM is lower than 'fminfo*' and
-                        * higher than some random filename, which will get picked as a last resort.
-                        * A language code appended to the FM name will sort similarly.
-                        * Within each basename, an extension of '.rtf' beats '.wri' beats '.txt'.
-                        * Any other extension gets a priority of 0 _regardless of the basename_.
-                        **)
-                    */
-                    // We want to improve on that with some fuzzy matching, like anything ending in "_de" or "-de"
-                    // is German etc. even if it doesn't start with "fminfo"
+                    // Original English-favoring section (keeping this in causes no harm)
                     if (fn.EqualsI("Readme") || fn.EqualsI("ReadmeEn") || fn.EqualsI("ReadmeEng") ||
                         fn.EqualsI("FMInfo") || fn.EqualsI("FMInfoEn") || fn.EqualsI("FMInfoEng") ||
                         fn.EqualsI("fm") || fn.EqualsI("fmEn") || fn.EqualsI("fmEng") ||
@@ -1361,6 +1356,14 @@ namespace AngelLoader
                         fn.EqualsI("Info") || fn.EqualsI("InfoEn") || fn.EqualsI("InfoEng") ||
                         fn.EqualsI("Entry") || fn.EqualsI("EntryEn") || fn.EqualsI("EntryEng") ||
                         fn.EqualsI("English") ||
+                    // end original English-favoring section
+                        (langCodeExists &&
+                         !ContainsUnsafeOrJunkPhrase(fn) &&
+                         (fn_orig.EndsWithI("_" + langCode) ||
+                          fn_orig.EndsWithI("-" + langCode) ||
+                          (altLangCodeExists &&
+                           (fn_orig.EndsWithI("_" + altLangCode) ||
+                            fn_orig.EndsWithI("-" + altLangCode))))) ||
                         (fn.StartsWithI(StripPunctuation(fmTitle)) && !ContainsUnsafeOrJunkPhrase(fn)) ||
                         (fn.EndsWithI("Readme") && !ContainsUnsafePhrase(fn)))
                     {
@@ -1387,7 +1390,12 @@ namespace AngelLoader
                     foreach (string sr in safeReadmes)
                     {
                         string srNoExt = Path.GetFileNameWithoutExtension(sr);
-                        if (srNoExt.EndsWithI("en") || srNoExt.EndsWithI("eng"))
+                        if (langCodeExists &&
+                            (srNoExt.EndsWithI("_" + langCode) ||
+                             srNoExt.EndsWithI("-" + langCode) ||
+                             (altLangCodeExists &&
+                              (srNoExt.EndsWithI("_" + altLangCode) ||
+                               srNoExt.EndsWithI("-" + altLangCode)))))
                         {
                             safeReadmes.Remove(sr);
                             safeReadmes.Insert(0, sr);
