@@ -148,17 +148,17 @@ namespace AngelLoader
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
         internal static readonly string[] FMSupportedLanguages =
         {
-            "english", // must be first
-            "czech",
-            "dutch",
-            "french",
-            "german",
-            "hungarian",
-            "italian",
-            "japanese",
-            "polish",
-            "russian",
-            "spanish"
+            "english",    // en, must be first
+            "czech",      // cz
+            "dutch",      // nl
+            "french",     // fr
+            "german",     // de
+            "hungarian",  // hu
+            "italian",    // it
+            "japanese",   // ja, jp
+            "polish",     // pl
+            "russian",    // ru
+            "spanish"     // es
         };
 
         // For manual selection of language for playing an FM

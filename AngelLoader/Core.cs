@@ -1335,6 +1335,23 @@ namespace AngelLoader
                 {
                     string fn = StripPunctuation(Path.GetFileNameWithoutExtension(rf));
 
+                    // TODO: Choose readme based on Config.Language
+                    // From the DarkLoader source code main.pas:
+                    /*
+                       (***
+                        * Okay, here's the deal...
+                        * 'fminfo-xx' with the current language is the highest priority base name,
+                        * 'fminfo' is just below it, 'fminfo-xx' with some other language is below
+                        * that but higher than anything else.
+                        * A basename with the same name as the FM is lower than 'fminfo*' and
+                        * higher than some random filename, which will get picked as a last resort.
+                        * A language code appended to the FM name will sort similarly.
+                        * Within each basename, an extension of '.rtf' beats '.wri' beats '.txt'.
+                        * Any other extension gets a priority of 0 _regardless of the basename_.
+                        **)
+                    */
+                    // We want to improve on that with some fuzzy matching, like anything ending in "_de" or "-de"
+                    // is German etc. even if it doesn't start with "fminfo"
                     if (fn.EqualsI("Readme") || fn.EqualsI("ReadmeEn") || fn.EqualsI("ReadmeEng") ||
                         fn.EqualsI("FMInfo") || fn.EqualsI("FMInfoEn") || fn.EqualsI("FMInfoEng") ||
                         fn.EqualsI("fm") || fn.EqualsI("fmEn") || fn.EqualsI("fmEng") ||
