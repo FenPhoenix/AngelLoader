@@ -75,7 +75,6 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
 
-            Config.ShowRecentAtTop = ShowRecentAtTopCheckBox.Checked;
             await SortAndSetFilter(keepSelection: false);
         }
 #endif
@@ -1885,7 +1884,8 @@ namespace AngelLoader.Forms
             {
                 var fm = FMsViewList[i];
 
-                if (titleIsWhitespace ||
+                if (fm.MarkedRecent ||
+                    titleIsWhitespace ||
                     fm.Title.ContainsI(FMsDGV.Filter.Title) ||
                     (fm.Archive.ExtIsArchive()
                         ? fm.Archive.IndexOf(FMsDGV.Filter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
@@ -1920,8 +1920,8 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    Game fmGame = FMsViewList[FMsDGV.FilterShownIndexList[i]].Game;
-                    if (fmGame == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    if (fm.Game == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -1937,8 +1937,10 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    Game fmGame = FMsViewList[FMsDGV.FilterShownIndexList[i]].Game;
-                    if (GameIsKnownAndSupported(fmGame) && (FMsDGV.Filter.Games & fmGame) != fmGame)
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    if (GameIsKnownAndSupported(fm.Game) &&
+                        (Config.GameOrganization == GameOrganization.ByTab || !fm.MarkedRecent) &&
+                        (FMsDGV.Filter.Games & fm.Game) != fm.Game)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -1960,8 +1962,11 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    CatAndTagsList fmTags = FMsViewList[FMsDGV.FilterShownIndexList[i]].Tags;
-                    if (fmTags.Count == 0 && notTags.Count == 0)
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
+
+                    if (fm.MarkedRecent) continue;
+
+                    if (fm.Tags.Count == 0 && notTags.Count == 0)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -1977,7 +1982,7 @@ namespace AngelLoader.Forms
                         bool andPass = true;
                         foreach (CatAndTags andTag in andTags)
                         {
-                            CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == andTag.Category);
+                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == andTag.Category);
                             if (match == null)
                             {
                                 andPass = false;
@@ -2016,7 +2021,7 @@ namespace AngelLoader.Forms
                         bool orPass = false;
                         foreach (CatAndTags orTag in orTags)
                         {
-                            CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == orTag.Category);
+                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == orTag.Category);
                             if (match == null) continue;
 
                             if (orTag.Tags.Count > 0)
@@ -2055,7 +2060,7 @@ namespace AngelLoader.Forms
                         bool notPass = true;
                         foreach (CatAndTags notTag in notTags)
                         {
-                            CatAndTags? match = fmTags.FirstOrDefault(x => x.Category == notTag.Category);
+                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == notTag.Category);
                             if (match == null) continue;
 
                             if (notTag.Tags.Count == 0)
@@ -2102,8 +2107,9 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    int fmRating = FMsViewList[FMsDGV.FilterShownIndexList[i]].Rating;
-                    if (fmRating < rf || fmRating > rt)
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        (fm.Rating < rf || fm.Rating > rt))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2122,12 +2128,13 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    DateTime? fmRelDate = FMsViewList[FMsDGV.FilterShownIndexList[i]].ReleaseDate.DateTime;
-                    if (fmRelDate == null ||
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        (fm.ReleaseDate.DateTime == null ||
                         (rdf != null &&
-                         fmRelDate.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
+                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
                         (rdt != null &&
-                         fmRelDate.Value.Date.CompareTo(rdt.Value.Date) > 0))
+                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdt.Value.Date) > 0)))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2146,12 +2153,13 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    DateTime? fmLastPlayed = FMsViewList[FMsDGV.FilterShownIndexList[i]].LastPlayed.DateTime;
-                    if (fmLastPlayed == null ||
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        (fm.LastPlayed.DateTime == null ||
                         (lpdf != null &&
-                         fmLastPlayed.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
+                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
                         (lpdt != null &&
-                         fmLastPlayed.Value.Date.CompareTo(lpdt.Value.Date) > 0))
+                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdt.Value.Date) > 0)))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -2171,8 +2179,9 @@ namespace AngelLoader.Forms
                     uint fmFinished = fm.FinishedOn;
                     bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
-                    if (((fmFinished > 0 || fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
-                        (fmFinished == 0 && !fmFinishedOnUnknown && (FMsDGV.Filter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished))
+                    if (!fm.MarkedRecent &&
+                        (((fmFinished > 0 || fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
+                        (fmFinished == 0 && !fmFinishedOnUnknown && (FMsDGV.Filter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished)))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
@@ -4123,6 +4132,8 @@ namespace AngelLoader.Forms
         }
 
         #region Filter bar controls
+
+        private async void FilterShowRecentAtTopButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: false);
 
         private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 

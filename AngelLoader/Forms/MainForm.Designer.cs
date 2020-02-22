@@ -40,6 +40,7 @@
             this.TestButton = new System.Windows.Forms.Button();
             this.ScanAllFMsButton = new System.Windows.Forms.Button();
             this.BottomPanel = new System.Windows.Forms.Panel();
+            this.FMPlayLangComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.SettingsButton = new System.Windows.Forms.Button();
             this.ImportButton = new System.Windows.Forms.Button();
@@ -86,6 +87,7 @@
             this.FilterByUnfinishedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterByRatingButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.FilterShowUnsupportedButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
+            this.FilterShowRecentAtTopButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshAreaToolStrip = new AngelLoader.CustomControls.ToolStripCustom();
             this.RefreshFromDiskButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
             this.RefreshFiltersButton = new AngelLoader.CustomControls.ToolStripButtonCustom();
@@ -159,7 +161,6 @@
             this.ChooseReadmeComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.ReadmeRichTextBox = new AngelLoader.CustomControls.RichTextBoxCustom();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.FMPlayLangComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
             this.BottomPanel.SuspendLayout();
             this.BottomRightButtonsFLP.SuspendLayout();
             this.BottomLeftButtonsFLP.SuspendLayout();
@@ -247,6 +248,17 @@
             this.BottomPanel.Name = "BottomPanel";
             this.BottomPanel.Size = new System.Drawing.Size(1671, 44);
             this.BottomPanel.TabIndex = 1;
+            // 
+            // FMPlayLangComboBox
+            // 
+            this.FMPlayLangComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FMPlayLangComboBox.FormattingEnabled = true;
+            this.FMPlayLangComboBox.Items.AddRange(new object[] {
+            "English"});
+            this.FMPlayLangComboBox.Location = new System.Drawing.Point(976, 8);
+            this.FMPlayLangComboBox.Name = "FMPlayLangComboBox";
+            this.FMPlayLangComboBox.Size = new System.Drawing.Size(128, 21);
+            this.FMPlayLangComboBox.TabIndex = 1000;
             // 
             // BottomRightButtonsFLP
             // 
@@ -796,12 +808,13 @@
             this.FilterByFinishedButton,
             this.FilterByUnfinishedButton,
             this.FilterByRatingButton,
-            this.FilterShowUnsupportedButton});
+            this.FilterShowUnsupportedButton,
+            this.FilterShowRecentAtTopButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(491, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
             this.FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
-            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(212, 26);
+            this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(274, 26);
             this.FilterIconButtonsToolStrip.TabIndex = 3;
             this.FilterIconButtonsToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.FilterIconButtonsToolStrip_Paint);
             // 
@@ -896,8 +909,21 @@
             this.FilterShowUnsupportedButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterShowUnsupportedButton.Name = "FilterShowUnsupportedButton";
             this.FilterShowUnsupportedButton.Size = new System.Drawing.Size(25, 25);
-            this.FilterShowUnsupportedButton.ToolTipText = "Unfinished";
+            this.FilterShowUnsupportedButton.ToolTipText = "Show FMs marked as \"unsupported game or non-FM archive\"";
             this.FilterShowUnsupportedButton.Click += new System.EventHandler(this.FilterShowUnsupportedButton_Click);
+            // 
+            // FilterShowRecentAtTopButton
+            // 
+            this.FilterShowRecentAtTopButton.AutoSize = false;
+            this.FilterShowRecentAtTopButton.CheckOnClick = true;
+            this.FilterShowRecentAtTopButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FilterShowRecentAtTopButton.Image = global::AngelLoader.Properties.Resources.FilterShowRecentAtTop;
+            this.FilterShowRecentAtTopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FilterShowRecentAtTopButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
+            this.FilterShowRecentAtTopButton.Name = "FilterShowRecentAtTopButton";
+            this.FilterShowRecentAtTopButton.Size = new System.Drawing.Size(25, 25);
+            this.FilterShowRecentAtTopButton.ToolTipText = "Show recent at top";
+            this.FilterShowRecentAtTopButton.Click += new System.EventHandler(this.FilterShowRecentAtTopButton_Click);
             // 
             // RefreshAreaToolStrip
             // 
@@ -1801,17 +1827,6 @@
             this.ReadmeRichTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.ReadmeRichTextBox_LinkClicked);
             this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
-            // FMPlayLangComboBox
-            // 
-            this.FMPlayLangComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.FMPlayLangComboBox.FormattingEnabled = true;
-            this.FMPlayLangComboBox.Items.AddRange(new object[] {
-            "English"});
-            this.FMPlayLangComboBox.Location = new System.Drawing.Point(976, 8);
-            this.FMPlayLangComboBox.Name = "FMPlayLangComboBox";
-            this.FMPlayLangComboBox.Size = new System.Drawing.Size(128, 21);
-            this.FMPlayLangComboBox.TabIndex = 1000;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -2012,5 +2027,6 @@
         internal System.Windows.Forms.TabPage SS2TabPage;
         internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
         internal CustomControls.ComboBoxCustom FMPlayLangComboBox;
+        internal CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
     }
 }

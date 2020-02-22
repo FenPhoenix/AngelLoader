@@ -626,10 +626,10 @@ namespace AngelLoader
                     fm.MarkedRecent = false;
 
                     if (fm.DateAdded != null &&
-                        ((DateTime)fm.DateAdded).CompareTo(dtNow) <= 0 &&
-                        (dtNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
+                        ((DateTime)fm.DateAdded).ToLocalTime().CompareTo(dtNow) <= 0 &&
+                        (dtNow - ((DateTime)fm.DateAdded).ToLocalTime()).TotalDays <= Config.DaysRecent)
                     {
-                        FMsViewList.Remove(fm);
+
                         tempFMs.Add(fm);
                     }
                 }
@@ -641,6 +641,7 @@ namespace AngelLoader
                 {
                     var fm = tempFMs[i];
                     fm.MarkedRecent = true;
+                    FMsViewList.Remove(fm);
                     FMsViewList.Insert(0, fm);
                 }
             }
@@ -1356,7 +1357,7 @@ namespace AngelLoader
                         fn.EqualsI("Info") || fn.EqualsI("InfoEn") || fn.EqualsI("InfoEng") ||
                         fn.EqualsI("Entry") || fn.EqualsI("EntryEn") || fn.EqualsI("EntryEng") ||
                         fn.EqualsI("English") ||
-                    // end original English-favoring section
+                        // end original English-favoring section
                         (langCodeExists &&
                          !ContainsUnsafeOrJunkPhrase(fn) &&
                          (fn_orig.EndsWithI("_" + langCode) ||
