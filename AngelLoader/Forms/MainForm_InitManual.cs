@@ -456,6 +456,7 @@ namespace AngelLoader.Forms
             FMsDGV.CellDoubleClick += FMsDGV_CellDoubleClick;
             FMsDGV.CellValueNeeded += FMsDGV_CellValueNeeded_Initial;
             FMsDGV.ColumnHeaderMouseClick += FMsDGV_ColumnHeaderMouseClick;
+            FMsDGV.RowPrePaint += FMsDGV_RowPrePaint;
             FMsDGV.SelectionChanged += FMsDGV_SelectionChanged;
             FMsDGV.KeyDown += FMsDGV_KeyDown;
             FMsDGV.KeyPress += FMsDGV_KeyPress;

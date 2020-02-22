@@ -2184,6 +2184,22 @@ namespace AngelLoader.Forms
 
         #region FMsDGV event handlers
 
+        // Coloring the recent rows here because if we do it in _CellValueNeeded, we get a brief flash of the
+        // default while-background cell color before it changes.
+        private void FMsDGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        {
+            if (CellValueNeededDisabled) return;
+
+            if (FMsDGV.Filtered && FMsDGV.FilterShownIndexList.Count == 0) return;
+
+            var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
+
+            if (fm.MarkedRecent)
+            {
+                FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGoldenrodYellow;
+            }
+        }
+
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
         {
             if (CellValueNeededDisabled) return;
@@ -2262,11 +2278,6 @@ namespace AngelLoader.Forms
             if (FMsDGV.Filtered && FMsDGV.FilterShownIndexList.Count == 0) return;
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
-
-            if (fm.MarkedRecent)
-            {
-                FMsDGV.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = Color.LightGoldenrodYellow;
-            }
 
             // PERF: ~0.14ms per FM for en-US Long Date format
             // PERF_TODO: Test with custom - dt.ToString() might be slow?
