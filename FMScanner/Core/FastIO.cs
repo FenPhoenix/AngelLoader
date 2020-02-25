@@ -34,6 +34,21 @@ namespace FMScanner
             private static extern bool FindClose(IntPtr hFindFile);
         }
 
+        [PublicAPI]
+        private enum FINDEX_INFO_LEVELS
+        {
+            FindExInfoStandard = 0,
+            FindExInfoBasic = 1
+        }
+
+        [PublicAPI]
+        private enum FINDEX_SEARCH_OPS
+        {
+            FindExSearchNameMatch = 0,
+            FindExSearchLimitToDirectories = 1,
+            FindExSearchLimitToDevices = 2
+        }
+
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
         [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
@@ -55,7 +70,13 @@ namespace FMScanner
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern SafeSearchHandle FindFirstFileW(string lpFileName, out WIN32_FIND_DATAW lpFindFileData);
+        private static extern SafeSearchHandle FindFirstFileEx(
+            string lpFileName,
+            FINDEX_INFO_LEVELS fInfoLevelId,
+            out WIN32_FIND_DATAW lpFindFileData,
+            FINDEX_SEARCH_OPS fSearchOp,
+            IntPtr lpSearchFilter,
+            int dwAdditionalFlags);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern bool FindNextFileW(SafeSearchHandle hFindFile, out WIN32_FIND_DATAW lpFindFileData);
@@ -126,11 +147,19 @@ namespace FMScanner
             // Search the base directory first, and only then search subdirectories.
             // TODO: Fix goofy duplicate code
 
+            string pathC = @"\\?\" + path + "\\";
+
             if (searchOption != FastIOSearchOption.AllDirectoriesSkipTop)
             {
                 foreach (string p in searchPatterns)
                 {
-                    using SafeSearchHandle findHandle = FindFirstFileW(@"\\?\" + path.TrimEnd('\\') + '\\' + p, out findData);
+                    using SafeSearchHandle findHandle = FindFirstFileEx(
+                        pathC + p,
+                        FINDEX_INFO_LEVELS.FindExInfoBasic,
+                        out findData,
+                        FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                        IntPtr.Zero,
+                        0);
 
                     if (findHandle.IsInvalid)
                     {
@@ -155,7 +184,13 @@ namespace FMScanner
                 }
             }
 
-            using (SafeSearchHandle findHandle = FindFirstFileW(@"\\?\" + path.TrimEnd('\\') + @"\*", out findData))
+            using (SafeSearchHandle findHandle = FindFirstFileEx(
+                pathC + "*",
+                FINDEX_INFO_LEVELS.FindExInfoBasic,
+                out findData,
+                FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                IntPtr.Zero,
+                0))
             {
                 if (findHandle.IsInvalid)
                 {
