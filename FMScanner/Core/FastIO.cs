@@ -126,9 +126,22 @@ namespace FMScanner
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         private static bool FirstFileExists(FastIOSearchOption searchOption, string path, params string[] searchPatterns)
         {
-            path = path.TrimEnd('\\');
+            path = path.TrimEnd(FMConstants.CA_Backslash);
 
-            if (string.IsNullOrWhiteSpace(path) || Path.GetInvalidPathChars().Any(path.Contains))
+            bool pathContainsInvalidChars = false;
+            char[] invalidChars = Path.GetInvalidPathChars();
+
+            // Dumb loop to avoid LINQ.
+            for (int i = 0; i < invalidChars.Length; i++)
+            {
+                if (path.Contains(invalidChars[i]))
+                {
+                    pathContainsInvalidChars = true;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(path) || pathContainsInvalidChars)
             {
                 throw new ArgumentException("The path '" + path + "' is invalid in some, or other, regard.");
             }

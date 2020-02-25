@@ -108,6 +108,58 @@ namespace FMScanner
 
     internal static class FMConstants
     {
+        #region Preallocated arrays
+
+        // Perf, for passing to params[]-taking methods so we don't allocate all the time
+
+        internal static readonly char[] CA_Period = { '.' };
+        internal static readonly char[] CA_Asterisk = { '*' };
+        internal static readonly char[] CA_Hyphen = { '-' };
+        internal static readonly char[] CA_CommaSemicolon = { ',', ';' };
+        internal static readonly char[] CA_Backslash = { '\\' };
+        internal static readonly char[] CA_DoubleQuote = { '\"' };
+        internal static readonly char[] CA_UnicodeQuotes = { Constants.uldq, Constants.urdq };
+        internal static readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
+        internal static readonly string[] SA_AllFiles = { "*" };
+        internal static readonly string[] SA_AllBinFiles = { "*.bin" };
+        internal static readonly string[] SA_AllSubFiles = { "*.sub" };
+
+        #region Field detect strings
+
+        internal static readonly string[] SA_TitleDetect =
+        {
+            "Title of the Mission", "Title of the mission",
+            "Title", "Mission Title", "Mission title", "Mission Name", "Mission name", "Level Name",
+            "Level name", "Mission:", "Mission ", "Campaign Title", "Campaign title",
+            "The name of Mission:",
+            // TODO: @TEMP_HACK: This works for the one mission that has it in this casing
+            // Rewrite this code in here so we can have more detailed detection options than just
+            // these silly strings and the default case check
+            "Fan Mission/Map Name"
+        };
+
+        internal static readonly string[] SA_AuthorDetect =
+        {
+            "Author", "Authors", "Autor",
+            "Created by", "Devised by", "Designed by", "Author=", "Made by",
+            "FM Author", "Mission Author", "Mission author", "Mission Creator", "Mission creator",
+            "The author:", "author:",
+            // TODO: @TEMP_HACK: See above
+            "Fan Mission/Map Author"
+        };
+
+        internal static readonly string[] SA_ReleaseDateDetect =
+        {
+            "Date Of Release", "Date of Release",
+            "Date of release", "Release Date", "Release date"
+        };
+
+        internal static readonly string[] SA_VersionDetect = { "Version" };
+
+        #endregion
+
+        #endregion
+
         // Ordered by number of actual total occurrences across all FMs:
         // gif: 153,294
         // pcx: 74,786

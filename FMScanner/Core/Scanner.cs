@@ -630,15 +630,7 @@ namespace FMScanner
 
             if (ScanOptions.ScanTitle)
             {
-                SetOrAddTitle(
-                    GetValueFromReadme(SpecialLogic.Title, titles: null, "Title of the Mission", "Title of the mission",
-                        "Title", "Mission Title", "Mission title", "Mission Name", "Mission name", "Level Name",
-                        "Level name", "Mission:", "Mission ", "Campaign Title", "Campaign title",
-                        "The name of Mission:",
-                        // TODO: @TEMP_HACK: This works for the one mission that has it in this casing
-                        // Rewrite this code in here so we can have more detailed detection options than just
-                        // these silly strings and the default case check
-                        "Fan Mission/Map Name"));
+                SetOrAddTitle(GetValueFromReadme(SpecialLogic.Title, titles: null, SA_TitleDetect));
 
                 if (!fmIsT3) SetOrAddTitle(GetTitleFromNewGameStrFile(intrfaceDirFiles));
 
@@ -666,15 +658,7 @@ namespace FMScanner
                     }
 
                     // TODO: Do I want to check AlternateTitles for StartsWithI("By ") as well?
-                    string author =
-                        GetValueFromReadme(SpecialLogic.Author,
-                            titles,
-                            "Author", "Authors", "Autor",
-                            "Created by", "Devised by", "Designed by", "Author=", "Made by",
-                            "FM Author", "Mission Author", "Mission author", "Mission Creator", "Mission creator",
-                            "The author:", "author:",
-                            // TODO: @TEMP_HACK: See above
-                            "Fan Mission/Map Author");
+                    string author = GetValueFromReadme(SpecialLogic.Author, titles, SA_AuthorDetect);
 
                     fmData.Author = CleanupValue(author);
                 }
@@ -767,8 +751,7 @@ namespace FMScanner
             DateTime? ret = null;
 
             // Look in the readme
-            string ds = GetValueFromReadme(SpecialLogic.None, null, "Date Of Release", "Date of Release",
-                "Date of release", "Release Date", "Release date");
+            string ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
             if (!string.IsNullOrEmpty(ds) && StringToDate(ds, out DateTime dt))
             {
                 ret = dt;
@@ -851,7 +834,7 @@ namespace FMScanner
         {
             if (string.IsNullOrWhiteSpace(fmData.TagsString)) fmData.TagsString = "";
 
-            var list = fmData.TagsString.Split(',', ';').ToList();
+            var list = fmData.TagsString.Split(CA_CommaSemicolon).ToList();
             bool tagFound = false;
             for (int i = 0; i < list.Count; i++)
             {
@@ -1061,7 +1044,7 @@ namespace FMScanner
             {
                 string t3DetectPath = Path.Combine(FmWorkingPath, FMDirs.T3Detect);
                 if (Directory.Exists(t3DetectPath) &&
-                    FastIO.FilesExistSearchTop(t3DetectPath, "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr"))
+                    FastIO.FilesExistSearchTop(t3DetectPath, SA_T3DetectExtensions))
                 {
                     t3Found = true;
                     fmd.Game = Game.Thief3;
@@ -1139,9 +1122,9 @@ namespace FMScanner
 
                         fmd.HasMovies =
                             (baseDirFolders.ContainsI(FMDirs.Movies) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Movies), "*")) ||
+                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Movies), SA_AllFiles)) ||
                             (baseDirFolders.ContainsI(FMDirs.Cutscenes) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Cutscenes), "*"));
+                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Cutscenes), SA_AllFiles));
 
                         fmd.HasCustomTextures =
                             baseDirFolders.ContainsI(FMDirs.Fam) &&
@@ -1150,26 +1133,26 @@ namespace FMScanner
 
                         fmd.HasCustomObjects =
                             baseDirFolders.ContainsI(FMDirs.Obj) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Obj), "*.bin");
+                            FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Obj), SA_AllBinFiles);
 
                         fmd.HasCustomCreatures =
                             baseDirFolders.ContainsI(FMDirs.Mesh) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Mesh), "*.bin");
+                            FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Mesh), SA_AllBinFiles);
 
                         fmd.HasCustomScripts =
                             baseDirFiles.Any(x => ScriptFileExtensions.ContainsI(Path.GetExtension(x.Name))) ||
                             (baseDirFolders.ContainsI(FMDirs.Scripts) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Scripts), "*"));
+                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Scripts), SA_AllFiles));
 
                         fmd.HasCustomSounds =
                             (baseDirFolders.ContainsI(FMDirs.Snd) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Snd), "*")) ||
+                             FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Snd), SA_AllFiles)) ||
                              (baseDirFolders.ContainsI(FMDirs.Snd2) &&
-                              FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Snd2), "*"));
+                              FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Snd2), SA_AllFiles));
 
                         fmd.HasCustomSubtitles =
                             baseDirFolders.ContainsI(FMDirs.Subtitles) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Subtitles), "*.sub");
+                            FastIO.FilesExistSearchAll(Path.Combine(FmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
                     }
                 }
             }
@@ -1356,12 +1339,12 @@ namespace FMScanner
                 if (fmIni.Descr[0] == '\"' && fmIni.Descr[fmIni.Descr.Length - 1] == '\"' &&
                     fmIni.Descr.CountChars('\"') == 2)
                 {
-                    fmIni.Descr = fmIni.Descr.Trim('\"');
+                    fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
                 }
                 if (fmIni.Descr[0] == uldq && fmIni.Descr[fmIni.Descr.Length - 1] == urdq &&
                     fmIni.Descr.CountChars(uldq) + fmIni.Descr.CountChars(urdq) == 2)
                 {
-                    fmIni.Descr = fmIni.Descr.Trim(uldq, urdq);
+                    fmIni.Descr = fmIni.Descr.Trim(CA_UnicodeQuotes);
                 }
 
                 fmIni.Descr = fmIni.Descr.RemoveUnpairedLeadingOrTrailingQuotes();
@@ -1380,18 +1363,22 @@ namespace FMScanner
             {
                 if (fmIni.Tags != null)
                 {
-                    string[] tagsList = fmIni.Tags.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] tagsArray = fmIni.Tags.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    var authors = tagsList.Where(x => x.StartsWithI("author:"));
+                    // LINQ avoidance
+                    var authors = new List<string>();
+                    for (int i = 0; i < tagsArray.Length; i++)
+                    {
+                        string tag = tagsArray[i];
+                        if (tag.StartsWithI("author:")) authors.Add(tag);
+                    }
 
                     string authorString = "";
-                    bool first = true;
-                    foreach (string a in authors)
+                    for (int i = 0; i < authors.Count; i++)
                     {
-                        if (!first && !authorString.EndsWith(", ")) authorString += ", ";
+                        string a = authors[i];
+                        if (i > 0 && !authorString.EndsWith(", ")) authorString += ", ";
                         authorString += a.Substring(a.IndexOf(':') + 1).Trim();
-
-                        first = false;
                     }
 
                     ret.Author = authorString;
@@ -1853,20 +1840,31 @@ namespace FMScanner
 
             if (ReadmeFiles == null || ReadmeFiles.Count == 0) return ret;
 
+            const int maxTopLines = 5;
+
             foreach (ReadmeInternal r in readmes)
             {
                 if (r.FileName.ExtIsHtml() || r.Lines == null || r.Lines.Length == 0) continue;
 
-                var lines = r.Lines.ToList();
+                var lines = new List<string>();
 
-                lines.RemoveAll(string.IsNullOrWhiteSpace);
+                int fullLineCount = 0;
+                for (int i = 0; i < r.Lines.Length; i++)
+                {
+                    string line = r.Lines[i];
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        lines.Add(line);
+                        fullLineCount++;
+                    }
+                    if (fullLineCount == maxTopLines) break;
+                }
 
                 if (lines.Count < 2) continue;
 
                 string titleConcat = "";
 
-                int linesToSearch = lines.Count >= 5 ? 5 : lines.Count;
-                for (int i = 0; i < linesToSearch; i++)
+                for (int i = 0; i < lines.Count; i++)
                 {
                     string lineT = lines[i].Trim();
                     if (i > 0 &&
@@ -2090,11 +2088,11 @@ namespace FMScanner
             string ret = value.TrimEnd();
 
             // Remove surrounding quotes
-            if (ret[0] == '\"' && ret[ret.Length - 1] == '\"') ret = ret.Trim('\"');
+            if (ret[0] == '\"' && ret[ret.Length - 1] == '\"') ret = ret.Trim(CA_DoubleQuote);
             if ((ret[0] == uldq || ret[0] == urdq) &&
                 (ret[ret.Length - 1] == uldq || ret[ret.Length - 1] == urdq))
             {
-                ret = ret.Trim(uldq, urdq);
+                ret = ret.Trim(CA_UnicodeQuotes);
             }
 
             ret = ret.RemoveUnpairedLeadingOrTrailingQuotes();
@@ -2218,6 +2216,8 @@ namespace FMScanner
 
         private static string GetAuthorFromTopOfReadme(string[] linesArray, List<string> titles)
         {
+            if (linesArray.Length == 0) return null;
+
             bool titleStartsWithBy = false;
             bool titleContainsBy = false;
             if (titles != null)
@@ -2228,17 +2228,28 @@ namespace FMScanner
                     if (title.ContainsI(" by ")) titleContainsBy = true;
                 }
             }
+            
+            const int maxTopLines = 5;
 
             // Look for a "by [author]" in the first few lines. Looking for a line starting with "by" throughout
             // the whole text is asking for a cavalcade of false positives, hence why we only look near the top.
-            var lines = linesArray.ToList();
+            var lines = new List<string>();
 
-            lines.RemoveAll(string.IsNullOrWhiteSpace);
+            int fullLineCount = 0;
+            for (int i = 0; i < linesArray.Length; i++)
+            {
+                string line = linesArray[i];
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    lines.Add(line);
+                    fullLineCount++;
+                }
+                if (fullLineCount == maxTopLines) break;
+            }
 
             if (lines.Count < 2) return null;
 
-            int linesToSearch = lines.Count >= 5 ? 5 : lines.Count;
-            for (int i = 0; i < linesToSearch; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 // Preemptive check
                 if (i == 0 && titleStartsWithBy) continue;
@@ -2251,7 +2262,7 @@ namespace FMScanner
                 }
                 else if (lineT.EqualsI("By"))
                 {
-                    if (!titleContainsBy && i < linesToSearch - 1)
+                    if (!titleContainsBy && i < lines.Count - 1)
                     {
                         return lines[i + 1].Trim();
                     }
@@ -2390,7 +2401,7 @@ namespace FMScanner
                         break;
                     }
 
-                    string lineT = line.Trim('*').Trim('-').Trim();
+                    string lineT = line.Trim(CA_Asterisk).Trim(CA_Hyphen).Trim();
                     if (lineT.EqualsI("Copyright Information") || lineT.EqualsI("Copyright"))
                     {
                         inCopyrightSection = true;
@@ -2426,14 +2437,14 @@ namespace FMScanner
                 author = author.Substring(0, author.Length - 2);
             }
 
-            author = author.TrimEnd('.').Trim();
+            author = author.TrimEnd(CA_Period).Trim();
 
             return author;
         }
 
         private string GetVersion()
         {
-            string version = GetValueFromReadme(SpecialLogic.Version, null, "Version");
+            string version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
 
             if (string.IsNullOrEmpty(version)) return null;
 
@@ -2876,7 +2887,7 @@ namespace FMScanner
 
             if (string.IsNullOrEmpty(version)) return null;
 
-            string ndv = version.Trim('.');
+            string ndv = version.Trim(CA_Period);
             int index = ndv.IndexOf('.');
             if (index > -1 && ndv.Substring(index + 1).Length < 2)
             {
@@ -2893,10 +2904,8 @@ namespace FMScanner
         {
             try
             {
-                foreach (string d in Directory.EnumerateDirectories(fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
-                {
-                    Directory.Delete(d, true);
-                }
+                var ds = Directory.GetDirectories(fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
+                for (var i = 0; i < ds.Length; i++) Directory.Delete(ds[i], true);
 
                 Directory.Delete(fmWorkingPath, true);
             }
@@ -2908,23 +2917,23 @@ namespace FMScanner
 
         #region Generic dir/file functions
 
-        private IEnumerable<string>
+        private string[]
         EnumFiles(string searchPattern, SearchOption searchOption)
         {
             return EnumFiles("", searchPattern, searchOption, checkDirExists: false);
         }
 
-        private IEnumerable<string>
+        private string[]
         EnumFiles(string path, string searchPattern, SearchOption searchOption, bool checkDirExists = true)
         {
             string fullDir = Path.Combine(FmWorkingPath, path);
 
             if (!checkDirExists || Directory.Exists(fullDir))
             {
-                return Directory.EnumerateFiles(fullDir, searchPattern, searchOption);
+                return Directory.GetFiles(fullDir, searchPattern, searchOption);
             }
 
-            return new List<string>();
+            return new string[0];
         }
 
         #endregion
