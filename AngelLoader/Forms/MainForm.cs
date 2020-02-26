@@ -99,9 +99,7 @@ namespace AngelLoader.Forms
         public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
         public bool ShowRecentAtTop => FilterShowRecentAtTopButton.Checked;
 
-#if DEBUG
         public string SelectedFMLanguage => EditFMLanguageComboBox.SelectedBackingItem();
-#endif
 
         public void Block(bool block)
         {
@@ -1339,7 +1337,15 @@ namespace AngelLoader.Forms
                 EditFMRatingLabel.Text = LText.EditFMTab.Rating;
 
                 // For some reason this counts as a selected index change?!
-                using (new DisableEvents(this)) EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
+                using (new DisableEvents(this))
+                {
+                    EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
+                    if (EditFMLanguageComboBox.Items.Count > 0 &&
+                        EditFMLanguageComboBox.BackingItems[0].EqualsI(DefaultLangKey))
+                    {
+                        EditFMLanguageComboBox.Items[0] = LText.EditFMTab.DefaultLanguage;
+                    }
+                }
 
                 EditFMFinishedOnButton.SetTextAutoSize(LText.EditFMTab.FinishedOn, ((Size)EditFMFinishedOnButton.Tag).Width);
                 EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
@@ -1348,6 +1354,9 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(EditFMScanTitleButton, LText.EditFMTab.RescanTitleToolTip);
                 MainToolTip.SetToolTip(EditFMScanAuthorButton, LText.EditFMTab.RescanAuthorToolTip);
                 MainToolTip.SetToolTip(EditFMScanReleaseDateButton, LText.EditFMTab.RescanReleaseDateToolTip);
+                MainToolTip.SetToolTip(EditFMScanLanguagesButton, LText.EditFMTab.RescanLanguages);
+
+                EditFMLanguageLabel.Text = LText.EditFMTab.PlayFMInThisLanguage;
 
                 EditFMScanForReadmesButton.SetTextAutoSize(LText.EditFMTab.RescanForReadmes);
 
@@ -2950,6 +2959,10 @@ namespace AngelLoader.Forms
             {
                 EditFMRatingComboBox.SelectedIndex = 0;
 
+                EditFMLanguageComboBox.ClearFullItems();
+                EditFMLanguageComboBox.AddFullItem(DefaultLangKey, LText.EditFMTab.DefaultLanguage);
+                EditFMLanguageComboBox.SelectedIndex = 0;
+
                 foreach (Control c in EditFMTabPage.Controls)
                 {
                     switch (c)
@@ -3183,38 +3196,8 @@ namespace AngelLoader.Forms
 
             #endregion
 
-#if Debug
-            using (new DisableEvents(this))
-            {
-                EditFMLanguageComboBox.ClearFullItems();
-                EditFMLanguageComboBox.AddFullItem("default", "Default");
+            ScanAndFillLanguagesBox(fm);
 
-                if (GameIsKnownAndSupported(fm.Game))
-                {
-                    if (!fm.LangDirsScanned)
-                    {
-                        FMInstallAndPlay.FillFMSupportedLangs(fm);
-                    }
-
-                    var langs = FMInstallAndPlay.SortLangsToSpec(fm.LangDirs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList());
-                    for (int i = 0; i < langs.Count; i++)
-                    {
-                        string langLower = langs[i].ToLowerInvariant();
-                        EditFMLanguageComboBox.AddFullItem(langLower, FMLangsTranslated[langLower]);
-                    }
-                }
-
-                if (fm.SelectedLangDir.EqualsI("default"))
-                {
-                    EditFMLanguageComboBox.SelectedIndex = 0;
-                }
-                else
-                {
-                    int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(fm.SelectedLangDir));
-                    EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
-                }
-            }
-#endif
             if (!refreshReadme) return;
 
             var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
@@ -3291,6 +3274,52 @@ namespace AngelLoader.Forms
             LoadReadme(fm);
 
             #endregion
+        }
+
+        private void ScanAndFillLanguagesBox(FanMission fm, bool forceScan = false)
+        {
+            using (new DisableEvents(this))
+            {
+                EditFMLanguageComboBox.ClearFullItems();
+                EditFMLanguageComboBox.AddFullItem(DefaultLangKey, LText.EditFMTab.DefaultLanguage);
+
+                if (GameIsKnownAndSupported(fm.Game))
+                {
+                    bool doScan = !fm.LangsScanned || forceScan;
+
+                    if (doScan)
+                    {
+                        FMInstallAndPlay.FillFMSupportedLangs(fm, removeEnglish: false);
+                    }
+
+                    var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var sortedLangs = doScan ? langs : FMInstallAndPlay.SortLangsToSpec(langs);
+                    fm.Langs = "";
+                    for (int i = 0; i < sortedLangs.Count; i++)
+                    {
+                        string langLower = sortedLangs[i].ToLowerInvariant();
+                        EditFMLanguageComboBox.AddFullItem(langLower, FMLangsTranslated[langLower]);
+
+                        // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
+                        // other nonsense
+                        if (!langLower.EqualsI(DefaultLangKey))
+                        {
+                            if (!fm.Langs.IsEmpty()) fm.Langs += ",";
+                            fm.Langs += langLower;
+                        }
+                    }
+                }
+
+                if (fm.SelectedLang.EqualsI(DefaultLangKey))
+                {
+                    EditFMLanguageComboBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(fm.SelectedLang));
+                    EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
+                }
+            }
         }
 
         private void ReadmeComboBoxFillAndSelect(List<string> readmeFiles, string readme)
@@ -3621,6 +3650,11 @@ namespace AngelLoader.Forms
         private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
         {
             await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true));
+        }
+
+        private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
+        {
+            ScanAndFillLanguagesBox(FMsDGV.GetSelectedFM(), forceScan: true);
         }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
@@ -4304,9 +4338,9 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled || !FMsDGV.RowSelected()) return;
 
-            FMsDGV.GetSelectedFM().SelectedLangDir = EditFMLanguageComboBox.SelectedIndex > -1
+            FMsDGV.GetSelectedFM().SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
                 ? EditFMLanguageComboBox.SelectedBackingItem()
-                : "default";
+                : DefaultLangKey;
         }
     }
 }

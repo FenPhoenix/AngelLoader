@@ -256,15 +256,20 @@ namespace AngelLoader
                     string val = lineT.Substring(16);
                     fm.LanguagesString = val;
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("LangDirsScanned="))
+                else if (lineT.StartsWithFast_NoNullChecks("LangsScanned="))
                 {
-                    string val = lineT.Substring(16);
-                    fm.LangDirsScanned = val.EqualsTrue();
+                    string val = lineT.Substring(13);
+                    fm.LangsScanned = val.EqualsTrue();
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("LangDirs="))
+                else if (lineT.StartsWithFast_NoNullChecks("Langs="))
                 {
-                    string val = lineT.Substring(9);
-                    fm.LangDirs = val;
+                    string val = lineT.Substring(6);
+                    fm.Langs = val;
+                }
+                else if (lineT.StartsWithFast_NoNullChecks("SelectedLang="))
+                {
+                    string val = lineT.Substring(13);
+                    fm.SelectedLang = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("TagsString="))
                 {
@@ -439,15 +444,20 @@ namespace AngelLoader
                     sb.Append("LanguagesString=");
                     sb.AppendLine(fm.LanguagesString);
                 }
-                if (fm.LangDirsScanned)
+                if (fm.LangsScanned)
                 {
-                    sb.Append("LangDirsScanned=");
-                    sb.AppendLine(fm.LangDirsScanned.ToString());
+                    sb.Append("LangsScanned=");
+                    sb.AppendLine(fm.LangsScanned.ToString());
                 }
-                if (!string.IsNullOrEmpty(fm.LangDirs))
+                if (!string.IsNullOrEmpty(fm.Langs))
                 {
-                    sb.Append("LangDirs=");
-                    sb.AppendLine(fm.LangDirs);
+                    sb.Append("Langs=");
+                    sb.AppendLine(fm.Langs);
+                }
+                if (!string.IsNullOrEmpty(fm.SelectedLang))
+                {
+                    sb.Append("SelectedLang=");
+                    sb.AppendLine(fm.SelectedLang);
                 }
                 if (!string.IsNullOrEmpty(fm.TagsString))
                 {

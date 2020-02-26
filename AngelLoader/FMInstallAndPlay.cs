@@ -426,7 +426,7 @@ namespace AngelLoader
             return (sLanguage, bForceLanguage);
         }
 
-        internal static void FillFMSupportedLangs(FanMission fm)
+        internal static void FillFMSupportedLangs(FanMission fm, bool removeEnglish = true)
         {
             string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
             List<string> langs = new List<string>();
@@ -455,20 +455,20 @@ namespace AngelLoader
                 }
             }
 
-            fm.LangDirs = "";
+            fm.Langs = "";
             if (langs.Count > 0)
             {
                 langs = SortLangsToSpec(langs);
 
-                if (langs[0].EqualsI("english")) langs.RemoveAt(0);
+                if (removeEnglish && langs[0].EqualsI("english")) langs.RemoveAt(0);
                 for (int i = 0; i < langs.Count; i++)
                 {
-                    if (i > 0) fm.LangDirs += ",";
-                    fm.LangDirs += langs[i];
+                    if (i > 0) fm.Langs += ",";
+                    fm.Langs += langs[i];
                 }
             }
 
-            fm.LangDirsScanned = true;
+            fm.LangsScanned = true;
         }
 
         #endregion
@@ -478,12 +478,8 @@ namespace AngelLoader
             string sLanguage = "";
             bool? bForceLanguage = null;
 
-#if DEBUG
             string selLang = Core.View.SelectedFMLanguage;
-            if (fm != null && GameIsDark(fm.Game) && selLang == "default")
-#else
-            if (fm != null && GameIsDark(fm.Game))
-#endif
+            if (fm != null && GameIsDark(fm.Game) && selLang == DefaultLangKey)
             {
                 // For Dark, we have to do this semi-manual stuff.
                 (sLanguage, bForceLanguage) = GetDarkFMLanguage(GameToGameIndex(fm.Game), fm.Archive, fm.InstalledDir);
@@ -494,13 +490,11 @@ namespace AngelLoader
             // the "All The World's a Stage" custom sound extract thing.
             // So, I don't have to do anything whatsoever here, just pass blank and carry on. Awesome!
 
-#if DEBUG
-            if (!selLang.EqualsI("default"))
+            if (!selLang.EqualsI(DefaultLangKey))
             {
                 sLanguage = selLang;
                 bForceLanguage = true;
             }
-#endif
 
             try
             {

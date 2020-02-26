@@ -134,6 +134,9 @@ namespace AngelLoader.Forms
             EditFMAuthorTextBox = new TextBox();
             EditFMAuthorLabel = new Label();
             EditFMTitleLabel = new Label();
+            EditFMLanguageLabel = new Label();
+            EditFMLanguageComboBox = new ComboBoxCustom();
+            EditFMScanLanguagesButton = new Button();
             CommentTabPage = new TabPage();
             CommentTextBox = new TextBox();
             TagsTabPage = new TabPage();
@@ -1017,6 +1020,9 @@ namespace AngelLoader.Forms
             // 
             EditFMTabPage.AutoScroll = true;
             EditFMTabPage.BackColor = SystemColors.Control;
+            EditFMTabPage.Controls.Add(EditFMScanLanguagesButton);
+            EditFMTabPage.Controls.Add(EditFMLanguageLabel);
+            EditFMTabPage.Controls.Add(EditFMLanguageComboBox);
             EditFMTabPage.Controls.Add(EditFMScanForReadmesButton);
             EditFMTabPage.Controls.Add(EditFMScanReleaseDateButton);
             EditFMTabPage.Controls.Add(EditFMScanAuthorButton);
@@ -1040,13 +1046,37 @@ namespace AngelLoader.Forms
             EditFMTabPage.Size = new Size(526, 284);
             EditFMTabPage.TabIndex = 2;
             // 
+            // EditFMLanguageLabel
+            // 
+            EditFMLanguageLabel.AutoSize = true;
+            EditFMLanguageLabel.Location = new Point(8, 246);
+            EditFMLanguageLabel.TabIndex = 31;
+            // 
+            // EditFMLanguageComboBox
+            // 
+            EditFMLanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            EditFMLanguageComboBox.FormattingEnabled = true;
+            EditFMLanguageComboBox.Location = new Point(9, 262);
+            EditFMLanguageComboBox.Size = new Size(128, 21);
+            EditFMLanguageComboBox.TabIndex = 32;
+            EditFMLanguageComboBox.SelectedIndexChanged += EditFMLanguageComboBox_SelectedIndexChanged;
+            // 
+            // EditFMScanLanguagesButton
+            // 
+            EditFMScanLanguagesButton.Location = new Point(137, 261);
+            EditFMScanLanguagesButton.Size = new Size(22, 23);
+            EditFMScanLanguagesButton.TabIndex = 33;
+            EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
+            EditFMScanLanguagesButton.Click += EditFMScanLanguagesButton_Click;
+            EditFMScanLanguagesButton.Paint += ScanIconButtons_Paint;
+            // 
             // EditFMScanForReadmesButton
             // 
             EditFMScanForReadmesButton.AutoSize = true;
-            EditFMScanForReadmesButton.Location = new Point(8, 248);
+            EditFMScanForReadmesButton.Location = new Point(8, 299);
             EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
             EditFMScanForReadmesButton.Height = 23;
-            EditFMScanForReadmesButton.TabIndex = 31;
+            EditFMScanForReadmesButton.TabIndex = 34;
             EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             EditFMScanForReadmesButton.Click += EditFMScanForReadmesButton_Click;
             EditFMScanForReadmesButton.Paint += ScanIconButtons_Paint;

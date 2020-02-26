@@ -31,10 +31,10 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
             this.Test2Button = new System.Windows.Forms.Button();
             this.TestButton = new System.Windows.Forms.Button();
@@ -116,6 +116,7 @@
             this.CR_ObjectsCheckBox = new System.Windows.Forms.CheckBox();
             this.CustomResourcesLabel = new System.Windows.Forms.Label();
             this.EditFMTabPage = new System.Windows.Forms.TabPage();
+            this.EditFMScanLanguagesButton = new System.Windows.Forms.Button();
             this.EditFMLanguageLabel = new System.Windows.Forms.Label();
             this.EditFMScanForReadmesButton = new System.Windows.Forms.Button();
             this.EditFMScanReleaseDateButton = new System.Windows.Forms.Button();
@@ -370,12 +371,10 @@
             // 
             this.EditFMLanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EditFMLanguageComboBox.FormattingEnabled = true;
-            this.EditFMLanguageComboBox.Items.AddRange(new object[] {
-            "English"});
-            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(8, 262);
+            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 262);
             this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
             this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
-            this.EditFMLanguageComboBox.TabIndex = 1000;
+            this.EditFMLanguageComboBox.TabIndex = 32;
             this.EditFMLanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMLanguageComboBox_SelectedIndexChanged);
             // 
             // EverythingPanel
@@ -490,14 +489,14 @@
             this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.FMsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.FMsDGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.GameTypeColumn,
@@ -513,26 +512,26 @@
             this.DateAddedColumn,
             this.DisabledModsColumn,
             this.CommentColumn});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle7;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -594,8 +593,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -1274,6 +1273,7 @@
             // 
             this.EditFMTabPage.AutoScroll = true;
             this.EditFMTabPage.BackColor = System.Drawing.SystemColors.Control;
+            this.EditFMTabPage.Controls.Add(this.EditFMScanLanguagesButton);
             this.EditFMTabPage.Controls.Add(this.EditFMLanguageLabel);
             this.EditFMTabPage.Controls.Add(this.EditFMLanguageComboBox);
             this.EditFMTabPage.Controls.Add(this.EditFMScanForReadmesButton);
@@ -1301,23 +1301,33 @@
             this.EditFMTabPage.TabIndex = 2;
             this.EditFMTabPage.Text = "Edit FM";
             // 
+            // EditFMScanLanguagesButton
+            // 
+            this.EditFMScanLanguagesButton.Location = new System.Drawing.Point(137, 261);
+            this.EditFMScanLanguagesButton.Name = "EditFMScanLanguagesButton";
+            this.EditFMScanLanguagesButton.Size = new System.Drawing.Size(22, 23);
+            this.EditFMScanLanguagesButton.TabIndex = 33;
+            this.EditFMScanLanguagesButton.UseVisualStyleBackColor = true;
+            this.EditFMScanLanguagesButton.Click += new System.EventHandler(this.EditFMScanLanguagesButton_Click);
+            this.EditFMScanLanguagesButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ScanIconButtons_Paint);
+            // 
             // EditFMLanguageLabel
             // 
             this.EditFMLanguageLabel.AutoSize = true;
             this.EditFMLanguageLabel.Location = new System.Drawing.Point(8, 246);
             this.EditFMLanguageLabel.Name = "EditFMLanguageLabel";
             this.EditFMLanguageLabel.Size = new System.Drawing.Size(125, 13);
-            this.EditFMLanguageLabel.TabIndex = 1001;
+            this.EditFMLanguageLabel.TabIndex = 31;
             this.EditFMLanguageLabel.Text = "Play FM in this language:";
             // 
             // EditFMScanForReadmesButton
             // 
             this.EditFMScanForReadmesButton.AutoSize = true;
-            this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 318);
+            this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 299);
             this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
             this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(128, 23);
-            this.EditFMScanForReadmesButton.TabIndex = 31;
+            this.EditFMScanForReadmesButton.TabIndex = 34;
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             this.EditFMScanForReadmesButton.Click += new System.EventHandler(this.EditFMScanForReadmesButton_Click);
@@ -1336,7 +1346,7 @@
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(442, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(374, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
@@ -1347,7 +1357,7 @@
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(442, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(374, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
@@ -1359,7 +1369,7 @@
             // 
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(426, 23);
+            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(358, 23);
             this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 15;
@@ -1372,7 +1382,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(418, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(350, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
@@ -1482,7 +1492,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
-            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(451, 20);
+            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(383, 20);
             this.EditFMDisabledModsTextBox.TabIndex = 29;
             this.EditFMDisabledModsTextBox.TextChanged += new System.EventHandler(this.EditFMDisabledModsTextBox_TextChanged);
             this.EditFMDisabledModsTextBox.Leave += new System.EventHandler(this.EditFMDisabledModsTextBox_Leave);
@@ -1502,7 +1512,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(434, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(366, 20);
             this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
@@ -2041,6 +2051,7 @@
         internal System.Windows.Forms.Control TagsTabAutoScrollMarker;
         internal CustomControls.ComboBoxCustom EditFMLanguageComboBox;
         internal CustomControls.ToolStripButtonCustom FilterShowRecentAtTopButton;
-        private System.Windows.Forms.Label EditFMLanguageLabel;
+        internal System.Windows.Forms.Button EditFMScanLanguagesButton;
+        internal System.Windows.Forms.Label EditFMLanguageLabel;
     }
 }

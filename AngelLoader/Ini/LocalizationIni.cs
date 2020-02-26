@@ -762,6 +762,14 @@ namespace AngelLoader
                         {
                             LText.EditFMTab.DisableAllMods = lt.Substring(15);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("PlayFMInThisLanguage="))
+                        {
+                            LText.EditFMTab.PlayFMInThisLanguage = lt.Substring(21);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DefaultLanguage="))
+                        {
+                            LText.EditFMTab.DefaultLanguage = lt.Substring(16);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("RescanTitleToolTip="))
                         {
                             LText.EditFMTab.RescanTitleToolTip = lt.Substring(19);
@@ -773,6 +781,10 @@ namespace AngelLoader
                         else if (lt.StartsWithFast_NoNullChecks("RescanReleaseDateToolTip="))
                         {
                             LText.EditFMTab.RescanReleaseDateToolTip = lt.Substring(25);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("RescanLanguages="))
+                        {
+                            LText.EditFMTab.RescanLanguages = lt.Substring(16);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("RescanForReadmes="))
                         {
