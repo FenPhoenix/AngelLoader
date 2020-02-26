@@ -96,6 +96,7 @@ namespace AngelLoader.DataClasses
         
         internal bool LangDirsScanned;
         internal string LangDirs = "";
+        internal string SelectedLangDir = "";
 
         // [FenGen:DoNotSerialize]
         internal readonly CatAndTagsList Tags = new CatAndTagsList();

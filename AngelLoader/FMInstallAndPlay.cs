@@ -477,7 +477,9 @@ namespace AngelLoader
         {
             string sLanguage = "";
             bool? bForceLanguage = null;
-            if (fm != null && GameIsDark(fm.Game))
+
+            string selLang = Core.View.SelectedFMLanguage;
+            if (fm != null && GameIsDark(fm.Game) && selLang == "default")
             {
                 // For Dark, we have to do this semi-manual stuff.
                 (sLanguage, bForceLanguage) = GetDarkFMLanguage(GameToGameIndex(fm.Game), fm.Archive, fm.InstalledDir);
@@ -487,6 +489,12 @@ namespace AngelLoader
             // I just can't tell you how much I appreciate how much work SU does for me, even right down to handling
             // the "All The World's a Stage" custom sound extract thing.
             // So, I don't have to do anything whatsoever here, just pass blank and carry on. Awesome!
+
+            if (!selLang.EqualsI("default"))
+            {
+                sLanguage = selLang;
+                bForceLanguage = true;
+            }
 
             try
             {
