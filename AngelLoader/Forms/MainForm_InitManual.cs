@@ -627,7 +627,8 @@ namespace AngelLoader.Forms
             FilterBySS2Button.CheckOnClick = true;
             FilterBySS2Button.DisplayStyle = ToolStripItemDisplayStyle.Image;
             FilterBySS2Button.Image = Images.Shock2_21;
-            FilterBySS2Button.Margin = new Padding(0);
+            // Extra 2 padding on the right: Fix slight visual glitch on the right side
+            FilterBySS2Button.Margin = new Padding(0, 0, 2, 0);
             FilterBySS2Button.Size = new Size(25, 25);
             FilterBySS2Button.Click += FilterByGameCheckButtons_Click;
             // 

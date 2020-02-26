@@ -98,7 +98,10 @@ namespace AngelLoader.Forms
         public int CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
         public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
         public bool ShowRecentAtTop => FilterShowRecentAtTopButton.Checked;
+
+#if DEBUG
         public string SelectedFMLanguage => EditFMLanguageComboBox.SelectedBackingItem();
+#endif
 
         public void Block(bool block)
         {
