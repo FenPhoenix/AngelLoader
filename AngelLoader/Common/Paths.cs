@@ -38,6 +38,7 @@ namespace AngelLoader
 
         #region Game config files
 
+        internal const string CamCfg = "cam.cfg";
         internal const string CamModIni = "cam_mod.ini";
 
         internal static string GetSneakyOptionsIni()

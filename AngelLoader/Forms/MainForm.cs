@@ -3075,7 +3075,20 @@ namespace AngelLoader.Forms
 
             WebSearchButton.Enabled = true;
 
-            foreach (Control c in EditFMTabPage.Controls) c.Enabled = true;
+            foreach (Control c in EditFMTabPage.Controls)
+            {
+                if (c == EditFMLanguageLabel ||
+                    c == EditFMLanguageComboBox ||
+                    c == EditFMScanLanguagesButton)
+                {
+                    c.Enabled = !fmIsT3;
+                }
+                else
+                {
+                    c.Enabled = true;
+                }
+
+            }
 
             CommentTextBox.Enabled = true;
             foreach (Control c in TagsTabPage.Controls) c.Enabled = true;
@@ -3172,6 +3185,8 @@ namespace AngelLoader.Forms
                 FMsDGV.SetRatingMenuItemChecked(fm.Rating);
                 EditFMRatingComboBox.SelectedIndex = fm.Rating + 1;
 
+                ScanAndFillLanguagesBox(fm, disableEvents: false);
+
                 CommentTextBox.Text = fm.Comment.FromRNEscapes();
 
                 AddTagTextBox.Text = "";
@@ -3195,8 +3210,6 @@ namespace AngelLoader.Forms
             DisplayFMTags(fm.Tags);
 
             #endregion
-
-            ScanAndFillLanguagesBox(fm);
 
             if (!refreshReadme) return;
 
@@ -3276,37 +3289,40 @@ namespace AngelLoader.Forms
             #endregion
         }
 
-        private void ScanAndFillLanguagesBox(FanMission fm, bool forceScan = false)
+        private void ScanAndFillLanguagesBox(FanMission fm, bool forceScan = false, bool disableEvents = true)
         {
-            using (new DisableEvents(this))
+            using (disableEvents ? new DisableEvents(this) : null)
             {
                 EditFMLanguageComboBox.ClearFullItems();
                 EditFMLanguageComboBox.AddFullItem(DefaultLangKey, LText.EditFMTab.DefaultLanguage);
 
-                if (GameIsKnownAndSupported(fm.Game))
+                if (!GameIsDark(fm.Game))
                 {
-                    bool doScan = !fm.LangsScanned || forceScan;
+                    EditFMLanguageComboBox.SelectedIndex = 0;
+                    return;
+                }
 
-                    if (doScan)
+                bool doScan = !fm.LangsScanned || forceScan;
+
+                if (doScan)
+                {
+                    FMInstallAndPlay.FillFMSupportedLangs(fm, removeEnglish: false);
+                }
+
+                var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var sortedLangs = doScan ? langs : FMInstallAndPlay.SortLangsToSpec(langs);
+                fm.Langs = "";
+                for (int i = 0; i < sortedLangs.Count; i++)
+                {
+                    string langLower = sortedLangs[i].ToLowerInvariant();
+                    EditFMLanguageComboBox.AddFullItem(langLower, FMLangsTranslated[langLower]);
+
+                    // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
+                    // other nonsense
+                    if (!langLower.EqualsI(DefaultLangKey))
                     {
-                        FMInstallAndPlay.FillFMSupportedLangs(fm, removeEnglish: false);
-                    }
-
-                    var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    var sortedLangs = doScan ? langs : FMInstallAndPlay.SortLangsToSpec(langs);
-                    fm.Langs = "";
-                    for (int i = 0; i < sortedLangs.Count; i++)
-                    {
-                        string langLower = sortedLangs[i].ToLowerInvariant();
-                        EditFMLanguageComboBox.AddFullItem(langLower, FMLangsTranslated[langLower]);
-
-                        // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
-                        // other nonsense
-                        if (!langLower.EqualsI(DefaultLangKey))
-                        {
-                            if (!fm.Langs.IsEmpty()) fm.Langs += ",";
-                            fm.Langs += langLower;
-                        }
+                        if (!fm.Langs.IsEmpty()) fm.Langs += ",";
+                        fm.Langs += langLower;
                     }
                 }
 

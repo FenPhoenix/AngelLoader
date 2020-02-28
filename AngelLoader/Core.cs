@@ -295,7 +295,7 @@ namespace AngelLoader
                         // For Dark, we need to know if the game exe itself actually exists.
                         if (GameIsDark(game) && File.Exists(gameExe))
                         {
-                            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
+                            ResetDarkConfigFileValues(game);
                         }
                         else
                         {
@@ -1610,6 +1610,12 @@ namespace AngelLoader
             Config.ReadmeZoomFactor = readmeZoomFactor;
         }
 
+        private static void ResetDarkConfigFileValues(GameIndex game)
+        {
+            FMInstallAndPlay.SetCamCfgLanguage(Config.GetGamePath(game), "");
+            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
+        }
+
         internal static void Shutdown()
         {
             try
@@ -1651,7 +1657,7 @@ namespace AngelLoader
                         var game = (GameIndex)i;
                         if (GameIsDark(game))
                         {
-                            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
+                            ResetDarkConfigFileValues(game);
                         }
                         else
                         {

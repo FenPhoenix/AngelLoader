@@ -86,7 +86,7 @@ namespace AngelLoader
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
-            WriteStubCommFile(null, playOriginalGame: true);
+            WriteStubCommFile(null, gamePath, playOriginalGame: true);
 
             StartExe(gameExe, workingPath, args);
 
@@ -140,7 +140,7 @@ namespace AngelLoader
             string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
 
-            WriteStubCommFile(fm, playOriginalGame: false);
+            WriteStubCommFile(fm, gamePath, playOriginalGame: false);
 
             StartExe(gameExe, workingPath, args);
 
@@ -473,28 +473,33 @@ namespace AngelLoader
 
         #endregion
 
-        private static void WriteStubCommFile(FanMission? fm, bool playOriginalGame)
+        private static void WriteStubCommFile(FanMission? fm, string gamePath, bool playOriginalGame)
         {
             string sLanguage = "";
             bool? bForceLanguage = null;
 
             string selLang = Core.View.SelectedFMLanguage;
-            if (fm != null && GameIsDark(fm.Game) && selLang == DefaultLangKey)
+            bool langIsDefault = selLang == DefaultLangKey;
+            if (fm != null && GameIsDark(fm.Game))
             {
-                // For Dark, we have to do this semi-manual stuff.
-                (sLanguage, bForceLanguage) = GetDarkFMLanguage(GameToGameIndex(fm.Game), fm.Archive, fm.InstalledDir);
+                if (langIsDefault)
+                {
+                    // For Dark, we have to do this semi-manual stuff.
+                    (sLanguage, bForceLanguage) = GetDarkFMLanguage(GameToGameIndex(fm.Game), fm.Archive, fm.InstalledDir);
+                }
+                else
+                {
+                    sLanguage = selLang;
+                    bForceLanguage = true;
+                }
+
+                SetCamCfgLanguage(gamePath, langIsDefault ? "" : selLang);
             }
 
             // For Thief 3, Sneaky Upgrade does the entire language thing for me, Builder bless snobel once again.
             // I just can't tell you how much I appreciate how much work SU does for me, even right down to handling
             // the "All The World's a Stage" custom sound extract thing.
             // So, I don't have to do anything whatsoever here, just pass blank and carry on. Awesome!
-
-            if (!selLang.EqualsI(DefaultLangKey))
-            {
-                sLanguage = selLang;
-                bForceLanguage = true;
-            }
 
             try
             {
@@ -516,6 +521,57 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log("Exception writing stub file " + Paths.StubFileName, ex);
+            }
+        }
+
+        // TODO: Pop up actual dialogs here if we fail, because we do NOT want scraps of the wrong language left
+        internal static void SetCamCfgLanguage(string gamePath, string lang)
+        {
+            const string fmLanguage = "fm_language";
+            const string fmLanguageForced = "fm_language_forced";
+
+            string camCfg = Path.Combine(gamePath, Paths.CamCfg);
+            if (!File.Exists(camCfg))
+            {
+                Log(Paths.CamCfg + " not found for " + gamePath, stackTrace: true);
+                return;
+            }
+
+            List<string> lines;
+            try
+            {
+                lines = File.ReadAllLines(camCfg).ToList();
+            }
+            catch (Exception ex)
+            {
+                Log("Exception reading " + Paths.CamModIni + " for " + gamePath, ex);
+                return;
+            }
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lineT = lines[i].Trim();
+                if (lineT.StartsWithI(fmLanguage) || lineT.StartsWithI(fmLanguageForced))
+                {
+                    lines.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            if (!lang.IsEmpty())
+            {
+                lines.Add(fmLanguage + " " + lang);
+                lines.Add(fmLanguageForced + " 1");
+            }
+
+            try
+            {
+                File.WriteAllLines(camCfg, lines);
+            }
+            catch (Exception ex)
+            {
+                Log("Exception writing " + Paths.CamModIni + " for " + gamePath, ex);
+                return;
             }
         }
 
