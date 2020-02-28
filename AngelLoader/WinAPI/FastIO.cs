@@ -246,6 +246,73 @@ namespace AngelLoader.WinAPI
             return ret;
         }
 
+#if false
+        internal static bool AnyFilesInDir(string path)
+        {
+            path = path.TrimEnd(CA_BS_FS);
+
+            bool pathContainsInvalidChars = false;
+            char[] invalidChars = Path.GetInvalidPathChars();
+
+            // Dumb loop to avoid LINQ.
+            for (int i = 0; i < invalidChars.Length; i++)
+            {
+                if (path.Contains(invalidChars[i]))
+                {
+                    pathContainsInvalidChars = true;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(path) || pathContainsInvalidChars)
+            {
+                throw new ArgumentException("The path '" + path + "' is invalid in some, or other, regard.");
+            }
+
+            // Other relevant errors (though we don't use them specifically at the moment)
+            //const int ERROR_PATH_NOT_FOUND = 0x3;
+            //const int ERROR_REM_NOT_LIST = 0x33;
+            //const int ERROR_BAD_NETPATH = 0x35;
+
+            WIN32_FIND_DATA findData;
+
+            // Search the base directory first, and only then search subdirectories.
+            // TODO: Fix goofy duplicate code
+
+            string pathC = @"\\?\" + path + "\\*";
+
+            using SafeSearchHandle findHandle = FindFirstFileEx(
+                pathC,
+                FINDEX_INFO_LEVELS.FindExInfoBasic,
+                out findData,
+                FINDEX_SEARCH_OPS.FindExSearchNameMatch,
+                IntPtr.Zero,
+                0);
+
+            if (findHandle.IsInvalid)
+            {
+                int err = Marshal.GetLastWin32Error();
+                if (err == ERROR_FILE_NOT_FOUND) return false;
+
+                // Since the framework isn't here to save us, we should blanket-catch and throw on every
+                // possible error other than file-not-found (as that's an intended scenario, obviously).
+                // This isn't as nice as you'd get from a framework method call, but it gets the job done.
+                ThrowException("*", err, path);
+            }
+            do
+            {
+                if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
+                    (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT &&
+                    findData.cFileName != "." && findData.cFileName != "..")
+                {
+                    return true;
+                }
+            } while (FindNextFileW(findHandle, out findData));
+
+            return false;
+        }
+#endif
+
         /// <summary>
         /// Helper for finding language-named subdirectories in an installed FM directory.
         /// </summary>

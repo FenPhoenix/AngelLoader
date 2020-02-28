@@ -409,6 +409,34 @@ namespace AngelLoader
 
                     // Disabled till this is working completely
 #if false
+                    // Crappy hack method
+                    var crfs = Directory.GetFiles(fmInstalledPath, "*.crf", SearchOption.TopDirectoryOnly);
+                    var dirRemoveList = new List<string>();
+                    foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.TopDirectoryOnly))
+                    {
+                        string dt = d.GetDirNameFast();
+                        if (Directory.GetFiles(d, "*", SearchOption.AllDirectories).Length == 0)
+                        {
+                            for (int i = 0; i < crfs.Length; i++)
+                            {
+                                string ft = crfs[i].GetFileNameFast().RemoveExtension();
+                                if (ft.EqualsI(dt))
+                                {
+                                    dirRemoveList.Add(d);
+                                }
+                            }
+                        }
+                    }
+
+                    if (dirRemoveList.Count > 0)
+                    {
+                        for (int i = 0; i < dirRemoveList.Count; i++)
+                        {
+                            Directory.Delete(dirRemoveList[i], recursive: true);
+                        }
+                    }
+
+                    // Proper method
                     foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
                         if (dirExcludes.ContainsI(d.Substring(fmInstalledPath.Length)

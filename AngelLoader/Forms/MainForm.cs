@@ -3252,7 +3252,7 @@ namespace AngelLoader.Forms
                         ChooseReadmeLLPanel.Construct(this, MainSplitContainer.Panel2);
 
                         ChooseReadmeLLPanel.ListBox.ClearFullItems();
-                        foreach (string f in readmeFiles) ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFastBothDSC());
+                        foreach (string f in readmeFiles) ChooseReadmeLLPanel.ListBox.AddFullItem(f, f.GetFileNameFast());
 
                         ShowReadmeControls(false);
 
@@ -3326,7 +3326,7 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                foreach (string f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f, f.GetFileNameFastBothDSC());
+                foreach (string f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f, f.GetFileNameFast());
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
             }
         }

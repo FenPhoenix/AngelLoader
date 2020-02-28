@@ -121,7 +121,7 @@ namespace AngelLoader
                 for (int i = 0; i < langFiles.Count; i++)
                 {
                     string f = langFiles[i];
-                    string fn = f.GetFileNameFastBothDSC().RemoveExtension();
+                    string fn = f.GetFileNameFast().RemoveExtension();
                     if (!selFound && fn.EqualsI(Config.Language))
                     {
                         try

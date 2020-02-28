@@ -378,22 +378,11 @@ namespace AngelLoader
         #region Get file / dir names
 
         /// <summary>
-        /// Strips the path from the filename, taking into account only the current OS's directory separator char.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        internal static string GetFileNameFast(this string path)
-        {
-            int i;
-            return (i = path.LastIndexOf(Path.DirectorySeparatorChar)) == -1 ? path : path.Substring(i + 1);
-        }
-
-        /// <summary>
         /// Strips the leading path from the filename, taking into account both / and \ chars.
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        internal static string GetFileNameFastBothDSC(this string path)
+        internal static string GetFileNameFast(this string path)
         {
             int i1 = path.LastIndexOf('\\');
             int i2 = path.LastIndexOf('/');
