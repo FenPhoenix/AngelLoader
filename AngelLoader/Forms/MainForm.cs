@@ -99,8 +99,6 @@ namespace AngelLoader.Forms
         public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
         public bool ShowRecentAtTop => FilterShowRecentAtTopButton.Checked;
 
-        public string SelectedFMLanguage => EditFMLanguageComboBox.SelectedBackingItem();
-
         public void Block(bool block)
         {
             if (ViewBlockingPanel == null)
@@ -3299,6 +3297,7 @@ namespace AngelLoader.Forms
                 if (!GameIsDark(fm.Game))
                 {
                     EditFMLanguageComboBox.SelectedIndex = 0;
+                    fm.SelectedLang = DefaultLangKey;
                     return;
                 }
 
@@ -3329,11 +3328,16 @@ namespace AngelLoader.Forms
                 if (fm.SelectedLang.EqualsI(DefaultLangKey))
                 {
                     EditFMLanguageComboBox.SelectedIndex = 0;
+                    fm.SelectedLang = DefaultLangKey;
                 }
                 else
                 {
                     int index = EditFMLanguageComboBox.BackingItems.FindIndex(x => x.EqualsI(fm.SelectedLang));
                     EditFMLanguageComboBox.SelectedIndex = index == -1 ? 0 : index;
+
+                    fm.SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
+                        ? EditFMLanguageComboBox.SelectedBackingItem()
+                        : DefaultLangKey;
                 }
             }
         }
@@ -3648,6 +3652,16 @@ namespace AngelLoader.Forms
             Ini.WriteFullFMDataIni();
         }
 
+        private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled || !FMsDGV.RowSelected()) return;
+
+            FMsDGV.GetSelectedFM().SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
+                ? EditFMLanguageComboBox.SelectedBackingItem()
+                : DefaultLangKey;
+            Ini.WriteFullFMDataIni();
+        }
+
         private void EditFMFinishedOnButton_Click(object sender, EventArgs e)
         {
             ShowMenu(FMsDGV.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
@@ -3671,6 +3685,7 @@ namespace AngelLoader.Forms
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
         {
             ScanAndFillLanguagesBox(FMsDGV.GetSelectedFM(), forceScan: true);
+            Ini.WriteFullFMDataIni();
         }
 
         private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
@@ -4349,14 +4364,5 @@ namespace AngelLoader.Forms
             => ButtonPainter.PaintScanSmallButtons((Button)sender, e);
 
         #endregion
-
-        private void EditFMLanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled || !FMsDGV.RowSelected()) return;
-
-            FMsDGV.GetSelectedFM().SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
-                ? EditFMLanguageComboBox.SelectedBackingItem()
-                : DefaultLangKey;
-        }
     }
 }

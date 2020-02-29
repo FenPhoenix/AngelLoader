@@ -25,7 +25,6 @@ namespace AngelLoader.Forms
         int CurrentSortedColumnIndex { get; }
         SortOrder CurrentSortDirection { get; }
         bool ShowRecentAtTop { get; }
-        string SelectedFMLanguage { get; }
         void ShowFMsListZoomButtons(bool visible);
         void ShowInstallUninstallButton(bool enabled);
         void ClearUIAndCurrentInternalFilter();
