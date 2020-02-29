@@ -3085,7 +3085,6 @@ namespace AngelLoader.Forms
                 {
                     c.Enabled = true;
                 }
-
             }
 
             CommentTextBox.Enabled = true;
