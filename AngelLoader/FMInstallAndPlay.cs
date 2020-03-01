@@ -86,7 +86,7 @@ namespace AngelLoader
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
-            WriteStubCommFile(null, gamePath, playOriginalGame: true);
+            WriteStubCommFile(null, gamePath);
 
             StartExe(gameExe, workingPath, args);
 
@@ -140,7 +140,7 @@ namespace AngelLoader
             string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
 
-            WriteStubCommFile(fm, gamePath, playOriginalGame: false);
+            WriteStubCommFile(fm, gamePath);
 
             StartExe(gameExe, workingPath, args);
 
@@ -192,6 +192,10 @@ namespace AngelLoader
 
             // TODO: We don't need to do this here, right?
             SetUsAsSelector(game, gamePath);
+
+            // Since we don't use the stub currently, set this here
+            // TODO: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
+            SetCamCfgLanguage(gamePath, "");
 
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
             StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
@@ -473,12 +477,16 @@ namespace AngelLoader
 
         #endregion
 
-        private static void WriteStubCommFile(FanMission? fm, string gamePath, bool playOriginalGame)
+        private static void WriteStubCommFile(FanMission? fm, string gamePath)
         {
             string sLanguage = "";
             bool? bForceLanguage = null;
 
-            if (fm != null && GameIsDark(fm.Game))
+            if (fm == null)
+            {
+                SetCamCfgLanguage(gamePath, "");
+            }
+            else if (GameIsDark(fm.Game))
             {
                 bool langIsDefault = fm.SelectedLang.EqualsI(DefaultLangKey);
                 if (langIsDefault)
@@ -507,14 +515,14 @@ namespace AngelLoader
                 // handle the byte order mark).
                 using var sw = new StreamWriter(Paths.StubCommFilePath, append: false,
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
-                sw.WriteLine("PlayOriginalGame=" + playOriginalGame);
+                sw.WriteLine("PlayOriginalGame=" + (fm == null));
                 if (fm != null)
                 {
                     sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
                     sw.WriteLine("DisabledMods=" + (fm.DisableAllMods ? "*" : fm.DisabledMods));
                     // Pass blank if we have nothing, so the stub will leave whatever was in there before
                     if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
-                    if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + bForceLanguage);
+                    if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
                 }
             }
             catch (Exception ex)
