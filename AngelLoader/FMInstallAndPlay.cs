@@ -993,7 +993,7 @@ namespace AngelLoader
 
             // Confirmed SU can read the selector value with both forward and backward slashes
 
-            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
+            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName).ToBackSlashes();
 
             string selectorPath;
 

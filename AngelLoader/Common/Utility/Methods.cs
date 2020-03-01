@@ -370,7 +370,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < Config.GameExes.Length; i++)
                 {
-                    string exe = Config.GetGameExe((GameIndex)i);
+                    string exe = Config.GetGameExe((GameIndex)i).ToBackSlashes();
                     if (!exe.IsEmpty() && fnb.EqualsI(exe.ToBackSlashes())) return true;
                 }
 
