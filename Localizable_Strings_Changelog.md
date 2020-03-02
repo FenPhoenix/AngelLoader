@@ -80,8 +80,8 @@ FMDisplay_Custom=Custom:
 FMDisplay_ErrorInvalidDateFormat=Invalid date format.
 FMDisplay_ErrorDateOutOfRange=The date and time is outside the range of dates supported by the calendar used by the current culture.
 
-FMDisplay_RecentFMs=Recent FMs
-FMDisplay_RecentFMs_MaxDays=Maximum number of days to consider an FM "recent":
++ FMDisplay_RecentFMs=Recent FMs
++ FMDisplay_RecentFMs_MaxDays=Maximum number of days to consider an FM "recent":
 ```
 
 #### AngelLoader documentation.html:
