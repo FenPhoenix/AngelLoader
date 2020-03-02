@@ -84,6 +84,15 @@ FMDisplay_ErrorDateOutOfRange=The date and time is outside the range of dates su
 + FMDisplay_RecentFMs_MaxDays=Maximum number of days to consider an FM "recent":
 ```
 
+#### Documentation:
+
+#### Images:
+The following images have been **updated** to show new text and features:  
+`main_window_full_960.png`  
+`fms_list_960.png`  
+`edit_fm_tab.png`  
+`setup_fm_display_tab.png`  
+
 #### AngelLoader documentation.html:
 
 ```diff
