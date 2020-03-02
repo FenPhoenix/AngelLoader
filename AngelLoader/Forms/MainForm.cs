@@ -3169,11 +3169,11 @@ namespace AngelLoader.Forms
 
                 EditFMReleaseDateCheckBox.Checked = fm.ReleaseDate.DateTime != null;
                 EditFMReleaseDateDateTimePicker.Value = fm.ReleaseDate.DateTime ?? DateTime.Now;
-                EditFMReleaseDateDateTimePicker.Visible = fm.ReleaseDate != null;
+                EditFMReleaseDateDateTimePicker.Visible = fm.ReleaseDate.DateTime != null;
 
                 EditFMLastPlayedCheckBox.Checked = fm.LastPlayed.DateTime != null;
                 EditFMLastPlayedDateTimePicker.Value = fm.LastPlayed.DateTime ?? DateTime.Now;
-                EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed != null;
+                EditFMLastPlayedDateTimePicker.Visible = fm.LastPlayed.DateTime != null;
 
                 EditFMDisableAllModsCheckBox.Checked = fm.DisableAllMods;
                 EditFMDisabledModsTextBox.Text = fm.DisabledMods;
