@@ -19,6 +19,188 @@ Thanks for checking it out!
 
 ## List of new strings by version
 
+### v1.4:
+
+#### English.ini:  
+
+```diff
+[FilterBar]
+...
+ShowJunk=Show FMs marked as "unsupported game or non-FM archive"
++ ShowRecentAtTop=Show recently added FMs at the top of the list
+```
+
+```diff
+GameColumn=Game
+InstalledColumn=Installed
+TitleColumn=Title
+ArchiveColumn=Archive
+AuthorColumn=Author
+SizeColumn=Size
+RatingColumn=Rating
+FinishedColumn=Finished
+ReleaseDateColumn=Release Date
+LastPlayedColumn=Last Played
++ ; The date an FM was added to the list. Basically means the date you downloaded it and put it into your archives folder.
++ DateAddedColumn=Date Added
+DisabledModsColumn=Disabled Mods
+CommentColumn=Comment
+```
+
+```diff
+[EditFMTab]
+TabText=Edit FM
+
+Title=Title:
+Author=Author:
+ReleaseDate=Release date:
+LastPlayed=Last played:
+Rating=Rating:
+FinishedOn=Finished on...
+DisabledMods=Disabled mods:
+DisableAllMods=Disable all mods
++ PlayFMInThisLanguage=Play FM in this language:
++ DefaultLanguage=Default
+
+RescanTitleToolTip=Rescan title
+RescanAuthorToolTip=Rescan author
+RescanReleaseDateToolTip=Rescan release date
++ RescanLanguages=Rescan for supported languages
+RescanForReadmes=Rescan for readmes
+```
+
+```diff
+[SettingsWindow]
+...
+FMDisplay_DateFormat=Date format
+FMDisplay_CurrentCultureShort=Current culture short
+FMDisplay_CurrentCultureLong=Current culture long
+FMDisplay_Custom=Custom:
+
+FMDisplay_ErrorInvalidDateFormat=Invalid date format.
+FMDisplay_ErrorDateOutOfRange=The date and time is outside the range of dates supported by the calendar used by the current culture.
+
+FMDisplay_RecentFMs=Recent FMs
+FMDisplay_RecentFMs_MaxDays=Maximum number of days to consider an FM "recent":
+```
+
+#### AngelLoader documentation.html:
+
+```diff
+<h2><a name="main_window" />Main window</h2>
+
+<p><img src="images/main_window_full_960.png" /></p>
+
+<h4>Startup scan</h4>
+- Whenever new FMs are detected, they will be quick-scanned for game type only. If you cancel the scan, then the game types will remain blank and will be scanned when selected, similar to DarkLoader. It's recommended that you let the scan finish, especially if you're using game tabs, as it will result in FMs being categorized properly. You can perform a more detailed scan later (see <a href="#scan_all_fms_button">Scan all FMs</a>).
++ Whenever new FMs are detected, they will be automatically scanned. If you cancel the scan, then they will be scanned when manually selected, similar to DarkLoader. It's recommended that you let the scan finish, especially if you're using game tabs, as it will result in FMs being categorized properly.
+
+<h4>Filter bar</h4>
+Here you can choose to filter your FM list by game, title, author, release date, last played date, tags, finished status, and rating. If you've chosen to organize your games by tab, then these tabs will take the place of the game filter buttons.
+
+- <h4><a name="show_junk" />Show unsupported</h4>
++ <h4><a name="show_junk" />Show FMs marked as "unsupported game or non-FM archive"</h4>
+This allows archives marked as Unknown (<img src="images/red_circle_question_mark_21.png" />) (archives that were rejected as not being FMs) to be displayed in the list. If support for new games is added in the future, you can use this to show previously unsupported FMs so you can re-scan them individually if you wish.
+
++ <h4><a name="show_recent_at_top" />Show recently added FMs at the top of the list</h4>
++ This will cause recently added FMs to be highlighted and displayed at the top of the list. This makes it easier to find FMs that you've just downloaded, for example. The number of days to consider an FM "recent" can be changed in the <a href="#settings_days_recent">Settings window</a>. The default is 15 days.
++
+<h4>Refresh from disk button</h4>
+Reloads the list of FMs from disk. This will always occur on startup, but this button is useful if you've added new FMs since starting AngelLoader.
+<br>The list can also be refreshed from disk by pressing <code>Shift-F5</code> when the <a href="#mission_list">mission list</a> is focused.
+```
+
+```diff
+<h4>Finished</h4>
+Displays an icon representing which difficulty or difficulties you've finished an FM on.
+<p>
+<img src="images/Finished_Normal.png" /> - <b>Normal</b> (<b>Easy</b> for Thief: Deadly Shadows and System Shock 2)<br>
+<img src="images/Finished_Hard.png" /> - <b>Hard</b> (<b>Normal</b> for Thief: Deadly Shadows and System Shock 2)<br>
+<img src="images/Finished_Expert.png" /> - <b>Expert</b> (<b>Hard</b> for Thief: Deadly Shadows and System Shock 2)<br>
+<img src="images/Finished_Extreme.png" /> - <b>Extreme</b> (<b>Expert</b> for Thief: Deadly Shadows, <b>Impossible</b> for System Shock 2)<br>
+<img src="images/Finished_Unknown.png" /> - <b>Unknown</b>
+</p>
+See the <a href="#finished_on">Finished On submenu</a> for more information about difficulty levels.
+
+<h4>Release Date</h4>
+Displays the FM's release date in the <a href="#settings_date_format">specified format</a>.
+
+<h4>Last Played</h4>
+Displays the FM's last played date in the <a href="#settings_date_format">specified format</a>.
+
++ <h4>Date Added</h4>
++ Displays the date the FM was added to the list.
++
+<h4>Disabled Mods</h4>
+Displays the disabled mods, if any, for the FM. If all mods are disabled for the FM, it will display "* [All]".
+
+<h4>Comment</h4>
+Displays the FM's comment, if any, up to the first 100 characters or the first linebreak, whichever comes first.
+```
+
+```diff
+<h4><a name="edit_fm_tab" />Edit FM tab</h4>
+
+<p><img src="images/edit_fm_tab.png" /></p>
+
+Here you can edit an FM's data. If you want to re-scan for a certain field, click the <img src="images/scan_14.png" /> icon beside the field.
+
+<h4>Alternate titles button</h4>
+Sometimes, multiple different titles will be detected during a scan. If the default title doesn't look correct, try clicking this dropdown button to see if another is available. Clicking an alternate title will change the FM's title to the one that you've selected.
+
+<h4>Release date and Last played</h4>
+If a date hasn't been scanned for or cannot be detected, its checkbox will be unchecked and no date will be shown.
+
+<h4>Disabled mods</h4>
+You can disable certain mods per-mission here. To see which mods you have installed, look at <code>cam_mod.ini</code> in your game folder. This string must be in the format <code>modname1+modname2+modname3</code> etc. So to disable the Enhancement Pack 2, it should be:
+
+<p><code>ep2</code></p>
+
+<p>To disable the Enhancement Pack 2 and the HD mod, it would be:</p>
+
+<p><code>ep2+hdmod</code></p>
+
+<p>To disable all mods for the current FM, check the <b>Disable all mods</b> checkbox.</p>
+
++ <h4>Language selection</h4>
++ Here you can choose to play an FM in a particular language. Only languages the FM supports will be available.
++
+<h4>Comment tab</h4>
+
+<p><img src="images/comment_tab.png" /></p>
+
+Here you can enter a comment for the FM. This comment will also be displayed in the Comments column (up to the first 100 characters or the first linebreak, whichever comes first), and will update as you type.
+```
+
+```diff
+<h3><a name="settings_fm_display_section" />FM Display section</h3>
+
+<p><img src="images/setup_fm_display_tab.png" /></p>
+
+<h4>Game organization</h4>
+Here you can choose to either organize games into their own tabs, or to display your FMs as one list and allow filtering by game. When game tabs are enabled, each game will have its own selected FM and set of filters that will be retained between tab switches. Organizing games by tab can make things cleaner, but if you want to filter without regard to game (say, to find all missions by a single author who has released missions for multiple games), then having one list with game filters will work better.
+
+<p>
+  If you select the <b>Use short names on game tabs</b> checkbox, game tabs will be displayed with abbreviated names to save screen space.
+</p>
+
+<h4><a name="settings_sorting" />Sorting</h4>
+Here you can choose to ignore leading articles when sorting FMs. For example, the FM "The Seven Sisters" will be considered to start with an "S". If you choose to move articles to the end of names when displaying them, then "The Seven Sisters" will be displayed as "Seven Sisters, The". The default set of articles is "a, an, the", but you can add more (for example to support other languages). These articles are not part of the normal localization functionality, because they apply to fan mission names, which can be any language; therefore the app-wide language setting doesn't apply to them.
+
+<h4><a name="settings_rating_display_style" />Rating display style</h4>
+Here you can choose the style in which to display an FM's rating (0-10, 0-5, or 0-5 with stars).
+
+<h4><a name="settings_date_format" />Date format</h4>
+Here you can choose how to display dates: either in the short or long form of your PC's current culture, or a custom format.
+
++ <h4><a name="settings_days_recent" />Recent FMs</h4>
++ When choosing to <a href="#show_recent_at_top">show recently added FMs at the top of the list</a>, only FMs added within the selected number of days will be included.
++
+<h3><a name="settings_other_section" />Other section</h3>
+
+<p><img src="images/setup_other_tab.png" /></p>
+```
+
 ### v1.3.2:
 
 No localizable text changes.
