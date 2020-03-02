@@ -80,7 +80,9 @@ namespace AngelLoader
                         {
                             string gameExe = Config.GetGameExe((GameIndex)i);
                             gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                            if (gameExeExists[i]) SetGameData((GameIndex)i, storeConfigInfo: true);
+                            bool exe_Specified = false;
+                            if (gameExeExists[i]) exe_Specified = SetGameData((GameIndex)i, storeConfigInfo: true);
+                            if ((GameIndex)i == Thief2) Config.T2MPDetected = exe_Specified && !GetT2MultiplayerExe().IsEmpty();
                         }
 
                         Error error =
