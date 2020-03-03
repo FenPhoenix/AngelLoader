@@ -2205,10 +2205,7 @@ namespace AngelLoader.Forms
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
-            if (fm.MarkedRecent)
-            {
-                FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGoldenrodYellow;
-            }
+            FMsDGV.Rows[e.RowIndex].DefaultCellStyle.BackColor = fm.MarkedRecent ? Color.LightGoldenrodYellow : SystemColors.Window;
         }
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
