@@ -629,7 +629,7 @@ namespace AngelLoader.Forms
             // Any other keys have to use this.
             else if (m.Msg == InteropMisc.WM_KEYDOWN)
             {
-                // nothing in here now, but keep for later use
+                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
             }
             else if (m.Msg == InteropMisc.WM_KEYUP)
             {
