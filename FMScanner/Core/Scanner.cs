@@ -104,6 +104,8 @@ namespace FMScanner
         // Guess I'll leave this one global for reasons
         private List<ReadmeInternal> ReadmeFiles { get; } = new List<ReadmeInternal>();
 
+        private readonly TitlesStrNaturalNumericSort _titlesStrNaturalNumericSort = new TitlesStrNaturalNumericSort();
+
         #endregion
 
         private enum SpecialLogic
@@ -1743,7 +1745,7 @@ namespace FMScanner
                 }
             }
 
-            tfLinesD.Sort(new TitlesStrNaturalNumericSort());
+            tfLinesD.Sort(_titlesStrNaturalNumericSort);
 
             #endregion
 
