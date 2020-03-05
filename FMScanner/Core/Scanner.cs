@@ -196,14 +196,14 @@ namespace FMScanner
 
             #region Checks
 
-            if (string.IsNullOrEmpty(tempPath))
+            if (tempPath.IsEmpty())
             {
                 Log(LogFile, nameof(ScanMany) + ": Argument is null or empty: " + nameof(tempPath), methodName: false);
                 throw new ArgumentException("Argument is null or empty.", nameof(tempPath));
             }
 
             if (missions == null) throw new ArgumentNullException(nameof(missions));
-            if (missions.Count == 0 || (missions.Count == 1 && string.IsNullOrEmpty(missions[0].Path)))
+            if (missions.Count == 0 || (missions.Count == 1 && missions[0].Path.IsEmpty()))
             {
                 Log(LogFile, nameof(ScanMany) + ": No mission(s) specified. tempPath: " + tempPath, methodName: false);
                 throw new ArgumentException("No mission(s) specified.", nameof(missions));
@@ -481,9 +481,9 @@ namespace FMScanner
             {
                 value = CleanupTitle(value);
 
-                if (string.IsNullOrEmpty(value)) return;
+                if (value.IsEmpty()) return;
 
-                if (string.IsNullOrEmpty(fmData.Title))
+                if (fmData.Title.IsEmpty())
                 {
                     fmData.Title = value;
                 }
@@ -647,9 +647,7 @@ namespace FMScanner
             {
                 if (fmData.Author.IsEmpty())
                 {
-                    var titles = !string.IsNullOrEmpty(fmData.Title)
-                        ? new List<string> { fmData.Title }
-                        : null;
+                    var titles = !fmData.Title.IsEmpty() ? new List<string> { fmData.Title } : null;
                     if (titles != null && fmData.AlternateTitles?.Count > 0)
                     {
                         titles.AddRange(fmData.AlternateTitles);
@@ -700,7 +698,7 @@ namespace FMScanner
             {
                 if (fmData.Type == FMType.Campaign) SetMiscTag(fmData, "campaign");
 
-                if (!string.IsNullOrEmpty(fmData.Author))
+                if (!fmData.Author.IsEmpty())
                 {
                     int ai = fmData.Author.IndexOf(' ');
                     if (ai == -1) ai = fmData.Author.IndexOf('-');
@@ -747,7 +745,7 @@ namespace FMScanner
 
             // Look in the readme
             string ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
-            if (!string.IsNullOrEmpty(ds) && StringToDate(ds, out DateTime dt))
+            if (!ds.IsEmpty() && StringToDate(ds, out DateTime dt))
             {
                 ret = dt;
             }
@@ -796,7 +794,7 @@ namespace FMScanner
 
         private static void SetLangTags(ScannedFMData fmData, string[] uncertainLangs)
         {
-            if (string.IsNullOrWhiteSpace(fmData.TagsString)) fmData.TagsString = "";
+            if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
             for (int i = 0; i < fmData.Languages.Length; i++)
             {
                 string lang = fmData.Languages[i];
@@ -821,19 +819,19 @@ namespace FMScanner
             }
 
             // Compatibility with old behavior for painless diffing
-            if (string.IsNullOrEmpty(fmData.TagsString)) fmData.TagsString = null;
+            if (fmData.TagsString.IsEmpty()) fmData.TagsString = null;
         }
 
         private static void SetMiscTag(ScannedFMData fmData, string tag)
         {
-            if (string.IsNullOrWhiteSpace(fmData.TagsString)) fmData.TagsString = "";
+            if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
 
             var list = fmData.TagsString.Split(CA_CommaSemicolon).ToList();
             bool tagFound = false;
             for (int i = 0; i < list.Count; i++)
             {
                 list[i] = list[i].Trim();
-                if (string.IsNullOrEmpty(list[i]))
+                if (list[i].IsEmpty())
                 {
                     list.RemoveAt(i);
                     i--;
@@ -1317,7 +1315,7 @@ namespace FMScanner
             // multiple actual lines for some reason. God help us if any more keys get added to the spec and some
             // wise guy puts one of those keys after a multiline Descr.
 
-            if (!string.IsNullOrEmpty(fmIni.Descr))
+            if (!fmIni.Descr.IsEmpty())
             {
                 fmIni.Descr = fmIni.Descr
                     .Replace(@"\t", "\t")
@@ -1343,7 +1341,7 @@ namespace FMScanner
                 // Normalize to just LF for now. Otherwise it just doesn't work right for reasons confusing and
                 // senseless. It can easily be converted later.
                 fmIni.Descr = fmIni.Descr.Replace("\r\n", "\n");
-                if (string.IsNullOrWhiteSpace(fmIni.Descr)) fmIni.Descr = null;
+                if (fmIni.Descr.IsWhiteSpace()) fmIni.Descr = null;
             }
 
             #endregion
@@ -1402,7 +1400,7 @@ namespace FMScanner
                         // Invalid date, leave blank
                     }
                 }
-                else if (!string.IsNullOrEmpty(fmIni.ReleaseDate))
+                else if (!fmIni.ReleaseDate.IsEmpty())
                 {
                     ret.LastUpdateDate = StringToDate(fmIni.ReleaseDate, out DateTime dt) ? (DateTime?)dt : null;
                 }
@@ -1450,11 +1448,11 @@ namespace FMScanner
                     while (i < lines.Length - 1)
                     {
                         string lt = lines[i + 1].Trim();
-                        if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] != ';')
+                        else if (!lt.IsEmpty() && lt[0] != ';')
                         {
                             ret.Title = lt;
                             break;
@@ -1467,11 +1465,11 @@ namespace FMScanner
                     while (i < lines.Length - 1)
                     {
                         string lt = lines[i + 1].Trim();
-                        if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] != ';')
+                        else if (!lt.IsEmpty() && lt[0] != ';')
                         {
                             ret.Author = lt;
                             break;
@@ -1734,7 +1732,7 @@ namespace FMScanner
                 {
                     // Note: the Trim() is important, don't remove it
                     string line = titlesStrLines[i].Trim();
-                    if (!string.IsNullOrEmpty(line) &&
+                    if (!line.IsEmpty() &&
                         line.Contains(':') &&
                         line.CountChars('\"') > 1 &&
                         line.StartsWithI("title_") &&
@@ -1782,7 +1780,7 @@ namespace FMScanner
                     if (titleNum == "0") ret.TitleFrom0 = ExtractFromQuotedSection(line);
 
                     title = ExtractFromQuotedSection(line);
-                    if (string.IsNullOrEmpty(title)) continue;
+                    if (title.IsEmpty()) continue;
 
                     string umfNoExt = usedMisFiles[umfIndex].Name.RemoveExtension();
                     if (umfNoExt != null && umfNoExt.StartsWithI("miss") && umfNoExt.Length > 4 &&
@@ -1795,8 +1793,8 @@ namespace FMScanner
                 if (ScanOptions.ScanTitle &&
                     ret.TitleFromNumbered.IsEmpty() &&
                     lineIndex == titlesStrLines.Count - 1 &&
-                    !string.IsNullOrEmpty(titleNum) &&
-                    !string.IsNullOrEmpty(title) &&
+                    !titleNum.IsEmpty() &&
+                    !title.IsEmpty() &&
                     !usedMisFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")) &&
                     misFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")))
                 {
@@ -1842,7 +1840,7 @@ namespace FMScanner
                 for (int i = 0; i < r.Lines.Length; i++)
                 {
                     string line = r.Lines[i];
-                    if (!string.IsNullOrWhiteSpace(line))
+                    if (!line.IsWhiteSpace())
                     {
                         lines.Add(line);
                         fullLineCount++;
@@ -1874,7 +1872,7 @@ namespace FMScanner
                         }
                         // Set a cutoff for the length so we don't end up with a huge string that's obviously
                         // more than a title
-                        if (!string.IsNullOrWhiteSpace(titleConcat) && titleConcat.Length <= 50)
+                        if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
                         {
                             ret.Add(CleanupTitle(titleConcat));
                         }
@@ -1897,7 +1895,7 @@ namespace FMScanner
                 if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
                 {
                     string ndv = GetNewDarkVersionFromText(file.Text);
-                    if (!string.IsNullOrEmpty(ndv)) return ndv;
+                    if (!ndv.IsEmpty()) return ndv;
                 }
                 else
                 {
@@ -1910,16 +1908,16 @@ namespace FMScanner
                             Created by Yandros using VideoPad by NCH Software
                         */
                         ret = GetAuthorFromTopOfReadme(file.Lines, titles);
-                        if (!string.IsNullOrEmpty(ret)) return ret;
+                        if (!ret.IsEmpty()) return ret;
                     }
 
                     ret = GetValueFromLines(specialLogic, keys, file.Lines);
-                    if (string.IsNullOrEmpty(ret))
+                    if (ret.IsEmpty())
                     {
                         if (specialLogic == SpecialLogic.Author)
                         {
                             ret = GetAuthorFromText(file.Text);
-                            if (!string.IsNullOrEmpty(ret)) return ret;
+                            if (!ret.IsEmpty()) return ret;
                         }
                     }
                     else
@@ -1931,14 +1929,14 @@ namespace FMScanner
 
             // Do the less common cases separately so as not to slow down the main ones with checks that are
             // statistically unlikely to find anything
-            if (specialLogic == SpecialLogic.Author && string.IsNullOrEmpty(ret))
+            if (specialLogic == SpecialLogic.Author && ret.IsEmpty())
             {
                 // We do this separately for performance and clarity; it's an uncommon case involving regex
                 // searching and we don't want to run it unless we have to. Also, it's specific enough that we
                 // don't really want to shoehorn it into the standard line search.
                 ret = GetAuthorFromCopyrightMessage();
 
-                if (!string.IsNullOrEmpty(ret)) return ret;
+                if (!ret.IsEmpty()) return ret;
 
                 // Finds eg.
                 // Author:
@@ -1946,7 +1944,7 @@ namespace FMScanner
                 foreach (ReadmeInternal file in ReadmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
                 {
                     ret = GetValueFromLines(SpecialLogic.AuthorNextLine, null, file.Lines);
-                    if (!string.IsNullOrEmpty(ret)) return ret;
+                    if (!ret.IsEmpty()) return ret;
                 }
 
                 // Very last resort, because it has a dynamic regex in it
@@ -1970,7 +1968,7 @@ namespace FMScanner
                         string lineAfterNext = lines[i + 2].Trim();
                         int lanLen = lineAfterNext.Length;
                         if ((lanLen > 0 && lineAfterNext[lanLen - 1] == ':' && lineAfterNext.Length <= 50) ||
-                            string.IsNullOrWhiteSpace(lineAfterNext))
+                            lineAfterNext.IsWhiteSpace())
                         {
                             return lines[i + 1].Trim();
                         }
@@ -2040,7 +2038,7 @@ namespace FMScanner
                     if (index == -1) index = indexUnicodeDash;
 
                     string finalValue = lineStartTrimmed.Substring(index + 1).Trim();
-                    if (!string.IsNullOrEmpty(finalValue)) return finalValue;
+                    if (!finalValue.IsEmpty()) return finalValue;
                 }
                 else
                 {
@@ -2057,11 +2055,11 @@ namespace FMScanner
                         // first space in the key itself if there is one.
                         string lineAfterKey = lineStartTrimmed.Remove(0, key.Length);
 
-                        if (!string.IsNullOrEmpty(lineAfterKey) &&
+                        if (!lineAfterKey.IsEmpty() &&
                             (lineAfterKey[0] == ' ' || lineAfterKey[0] == '\t'))
                         {
                             string finalValue = lineAfterKey.TrimStart();
-                            if (!string.IsNullOrEmpty(finalValue)) return finalValue;
+                            if (!finalValue.IsEmpty()) return finalValue;
                         }
                     }
                 }
@@ -2072,7 +2070,7 @@ namespace FMScanner
 
         private static string CleanupValue(string value)
         {
-            if (string.IsNullOrEmpty(value)) return value;
+            if (value.IsEmpty()) return value;
 
             string ret = value.TrimEnd();
 
@@ -2153,7 +2151,7 @@ namespace FMScanner
                 if (match.Success)
                 {
                     string title = match.Groups["Title"].Value.Trim();
-                    if (string.IsNullOrEmpty(title)) continue;
+                    if (title.IsEmpty()) continue;
 
                     // Do our best to ignore things that aren't titles
                     if ("{}-_:;!@#$%^&*()".All(x => title[0] != x) &&
@@ -2174,7 +2172,7 @@ namespace FMScanner
 
         private static string CleanupTitle(string value)
         {
-            if (string.IsNullOrEmpty(value)) return value;
+            if (value.IsEmpty()) return value;
 
             // Some titles are clever and  A r e  W r i t t e n  L i k e  T h i s
             // But we want to leave titles that are supposed to be acronyms - ie, "U F O", "R G B"
@@ -2228,7 +2226,7 @@ namespace FMScanner
             for (int i = 0; i < linesArray.Length; i++)
             {
                 string line = linesArray[i];
-                if (!string.IsNullOrWhiteSpace(line))
+                if (!line.IsWhiteSpace())
                 {
                     lines.Add(line);
                     fullLineCount++;
@@ -2247,7 +2245,7 @@ namespace FMScanner
                 if (lineT.StartsWithI("By ") || lineT.StartsWithI("By: "))
                 {
                     string author = lineT.Substring(lineT.IndexOf(' ')).TrimStart();
-                    if (!string.IsNullOrEmpty(author)) return author;
+                    if (!author.IsEmpty()) return author;
                 }
                 else if (lineT.EqualsI("By"))
                 {
@@ -2262,7 +2260,7 @@ namespace FMScanner
                     if (!m.Success) continue;
 
                     string author = CleanupCopyrightAuthor(m.Groups["Author"].Value);
-                    if (!string.IsNullOrEmpty(author)) return author;
+                    if (!author.IsEmpty()) return author;
                 }
             }
 
@@ -2283,7 +2281,7 @@ namespace FMScanner
                 }
             }
 
-            return !string.IsNullOrEmpty(author) ? author : null;
+            return !author.IsEmpty() ? author : null;
         }
 
         private string GetAuthorFromTitleByAuthorLine(List<string> titles)
@@ -2364,7 +2362,7 @@ namespace FMScanner
 
                 foreach (string line in rf.Lines)
                 {
-                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    if (line.IsWhiteSpace()) continue;
 
                     if (inCopyrightSection)
                     {
@@ -2384,7 +2382,7 @@ namespace FMScanner
                     }
 
                     author = AuthorCopyrightRegexesMatch(line);
-                    if (!string.IsNullOrEmpty(author))
+                    if (!author.IsEmpty())
                     {
                         foundAuthor = true;
                         break;
@@ -2400,7 +2398,7 @@ namespace FMScanner
                 if (foundAuthor) break;
             }
 
-            if (string.IsNullOrWhiteSpace(author)) return null;
+            if (author.IsWhiteSpace()) return null;
 
             author = CleanupCopyrightAuthor(author);
 
@@ -2435,7 +2433,7 @@ namespace FMScanner
         {
             string version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
 
-            if (string.IsNullOrEmpty(version)) return null;
+            if (version.IsEmpty()) return null;
 
             Debug.WriteLine(@"GetVersion() top:");
             Debug.WriteLine(version);
@@ -2874,7 +2872,7 @@ namespace FMScanner
                 }
             }
 
-            if (string.IsNullOrEmpty(version)) return null;
+            if (version.IsEmpty()) return null;
 
             string ndv = version.Trim(CA_Period);
             int index = ndv.IndexOf('.');

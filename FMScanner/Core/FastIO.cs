@@ -141,13 +141,12 @@ namespace FMScanner
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(path) || pathContainsInvalidChars)
+            if (path.IsWhiteSpace() || pathContainsInvalidChars)
             {
                 throw new ArgumentException("The path '" + path + "' is invalid in some, or other, regard.");
             }
 
-            const int fileAttributeDirectory = 0x10;
-
+            const int FILE_ATTRIBUTE_DIRECTORY = 0x10;
             const int ERROR_FILE_NOT_FOUND = 0x2;
 
             // Other relevant errors (though we don't use them specifically at the moment)
@@ -186,7 +185,7 @@ namespace FMScanner
                     }
                     do
                     {
-                        if ((findData.dwFileAttributes & fileAttributeDirectory) != fileAttributeDirectory &&
+                        if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
                             findData.cFileName != "." && findData.cFileName != "..")
                         {
                             return true;
@@ -215,7 +214,7 @@ namespace FMScanner
                 }
                 do
                 {
-                    if ((findData.dwFileAttributes & fileAttributeDirectory) == fileAttributeDirectory &&
+                    if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
                         findData.cFileName != "." && findData.cFileName != ".." &&
                         FirstFileExists(FastIOSearchOption.AllDirectories, Path.Combine(path, findData.cFileName),
                             searchPatterns))

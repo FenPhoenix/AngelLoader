@@ -51,7 +51,7 @@ namespace FMScanner
                 }
             }
 
-            if (!string.IsNullOrEmpty(fmIni.Descr)) fmIni.Descr = fmIni.Descr.Trim();
+            if (!fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
 
             return fmIni;
         }

@@ -436,8 +436,8 @@ namespace FMScanner
         public int Compare(string x, string y)
         {
             if (x == y) return 0;
-            if (string.IsNullOrEmpty(x)) return -1;
-            if (string.IsNullOrEmpty(y)) return 1;
+            if (x.IsEmpty()) return -1;
+            if (y.IsEmpty()) return 1;
 
             int xIndex1;
             string xNum = x.Substring(xIndex1 = x.IndexOf('_') + 1, x.IndexOf(':') - xIndex1);

@@ -62,7 +62,7 @@ namespace FMScanner
         internal static bool IsEnglishReadme(this string value)
         {
             string rNoExt = value.RemoveExtension();
-            if (string.IsNullOrEmpty(rNoExt)) return false;
+            if (rNoExt.IsEmpty()) return false;
 
             return rNoExt.EqualsI("fminfo-en") ||
                    rNoExt.EqualsI("fminfo-eng") ||
@@ -179,10 +179,7 @@ namespace FMScanner
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        internal static bool EqualsI(this string first, string second)
-        {
-            return first.Equals(second, OrdinalIgnoreCase);
-        }
+        internal static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
 
         #region File extensions
 
@@ -499,7 +496,7 @@ namespace FMScanner
         private static bool StartsWithOrEndsWithFast(this string str, string value,
             CaseComparison caseComparison, StartOrEnd startOrEnd)
         {
-            if (string.IsNullOrEmpty(str) || str.Length < value.Length) return false;
+            if (str.IsEmpty() || str.Length < value.Length) return false;
 
             // Note: ASCII chars are 0-127. Uppercase is 65-90; lowercase is 97-122.
             // Therefore, if a char is in one of these ranges, one can convert between cases by simply adding or
@@ -564,12 +561,20 @@ namespace FMScanner
         #endregion
 
         /// <summary>
-        /// string.IsNullOrEmpty(str) but with less typing.
+        /// Returns true if <paramref name="value"/> is null or empty.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         [ContractAnnotation("null => true")]
         internal static bool IsEmpty(this string value) => string.IsNullOrEmpty(value);
+
+        /// <summary>
+        /// Returns true if <paramref name="value"/> is null, empty, or whitespace.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [ContractAnnotation("null => true")]
+        internal static bool IsWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
 
         #endregion
 
