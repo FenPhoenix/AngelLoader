@@ -179,7 +179,8 @@ namespace FMScanner
         // NOTE: I think this was for GetLanguages() for the planned accuracy update?
         //internal static string[] LanguageDirs { get; } = { FMDirs.Books, FMDirs.Intrface, FMDirs.Strings };
 
-        internal static readonly string[] Languages =
+        internal static readonly string[]
+        Languages =
         {
             "english",
             "czech",
@@ -195,7 +196,8 @@ namespace FMScanner
         };
 
         // Cheesy hack because it wasn't designed this way
-        internal static readonly Dictionary<string, string> LanguagesC = new Dictionary<string, string>
+        internal static readonly Dictionary<string, string>
+        LanguagesC = new Dictionary<string, string>
         {
             { "english", "English" },
             { "czech", "Czech" },
@@ -210,7 +212,8 @@ namespace FMScanner
             { "spanish", "Spanish" }
         };
 
-        internal static readonly string[] DateFormats =
+        internal static readonly string[]
+        DateFormats =
         {
             "MMM d yy",
             "MMM d, yy",
@@ -290,16 +293,6 @@ namespace FMScanner
 
         // SS2-only detection string
         internal static readonly char[] MapParam = { 'M', 'A', 'P', 'P', 'A', 'R', 'A', 'M' };
-    }
-
-    [PublicAPI] // Not public, but whatever
-    internal sealed class FMIniData
-    {
-        internal string NiceName { get; set; }
-        internal string ReleaseDate { get; set; }
-        internal string InfoFile { get; set; }
-        internal string Tags { get; set; }
-        internal string Descr { get; set; }
     }
 
     // Putting regexes in here is a perf optimization: static (initialized only once) and Compiled increases
