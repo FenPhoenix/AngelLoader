@@ -47,7 +47,7 @@ namespace FMScanner
             return success;
         }
 
-        #region ReadAllLines / ReadAllText
+        #region ReadAllLines
 
         /// <summary>
         /// Reads all the lines in a stream, auto-detecting its encoding. Ensures non-ASCII characters show up
@@ -78,8 +78,8 @@ namespace FMScanner
             }
             else
             {
-                // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in an
-                // archive stream, so I have to copy it to a seekable MemoryStream. Blah.
+                // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
+                // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
                 using var memStream = new MemoryStream((int)length);
                 stream.CopyTo(memStream);
                 stream.Dispose();

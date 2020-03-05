@@ -13,6 +13,7 @@ If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using static System.StringComparison;
 
 namespace FMScanner
@@ -449,11 +450,7 @@ namespace FMScanner
             GivenOrLower
         }
 
-        private enum StartOrEnd
-        {
-            Start,
-            End
-        }
+        private enum StartOrEnd { Start, End }
 
         /// <summary>
         /// StartsWith (case-insensitive). Uses a fast ASCII compare where possible.
@@ -569,12 +566,10 @@ namespace FMScanner
         /// <summary>
         /// string.IsNullOrEmpty(str) but with less typing.
         /// </summary>
-        /// <param name="str"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        internal static bool IsEmpty(this string str)
-        {
-            return string.IsNullOrEmpty(str);
-        }
+        [ContractAnnotation("null => true")]
+        internal static bool IsEmpty(this string value) => string.IsNullOrEmpty(value);
 
         #endregion
 

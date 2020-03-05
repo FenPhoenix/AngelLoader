@@ -14,7 +14,7 @@ namespace FMScanner
 {
     internal static class Ini
     {
-        internal static FMIniData DeserializeFmIniLines(string[] lines)
+        internal static FMIniData DeserializeFMIniLines(string[] lines)
         {
             var fmIni = new FMIniData();
 
