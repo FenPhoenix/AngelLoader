@@ -89,7 +89,7 @@ namespace FMScanner
 
         #endregion
 
-        private List<FileInfo> FMDirFiles { get; set; } = new List<FileInfo>();
+        private List<FileInfo> FMDirFiles { get; } = new List<FileInfo>();
 
         private char dsc { get; set; }
 
@@ -102,7 +102,7 @@ namespace FMScanner
         private string FMWorkingPath { get; set; }
 
         // Guess I'll leave this one global for reasons
-        private List<ReadmeInternal> ReadmeFiles { get; set; } = new List<ReadmeInternal>();
+        private List<ReadmeInternal> ReadmeFiles { get; } = new List<ReadmeInternal>();
 
         #endregion
 
@@ -140,7 +140,7 @@ namespace FMScanner
         [PublicAPI]
         public List<ScannedFMData>
         Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-                IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+             IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
             return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken);
         }
@@ -169,7 +169,7 @@ namespace FMScanner
         [PublicAPI]
         public async Task<List<ScannedFMData>>
         ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
-            CancellationToken cancellationToken)
+                  CancellationToken cancellationToken)
         {
             return await Task.Run(() =>
                 ScanMany(missions, tempPath, this.ScanOptions, progress, cancellationToken));
@@ -178,7 +178,7 @@ namespace FMScanner
         [PublicAPI]
         public async Task<List<ScannedFMData>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-            IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+                  IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
             return await Task.Run(() =>
                 ScanMany(missions, tempPath, scanOptions, progress, cancellationToken));
@@ -188,7 +188,7 @@ namespace FMScanner
 
         private List<ScannedFMData>
         ScanMany(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-            IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+                 IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
             // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
             // entries as the in-list; this allows the calling app to not have to do a search to link up the FMs
@@ -435,7 +435,8 @@ namespace FMScanner
                 }
                 else
                 {
-                    FMDirFiles = new DirectoryInfo(FMWorkingPath).EnumerateFiles("*", SearchOption.AllDirectories).ToList();
+                    FMDirFiles.Clear();
+                    FMDirFiles.AddRange(new DirectoryInfo(FMWorkingPath).EnumerateFiles("*", SearchOption.AllDirectories));
 
                     if (fmIsSevenZip)
                     {
@@ -464,7 +465,7 @@ namespace FMScanner
 
             bool success =
                 ReadAndCacheFMData(fmData, baseDirFiles, misFiles, usedMisFiles, stringsDirFiles,
-                    intrfaceDirFiles, booksDirFiles, t3FMExtrasDirFiles);
+                                   intrfaceDirFiles, booksDirFiles, t3FMExtrasDirFiles);
 
             if (!success)
             {
@@ -688,10 +689,7 @@ namespace FMScanner
                 {
                     var getLangs = GetLanguages(baseDirFiles, booksDirFiles, intrfaceDirFiles, stringsDirFiles);
                     fmData.Languages = getLangs.Langs;
-                    if (getLangs.Langs?.Length > 0)
-                    {
-                        SetLangTags(fmData, getLangs.UncertainLangs);
-                    }
+                    if (getLangs.Langs?.Length > 0) SetLangTags(fmData, getLangs.UncertainLangs);
                     if (!ScanOptions.ScanLanguages) fmData.Languages = null;
                 }
 
@@ -769,9 +767,8 @@ namespace FMScanner
                 DateTime misFileDate;
                 if (FMIsZip)
                 {
-                    misFileDate =
-                        new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                            Archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
+                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
+                        Archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
                 }
                 else
                 {
@@ -1089,8 +1086,7 @@ namespace FMScanner
                         // TODO: I already have baseDirFiles; see if this EnumerateDirectories can be removed
                         // Even a janky scan through baseDirFiles would probably be faster than hitting the disk
                         string[] baseDirFolders = (
-                            from f in Directory.EnumerateDirectories(FMWorkingPath, "*",
-                                SearchOption.TopDirectoryOnly)
+                            from f in Directory.EnumerateDirectories(FMWorkingPath, "*", SearchOption.TopDirectoryOnly)
                             select f.Substring(f.LastIndexOf(dsc) + 1)).ToArray();
 
                         foreach (NameAndIndex f in intrfaceDirFiles)
@@ -1114,8 +1110,7 @@ namespace FMScanner
 
                         fmd.HasCustomMotions =
                             baseDirFolders.ContainsI(FMDirs.Motions) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(FMWorkingPath, FMDirs.Motions),
-                                MotionFilePatterns);
+                            FastIO.FilesExistSearchAll(Path.Combine(FMWorkingPath, FMDirs.Motions), MotionFilePatterns);
 
                         fmd.HasMovies =
                             (baseDirFolders.ContainsI(FMDirs.Movies) &&
@@ -1125,8 +1120,7 @@ namespace FMScanner
 
                         fmd.HasCustomTextures =
                             baseDirFolders.ContainsI(FMDirs.Fam) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(FMWorkingPath, FMDirs.Fam),
-                                ImageFilePatterns);
+                            FastIO.FilesExistSearchAll(Path.Combine(FMWorkingPath, FMDirs.Fam), ImageFilePatterns);
 
                         fmd.HasCustomObjects =
                             baseDirFolders.ContainsI(FMDirs.Obj) &&
@@ -1497,8 +1491,8 @@ namespace FMScanner
         {
             if (stream.Position > 0) stream.Position = 0;
 
-            // Don't parse files small enough to be unlikely to have embedded images; otherwise we're just
-            // parsing it twice for nothing
+            // Don't parse files small enough to be unlikely to have embedded images; otherwise we're just parsing
+            // it twice for nothing
             if (streamLength < 262_144)
             {
                 rtfBox.LoadFile(stream, RichTextBoxStreamType.RichText);
@@ -1587,8 +1581,7 @@ namespace FMScanner
                 if (FMIsZip)
                 {
                     fileName = readmeEntry.Name;
-                    lastModifiedDate =
-                        new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(readmeEntry.LastWriteTime)).DateTime;
+                    lastModifiedDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(readmeEntry.LastWriteTime)).DateTime;
                     readmeSize = readmeEntry.Length;
                 }
                 else
@@ -1622,8 +1615,8 @@ namespace FMScanner
                         readmeStream.Position = 0;
                     }
 
-                    // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by
-                    // header alone.
+                    // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
+                    // alone.
                     char[] rtfHeader = new char[6];
                     using (var sr = FMIsZip
                         ? new StreamReader(readmeStream, Encoding.ASCII, false, 6, true)
@@ -1941,8 +1934,8 @@ namespace FMScanner
             if (specialLogic == SpecialLogic.Author && string.IsNullOrEmpty(ret))
             {
                 // We do this separately for performance and clarity; it's an uncommon case involving regex
-                // searching and we don't want to run it unless we have to. Also, it's specific enough that
-                // we don't really want to shoehorn it into the standard line search.
+                // searching and we don't want to run it unless we have to. Also, it's specific enough that we
+                // don't really want to shoehorn it into the standard line search.
                 ret = GetAuthorFromCopyrightMessage();
 
                 if (!string.IsNullOrEmpty(ret)) return ret;
@@ -2018,8 +2011,8 @@ namespace FMScanner
                 {
                     string x = keys[i];
 
-                    // Either in given case or in all caps, but not in lowercase, because that's given me at
-                    // least one false positive
+                    // Either in given case or in all caps, but not in lowercase, because that's given me at least
+                    // one false positive
                     if (lineStartTrimmed.StartsWithGU(x))
                     {
                         lineStartsWithKey = true;
@@ -2052,8 +2045,7 @@ namespace FMScanner
                 else
                 {
                     // Don't detect "Version "; too many false positives
-                    // TODO: Can probably remove this check and then just sort out any false positives in
-                    // TODO: GetVersion()
+                    // TODO: Can probably remove this check and then just sort out any false positives in GetVersion()
                     if (specialLogic == SpecialLogic.Version) continue;
 
                     for (int i = 0; i < keys.Length; i++)
@@ -2773,8 +2765,8 @@ namespace FMScanner
                     // We avoid string.Concat() in favor of directly searching char arrays, as that's WAY faster
                     if ((FMIsZip ? zipBuf : dirBuf).Contains(MisFileStrings.SkyObjVar))
                     {
-                        // Zip reading is going to check the NewDark locations the other way round, but
-                        // fortunately they're interchangeable in meaning so we don't have to do anything
+                        // Zip reading is going to check the NewDark locations the other way round, but fortunately
+                        // they're interchangeable in meaning so we don't have to do anything
                         if (locations[i] == newDarkLoc1 || locations[i] == newDarkLoc2)
                         {
                             ret.NewDarkRequired = true;
@@ -2813,9 +2805,9 @@ namespace FMScanner
                     ? MisFileStrings.Thief2UniqueStringGam
                     : MisFileStrings.Thief2UniqueStringMis;
 
-                // To catch matches on a boundary between chunks, leave extra space at the start of each
-                // chunk for the last boundaryLen bytes of the previous chunk to go into, thus achieving a
-                // kind of quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
+                // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
+                // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
+                // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
                 int boundaryLen = identString.Length;
                 const int bufSize = 81_920;
                 byte[] chunk = new byte[boundaryLen + bufSize];
@@ -2891,8 +2883,8 @@ namespace FMScanner
                 ndv += "0";
             }
 
-            // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-
-            // travelling Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
+            // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-travelling
+            // Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
             float ndvF = float.Parse(ndv);
             return ndvF >= 1.19 && ndvF < 2.0 ? ndv : null;
         }
