@@ -41,7 +41,7 @@ namespace FMScanner
     public class Scanner : IDisposable
     {
 #if DEBUG
-        private Stopwatch OverallTimer { get; } = new Stopwatch();
+        private readonly Stopwatch _overallTimer = new Stopwatch();
 #endif
 
         #region Public properties
@@ -115,11 +115,11 @@ namespace FMScanner
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private sealed class FMIniData
         {
-            internal string NiceName { get; set; }
-            internal string ReleaseDate { get; set; }
-            internal string InfoFile { get; set; }
-            internal string Tags { get; set; }
-            internal string Descr { get; set; }
+            internal string NiceName;
+            internal string ReleaseDate;
+            internal string InfoFile;
+            internal string Tags;
+            internal string Descr;
         }
 
         #endregion
@@ -350,7 +350,7 @@ namespace FMScanner
         private ScannedFMData ScanCurrentFM(RichTextBox rtfBox)
         {
 #if DEBUG
-            OverallTimer.Restart();
+            _overallTimer.Restart();
 #endif
             _dsc = _fmIsZip ? '/' : '\\';
 
@@ -732,8 +732,8 @@ namespace FMScanner
             if (fmIsSevenZip) DeleteFMWorkingPath(_fmWorkingPath);
 
 #if DEBUG
-            OverallTimer.Stop();
-            Debug.WriteLine(@"This FM took:\r\n" + OverallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
+            _overallTimer.Stop();
+            Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
 #endif
 
             // Due to the Thief 3 detection being done in the same place as the custom resources check, it's
