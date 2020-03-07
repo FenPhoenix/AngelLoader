@@ -112,16 +112,6 @@ namespace FMScanner
             internal int Index = -1;
         }
 
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-        private sealed class FMIniData
-        {
-            internal string NiceName;
-            internal string ReleaseDate;
-            internal string InfoFile;
-            internal string Tags;
-            internal string Descr;
-        }
-
         #endregion
 
         private enum SpecialLogic
@@ -1321,7 +1311,7 @@ namespace FMScanner
 
             if (iniLines == null || iniLines.Length == 0) return (null, null, null, null, null);
 
-            var fmIni = new FMIniData();
+            (string NiceName, string ReleaseDate, string Tags, string Descr) fmIni = (null, null, null, null);
 
             #region Deserialize ini
 
@@ -1448,8 +1438,7 @@ namespace FMScanner
                 {
                     try
                     {
-                        var newDate = DateTimeOffset.FromUnixTimeSeconds(seconds).DateTime;
-                        ret.LastUpdateDate = newDate;
+                        ret.LastUpdateDate = DateTimeOffset.FromUnixTimeSeconds(seconds).DateTime;
                     }
                     catch (ArgumentOutOfRangeException)
                     {
