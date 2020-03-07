@@ -141,10 +141,7 @@ namespace FMScanner
 
         #region Contains
 
-        internal static bool Contains(this string value, char character)
-        {
-            return value.IndexOf(character) >= 0;
-        }
+        internal static bool Contains(this string value, char character) => value.IndexOf(character) >= 0;
 
         /// <summary>
         /// Determines whether a string contains a specified substring. Uses
@@ -153,10 +150,7 @@ namespace FMScanner
         /// <param name="value"></param>
         /// <param name="substring"></param>
         /// <returns></returns>
-        internal static bool ContainsI(this string value, string substring)
-        {
-            return value.IndexOf(substring, OrdinalIgnoreCase) >= 0;
-        }
+        internal static bool ContainsI(this string value, string substring) => value.IndexOf(substring, OrdinalIgnoreCase) >= 0;
 
         /// <summary>
         /// Determines whether an <see cref="IEnumerable{T}"/> contains a specified element. Uses 
@@ -560,6 +554,8 @@ namespace FMScanner
 
         #endregion
 
+        #region Empty / whitespace checks
+
         /// <summary>
         /// Returns true if <paramref name="value"/> is null or empty.
         /// </summary>
@@ -575,6 +571,8 @@ namespace FMScanner
         /// <returns></returns>
         [ContractAnnotation("null => true")]
         internal static bool IsWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
+
+        #endregion
 
         #endregion
 
