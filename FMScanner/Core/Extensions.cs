@@ -151,17 +151,32 @@ namespace FMScanner
         /// <param name="substring"></param>
         /// <returns></returns>
         internal static bool ContainsI(this string value, string substring) => value.IndexOf(substring, OrdinalIgnoreCase) >= 0;
-
+        
         /// <summary>
-        /// Determines whether an <see cref="IEnumerable{T}"/> contains a specified element. Uses 
-        /// <see cref="StringComparer.OrdinalIgnoreCase"/>.
+        /// Determines whether a List&lt;string&gt; contains a specified element. Uses 
+        /// <see cref="StringComparison.OrdinalIgnoreCase"/>.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="substring"></param>
         /// <returns></returns>
-        internal static bool ContainsI(this IEnumerable<string> value, string substring)
+        internal static bool ContainsI(this string[] value, string substring)
         {
-            return value.Contains(substring, StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
+            return false;
+
+        }
+
+        /// <summary>
+        /// Determines whether a string[] contains a specified element. Uses 
+        /// <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="substring"></param>
+        /// <returns></returns>
+        internal static bool ContainsI(this List<string> value, string substring)
+        {
+            for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
+            return false;
         }
 
         #endregion
