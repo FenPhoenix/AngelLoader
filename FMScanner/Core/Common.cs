@@ -365,7 +365,7 @@ namespace FMScanner
         internal static readonly Regex[] AuthorRegexes =
         {
             new Regex(
-                @"(FM|mission|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
+                @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
                 RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
             new Regex(
                 @"(A )?Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?) (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+by (?<Author>.+)",
@@ -390,15 +390,15 @@ namespace FMScanner
         {
             new Regex(
                 //language=regexp
-                @"^This (level|(fan(-| |))?mission|FM) is( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
+                @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
             new Regex(
                 //language=regexp
-                @"^The (levels?|(fan(-| |))?missions?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
+                @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
             new Regex(
                 //language=regexp
-                @"^These (levels|(fan(-| |))?missions|FMs) are( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
+                @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture)
         };
 
