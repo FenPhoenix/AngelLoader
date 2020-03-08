@@ -799,6 +799,8 @@ namespace FMScanner
             return ret;
         }
 
+        #region Set tags
+
         private static void SetLangTags(ScannedFMData fmData, string[] uncertainLangs)
         {
             if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
@@ -869,6 +871,8 @@ namespace FMScanner
             }
             fmData.TagsString = tagsString;
         }
+
+        #endregion
 
         private bool ReadAndCacheFMData(ScannedFMData fmd, List<NameAndIndex> baseDirFiles,
             List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles, List<NameAndIndex> stringsDirFiles,
@@ -1232,6 +1236,8 @@ namespace FMScanner
             return true;
         }
 
+        #region Read FM info files
+
         private (string Title, string Author, string Version, DateTime? ReleaseDate)
         ReadFMInfoXml(NameAndIndex file)
         {
@@ -1527,6 +1533,8 @@ namespace FMScanner
             return ret;
         }
 
+        #endregion
+
         // Because RTF files can have embedded images, their size can far exceed that normally expected of a
         // readme. To save time and memory, this method strips out such large data blocks before passing the
         // result to a WinForms RichTextBox for final conversion to plain text.
@@ -1720,218 +1728,7 @@ namespace FMScanner
             }
         }
 
-        private List<string> GetTitlesStrLines(List<NameAndIndex> stringsDirFiles)
-        {
-            string[] titlesStrLines = null;
-
-            #region Read title(s).str file
-
-            // Do not change search order: strings/english, strings, strings/[any other language]
-            var titlesStrDirs = new List<string>
-            {
-                FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.TitlesStr,
-                FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.TitleStr,
-                FMDirs.StringsS(_dsc) + FMFiles.TitlesStr,
-                FMDirs.StringsS(_dsc) + FMFiles.TitleStr
-            };
-            foreach (string lang in Languages)
-            {
-                if (lang == "english") continue;
-
-                titlesStrDirs.Add(FMDirs.StringsS(_dsc) + lang + _dsc + FMFiles.TitlesStr);
-                titlesStrDirs.Add(FMDirs.StringsS(_dsc) + lang + _dsc + FMFiles.TitleStr);
-            }
-
-            foreach (string titlesFileLocation in titlesStrDirs)
-            {
-                NameAndIndex titlesFile = _fmIsZip
-                    ? stringsDirFiles.FirstOrDefault(x => x.Name.EqualsI(titlesFileLocation))
-                    : new NameAndIndex { Name = Path.Combine(_fmWorkingPath, titlesFileLocation) };
-
-                if (titlesFile == null || !_fmIsZip && !File.Exists(titlesFile.Name)) continue;
-
-                if (_fmIsZip)
-                {
-                    var e = _archive.Entries[titlesFile.Index];
-                    using var es = e.Open();
-                    titlesStrLines = ReadAllLinesE(es, e.Length);
-                }
-                else
-                {
-                    titlesStrLines = ReadAllLinesE(titlesFile.Name);
-                }
-
-                break;
-            }
-
-            #endregion
-
-            if (titlesStrLines == null || titlesStrLines.Length == 0) return null;
-
-            #region Filter titlesStrLines
-
-            // There's a way to do this with an IEqualityComparer, but no, for reasons
-            var tfLinesD = new List<string>(titlesStrLines.Length);
-            {
-                for (int i = 0; i < titlesStrLines.Length; i++)
-                {
-                    // Note: the Trim() is important, don't remove it
-                    string line = titlesStrLines[i].Trim();
-                    if (!line.IsEmpty() &&
-                        line.Contains(':') &&
-                        line.CountChars('\"') > 1 &&
-                        line.StartsWithI("title_") &&
-                        !tfLinesD.Any(x => x.StartsWithI(line.Substring(0, line.IndexOf(':')))))
-                    {
-                        tfLinesD.Add(line);
-                    }
-                }
-            }
-
-            tfLinesD.Sort(_titlesStrNaturalNumericSort);
-
-            #endregion
-
-            return tfLinesD;
-        }
-
-        private (string TitleFrom0, string TitleFromNumbered, string[] CampaignMissionNames)
-        GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
-        {
-            var titlesStrLines = GetTitlesStrLines(stringsDirFiles);
-            if (titlesStrLines == null || titlesStrLines.Count == 0) return (null, null, null);
-
-            var ret =
-                (TitleFrom0: (string)null,
-                TitleFromNumbered: (string)null,
-                CampaignMissionNames: (string[])null);
-
-            static string ExtractFromQuotedSection(string line)
-            {
-                int i;
-                return line.Substring(i = line.IndexOf('\"') + 1, line.IndexOf('\"', i) - i);
-            }
-
-            var titles = new List<string>(titlesStrLines.Count);
-            for (int lineIndex = 0; lineIndex < titlesStrLines.Count; lineIndex++)
-            {
-                string titleNum = null;
-                string title = null;
-                for (int umfIndex = 0; umfIndex < usedMisFiles.Count; umfIndex++)
-                {
-                    string line = titlesStrLines[lineIndex];
-                    int i;
-                    titleNum = line.Substring(i = line.IndexOf('_') + 1, line.IndexOf(':') - i).Trim();
-                    if (titleNum == "0") ret.TitleFrom0 = ExtractFromQuotedSection(line);
-
-                    title = ExtractFromQuotedSection(line);
-                    if (title.IsEmpty()) continue;
-
-                    string umfNoExt = usedMisFiles[umfIndex].Name.RemoveExtension();
-                    if (umfNoExt != null && umfNoExt.StartsWithI("miss") && umfNoExt.Length > 4 &&
-                        titleNum == umfNoExt.Substring(4))
-                    {
-                        titles.Add(title);
-                    }
-                }
-
-                if (_scanOptions.ScanTitle &&
-                    ret.TitleFromNumbered.IsEmpty() &&
-                    lineIndex == titlesStrLines.Count - 1 &&
-                    !titleNum.IsEmpty() &&
-                    !title.IsEmpty() &&
-                    !usedMisFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")) &&
-                    misFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")))
-                {
-                    ret.TitleFromNumbered = title;
-                    if (!_scanOptions.ScanCampaignMissionNames) break;
-                }
-            }
-
-            if (titles.Count > 0)
-            {
-                if (_scanOptions.ScanTitle && titles.Count == 1)
-                {
-                    ret.TitleFromNumbered = titles[0];
-                }
-                else if (_scanOptions.ScanCampaignMissionNames)
-                {
-                    ret.CampaignMissionNames = titles.ToArray();
-                }
-            }
-
-            return ret;
-        }
-
-        // This is kind of just an excuse to say that my scanner can catch the full proper title of Deceptive
-        // Perception 2. :P
-        // This is likely to be a bit loose with its accuracy, but since values caught here are almost certain to
-        // end up as alternate titles, I can afford that.
-        private List<string> GetTitlesFromTopOfReadmes(List<ReadmeInternal> readmes)
-        {
-            var ret = new List<string>();
-
-            if (_readmeFiles == null || _readmeFiles.Count == 0) return ret;
-
-            const int maxTopLines = 5;
-
-            foreach (ReadmeInternal r in readmes)
-            {
-                if (r.FileName.ExtIsHtml() || r.Lines == null || r.Lines.Length == 0) continue;
-
-                var lines = new List<string>();
-
-                int fullLineCount = 0;
-                for (int i = 0; i < r.Lines.Length; i++)
-                {
-                    string line = r.Lines[i];
-                    if (!line.IsWhiteSpace())
-                    {
-                        lines.Add(line);
-                        fullLineCount++;
-                    }
-                    if (fullLineCount == maxTopLines) break;
-                }
-
-                if (lines.Count < 2) continue;
-
-                string titleConcat = "";
-
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    string lineT = lines[i].Trim();
-                    if (i > 0 &&
-                        lineT.StartsWithI("By ") || lineT.StartsWithI("By: ") ||
-                        lineT.StartsWithI("Original concept by ") ||
-                        lineT.StartsWithI("Created by ") ||
-                        lineT.StartsWithI("A Thief 2 fan") ||
-                        lineT.StartsWithI("A Thief Gold fan") ||
-                        lineT.StartsWithI("A Thief 1 fan") ||
-                        lineT.StartsWithI("A Thief fan") ||
-                        lineT.StartsWithI("A fan mission"))
-                    {
-                        for (int j = 0; j < i; j++)
-                        {
-                            if (j > 0) titleConcat += " ";
-                            titleConcat += lines[j];
-                        }
-                        // Set a cutoff for the length so we don't end up with a huge string that's obviously
-                        // more than a title
-                        if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
-                        {
-                            ret.Add(CleanupTitle(titleConcat));
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-        private string
-        GetValueFromReadme(SpecialLogic specialLogic, List<string> titles = null, params string[] keys)
+        private string GetValueFromReadme(SpecialLogic specialLogic, List<string> titles = null, params string[] keys)
         {
             string ret = null;
 
@@ -2155,6 +1952,75 @@ namespace FMScanner
             return ret;
         }
 
+        #region Title(s) and mission names
+
+        // This is kind of just an excuse to say that my scanner can catch the full proper title of Deceptive
+        // Perception 2. :P
+        // This is likely to be a bit loose with its accuracy, but since values caught here are almost certain to
+        // end up as alternate titles, I can afford that.
+        private List<string> GetTitlesFromTopOfReadmes(List<ReadmeInternal> readmes)
+        {
+            var ret = new List<string>();
+
+            if (_readmeFiles == null || _readmeFiles.Count == 0) return ret;
+
+            const int maxTopLines = 5;
+
+            foreach (ReadmeInternal r in readmes)
+            {
+                if (r.FileName.ExtIsHtml() || r.Lines == null || r.Lines.Length == 0) continue;
+
+                var lines = new List<string>();
+
+                int fullLineCount = 0;
+                for (int i = 0; i < r.Lines.Length; i++)
+                {
+                    string line = r.Lines[i];
+                    if (!line.IsWhiteSpace())
+                    {
+                        lines.Add(line);
+                        fullLineCount++;
+                    }
+                    if (fullLineCount == maxTopLines) break;
+                }
+
+                if (lines.Count < 2) continue;
+
+                string titleConcat = "";
+
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string lineT = lines[i].Trim();
+                    if (i > 0 &&
+                        lineT.StartsWithI("By ") || lineT.StartsWithI("By: ") ||
+                        lineT.StartsWithI("Original concept by ") ||
+                        lineT.StartsWithI("Created by ") ||
+                        lineT.StartsWithI("A Thief 2 fan") ||
+                        lineT.StartsWithI("A Thief Gold fan") ||
+                        lineT.StartsWithI("A Thief 1 fan") ||
+                        lineT.StartsWithI("A Thief fan") ||
+                        lineT.StartsWithI("A fan mission"))
+                    {
+                        for (int j = 0; j < i; j++)
+                        {
+                            if (j > 0) titleConcat += " ";
+                            titleConcat += lines[j];
+                        }
+                        // Set a cutoff for the length so we don't end up with a huge string that's obviously
+                        // more than a title
+                        if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
+                        {
+                            ret.Add(CleanupTitle(titleConcat));
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
         private string GetTitleFromNewGameStrFile(List<NameAndIndex> intrfaceDirFiles)
         {
             if (intrfaceDirFiles.Count == 0) return null;
@@ -2215,6 +2081,149 @@ namespace FMScanner
             return null;
         }
 
+        private (string TitleFrom0, string TitleFromNumbered, string[] CampaignMissionNames)
+        GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
+        {
+            var titlesStrLines = GetTitlesStrLines(stringsDirFiles);
+            if (titlesStrLines == null || titlesStrLines.Count == 0) return (null, null, null);
+
+            var ret =
+                (TitleFrom0: (string)null,
+                TitleFromNumbered: (string)null,
+                CampaignMissionNames: (string[])null);
+
+            static string ExtractFromQuotedSection(string line)
+            {
+                int i;
+                return line.Substring(i = line.IndexOf('\"') + 1, line.IndexOf('\"', i) - i);
+            }
+
+            var titles = new List<string>(titlesStrLines.Count);
+            for (int lineIndex = 0; lineIndex < titlesStrLines.Count; lineIndex++)
+            {
+                string titleNum = null;
+                string title = null;
+                for (int umfIndex = 0; umfIndex < usedMisFiles.Count; umfIndex++)
+                {
+                    string line = titlesStrLines[lineIndex];
+                    int i;
+                    titleNum = line.Substring(i = line.IndexOf('_') + 1, line.IndexOf(':') - i).Trim();
+                    if (titleNum == "0") ret.TitleFrom0 = ExtractFromQuotedSection(line);
+
+                    title = ExtractFromQuotedSection(line);
+                    if (title.IsEmpty()) continue;
+
+                    string umfNoExt = usedMisFiles[umfIndex].Name.RemoveExtension();
+                    if (umfNoExt != null && umfNoExt.StartsWithI("miss") && umfNoExt.Length > 4 &&
+                        titleNum == umfNoExt.Substring(4))
+                    {
+                        titles.Add(title);
+                    }
+                }
+
+                if (_scanOptions.ScanTitle &&
+                    ret.TitleFromNumbered.IsEmpty() &&
+                    lineIndex == titlesStrLines.Count - 1 &&
+                    !titleNum.IsEmpty() &&
+                    !title.IsEmpty() &&
+                    !usedMisFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")) &&
+                    misFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")))
+                {
+                    ret.TitleFromNumbered = title;
+                    if (!_scanOptions.ScanCampaignMissionNames) break;
+                }
+            }
+
+            if (titles.Count > 0)
+            {
+                if (_scanOptions.ScanTitle && titles.Count == 1)
+                {
+                    ret.TitleFromNumbered = titles[0];
+                }
+                else if (_scanOptions.ScanCampaignMissionNames)
+                {
+                    ret.CampaignMissionNames = titles.ToArray();
+                }
+            }
+
+            return ret;
+        }
+
+        private List<string> GetTitlesStrLines(List<NameAndIndex> stringsDirFiles)
+        {
+            string[] titlesStrLines = null;
+
+            #region Read title(s).str file
+
+            // Do not change search order: strings/english, strings, strings/[any other language]
+            var titlesStrDirs = new List<string>
+            {
+                FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.TitlesStr,
+                FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.TitleStr,
+                FMDirs.StringsS(_dsc) + FMFiles.TitlesStr,
+                FMDirs.StringsS(_dsc) + FMFiles.TitleStr
+            };
+            foreach (string lang in Languages)
+            {
+                if (lang == "english") continue;
+
+                titlesStrDirs.Add(FMDirs.StringsS(_dsc) + lang + _dsc + FMFiles.TitlesStr);
+                titlesStrDirs.Add(FMDirs.StringsS(_dsc) + lang + _dsc + FMFiles.TitleStr);
+            }
+
+            foreach (string titlesFileLocation in titlesStrDirs)
+            {
+                NameAndIndex titlesFile = _fmIsZip
+                    ? stringsDirFiles.FirstOrDefault(x => x.Name.EqualsI(titlesFileLocation))
+                    : new NameAndIndex { Name = Path.Combine(_fmWorkingPath, titlesFileLocation) };
+
+                if (titlesFile == null || !_fmIsZip && !File.Exists(titlesFile.Name)) continue;
+
+                if (_fmIsZip)
+                {
+                    var e = _archive.Entries[titlesFile.Index];
+                    using var es = e.Open();
+                    titlesStrLines = ReadAllLinesE(es, e.Length);
+                }
+                else
+                {
+                    titlesStrLines = ReadAllLinesE(titlesFile.Name);
+                }
+
+                break;
+            }
+
+            #endregion
+
+            if (titlesStrLines == null || titlesStrLines.Length == 0) return null;
+
+            #region Filter titlesStrLines
+
+            // There's a way to do this with an IEqualityComparer, but no, for reasons
+            var tfLinesD = new List<string>(titlesStrLines.Length);
+            {
+                for (int i = 0; i < titlesStrLines.Length; i++)
+                {
+                    // Note: the Trim() is important, don't remove it
+                    string line = titlesStrLines[i].Trim();
+                    if (!line.IsEmpty() &&
+                        line.Contains(':') &&
+                        line.CountChars('\"') > 1 &&
+                        line.StartsWithI("title_") &&
+                        !tfLinesD.Any(x => x.StartsWithI(line.Substring(0, line.IndexOf(':')))))
+                    {
+                        tfLinesD.Add(line);
+                    }
+                }
+            }
+
+            tfLinesD.Sort(_titlesStrNaturalNumericSort);
+
+            #endregion
+
+            return tfLinesD;
+        }
+
         private static string CleanupTitle(string value)
         {
             if (value.IsEmpty()) return value;
@@ -2245,6 +2254,10 @@ namespace FMScanner
 
             return value;
         }
+
+        #endregion
+
+        #region Author
 
         private static string GetAuthorFromTopOfReadme(string[] linesArray, List<string> titles)
         {
@@ -2473,6 +2486,8 @@ namespace FMScanner
 
             return author;
         }
+
+        #endregion
 
         private string GetVersion()
         {
