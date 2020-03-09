@@ -48,11 +48,11 @@ namespace FMScanner.SimpleHelpers
         /// <param name="inputFilename">The input filename.</param>
         /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
         /// <returns></returns>
-        public static Encoding DetectFileEncoding (string inputFilename, Encoding defaultIfNotDetected = null)
+        public static Encoding DetectFileEncoding(string inputFilename, Encoding defaultIfNotDetected = null)
         {
-            using (var stream = new System.IO.FileStream (inputFilename, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite | System.IO.FileShare.Delete, DEFAULT_BUFFER_SIZE))
+            using (var stream = new System.IO.FileStream(inputFilename, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite | System.IO.FileShare.Delete, DEFAULT_BUFFER_SIZE))
             {
-                return DetectFileEncoding (stream) ?? defaultIfNotDetected;
+                return DetectFileEncoding(stream) ?? defaultIfNotDetected;
             }
         }
 
@@ -62,11 +62,11 @@ namespace FMScanner.SimpleHelpers
         /// <param name="inputStream">The input stream.</param>
         /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
         /// <returns></returns>
-        public static Encoding DetectFileEncoding (Stream inputStream, Encoding defaultIfNotDetected = null)
+        public static Encoding DetectFileEncoding(Stream inputStream, Encoding defaultIfNotDetected = null)
         {
-            var det = new FileEncoding ();
-            det.Detect (inputStream);
-            return det.Complete () ?? defaultIfNotDetected;
+            var det = new FileEncoding();
+            det.Detect(inputStream);
+            return det.Complete() ?? defaultIfNotDetected;
         }
 
         /// <summary>
@@ -77,11 +77,11 @@ namespace FMScanner.SimpleHelpers
         /// <param name="count">The count.</param>
         /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
         /// <returns></returns>
-        public static Encoding DetectFileEncoding (byte[] inputData, int start, int count, Encoding defaultIfNotDetected = null)
+        public static Encoding DetectFileEncoding(byte[] inputData, int start, int count, Encoding defaultIfNotDetected = null)
         {
-            var det = new FileEncoding ();
-            det.Detect (inputData, start, count);
-            return det.Complete () ?? defaultIfNotDetected;            
+            var det = new FileEncoding();
+            det.Detect(inputData, start, count);
+            return det.Complete() ?? defaultIfNotDetected;
         }
 
         /// <summary>
@@ -90,16 +90,16 @@ namespace FMScanner.SimpleHelpers
         /// <param name="filename">The filename.</param>
         /// <param name="defaultValue">The default value if unable to load file content.</param>
         /// <returns>File content</returns>
-        public static string TryLoadFile (string filename, string defaultValue = "")
+        public static string TryLoadFile(string filename, string defaultValue = "")
         {
             try
             {
-                if (System.IO.File.Exists (filename))
+                if (System.IO.File.Exists(filename))
                 {
                     // enable file encoding detection
-                    var encoding = SimpleHelpers.FileEncoding.DetectFileEncoding (filename);
+                    var encoding = SimpleHelpers.FileEncoding.DetectFileEncoding(filename);
                     // Load data based on parameters
-                    return System.IO.File.ReadAllText (filename, encoding);
+                    return System.IO.File.ReadAllText(filename, encoding);
                 }
             }
             catch { }
@@ -110,9 +110,9 @@ namespace FMScanner.SimpleHelpers
         /// Detects if contains textual data.
         /// </summary>
         /// <param name="rawData">The raw data.</param>
-        public static bool CheckForTextualData (byte[] rawData)
+        public static bool CheckForTextualData(byte[] rawData)
         {
-            return CheckForTextualData (rawData, 0, rawData.Length);
+            return CheckForTextualData(rawData, 0, rawData.Length);
         }
 
         /// <summary>
@@ -121,12 +121,12 @@ namespace FMScanner.SimpleHelpers
         /// <param name="rawData">The raw data.</param>
         /// <param name="start">The start.</param>
         /// <param name="count">The count.</param>
-        public static bool CheckForTextualData (byte[] rawData, int start, int count)
+        public static bool CheckForTextualData(byte[] rawData, int start, int count)
         {
             if (rawData.Length < count || count < 4 || start + 1 >= count)
                 return true;
-                        
-            if (CheckForByteOrderMark (rawData, start))
+
+            if (CheckForByteOrderMark(rawData, start))
             {
                 return true;
             }
@@ -153,14 +153,14 @@ namespace FMScanner.SimpleHelpers
             // is text if there is no null byte sequences or less than 10% of the buffer has control caracteres
             return nullSequences == 0 && (controlSequences <= (rawData.Length / 10));
         }
-  
+
         /// <summary>
         /// Detects if data has bytes order mark to indicate its encoding for textual data.
         /// </summary>
         /// <param name="rawData">The raw data.</param>
         /// <param name="start">The start.</param>
         /// <returns></returns>
-        private static bool CheckForByteOrderMark (byte[] rawData, int start = 0)
+        private static bool CheckForByteOrderMark(byte[] rawData, int start = 0)
         {
             if (rawData.Length - start < 4)
                 return false;
@@ -189,9 +189,9 @@ namespace FMScanner.SimpleHelpers
             return false;
         }
 
-        Ude.CharsetDetector ude = new Ude.CharsetDetector ();
+        Ude.CharsetDetector ude = new Ude.CharsetDetector();
         bool _started = false;
-        
+
 
         /// <summary>
         /// If the detection has reached a decision.
@@ -214,18 +214,18 @@ namespace FMScanner.SimpleHelpers
         /// </summary>
         public bool HasByteOrderMark { get; set; }
 
-        Dictionary<string, int> encodingFrequency = new Dictionary<string, int> (StringComparer.Ordinal);
+        Dictionary<string, int> encodingFrequency = new Dictionary<string, int>(StringComparer.Ordinal);
 
         /// <summary>
         /// Resets this instance.
         /// </summary>
-        public void Reset ()
+        public void Reset()
         {
             _started = false;
             Done = false;
             HasByteOrderMark = false;
-            encodingFrequency.Clear ();
-            ude.Reset ();
+            encodingFrequency.Clear();
+            ude.Reset();
             EncodingName = null;
         }
 
@@ -235,9 +235,9 @@ namespace FMScanner.SimpleHelpers
         /// </summary>
         /// <param name="inputData">The input data.</param>
         /// <returns>Detected encoding name</returns>
-        public string Detect (Stream inputData)
+        public string Detect(Stream inputData)
         {
-            return Detect (inputData, 20 * 1024 * 1024);
+            return Detect(inputData, 20 * 1024 * 1024);
         }
 
         /// <summary>
@@ -248,25 +248,25 @@ namespace FMScanner.SimpleHelpers
         /// <param name="bufferSize">Size of the buffer for the stream read.</param>
         /// <returns>Detected encoding name</returns>
         /// <exception cref="ArgumentOutOfRangeException">bufferSize parameter cannot be 0 or less.</exception>
-        public string Detect (Stream inputData, int maxSize, int bufferSize = 16 * 1024)
+        public string Detect(Stream inputData, int maxSize, int bufferSize = 16 * 1024)
         {
             if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException ("bufferSize", "Buffer size cannot be 0 or less.");
+                throw new ArgumentOutOfRangeException("bufferSize", "Buffer size cannot be 0 or less.");
             int maxIterations = maxSize <= 0 ? Int32.MaxValue : maxSize / bufferSize;
             int i = 0;
             byte[] buffer = new byte[bufferSize];
             while (i++ < maxIterations)
             {
-                int sz = inputData.Read (buffer, 0, (int)buffer.Length);
+                int sz = inputData.Read(buffer, 0, (int)buffer.Length);
                 if (sz <= 0)
                 {
                     break;
                 }
-                Detect (buffer, 0, sz);
+                Detect(buffer, 0, sz);
                 if (Done)
                     break;
             }
-            Complete ();
+            Complete();
             return EncodingName;
         }
 
@@ -277,52 +277,52 @@ namespace FMScanner.SimpleHelpers
         /// <param name="start">The start.</param>
         /// <param name="count">The count.</param>
         /// <returns>Detected encoding name</returns>
-        public string Detect (byte[] inputData, int start, int count)
+        public string Detect(byte[] inputData, int start, int count)
         {
             if (Done)
                 return EncodingName;
             if (!_started)
             {
-                Reset ();
+                Reset();
                 _started = true;
-                if (!CheckForTextualData (inputData, start, count))
+                if (!CheckForTextualData(inputData, start, count))
                 {
                     IsText = false;
                     Done = true;
                     return EncodingName;
                 }
-                HasByteOrderMark = CheckForByteOrderMark (inputData, start);
+                HasByteOrderMark = CheckForByteOrderMark(inputData, start);
                 IsText = true;
             }
 
             // execute charset detector                
-            ude.Feed (inputData, start, count);
-            ude.DataEnd ();
-            if (ude.IsDone () && !String.IsNullOrEmpty (ude.Charset))
+            ude.Feed(inputData, start, count);
+            ude.DataEnd();
+            if (ude.IsDone() && !String.IsNullOrEmpty(ude.Charset))
             {
-                IncrementFrequency (ude.Charset);
+                IncrementFrequency(ude.Charset);
                 Done = true;
                 return EncodingName;
             }
 
             // singular buffer detection
-            var singleUde = new Ude.CharsetDetector ();
+            var singleUde = new Ude.CharsetDetector();
             const int udeFeedSize = 4 * 1024;
             int step = (count - start) < udeFeedSize ? (count - start) : udeFeedSize;
             for (var pos = start; pos < count; pos += step)
             {
-                singleUde.Reset ();
+                singleUde.Reset();
                 if (pos + step > count)
-                    singleUde.Feed (inputData, pos, count - pos);
+                    singleUde.Feed(inputData, pos, count - pos);
                 else
-                    singleUde.Feed (inputData, pos, step);
-                singleUde.DataEnd ();
+                    singleUde.Feed(inputData, pos, step);
+                singleUde.DataEnd();
                 // update encoding frequency
-                if (singleUde.Confidence > 0.3 && !String.IsNullOrEmpty (singleUde.Charset))
-                    IncrementFrequency (singleUde.Charset);
+                if (singleUde.Confidence > 0.3 && !String.IsNullOrEmpty(singleUde.Charset))
+                    IncrementFrequency(singleUde.Charset);
             }
             // vote for best encoding
-            EncodingName = GetCurrentEncoding ();
+            EncodingName = GetCurrentEncoding();
             // update current encoding name
             return EncodingName;
         }
@@ -331,37 +331,37 @@ namespace FMScanner.SimpleHelpers
         /// Finalize detection phase and gets detected encoding name.
         /// </summary>
         /// <returns></returns>
-        public Encoding Complete ()
+        public Encoding Complete()
         {
             Done = true;
-            ude.DataEnd ();
-            if (ude.IsDone () && !String.IsNullOrEmpty (ude.Charset))
+            ude.DataEnd();
+            if (ude.IsDone() && !String.IsNullOrEmpty(ude.Charset))
             {
                 EncodingName = ude.Charset;
             }
             // vote for best encoding
-            EncodingName = GetCurrentEncoding ();
+            EncodingName = GetCurrentEncoding();
             // check result
-            if (!String.IsNullOrEmpty (EncodingName))
-                return Encoding.GetEncoding (EncodingName);
+            if (!String.IsNullOrEmpty(EncodingName))
+                return Encoding.GetEncoding(EncodingName);
             return null;
         }
 
-        private void IncrementFrequency (string charset)
+        private void IncrementFrequency(string charset)
         {
             int currentCount;
-            encodingFrequency.TryGetValue (charset, out currentCount);
+            encodingFrequency.TryGetValue(charset, out currentCount);
             encodingFrequency[charset] = ++currentCount;
         }
 
-        private string GetCurrentEncoding ()
+        private string GetCurrentEncoding()
         {
             if (encodingFrequency.Count == 0)
                 return null;
             // ASCII should be the last option, since other encodings often has ASCII included...
             return encodingFrequency
-                    .OrderByDescending (i => i.Value * (i.Key != ("ASCII") ? 1 : 0))
-                    .FirstOrDefault ().Key;
+                    .OrderByDescending(i => i.Value * (i.Key != ("ASCII") ? 1 : 0))
+                    .FirstOrDefault().Key;
         }
     }
 }
