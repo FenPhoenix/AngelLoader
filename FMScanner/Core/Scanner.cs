@@ -1758,6 +1758,12 @@ namespace FMScanner
                     {
                         if (specialLogic == SpecialLogic.Author)
                         {
+                            // PERF_TODO: We can move things around for perf here.
+                            // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be
+                            // a little bit faster on average. But that causes a handful of differences in the
+                            // output. Not enough to matter really, but the conceptual issue I have is that I
+                            // don't quite like looking for copyright-section authors first. It feels like we
+                            // should search other places first. I dunno.
                             ret = GetAuthorFromText(file.Text);
                             if (!ret.IsEmpty()) return ret;
                         }
