@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace FMScanner.FastZipReader
 {
@@ -93,12 +94,15 @@ namespace FMScanner.FastZipReader
         //
         // If there are more than one Zip64 extra fields, we take the first one that has the expected size
         //
+        // @Fen_added: Instantiate this once and pass it every time, otherwise we're just constructing and GC-ing
+        // a default UTF8Encoding object a bazillion times.
+        private static readonly Encoding _utf8EncodingNoBOM = new UTF8Encoding();
         internal static Zip64ExtraField GetJustZip64Block(Stream extraFieldStream,
             bool readUncompressedSize, bool readCompressedSize,
             bool readLocalHeaderOffset, bool readStartDiskNumber)
         {
             Zip64ExtraField zip64Field;
-            using (var reader = new BinaryReader(extraFieldStream))
+            using (var reader = new BinaryReader(extraFieldStream, _utf8EncodingNoBOM))
             {
                 while (ZipGenericExtraField.TryReadBlock(reader, extraFieldStream.Length, out var currentExtraField))
                 {
