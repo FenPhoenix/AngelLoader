@@ -1614,9 +1614,19 @@ namespace FMScanner
 
                 if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
 
-                FileInfo readmeFI = _fmDirFiles.Count > 0
-                    ? _fmDirFiles.FirstOrDefault(x => x.Name.EqualsI(Path.Combine(_fmWorkingPath, readmeFile.Name)))
-                    : null;
+                FileInfo readmeFI = null;
+                if (_fmDirFiles.Count > 0)
+                {
+                    for (int i = 0; i < _fmDirFiles.Count; i++)
+                    {
+                        FileInfo f = _fmDirFiles[i];
+                        if (f.Name.EqualsI(Path.Combine(_fmWorkingPath, readmeFile.Name)))
+                        {
+                            readmeFI = f;
+                            break;
+                        }
+                    }
+                }
 
                 int readmeFileLen =
                     _fmIsZip ? (int)readmeEntry.Length :
@@ -2483,7 +2493,7 @@ namespace FMScanner
             if (yearMatch.Success) author = author.Substring(0, yearMatch.Index);
 
             if ("!@#$%^&*".Any(x => author[author.Length - 1] == x) &&
-                author.ElementAt(author.Length - 2) == ' ')
+                author[author.Length - 2] == ' ')
             {
                 author = author.Substring(0, author.Length - 2);
             }
