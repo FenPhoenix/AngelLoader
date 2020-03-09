@@ -195,6 +195,77 @@ namespace FMScanner
             "spanish"
         };
 
+        #region Pre-baked lang stuff
+
+        // Perf: avoids concats
+
+        private static readonly string[]
+        Languages_FS_Lang_FS =
+        {
+            "/english/",
+            "/czech/",
+            "/dutch/",
+            "/french/",
+            "/german/",
+            "/hungarian/",
+            "/italian/",
+            "/japanese/",
+            "/polish/",
+            "/russian/",
+            "/spanish/"
+        };
+
+        private static readonly string[]
+        Languages_BS_Lang_BS =
+        {
+            @"\english\",
+            @"\czech\",
+            @"\dutch\",
+            @"\french\",
+            @"\german\",
+            @"\hungarian\",
+            @"\italian\",
+            @"\japanese\",
+            @"\polish\",
+            @"\russian\",
+            @"\spanish\"
+        };
+
+        private static readonly string[] Languages_FS_Lang_Language_FS =
+        {
+            "/english Language/",
+            "/czech Language/",
+            "/dutch Language/",
+            "/french Language/",
+            "/german Language/",
+            "/hungarian Language/",
+            "/italian Language/",
+            "/japanese Language/",
+            "/polish Language/",
+            "/russian Language/",
+            "/spanish Language/"
+        };
+
+        private static readonly string[] Languages_BS_Lang_Language_BS =
+        {
+            @"\english Language\",
+            @"\czech Language\",
+            @"\dutch Language\",
+            @"\french Language\",
+            @"\german Language\",
+            @"\hungarian Language\",
+            @"\italian Language\",
+            @"\japanese Language\",
+            @"\polish Language\",
+            @"\russian Language\",
+            @"\spanish Language\"
+        };
+
+        internal static string[] GetLangsArray(char dsc) => dsc == '/' ? Languages_FS_Lang_FS : Languages_BS_Lang_BS;
+        internal static string[] GetLangs_Language_Array(char dsc) => dsc == '/' ? Languages_FS_Lang_Language_FS : Languages_BS_Lang_Language_BS;
+
+#endregion
+
         // Cheesy hack because it wasn't designed this way
         internal static readonly Dictionary<string, string>
         LanguagesC = new Dictionary<string, string>

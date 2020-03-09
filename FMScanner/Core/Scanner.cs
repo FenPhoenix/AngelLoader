@@ -2549,6 +2549,9 @@ namespace FMScanner
             var langs = new List<string>();
             var uncertainLangs = new List<string>();
 
+            string[] languages_DLD = GetLangsArray(_dsc);
+            string[] languages_DLLD = GetLangs_Language_Array(_dsc);
+
             for (int dirIndex = 0; dirIndex < 3; dirIndex++)
             {
                 var dirFiles = dirIndex switch
@@ -2565,8 +2568,8 @@ namespace FMScanner
                     {
                         NameAndIndex df = dirFiles[dfIndex];
                         if (df.Name.HasFileExtension() &&
-                            (df.Name.ContainsI(_dsc + lang + _dsc) ||
-                             df.Name.ContainsI(_dsc + lang + " Language" + _dsc)))
+                            (df.Name.ContainsI(languages_DLD[langIndex]) ||
+                             df.Name.ContainsI(languages_DLLD[langIndex])))
                         {
                             langs.Add(lang);
                         }
@@ -2591,10 +2594,12 @@ namespace FMScanner
 
                 fn = fn.RemoveExtension();
 
-                langs.AddRange(
-                    from lang in Languages
-                    where fn.StartsWithI(lang)
-                    select lang);
+                // LINQ avoidance
+                for (int j = 0; j < Languages.Length; j++)
+                {
+                    string lang = Languages[j];
+                    if (fn.StartsWithI(lang)) langs.Add(lang);
+                }
 
                 // "Italiano" will be caught by StartsWithI("italian")
 
