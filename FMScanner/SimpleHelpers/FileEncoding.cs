@@ -74,7 +74,7 @@ namespace FMScanner.SimpleHelpers
         public static Encoding DetectFileEncoding(Stream inputStream, Encoding defaultIfNotDetected = null)
         {
             Detect(inputStream);
-            var ret = Complete() ?? defaultIfNotDetected;
+            Encoding ret = Complete() ?? defaultIfNotDetected;
             Reset();
             return ret;
         }
@@ -90,7 +90,7 @@ namespace FMScanner.SimpleHelpers
         public static Encoding DetectFileEncoding(byte[] inputData, int start, int count, Encoding defaultIfNotDetected = null)
         {
             Detect(inputData, start, count);
-            var ret = Complete() ?? defaultIfNotDetected;
+            Encoding ret = Complete() ?? defaultIfNotDetected;
             Reset();
             return ret;
         }
@@ -108,7 +108,7 @@ namespace FMScanner.SimpleHelpers
                 if (File.Exists(filename))
                 {
                     // enable file encoding detection
-                    var encoding = DetectFileEncoding(filename);
+                    Encoding encoding = DetectFileEncoding(filename);
                     // Load data based on parameters
                     return File.ReadAllText(filename, encoding);
                 }
@@ -144,7 +144,7 @@ namespace FMScanner.SimpleHelpers
             // considering only sequences of 2 0s: "\0\0" or control characters below 10
             int nullSequences = 0;
             int controlSequences = 0;
-            for (var i = start + 1; i < count; i++)
+            for (int i = start + 1; i < count; i++)
             {
                 if (rawData[i - 1] == 0 && rawData[i] == 0)
                 {
