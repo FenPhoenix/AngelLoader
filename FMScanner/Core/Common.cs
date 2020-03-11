@@ -72,6 +72,9 @@ namespace FMScanner
         internal static string StringsS(char dsc) => dsc == '/' ? "strings/" : @"strings\";
         internal static string SubtitlesS(char dsc) => dsc == '/' ? "subtitles/" : @"subtitles\";
 
+        internal static string IntrfaceEnglishNewGameStrS(char dsc) => dsc == '/' ? "intrface/english/newgame.str" : @"intrface\english\newgame.str";
+        internal static string IntrfaceNewGameStrS(char dsc) => dsc == '/' ? "intrface/newgame.str" : @"intrface\newgame.str";
+        internal static string DscNewGameStrS(char dsc) => dsc == '/' ? "/newgame.str" : @"\newgame.str";
     }
 
     internal static class FMFiles
@@ -264,7 +267,7 @@ namespace FMScanner
         internal static string[] GetLangsArray(char dsc) => dsc == '/' ? Languages_FS_Lang_FS : Languages_BS_Lang_BS;
         internal static string[] GetLangs_Language_Array(char dsc) => dsc == '/' ? Languages_FS_Lang_Language_FS : Languages_BS_Lang_Language_BS;
 
-#endregion
+        #endregion
 
         // Cheesy hack because it wasn't designed this way
         internal static readonly Dictionary<string, string>

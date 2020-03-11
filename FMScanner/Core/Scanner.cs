@@ -2070,12 +2070,12 @@ namespace FMScanner
             {
                 newGameStrFile =
                     intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.EqualsI(FMDirs.IntrfaceS(_dsc) + "english" + _dsc + FMFiles.NewGameStr))
+                        x.Name.EqualsI(FMDirs.IntrfaceEnglishNewGameStrS(_dsc)))
                     ?? intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.EqualsI(FMDirs.IntrfaceS(_dsc) + FMFiles.NewGameStr))
+                        x.Name.EqualsI(FMDirs.IntrfaceNewGameStrS(_dsc)))
                     ?? intrfaceDirFiles.FirstOrDefault(x =>
                         x.Name.StartsWithI(FMDirs.IntrfaceS(_dsc)) &&
-                        x.Name.EndsWithI(_dsc + FMFiles.NewGameStr));
+                        x.Name.EndsWithI(FMDirs.DscNewGameStrS(_dsc)));
             }
 
             if (newGameStrFile == null) return null;
