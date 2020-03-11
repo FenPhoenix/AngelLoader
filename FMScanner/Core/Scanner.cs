@@ -228,7 +228,7 @@ namespace FMScanner
             // For performance, we only have one instance and we just change its content as needed.
             using (var rtfBox = new RichTextBox())
             {
-                ProgressReport progressReport = null;
+                ProgressReport progressReport = new ProgressReport();
 
                 for (int i = 0; i < missions.Count; i++)
                 {
@@ -280,14 +280,12 @@ namespace FMScanner
 
                     if (progress != null)
                     {
-                        progressReport = new ProgressReport
-                        {
-                            FMName = missions[i].Path,
-                            FMNumber = i + 1,
-                            FMsTotal = missions.Count,
-                            Percent = (100 * (i + 1)) / missions.Count,
-                            Finished = false
-                        };
+                        // Recycle one object to minimize GC
+                        progressReport.FMName = missions[i].Path;
+                        progressReport.FMNumber = i + 1;
+                        progressReport.FMsTotal = missions.Count;
+                        progressReport.Percent = (100 * (i + 1)) / missions.Count;
+                        progressReport.Finished = false;
 
                         progress.Report(progressReport);
                     }
