@@ -2105,10 +2105,16 @@ namespace FMScanner
                     if (title.IsEmpty()) continue;
 
                     // Do our best to ignore things that aren't titles
-                    if ("{}-_:;!@#$%^&*()".All(x => title[0] != x) &&
+                    if (// first chars
+                        title[0] != '{' && title[0] != '}' && title[0] != '-' && title[0] != '_' &&
+                        title[0] != ':' && title[0] != ';' && title[0] != '!' && title[0] != '@' &&
+                        title[0] != '#' && title[0] != '$' && title[0] != '%' && title[0] != '^' &&
+                        title[0] != '&' && title[0] != '*' && title[0] != '(' && title[0] != ')' &&
+                        // entire titles
                         !title.EqualsI("Play") && !title.EqualsI("Start") &&
                         !title.EqualsI("Begin") && !title.EqualsI("Begin...") &&
                         !title.EqualsI("skip training") &&
+                        // starting strings
                         !title.StartsWithI("Let's go") && !title.StartsWithI("Let's rock this boat") &&
                         !title.StartsWithI("Play ") && !title.StartsWithI("Continue") &&
                         !title.StartsWithI("Start ") && !title.StartsWithI("Begin "))
