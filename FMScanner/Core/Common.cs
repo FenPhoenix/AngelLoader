@@ -122,6 +122,7 @@ namespace FMScanner
         internal static readonly char[] CA_Backslash = { '\\' };
         internal static readonly char[] CA_DoubleQuote = { '\"' };
         internal static readonly char[] CA_UnicodeQuotes = { Constants.uldq, Constants.urdq };
+        internal static readonly string[] SA_DoubleSpaces = { "  " };
         internal static readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
         internal static readonly string[] SA_AllFiles = { "*" };
         internal static readonly string[] SA_AllBinFiles = { "*.bin" };
@@ -492,6 +493,10 @@ namespace FMScanner
                 RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         internal static readonly Regex CopyrightAuthorYearRegex = new Regex(@" \d+.*$", RegexOptions.Compiled);
+
+        internal static readonly Regex TitleByAuthorRegex =
+            new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
+                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
     }
 
     /// <summary>

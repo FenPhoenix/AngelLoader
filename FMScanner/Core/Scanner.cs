@@ -426,6 +426,7 @@ namespace FMScanner
             {
                 ArchiveName = _fmIsZip || fmIsSevenZip
                     ? Path.GetFileName(_archivePath)
+                    // PERF_TODO: Use fast string-only name getter, or even just pass the name to ScanCurrentFM()
                     : new DirectoryInfo(_fmWorkingPath).Name
             };
 
@@ -459,6 +460,7 @@ namespace FMScanner
 
             #endregion
 
+            // PERF_TODO: Recycle these
             var baseDirFiles = new List<NameAndIndex>();
             var misFiles = new List<NameAndIndex>();
             var usedMisFiles = new List<NameAndIndex>();
@@ -578,6 +580,7 @@ namespace FMScanner
 
             #region Read, cache, and set readme files
 
+            // PERF_TODO: Recycle this
             var readmeDirFiles = new List<NameAndIndex>();
 
             foreach (NameAndIndex f in baseDirFiles) readmeDirFiles.Add(f);
@@ -1429,7 +1432,7 @@ namespace FMScanner
             {
                 if (fmIni.Tags != null)
                 {
-                    string[] tagsArray = fmIni.Tags.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
                     // LINQ avoidance
                     var authors = new List<string>();
@@ -2013,16 +2016,11 @@ namespace FMScanner
 
                 var lines = new List<string>();
 
-                int fullLineCount = 0;
                 for (int i = 0; i < r.Lines.Length; i++)
                 {
                     string line = r.Lines[i];
-                    if (!line.IsWhiteSpace())
-                    {
-                        lines.Add(line);
-                        fullLineCount++;
-                    }
-                    if (fullLineCount == maxTopLines) break;
+                    if (!line.IsWhiteSpace()) lines.Add(line);
+                    if (lines.Count == maxTopLines) break;
                 }
 
                 if (lines.Count < 2) continue;
@@ -2203,6 +2201,7 @@ namespace FMScanner
             #region Read title(s).str file
 
             // Do not change search order: strings/english, strings, strings/[any other language]
+            // PERF_TODO: Recycle this
             var titlesStrDirs = new List<string>
             {
                 FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.TitlesStr,
@@ -2283,7 +2282,7 @@ namespace FMScanner
             {
                 if (value.Contains("  "))
                 {
-                    string[] titleWords = value.Split(new[] { "  " }, StringSplitOptions.None);
+                    string[] titleWords = value.Split(SA_DoubleSpaces, StringSplitOptions.None);
                     for (int i = 0; i < titleWords.Length; i++)
                     {
                         titleWords[i] = titleWords[i].Replace(" ", "");
@@ -2325,18 +2324,16 @@ namespace FMScanner
 
             // Look for a "by [author]" in the first few lines. Looking for a line starting with "by" throughout
             // the whole text is asking for a cavalcade of false positives, hence why we only look near the top.
-            var lines = new List<string>();
+            var lines = new List<string>(maxTopLines);
 
-            int fullLineCount = 0;
             for (int i = 0; i < linesArray.Length; i++)
             {
                 string line = linesArray[i];
                 if (!line.IsWhiteSpace())
                 {
                     lines.Add(line);
-                    fullLineCount++;
                 }
-                if (fullLineCount == maxTopLines) break;
+                if (lines.Count == maxTopLines) break;
             }
 
             if (lines.Count < 2) return null;
@@ -2405,9 +2402,6 @@ namespace FMScanner
 
             if (titles.Count == 0) return null;
 
-            var titleByAuthorRegex = new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
-                RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
-
             // We DON'T just check the first five lines, because there might be another language section first
             // and this kind of author string might well be buried down in the file.
             foreach (ReadmeInternal rf in _readmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
@@ -2433,11 +2427,8 @@ namespace FMScanner
 
                     string secondHalf = lineT.Substring(lineT.IndexOf(" by", OrdinalIgnoreCase));
 
-                    Match match = titleByAuthorRegex.Match(secondHalf);
-                    if (match.Success)
-                    {
-                        return match.Groups["Author"].Value;
-                    }
+                    Match match = TitleByAuthorRegex.Match(secondHalf);
+                    if (match.Success) return match.Groups["Author"].Value;
                 }
             }
 
@@ -2696,6 +2687,8 @@ namespace FMScanner
         private (bool? NewDarkRequired, Game Game)
         GetGameTypeAndEngine(List<NameAndIndex> baseDirFiles, List<NameAndIndex> usedMisFiles)
         {
+            // PERF_TODO: Recycle the buffers in here
+
             var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
 
             #region Choose smallest .gam file
@@ -2703,7 +2696,7 @@ namespace FMScanner
             NameAndIndex[] gamFiles = baseDirFiles.Where(x => x.Name.ExtIsGam()).ToArray();
             bool gamFileExists = gamFiles.Length > 0;
 
-            var gamSizeList = new List<(string Name, int Index, long Size)>();
+            var gamSizeList = new List<(string Name, int Index, long Size)>(gamFiles.Length);
             NameAndIndex smallestGamFile = null;
 
             if (gamFileExists)
@@ -2738,7 +2731,7 @@ namespace FMScanner
 
             #region Choose smallest .mis file
 
-            var misSizeList = new List<(string Name, int Index, long Size)>();
+            var misSizeList = new List<(string Name, int Index, long Size)>(usedMisFiles.Count);
             NameAndIndex smallestUsedMisFile;
 
             if (usedMisFiles.Count == 1)
@@ -2841,7 +2834,7 @@ namespace FMScanner
             bool foundAtOldDarkThief2Location = false;
 
             char[] zipBuf = null;
-            char[] dirBuf = new char[locationBytesToRead];
+            char[] dirBuf = null;
 
             using (var sr = _fmIsZip
                 ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
