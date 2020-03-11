@@ -1197,31 +1197,55 @@ namespace FMScanner
             {
                 string[] mfLines;
 
+                // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
                 if (_fmIsZip)
                 {
                     var e = _archive.Entries[missFlag.Index];
                     using var es = e.Open();
-                    mfLines = ReadAllLinesE(es, e.Length);
+                    mfLines = ReadAllLines(es, Encoding.UTF8);
                 }
                 else
                 {
-                    mfLines = ReadAllLinesE(Path.Combine(_fmWorkingPath, missFlag.Name));
+                    mfLines = File.ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), Encoding.UTF8);
                 }
 
                 for (int i = 0; i < misFiles.Count; i++)
                 {
                     NameAndIndex mf = misFiles[i];
-                    string mfNoExt = mf.Name.RemoveExtension();
-                    if (mfNoExt.StartsWithI("miss") && mfNoExt.Length > 4)
+
+                    // Obtuse nonsense to avoid string allocations (perf)
+                    if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
                     {
+                        int count = mf.Name.IndexOf('.') - 4;
                         for (int j = 0; j < mfLines.Length; j++)
                         {
                             string line = mfLines[j];
-                            if (line.StartsWithI("miss_" + mfNoExt.Substring(4) + ":") &&
-                                line.IndexOf('\"') > -1 &&
-                                !line.Substring(line.IndexOf('\"')).StartsWithI("\"skip\""))
+                            if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
                             {
-                                usedMisFiles.Add(mf);
+                                bool numsMatch = true;
+                                for (int x = 4; x < 4 + count; x++)
+                                {
+                                    if (line[x + 1] != mf.Name[x])
+                                    {
+                                        numsMatch = false;
+                                        break;
+                                    }
+                                }
+                                int qIndex;
+                                if (numsMatch && (qIndex = line.IndexOf('\"')) > -1)
+                                {
+                                    if (!(line.Length > qIndex + 5 &&
+                                          // I don't think any files actually have "skip" in anything other than
+                                          // lowercase, but I'm supporting any case anyway. You never know.
+                                          (line[qIndex + 1] == 's' || line[qIndex + 1] == 'S') &&
+                                          (line[qIndex + 2] == 'k' || line[qIndex + 2] == 'K') &&
+                                          (line[qIndex + 3] == 'i' || line[qIndex + 3] == 'I') &&
+                                          (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
+                                          line[qIndex + 5] == '\"'))
+                                    {
+                                        usedMisFiles.Add(mf);
+                                    }
+                                }
                             }
                         }
                     }

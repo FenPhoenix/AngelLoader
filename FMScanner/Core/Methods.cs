@@ -95,6 +95,17 @@ namespace FMScanner
             return lines.ToArray();
         }
 
+        internal static string[] ReadAllLines(Stream stream, Encoding encoding)
+        {
+            var lines = new List<string>();
+
+            using var sr = new StreamReader(stream, encoding ?? Encoding.GetEncoding(1252), false);
+            string line;
+            while ((line = sr.ReadLine()) != null) lines.Add(line);
+
+            return lines.ToArray();
+        }
+
         /// <summary>
         /// Reads all the lines in a file, auto-detecting its encoding. Ensures non-ASCII characters show up
         /// correctly.
