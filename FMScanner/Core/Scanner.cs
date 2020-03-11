@@ -1228,6 +1228,9 @@ namespace FMScanner
                     // Obtuse nonsense to avoid string allocations (perf)
                     if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
                     {
+                        // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
+                        // character and not get a -1 index. And since we know our file starts with "miss", the
+                        // -4 is guaranteed not to take us negative either.
                         int count = mf.Name.IndexOf('.') - 4;
                         for (int j = 0; j < mfLines.Length; j++)
                         {
@@ -1841,7 +1844,12 @@ namespace FMScanner
                     if (!ret.IsEmpty()) return ret;
                 }
 
-                // Very last resort, because it has a dynamic regex in it
+                // PERF_TODO:
+                // This is last because it used to have a dynamic and constantly re-instantiated regex in it. I
+                // don't even know why I thought I needed that but it turns out I could just make it static like
+                // the rest, so I did. Re-evaluate this and maybe put it higher?
+                // Anything that can go before the full-text search probably should, because that's clearly the
+                // slowest by far.
                 ret = GetAuthorFromTitleByAuthorLine(titles);
             }
 
@@ -2337,10 +2345,7 @@ namespace FMScanner
             for (int i = 0; i < linesArray.Length; i++)
             {
                 string line = linesArray[i];
-                if (!line.IsWhiteSpace())
-                {
-                    lines.Add(line);
-                }
+                if (!line.IsWhiteSpace()) lines.Add(line);
                 if (lines.Count == maxTopLines) break;
             }
 
