@@ -12,14 +12,19 @@ If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using static System.StringComparison;
+using static FMScanner.Regexes;
 
 namespace FMScanner
 {
-    internal static class Extensions
+    internal static class Utility
     {
+        #region Extensions
+
         #region Queries
 
         /// <summary>
@@ -151,7 +156,7 @@ namespace FMScanner
         /// <param name="substring"></param>
         /// <returns></returns>
         internal static bool ContainsI(this string value, string substring) => value.IndexOf(substring, OrdinalIgnoreCase) >= 0;
-        
+
         /// <summary>
         /// Determines whether a List&lt;string&gt; contains a specified element. Uses 
         /// <see cref="StringComparison.OrdinalIgnoreCase"/>.
@@ -664,5 +669,31 @@ namespace FMScanner
         }
 
         #endregion
+
+        #endregion
+
+        internal static bool StringToDate(string dateString, out DateTime dateTime)
+        {
+            dateString = dateString.Replace(",", " ");
+            dateString = Regex.Replace(dateString, @"\s+", @" ");
+            dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
+            dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
+
+            // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
+            Match match = DaySuffixesRegex.Match(dateString);
+            if (match.Success)
+            {
+                Group suffix = match.Groups["Suffix"];
+                dateString = dateString.Substring(0, suffix.Index) +
+                             dateString.Substring(suffix.Index + suffix.Length);
+            }
+
+            // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
+            // want to fail, and not assume the current year.
+            bool success = DateTime.TryParseExact(dateString, FMConstants.DateFormats,
+                DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result);
+            dateTime = success ? result : new DateTime();
+            return success;
+        }
     }
 }

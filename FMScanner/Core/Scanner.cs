@@ -32,8 +32,8 @@ using static System.StringComparison;
 using static FMScanner.Constants;
 using static FMScanner.FMConstants;
 using static FMScanner.Logger;
-using static FMScanner.Methods;
 using static FMScanner.Regexes;
+using static FMScanner.Utility;
 
 namespace FMScanner
 {
