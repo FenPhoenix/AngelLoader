@@ -483,6 +483,21 @@ namespace AngelLoader
             return "";
         }
 
+        internal static List<string> FindFMArchive_Multiple(string fmArchive)
+        {
+            if (fmArchive.IsEmpty()) return new List<string>();
+
+            var list = new List<string>();
+
+            foreach (string path in GetFMArchivePaths())
+            {
+                string f = Path.Combine(path, fmArchive);
+                if (File.Exists(f)) list.Add(f);
+            }
+
+            return list;
+        }
+
         #endregion
 
         #region Set file attributes

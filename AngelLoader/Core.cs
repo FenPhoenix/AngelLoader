@@ -27,6 +27,7 @@ using AngelLoader.Forms;
 using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
+using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
@@ -1531,6 +1532,42 @@ namespace AngelLoader
         }
 
         #endregion
+
+        internal static void DeleteFMArchive(FanMission fm)
+        {
+            var archives = FindFMArchive_Multiple(fm.Archive);
+            if (archives.Count == 0)
+            {
+                View.ShowAlert("No archive(s) found for this FM.", LText.AlertMessages.Alert);
+            }
+            else if (archives.Count == 1)
+            {
+                View.ShowAlert(archives[0], LText.AlertMessages.Alert);
+            }
+            else
+            {
+                string s = "";
+                foreach (var a in archives) s += (!s.IsEmpty() ? "\r\n" : "") + a;
+                View.ShowAlert("Multiple archives:\r\n\r\n" + s, LText.AlertMessages.Alert);
+            }
+
+            string testFile = @"C:\vb_del_test.tmp";
+            using (var sw = new StreamWriter(testFile, append: false))
+            {
+                for (int i = 0; i < 50_000_000; i++) sw.Write("0");
+            }
+
+            View.ShowAlert("created test file", "Test");
+
+            try
+            {
+                FileSystem.DeleteFile(testFile, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+            }
+            catch (Exception ex)
+            {
+                View.ShowAlert("Exception deleting file: " + ex.Message, LText.AlertMessages.Alert);
+            }
+        }
 
         internal static void UpdateConfig(
             FormWindowState mainWindowState,
