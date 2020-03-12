@@ -546,40 +546,52 @@ namespace FMScanner
                 if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanVersion ||
                     _scanOptions.ScanReleaseDate || _scanOptions.ScanTags)
                 {
-                    NameAndIndex fmInfoXml = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.FMInfoXml));
-                    if (fmInfoXml != null)
+                    for (int i = 0; i < baseDirFiles.Count; i++)
                     {
-                        var t = ReadFMInfoXml(fmInfoXml);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(t.Title);
-                        if (_scanOptions.ScanAuthor) fmData.Author = t.Author;
-                        if (_scanOptions.ScanVersion) fmData.Version = t.Version;
-                        if (_scanOptions.ScanReleaseDate && t.ReleaseDate != null) fmData.LastUpdateDate = t.ReleaseDate;
+                        NameAndIndex f = baseDirFiles[i];
+                        if (f.Name.EqualsI(FMFiles.FMInfoXml))
+                        {
+                            var (title, author, version, releaseDate) = ReadFMInfoXml(f);
+                            if (_scanOptions.ScanTitle) SetOrAddTitle(title);
+                            if (_scanOptions.ScanAuthor) fmData.Author = author;
+                            if (_scanOptions.ScanVersion) fmData.Version = version;
+                            if (_scanOptions.ScanReleaseDate && releaseDate != null) fmData.LastUpdateDate = releaseDate;
+                            break;
+                        }
                     }
                 }
                 // I think we need to always scan fm.ini even if we're not returning any of its fields, because
                 // of tags, I think for some reason we're needing to read tags always?
                 {
-                    NameAndIndex fmIni = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.FMIni));
-                    if (fmIni != null)
+                    for (int i = 0; i < baseDirFiles.Count; i++)
                     {
-                        var t = ReadFMIni(fmIni);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(t.Title);
-                        if (_scanOptions.ScanAuthor && !t.Author.IsEmpty()) fmData.Author = t.Author;
-                        fmData.Description = t.Description;
-                        if (_scanOptions.ScanReleaseDate && t.LastUpdateDate != null) fmData.LastUpdateDate = t.LastUpdateDate;
-                        if (_scanOptions.ScanTags) fmData.TagsString = t.Tags;
+                        NameAndIndex f = baseDirFiles[i];
+                        if (f.Name.EqualsI(FMFiles.FMIni))
+                        {
+                            var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
+                            if (_scanOptions.ScanTitle) SetOrAddTitle(title);
+                            if (_scanOptions.ScanAuthor && !author.IsEmpty()) fmData.Author = author;
+                            fmData.Description = description;
+                            if (_scanOptions.ScanReleaseDate && lastUpdateDate != null) fmData.LastUpdateDate = lastUpdateDate;
+                            if (_scanOptions.ScanTags) fmData.TagsString = tags;
+                            break;
+                        }
                     }
                 }
                 if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor)
                 {
                     // SS2 file
                     // TODO: If we wanted to be sticklers, we could skip this for non-SS2 FMs
-                    NameAndIndex modIni = baseDirFiles.FirstOrDefault(x => x.Name.EqualsI(FMFiles.ModIni));
-                    if (modIni != null)
+                    for (int i = 0; i < baseDirFiles.Count; i++)
                     {
-                        var t = ReadModIni(modIni);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(t.Title);
-                        if (_scanOptions.ScanAuthor && !t.Author.IsEmpty()) fmData.Author = t.Author;
+                        NameAndIndex f = baseDirFiles[i];
+                        if (f.Name.EqualsI(FMFiles.ModIni))
+                        {
+                            var (title, author) = ReadModIni(f);
+                            if (_scanOptions.ScanTitle) SetOrAddTitle(title);
+                            if (_scanOptions.ScanAuthor && !author.IsEmpty()) fmData.Author = author;
+                            break;
+                        }
                     }
                 }
 
@@ -791,8 +803,20 @@ namespace FMScanner
                 {
                     if (_scanOptions.ScanSize && _fmDirFiles.Count > 0)
                     {
-                        FileInfo misFile = _fmDirFiles.First(x => x.FullName.EqualsI(_fmWorkingPath + usedMisFiles[0].Name));
-                        misFileDate = new DateTimeOffset(misFile.LastWriteTime).DateTime;
+                        string fn = _fmWorkingPath + usedMisFiles[0].Name;
+                        // This loop is guaranteed to find something, because we will have quit early if we had
+                        // no used .mis files.
+                        FileInfo misFile = null;
+                        for (int i = 0; i < _fmDirFiles.Count; i++)
+                        {
+                            FileInfo f = _fmDirFiles[i];
+                            if (f.FullName.EqualsI(fn))
+                            {
+                                misFile = f;
+                                break;
+                            }
+                        }
+                        misFileDate = new DateTimeOffset(misFile!.LastWriteTime).DateTime;
                     }
                     else
                     {
@@ -2527,8 +2551,18 @@ namespace FMScanner
             Match yearMatch = CopyrightAuthorYearRegex.Match(author);
             if (yearMatch.Success) author = author.Substring(0, yearMatch.Index);
 
-            if ("!@#$%^&*".Any(x => author[author.Length - 1] == x) &&
-                author[author.Length - 2] == ' ')
+            const string junkChars = "!@#$%^&*";
+            bool authorLastCharIsJunk = false;
+            char lastChar = author[author.Length - 1];
+            for (int i = 0; i < junkChars.Length; i++)
+            {
+                if (lastChar == junkChars[i])
+                {
+                    authorLastCharIsJunk = true;
+                    break;
+                }
+            }
+            if (authorLastCharIsJunk && author[author.Length - 2] == ' ')
             {
                 author = author.Substring(0, author.Length - 2);
             }
