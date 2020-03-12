@@ -776,7 +776,7 @@ namespace AngelLoader.Forms
             TopRightTabControl.TabPages.Clear();
 #endif
 
-            var tabs = new List<TabPage>();
+            var tabs = new List<TabPage>(sortedTabPages.Count);
             foreach (var item in sortedTabPages) tabs.Add(item.Value);
 
             TopRightTabControl.AddTabsFull(tabs);
@@ -3401,7 +3401,7 @@ namespace AngelLoader.Forms
             }
             else
             {
-                List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>();
+                List<ToolStripItem> altTitlesMenuItems = new List<ToolStripItem>(fmAltTitles.Count);
                 foreach (string altTitle in fmAltTitles)
                 {
                     var item = new ToolStripMenuItem { Text = altTitle };
@@ -3838,7 +3838,7 @@ namespace AngelLoader.Forms
             AddTagLLMenu.Construct(this, components);
             AddTagLLMenu.Menu.Items.Clear();
 
-            var addTagMenuItems = new List<ToolStripItem>();
+            var addTagMenuItems = new List<ToolStripItem>(GlobalTags.Count);
             foreach (GlobalCatAndTags catAndTag in GlobalTags)
             {
                 if (catAndTag.Tags.Count == 0)

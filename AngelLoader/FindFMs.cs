@@ -41,10 +41,10 @@ namespace AngelLoader
 
             // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
             // up with a blank or incomplete list and then glibly save it out later.
-            var backupList = new List<FanMission>();
+            var backupList = new List<FanMission>(FMDataIniList.Count);
             foreach (FanMission fm in FMDataIniList) backupList.Add(fm);
 
-            var viewBackupList = new List<FanMission>();
+            var viewBackupList = new List<FanMission>(FMsViewList.Count);
             foreach (FanMission fm in FMsViewList) viewBackupList.Add(fm);
 
             FMDataIniList.Clear();

@@ -1102,9 +1102,10 @@ namespace AngelLoader
                             }
                             else
                             {
+                                string catC = catAndTags.Category + ":";
                                 foreach (string tag in catAndTags.Tags)
                                 {
-                                    intermediateTagsList.Add(catAndTags.Category + ":" + tag);
+                                    intermediateTagsList.Add(catC + tag);
                                 }
                             }
                         }

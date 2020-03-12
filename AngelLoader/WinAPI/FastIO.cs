@@ -196,8 +196,9 @@ namespace AngelLoader.WinAPI
             // PERF: We can't know how many files we're going to find, so make the initial list capacity large
             // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
             var ret = initListCapacityLarge ? new List<string>(2000) : new List<string>(16);
-
-            dateTimes = new List<DateTime>();
+            dateTimes = 
+                !returnDateTimes ? new List<DateTime>() :
+                initListCapacityLarge ? new List<DateTime>(2000) : new List<DateTime>(16);
 
             // Other relevant errors (though we don't use them specifically at the moment)
             //const int ERROR_PATH_NOT_FOUND = 0x3;
