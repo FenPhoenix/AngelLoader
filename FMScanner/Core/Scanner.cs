@@ -2894,7 +2894,7 @@ namespace FMScanner
                     // NewDark. Might as well skip the unneeded file-on-disk reads too, even though that won't
                     // save any time at all really (two 9-byte reads saved). Still, it's trivial, so why not.
                     if (!_scanOptions.ScanNewDarkRequired &&
-                        (_fmIsZip && i > 3) || (!_fmIsZip && i > 1))
+                        ((_fmIsZip && i > 3) || (!_fmIsZip && i > 1)))
                     {
                         break;
                     }
