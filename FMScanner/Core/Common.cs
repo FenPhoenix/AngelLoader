@@ -361,13 +361,14 @@ namespace FMScanner
 
     internal static class MisFileStrings
     {
-        internal static readonly char[] SkyObjVar = { 'S', 'K', 'Y', 'O', 'B', 'J', 'V', 'A', 'R' };
-        internal static readonly char[] ObjMap = { 'O', 'B', 'J', '_', 'M', 'A', 'P' };
+        internal static readonly byte[] SKYOBJVAR = Encoding.ASCII.GetBytes("SKYOBJVAR");
+        internal static readonly byte[] OBJ_MAP = Encoding.ASCII.GetBytes("OBJ_MAP");
+
         internal static readonly byte[] Thief2UniqueStringMis = Encoding.ASCII.GetBytes("RopeyArrow");
         internal static readonly byte[] Thief2UniqueStringGam = Encoding.ASCII.GetBytes("RopeyArrow");
 
         // SS2-only detection string
-        internal static readonly char[] MapParam = { 'M', 'A', 'P', 'P', 'A', 'R', 'A', 'M' };
+        internal static readonly byte[] MAPPARAM = Encoding.ASCII.GetBytes("MAPPARAM");
     }
 
     // Putting regexes in here is a perf optimization: static (initialized only once) and Compiled increases

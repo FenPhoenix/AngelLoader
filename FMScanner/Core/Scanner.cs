@@ -2837,11 +2837,11 @@ namespace FMScanner
             #region Check for SKYOBJVAR in .mis (determines OldDark/NewDark; determines game type for OldDark)
 
             /*
-             SKYOBJVAR location key:
+             SKYOBJVAR location key (byte position in file):
                  No SKYOBJVAR           - OldDark Thief 1/G
-                 ~770                   - OldDark Thief 2                        Commonness: ~80%
-                 ~7216                  - NewDark, could be either T1/G or T2    Commonness: ~14%
-                 ~3092                  - NewDark, could be either T1/G or T2    Commonness: ~4%
+                 772                    - OldDark Thief 2                        Commonness: ~80%
+                 7217                   - NewDark, could be either T1/G or T2    Commonness: ~14%
+                 3093                   - NewDark, could be either T1/G or T2    Commonness: ~4%
                  Any other location*    - OldDark Thief2
 
             System Shock 2 .mis files can (but may not) have the SKYOBJVAR string. If they do, it'll be at 3168
@@ -2857,31 +2857,31 @@ namespace FMScanner
 
             // For folder scans, we can seek to these positions directly, but for zip scans, we have to read
             // through the stream sequentially until we hit each one.
-            const int oldDarkT2Loc = 750;
+            const int oldDarkT2Loc = 772;
 
             // These two locations just narrowly avoid the places where an SS2 SKYOBJVAR can be
             // (when read length is 100 bytes)
-            const int newDarkLoc1 = 7180;
-            const int newDarkLoc2 = 3050;
+            const int newDarkLoc1 = 7217;
+            const int newDarkLoc2 = 3093;
 
-            const int ss2MapParamLoc1 = 670;
-            const int ss2MapParamLoc2 = 870;
+            const int ss2MapParamLoc1 = 696;
+            const int ss2MapParamLoc2 = 916;
             int[] locations = { ss2MapParamLoc1, ss2MapParamLoc2, oldDarkT2Loc, newDarkLoc1, newDarkLoc2 };
 
-            // 750+100 = 850
-            // (3050+100)-850 = 2300
-            // ((7180+100)-2300)-850 = 4130
-            // For SS2, SKYOBJVAR is located after position 2300, so we can get away without explicitly accounting
+            // 772+9 = 781
+            // (3093+9)-781 = 2321
+            // ((7217+9)-2321)-781 = 4124
+            // For SS2, SKYOBJVAR is located after position 2321, so we can get away without explicitly accounting
             // for it here.
             // Extra dummy values to make its length match locations[]
-            int[] zipOffsets = { -1, -1, 850, 2300, 4130 };
+            int[] zipOffsets = { -1, -1, 781, 2321, 4124 };
 
-            const int locationBytesToRead = 100;
+            const int locationBytesToRead = 9;
             bool foundAtNewDarkLocation = false;
             bool foundAtOldDarkThief2Location = false;
 
-            char[] zipBuf = null;
-            char[] dirBuf = null;
+            byte[] zipBuf = null;
+            byte[] dirBuf = null;
 
             using (var sr = _fmIsZip
                 ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
@@ -2892,16 +2892,16 @@ namespace FMScanner
                     if (_fmIsZip)
                     {
                         if (zipOffsets[i] == -1) continue;
-                        zipBuf = sr.ReadChars(zipOffsets[i]);
+                        zipBuf = sr.ReadBytes(zipOffsets[i]);
                     }
                     else
                     {
                         sr.BaseStream.Position = locations[i];
-                        dirBuf = sr.ReadChars(locationBytesToRead);
+                        dirBuf = sr.ReadBytes(locationBytesToRead);
                     }
 
-                    if ((_fmIsZip && i < 4 && zipBuf.Contains(MisFileStrings.MapParam)) ||
-                        (!_fmIsZip && i < 2 && dirBuf.Contains(MisFileStrings.MapParam)))
+                    if ((_fmIsZip && i < 4 && zipBuf.Contains(MisFileStrings.MAPPARAM)) ||
+                        (!_fmIsZip && i < 2 && dirBuf.Contains(MisFileStrings.MAPPARAM)))
                     {
                         // TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
                         return (null, Game.SS2);
@@ -2913,7 +2913,7 @@ namespace FMScanner
                     }
 
                     // We avoid string.Concat() in favor of directly searching char arrays, as that's WAY faster
-                    if ((_fmIsZip ? zipBuf : dirBuf).Contains(MisFileStrings.SkyObjVar))
+                    if ((_fmIsZip ? zipBuf : dirBuf).Contains(MisFileStrings.SKYOBJVAR))
                     {
                         // Zip reading is going to check the NewDark locations the other way round, but fortunately
                         // they're interchangeable in meaning so we don't have to do anything
@@ -2989,11 +2989,11 @@ namespace FMScanner
                 uint invCount = br.ReadUInt32();
                 for (int i = 0; i < invCount; i++)
                 {
-                    char[] header = br.ReadChars(12);
+                    byte[] header = br.ReadBytes(12);
                     uint offset = br.ReadUInt32();
                     uint length = br.ReadUInt32();
 
-                    if (!header.Contains(MisFileStrings.ObjMap)) continue;
+                    if (!header.Contains(MisFileStrings.OBJ_MAP)) continue;
 
                     br.BaseStream.Position = offset;
 
