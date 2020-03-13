@@ -226,7 +226,7 @@ namespace AngelLoader.DataClasses
 
         #region Columns and sorting
 
-        internal readonly List<ColumnData> Columns = new List<ColumnData>();
+        internal readonly List<ColumnData> Columns = new List<ColumnData>(13);
         internal Column SortedColumn = Column.Title;
         internal SortOrder SortDirection = SortOrder.Ascending;
 

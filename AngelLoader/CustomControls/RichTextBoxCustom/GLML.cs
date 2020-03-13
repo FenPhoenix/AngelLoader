@@ -6,31 +6,20 @@ namespace AngelLoader.CustomControls
 {
     internal sealed partial class RichTextBoxCustom
     {
-        #region Consts and helpers
+        #region Helpers
 
-        private const string RtfHeader =
-            // RTF identifier
-            @"{\rtf1" +
-            // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
-            @"\ansi\ansicpg1252" +
-            // Fonts (use a pleasant sans-serif)
-            @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset0 Calibri;}}" +
-            // Set up red color
-            @"{\colortbl ;\red255\green0\blue0;}" +
-            // viewkind4 = normal, uc1 = 1 char Unicode fallback (don't worry about it), f0 = use font 0 I guess?
-            @"\viewkind4\uc1\f0 ";
-
-        private const string AlphaCaps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private const string AlphaLower = "abcdefghijklmnopqrstuvwxyz";
-
-        private static bool IsAlphaCaps(string str)
+        private static bool IsAlphaUpper(string str)
         {
             for (int i = 0; i < str.Length; i++)
             {
-                if (!AlphaCaps.Contains(str[i])) return false;
+                if (str[i] < 65 || str[i] > 90) return false;
             }
             return true;
         }
+
+        private static bool IsAlpha(char c) => (c >= 65 && c <= 90) || (c >= 97 && c <= 122);
+
+        private static bool IsAlphanumeric(char c) => IsAlpha(c) || (c >= 48 && c <= 57);
 
         #endregion
 
@@ -38,6 +27,18 @@ namespace AngelLoader.CustomControls
         {
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo
+
+            const string RtfHeader =
+                // RTF identifier
+                @"{\rtf1" +
+                // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
+                @"\ansi\ansicpg1252" +
+                // Fonts (use a pleasant sans-serif)
+                @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset0 Calibri;}}" +
+                // Set up red color
+                @"{\colortbl ;\red255\green0\blue0;}" +
+                // viewkind4 = normal, uc1 = 1 char Unicode fallback (don't worry about it), f0 = use font 0 I guess?
+                @"\viewkind4\uc1\f0 ";
 
             // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
             // and scale the width out
@@ -137,7 +138,7 @@ namespace AngelLoader.CustomControls
                                     if (!lastTagWasLineBreak) sb.Append(@"\line ");
                                     sb.Append(HorizontalLine);
                                 }
-                                else if (!IsAlphaCaps(tag))
+                                else if (!IsAlphaUpper(tag))
                                 {
                                     sb.Append("[GL");
                                     sb.Append(subSB);
@@ -185,7 +186,7 @@ namespace AngelLoader.CustomControls
                                 {
                                     sb.Append(@"\line\line ");
                                 }
-                                else if (!IsAlphaCaps(tag))
+                                else if (!IsAlphaUpper(tag))
                                 {
                                     sb.Append("[/GL");
                                     sb.Append(subSB);
@@ -230,7 +231,9 @@ namespace AngelLoader.CustomControls
 
                                 if (success)
                                 {
-                                    sb.Append(@"\u" + result + "?");
+                                    sb.Append(@"\u");
+                                    sb.Append(result.ToString());
+                                    sb.Append("?");
                                 }
                                 else
                                 {
@@ -248,7 +251,7 @@ namespace AngelLoader.CustomControls
                         }
                     }
                     // HTML Unicode named character references
-                    else if (i < text.Length - 3 && (AlphaCaps.Contains(text[i + 1]) || AlphaLower.Contains(text[i + 1])))
+                    else if (i < text.Length - 3 && IsAlpha(text[i + 1]))
                     {
                         for (int j = i + 1; i < text.Length; j++)
                         {
@@ -269,7 +272,8 @@ namespace AngelLoader.CustomControls
                                 i = j;
                                 break;
                             }
-                            else if (!AlphaCaps.Contains(text[j]) && !AlphaLower.Contains(text[j]))
+                            // Support named references with numbers somewhere after their first char ("blk34" for instance)
+                            else if (!IsAlphanumeric(text[j]))
                             {
                                 sb.Append('&');
                                 sb.Append(subSB);
@@ -290,7 +294,9 @@ namespace AngelLoader.CustomControls
                 }
                 else if (c > 127)
                 {
-                    sb.Append(@"\u" + (int)c + "?");
+                    sb.Append(@"\u");
+                    sb.Append(((int)c).ToString());
+                    sb.Append("?");
                 }
                 else
                 {

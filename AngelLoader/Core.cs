@@ -1335,6 +1335,7 @@ namespace AngelLoader
             }
             else
             {
+                // PERF_TODO: Switch to TryGetValue
                 // Because there's no built-in way to tell it to find a key case-insensitively, we just convert
                 // to lowercase cause whatever. Perf doesn't really matter here.
                 string langLower = Config.Language.ToLowerInvariant();

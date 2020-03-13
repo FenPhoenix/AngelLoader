@@ -86,6 +86,7 @@ namespace AngelLoader
 
         #region FMs lists
 
+        // PERF_TODO: Set capacity later when we read FMData.ini and we count the [FM] entries in the file
         internal static readonly List<FanMission> FMsViewList = new List<FanMission>();
         internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
 
@@ -164,7 +165,7 @@ namespace AngelLoader
         };
 
         internal static readonly Dictionary<string, string>
-        LangCodes = new Dictionary<string, string>
+        LangCodes = new Dictionary<string, string>(11)
         {
             { "english", "en" },
             { "czech", "cz" },
@@ -180,7 +181,7 @@ namespace AngelLoader
         };
 
         internal static readonly Dictionary<string, string>
-        AltLangCodes = new Dictionary<string, string>
+        AltLangCodes = new Dictionary<string, string>(2)
         {
             { "en", "eng" },
             { "ja", "jp" }
@@ -188,7 +189,7 @@ namespace AngelLoader
 
         // For manual selection of language for playing an FM
         internal static readonly Dictionary<string, string>
-        FMLangsTranslated = new Dictionary<string, string>
+        FMLangsTranslated = new Dictionary<string, string>(11)
         {
             { "english", "English" },
             { "czech", "Čeština" },

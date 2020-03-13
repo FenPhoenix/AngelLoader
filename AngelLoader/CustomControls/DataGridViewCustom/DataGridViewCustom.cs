@@ -208,15 +208,13 @@ namespace AngelLoader.CustomControls
 
             foreach (DataGridViewColumn col in Columns)
             {
-                var cData = new ColumnData
+                columns.Add(new ColumnData
                 {
                     Id = (Column)col.Index,
                     DisplayIndex = col.DisplayIndex,
                     Visible = col.Visible,
                     Width = col.Width
-                };
-
-                columns.Add(cData);
+                });
             }
 
             columns = columns.OrderBy(x => x.Id).ToList();
