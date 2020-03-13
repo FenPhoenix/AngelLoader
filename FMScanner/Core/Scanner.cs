@@ -2889,10 +2889,10 @@ namespace FMScanner
             {
                 for (int i = 0; i < locations.Length; i++)
                 {
-                    // Zip offset 3 is 2321, and since MAPPARAM will be earlier than that (696 or 916), we don't
-                    // need to read the extra 1803 bytes nor search it if we're not detecting NewDark.
-                    // Might as well skip the unneeded file-on-disk reads too, even though that won't save any
-                    // time at all really (two 9-byte reads saved). Still, it's trivial, so why not.
+                    // Zip offset 3 is 2321 (absolute 3093), and since MAPPARAM will be earlier than that (696 or
+                    // 916), we don't need to read the extra 1803 bytes nor search it if we're not detecting
+                    // NewDark. Might as well skip the unneeded file-on-disk reads too, even though that won't
+                    // save any time at all really (two 9-byte reads saved). Still, it's trivial, so why not.
                     if (!_scanOptions.ScanNewDarkRequired &&
                         (_fmIsZip && i > 3) || (!_fmIsZip && i > 1))
                     {
