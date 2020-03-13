@@ -2871,8 +2871,8 @@ namespace FMScanner
             // 772+9 = 781
             // (3093+9)-781 = 2321
             // ((7217+9)-2321)-781 = 4124
-            // For SS2, SKYOBJVAR is located after position 2321, so we can get away without explicitly accounting
-            // for it here.
+            // For SS2, SKYOBJVAR is located after position 3093 (offset 2321), so we can get away without
+            // explicitly accounting for it here.
             // Extra dummy values to make its length match locations[]
             int[] zipOffsets = { -1, -1, 781, 2321, 4124 };
 
