@@ -118,30 +118,6 @@ namespace FMScanner
             return index > -1;
         }
 
-        // Exact duplicate except for the array type, but there's nothing I can do if I want to be fast :/
-        internal static bool Contains(this char[] input, char[] pattern)
-        {
-            char firstChar = pattern[0];
-            int index = Array.IndexOf(input, firstChar);
-
-            while (index > -1)
-            {
-                for (int i = 0; i < pattern.Length; i++)
-                {
-                    if (index + i >= input.Length) return false;
-                    if (pattern[i] != input[index + i])
-                    {
-                        if ((index = Array.IndexOf(input, firstChar, index + i)) == -1) return false;
-                        break;
-                    }
-
-                    if (i == pattern.Length - 1) return true;
-                }
-            }
-
-            return index > -1;
-        }
-
         #endregion
 
         #region Contains

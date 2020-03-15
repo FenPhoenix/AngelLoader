@@ -361,11 +361,9 @@ namespace FMScanner
 
     internal static class MisFileStrings
     {
-        internal static readonly byte[] SKYOBJVAR = Encoding.ASCII.GetBytes("SKYOBJVAR");
         internal static readonly byte[] OBJ_MAP = Encoding.ASCII.GetBytes("OBJ_MAP");
 
-        internal static readonly byte[] Thief2UniqueStringMis = Encoding.ASCII.GetBytes("RopeyArrow");
-        internal static readonly byte[] Thief2UniqueStringGam = Encoding.ASCII.GetBytes("RopeyArrow");
+        internal static readonly byte[] Thief2UniqueString = Encoding.ASCII.GetBytes("RopeyArrow");
 
         // SS2-only detection string
         internal static readonly byte[] MAPPARAM = Encoding.ASCII.GetBytes("MAPPARAM");
