@@ -2883,6 +2883,20 @@ namespace FMScanner
             byte[] zipBuf = null;
             byte[] dirBuf = null;
 
+            static bool EndsWithSKYOBJVAR(byte[] buffer)
+            {
+                int len = buffer.Length;
+                return buffer[len - 9] == 'S' &&
+                       buffer[len - 8] == 'K' &&
+                       buffer[len - 7] == 'Y' &&
+                       buffer[len - 6] == 'O' &&
+                       buffer[len - 5] == 'B' &&
+                       buffer[len - 4] == 'J' &&
+                       buffer[len - 3] == 'V' &&
+                       buffer[len - 2] == 'A' &&
+                       buffer[len - 1] == 'R';
+            }
+
             using (var sr = _fmIsZip
                 ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
                 : new BinaryReader(new FileStream(misFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, false))
@@ -2923,7 +2937,7 @@ namespace FMScanner
                     }
 
                     // We avoid string.Concat() in favor of directly searching char arrays, as that's WAY faster
-                    if ((_fmIsZip ? zipBuf : dirBuf).Contains(MisFileStrings.SKYOBJVAR))
+                    if (EndsWithSKYOBJVAR(_fmIsZip ? zipBuf : dirBuf))
                     {
                         // Zip reading is going to check the NewDark locations the other way round, but fortunately
                         // they're interchangeable in meaning so we don't have to do anything
@@ -2961,9 +2975,7 @@ namespace FMScanner
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
                 using var zipEntryStream = gamFileExists ? gamFileZipEntry.Open() : misFileZipEntry.Open();
-                byte[] identString = gamFileExists
-                    ? MisFileStrings.Thief2UniqueStringGam
-                    : MisFileStrings.Thief2UniqueStringMis;
+                byte[] identString = MisFileStrings.Thief2UniqueString;
 
                 // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
                 // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
@@ -3008,7 +3020,7 @@ namespace FMScanner
                     br.BaseStream.Position = offset;
 
                     byte[] content = br.ReadBytes((int)length);
-                    ret.Game = content.Contains(MisFileStrings.Thief2UniqueStringMis)
+                    ret.Game = content.Contains(MisFileStrings.Thief2UniqueString)
                         ? Game.Thief2
                         : Game.Thief1;
                     break;
