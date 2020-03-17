@@ -153,7 +153,7 @@ namespace AngelLoader
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("DateAdded="))
                 {
-                    string val = lineT.Substring(8);
+                    string val = lineT.Substring(10);
                     // PERF: Don't convert to local here; do it at display-time
                     fm.DateAdded = ConvertHexUnixDateToDateTime(val, convertToLocal: false);
                 }

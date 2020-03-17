@@ -280,6 +280,7 @@ namespace AngelLoader
         /// Converts a 32-bit or 64-bit Unix date string in hex format to a nullable DateTime object.
         /// </summary>
         /// <param name="unixDate"></param>
+        /// <param name="convertToLocal"></param>
         /// <returns>A DateTime object, or null if the string couldn't be converted to a valid date for any reason.</returns>
         internal static DateTime? ConvertHexUnixDateToDateTime(string unixDate, bool convertToLocal = true)
         {
