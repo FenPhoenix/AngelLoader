@@ -94,6 +94,8 @@ namespace FMScanner
 
         private readonly TitlesStrNaturalNumericSort _titlesStrNaturalNumericSort = new TitlesStrNaturalNumericSort();
 
+        private bool _ss2Fingerprinted;
+
         #endregion
 
         #region Private classes
@@ -234,6 +236,7 @@ namespace FMScanner
                 {
                     _readmeFiles.Clear();
                     _fmDirFiles.Clear();
+                    _ss2Fingerprinted = false;
 
                     bool nullAlreadyAdded = false;
 
@@ -977,6 +980,13 @@ namespace FMScanner
                     else if (!t3Found && fn.StartsWithI(FMDirs.StringsS(_dsc)))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
+                        if (fn.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
+                            fn.EndsWithI(FMDirs.SS2Fingerprint2(_dsc)) ||
+                            fn.EndsWithI(FMDirs.SS2Fingerprint3(_dsc)) ||
+                            fn.EndsWithI(FMDirs.SS2Fingerprint4(_dsc)))
+                        {
+                            _ss2Fingerprinted = true;
+                        }
                         continue;
                     }
                     else if (!t3Found && fn.StartsWithI(FMDirs.IntrfaceS(_dsc)))
@@ -988,6 +998,12 @@ namespace FMScanner
                     {
                         booksDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         continue;
+                    }
+                    else if (!t3Found && (fn.StartsWithI(FMDirs.CutscenesS(_dsc)) ||
+                                          fn.StartsWithI(FMDirs.Snd2S(_dsc))))
+                    {
+                        _ss2Fingerprinted = true;
+                        // Fallthrough so ScanCustomResources can use it
                     }
 
                     // Inlined for performance. We cut the time roughly in half by doing this.
@@ -1113,6 +1129,13 @@ namespace FMScanner
                     foreach (string f in EnumFiles(FMDirs.Strings, "*", SearchOption.AllDirectories))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
+                        if (f.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
+                            f.EndsWithI(FMDirs.SS2Fingerprint2(_dsc)) ||
+                            f.EndsWithI(FMDirs.SS2Fingerprint3(_dsc)) ||
+                            f.EndsWithI(FMDirs.SS2Fingerprint4(_dsc)))
+                        {
+                            _ss2Fingerprinted = true;
+                        }
                     }
 
                     foreach (string f in EnumFiles(FMDirs.Intrface, "*", SearchOption.AllDirectories))
@@ -1189,6 +1212,12 @@ namespace FMScanner
                         fmd.HasCustomSubtitles =
                             baseDirFolders.ContainsI(FMDirs.Subtitles) &&
                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
+
+                        if (baseDirFolders.ContainsI(FMDirs.Cutscenes) ||
+                            baseDirFolders.ContainsI(FMDirs.Snd2))
+                        {
+                            _ss2Fingerprinted = true;
+                        }
                     }
                 }
             }
@@ -2857,32 +2886,32 @@ namespace FMScanner
 
             // For folder scans, we can seek to these positions directly, but for zip scans, we have to read
             // through the stream sequentially until we hit each one.
-            const int oldDarkT2Loc = 772;
 
-            // These two locations just narrowly avoid the places where an SS2 SKYOBJVAR can be
-            // (when read length is 100 bytes)
+            const int ss2MapParamLoc1 = 696;
+            const int oldDarkT2Loc = 772;
+            const int ss2MapParamLoc2 = 916;
+            // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
             const int newDarkLoc1 = 7217;
             const int newDarkLoc2 = 3093;
 
-            const int ss2MapParamLoc1 = 696;
-            const int ss2MapParamLoc2 = 916;
-            int[] locations = { ss2MapParamLoc1, ss2MapParamLoc2, oldDarkT2Loc, newDarkLoc1, newDarkLoc2 };
+            int[] locations = { ss2MapParamLoc1, oldDarkT2Loc, ss2MapParamLoc2, newDarkLoc1, newDarkLoc2 };
 
-            // 772+9 = 781
-            // (3093+9)-781 = 2321
-            // ((7217+9)-2321)-781 = 4124
-            // For SS2, SKYOBJVAR is located after position 3093 (offset 2321), so we can get away without
-            // explicitly accounting for it here.
-            // Extra dummy values to make its length match locations[]
-            int[] zipOffsets = { -1, -1, 781, 2321, 4124 };
+            const int ss2Offset1 = 705;      // 696+9 = 705
+            const int t2OldDarkOffset = 76;  // (772+9)-705 = 76
+            const int ss2Offset2 = 144;      // ((916+9)-76)-705 = 144
+            const int newDarkOffset1 = 2177; // (((3093+9)-144)-76)-705 = 2177
+            const int newDarkOffset2 = 4124; // ((((7217+9)-2177)-144)-76)-705 = 4124
 
+            int[] zipOffsets = { ss2Offset1, t2OldDarkOffset, ss2Offset2, newDarkOffset1, newDarkOffset2 };
+
+            // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
+            // complicating things any further than they already are.
             const int locationBytesToRead = 9;
             bool foundAtNewDarkLocation = false;
             bool foundAtOldDarkThief2Location = false;
 
-            byte[] zipBuf = null;
-            byte[] dirBuf = null;
-
+            // We need to say "length - x" because for zips, the buffer will be full offset size rather than
+            // locationBytesToRead size
             static bool EndsWithSKYOBJVAR(byte[] buffer)
             {
                 int len = buffer.Length;
@@ -2897,47 +2926,54 @@ namespace FMScanner
                        buffer[len - 1] == 'R';
             }
 
+            static bool EndsWithMAPPARAM(byte[] buffer)
+            {
+                int len = buffer.Length;
+                return buffer[len - 9] == 'M' &&
+                       buffer[len - 8] == 'A' &&
+                       buffer[len - 7] == 'P' &&
+                       buffer[len - 6] == 'P' &&
+                       buffer[len - 5] == 'A' &&
+                       buffer[len - 4] == 'R' &&
+                       buffer[len - 3] == 'A' &&
+                       buffer[len - 2] == 'M';
+            }
+
             using (var sr = _fmIsZip
                 ? new BinaryReader(misFileZipEntry.Open(), Encoding.ASCII, false)
                 : new BinaryReader(new FileStream(misFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, false))
             {
                 for (int i = 0; i < locations.Length; i++)
                 {
-                    // Zip offset 3 is 2321 (absolute 3093), and since MAPPARAM will be earlier than that (696 or
-                    // 916), we don't need to read the extra 1803 bytes nor search it if we're not detecting
-                    // NewDark. Might as well skip the unneeded file-on-disk reads too, even though that won't
-                    // save any time at all really (two 9-byte reads saved). Still, it's trivial, so why not.
                     if (!_scanOptions.ScanNewDarkRequired &&
-                        ((_fmIsZip && i > 3) || (!_fmIsZip && i > 1)))
+                        (locations[i] == newDarkLoc1 || locations[i] == newDarkLoc2))
                     {
                         break;
                     }
 
+                    byte[] buffer;
+
                     if (_fmIsZip)
                     {
-                        if (zipOffsets[i] == -1) continue;
-                        zipBuf = sr.ReadBytes(zipOffsets[i]);
+                        buffer = sr.ReadBytes(zipOffsets[i]);
                     }
                     else
                     {
                         sr.BaseStream.Position = locations[i];
-                        dirBuf = sr.ReadBytes(locationBytesToRead);
+                        buffer = sr.ReadBytes(locationBytesToRead);
                     }
 
-                    if ((_fmIsZip && i < 4 && zipBuf.Contains(MisFileStrings.MAPPARAM)) ||
-                        (!_fmIsZip && i < 2 && dirBuf.Contains(MisFileStrings.MAPPARAM)))
+                    if ((locations[i] == ss2MapParamLoc1 ||
+                         locations[i] == ss2MapParamLoc2) &&
+                        EndsWithMAPPARAM(buffer))
                     {
                         // TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
                         return (null, Game.SS2);
                     }
-
-                    if (locations[i] == ss2MapParamLoc1 || locations[i] == ss2MapParamLoc2)
-                    {
-                        continue;
-                    }
-
-                    // We avoid string.Concat() in favor of directly searching char arrays, as that's WAY faster
-                    if (EndsWithSKYOBJVAR(_fmIsZip ? zipBuf : dirBuf))
+                    else if ((locations[i] == oldDarkT2Loc ||
+                              locations[i] == newDarkLoc1 ||
+                              locations[i] == newDarkLoc2) &&
+                             EndsWithSKYOBJVAR(buffer))
                     {
                         // Zip reading is going to check the NewDark locations the other way round, but fortunately
                         // they're interchangeable in meaning so we don't have to do anything
@@ -2970,33 +3006,40 @@ namespace FMScanner
 
             #region Check for T2-unique value in .gam or .mis (determines game type for both OldDark and NewDark)
 
+            static bool StreamContainsIdentString(Stream stream, byte[] identString)
+            {
+                try
+                {
+                    // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
+                    // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
+                    // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
+                    int boundaryLen = identString.Length;
+                    const int bufSize = 81_920;
+                    byte[] chunk = new byte[boundaryLen + bufSize];
+
+                    while (stream.Read(chunk, boundaryLen, bufSize) != 0)
+                    {
+                        if (chunk.Contains(identString)) return true;
+
+                        // Copy the last boundaryLen bytes from chunk and put them at the beginning
+                        for (int si = 0, ei = bufSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
+                    }
+
+                    return false;
+                }
+                finally
+                {
+                    stream.Dispose();
+                }
+            }
             if (_fmIsZip)
             {
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
-                using var zipEntryStream = gamFileExists ? gamFileZipEntry.Open() : misFileZipEntry.Open();
-                byte[] identString = MisFileStrings.Thief2UniqueString;
-
-                // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
-                // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
-                // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
-                int boundaryLen = identString.Length;
-                const int bufSize = 81_920;
-                byte[] chunk = new byte[boundaryLen + bufSize];
-
-                while (zipEntryStream.Read(chunk, boundaryLen, bufSize) != 0)
-                {
-                    if (chunk.Contains(identString))
-                    {
-                        ret.Game = Game.Thief2;
-                        break;
-                    }
-
-                    // Copy the last boundaryLen bytes from chunk and put them at the beginning
-                    for (int si = 0, ei = bufSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
-                }
-
-                if (ret.Game == Game.Null) ret.Game = Game.Thief1;
+                Stream stream = gamFileExists ? gamFileZipEntry.Open() : misFileZipEntry.Open();
+                ret.Game = StreamContainsIdentString(stream, MisFileStrings.Thief2UniqueString)
+                    ? Game.Thief2
+                    : Game.Thief1;
             }
             else
             {
@@ -3026,6 +3069,48 @@ namespace FMScanner
                     break;
                 }
             }
+
+            #region SS2 slow-detect fallback
+
+            // Paranoid fallback. In case MAPPARAM ends up at a different byte location in a future version of
+            // NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted
+            // it earlier during ReadAndCacheFMData() and again here). For T2, we have a fallback scan if we don't
+            // find SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's
+            // really slow, but better slow than incorrect. This way, if a new SS2 FM is released and has MAPPARAM
+            // in a different place, at least we're like 98% certain to still detect it correctly here. Then people
+            // can still at least have an accurate detection while I work on a new version that takes the new
+            // MAPPARAM location into account.
+
+            static bool SS2MisFilesPresent(List<NameAndIndex> misFiles)
+            {
+                for (int mfI = 0; mfI < misFiles.Count; mfI++)
+                {
+                    string fn = misFiles[mfI].Name;
+                    for (int ss2mfI = 0; ss2mfI < FMFiles.SS2MisFiles.Length; ss2mfI++)
+                    {
+                        if (fn.EqualsI(FMFiles.SS2MisFiles[ss2mfI]))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles)))
+            {
+                Stream stream = _fmIsZip
+                    ? misFileZipEntry.Open()
+                    : new FileStream(misFileOnDisk, FileMode.Open, FileAccess.Read);
+
+                if (StreamContainsIdentString(stream, MisFileStrings.MAPPARAM))
+                {
+                    ret.Game = Game.SS2;
+                }
+            }
+
+            #endregion
 
             #endregion
 

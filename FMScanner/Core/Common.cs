@@ -58,6 +58,11 @@ namespace FMScanner
         internal static string T3FMExtras1S(char dsc) => dsc == '/' ? "Fan Mission Extras/" : @"Fan Mission Extras\";
         internal static string T3FMExtras2S(char dsc) => dsc == '/' ? "FanMissionExtras/" : @"FanMissionExtras\";
 
+        internal static string SS2Fingerprint1(char dsc) => dsc == '/' ? "/usemsg.str" : @"\usemsg.str";
+        internal static string SS2Fingerprint2(char dsc) => dsc == '/' ? "/savename.str" : @"\savename.str";
+        internal static string SS2Fingerprint3(char dsc) => dsc == '/' ? "/objlooks.str" : @"\objlooks.str";
+        internal static string SS2Fingerprint4(char dsc) => dsc == '/' ? "/OBJSHORT.str" : @"\OBJSHORT.str";
+
         internal static string BooksS(char dsc) => dsc == '/' ? "books/" : @"books\";
         internal static string FamS(char dsc) => dsc == '/' ? "fam/" : @"fam\";
         internal static string IntrfaceS(char dsc) => dsc == '/' ? "intrface/" : @"intrface\";
@@ -92,6 +97,35 @@ namespace FMScanner
 
         // System Shock 2 file
         internal const string ModIni = "mod.ini";
+
+        // Used for SS2 fingerprinting for the game type scan fallback
+        internal static readonly string[]
+        SS2MisFiles =
+        {
+            "command1.mis",
+            "command2.mis",
+            "earth.mis",
+            "eng1.mis",
+            "eng2.mis",
+            "hydro1.mis",
+            "hydro2.mis",
+            "hydro3.mis",
+            "many.mis",
+            "medsci1.mis",
+            "medsci2.mis",
+            "ops1.mis",
+            "ops2.mis",
+            "ops3.mis",
+            "ops4.mis",
+            "rec1.mis",
+            "rec2.mis",
+            "rec3.mis",
+            "rick1.mis",
+            "rick2.mis",
+            "rick3.mis",
+            "shodan.mis",
+            "station.mis"
+        };
     }
 
     // Used for stripping RTF files of embedded images before scanning (performance and memory optimization)
