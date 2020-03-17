@@ -980,10 +980,11 @@ namespace FMScanner
                     else if (!t3Found && fn.StartsWithI(FMDirs.StringsS(_dsc)))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
-                        if (fn.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
+                        if (!_ss2Fingerprinted &&
+                            (fn.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
                             fn.EndsWithI(FMDirs.SS2Fingerprint2(_dsc)) ||
                             fn.EndsWithI(FMDirs.SS2Fingerprint3(_dsc)) ||
-                            fn.EndsWithI(FMDirs.SS2Fingerprint4(_dsc)))
+                            fn.EndsWithI(FMDirs.SS2Fingerprint4(_dsc))))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -999,8 +1000,9 @@ namespace FMScanner
                         booksDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         continue;
                     }
-                    else if (!t3Found && (fn.StartsWithI(FMDirs.CutscenesS(_dsc)) ||
-                                          fn.StartsWithI(FMDirs.Snd2S(_dsc))))
+                    else if (!t3Found && !_ss2Fingerprinted &&
+                             (fn.StartsWithI(FMDirs.CutscenesS(_dsc)) ||
+                              fn.StartsWithI(FMDirs.Snd2S(_dsc))))
                     {
                         _ss2Fingerprinted = true;
                         // Fallthrough so ScanCustomResources can use it
@@ -1129,10 +1131,11 @@ namespace FMScanner
                     foreach (string f in EnumFiles(FMDirs.Strings, "*", SearchOption.AllDirectories))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
-                        if (f.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
+                        if (!_ss2Fingerprinted &&
+                            (f.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
                             f.EndsWithI(FMDirs.SS2Fingerprint2(_dsc)) ||
                             f.EndsWithI(FMDirs.SS2Fingerprint3(_dsc)) ||
-                            f.EndsWithI(FMDirs.SS2Fingerprint4(_dsc)))
+                            f.EndsWithI(FMDirs.SS2Fingerprint4(_dsc))))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -1213,8 +1216,9 @@ namespace FMScanner
                             baseDirFolders.ContainsI(FMDirs.Subtitles) &&
                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
 
-                        if (baseDirFolders.ContainsI(FMDirs.Cutscenes) ||
-                            baseDirFolders.ContainsI(FMDirs.Snd2))
+                        if (!_ss2Fingerprinted &&
+                            (baseDirFolders.ContainsI(FMDirs.Cutscenes) ||
+                            baseDirFolders.ContainsI(FMDirs.Snd2)))
                         {
                             _ss2Fingerprinted = true;
                         }
