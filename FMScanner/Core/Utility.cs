@@ -289,7 +289,7 @@ namespace FMScanner
                 if (fc > 127 || sc > 127)
                 {
                     // Non-ASCII slow path
-                    return first.StartsWithI(second) || SanitizePath(first).StartsWithI(SanitizePath(second));
+                    return first.EndsWithI(second) || SanitizePath(first).EndsWithI(SanitizePath(second));
                 }
 
                 if (fc == sc ||
