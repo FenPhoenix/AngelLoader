@@ -48,38 +48,37 @@ namespace FMScanner
         internal const string Strings = "strings";
         internal const string Subtitles = "subtitles";
 
-        internal const string T3Detect = @"Content\T3\Maps\";
         internal const string T3FMExtras1 = "Fan Mission Extras";
         internal const string T3FMExtras2 = "FanMissionExtras";
 
         // Perf, so directory separator char doesn't have to converted to a string and concatenated
         // NOTE: This is dubious, did I even profile this? Still, the scanner is lightning fast anyway, so whatever
-        internal static string T3DetectS(char dsc) => dsc == '/' ? "Content/T3/Maps/" : @"Content\T3\Maps\";
-        internal static string T3FMExtras1S(char dsc) => dsc == '/' ? "Fan Mission Extras/" : @"Fan Mission Extras\";
-        internal static string T3FMExtras2S(char dsc) => dsc == '/' ? "FanMissionExtras/" : @"FanMissionExtras\";
+        internal const string T3DetectS = "Content/T3/Maps/";
+        internal const string T3FMExtras1S = "Fan Mission Extras/";
+        internal const string T3FMExtras2S = "FanMissionExtras/";
 
-        internal static string SS2Fingerprint1(char dsc) => dsc == '/' ? "/usemsg.str" : @"\usemsg.str";
-        internal static string SS2Fingerprint2(char dsc) => dsc == '/' ? "/savename.str" : @"\savename.str";
-        internal static string SS2Fingerprint3(char dsc) => dsc == '/' ? "/objlooks.str" : @"\objlooks.str";
-        internal static string SS2Fingerprint4(char dsc) => dsc == '/' ? "/OBJSHORT.str" : @"\OBJSHORT.str";
+        internal const string SS2Fingerprint1 = "/usemsg.str";
+        internal const string SS2Fingerprint2 = "/savename.str";
+        internal const string SS2Fingerprint3 = "/objlooks.str";
+        internal const string SS2Fingerprint4 = "/OBJSHORT.str";
 
-        internal static string BooksS(char dsc) => dsc == '/' ? "books/" : @"books\";
-        internal static string FamS(char dsc) => dsc == '/' ? "fam/" : @"fam\";
-        internal static string IntrfaceS(char dsc) => dsc == '/' ? "intrface/" : @"intrface\";
-        internal static string MeshS(char dsc) => dsc == '/' ? "mesh/" : @"mesh\";
-        internal static string MotionsS(char dsc) => dsc == '/' ? "motions/" : @"motions\";
-        internal static string MoviesS(char dsc) => dsc == '/' ? "movies/" : @"movies\";
-        internal static string CutscenesS(char dsc) => dsc == '/' ? "cutscenes/" : @"cutscenes\"; // SS2 only
-        internal static string ObjS(char dsc) => dsc == '/' ? "obj/" : @"obj\";
-        internal static string ScriptsS(char dsc) => dsc == '/' ? "scripts/" : @"scripts\";
-        internal static string SndS(char dsc) => dsc == '/' ? "snd/" : @"snd\";
-        internal static string Snd2S(char dsc) => dsc == '/' ? "snd2/" : @"snd2\"; // SS2 only
-        internal static string StringsS(char dsc) => dsc == '/' ? "strings/" : @"strings\";
-        internal static string SubtitlesS(char dsc) => dsc == '/' ? "subtitles/" : @"subtitles\";
+        internal const string BooksS = "books/";
+        internal const string FamS = "fam/";
+        internal const string IntrfaceS = "intrface/";
+        internal const string MeshS = "mesh/";
+        internal const string MotionsS = "motions/";
+        internal const string MoviesS = "movies/";
+        internal const string CutscenesS = "cutscenes/"; // SS2 only
+        internal const string ObjS = "obj/";
+        internal const string ScriptsS = "scripts/";
+        internal const string SndS = "snd/";
+        internal const string Snd2S = "snd2/"; // SS2 only
+        internal const string StringsS = "strings/";
+        internal const string SubtitlesS = "subtitles/";
 
-        internal static string IntrfaceEnglishNewGameStrS(char dsc) => dsc == '/' ? "intrface/english/newgame.str" : @"intrface\english\newgame.str";
-        internal static string IntrfaceNewGameStrS(char dsc) => dsc == '/' ? "intrface/newgame.str" : @"intrface\newgame.str";
-        internal static string DscNewGameStrS(char dsc) => dsc == '/' ? "/newgame.str" : @"\newgame.str";
+        internal const string IntrfaceEnglishNewGameStrS = "intrface/english/newgame.str";
+        internal const string IntrfaceNewGameStrS = "intrface/newgame.str";
+        internal const string DscNewGameStrS = "/newgame.str";
     }
 
     internal static class FMFiles
@@ -87,7 +86,6 @@ namespace FMScanner
         internal const string MissFlag = "missflag.str";
         internal const string TitlesStr = "titles.str";
         internal const string TitleStr = "title.str";
-        internal const string NewGameStr = "newgame.str";
 
         // Telliamed's fminfo.xml file, used in a grand total of three missions
         internal const string FMInfoXml = "fminfo.xml";
@@ -237,7 +235,7 @@ namespace FMScanner
 
         // Perf: avoids concats
 
-        private static readonly string[]
+        internal static readonly string[]
         Languages_FS_Lang_FS =
         {
             "/english/",
@@ -253,23 +251,7 @@ namespace FMScanner
             "/spanish/"
         };
 
-        private static readonly string[]
-        Languages_BS_Lang_BS =
-        {
-            @"\english\",
-            @"\czech\",
-            @"\dutch\",
-            @"\french\",
-            @"\german\",
-            @"\hungarian\",
-            @"\italian\",
-            @"\japanese\",
-            @"\polish\",
-            @"\russian\",
-            @"\spanish\"
-        };
-
-        private static readonly string[] Languages_FS_Lang_Language_FS =
+        internal static readonly string[] Languages_FS_Lang_Language_FS =
         {
             "/english Language/",
             "/czech Language/",
@@ -283,24 +265,6 @@ namespace FMScanner
             "/russian Language/",
             "/spanish Language/"
         };
-
-        private static readonly string[] Languages_BS_Lang_Language_BS =
-        {
-            @"\english Language\",
-            @"\czech Language\",
-            @"\dutch Language\",
-            @"\french Language\",
-            @"\german Language\",
-            @"\hungarian Language\",
-            @"\italian Language\",
-            @"\japanese Language\",
-            @"\polish Language\",
-            @"\russian Language\",
-            @"\spanish Language\"
-        };
-
-        internal static string[] GetLangsArray(char dsc) => dsc == '/' ? Languages_FS_Lang_FS : Languages_BS_Lang_BS;
-        internal static string[] GetLangs_Language_Array(char dsc) => dsc == '/' ? Languages_FS_Lang_Language_FS : Languages_BS_Lang_Language_BS;
 
         #endregion
 

@@ -171,6 +171,144 @@ namespace FMScanner
         /// <returns></returns>
         internal static bool EqualsI(this string first, string second) => first.Equals(second, OrdinalIgnoreCase);
 
+        #region Path-specific string queries (separator-agnostic)
+
+        // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
+        // sep chars are in no way guaranteed to match those of the OS.
+        // Not like any OS is likely to use anything other than '/' or '\' anyway.
+
+        // We hope not to have to call this too often, but it's here as a fallback.
+        private static string SanitizePath(string value) => value.Replace('/', '\\');
+
+        internal static bool ContainsDirSep(this string value)
+        {
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] == '/' || value[i] == '\\') return true;
+            }
+
+            return false;
+        }
+
+        internal static int CountDirSeps(this string value)
+        {
+            int count = 0;
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] == '/' || value[i] == '\\')
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        internal static int LastIndexOfDirSep(this string value)
+        {
+            int i1 = value.LastIndexOf('/');
+            int i2 = value.LastIndexOf('\\');
+
+            if (i1 == -1 && i2 == -1) return -1;
+
+            return Math.Max(i1, i2);
+        }
+
+        internal static bool PathEqualsI(this string first, string second)
+        {
+            if (first == second) return true;
+
+            int firstLen = first.Length;
+
+            if (firstLen != second.Length) return false;
+
+            for (int i = 0; i < firstLen; i++)
+            {
+                char fc = first[i];
+                char sc = second[i];
+
+                if (fc > 127 || sc > 127)
+                {
+                    // Non-ASCII slow path
+                    return first.EqualsI(second) || SanitizePath(first).EqualsI(SanitizePath(second));
+                }
+
+                if (fc == sc ||
+                    ((fc == '\\' || fc == '/') &&
+                    (sc == '\\' || sc == '/')) ||
+                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
+                    (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        internal static bool PathStartsWithI(this string first, string second)
+        {
+            if (first == null || first.Length < second.Length) return false;
+
+            for (int i = 0; i < second.Length; i++)
+            {
+                char fc = first[i];
+                char sc = second[i];
+
+                if (fc > 127 || sc > 127)
+                {
+                    // Non-ASCII slow path
+                    return first.StartsWithI(second) || SanitizePath(first).StartsWithI(SanitizePath(second));
+                }
+
+                if (fc == sc ||
+                    ((fc == '\\' || fc == '/') &&
+                     (sc == '\\' || sc == '/')) ||
+                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
+                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        internal static bool PathEndsWithI(this string first, string second)
+        {
+            if (first == null || first.Length < second.Length) return false;
+
+            for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
+            {
+                char fc = first[fi];
+                char sc = second[si];
+
+                if (fc > 127 || sc > 127)
+                {
+                    // Non-ASCII slow path
+                    return first.StartsWithI(second) || SanitizePath(first).StartsWithI(SanitizePath(second));
+                }
+
+                if (fc == sc ||
+                    ((fc == '\\' || fc == '/') &&
+                     (sc == '\\' || sc == '/')) ||
+                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
+                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
+
         #region File extensions
 
         /// <summary>

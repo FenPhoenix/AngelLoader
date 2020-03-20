@@ -11,6 +11,7 @@ If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
 //#define ScanSynchronous
+//#define DEBUG_RANDOMIZE_DIR_SEPS
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,6 +70,27 @@ namespace FMScanner
 
         #region Private fields
 
+#if DEBUG_RANDOMIZE_DIR_SEPS
+
+        // Testing robustness of directory separator-agnostic code
+
+        private readonly Random rnd = new Random();
+
+        private string Debug_RandomizeDirSeps(string value)
+        {
+            for (int ri = 0; ri < value.Length; ri++)
+            {
+                if (value[ri] == '/' || value[ri] == '\\')
+                {
+                    value = value.Remove(ri, 1).Insert(ri, rnd.Next(0, 2) == 0 ? "\\" : "/");
+                }
+            }
+
+            return value;
+        }
+
+#endif
+
         #region Disposable
 
         private ZipArchiveFast _archive;
@@ -78,8 +100,6 @@ namespace FMScanner
         private readonly FileEncoding _fileEncoding = new FileEncoding();
 
         private readonly List<FileInfo> _fmDirFileInfos = new List<FileInfo>();
-
-        private char _dsc;
 
         private ScanOptions _scanOptions = new ScanOptions();
 
@@ -227,8 +247,6 @@ namespace FMScanner
 
             #endregion
 
-            tempPath = tempPath.Replace('/', '\\');
-
             var scannedFMDataList = new List<ScannedFMData>();
 
             // Init and dispose rtfBox here to avoid cross-thread exceptions.
@@ -255,7 +273,7 @@ namespace FMScanner
                     }
                     else
                     {
-                        string fm = missions[i].Path.Replace('/', '\\');
+                        string fm = missions[i].Path;
                         _fmIsZip = fm.ExtIsZip() || fm.ExtIs7z();
 
                         _archive?.Dispose();
@@ -351,12 +369,22 @@ namespace FMScanner
 #if DEBUG
             _overallTimer.Restart();
 #endif
-            _dsc = _fmIsZip ? '/' : '\\';
 
             // Sometimes we'll want to remove this from the start of a string to get a relative path, so it's
             // critical that we always know we have a dir separator on the end so we don't end up with a leading
             // one on the string when we remove this from the start of it
-            if (_fmWorkingPath[_fmWorkingPath.Length - 1] != _dsc) _fmWorkingPath += _dsc;
+
+            if (_fmWorkingPath[_fmWorkingPath.Length - 1] != '\\' &&
+                _fmWorkingPath[_fmWorkingPath.Length - 1] != '/')
+            {
+                _fmWorkingPath += "\\";
+            }
+
+#if DEBUG_RANDOMIZE_DIR_SEPS
+
+            _fmWorkingPath = Debug_RandomizeDirSeps(_fmWorkingPath);
+
+#endif
 
             static ScannedFMData UnsupportedZip(string archivePath) => new ScannedFMData
             {
@@ -376,8 +404,6 @@ namespace FMScanner
             if (_fmIsZip && _archivePath.ExtIs7z())
             {
                 _fmIsZip = false;
-                _dsc = '\\';
-                _fmWorkingPath = _fmWorkingPath.Replace('/', '\\');
                 fmIsSevenZip = true;
 
                 try
@@ -818,7 +844,7 @@ namespace FMScanner
                         for (int i = 0; i < _fmDirFileInfos.Count; i++)
                         {
                             FileInfo f = _fmDirFileInfos[i];
-                            if (f.FullName.EqualsI(fn))
+                            if (f.FullName.PathEqualsI(fn))
                             {
                                 misFile = f;
                                 break;
@@ -929,12 +955,12 @@ namespace FMScanner
 
             // This is split out because of weird semantics with if(this && that) vs nested ifs (required in
             // order to have a var in the middle to avoid multiple LastIndexOf calls).
-            static bool MapFileExists(string path, char dsc)
+            static bool MapFileExists(string path)
             {
-                if (path.StartsWithI(FMDirs.IntrfaceS(dsc)) &&
-                    path.CountChars(dsc) >= 2)
+                if (path.PathStartsWithI(FMDirs.IntrfaceS) &&
+                    path.CountDirSeps() >= 2)
                 {
-                    int lsi = path.LastIndexOf(dsc);
+                    int lsi = path.LastIndexOfDirSep();
                     if (path.Length > lsi + 5 &&
                         path.Substring(lsi + 1, 5).EqualsI("page0") &&
                         path.LastIndexOf('.') > lsi)
@@ -954,11 +980,17 @@ namespace FMScanner
                         ? _archive.Entries[i].FullName
                         : _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
+#if DEBUG_RANDOMIZE_DIR_SEPS
+
+                    fn = Debug_RandomizeDirSeps(fn);
+
+#endif
+
                     int index = _fmIsZip ? i : -1;
 
                     if (!t3Found &&
-                        fn.StartsWithI(FMDirs.T3DetectS(_dsc)) &&
-                        fn.CountChars(_dsc) == 3 &&
+                        fn.PathStartsWithI(FMDirs.T3DetectS) &&
+                        fn.CountDirSeps() == 3 &&
                         (fn.ExtIsIbt() ||
                         fn.ExtIsCbt() ||
                         fn.ExtIsGmp() ||
@@ -971,43 +1003,43 @@ namespace FMScanner
                     }
                     // We can't early-out if !t3Found here because if we find it after this point, we'll be
                     // missing however many of these we skipped before we detected Thief 3
-                    else if (fn.StartsWithI(FMDirs.T3FMExtras1S(_dsc)) ||
-                             fn.StartsWithI(FMDirs.T3FMExtras2S(_dsc)))
+                    else if (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
+                             fn.PathStartsWithI(FMDirs.T3FMExtras2S))
                     {
                         t3FMExtrasDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         continue;
                     }
-                    else if (!fn.Contains(_dsc) && fn.Contains('.'))
+                    else if (!fn.ContainsDirSep() && fn.Contains('.'))
                     {
                         baseDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         // Fallthrough so ScanCustomResources can use it
                     }
-                    else if (!t3Found && fn.StartsWithI(FMDirs.StringsS(_dsc)))
+                    else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         if (!_ss2Fingerprinted &&
-                            (fn.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
-                            fn.EndsWithI(FMDirs.SS2Fingerprint2(_dsc)) ||
-                            fn.EndsWithI(FMDirs.SS2Fingerprint3(_dsc)) ||
-                            fn.EndsWithI(FMDirs.SS2Fingerprint4(_dsc))))
+                            (fn.PathEndsWithI(FMDirs.SS2Fingerprint1) ||
+                            fn.PathEndsWithI(FMDirs.SS2Fingerprint2) ||
+                            fn.PathEndsWithI(FMDirs.SS2Fingerprint3) ||
+                            fn.PathEndsWithI(FMDirs.SS2Fingerprint4)))
                         {
                             _ss2Fingerprinted = true;
                         }
                         continue;
                     }
-                    else if (!t3Found && fn.StartsWithI(FMDirs.IntrfaceS(_dsc)))
+                    else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
                     {
                         intrfaceDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         // Fallthrough so ScanCustomResources can use it
                     }
-                    else if (!t3Found && fn.StartsWithI(FMDirs.BooksS(_dsc)))
+                    else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
                     {
                         booksDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         continue;
                     }
                     else if (!t3Found && !_ss2Fingerprinted &&
-                             (fn.StartsWithI(FMDirs.CutscenesS(_dsc)) ||
-                              fn.StartsWithI(FMDirs.Snd2S(_dsc))))
+                             (fn.PathStartsWithI(FMDirs.CutscenesS) ||
+                              fn.PathStartsWithI(FMDirs.Snd2S)))
                     {
                         _ss2Fingerprinted = true;
                         // Fallthrough so ScanCustomResources can use it
@@ -1017,64 +1049,64 @@ namespace FMScanner
                     if (!t3Found && _scanOptions.ScanCustomResources)
                     {
                         if (fmd.HasAutomap == null &&
-                            fn.StartsWithI(FMDirs.IntrfaceS(_dsc)) &&
-                            fn.CountChars(_dsc) >= 2 &&
+                            fn.PathStartsWithI(FMDirs.IntrfaceS) &&
+                            fn.CountDirSeps() >= 2 &&
                             fn.EndsWithRaDotBin())
                         {
                             fmd.HasAutomap = true;
                             // Definitely a clever deduction, definitely not a sneaky hack for GatB-T2
                             fmd.HasMap = true;
                         }
-                        else if (fmd.HasMap == null && MapFileExists(fn, _dsc))
+                        else if (fmd.HasMap == null && MapFileExists(fn))
                         {
                             fmd.HasMap = true;
                         }
                         else if (fmd.HasCustomMotions == null &&
-                                 fn.StartsWithI(FMDirs.MotionsS(_dsc)) &&
+                                 fn.PathStartsWithI(FMDirs.MotionsS) &&
                                  MotionFileExtensions.Any(fn.EndsWithI))
                         {
                             fmd.HasCustomMotions = true;
                         }
                         else if (fmd.HasMovies == null &&
-                                 (fn.StartsWithI(FMDirs.MoviesS(_dsc)) || fn.StartsWithI(FMDirs.CutscenesS(_dsc))) &&
+                                 (fn.PathStartsWithI(FMDirs.MoviesS) || fn.PathStartsWithI(FMDirs.CutscenesS)) &&
                                  fn.HasFileExtension())
                         {
                             fmd.HasMovies = true;
                         }
                         else if (fmd.HasCustomTextures == null &&
-                                 fn.StartsWithI(FMDirs.FamS(_dsc)) &&
+                                 fn.PathStartsWithI(FMDirs.FamS) &&
                                  ImageFileExtensions.Any(fn.EndsWithI))
                         {
                             fmd.HasCustomTextures = true;
                         }
                         else if (fmd.HasCustomObjects == null &&
-                                 fn.StartsWithI(FMDirs.ObjS(_dsc)) &&
+                                 fn.PathStartsWithI(FMDirs.ObjS) &&
                                  fn.ExtIsBin())
                         {
                             fmd.HasCustomObjects = true;
                         }
                         else if (fmd.HasCustomCreatures == null &&
-                                 fn.StartsWithI(FMDirs.MeshS(_dsc)) &&
+                                 fn.PathStartsWithI(FMDirs.MeshS) &&
                                  fn.ExtIsBin())
                         {
                             fmd.HasCustomCreatures = true;
                         }
                         else if (fmd.HasCustomScripts == null &&
-                                 (!fn.Contains(_dsc) &&
+                                 (!fn.ContainsDirSep() &&
                                   ScriptFileExtensions.Any(fn.EndsWithI)) ||
-                                 (fn.StartsWithI(FMDirs.ScriptsS(_dsc)) &&
+                                 (fn.PathStartsWithI(FMDirs.ScriptsS) &&
                                   fn.HasFileExtension()))
                         {
                             fmd.HasCustomScripts = true;
                         }
                         else if (fmd.HasCustomSounds == null &&
-                                 (fn.StartsWithI(FMDirs.SndS(_dsc)) || fn.StartsWithI(FMDirs.Snd2S(_dsc))) &&
+                                 (fn.PathStartsWithI(FMDirs.SndS) || fn.PathStartsWithI(FMDirs.Snd2S)) &&
                                  fn.HasFileExtension())
                         {
                             fmd.HasCustomSounds = true;
                         }
                         else if (fmd.HasCustomSubtitles == null &&
-                                 fn.StartsWithI(FMDirs.SubtitlesS(_dsc)) &&
+                                 fn.PathStartsWithI(FMDirs.SubtitlesS) &&
                                  fn.ExtIsSub())
                         {
                             fmd.HasCustomSubtitles = true;
@@ -1104,7 +1136,7 @@ namespace FMScanner
             }
             else
             {
-                string t3DetectPath = Path.Combine(_fmWorkingPath, FMDirs.T3Detect);
+                string t3DetectPath = Path.Combine(_fmWorkingPath, FMDirs.T3DetectS);
                 if (Directory.Exists(t3DetectPath) &&
                     FastIO.FilesExistSearchTop(t3DetectPath, SA_T3DetectExtensions))
                 {
@@ -1137,10 +1169,10 @@ namespace FMScanner
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
                         if (!_ss2Fingerprinted &&
-                            (f.EndsWithI(FMDirs.SS2Fingerprint1(_dsc)) ||
-                            f.EndsWithI(FMDirs.SS2Fingerprint2(_dsc)) ||
-                            f.EndsWithI(FMDirs.SS2Fingerprint3(_dsc)) ||
-                            f.EndsWithI(FMDirs.SS2Fingerprint4(_dsc))))
+                            (f.PathEndsWithI(FMDirs.SS2Fingerprint1) ||
+                            f.PathEndsWithI(FMDirs.SS2Fingerprint2) ||
+                            f.PathEndsWithI(FMDirs.SS2Fingerprint3) ||
+                            f.PathEndsWithI(FMDirs.SS2Fingerprint4)))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -1163,13 +1195,13 @@ namespace FMScanner
                         // Even a janky scan through baseDirFiles would probably be faster than hitting the disk
                         string[] baseDirFolders = (
                             from f in Directory.EnumerateDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly)
-                            select f.Substring(f.LastIndexOf(_dsc) + 1)).ToArray();
+                            select f.Substring(f.LastIndexOfDirSep() + 1)).ToArray();
 
                         foreach (NameAndIndex f in intrfaceDirFiles)
                         {
                             if (fmd.HasAutomap == null &&
-                                f.Name.StartsWithI(FMDirs.IntrfaceS(_dsc)) &&
-                                f.Name.CountChars(_dsc) >= 2 &&
+                                f.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
+                                f.Name.CountDirSeps() >= 2 &&
                                 f.Name.EndsWithRaDotBin())
                             {
                                 fmd.HasAutomap = true;
@@ -1178,7 +1210,7 @@ namespace FMScanner
                                 break;
                             }
 
-                            if (fmd.HasMap == null && MapFileExists(f.Name, _dsc)) fmd.HasMap = true;
+                            if (fmd.HasMap == null && MapFileExists(f.Name)) fmd.HasMap = true;
                         }
 
                         if (fmd.HasMap == null) fmd.HasMap = false;
@@ -1260,11 +1292,11 @@ namespace FMScanner
                 // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
                 missFlag =
                     stringsDirFiles.FirstOrDefault(x =>
-                        x.Name.EqualsI(FMDirs.StringsS(_dsc) + FMFiles.MissFlag))
+                        x.Name.PathEqualsI(FMDirs.StringsS + FMFiles.MissFlag))
                     ?? stringsDirFiles.FirstOrDefault(x =>
-                        x.Name.EqualsI(FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.MissFlag))
+                        x.Name.PathEqualsI(FMDirs.StringsS + "english\\" + FMFiles.MissFlag))
                     ?? stringsDirFiles.FirstOrDefault(x =>
-                        x.Name.EndsWithI(_dsc + FMFiles.MissFlag));
+                        x.Name.PathEndsWithI("\\" + FMFiles.MissFlag));
             }
 
             if (missFlag != null)
@@ -1721,7 +1753,7 @@ namespace FMScanner
                     for (int i = 0; i < _fmDirFileInfos.Count; i++)
                     {
                         FileInfo f = _fmDirFileInfos[i];
-                        if (f.Name.EqualsI(Path.Combine(_fmWorkingPath, readmeFile.Name)))
+                        if (f.Name.PathEqualsI(Path.Combine(_fmWorkingPath, readmeFile.Name)))
                         {
                             readmeFI = f;
                             break;
@@ -2154,12 +2186,12 @@ namespace FMScanner
             {
                 newGameStrFile =
                     intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.EqualsI(FMDirs.IntrfaceEnglishNewGameStrS(_dsc)))
+                        x.Name.PathEqualsI(FMDirs.IntrfaceEnglishNewGameStrS))
                     ?? intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.EqualsI(FMDirs.IntrfaceNewGameStrS(_dsc)))
+                        x.Name.PathEqualsI(FMDirs.IntrfaceNewGameStrS))
                     ?? intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.StartsWithI(FMDirs.IntrfaceS(_dsc)) &&
-                        x.Name.EndsWithI(FMDirs.DscNewGameStrS(_dsc)));
+                        x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
+                        x.Name.PathEndsWithI(FMDirs.DscNewGameStrS));
             }
 
             if (newGameStrFile == null) return null;
@@ -2289,23 +2321,23 @@ namespace FMScanner
             // PERF_TODO: Recycle this
             var titlesStrDirs = new List<string>
             {
-                FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.TitlesStr,
-                FMDirs.StringsS(_dsc) + "english" + _dsc + FMFiles.TitleStr,
-                FMDirs.StringsS(_dsc) + FMFiles.TitlesStr,
-                FMDirs.StringsS(_dsc) + FMFiles.TitleStr
+                FMDirs.StringsS + "english\\" + FMFiles.TitlesStr,
+                FMDirs.StringsS + "english\\" + FMFiles.TitleStr,
+                FMDirs.StringsS + FMFiles.TitlesStr,
+                FMDirs.StringsS + FMFiles.TitleStr
             };
             foreach (string lang in Languages)
             {
                 if (lang == "english") continue;
 
-                titlesStrDirs.Add(FMDirs.StringsS(_dsc) + lang + _dsc + FMFiles.TitlesStr);
-                titlesStrDirs.Add(FMDirs.StringsS(_dsc) + lang + _dsc + FMFiles.TitleStr);
+                titlesStrDirs.Add(FMDirs.StringsS + lang + "\\" + FMFiles.TitlesStr);
+                titlesStrDirs.Add(FMDirs.StringsS + lang + "\\" + FMFiles.TitleStr);
             }
 
             foreach (string titlesFileLocation in titlesStrDirs)
             {
                 NameAndIndex titlesFile = _fmIsZip
-                    ? stringsDirFiles.FirstOrDefault(x => x.Name.EqualsI(titlesFileLocation))
+                    ? stringsDirFiles.FirstOrDefault(x => x.Name.PathEqualsI(titlesFileLocation))
                     : new NameAndIndex { Name = Path.Combine(_fmWorkingPath, titlesFileLocation) };
 
                 if (titlesFile == null || !_fmIsZip && !File.Exists(titlesFile.Name)) continue;
@@ -2683,9 +2715,6 @@ namespace FMScanner
             var langs = new List<string>();
             var uncertainLangs = new List<string>();
 
-            string[] languages_DLD = GetLangsArray(_dsc);
-            string[] languages_DLLD = GetLangs_Language_Array(_dsc);
-
             for (int dirIndex = 0; dirIndex < 3; dirIndex++)
             {
                 var dirFiles = dirIndex switch
@@ -2701,9 +2730,12 @@ namespace FMScanner
                     for (int dfIndex = 0; dfIndex < dirFiles.Count; dfIndex++)
                     {
                         NameAndIndex df = dirFiles[dfIndex];
-                        if (df.Name.HasFileExtension() &&
-                            (df.Name.ContainsI(languages_DLD[langIndex]) ||
-                             df.Name.ContainsI(languages_DLLD[langIndex])))
+                        // Directory separator agnostic & keeping perf reasonably high
+                        string dfName = df.Name.Replace('\\', '/');
+
+                        if (dfName.HasFileExtension() &&
+                            (dfName.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
+                             dfName.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
                         {
                             langs.Add(lang);
                         }
@@ -2812,7 +2844,7 @@ namespace FMScanner
                         }
                         else
                         {
-                            FileInfo gamFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(_fmWorkingPath, gam.Name)));
+                            FileInfo gamFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(Path.Combine(_fmWorkingPath, gam.Name)));
                             length = gamFI?.Length ?? new FileInfo(Path.Combine(_fmWorkingPath, gam.Name)).Length;
                         }
                         gamSizeList.Add((gam.Name, gam.Index, length));
@@ -2845,7 +2877,7 @@ namespace FMScanner
                     }
                     else
                     {
-                        FileInfo misFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(_fmWorkingPath, mis.Name)));
+                        FileInfo misFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.PathEqualsI(Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
                     misSizeList.Add((mis.Name, mis.Index, length));

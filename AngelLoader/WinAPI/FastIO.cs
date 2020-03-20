@@ -170,7 +170,8 @@ namespace AngelLoader.WinAPI
             }
 
             // Vital, path must not have a trailing separator
-            path = path.TrimEnd(CA_BS_FS);
+            // We also normalize it manually because we use \?\\ which skips normalization
+            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
 
             if (!pathIsKnownValid)
             {
@@ -196,7 +197,7 @@ namespace AngelLoader.WinAPI
             // PERF: We can't know how many files we're going to find, so make the initial list capacity large
             // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
             var ret = initListCapacityLarge ? new List<string>(2000) : new List<string>(16);
-            dateTimes = 
+            dateTimes =
                 !returnDateTimes ? new List<DateTime>() :
                 initListCapacityLarge ? new List<DateTime>(2000) : new List<DateTime>(16);
 
@@ -250,7 +251,7 @@ namespace AngelLoader.WinAPI
 #if false
         internal static bool AnyFilesInDir(string path)
         {
-            path = path.TrimEnd(CA_BS_FS);
+            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
 
             bool pathContainsInvalidChars = false;
             char[] invalidChars = Path.GetInvalidPathChars();
@@ -326,7 +327,7 @@ namespace AngelLoader.WinAPI
             bool earlyOutOnEnglish)
         {
             // Always do this
-            path = path.TrimEnd(CA_BS_FS);
+            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
 
             using var findHandle = FindFirstFileEx(@"\\?\" + path + "\\*",
                 FINDEX_INFO_LEVELS.FindExInfoBasic, out WIN32_FIND_DATA findData,

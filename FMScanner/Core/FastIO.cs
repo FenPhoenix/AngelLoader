@@ -126,7 +126,9 @@ namespace FMScanner
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         private static bool FirstFileExists(FastIOSearchOption searchOption, string path, params string[] searchPatterns)
         {
-            path = path.TrimEnd(FMConstants.CA_Backslash);
+            // Vital, path must not have a trailing separator
+            // We also normalize manually to all backslashes because we use \\?\ which skips normalization
+            path = path.Replace('/', '\\').TrimEnd(FMConstants.CA_Backslash);
 
             bool pathContainsInvalidChars = false;
             char[] invalidChars = Path.GetInvalidPathChars();
