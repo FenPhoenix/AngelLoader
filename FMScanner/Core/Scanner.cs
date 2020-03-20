@@ -1278,9 +1278,9 @@ namespace FMScanner
                     mfLines = File.ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), Encoding.UTF8);
                 }
 
-                for (int i = 0; i < misFiles.Count; i++)
+                for (int mfI = 0; mfI < misFiles.Count; mfI++)
                 {
-                    NameAndIndex mf = misFiles[i];
+                    NameAndIndex mf = misFiles[mfI];
 
                     // Obtuse nonsense to avoid string allocations (perf)
                     if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
@@ -1289,15 +1289,15 @@ namespace FMScanner
                         // character and not get a -1 index. And since we know our file starts with "miss", the
                         // -4 is guaranteed not to take us negative either.
                         int count = mf.Name.IndexOf('.') - 4;
-                        for (int j = 0; j < mfLines.Length; j++)
+                        for (int mflI = 0; mflI < mfLines.Length; mflI++)
                         {
-                            string line = mfLines[j];
+                            string line = mfLines[mflI];
                             if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
                             {
                                 bool numsMatch = true;
-                                for (int x = 4; x < 4 + count; x++)
+                                for (int li = 4; li < 4 + count; li++)
                                 {
-                                    if (line[x + 1] != mf.Name[x])
+                                    if (line[li + 1] != mf.Name[li])
                                     {
                                         numsMatch = false;
                                         break;
@@ -3238,7 +3238,7 @@ namespace FMScanner
             return lines.ToArray();
         }
 
-        private string[] ReadAllLines(Stream stream, Encoding encoding)
+        private static string[] ReadAllLines(Stream stream, Encoding encoding)
         {
             var lines = new List<string>();
 
