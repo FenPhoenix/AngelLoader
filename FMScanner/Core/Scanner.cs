@@ -77,7 +77,7 @@ namespace FMScanner
 
         private readonly FileEncoding _fileEncoding = new FileEncoding();
 
-        private readonly List<FileInfo> _fmDirFiles = new List<FileInfo>();
+        private readonly List<FileInfo> _fmDirFileInfos = new List<FileInfo>();
 
         private char _dsc;
 
@@ -235,7 +235,7 @@ namespace FMScanner
                 for (int i = 0; i < missions.Count; i++)
                 {
                     _readmeFiles.Clear();
-                    _fmDirFiles.Clear();
+                    _fmDirFileInfos.Clear();
                     _ss2Fingerprinted = false;
 
                     bool nullAlreadyAdded = false;
@@ -453,8 +453,8 @@ namespace FMScanner
                 }
                 else
                 {
-                    _fmDirFiles.Clear();
-                    _fmDirFiles.AddRange(new DirectoryInfo(_fmWorkingPath).EnumerateFiles("*", SearchOption.AllDirectories));
+                    _fmDirFileInfos.Clear();
+                    _fmDirFileInfos.AddRange(new DirectoryInfo(_fmWorkingPath).EnumerateFiles("*", SearchOption.AllDirectories));
 
                     if (fmIsSevenZip)
                     {
@@ -463,7 +463,7 @@ namespace FMScanner
                     else
                     {
                         long size = 0;
-                        foreach (FileInfo fi in _fmDirFiles) size += fi.Length;
+                        foreach (FileInfo fi in _fmDirFileInfos) size += fi.Length;
                         fmData.Size = size;
                     }
                 }
@@ -804,15 +804,15 @@ namespace FMScanner
                 }
                 else
                 {
-                    if (_scanOptions.ScanSize && _fmDirFiles.Count > 0)
+                    if (_scanOptions.ScanSize && _fmDirFileInfos.Count > 0)
                     {
                         string fn = _fmWorkingPath + usedMisFiles[0].Name;
                         // This loop is guaranteed to find something, because we will have quit early if we had
                         // no used .mis files.
                         FileInfo misFile = null;
-                        for (int i = 0; i < _fmDirFiles.Count; i++)
+                        for (int i = 0; i < _fmDirFileInfos.Count; i++)
                         {
-                            FileInfo f = _fmDirFiles[i];
+                            FileInfo f = _fmDirFileInfos[i];
                             if (f.FullName.EqualsI(fn))
                             {
                                 misFile = f;
@@ -943,11 +943,11 @@ namespace FMScanner
 
             if (_fmIsZip || _scanOptions.ScanSize)
             {
-                for (int i = 0; i < (_fmIsZip ? _archive.Entries.Count : _fmDirFiles.Count); i++)
+                for (int i = 0; i < (_fmIsZip ? _archive.Entries.Count : _fmDirFileInfos.Count); i++)
                 {
                     string fn = _fmIsZip
                         ? _archive.Entries[i].FullName
-                        : _fmDirFiles[i].FullName.Substring(_fmWorkingPath.Length);
+                        : _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
                     int index = _fmIsZip ? i : -1;
 
@@ -1711,11 +1711,11 @@ namespace FMScanner
                 if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
 
                 FileInfo readmeFI = null;
-                if (_fmDirFiles.Count > 0)
+                if (_fmDirFileInfos.Count > 0)
                 {
-                    for (int i = 0; i < _fmDirFiles.Count; i++)
+                    for (int i = 0; i < _fmDirFileInfos.Count; i++)
                     {
-                        FileInfo f = _fmDirFiles[i];
+                        FileInfo f = _fmDirFileInfos[i];
                         if (f.Name.EqualsI(Path.Combine(_fmWorkingPath, readmeFile.Name)))
                         {
                             readmeFI = f;
@@ -2796,7 +2796,7 @@ namespace FMScanner
                         }
                         else
                         {
-                            FileInfo gamFI = _fmDirFiles.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(_fmWorkingPath, gam.Name)));
+                            FileInfo gamFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(_fmWorkingPath, gam.Name)));
                             length = gamFI?.Length ?? new FileInfo(Path.Combine(_fmWorkingPath, gam.Name)).Length;
                         }
                         gamSizeList.Add((gam.Name, gam.Index, length));
@@ -2829,7 +2829,7 @@ namespace FMScanner
                     }
                     else
                     {
-                        FileInfo misFI = _fmDirFiles.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(_fmWorkingPath, mis.Name)));
+                        FileInfo misFI = _fmDirFileInfos.FirstOrDefault(x => x.FullName.EqualsI(Path.Combine(_fmWorkingPath, mis.Name)));
                         length = misFI?.Length ?? new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
                     }
                     misSizeList.Add((mis.Name, mis.Index, length));
