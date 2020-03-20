@@ -57,11 +57,6 @@ namespace FMScanner
         internal const string T3FMExtras1S = "Fan Mission Extras/";
         internal const string T3FMExtras2S = "FanMissionExtras/";
 
-        internal const string SS2Fingerprint1 = "/usemsg.str";
-        internal const string SS2Fingerprint2 = "/savename.str";
-        internal const string SS2Fingerprint3 = "/objlooks.str";
-        internal const string SS2Fingerprint4 = "/OBJSHORT.str";
-
         internal const string BooksS = "books/";
         internal const string FamS = "fam/";
         internal const string IntrfaceS = "intrface/";
@@ -75,17 +70,54 @@ namespace FMScanner
         internal const string Snd2S = "snd2/"; // SS2 only
         internal const string StringsS = "strings/";
         internal const string SubtitlesS = "subtitles/";
-
-        internal const string IntrfaceEnglishNewGameStrS = "intrface/english/newgame.str";
-        internal const string IntrfaceNewGameStrS = "intrface/newgame.str";
-        internal const string DscNewGameStrS = "/newgame.str";
     }
 
     internal static class FMFiles
     {
-        internal const string MissFlag = "missflag.str";
-        internal const string TitlesStr = "titles.str";
-        internal const string TitleStr = "title.str";
+        internal const string SS2Fingerprint1 = "/usemsg.str";
+        internal const string SS2Fingerprint2 = "/savename.str";
+        internal const string SS2Fingerprint3 = "/objlooks.str";
+        internal const string SS2Fingerprint4 = "/OBJSHORT.str";
+
+        internal const string IntrfaceEnglishNewGameStrS = "intrface/english/newgame.str";
+        internal const string IntrfaceNewGameStrS = "intrface/newgame.str";
+        internal const string DscNewGameStrS = "/newgame.str";
+
+        internal const string StringsMissFlag = "strings/missflag.str";
+        internal const string StringsEnglishMissFlag = "strings/english/missflag.str";
+        internal const string SMissFlag = "/missflag.str";
+
+        internal static readonly string[]
+        TitlesStrLocations =
+        {
+            // Do not change search order: strings/english, strings, strings/[any other language]
+            "strings/english/titles.str",
+            "strings/english/title.str",
+            "strings/titles.str",
+            "strings/title.str",
+
+            "strings/czech/titles.str",
+            "strings/dutch/titles.str",
+            "strings/french/titles.str",
+            "strings/german/titles.str",
+            "strings/hungarian/titles.str",
+            "strings/italian/titles.str",
+            "strings/japanese/titles.str",
+            "strings/polish/titles.str",
+            "strings/russian/titles.str",
+            "strings/spanish/titles.str",
+
+            "strings/czech/title.str",
+            "strings/dutch/title.str",
+            "strings/french/title.str",
+            "strings/german/title.str",
+            "strings/hungarian/title.str",
+            "strings/italian/title.str",
+            "strings/japanese/title.str",
+            "strings/polish/title.str",
+            "strings/russian/title.str",
+            "strings/spanish/title.str"
+        };
 
         // Telliamed's fminfo.xml file, used in a grand total of three missions
         internal const string FMInfoXml = "fminfo.xml";
@@ -212,6 +244,8 @@ namespace FMScanner
         // .osm for the classic scripts; .nut for Squirrel scripts for NewDark >= 1.25
         internal static readonly string[] ScriptFileExtensions = { ".osm", ".nut" };
 
+        #region Languages
+
         // NOTE: I think this was for GetLanguages() for the planned accuracy update?
         //internal static string[] LanguageDirs { get; } = { FMDirs.Books, FMDirs.Intrface, FMDirs.Strings };
 
@@ -230,8 +264,6 @@ namespace FMScanner
             "russian",
             "spanish"
         };
-
-        #region Pre-baked lang stuff
 
         // Perf: avoids concats
 
@@ -266,8 +298,6 @@ namespace FMScanner
             "/spanish Language/"
         };
 
-        #endregion
-
         // Cheesy hack because it wasn't designed this way
         internal static readonly Dictionary<string, string>
         LanguagesC = new Dictionary<string, string>
@@ -284,6 +314,8 @@ namespace FMScanner
             { "russian", "Russian" },
             { "spanish", "Spanish" }
         };
+
+        #endregion
 
         internal static readonly string[]
         DateFormats =

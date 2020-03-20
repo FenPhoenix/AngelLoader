@@ -1018,10 +1018,10 @@ namespace FMScanner
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         if (!_ss2Fingerprinted &&
-                            (fn.PathEndsWithI(FMDirs.SS2Fingerprint1) ||
-                            fn.PathEndsWithI(FMDirs.SS2Fingerprint2) ||
-                            fn.PathEndsWithI(FMDirs.SS2Fingerprint3) ||
-                            fn.PathEndsWithI(FMDirs.SS2Fingerprint4)))
+                            (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
+                            fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
+                            fn.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
+                            fn.PathEndsWithI(FMFiles.SS2Fingerprint4)))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -1169,10 +1169,10 @@ namespace FMScanner
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
                         if (!_ss2Fingerprinted &&
-                            (f.PathEndsWithI(FMDirs.SS2Fingerprint1) ||
-                            f.PathEndsWithI(FMDirs.SS2Fingerprint2) ||
-                            f.PathEndsWithI(FMDirs.SS2Fingerprint3) ||
-                            f.PathEndsWithI(FMDirs.SS2Fingerprint4)))
+                            (f.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
+                            f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
+                            f.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
+                            f.PathEndsWithI(FMFiles.SS2Fingerprint4)))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -1292,11 +1292,11 @@ namespace FMScanner
                 // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
                 missFlag =
                     stringsDirFiles.FirstOrDefault(x =>
-                        x.Name.PathEqualsI(FMDirs.StringsS + FMFiles.MissFlag))
+                        x.Name.PathEqualsI(FMFiles.StringsMissFlag))
                     ?? stringsDirFiles.FirstOrDefault(x =>
-                        x.Name.PathEqualsI(FMDirs.StringsS + "english\\" + FMFiles.MissFlag))
+                        x.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
                     ?? stringsDirFiles.FirstOrDefault(x =>
-                        x.Name.PathEndsWithI("\\" + FMFiles.MissFlag));
+                        x.Name.PathEndsWithI(FMFiles.SMissFlag));
             }
 
             if (missFlag != null)
@@ -2186,12 +2186,12 @@ namespace FMScanner
             {
                 newGameStrFile =
                     intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.PathEqualsI(FMDirs.IntrfaceEnglishNewGameStrS))
+                        x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStrS))
                     ?? intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.PathEqualsI(FMDirs.IntrfaceNewGameStrS))
+                        x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStrS))
                     ?? intrfaceDirFiles.FirstOrDefault(x =>
                         x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
-                        x.Name.PathEndsWithI(FMDirs.DscNewGameStrS));
+                        x.Name.PathEndsWithI(FMFiles.DscNewGameStrS));
             }
 
             if (newGameStrFile == null) return null;
@@ -2283,13 +2283,15 @@ namespace FMScanner
                     }
                 }
 
+                string missNumMis = null;
+
                 if (_scanOptions.ScanTitle &&
                     ret.TitleFromNumbered.IsEmpty() &&
                     lineIndex == titlesStrLines.Count - 1 &&
                     !titleNum.IsEmpty() &&
                     !title.IsEmpty() &&
-                    !usedMisFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")) &&
-                    misFiles.Any(x => x.Name.ContainsI("miss" + titleNum + ".mis")))
+                    !usedMisFiles.Any(x => x.Name.ContainsI(missNumMis = "miss" + titleNum + ".mis")) &&
+                    misFiles.Any(x => x.Name.ContainsI(missNumMis)))
                 {
                     ret.TitleFromNumbered = title;
                     if (!_scanOptions.ScanCampaignMissionNames) break;
@@ -2317,24 +2319,7 @@ namespace FMScanner
 
             #region Read title(s).str file
 
-            // Do not change search order: strings/english, strings, strings/[any other language]
-            // PERF_TODO: Recycle this
-            var titlesStrDirs = new List<string>
-            {
-                FMDirs.StringsS + "english\\" + FMFiles.TitlesStr,
-                FMDirs.StringsS + "english\\" + FMFiles.TitleStr,
-                FMDirs.StringsS + FMFiles.TitlesStr,
-                FMDirs.StringsS + FMFiles.TitleStr
-            };
-            foreach (string lang in Languages)
-            {
-                if (lang == "english") continue;
-
-                titlesStrDirs.Add(FMDirs.StringsS + lang + "\\" + FMFiles.TitlesStr);
-                titlesStrDirs.Add(FMDirs.StringsS + lang + "\\" + FMFiles.TitleStr);
-            }
-
-            foreach (string titlesFileLocation in titlesStrDirs)
+            foreach (string titlesFileLocation in FMFiles.TitlesStrLocations)
             {
                 NameAndIndex titlesFile = _fmIsZip
                     ? stringsDirFiles.FirstOrDefault(x => x.Name.PathEqualsI(titlesFileLocation))
