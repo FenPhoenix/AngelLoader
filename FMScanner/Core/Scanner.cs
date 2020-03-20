@@ -1193,9 +1193,11 @@ namespace FMScanner
                     {
                         // TODO: I already have baseDirFiles; see if this EnumerateDirectories can be removed
                         // Even a janky scan through baseDirFiles would probably be faster than hitting the disk
-                        string[] baseDirFolders = (
-                            from f in Directory.EnumerateDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly)
-                            select f.Substring(f.LastIndexOfDirSep() + 1)).ToArray();
+                        var baseDirFolders = new List<string>();
+                        foreach (string f in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
+                        {
+                            baseDirFolders.Add(f.Substring(f.LastIndexOfDirSep() + 1));
+                        }
 
                         foreach (NameAndIndex f in intrfaceDirFiles)
                         {
@@ -1673,6 +1675,12 @@ namespace FMScanner
         // result to a WinForms RichTextBox for final conversion to plain text.
         private static bool GetRtfFileLinesAndText(Stream stream, int streamLength, RichTextBox rtfBox)
         {
+            static bool ByteArrayStartsWith(byte[] first, byte[] second)
+            {
+                for (int i = 0; i < second.Length; i++) if (first[i] != second[i]) return false;
+                return true;
+            }
+
             if (stream.Position > 0) stream.Position = 0;
 
             // Don't parse files small enough to be unlikely to have embedded images; otherwise we're just parsing
@@ -1702,13 +1710,10 @@ namespace FMScanner
                     {
                         stream.Read(RtfTags.Bytes11, 0, RtfTags.Bytes11.Length);
 
-                        Array.Copy(RtfTags.Bytes11, RtfTags.Bytes10, 10);
-                        Array.Copy(RtfTags.Bytes11, RtfTags.Bytes5, 5);
-
-                        if (RtfTags.Bytes10.SequenceEqual(RtfTags.shppict) ||
-                            RtfTags.Bytes10.SequenceEqual(RtfTags.objdata) ||
-                            RtfTags.Bytes11.SequenceEqual(RtfTags.nonshppict) ||
-                            RtfTags.Bytes5.SequenceEqual(RtfTags.pict))
+                        if (ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.shppict) ||
+                           ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.objdata) ||
+                           ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.nonshppict) ||
+                           ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.pict))
                         {
                             stack++;
                             stream.Position -= RtfTags.Bytes11.Length;
@@ -2260,6 +2265,15 @@ namespace FMScanner
                 return line.Substring(i = line.IndexOf('\"') + 1, line.IndexOf('\"', i) - i);
             }
 
+            static bool NameExistsInList(List<NameAndIndex> list, string value)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    if (list[i].Name.ContainsI(value)) return true;
+                }
+                return false;
+            }
+
             var titles = new List<string>(titlesStrLines.Count);
             for (int lineIndex = 0; lineIndex < titlesStrLines.Count; lineIndex++)
             {
@@ -2283,15 +2297,15 @@ namespace FMScanner
                     }
                 }
 
-                string missNumMis = null;
+                string missNumMis;
 
                 if (_scanOptions.ScanTitle &&
                     ret.TitleFromNumbered.IsEmpty() &&
                     lineIndex == titlesStrLines.Count - 1 &&
                     !titleNum.IsEmpty() &&
                     !title.IsEmpty() &&
-                    !usedMisFiles.Any(x => x.Name.ContainsI(missNumMis = "miss" + titleNum + ".mis")) &&
-                    misFiles.Any(x => x.Name.ContainsI(missNumMis)))
+                    !NameExistsInList(usedMisFiles, missNumMis = "miss" + titleNum + ".mis") &&
+                    NameExistsInList(misFiles, missNumMis))
                 {
                     ret.TitleFromNumbered = title;
                     if (!_scanOptions.ScanCampaignMissionNames) break;
