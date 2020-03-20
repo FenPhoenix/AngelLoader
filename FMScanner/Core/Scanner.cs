@@ -102,6 +102,11 @@ namespace FMScanner
 
         private sealed class ReadmeInternal
         {
+            /// <summary>
+            /// Check this bool to see if you want to scan the file or not. Currently false if readme is HTML or
+            /// non-English.
+            /// </summary>
+            internal bool Scan;
             internal string FileName;
             internal string[] Lines;
             internal string Text;
@@ -1752,13 +1757,16 @@ namespace FMScanner
 
                 if (readmeSize == 0) continue;
 
+                bool scanThisReadme = !readmeFile.Name.ExtIsHtml() && readmeFile.Name.IsEnglishReadme();
+
                 _readmeFiles.Add(new ReadmeInternal
                 {
                     FileName = fileName,
-                    LastModifiedDate = lastModifiedDate
+                    LastModifiedDate = lastModifiedDate,
+                    Scan = scanThisReadme
                 });
 
-                if (readmeFile.Name.ExtIsHtml() || !readmeFile.Name.IsEnglishReadme()) continue;
+                if (!scanThisReadme) continue;
 
                 // try-finally instead of using, because we only want to initialize the readme stream if FMIsZip
                 Stream readmeStream = null;
@@ -1838,8 +1846,10 @@ namespace FMScanner
         {
             string ret = null;
 
-            foreach (ReadmeInternal file in _readmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+            foreach (ReadmeInternal file in _readmeFiles)
             {
+                if (!file.Scan) continue;
+
                 if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
                 {
                     string ndv = GetNewDarkVersionFromText(file.Text);
@@ -1895,8 +1905,10 @@ namespace FMScanner
                 // Finds eg.
                 // Author:
                 //      GORT (Shaun M.D. Morin)
-                foreach (ReadmeInternal file in _readmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+                foreach (ReadmeInternal file in _readmeFiles)
                 {
+                    if (!file.Scan) continue;
+
                     ret = GetValueFromLines(SpecialLogic.AuthorNextLine, null, file.Lines);
                     if (!ret.IsEmpty()) return ret;
                 }
@@ -2474,8 +2486,10 @@ namespace FMScanner
 
             // We DON'T just check the first five lines, because there might be another language section first
             // and this kind of author string might well be buried down in the file.
-            foreach (ReadmeInternal rf in _readmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+            foreach (ReadmeInternal rf in _readmeFiles)
             {
+                if (!rf.Scan) continue;
+
                 foreach (string line in rf.Lines)
                 {
                     string lineT = line.Trim();
@@ -2521,8 +2535,10 @@ namespace FMScanner
 
             bool foundAuthor = false;
 
-            foreach (ReadmeInternal rf in _readmeFiles.Where(x => !x.FileName.ExtIsHtml() && x.FileName.IsEnglishReadme()))
+            foreach (ReadmeInternal rf in _readmeFiles)
             {
+                if (!rf.Scan) continue;
+
                 bool inCopyrightSection = false;
                 bool pastFirstLineOfCopyrightSection = false;
 
