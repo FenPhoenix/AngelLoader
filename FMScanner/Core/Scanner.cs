@@ -3079,6 +3079,7 @@ namespace FMScanner
                     stream.Dispose();
                 }
             }
+
             if (_fmIsZip)
             {
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to

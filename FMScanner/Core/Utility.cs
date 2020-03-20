@@ -180,29 +180,34 @@ namespace FMScanner
         // We hope not to have to call this too often, but it's here as a fallback.
         private static string CanonicalizePath(string value) => value.Replace('/', '\\');
 
+        /// <summary>
+        /// Returns true if <paramref name="value"/> contains either directory separator character.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         internal static bool ContainsDirSep(this string value)
         {
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i] == '/' || value[i] == '\\') return true;
-            }
-
+            for (int i = 0; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') return true;
             return false;
         }
 
+        /// <summary>
+        /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         internal static int CountDirSeps(this string value)
         {
             int count = 0;
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i] == '/' || value[i] == '\\')
-                {
-                    count++;
-                }
-            }
+            for (int i = 0; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') count++;
             return count;
         }
 
+        /// <summary>
+        /// Returns the last index of either directory separator character in <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         internal static int LastIndexOfDirSep(this string value)
         {
             int i1 = value.LastIndexOf('/');
@@ -213,6 +218,12 @@ namespace FMScanner
             return Math.Max(i1, i2);
         }
 
+        /// <summary>
+        /// Path equality check ignoring case and directory separator differences.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
         internal static bool PathEqualsI(this string first, string second)
         {
             if (first == second) return true;
@@ -229,7 +240,8 @@ namespace FMScanner
                 if (fc > 127 || sc > 127)
                 {
                     // Non-ASCII slow path
-                    return first.EqualsI(second) || CanonicalizePath(first).EqualsI(CanonicalizePath(second));
+                    return first.Equals(second, OrdinalIgnoreCase) ||
+                           CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
                 if (fc == sc ||
@@ -247,6 +259,12 @@ namespace FMScanner
             return true;
         }
 
+        /// <summary>
+        /// Path starts-with check ignoring case and directory separator differences.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
         internal static bool PathStartsWithI(this string first, string second)
         {
             if (first == null || first.Length < second.Length) return false;
@@ -259,7 +277,8 @@ namespace FMScanner
                 if (fc > 127 || sc > 127)
                 {
                     // Non-ASCII slow path
-                    return first.StartsWithI(second) || CanonicalizePath(first).StartsWithI(CanonicalizePath(second));
+                    return first.StartsWith(second, OrdinalIgnoreCase) ||
+                           CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
                 if (fc == sc ||
@@ -277,6 +296,12 @@ namespace FMScanner
             return true;
         }
 
+        /// <summary>
+        /// Path ends-with check ignoring case and directory separator differences.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
         internal static bool PathEndsWithI(this string first, string second)
         {
             if (first == null || first.Length < second.Length) return false;
@@ -289,7 +314,8 @@ namespace FMScanner
                 if (fc > 127 || sc > 127)
                 {
                     // Non-ASCII slow path
-                    return first.EndsWithI(second) || CanonicalizePath(first).EndsWithI(CanonicalizePath(second));
+                    return first.EndsWith(second, OrdinalIgnoreCase) ||
+                           CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
                 if (fc == sc ||
