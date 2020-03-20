@@ -51,8 +51,6 @@ namespace FMScanner
         internal const string T3FMExtras1 = "Fan Mission Extras";
         internal const string T3FMExtras2 = "FanMissionExtras";
 
-        // Perf, so directory separator char doesn't have to converted to a string and concatenated
-        // NOTE: This is dubious, did I even profile this? Still, the scanner is lightning fast anyway, so whatever
         internal const string T3DetectS = "Content/T3/Maps/";
         internal const string T3FMExtras1S = "Fan Mission Extras/";
         internal const string T3FMExtras2S = "FanMissionExtras/";
