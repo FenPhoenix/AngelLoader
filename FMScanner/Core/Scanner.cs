@@ -460,10 +460,6 @@ namespace FMScanner
 
             #endregion
 
-            // PERF_TODO: Set up _dsc stuff here: choose arrays etc. (new fs/bs selection style)
-            // We don't want to keep calling methods that constantly run ifs to decide what string to give us,
-            // so instead we can choose the strings in advance here and just use them directly from here on out.
-
             var fmData = new ScannedFMData
             {
                 ArchiveName = _fmIsZip || fmIsSevenZip

@@ -409,8 +409,6 @@ namespace AngelLoader
                  have SOMETHING to give it so text won't be blank, even though it's likely it'll be the wrong
                  language if it isn't English.
                 */
-                // TODO: If I wanted, I could easily make a power-user option to pick the language to play the FM with
-                // ---
 
                 // FMSel's comment:
                 // determine FM default language (used if the FM doesn't support the language set in dark by the "language" cfg var)
