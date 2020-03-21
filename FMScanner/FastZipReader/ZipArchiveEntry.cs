@@ -99,11 +99,13 @@ namespace FMScanner.FastZipReader
         /// </summary>
         public string FullName { get; }
 
+        private readonly ZipVersionMadeByPlatform _versionMadeByCompatibility;
+        private string _Name;
         /// <summary>
         /// The filename of the entry. This is equivalent to the substring of <see cref="FullName"/> that follows
         /// the final directory separator character.
         /// </summary>
-        public string Name { get; }
+        public string Name => _Name ??= ParseFileName(FullName, _versionMadeByCompatibility);
 
         #endregion
 
@@ -133,7 +135,8 @@ namespace FMScanner.FastZipReader
             // Sacrifice a slight amount of time for safety. Zips entry names are emphatically NOT supposed to
             // have backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
             FullName = DecodeEntryName(cd.Filename)?.Replace('\\', '/') ?? throw new ArgumentNullException(nameof(FullName));
-            Name = ParseFileName(FullName, (ZipVersionMadeByPlatform)cd.VersionMadeByCompatibility);
+            // Lazy-load Name so we don't preemptively do a ton of Substring() calls when we don't need to.
+            _versionMadeByCompatibility = (ZipVersionMadeByPlatform)cd.VersionMadeByCompatibility;
         }
 
         private string DecodeEntryName(byte[] entryNameBytes)
@@ -304,7 +307,9 @@ namespace FMScanner.FastZipReader
             {
                 char ch = path[i];
                 if (ch == '\\' || ch == '/' || ch == ':')
+                {
                     return path.Substring(i + 1);
+                }
             }
             return path;
         }
@@ -316,8 +321,12 @@ namespace FMScanner.FastZipReader
         {
             int length = path.Length;
             for (int i = length; --i >= 0;)
+            {
                 if (path[i] == '/')
+                {
                     return path.Substring(i + 1);
+                }
+            }
             return path;
         }
 

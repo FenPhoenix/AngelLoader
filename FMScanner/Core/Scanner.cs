@@ -953,12 +953,15 @@ namespace FMScanner
             // order to have a var in the middle to avoid multiple LastIndexOf calls).
             static bool MapFileExists(string path)
             {
-                if (path.PathStartsWithI(FMDirs.IntrfaceS) &&
-                    path.CountDirSeps() >= 2)
+                if (path.PathStartsWithI(FMDirs.IntrfaceS) && path.CountDirSeps() >= 2)
                 {
                     int lsi = path.LastIndexOfDirSep();
                     if (path.Length > lsi + 5 &&
-                        path.Substring(lsi + 1, 5).EqualsI("page0") &&
+                        (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
+                        (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
+                        (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
+                        (path[lsi + 4] == 'e' || path[lsi + 4] == 'E') &&
+                        (path[lsi + 5] == '0') &&
                         path.LastIndexOf('.') > lsi)
                     {
                         return true;
@@ -1457,27 +1460,27 @@ namespace FMScanner
             // Quick n dirty, works fine and is fast
             foreach (string line in iniLines)
             {
-                if (line.StartsWithI(nameof(fmIni.NiceName) + "="))
+                if (line.StartsWithI("NiceName="))
                 {
                     inDescr = false;
-                    fmIni.NiceName = line.Substring(line.IndexOf('=') + 1).Trim();
+                    fmIni.NiceName = line.Substring(9).Trim();
                 }
-                else if (line.StartsWithI(nameof(fmIni.ReleaseDate) + "="))
+                else if (line.StartsWithI("ReleaseDate="))
                 {
                     inDescr = false;
-                    fmIni.ReleaseDate = line.Substring(line.IndexOf('=') + 1).Trim();
+                    fmIni.ReleaseDate = line.Substring(12).Trim();
                 }
-                else if (line.StartsWithI(nameof(fmIni.Tags) + "="))
+                else if (line.StartsWithI("Tags="))
                 {
                     inDescr = false;
-                    fmIni.Tags = line.Substring(line.IndexOf('=') + 1).Trim();
+                    fmIni.Tags = line.Substring(5).Trim();
                 }
                 // Sometimes Descr values are literally multi-line. DON'T. DO. THAT. Use \n.
                 // But I have to deal with it anyway.
-                else if (line.StartsWithI(nameof(fmIni.Descr) + "="))
+                else if (line.StartsWithI("Descr="))
                 {
                     inDescr = true;
-                    fmIni.Descr = line.Substring(line.IndexOf('=') + 1).Trim();
+                    fmIni.Descr = line.Substring(6).Trim();
                 }
                 else if (inDescr)
                 {
