@@ -231,7 +231,7 @@ namespace AngelLoader
             using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
                 ZipArchiveMode.Read, leaveOpen: false);
 
-            foreach (string f in Directory.EnumerateFiles(fmCachePath, "*", SearchOption.AllDirectories))
+            foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
                 if (!f.ExtIsHtml()) continue;
 

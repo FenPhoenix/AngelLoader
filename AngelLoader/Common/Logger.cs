@@ -38,8 +38,8 @@ namespace AngelLoader
         {
             var dt = new SYSTEMTIME();
             GetLocalTime(ref dt);
-            return dt.wYear.ToString() + '/' + dt.wMonth + '/' + dt.wDay + ' ' +
-                   dt.wHour + ':' + dt.wMinute + ':' + dt.wSecond;
+            return dt.wYear + "/" + dt.wMonth + "/" + dt.wDay + " " +
+                   dt.wHour + ":" + dt.wMinute + ":" + dt.wSecond;
         }
 
         #endregion

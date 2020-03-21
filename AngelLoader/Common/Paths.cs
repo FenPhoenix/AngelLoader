@@ -161,7 +161,7 @@ namespace AngelLoader
             #region Safety check
 
             // Make sure we never delete any paths that are not safely tucked in our temp folder
-            string baseTemp = _baseTemp.TrimEnd('\\', '/', ' ');
+            string baseTemp = _baseTemp.TrimEnd(Misc.CA_BS_FS_Space);
 
             if (!path.StartsWithI(baseTemp + "\\") && !path.StartsWithI(baseTemp + "/")) return;
 

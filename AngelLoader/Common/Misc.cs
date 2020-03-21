@@ -142,7 +142,7 @@ namespace AngelLoader
         internal static readonly char[] CA_Backslash = { '\\' };
         internal static readonly char[] CA_ForwardSlash = { '/' };
         internal static readonly char[] CA_BS_FS = { '\\', '/' };
-        internal static readonly char[] CA_SysDirSep = { System.IO.Path.DirectorySeparatorChar };
+        internal static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
         #endregion
 

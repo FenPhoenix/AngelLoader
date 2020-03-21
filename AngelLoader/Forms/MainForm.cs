@@ -76,8 +76,8 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            if (!FMsDGV.RowSelected()) return;
-            Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
+            //if (!FMsDGV.RowSelected()) return;
+            //Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
