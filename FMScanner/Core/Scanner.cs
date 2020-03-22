@@ -941,9 +941,9 @@ namespace FMScanner
         #endregion
 
         private bool ReadAndCacheFMData(ScannedFMData fmd, List<NameAndIndex> baseDirFiles,
-            List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles, List<NameAndIndex> stringsDirFiles,
-            List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> booksDirFiles,
-            List<NameAndIndex> t3FMExtrasDirFiles)
+                                        List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles,
+                                        List<NameAndIndex> stringsDirFiles, List<NameAndIndex> intrfaceDirFiles,
+                                        List<NameAndIndex> booksDirFiles, List<NameAndIndex> t3FMExtrasDirFiles)
         {
             #region Add BaseDirFiles
 
@@ -2247,7 +2247,7 @@ namespace FMScanner
             return null;
         }
 
-        private (string TitleFrom0, string TitleFromNumbered, string[] CampaignMissionNames)
+        private (string TitleFrom0, string TitleFromN, string[] CampaignMissionNames)
         GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
         {
             var titlesStrLines = GetTitlesStrLines(stringsDirFiles);
@@ -2255,7 +2255,7 @@ namespace FMScanner
 
             var ret =
                 (TitleFrom0: (string)null,
-                TitleFromNumbered: (string)null,
+                TitleFromN: (string)null,
                 CampaignMissionNames: (string[])null);
 
             static string ExtractFromQuotedSection(string line)
@@ -2300,14 +2300,14 @@ namespace FMScanner
                 string missNumMis;
 
                 if (_scanOptions.ScanTitle &&
-                    ret.TitleFromNumbered.IsEmpty() &&
+                    ret.TitleFromN.IsEmpty() &&
                     lineIndex == titlesStrLines.Count - 1 &&
                     !titleNum.IsEmpty() &&
                     !title.IsEmpty() &&
                     !NameExistsInList(usedMisFiles, missNumMis = "miss" + titleNum + ".mis") &&
                     NameExistsInList(misFiles, missNumMis))
                 {
-                    ret.TitleFromNumbered = title;
+                    ret.TitleFromN = title;
                     if (!_scanOptions.ScanCampaignMissionNames) break;
                 }
             }
@@ -2316,7 +2316,7 @@ namespace FMScanner
             {
                 if (_scanOptions.ScanTitle && titles.Count == 1)
                 {
-                    ret.TitleFromNumbered = titles[0];
+                    ret.TitleFromN = titles[0];
                 }
                 else if (_scanOptions.ScanCampaignMissionNames)
                 {
@@ -2709,7 +2709,7 @@ namespace FMScanner
         // TODO: Add all missing languages, and implement language detection for non-folder-specified FMs
         private (string[] Langs, string[] UncertainLangs)
         GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
-            List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
+                     List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
         {
             var langs = new List<string>();
             var uncertainLangs = new List<string>();
