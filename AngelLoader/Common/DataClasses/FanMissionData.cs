@@ -89,11 +89,6 @@ namespace AngelLoader.DataClasses
         internal bool ResourcesScanned;
         internal CustomResources Resources = CustomResources.None;
 
-        // not using for now, but add DoNotSerialize attribute here if I ever do
-        // internal string[] Languages;
-        // Storing this but not using it for anything at the moment (values from FMScanner)
-        internal string LanguagesString = "";
-        
         internal bool LangsScanned;
         internal string Langs = "";
         internal string SelectedLang = "";

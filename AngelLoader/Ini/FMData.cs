@@ -251,11 +251,6 @@ namespace AngelLoader
                     resourcesFound = true;
                 }
                 #endregion
-                else if (lineT.StartsWithFast_NoNullChecks("LanguagesString="))
-                {
-                    string val = lineT.Substring(16);
-                    fm.LanguagesString = val;
-                }
                 else if (lineT.StartsWithFast_NoNullChecks("LangsScanned="))
                 {
                     string val = lineT.Substring(13);
@@ -439,11 +434,6 @@ namespace AngelLoader
                     sb.AppendLine("NotScanned");
                 }
 #endif
-                if (!string.IsNullOrEmpty(fm.LanguagesString))
-                {
-                    sb.Append("LanguagesString=");
-                    sb.AppendLine(fm.LanguagesString);
-                }
                 if (fm.LangsScanned)
                 {
                     sb.Append("LangsScanned=");
