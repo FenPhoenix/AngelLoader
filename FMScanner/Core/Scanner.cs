@@ -2288,9 +2288,10 @@ namespace FMScanner
                     title = ExtractFromQuotedSection(line);
                     if (title.IsEmpty()) continue;
 
-                    string umfNoExt = usedMisFiles[umfIndex].Name.RemoveExtension();
-                    if (umfNoExt != null && umfNoExt.StartsWithI("miss") && umfNoExt.Length > 4 &&
-                        titleNum == umfNoExt.Substring(4))
+                    string umf = usedMisFiles[umfIndex].Name;
+                    int umfDotIndex = umf.IndexOf('.');
+
+                    if (umfDotIndex > 4 && umf.StartsWithI("miss") && titleNum == umf.Substring(4, umfDotIndex - 4))
                     {
                         titles.Add(title);
                     }
@@ -2756,6 +2757,7 @@ namespace FMScanner
                     continue;
                 }
 
+                // PERF_TODO: String allocation, but a large convenience
                 fn = fn.RemoveExtension();
 
                 // LINQ avoidance

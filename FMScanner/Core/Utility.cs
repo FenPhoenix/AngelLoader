@@ -53,8 +53,7 @@ namespace FMScanner
                 {
                     int delCost = vec1[j + 1] + 1;
                     int insCost = vec2[j] + 1;
-                    int substCost =
-                        string1[i].ToString().Equals(string2[j].ToString(), stringComparison) ? 0 : 1;
+                    int substCost = string1[i].ToString().Equals(string2[j].ToString(), stringComparison) ? 0 : 1;
                     vec2[j + 1] = Math.Min(insCost, Math.Min(delCost, vec1[j] + substCost));
                 }
 
@@ -66,12 +65,11 @@ namespace FMScanner
 
         internal static bool IsEnglishReadme(this string value)
         {
-            string rNoExt = value.RemoveExtension();
-            if (rNoExt.IsEmpty()) return false;
-
-            return rNoExt.EqualsI("fminfo-en") ||
-                   rNoExt.EqualsI("fminfo-eng") ||
-                   !(rNoExt.StartsWithI("fminfo") && !rNoExt.EqualsI("fminfo"));
+            int dotIndex = value.IndexOf('.');
+            return dotIndex > -1 &&
+                   ((dotIndex == 9 && value.StartsWithI("fminfo-en")) ||
+                    (dotIndex == 10 && value.StartsWithI("fminfo-eng")) ||
+                    !(dotIndex > 6 && value.StartsWithI("fminfo")));
         }
 
         /// <summary>
