@@ -149,7 +149,8 @@ namespace AngelLoader
         internal const string DefaultLangKey = "default";
 
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
-        internal static readonly string[] FMSupportedLanguages =
+        internal static readonly string[]
+        FMSupportedLanguages =
         {
             "english",    // en, must be first
             "czech",      // cz

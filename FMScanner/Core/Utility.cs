@@ -818,6 +818,7 @@ namespace FMScanner
             dateString = Regex.Replace(dateString, @"\s+", @" ");
             dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
             dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
+            dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
 
             // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
             Match match = DaySuffixesRegex.Match(dateString);
