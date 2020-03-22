@@ -354,5 +354,7 @@ namespace AngelLoader.DataClasses
         // TODO: Quick-n-dirty session-only var for now
         internal bool ForceWindowed = false;
 #endif
+
+        internal bool CheckForUpdatesOnStartup = true;
     }
 }

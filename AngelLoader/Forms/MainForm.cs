@@ -927,6 +927,8 @@ namespace AngelLoader.Forms
             FMsDGV.Focus();
 
             if (!Visible) Show();
+
+            if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
         }
 
         private void SetWindowStateAndSize()

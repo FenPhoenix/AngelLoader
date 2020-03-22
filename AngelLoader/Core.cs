@@ -1534,6 +1534,12 @@ namespace AngelLoader
 
         #endregion
 
+        private static void ResetDarkConfigFileValues(GameIndex game)
+        {
+            FMInstallAndPlay.SetCamCfgLanguage(Config.GetGamePath(game), "");
+            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
+        }
+
         internal static void DeleteFMArchive(FanMission fm)
         {
             var archives = FindFMArchive_Multiple(fm.Archive);
@@ -1569,6 +1575,8 @@ namespace AngelLoader
                 View.ShowAlert("Exception deleting file: " + ex.Message, LText.AlertMessages.Alert);
             }
         }
+
+        #region Shutdown
 
         internal static void UpdateConfig(
             FormWindowState mainWindowState,
@@ -1651,12 +1659,6 @@ namespace AngelLoader
             Config.ReadmeZoomFactor = readmeZoomFactor;
         }
 
-        private static void ResetDarkConfigFileValues(GameIndex game)
-        {
-            FMInstallAndPlay.SetCamCfgLanguage(Config.GetGamePath(game), "");
-            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
-        }
-
         internal static void Shutdown()
         {
             try
@@ -1712,5 +1714,7 @@ namespace AngelLoader
                 Log("Exception trying to write to config files to unset " + Paths.StubFileName + " as the loader on shutdown", ex);
             }
         }
+
+        #endregion
     }
 }
