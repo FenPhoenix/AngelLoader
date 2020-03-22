@@ -174,7 +174,7 @@ namespace FMScanner
         public string ArchiveName { get; internal set; }
         public long? Size { get; internal set; }
         public string Title { get; internal set; }
-        public List<string> AlternateTitles { get; internal set; } = new List<string>();
+        public string[] AlternateTitles { get; internal set; }
         public string Author { get; internal set; }
         public FMType Type { get; internal set; }
         public string[] IncludedMissions { get; internal set; }

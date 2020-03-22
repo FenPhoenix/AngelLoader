@@ -128,7 +128,7 @@ namespace FMScanner
             /// </summary>
             internal bool Scan;
             internal string FileName;
-            internal string[] Lines;
+            internal List<string> Lines;
             internal string Text;
             internal DateTime LastModifiedDate;
         }
@@ -523,6 +523,8 @@ namespace FMScanner
 
             bool fmIsT3 = fmData.Game == Game.Thief3;
 
+            var altTitles = new List<string>();
+
             void SetOrAddTitle(string value)
             {
                 value = CleanupTitle(value);
@@ -533,9 +535,9 @@ namespace FMScanner
                 {
                     fmData.Title = value;
                 }
-                else if (!fmData.Title.EqualsI(value) && !fmData.AlternateTitles.ContainsI(value))
+                else if (!fmData.Title.EqualsI(value) && !altTitles.ContainsI(value))
                 {
-                    fmData.AlternateTitles.Add(value);
+                    altTitles.Add(value);
                 }
             }
 
@@ -677,10 +679,10 @@ namespace FMScanner
                         SetOrAddTitle(titleFromN);
                     }
 
-                    if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Length > 0)
+                    if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
                     {
-                        for (int i = 0; i < cNames.Length; i++) cNames[i] = CleanupTitle(cNames[i]);
-                        fmData.IncludedMissions = cNames;
+                        for (int i = 0; i < cNames.Count; i++) cNames[i] = CleanupTitle(cNames[i]);
+                        fmData.IncludedMissions = cNames.ToArray();
                     }
                 }
             }
@@ -696,6 +698,8 @@ namespace FMScanner
                 {
                     foreach (string title in topOfReadmeTitles) SetOrAddTitle(title);
                 }
+
+                fmData.AlternateTitles = altTitles.ToArray();
             }
 
             #endregion
@@ -707,12 +711,12 @@ namespace FMScanner
                 if (fmData.Author.IsEmpty())
                 {
                     var titles = !fmData.Title.IsEmpty() ? new List<string> { fmData.Title } : null;
-                    if (titles != null && fmData.AlternateTitles?.Count > 0)
+                    if (titles != null && altTitles.Count > 0)
                     {
-                        titles.AddRange(fmData.AlternateTitles);
+                        titles.AddRange(altTitles);
                     }
 
-                    // TODO: Do I want to check AlternateTitles for StartsWithI("By ") as well?
+                    // TODO: Do I want to check altTitles for StartsWithI("By ") as well?
                     string author = GetValueFromReadme(SpecialLogic.Author, titles, SA_AuthorDetect);
 
                     fmData.Author = CleanupValue(author);
@@ -745,8 +749,8 @@ namespace FMScanner
                 if (_scanOptions.ScanLanguages || _scanOptions.ScanTags)
                 {
                     var getLangs = GetLanguages(baseDirFiles, booksDirFiles, intrfaceDirFiles, stringsDirFiles);
-                    fmData.Languages = getLangs.Langs;
-                    if (getLangs.Langs?.Length > 0) SetLangTags(fmData, getLangs.UncertainLangs);
+                    fmData.Languages = getLangs.Langs.ToArray();
+                    if (getLangs.Langs.Count > 0) SetLangTags(fmData, getLangs.EnglishIsUncertain);
                     if (!_scanOptions.ScanLanguages) fmData.Languages = null;
                 }
 
@@ -773,13 +777,6 @@ namespace FMScanner
                 if (!_scanOptions.ScanAuthor) fmData.Author = null;
             }
 
-            if (fmIsSevenZip) DeleteFMWorkingPath(_fmWorkingPath);
-
-#if DEBUG
-            _overallTimer.Stop();
-            Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
-#endif
-
             // Due to the Thief 3 detection being done in the same place as the custom resources check, it's
             // theoretically possible to end up with some of these set. There's no way around it, so just unset
             // them all here for consistency.
@@ -796,6 +793,13 @@ namespace FMScanner
                 fmData.HasCustomSubtitles = null;
                 fmData.HasMovies = null;
             }
+
+            if (fmIsSevenZip) DeleteFMWorkingPath(_fmWorkingPath);
+
+#if DEBUG
+            _overallTimer.Stop();
+            Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
+#endif
 
             return fmData;
         }
@@ -867,7 +871,7 @@ namespace FMScanner
 
         #region Set tags
 
-        private static void SetLangTags(ScannedFMData fmData, string[] uncertainLangs)
+        private static void SetLangTags(ScannedFMData fmData, bool englishIsUncertain)
         {
             if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
             for (int i = 0; i < fmData.Languages.Length; i++)
@@ -878,7 +882,7 @@ namespace FMScanner
                 Debug.Assert(lang == lang.ToLowerInvariant(),
                             "lang != lang.ToLowerInvariant() - lang is not lowercase");
 
-                if (uncertainLangs.Contains(lang)) continue;
+                if (englishIsUncertain && lang.EqualsI("english")) continue;
 
                 if (fmData.TagsString.Contains(lang))
                 {
@@ -1302,7 +1306,7 @@ namespace FMScanner
 
             if (missFlag != null)
             {
-                string[] mfLines;
+                List<string> mfLines;
 
                 // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
                 if (_fmIsZip)
@@ -1313,7 +1317,7 @@ namespace FMScanner
                 }
                 else
                 {
-                    mfLines = File.ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), Encoding.UTF8);
+                    mfLines = ReadAllLines(Path.Combine(_fmWorkingPath, missFlag.Name), Encoding.UTF8);
                 }
 
                 for (int mfI = 0; mfI < misFiles.Count; mfI++)
@@ -1327,7 +1331,7 @@ namespace FMScanner
                         // character and not get a -1 index. And since we know our file starts with "miss", the
                         // -4 is guaranteed not to take us negative either.
                         int count = mf.Name.IndexOf('.') - 4;
-                        for (int mflI = 0; mflI < mfLines.Length; mflI++)
+                        for (int mflI = 0; mflI < mfLines.Count; mflI++)
                         {
                             string line = mfLines[mflI];
                             if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
@@ -1436,7 +1440,7 @@ namespace FMScanner
 
             #region Load INI
 
-            string[] iniLines;
+            List<string> iniLines;
 
             if (_fmIsZip)
             {
@@ -1449,7 +1453,7 @@ namespace FMScanner
                 iniLines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
             }
 
-            if (iniLines == null || iniLines.Length == 0) return (null, null, null, null, null);
+            if (iniLines == null || iniLines.Count == 0) return (null, null, null, null, null);
 
             (string NiceName, string ReleaseDate, string Tags, string Descr) fmIni = (null, null, null, null);
 
@@ -1610,7 +1614,7 @@ namespace FMScanner
         {
             var ret = (Title: (string)null, Author: (string)null);
 
-            string[] lines;
+            List<string> lines;
 
             if (_fmIsZip)
             {
@@ -1623,14 +1627,14 @@ namespace FMScanner
                 lines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
             }
 
-            if (lines == null || lines.Length == 0) return ret;
+            if (lines == null || lines.Count == 0) return ret;
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 string lineT = lines[i].Trim();
                 if (lineT.EqualsI("[modName]"))
                 {
-                    while (i < lines.Length - 1)
+                    while (i < lines.Count - 1)
                     {
                         string lt = lines[i + 1].Trim();
                         if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
@@ -1647,7 +1651,7 @@ namespace FMScanner
                 }
                 else if (lineT.EqualsI("[authors]"))
                 {
-                    while (i < lines.Length - 1)
+                    while (i < lines.Count - 1)
                     {
                         string lt = lines[i + 1].Trim();
                         if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
@@ -1843,7 +1847,7 @@ namespace FMScanner
                         if (success)
                         {
                             ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-                            last.Lines = rtfBox.Lines;
+                            last.Lines = rtfBox.Lines.ToList();
                             last.Text = rtfBox.Text;
                         }
                     }
@@ -1858,7 +1862,7 @@ namespace FMScanner
                         // easy as all tags are of the form [GLWHATEVER][/GLWHATEVER]. Very nice, very simple.
                         if (last.FileName.ExtIsGlml())
                         {
-                            for (int i = 0; i < last.Lines.Length; i++)
+                            for (int i = 0; i < last.Lines.Count; i++)
                             {
                                 var matches = GLMLTagRegex.Matches(last.Lines[i]);
                                 foreach (Match m in matches)
@@ -1961,16 +1965,16 @@ namespace FMScanner
             return ret;
         }
 
-        private static string GetValueFromLines(SpecialLogic specialLogic, string[] keys, string[] lines)
+        private static string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
         {
             if (specialLogic == SpecialLogic.AuthorNextLine)
             {
-                for (int i = 0; i < lines.Length; i++)
+                for (int i = 0; i < lines.Count; i++)
                 {
                     string lineT = lines[i].Trim();
                     if (!lineT.EqualsI("Author") && !lineT.EqualsI("Author:")) continue;
 
-                    if (i < lines.Length - 2)
+                    if (i < lines.Count - 2)
                     {
                         string lineAfterNext = lines[i + 2].Trim();
                         int lanLen = lineAfterNext.Length;
@@ -1985,7 +1989,7 @@ namespace FMScanner
                 return null;
             }
 
-            for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
             {
                 string line = lines[lineIndex];
                 string lineStartTrimmed = line.TrimStart();
@@ -2133,11 +2137,11 @@ namespace FMScanner
 
             foreach (ReadmeInternal r in readmes)
             {
-                if (r.FileName.ExtIsHtml() || r.Lines == null || r.Lines.Length == 0) continue;
+                if (r.FileName.ExtIsHtml() || r.Lines == null || r.Lines.Count == 0) continue;
 
                 var lines = new List<string>();
 
-                for (int i = 0; i < r.Lines.Length; i++)
+                for (int i = 0; i < r.Lines.Count; i++)
                 {
                     string line = r.Lines[i];
                     if (!line.IsWhiteSpace()) lines.Add(line);
@@ -2200,7 +2204,7 @@ namespace FMScanner
 
             if (newGameStrFile == null) return null;
 
-            string[] lines;
+            List<string> lines;
 
             if (_fmIsZip)
             {
@@ -2215,7 +2219,7 @@ namespace FMScanner
 
             if (lines == null) return null;
 
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 string lineT = lines[i].Trim();
                 Match match = NewGameStrTitleRegex.Match(lineT);
@@ -2247,7 +2251,7 @@ namespace FMScanner
             return null;
         }
 
-        private (string TitleFrom0, string TitleFromN, string[] CampaignMissionNames)
+        private (string TitleFrom0, string TitleFromN, List<string> CampaignMissionNames)
         GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
         {
             var titlesStrLines = GetTitlesStrLines(stringsDirFiles);
@@ -2256,7 +2260,7 @@ namespace FMScanner
             var ret =
                 (TitleFrom0: (string)null,
                 TitleFromN: (string)null,
-                CampaignMissionNames: (string[])null);
+                CampaignMissionNames: (List<string>)null);
 
             static string ExtractFromQuotedSection(string line)
             {
@@ -2320,7 +2324,7 @@ namespace FMScanner
                 }
                 else if (_scanOptions.ScanCampaignMissionNames)
                 {
-                    ret.CampaignMissionNames = titles.ToArray();
+                    ret.CampaignMissionNames = titles;
                 }
             }
 
@@ -2329,7 +2333,7 @@ namespace FMScanner
 
         private List<string> GetTitlesStrLines(List<NameAndIndex> stringsDirFiles)
         {
-            string[] titlesStrLines = null;
+            List<string> titlesStrLines = null;
 
             #region Read title(s).str file
 
@@ -2357,14 +2361,14 @@ namespace FMScanner
 
             #endregion
 
-            if (titlesStrLines == null || titlesStrLines.Length == 0) return null;
+            if (titlesStrLines == null || titlesStrLines.Count == 0) return null;
 
             #region Filter titlesStrLines
 
             // There's a way to do this with an IEqualityComparer, but no, for reasons
-            var tfLinesD = new List<string>(titlesStrLines.Length);
+            var tfLinesD = new List<string>(titlesStrLines.Count);
             {
-                for (int i = 0; i < titlesStrLines.Length; i++)
+                for (int i = 0; i < titlesStrLines.Count; i++)
                 {
                     // Note: the Trim() is important, don't remove it
                     string line = titlesStrLines[i].Trim();
@@ -2421,9 +2425,9 @@ namespace FMScanner
 
         #region Author
 
-        private static string GetAuthorFromTopOfReadme(string[] linesArray, List<string> titles)
+        private static string GetAuthorFromTopOfReadme(List<string> lines, List<string> titles)
         {
-            if (linesArray.Length == 0) return null;
+            if (lines.Count == 0) return null;
 
             bool titleStartsWithBy = false;
             bool titleContainsBy = false;
@@ -2440,23 +2444,23 @@ namespace FMScanner
 
             // Look for a "by [author]" in the first few lines. Looking for a line starting with "by" throughout
             // the whole text is asking for a cavalcade of false positives, hence why we only look near the top.
-            var lines = new List<string>(maxTopLines);
-
-            for (int i = 0; i < linesArray.Length; i++)
-            {
-                string line = linesArray[i];
-                if (!line.IsWhiteSpace()) lines.Add(line);
-                if (lines.Count == maxTopLines) break;
-            }
-
-            if (lines.Count < 2) return null;
+            var topLines = new List<string>(maxTopLines);
 
             for (int i = 0; i < lines.Count; i++)
+            {
+                string line = lines[i];
+                if (!line.IsWhiteSpace()) topLines.Add(line);
+                if (topLines.Count == maxTopLines) break;
+            }
+
+            if (topLines.Count < 2) return null;
+
+            for (int i = 0; i < topLines.Count; i++)
             {
                 // Preemptive check
                 if (i == 0 && titleStartsWithBy) continue;
 
-                string lineT = lines[i].Trim();
+                string lineT = topLines[i].Trim();
                 if (lineT.StartsWithI("By ") || lineT.StartsWithI("By: "))
                 {
                     string author = lineT.Substring(lineT.IndexOf(' ')).TrimStart();
@@ -2464,9 +2468,9 @@ namespace FMScanner
                 }
                 else if (lineT.EqualsI("By"))
                 {
-                    if (!titleContainsBy && i < lines.Count - 1)
+                    if (!titleContainsBy && i < topLines.Count - 1)
                     {
-                        return lines[i + 1].Trim();
+                        return topLines[i + 1].Trim();
                     }
                 }
                 else
@@ -2707,12 +2711,12 @@ namespace FMScanner
         }
 
         // TODO: Add all missing languages, and implement language detection for non-folder-specified FMs
-        private static (string[] Langs, string[] UncertainLangs)
+        private static (List<string> Langs, bool EnglishIsUncertain)
         GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
                      List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
         {
             var langs = new List<string>();
-            var uncertainLangs = new List<string>();
+            bool englishIsUncertain = false;
 
             for (int dirIndex = 0; dirIndex < 3; dirIndex++)
             {
@@ -2732,11 +2736,13 @@ namespace FMScanner
                         // Directory separator agnostic & keeping perf reasonably high
                         string dfName = df.Name.Replace('\\', '/');
 
+                        // We say HasFileExtension() because we only want to count lang dirs that have files in them
                         if (dfName.HasFileExtension() &&
                             (dfName.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
                              dfName.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
                         {
                             langs.Add(lang);
+                            break;
                         }
                     }
                 }
@@ -2745,17 +2751,14 @@ namespace FMScanner
             if (!langs.ContainsI("english"))
             {
                 langs.Add("english");
-                uncertainLangs.Add("english");
+                englishIsUncertain = true;
             }
 
             // Sometimes extra languages are in zip files inside the FM archive
             for (int i = 0; i < baseDirFiles.Count; i++)
             {
                 string fn = baseDirFiles[i].Name;
-                if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar())
-                {
-                    continue;
-                }
+                if (!fn.ExtIsZip() && !fn.ExtIs7z() && !fn.ExtIsRar()) continue;
 
                 // PERF_TODO: String allocation, but a large convenience
                 fn = fn.RemoveExtension();
@@ -2802,13 +2805,13 @@ namespace FMScanner
 
             if (langs.Count > 0)
             {
-                string[] langsD = langs.Distinct().ToArray();
-                Array.Sort(langsD);
-                return (langsD, uncertainLangs.ToArray());
+                var langsD = langs.Distinct().ToList();
+                langsD.Sort();
+                return (langsD, englishIsUncertain);
             }
             else
             {
-                return (new[] { "english" }, new[] { "english" });
+                return (EnglishOnly, EnglishIsUncertain: true);
             }
         }
 
@@ -3250,7 +3253,7 @@ namespace FMScanner
         /// <param name="streamIsSeekable">If true, the stream is used directly rather than copied, and is left
         /// open.</param>
         /// <returns></returns>
-        private string[] ReadAllLinesE(Stream stream, long length, bool streamIsSeekable = false)
+        private List<string> ReadAllLinesE(Stream stream, long length, bool streamIsSeekable = false)
         {
             var lines = new List<string>();
 
@@ -3284,10 +3287,10 @@ namespace FMScanner
                 while ((line = sr.ReadLine()) != null) lines.Add(line);
             }
 
-            return lines.ToArray();
+            return lines;
         }
 
-        private static string[] ReadAllLines(Stream stream, Encoding encoding)
+        private static List<string> ReadAllLines(Stream stream, Encoding encoding)
         {
             var lines = new List<string>();
 
@@ -3295,7 +3298,18 @@ namespace FMScanner
             string line;
             while ((line = sr.ReadLine()) != null) lines.Add(line);
 
-            return lines.ToArray();
+            return lines;
+        }
+
+        private static List<string> ReadAllLines(string file, Encoding encoding)
+        {
+            var lines = new List<string>();
+
+            using var sr = new StreamReader(file, encoding, false);
+            string line;
+            while ((line = sr.ReadLine()) != null) lines.Add(line);
+
+            return lines;
         }
 
         /// <summary>
@@ -3304,10 +3318,17 @@ namespace FMScanner
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <returns></returns>
-        private string[] ReadAllLinesE(string file)
+        private List<string> ReadAllLinesE(string file)
         {
             Encoding enc = _fileEncoding.DetectFileEncoding(file);
-            return File.ReadAllLines(file, enc ?? Encoding.GetEncoding(1252));
+
+            var lines = new List<string>();
+            using (StreamReader streamReader = new StreamReader(file, enc ?? Encoding.GetEncoding(1252)))
+            {
+                string str;
+                while ((str = streamReader.ReadLine()) != null) lines.Add(str);
+            }
+            return lines;
         }
 
         #endregion
