@@ -37,6 +37,8 @@ namespace AngelLoader
     {
         #region Private fields
 
+        private const string _startMisSav = "startmis.sav";
+
         private const string T3SavesDir = "SaveGames";
         private const string DarkSavesDir = "saves";
         private const string SS2CurrentDir = "current";
@@ -155,7 +157,8 @@ namespace AngelLoader
                     {
                         string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
                         if (IsSaveOrScreenshot(fn, fm.Game) ||
-                            (!fn.EqualsI(Paths.FMSelInf) && (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
+                            (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
+                            (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
                         {
                             AddEntry(archive, f, fn);
                         }
@@ -351,6 +354,7 @@ namespace AngelLoader
                                         (fm.Game != Game.SS2 ||
                                         (!SS2SaveDirsInZipRegex.IsMatch(val) && !val.StartsWithI(SS2CurrentDir + "/"))) &&
                                         !val.EqualsI(Paths.FMSelInf) &&
+                                        !val.EqualsI(_startMisSav) &&
                                         // Reject malformed and/or maliciously formed paths - we're going to
                                         // delete these files, and we don't want to delete anything outside
                                         // the FM folder
@@ -376,6 +380,7 @@ namespace AngelLoader
                                 string fn = f.FullName.ToForwardSlashes();
 
                                 if (fn.EqualsI(Paths.FMSelInf) ||
+                                    fn.EqualsI(_startMisSav) ||
                                     (fn.Length > 0 && fn[fn.Length - 1] == '/') ||
                                     fileExcludes.Contains(fn))
                                 {
@@ -496,6 +501,7 @@ namespace AngelLoader
                     string efn = entry.FullName.ToForwardSlashes();
 
                     if (efn.EqualsI(Paths.FMSelInf) ||
+                        efn.EqualsI(_startMisSav) ||
                         (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
                         IsSaveOrScreenshot(efn, game))
                     {
@@ -543,7 +549,9 @@ namespace AngelLoader
                 {
                     string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
 
-                    if (fn.EqualsI(Paths.FMSelInf) || IsSaveOrScreenshot(fn, game))
+                    if (fn.EqualsI(Paths.FMSelInf) ||
+                        fn.EqualsI(_startMisSav) ||
+                        IsSaveOrScreenshot(fn, game))
                     {
                         continue;
                     }
@@ -570,6 +578,7 @@ namespace AngelLoader
                     string efn = entry.FileName.ToForwardSlashes();
 
                     if (efn.EqualsI(Paths.FMSelInf) ||
+                        efn.EqualsI(_startMisSav) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
                         entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
                         IsSaveOrScreenshot(efn, game))
@@ -609,7 +618,11 @@ namespace AngelLoader
                 }
                 foreach (string f in installedFMFiles)
                 {
-                    if (Path.GetFileName(f).EqualsI(Paths.FMSelInf)) continue;
+                    string fnTemp = Path.GetFileName(f);
+                    if (fnTemp.EqualsI(Paths.FMSelInf) || fnTemp.EqualsI(_startMisSav))
+                    {
+                        continue;
+                    }
 
                     string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
 
