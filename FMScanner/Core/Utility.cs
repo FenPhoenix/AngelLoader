@@ -87,6 +87,18 @@ namespace FMScanner
             return count;
         }
 
+        internal static bool CharCountIsAtLeast(this string value, char character, int count, int start = 0)
+        {
+            int foundCount = 0;
+            for (int i = start; i < value.Length; i++)
+            {
+                if (value[i] == character) foundCount++;
+                if (foundCount == count) return true;
+            }
+
+            return false;
+        }
+
         #region Fast byte[] / char[] search
 
         // I don't know if this is "supposed" to be the fastest way, but every other algorithm I've tried is at
@@ -193,12 +205,25 @@ namespace FMScanner
         /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
         /// </summary>
         /// <param name="value"></param>
+        /// <param name="start"></param>
         /// <returns></returns>
-        internal static int CountDirSeps(this string value)
+        internal static int CountDirSeps(this string value, int start = 0)
         {
             int count = 0;
-            for (int i = 0; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') count++;
+            for (int i = start; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') count++;
             return count;
+        }
+
+        internal static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
+        {
+            int foundCount = 0;
+            for (int i = start; i < value.Length; i++)
+            {
+                if (value[i] == '/' || value[i] == '\\') foundCount++;
+                if (foundCount == count) return true;
+            }
+
+            return false;
         }
 
         /// <summary>

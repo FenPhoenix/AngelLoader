@@ -11,7 +11,6 @@ If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
 using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace FMScanner
@@ -36,12 +35,13 @@ namespace FMScanner
         /// <param name="scanSize"></param>
         /// <param name="scanReleaseDate"></param>
         /// <param name="scanTags"></param>
+        /// <param name="scanDescription"></param>
         /// <returns></returns>
         public static ScanOptions FalseDefault(bool scanTitle = false, bool scanCampaignMissionNames = false,
             bool scanAuthor = false, bool scanVersion = false, bool scanLanguages = false,
             bool scanGameType = false, bool scanNewDarkRequired = false, bool scanNewDarkMinimumVersion = false,
             bool scanCustomResources = false, bool scanSize = false, bool scanReleaseDate = false,
-            bool scanTags = false) =>
+            bool scanTags = false, bool scanDescription = false) =>
             new ScanOptions
             {
                 ScanTitle = scanTitle,
@@ -55,7 +55,8 @@ namespace FMScanner
                 ScanCustomResources = scanCustomResources,
                 ScanSize = scanSize,
                 ScanReleaseDate = scanReleaseDate,
-                ScanTags = scanTags
+                ScanTags = scanTags,
+                ScanDescription = scanDescription
             };
 
         internal ScanOptions DeepCopy() =>
@@ -72,7 +73,8 @@ namespace FMScanner
                 ScanCustomResources = ScanCustomResources,
                 ScanSize = ScanSize,
                 ScanReleaseDate = ScanReleaseDate,
-                ScanTags = ScanTags
+                ScanTags = ScanTags,
+                ScanDescription = ScanDescription
             };
 
         /// <summary>
@@ -131,6 +133,10 @@ namespace FMScanner
         /// <see langword="true"/> to detect the mission's tags.
         /// </summary>
         public bool ScanTags { get; set; } = true;
+        /// <summary>
+        /// <see langword="true"/> to detect the mission's fm.ini description field.
+        /// </summary>
+        public bool ScanDescription { get; set; } = true;
     }
 
     [PublicAPI]

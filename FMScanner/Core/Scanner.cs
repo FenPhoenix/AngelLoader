@@ -603,7 +603,7 @@ namespace FMScanner
                             var (title, author, description, lastUpdateDate, tags) = ReadFMIni(f);
                             if (_scanOptions.ScanTitle) SetOrAddTitle(title);
                             if (_scanOptions.ScanAuthor && !author.IsEmpty()) fmData.Author = author;
-                            fmData.Description = description;
+                            if (_scanOptions.ScanDescription) fmData.Description = description;
                             if (_scanOptions.ScanReleaseDate && lastUpdateDate != null) fmData.LastUpdateDate = lastUpdateDate;
                             if (_scanOptions.ScanTags) fmData.TagsString = tags;
                             break;
@@ -957,7 +957,7 @@ namespace FMScanner
             // order to have a var in the middle to avoid multiple LastIndexOf calls).
             static bool MapFileExists(string path)
             {
-                if (path.PathStartsWithI(FMDirs.IntrfaceS) && path.CountDirSeps() >= 2)
+                if (path.PathStartsWithI(FMDirs.IntrfaceS) && path.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen))
                 {
                     int lsi = path.LastIndexOfDirSep();
                     if (path.Length > lsi + 5 &&
@@ -993,7 +993,7 @@ namespace FMScanner
 
                     if (!t3Found &&
                         fn.PathStartsWithI(FMDirs.T3DetectS) &&
-                        fn.CountDirSeps() == 3 &&
+                        fn.CountDirSeps(FMDirs.T3DetectSLen) == 0 &&
                         (fn.ExtIsIbt() ||
                         fn.ExtIsCbt() ||
                         fn.ExtIsGmp() ||
@@ -1053,7 +1053,7 @@ namespace FMScanner
                     {
                         if (fmd.HasAutomap == null &&
                             fn.PathStartsWithI(FMDirs.IntrfaceS) &&
-                            fn.CountDirSeps() >= 2 &&
+                            fn.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
                             fn.EndsWithRaDotBin())
                         {
                             fmd.HasAutomap = true;
@@ -1206,7 +1206,7 @@ namespace FMScanner
                         {
                             if (fmd.HasAutomap == null &&
                                 f.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
-                                f.Name.CountDirSeps() >= 2 &&
+                                f.Name.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
                                 f.Name.EndsWithRaDotBin())
                             {
                                 fmd.HasAutomap = true;
@@ -1435,8 +1435,13 @@ namespace FMScanner
         private (string Title, string Author, string Description, DateTime? LastUpdateDate, string Tags)
         ReadFMIni(NameAndIndex file)
         {
-            var ret = (Title: (string)null, Author: (string)null, Description: (string)null,
-                LastUpdateDate: (DateTime?)null, Tags: (string)null);
+            var ret = (
+                Title: (string)null,
+                Author: (string)null,
+                Description: (string)null,
+                LastUpdateDate: (DateTime?)null,
+                Tags: (string)null
+            );
 
             #region Load INI
 
@@ -1484,15 +1489,15 @@ namespace FMScanner
                 else if (line.StartsWithI("Descr="))
                 {
                     inDescr = true;
-                    fmIni.Descr = line.Substring(6).Trim();
+                    if (_scanOptions.ScanDescription) fmIni.Descr = line.Substring(6).Trim();
                 }
                 else if (inDescr)
                 {
-                    fmIni.Descr += "\r\n" + line;
+                    if (_scanOptions.ScanDescription) fmIni.Descr += "\r\n" + line;
                 }
             }
 
-            if (!fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
+            if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
 
             #endregion
 
@@ -1505,7 +1510,7 @@ namespace FMScanner
             // multiple actual lines for some reason. God help us if any more keys get added to the spec and some
             // wise guy puts one of those keys after a multiline Descr.
 
-            if (!fmIni.Descr.IsEmpty())
+            if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty())
             {
                 fmIni.Descr = fmIni.Descr
                     .Replace(@"\t", "\t")
@@ -1595,7 +1600,7 @@ namespace FMScanner
                 }
             }
 
-            ret.Description = fmIni.Descr;
+            if (_scanOptions.ScanDescription) ret.Description = fmIni.Descr;
 
             /*
                Notes:
@@ -2370,13 +2375,14 @@ namespace FMScanner
             {
                 for (int i = 0; i < titlesStrLines.Count; i++)
                 {
+                    int indexOfColon;
                     // Note: the Trim() is important, don't remove it
                     string line = titlesStrLines[i].Trim();
                     if (!line.IsEmpty() &&
-                        line.Contains(':') &&
-                        line.CountChars('\"') > 1 &&
                         line.StartsWithI("title_") &&
-                        !tfLinesD.Any(x => x.StartsWithI(line.Substring(0, line.IndexOf(':')))))
+                        (indexOfColon = line.IndexOf(':')) > -1 &&
+                        line.CharCountIsAtLeast('\"', 2) &&
+                        !tfLinesD.Any(x => x.StartsWithI(line.Substring(0, indexOfColon))))
                     {
                         tfLinesD.Add(line);
                     }

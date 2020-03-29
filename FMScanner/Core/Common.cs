@@ -52,12 +52,14 @@ namespace FMScanner
         internal const string T3FMExtras2 = "FanMissionExtras";
 
         internal const string T3DetectS = "Content/T3/Maps/";
+        internal const int T3DetectSLen = 16; // workaround for .NET 4.7.2 not inlining const string lengths
         internal const string T3FMExtras1S = "Fan Mission Extras/";
         internal const string T3FMExtras2S = "FanMissionExtras/";
 
         internal const string BooksS = "books/";
         internal const string FamS = "fam/";
         internal const string IntrfaceS = "intrface/";
+        internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
         internal const string MeshS = "mesh/";
         internal const string MotionsS = "motions/";
         internal const string MoviesS = "movies/";
