@@ -481,7 +481,10 @@ namespace FMScanner
                 else
                 {
                     _fmDirFileInfos.Clear();
-                    _fmDirFileInfos.AddRange(new DirectoryInfo(_fmWorkingPath).EnumerateFiles("*", SearchOption.AllDirectories));
+                    // PERF: AddRange() is a fat slug, do Add() in a loop instead
+                    FileInfo[] fileInfos = new DirectoryInfo(_fmWorkingPath).GetFiles("*", SearchOption.AllDirectories);
+                    _fmDirFileInfos.Capacity = fileInfos.Length;
+                    for (int i = 0; i < fileInfos.Length; i++) _fmDirFileInfos.Add(fileInfos[i]);
 
                     if (fmIsSevenZip)
                     {
