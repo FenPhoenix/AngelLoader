@@ -183,18 +183,6 @@ namespace FMScanner
 
         #region Path-specific string queries (separator-agnostic)
 
-        internal static string GetDirNameFast(this string path)
-        {
-            path = path.TrimEnd(FMConstants.CA_BS_FS);
-
-            int i1 = path.LastIndexOf('\\');
-            int i2 = path.LastIndexOf('/');
-
-            if (i1 == -1 && i2 == -1) return path;
-
-            return path.Substring(Math.Max(i1, i2) + 1);
-        }
-
         // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
         // sep chars are in no way guaranteed to match those of the OS.
         // Not like any OS is likely to use anything other than '/' or '\' anyway.

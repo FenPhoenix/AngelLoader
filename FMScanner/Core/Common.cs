@@ -182,7 +182,6 @@ namespace FMScanner
         internal static readonly char[] CA_Hyphen = { '-' };
         internal static readonly char[] CA_CommaSemicolon = { ',', ';' };
         internal static readonly char[] CA_Backslash = { '\\' };
-        internal static readonly char[] CA_BS_FS = { '\\', '/' };
         internal static readonly char[] CA_DoubleQuote = { '\"' };
         internal static readonly char[] CA_UnicodeQuotes = { Constants.uldq, Constants.urdq };
         internal static readonly string[] SA_DoubleSpaces = { "  " };
