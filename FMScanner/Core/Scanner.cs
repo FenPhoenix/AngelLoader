@@ -464,7 +464,9 @@ namespace FMScanner
             {
                 ArchiveName = _fmIsZip || fmIsSevenZip
                     ? Path.GetFileName(_archivePath)
-                    // PERF_TODO: Use fast string-only name getter, or even just pass the name to ScanCurrentFM()
+                    // PERF_TODO: Use fast string-only name getter
+                    // Case against: Being built-in, this way is safe and complete. ArchiveName is monumentally
+                    // important, we don't want to mess around.
                     : new DirectoryInfo(_fmWorkingPath).Name
             };
 
