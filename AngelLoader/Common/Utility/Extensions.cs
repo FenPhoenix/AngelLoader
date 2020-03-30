@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static System.StringComparison;
 using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 
@@ -78,7 +79,7 @@ namespace AngelLoader
         /// <param name="substring"></param>
         /// <returns></returns>
         [PublicAPI]
-        internal static bool ContainsI(this string value, string substring) => value.Contains(substring, StringComparison.OrdinalIgnoreCase);
+        internal static bool ContainsI(this string value, string substring) => value.Contains(substring, OrdinalIgnoreCase);
 
         /// <summary>
         /// Case-insensitive Contains for List&lt;string&gt;. Avoiding IEnumerable like the plague for speed.
@@ -87,10 +88,10 @@ namespace AngelLoader
         /// <param name="str"></param>
         /// <returns></returns>
         [PublicAPI]
-        internal static bool ContainsI(this List<string> list, string str) => list.Contains(str, StringComparison.OrdinalIgnoreCase);
+        internal static bool ContainsI(this List<string> list, string str) => list.Contains(str, OrdinalIgnoreCase);
 
         [PublicAPI]
-        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, StringComparison.OrdinalIgnoreCase);
+        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, OrdinalIgnoreCase);
 
         /// <summary>
         /// Case-insensitive Contains for string[]. Avoiding IEnumerable like the plague for speed.
@@ -99,10 +100,10 @@ namespace AngelLoader
         /// <param name="str"></param>
         /// <returns></returns>
         [PublicAPI]
-        internal static bool ContainsI(this string[] array, string str) => array.Contains(str, StringComparison.OrdinalIgnoreCase);
+        internal static bool ContainsI(this string[] array, string str) => array.Contains(str, OrdinalIgnoreCase);
 
         [PublicAPI]
-        internal static bool ContainsRemoveFirstHit(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
+        internal static bool ContainsRemoveFirstHit(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
         {
             for (int i = 0; i < value.Count; i++)
             {
@@ -116,14 +117,14 @@ namespace AngelLoader
         }
 
         [PublicAPI]
-        internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
+        internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
         {
             for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, stringComparison)) return true;
             return false;
         }
 
         [PublicAPI]
-        internal static bool Contains(this string[] value, string substring, StringComparison stringComparison = StringComparison.Ordinal)
+        internal static bool Contains(this string[] value, string substring, StringComparison stringComparison = Ordinal)
         {
             for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, stringComparison)) return true;
             return false;
@@ -139,9 +140,9 @@ namespace AngelLoader
         /// <param name="first"></param>
         /// <param name="second"></param>
         /// <returns></returns>
-        internal static bool EqualsI(this string first, string second) => string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
+        internal static bool EqualsI(this string first, string second) => string.Equals(first, second, OrdinalIgnoreCase);
 
-        internal static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, StringComparison.OrdinalIgnoreCase);
+        internal static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
 
         #endregion
 
@@ -245,8 +246,8 @@ namespace AngelLoader
                 if (value[vi] > 127)
                 {
                     return start
-                        ? str.StartsWith(value, StringComparison.OrdinalIgnoreCase)
-                        : str.EndsWith(value, StringComparison.OrdinalIgnoreCase);
+                        ? str.StartsWith(value, OrdinalIgnoreCase)
+                        : str.EndsWith(value, OrdinalIgnoreCase);
                 }
 
                 if (str[si] >= 65 && str[si] <= 90 && value[vi] >= 97 && value[vi] <= 122)
@@ -267,6 +268,183 @@ namespace AngelLoader
         }
 
         #endregion
+
+        #endregion
+
+        #region Dirsep-agnostic
+
+        // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
+        // sep chars are in no way guaranteed to match those of the OS.
+        // Not like any OS is likely to use anything other than '/' or '\' anyway.
+
+        // We hope not to have to call this too often, but it's here as a fallback.
+        private static string CanonicalizePath(string value) => value.Replace('/', '\\');
+
+        /// <summary>
+        /// Returns true if <paramref name="value"/> contains either directory separator character.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static bool ContainsDirSep(this string value)
+        {
+            for (int i = 0; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="start"></param>
+        /// <returns></returns>
+        internal static int CountDirSeps(this string value, int start = 0)
+        {
+            int count = 0;
+            for (int i = start; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') count++;
+            return count;
+        }
+
+        internal static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
+        {
+            int foundCount = 0;
+            for (int i = start; i < value.Length; i++)
+            {
+                if (value[i] == '/' || value[i] == '\\') foundCount++;
+                if (foundCount == count) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the last index of either directory separator character in <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static int LastIndexOfDirSep(this string value)
+        {
+            int i1 = value.LastIndexOf('/');
+            int i2 = value.LastIndexOf('\\');
+
+            if (i1 == -1 && i2 == -1) return -1;
+
+            return Math.Max(i1, i2);
+        }
+
+        /// <summary>
+        /// Path equality check ignoring case and directory separator differences.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        internal static bool PathEqualsI(this string first, string second)
+        {
+            if (first == second) return true;
+
+            int firstLen = first.Length;
+
+            if (firstLen != second.Length) return false;
+
+            for (int i = 0; i < firstLen; i++)
+            {
+                char fc = first[i];
+                char sc = second[i];
+
+                if (fc > 127 || sc > 127)
+                {
+                    // Non-ASCII slow path
+                    return first.Equals(second, OrdinalIgnoreCase) ||
+                           CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
+                }
+
+                if (fc == sc ||
+                    ((fc == '\\' || fc == '/') &&
+                    (sc == '\\' || sc == '/')) ||
+                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
+                    (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Path starts-with check ignoring case and directory separator differences.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        internal static bool PathStartsWithI(this string first, string second)
+        {
+            if (first == null || first.Length < second.Length) return false;
+
+            for (int i = 0; i < second.Length; i++)
+            {
+                char fc = first[i];
+                char sc = second[i];
+
+                if (fc > 127 || sc > 127)
+                {
+                    // Non-ASCII slow path
+                    return first.StartsWith(second, OrdinalIgnoreCase) ||
+                           CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
+                }
+
+                if (fc == sc ||
+                    ((fc == '\\' || fc == '/') &&
+                     (sc == '\\' || sc == '/')) ||
+                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
+                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Path ends-with check ignoring case and directory separator differences.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        internal static bool PathEndsWithI(this string first, string second)
+        {
+            if (first == null || first.Length < second.Length) return false;
+
+            for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
+            {
+                char fc = first[fi];
+                char sc = second[si];
+
+                if (fc > 127 || sc > 127)
+                {
+                    // Non-ASCII slow path
+                    return first.EndsWith(second, OrdinalIgnoreCase) ||
+                           CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
+                }
+
+                if (fc == sc ||
+                    ((fc == '\\' || fc == '/') &&
+                     (sc == '\\' || sc == '/')) ||
+                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
+                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
 
         #endregion
 
@@ -410,7 +588,7 @@ namespace AngelLoader
         {
             if (value.IsEmpty()) return "";
 
-            int linebreakIndex = value.IndexOf("\r\n", StringComparison.InvariantCulture);
+            int linebreakIndex = value.IndexOf("\r\n", InvariantCulture);
 
             return linebreakIndex > -1 && linebreakIndex <= maxLength
                 ? value.Substring(0, linebreakIndex)
