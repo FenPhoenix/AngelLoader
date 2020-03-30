@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using AngelLoader.Forms;
 using static AngelLoader.Misc;
 using static AngelLoader.WinAPI.InteropMisc;
 

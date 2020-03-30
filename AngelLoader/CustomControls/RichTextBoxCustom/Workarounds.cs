@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader.Forms;
 using static AngelLoader.CustomControls.RichTextBoxCustom_Interop;
 using static AngelLoader.WinAPI.InteropMisc;
 

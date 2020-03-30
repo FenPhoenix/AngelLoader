@@ -137,7 +137,7 @@ namespace AngelLoader
                             Log("There was an error while reading " + f + ".", ex);
                         }
                     }
-                    Ini.ReadTranslatedLanguageName(f);
+                    Ini.AddLanguageFromFile(f, Config.LanguageNames);
 
                     // These need to be set after language read. Slightly awkward but oh well.
                     //SetDefaultConfigVarNamesToLocalized();

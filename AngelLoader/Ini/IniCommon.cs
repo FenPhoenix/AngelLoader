@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -34,7 +35,7 @@ namespace AngelLoader
 
         // This kinda belongs in LanguageIni.cs, but it's separated to prevent it from being removed when that
         // file is re-generated. I could make it so it doesn't get removed, but meh.
-        internal static void ReadTranslatedLanguageName(string file)
+        internal static void AddLanguageFromFile(string file, Dictionary<string, string> langDict)
         {
             StreamReader? sr = null;
             try
@@ -51,7 +52,7 @@ namespace AngelLoader
                     {
                         string key = file.GetFileNameFast().RemoveExtension();
                         string value = line.TrimStart().Substring(nameof(LText.Meta.TranslatedLanguageName).Length + 1);
-                        Config.LanguageNames[key] = value;
+                        langDict[key] = value;
                         return;
                     }
                     else if (lineT == "[" + nameof(LText.Meta) + "]")
@@ -99,95 +100,6 @@ namespace AngelLoader
                 }
             }
         }
-
-#if false
-        internal static void WriteFMsListToCSV()
-        {
-            static string Escape(string value)
-            {
-                bool needsEscaping = false;
-                value = value.Trim('\r', '\n');
-                foreach (char c in value)
-                {
-                    if (c == '\"' || c == '\r' || c == '\n' || c == ',')
-                    {
-                        needsEscaping = true;
-                        break;
-                    }
-                }
-
-                return needsEscaping
-                    ? "\"" + value.Replace("\"", "\"\"") + "\""
-                    : value;
-            }
-
-            static string FinishedOn_(FanMission fm)
-            {
-                if (fm.FinishedOnUnknown) return "Unknown";
-                FinishedOn diff = (FinishedOn)fm.FinishedOn;
-                if (diff == FinishedOn.None) return "";
-
-                string ret = "";
-                if ((diff & FinishedOn.Normal) == FinishedOn.Normal)
-                {
-                    ret += (!ret.IsEmpty() ? "," : "") + "1";
-                }
-                if ((diff & FinishedOn.Hard) == FinishedOn.Hard)
-                {
-                    ret += (!ret.IsEmpty() ? "," : "") + "2";
-                }
-                if ((diff & FinishedOn.Expert) == FinishedOn.Expert)
-                {
-                    ret += (!ret.IsEmpty() ? "," : "") + "3";
-                }
-                if ((diff & FinishedOn.Extreme) == FinishedOn.Extreme)
-                {
-                    ret += (!ret.IsEmpty() ? "," : "") + "4";
-                }
-
-                return ret;
-            }
-
-            using (var sw = new StreamWriter(@"C:\AL_csv_test.csv", append: false, Encoding.UTF8))
-            {
-                const string header = nameof(Column.Game) + "," +
-                                      nameof(Column.Installed) + "," +
-                                      nameof(Column.Title) + "," +
-                                      nameof(Column.Archive) + "," +
-                                      nameof(Column.Author) + "," +
-                                      nameof(Column.Size) + "," +
-                                      nameof(Column.Rating) + "," +
-                                      nameof(Column.Finished) + "," +
-                                      nameof(Column.ReleaseDate) + "," +
-                                      nameof(Column.LastPlayed) + "," +
-                                      nameof(Column.DateAdded) + "," +
-                                      nameof(Column.DisabledMods) + "," +
-                                      nameof(Column.Comment);
-
-                sw.WriteLine(header);
-                foreach (var fm in FMsViewList)
-                {
-                    string line = fm.Game + "," +
-                                  fm.Installed + "," +
-                                  Escape(fm.Title) + "," +
-                                  Escape(fm.Archive) + "," +
-                                  Escape(fm.Author) + "," +
-                                  fm.SizeBytes + "," +
-                                  (fm.Rating > -1 ? fm.Rating.ToString() : "Unrated") + "," +
-                                  Escape(FinishedOn_(fm)) + "," +
-                                  fm.ReleaseDate.UnixDateString + "," +
-                                  fm.LastPlayed.UnixDateString + "," +
-                                  (fm.DateAdded != null
-                                      ? new DateTimeOffset((DateTime)fm.DateAdded).ToUnixTimeSeconds()
-                                          .ToString("X") : "") + "," +
-                                  Escape(fm.DisabledMods) + "," +
-                                  Escape(fm.Comment.FromRNEscapes()) + ",";
-
-                    sw.WriteLine(line);
-                }
-            }
-        }
-#endif
 
         #region FM custom resource work
 

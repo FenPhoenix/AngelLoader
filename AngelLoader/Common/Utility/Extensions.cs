@@ -1,27 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static System.StringComparison;
 using static AngelLoader.Misc;
-using static AngelLoader.WinAPI.InteropMisc;
 
 namespace AngelLoader
 {
     internal static class Extensions
     {
-        #region Queries
-
         /// <summary>
-        /// Returns the number of times a character appears in a string.
-        /// Avoids whatever silly overhead junk Count(predicate) is doing.
+        /// Returns the number of times a character appears in a string. Avoids whatever silly overhead junk Count(predicate) is doing.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="character"></param>
@@ -35,33 +28,6 @@ namespace AngelLoader
         }
 
         #region Contains
-
-#if false
-
-        internal static int IndexOfByteSequence(this byte[] input, byte[] pattern)
-        {
-            byte firstByte = pattern[0];
-            int index = Array.IndexOf(input, firstByte);
-
-            while (index > -1)
-            {
-                for (int i = 0; i < pattern.Length; i++)
-                {
-                    if (index + i >= input.Length) return -1;
-                    if (pattern[i] != input[index + i])
-                    {
-                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return -1;
-                        break;
-                    }
-
-                    if (i == pattern.Length - 1) return index;
-                }
-            }
-
-            return index;
-        }
-
-#endif
 
         [PublicAPI]
         internal static bool Contains(this string value, string substring, StringComparison comparison)
@@ -90,9 +56,6 @@ namespace AngelLoader
         [PublicAPI]
         internal static bool ContainsI(this List<string> list, string str) => list.Contains(str, OrdinalIgnoreCase);
 
-        [PublicAPI]
-        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, OrdinalIgnoreCase);
-
         /// <summary>
         /// Case-insensitive Contains for string[]. Avoiding IEnumerable like the plague for speed.
         /// </summary>
@@ -101,6 +64,9 @@ namespace AngelLoader
         /// <returns></returns>
         [PublicAPI]
         internal static bool ContainsI(this string[] array, string str) => array.Contains(str, OrdinalIgnoreCase);
+
+        [PublicAPI]
+        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, OrdinalIgnoreCase);
 
         [PublicAPI]
         internal static bool ContainsRemoveFirstHit(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
@@ -130,18 +96,6 @@ namespace AngelLoader
             return false;
         }
 
-        internal static bool PathContainsI(this List<string> value, string substring)
-        {
-            for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI(substring)) return true;
-            return false;
-        }
-
-        internal static bool PathContainsI(this string[] value, string substring)
-        {
-            for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI(substring)) return true;
-            return false;
-        }
-
         #endregion
 
         #region Equals
@@ -155,43 +109,6 @@ namespace AngelLoader
         internal static bool EqualsI(this string first, string second) => string.Equals(first, second, OrdinalIgnoreCase);
 
         internal static bool EqualsTrue(this string value) => string.Equals(value, bool.TrueString, OrdinalIgnoreCase);
-
-        #endregion
-
-        #region Filename extension checks
-
-        internal static bool IsValidReadme(this string value)
-        {
-            // Well, this is embarrassing... Apparently EndsWithI is faster than the baked-in ones.
-            // Dunno how that could be the case, but whatever...
-            return value.EndsWithI(".txt") ||
-                   value.EndsWithI(".rtf") ||
-                   value.EndsWithI(".wri") ||
-                   value.EndsWithI(".glml") ||
-                   value.EndsWithI(".html") ||
-                   value.EndsWithI(".htm");
-        }
-
-        #region Baked-in extension checks
-        // TODO: Just passthroughs now because EndsWithI turned out to be faster(?!)
-
-        internal static bool ExtIsTxt(this string value) => value.EndsWithI(".txt");
-
-        internal static bool ExtIsRtf(this string value) => value.EndsWithI(".rtf");
-
-        internal static bool ExtIsWri(this string value) => value.EndsWithI(".wri");
-
-        internal static bool ExtIsHtml(this string value) => value.EndsWithI(".html") || value.EndsWithI(".htm");
-
-        internal static bool ExtIsGlml(this string value) => value.EndsWithI(".glml");
-
-        internal static bool ExtIsArchive(this string value) => value.EndsWithI(".zip") || value.EndsWithI(".7z");
-
-        internal static bool ExtIsZip(this string value) => value.EndsWithI(".zip");
-
-        internal static bool ExtIs7z(this string value) => value.EndsWithI(".7z");
-
-        #endregion
 
         #endregion
 
@@ -280,206 +197,6 @@ namespace AngelLoader
         }
 
         #endregion
-
-        #endregion
-
-        #region Dirsep-agnostic
-
-        // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
-        // sep chars are in no way guaranteed to match those of the OS.
-        // Not like any OS is likely to use anything other than '/' or '\' anyway.
-
-        // We hope not to have to call this too often, but it's here as a fallback.
-        private static string CanonicalizePath(string value) => value.Replace('/', '\\');
-
-        /// <summary>
-        /// Returns true if <paramref name="value"/> contains either directory separator character.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static bool ContainsDirSep(this string value)
-        {
-            for (int i = 0; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="start"></param>
-        /// <returns></returns>
-        internal static int CountDirSeps(this string value, int start = 0)
-        {
-            int count = 0;
-            for (int i = start; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') count++;
-            return count;
-        }
-
-        internal static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
-        {
-            int foundCount = 0;
-            for (int i = start; i < value.Length; i++)
-            {
-                if (value[i] == '/' || value[i] == '\\') foundCount++;
-                if (foundCount == count) return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Returns the last index of either directory separator character in <paramref name="value"/>.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static int LastIndexOfDirSep(this string value)
-        {
-            int i1 = value.LastIndexOf('/');
-            int i2 = value.LastIndexOf('\\');
-
-            if (i1 == -1 && i2 == -1) return -1;
-
-            return Math.Max(i1, i2);
-        }
-
-        internal static bool PathSequenceEqualI(this IList<string> first, IList<string> second)
-        {
-            int firstCount;
-            if ((firstCount = first.Count) != second.Count) return false;
-
-            for (int i = 0; i < firstCount; i++)
-            {
-                if (!first[i].PathEqualsI(second[i])) return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Path equality check ignoring case and directory separator differences.
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        internal static bool PathEqualsI(this string first, string second)
-        {
-            if (first == second) return true;
-
-            int firstLen = first.Length;
-
-            if (firstLen != second.Length) return false;
-
-            for (int i = 0; i < firstLen; i++)
-            {
-                char fc = first[i];
-                char sc = second[i];
-
-                if (fc > 127 || sc > 127)
-                {
-                    // Non-ASCII slow path
-                    return first.Equals(second, OrdinalIgnoreCase) ||
-                           CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
-                }
-
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                    (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                    (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Path starts-with check ignoring case and directory separator differences.
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        internal static bool PathStartsWithI(this string first, string second)
-        {
-            if (first == null || first.Length < second.Length) return false;
-
-            for (int i = 0; i < second.Length; i++)
-            {
-                char fc = first[i];
-                char sc = second[i];
-
-                if (fc > 127 || sc > 127)
-                {
-                    // Non-ASCII slow path
-                    return first.StartsWith(second, OrdinalIgnoreCase) ||
-                           CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
-                }
-
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                     (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Path ends-with check ignoring case and directory separator differences.
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns></returns>
-        internal static bool PathEndsWithI(this string first, string second)
-        {
-            if (first == null || first.Length < second.Length) return false;
-
-            for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
-            {
-                char fc = first[fi];
-                char sc = second[si];
-
-                if (fc > 127 || sc > 127)
-                {
-                    // Non-ASCII slow path
-                    return first.EndsWith(second, OrdinalIgnoreCase) ||
-                           CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
-                }
-
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                     (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
-        internal static bool IsDirSep(this char character) => character == '/' || character == '\\';
-
-        internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
-
-        internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
-
-        #endregion
-
-        #region Modifications
 
         #region Clear and add
 
@@ -572,49 +289,6 @@ namespace AngelLoader
 
         #endregion
 
-        /// <summary>
-        /// Just removes the extension from a filename, without the rather large overhead of
-        /// Path.GetFileNameWithoutExtension().
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        internal static string RemoveExtension(this string fileName)
-        {
-            int i;
-            return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
-        }
-
-        #region Get file / dir names
-
-        /// <summary>
-        /// Strips the leading path from the filename, taking into account both / and \ chars.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        internal static string GetFileNameFast(this string path)
-        {
-            int i1 = path.LastIndexOf('\\');
-            int i2 = path.LastIndexOf('/');
-
-            if (i1 == -1 && i2 == -1) return path;
-
-            return path.Substring(Math.Max(i1, i2) + 1);
-        }
-
-        internal static string GetDirNameFast(this string path)
-        {
-            path = path.TrimEnd(CA_BS_FS);
-
-            int i1 = path.LastIndexOf('\\');
-            int i2 = path.LastIndexOf('/');
-
-            if (i1 == -1 && i2 == -1) return path;
-
-            return path.Substring(Math.Max(i1, i2) + 1);
-        }
-
-        #endregion
-
         internal static string ToSingleLineComment(this string value, int maxLength)
         {
             if (value.IsEmpty()) return "";
@@ -653,179 +327,6 @@ namespace AngelLoader
             foreach (char c in value) ret += '\\' + c.ToString();
 
             return ret;
-        }
-
-        #endregion
-
-        #region Forward/backslash conversion
-
-        internal static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
-
-        internal static string ToBackSlashes(this string value) => value.Replace('/', '\\');
-
-        internal static string ToSystemDirSeps(this string value)
-        {
-            return value.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Control hacks
-
-        #region Suspend/resume drawing
-
-        internal static void SuspendDrawing(this Control control)
-        {
-            if (!control.IsHandleCreated || !control.Visible) return;
-            SendMessage(control.Handle, WM_SETREDRAW, false, 0);
-        }
-
-        internal static void ResumeDrawing(this Control control)
-        {
-            if (!control.IsHandleCreated || !control.Visible) return;
-            SendMessage(control.Handle, WM_SETREDRAW, true, 0);
-            control.Refresh();
-        }
-
-        #endregion
-
-        // NOTE: Blocking a window causes ding sounds if you interact with it (if you have Windows sounds enabled...)
-        // Currently using a transparent panel hack, along with suppressing keys/mouse.
-        // Reason we need the transparent panel hack is because mouse doesn't get suppressed enough when it comes
-        // to the RichTextBox (you can still scroll, ugh). Also mouse movement still makes highlights happen and
-        // stuff. Fine, but I want to make it clear the window is not responding to anything.
-        // If I ever put the RichTextBox in a separate app domain or whatever, the new method might not work.
-        // This method works in a pinch, dings notwithstanding.
-        //internal static void BlockWindow(this Control control, bool block)
-        //{
-        //    if (!control.IsHandleCreated) return;
-        //    EnableWindow(control.Handle, bEnable: !block);
-        //}
-
-        /// <summary>
-        /// Sets the progress bar's value instantly. Avoids the la-dee-dah catch-up-when-I-feel-like-it nature of
-        /// the progress bar that makes it look annoying and unprofessional.
-        /// </summary>
-        /// <param name="pb"></param>
-        /// <param name="value"></param>
-        public static void SetValueInstant(this ProgressBar pb, int value)
-        {
-            if (value == pb.Maximum)
-            {
-                pb.Value = pb.Maximum;
-            }
-            else
-            {
-                pb.Value = (value + 1).Clamp(pb.Minimum, pb.Maximum);
-                pb.Value = value.Clamp(pb.Minimum, pb.Maximum);
-            }
-        }
-
-        #region Centering
-
-        [PublicAPI]
-        internal static void CenterH(this Control control, Control parent)
-        {
-            control.Location = new Point((parent.Width / 2) - (control.Width / 2), control.Location.Y);
-        }
-
-        [PublicAPI]
-        internal static void CenterV(this Control control, Control parent)
-        {
-            control.Location = new Point(control.Location.X, (parent.Height / 2) - (control.Height / 2));
-        }
-
-        [PublicAPI]
-        internal static void CenterHV(this Control control, Control parent, bool clientSize = false)
-        {
-            int pWidth = clientSize ? parent.ClientSize.Width : parent.Width;
-            int pHeight = clientSize ? parent.ClientSize.Height : parent.Height;
-            control.Location = new Point((pWidth / 2) - (control.Width / 2), (pHeight / 2) - (control.Height / 2));
-        }
-
-        #endregion
-
-        #region Autosizing
-
-        // PERF_TODO: These are relatively expensive operations (10ms to make 3 calls from SettingsForm)
-        // See if we can manually calculate some or all of this and end up with the same result as if we let the
-        // layout do the work as we do now.
-
-        /// <summary>
-        /// Sets a <see cref="Button"/>'s text, and autosizes it horizontally to accomodate it.
-        /// </summary>
-        /// <param name="button"></param>
-        /// <param name="text"></param>
-        /// <param name="minWidth"></param>
-        /// <param name="preserveHeight"></param>
-        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, bool preserveHeight = false)
-        {
-            // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.
-            button.Text = "";
-            button.Width = 2;
-            if (!preserveHeight) button.Height = 2;
-            button.Text = text;
-
-            if (minWidth > -1 && button.Width < minWidth) button.Width = minWidth;
-        }
-
-        /// <summary>
-        /// Sets a <see cref="Button"/>'s text, and autosizes and repositions the <see cref="Button"/> and a
-        /// <see cref="TextBox"/> horizontally together to accommodate it.
-        /// </summary>
-        /// <param name="button"></param>
-        /// <param name="textBox"></param>
-        /// <param name="text"></param>
-        /// <param name="minWidth"></param>
-        internal static void SetTextAutoSize(this Button button, TextBox textBox, string text, int minWidth = -1)
-        {
-            // Quick fix for this not working if layout is suspended.
-            // This will then cause any other controls within the same parent to do their full layout.
-            // If this becomes a problem, come up with a better solution here.
-            button.Parent.ResumeLayout();
-
-            AnchorStyles oldAnchor = button.Anchor;
-            button.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-
-            int oldWidth = button.Width;
-
-            button.SetTextAutoSize(text, minWidth);
-
-            int diff =
-                button.Width > oldWidth ? -(button.Width - oldWidth) :
-                button.Width < oldWidth ? oldWidth - button.Width : 0;
-
-            button.Left += diff;
-            // For some reason the diff doesn't work when scaling is > 100% so, yeah
-            textBox.Width = button.Left > textBox.Left ? (button.Left - textBox.Left) - 1 : 0;
-
-            button.Anchor = oldAnchor;
-        }
-
-        #endregion
-
-        internal static void RemoveAndSelectNearest(this ListBox listBox)
-        {
-            if (listBox.SelectedIndex == -1) return;
-
-            int oldSelectedIndex = listBox.SelectedIndex;
-
-            listBox.Items.RemoveAt(listBox.SelectedIndex);
-
-            if (oldSelectedIndex < listBox.Items.Count && listBox.Items.Count > 1)
-            {
-                listBox.SelectedIndex = oldSelectedIndex;
-            }
-            else if (listBox.Items.Count > 1)
-            {
-                listBox.SelectedIndex = oldSelectedIndex - 1;
-            }
-            else if (listBox.Items.Count == 1)
-            {
-                listBox.SelectedIndex = 0;
-            }
         }
 
         #endregion
