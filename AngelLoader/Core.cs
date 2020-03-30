@@ -79,11 +79,11 @@ namespace AngelLoader
                         bool[] gameExeExists = new bool[SupportedGameCount];
                         for (int i = 0; i < SupportedGameCount; i++)
                         {
+                            // Existence checks on startup are merely a perf optimization: values start blank so
+                            // just don't set them if we don't have a game exe
                             string gameExe = Config.GetGameExe((GameIndex)i);
                             gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                            bool exe_Specified = false;
-                            if (gameExeExists[i]) exe_Specified = SetGameData((GameIndex)i, storeConfigInfo: true);
-                            if ((GameIndex)i == Thief2) Config.T2MPDetected = exe_Specified && !GetT2MultiplayerExe().IsEmpty();
+                            if (gameExeExists[i]) SetGameData((GameIndex)i, storeConfigInfo: true);
                         }
 
                         Error error =
@@ -324,8 +324,8 @@ namespace AngelLoader
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                bool exe_Specified = SetGameData((GameIndex)i, storeConfigInfo: startup || individualGamePathsChanged[i]);
-                if ((GameIndex)i == Thief2) Config.T2MPDetected = exe_Specified && !GetT2MultiplayerExe().IsEmpty();
+                // Set it regardless of game existing, because we want to blank the data
+                SetGameData((GameIndex)i, storeConfigInfo: startup || individualGamePathsChanged[i]);
             }
 
             #endregion
@@ -492,7 +492,7 @@ namespace AngelLoader
             #endregion
         }
 
-        private static bool SetGameData(GameIndex game, bool storeConfigInfo)
+        private static void SetGameData(GameIndex game, bool storeConfigInfo)
         {
             string gameExe = Config.GetGameExe(game);
             bool gameExeSpecified = !gameExe.IsWhiteSpace();
@@ -539,6 +539,8 @@ namespace AngelLoader
                         Config.SetStartupAlwaysStartSelector(game, false);
                     }
                 }
+
+                if (game == Thief2) Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe().IsEmpty();
             }
             else
             {
@@ -576,8 +578,6 @@ namespace AngelLoader
                     Config.T3UseCentralSaves = false;
                 }
             }
-
-            return gameExeSpecified;
         }
 
         // Future use

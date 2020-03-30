@@ -21,7 +21,7 @@ namespace AngelLoader.CustomControls
             // side if you don't do this.
             // Take margin into account to allow drawing past the left side of the first item or the right of the
             // last
-            var rect1 = new Rectangle(0, 0, Items[0].Bounds.X-Items[0].Margin.Left, Height);
+            var rect1 = new Rectangle(0, 0, Items[0].Bounds.X - Items[0].Margin.Left, Height);
             var last = Items[Items.Count - 1];
             int rect2Start = last.Bounds.X + last.Bounds.Width + last.Margin.Right;
             var rect2 = new Rectangle(rect2Start - PaddingDrawNudge, 0, (Width - rect2Start) + PaddingDrawNudge, Height);
