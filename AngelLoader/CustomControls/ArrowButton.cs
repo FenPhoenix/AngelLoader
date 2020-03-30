@@ -35,7 +35,7 @@ namespace AngelLoader.CustomControls
                     arrowX = (ClientRectangle.Width / 2) + 2;
                     arrowY = (ClientRectangle.Height / 2) - 4;
 
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY);
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY - 1);
                     (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX, arrowY + 7);
                     (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX - 4, arrowY + 3);
 
@@ -44,7 +44,7 @@ namespace AngelLoader.CustomControls
                     arrowX = (ClientRectangle.Width / 2) - 2;
                     arrowY = (ClientRectangle.Height / 2) - 4;
 
-                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY);
+                    (_arrowPolygon[0].X, _arrowPolygon[0].Y) = (arrowX, arrowY - 1);
                     (_arrowPolygon[1].X, _arrowPolygon[1].Y) = (arrowX, arrowY + 7);
                     (_arrowPolygon[2].X, _arrowPolygon[2].Y) = (arrowX + 4, arrowY + 3);
 
