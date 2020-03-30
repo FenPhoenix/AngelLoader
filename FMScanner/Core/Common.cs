@@ -34,6 +34,9 @@ namespace FMScanner
 
     internal static class FMDirs
     {
+        // PERF: const string concatenation is free (const concats are done at compile time), so do it to lessen
+        // the chance of error.
+
         internal const string Books = "books";
         internal const string Fam = "fam";
         internal const string Intrface = "intrface";
@@ -48,28 +51,28 @@ namespace FMScanner
         internal const string Strings = "strings";
         internal const string Subtitles = "subtitles";
 
+        internal const string BooksS = Books + "/";
+        internal const string FamS = Fam + "/";
+        internal const string IntrfaceS = Intrface + "/";
+        internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
+        internal const string MeshS = Mesh + "/";
+        internal const string MotionsS = Motions + "/";
+        internal const string MoviesS = Movies + "/";
+        internal const string CutscenesS = Cutscenes + "/"; // SS2 only
+        internal const string ObjS = Obj + "/";
+        internal const string ScriptsS = Scripts + "/";
+        internal const string SndS = Snd + "/";
+        internal const string Snd2S = Snd2 + "/"; // SS2 only
+        internal const string StringsS = Strings + "/";
+        internal const string SubtitlesS = Subtitles + "/";
+
         internal const string T3FMExtras1 = "Fan Mission Extras";
         internal const string T3FMExtras2 = "FanMissionExtras";
+        internal const string T3FMExtras1S = T3FMExtras1 + "/";
+        internal const string T3FMExtras2S = T3FMExtras2 + "/";
 
         internal const string T3DetectS = "Content/T3/Maps/";
         internal const int T3DetectSLen = 16; // workaround for .NET 4.7.2 not inlining const string lengths
-        internal const string T3FMExtras1S = "Fan Mission Extras/";
-        internal const string T3FMExtras2S = "FanMissionExtras/";
-
-        internal const string BooksS = "books/";
-        internal const string FamS = "fam/";
-        internal const string IntrfaceS = "intrface/";
-        internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
-        internal const string MeshS = "mesh/";
-        internal const string MotionsS = "motions/";
-        internal const string MoviesS = "movies/";
-        internal const string CutscenesS = "cutscenes/"; // SS2 only
-        internal const string ObjS = "obj/";
-        internal const string ScriptsS = "scripts/";
-        internal const string SndS = "snd/";
-        internal const string Snd2S = "snd2/"; // SS2 only
-        internal const string StringsS = "strings/";
-        internal const string SubtitlesS = "subtitles/";
     }
 
     internal static class FMFiles
