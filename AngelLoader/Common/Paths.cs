@@ -152,7 +152,9 @@ namespace AngelLoader
         internal static readonly string FFprobeExe = Path.Combine(Startup, "ffmpeg", "ffprobe.exe");
 
         internal const string T3ReadmeDir1 = "Fan Mission Extras";
+        internal const string T3ReadmeDir1S = T3ReadmeDir1 + "/";
         internal const string T3ReadmeDir2 = "FanMissionExtras";
+        internal const string T3ReadmeDir2S = T3ReadmeDir2 + "/";
 
         #region Methods
 
@@ -163,7 +165,9 @@ namespace AngelLoader
             // Make sure we never delete any paths that are not safely tucked in our temp folder
             string baseTemp = _baseTemp.TrimEnd(Misc.CA_BS_FS_Space);
 
-            if (!path.StartsWithI(baseTemp + "\\") && !path.StartsWithI(baseTemp + "/")) return;
+            // @DIRSEP: getting rid of this concat is more trouble than it's worth
+            // This method is called rarely and only once in a row
+            if (!path.PathStartsWithI(baseTemp + "\\")) return;
 
             #endregion
 

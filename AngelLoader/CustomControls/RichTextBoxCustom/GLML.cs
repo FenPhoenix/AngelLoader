@@ -233,7 +233,7 @@ namespace AngelLoader.CustomControls
                                 {
                                     sb.Append(@"\u");
                                     sb.Append(result.ToString());
-                                    sb.Append("?");
+                                    sb.Append('?');
                                 }
                                 else
                                 {
@@ -265,7 +265,7 @@ namespace AngelLoader.CustomControls
                                 }
                                 else
                                 {
-                                    sb.Append("&");
+                                    sb.Append('&');
                                     sb.Append(subSB);
                                     sb.Append(';');
                                 }
@@ -296,7 +296,7 @@ namespace AngelLoader.CustomControls
                 {
                     sb.Append(@"\u");
                     sb.Append(((int)c).ToString());
-                    sb.Append("?");
+                    sb.Append('?');
                 }
                 else
                 {

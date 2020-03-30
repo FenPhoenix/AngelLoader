@@ -66,7 +66,7 @@ namespace AngelLoader
         private static void ClearCacheDir(FanMission fm)
         {
             string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
-            if (!fmCachePath.TrimEnd(CA_Backslash).EqualsI(Paths.FMsCache.TrimEnd(CA_Backslash)) && Directory.Exists(fmCachePath))
+            if (!fmCachePath.TrimEnd(CA_Backslash).PathEqualsI(Paths.FMsCache.TrimEnd(CA_Backslash)) && Directory.Exists(fmCachePath))
             {
                 try
                 {
@@ -324,15 +324,13 @@ namespace AngelLoader
                     if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
                     string? t3ReadmeDir = null;
-                    if (fn.CountChars('/') + fn.CountChars('\\') == 1)
+                    if (fn.CountDirSeps() == 1)
                     {
-                        if (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
-                            fn.StartsWithI(Paths.T3ReadmeDir1 + '\\'))
+                        if (fn.PathStartsWithI(Paths.T3ReadmeDir1S))
                         {
                             t3ReadmeDir = Paths.T3ReadmeDir1;
                         }
-                        else if (fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
-                                 fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))
+                        else if (fn.PathStartsWithI(Paths.T3ReadmeDir2S))
                         {
                             t3ReadmeDir = Paths.T3ReadmeDir2;
                         }
@@ -341,7 +339,7 @@ namespace AngelLoader
                             continue;
                         }
                     }
-                    else if (fn.Contains('/') || fn.Contains('\\'))
+                    else if (fn.ContainsDirSep())
                     {
                         continue;
                     }
@@ -386,12 +384,10 @@ namespace AngelLoader
                         var entry = extractor.ArchiveFileData[i];
                         string fn = entry.FileName;
                         if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                            ((fn.CountChars('/') + fn.CountChars('\\') == 1 &&
-                              (fn.StartsWithI(Paths.T3ReadmeDir1 + '/') ||
-                               fn.StartsWithI(Paths.T3ReadmeDir1 + '\\') ||
-                               fn.StartsWithI(Paths.T3ReadmeDir2 + '/') ||
-                               fn.StartsWithI(Paths.T3ReadmeDir2 + '\\'))) ||
-                             (!fn.Contains('/') && !fn.Contains('\\'))))
+                            ((fn.CountDirSeps() == 1 &&
+                              (fn.PathStartsWithI(Paths.T3ReadmeDir1S) ||
+                               fn.PathStartsWithI(Paths.T3ReadmeDir2S))) ||
+                             !fn.ContainsDirSep()))
                         {
                             indexesList.Add(i);
                             readmes.Add(entry.FileName);

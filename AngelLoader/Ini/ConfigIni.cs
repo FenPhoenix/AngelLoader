@@ -540,7 +540,7 @@ namespace AngelLoader
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FMArchivePath="))
                 {
-                    config.FMArchivePaths.Add(val.ToSystemDirSeps().Trim());
+                    config.FMArchivePaths.Add(val.Trim());
                 }
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.FMArchivePathsIncludeSubfolders) + "="))
                 {

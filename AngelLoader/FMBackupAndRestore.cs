@@ -39,19 +39,28 @@ namespace AngelLoader
 
         private const string _startMisSav = "startmis.sav";
 
-        private const string T3SavesDir = "SaveGames";
-        private const string DarkSavesDir = "saves";
-        private const string SS2CurrentDir = "current";
-        // For multiplayer (currently T2-only)
-        private const string DarkNetSavesDir = "netsaves";
-        private const string ScreensDir = "screenshots";
-        private const string RemoveFileEq = "RemoveFile=";
-        private const string RemoveDirEq = "RemoveDir=";
+        // Note: Either dirsep is okay because our comparisons are dirsep-agnostic in here
 
-        private static readonly Regex SS2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}/",
+        private const string _t3SavesDir = "SaveGames";
+        private const string _t3SavesDirS = _t3SavesDir + "/";
+        private const string _darkSavesDir = "saves";
+        private const string _darkSavesDirS = _darkSavesDir + "/";
+        private const string _ss2CurrentDir = "current";
+        private const string _ss2CurrentDirS = _ss2CurrentDir + "/";
+        // For multiplayer (currently T2-only)
+        private const string _darkNetSavesDir = "netsaves";
+        private const string _darkNetSavesDirS = _darkNetSavesDir + "/";
+        private const string _screensDir = "screenshots";
+        private const string _screensDirS = _screensDir + "/";
+
+        private const string _removeFileEq = "RemoveFile=";
+        private const string _removeDirEq = "RemoveDir=";
+
+        // Important: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
+        private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}[/\\]",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private static readonly Regex SS2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0123456789]{1,2}[/\\]?$",
+        private static readonly Regex _ss2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0123456789]{1,2}[/\\]?$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         #endregion
@@ -68,21 +77,17 @@ namespace AngelLoader
                 return;
             }
 
-            // IMPORTANT!
-            // This MUST be converted to all system dir separators! Otherwise the diff detector breaks catastrophically!
-            fmInstalledPath = fmInstalledPath.ToSystemDirSeps();
-
             await Task.Run(() =>
             {
                 if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
-                string savesDir = fm.Game == Game.Thief3 ? T3SavesDir : DarkSavesDir;
+                string savesDir = fm.Game == Game.Thief3 ? _t3SavesDir : _darkSavesDir;
                 string savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
-                string netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, DarkNetSavesDir);
+                string netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _darkNetSavesDir);
                 // Screenshots directory name is the same for T1/T2/T3/SS2
-                string screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, ScreensDir);
-                string ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, SS2CurrentDir);
+                string screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _screensDir);
+                string ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _ss2CurrentDir);
 
                 string bakFile = Path.Combine(Config.FMsBackupPath,
                     (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
@@ -113,7 +118,7 @@ namespace AngelLoader
 
                         foreach (string dir in ss2SaveDirs)
                         {
-                            if (SS2SaveDirsOnDiskRegex.IsMatch(dir))
+                            if (_ss2SaveDirsOnDiskRegex.IsMatch(dir))
                             {
                                 savesAndScreensFiles.AddRange(Directory.GetFiles(dir, "*", SearchOption.AllDirectories));
                             }
@@ -127,7 +132,7 @@ namespace AngelLoader
 
                     foreach (string f in savesAndScreensFiles)
                     {
-                        string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
+                        string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
                         AddEntry(archive, f, fn);
                     }
 
@@ -155,10 +160,10 @@ namespace AngelLoader
 
                     foreach (string f in installedFMFiles)
                     {
-                        string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
+                        string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
                         if (IsSaveOrScreenshot(fn, fm.Game) ||
-                            (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
-                            (changedList.ContainsI(fn) || addedList.ContainsI(fn))))
+                            (!fn.PathEqualsI(Paths.FMSelInf) && !fn.PathEqualsI(_startMisSav) &&
+                            (changedList.PathContainsI(fn) || addedList.PathContainsI(fn))))
                         {
                             AddEntry(archive, f, fn);
                         }
@@ -168,9 +173,10 @@ namespace AngelLoader
                     for (int i = 0; i < fullList.Count; i++)
                     {
                         string f = fullList[i];
-                        if (!installedFMFiles.ContainsI(Path.Combine(fmInstalledPath, f).ToSystemDirSeps()))
+                        if (!installedFMFiles.PathContainsI(Path.Combine(fmInstalledPath, f)))
                         {
-                            fmSelInfString += RemoveFileEq + f.ToSystemDirSeps() + "\r\n";
+                            // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
+                            fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
                         }
                     }
 
@@ -221,7 +227,7 @@ namespace AngelLoader
                         // Account for the fact that DarkLoader trims archive names for save backup zips
                         // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
                         // way, so whatever.
-                        if (!an.IsEmpty() && an.EqualsI(fm.Archive.RemoveExtension().Trim()))
+                        if (!an.IsEmpty() && an.PathEqualsI(fm.Archive.RemoveExtension().Trim()))
                         {
                             fileToUse = (f, true);
                             break;
@@ -278,7 +284,7 @@ namespace AngelLoader
                 var dirExcludes = new List<string>();
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
-                string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir).ToSystemDirSeps();
+                string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
                 using (var archive = new ZipArchive(new FileStream(fileToUse.Name, FileMode.Open, FileAccess.Read),
                     ZipArchiveMode.Read, leaveOpen: false))
@@ -289,37 +295,37 @@ namespace AngelLoader
                         for (int i = 0; i < filesCount; i++)
                         {
                             var entry = archive.Entries[i];
-                            string fn = entry.FullName.ToForwardSlashes();
-                            if (!fn.Contains('/'))
+                            string fn = entry.FullName;
+                            if (!fn.ContainsDirSep())
                             {
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, DarkSavesDir));
-                                entry.ExtractToFile(Path.Combine(fmInstalledPath, DarkSavesDir, fn), overwrite: true);
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, _darkSavesDir));
+                                entry.ExtractToFile(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true);
                             }
-                            else if (fm.Game == Game.SS2 && (SS2SaveDirsInZipRegex.IsMatch(fn) || fn.StartsWithI(SS2CurrentDir + "/")))
+                            else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                             {
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOf('/'))));
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
                                 entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                             }
                         }
                     }
                     else
                     {
-                        string savesDir = fmIsT3 ? T3SavesDir : DarkSavesDir;
+                        string savesDirS = fmIsT3 ? _t3SavesDirS : _darkSavesDirS;
                         if (restoreSavesAndScreensOnly)
                         {
                             for (int i = 0; i < filesCount; i++)
                             {
                                 var entry = archive.Entries[i];
-                                string fn = entry.FullName.ToForwardSlashes();
+                                string fn = entry.FullName;
 
-                                if (fn.Length > 0 && fn[fn.Length - 1] != '/' &&
-                                    (fn.StartsWithI(savesDir + "/") ||
-                                     fn.StartsWithI(DarkNetSavesDir + "/") ||
-                                     fn.StartsWithI(ScreensDir + "/") ||
+                                if (fn.Length > 0 && !fn[fn.Length - 1].IsDirSep() &&
+                                    (fn.PathStartsWithI(savesDirS) ||
+                                     fn.PathStartsWithI(_darkNetSavesDirS) ||
+                                     fn.PathStartsWithI(_screensDirS) ||
                                      (fm.Game == Game.SS2 &&
-                                     (SS2SaveDirsInZipRegex.IsMatch(fn) || fn.StartsWithI(SS2CurrentDir + "/")))))
+                                     (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                                 {
-                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOf('/'))));
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
                                     entry.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
                                 }
                             }
@@ -338,29 +344,32 @@ namespace AngelLoader
                                 string line;
                                 while ((line = sr.ReadLine()) != null)
                                 {
-                                    bool startsWithRemoveFile = line.StartsWithFast_NoNullChecks(RemoveFileEq);
+                                    bool startsWithRemoveFile = line.StartsWithFast_NoNullChecks(_removeFileEq);
                                     bool startsWithRemoveDir = false;
                                     if (!startsWithRemoveFile)
                                     {
-                                        startsWithRemoveDir = line.StartsWithFast_NoNullChecks(RemoveDirEq);
+                                        startsWithRemoveDir = line.StartsWithFast_NoNullChecks(_removeDirEq);
                                     }
 
                                     if (!startsWithRemoveFile && !startsWithRemoveDir) continue;
 
-                                    string val = line.Substring(startsWithRemoveFile ? 11 : 10).ToForwardSlashes().Trim();
-                                    if (!val.StartsWithI(savesDir + "/") &&
-                                        !val.StartsWithI(DarkNetSavesDir + "/") &&
-                                        !val.StartsWithI(ScreensDir + "/") &&
+                                    string val = line.Substring(startsWithRemoveFile ? 11 : 10).Trim();
+                                    if (!val.PathStartsWithI(savesDirS) &&
+                                        !val.PathStartsWithI(_darkNetSavesDirS) &&
+                                        !val.PathStartsWithI(_screensDirS) &&
                                         (fm.Game != Game.SS2 ||
-                                        (!SS2SaveDirsInZipRegex.IsMatch(val) && !val.StartsWithI(SS2CurrentDir + "/"))) &&
-                                        !val.EqualsI(Paths.FMSelInf) &&
-                                        !val.EqualsI(_startMisSav) &&
+                                        (!_ss2SaveDirsInZipRegex.IsMatch(val) && !val.PathStartsWithI(_ss2CurrentDirS))) &&
+                                        !val.PathEqualsI(Paths.FMSelInf) &&
+                                        !val.PathEqualsI(_startMisSav) &&
                                         // Reject malformed and/or maliciously formed paths - we're going to
                                         // delete these files, and we don't want to delete anything outside
                                         // the FM folder
-                                        !val.StartsWith("/") &&
+                                        !val.StartsWithDirSep() &&
                                         !val.Contains(':') &&
-                                        !val.Contains("./"))
+                                        // Critical: Check both / and \ here because we have no dirsep-agnostic
+                                        // string.Contains()
+                                        !val.Contains("./") &&
+                                        !val.Contains(".\\"))
                                     {
                                         if (startsWithRemoveFile)
                                         {
@@ -377,19 +386,19 @@ namespace AngelLoader
                             for (int i = 0; i < filesCount; i++)
                             {
                                 var f = archive.Entries[i];
-                                string fn = f.FullName.ToForwardSlashes();
+                                string fn = f.FullName;
 
-                                if (fn.EqualsI(Paths.FMSelInf) ||
-                                    fn.EqualsI(_startMisSav) ||
-                                    (fn.Length > 0 && fn[fn.Length - 1] == '/') ||
-                                    fileExcludes.Contains(fn))
+                                if (fn.PathEqualsI(Paths.FMSelInf) ||
+                                    fn.PathEqualsI(_startMisSav) ||
+                                    (fn.Length > 0 && fn[fn.Length - 1].IsDirSep()) ||
+                                    fileExcludes.PathContainsI(fn))
                                 {
                                     continue;
                                 }
 
-                                if (fn.Contains('/'))
+                                if (fn.ContainsDirSep())
                                 {
-                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOf('/'))));
+                                    Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.LastIndexOfDirSep())));
                                 }
 
                                 f.ExtractToFile(Path.Combine(fmInstalledPath, fn), overwrite: true);
@@ -402,8 +411,7 @@ namespace AngelLoader
                 {
                     foreach (string f in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
-                        if (fileExcludes.ContainsI(f.Substring(fmInstalledPath.Length)
-                            .ToForwardSlashes().Trim(CA_ForwardSlash)))
+                        if (fileExcludes.PathContainsI(f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
                         {
                             // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
                             // If we have crf files replacing dirs, the empty dir will override the crf. We want
@@ -425,7 +433,7 @@ namespace AngelLoader
                             for (int i = 0; i < crfs.Length; i++)
                             {
                                 string ft = crfs[i].GetFileNameFast().RemoveExtension();
-                                if (ft.EqualsI(dt))
+                                if (ft.PathEqualsI(dt))
                                 {
                                     dirRemoveList.Add(d);
                                 }
@@ -444,8 +452,7 @@ namespace AngelLoader
                     // Proper method
                     foreach (string d in Directory.GetDirectories(fmInstalledPath, "*", SearchOption.AllDirectories))
                     {
-                        if (dirExcludes.ContainsI(d.Substring(fmInstalledPath.Length)
-                            .ToForwardSlashes().Trim(CA_ForwardSlash)))
+                        if (dirExcludes.PathContainsI(d.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
                         {
                             Directory.Delete(d, recursive: true);
                         }
@@ -466,7 +473,8 @@ namespace AngelLoader
         private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName,
             CompressionLevel compressionLevel = CompressionLevel.Fastest)
         {
-            var entry = archive.CreateEntry(entryFileName, compressionLevel);
+            // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
+            var entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), compressionLevel);
             entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
             using var fs = new FileStream(fileNameOnDisk, FileMode.Open, FileAccess.Read);
             using var eo = entry.Open();
@@ -475,11 +483,11 @@ namespace AngelLoader
 
         private static bool IsSaveOrScreenshot(string path, Game game)
         {
-            return path.StartsWithI(ScreensDir + "/") ||
-                   (game == Game.Thief3 && path.StartsWithI(T3SavesDir + "/")) ||
+            return path.PathStartsWithI(_screensDirS) ||
+                   (game == Game.Thief3 && path.PathStartsWithI(_t3SavesDirS)) ||
                    (game == Game.SS2 &&
-                    (SS2SaveDirsInZipRegex.IsMatch(path) || path.StartsWithI(SS2CurrentDir + "/"))) ||
-                   (game != Game.Thief3 && (path.StartsWithI(DarkSavesDir + "/") || path.StartsWithI(DarkNetSavesDir + "/")));
+                    (_ss2SaveDirsInZipRegex.IsMatch(path) || path.PathStartsWithI(_ss2CurrentDirS))) ||
+                   (game != Game.Thief3 && (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
         }
 
         private static (List<string> ChangedList, List<string> AddedList, List<string> FullList)
@@ -498,11 +506,11 @@ namespace AngelLoader
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
                     var entry = archive.Entries[i];
-                    string efn = entry.FullName.ToForwardSlashes();
+                    string efn = entry.FullName;
 
-                    if (efn.EqualsI(Paths.FMSelInf) ||
-                        efn.EqualsI(_startMisSav) ||
-                        (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
+                    if (efn.PathEqualsI(Paths.FMSelInf) ||
+                        efn.PathEqualsI(_startMisSav) ||
+                        (efn.Length > 0 && efn[efn.Length - 1].IsDirSep()) ||
                         IsSaveOrScreenshot(efn, game))
                     {
                         continue;
@@ -511,7 +519,7 @@ namespace AngelLoader
                     fullList.Add(entry.FullName);
 
                     string fileInInstalledDir = Path.Combine(fmInstalledPath, entry.FullName);
-                    if (installedFMFiles.ContainsI(fileInInstalledDir.ToSystemDirSeps()))
+                    if (installedFMFiles.PathContainsI(fileInInstalledDir))
                     {
                         try
                         {
@@ -547,10 +555,10 @@ namespace AngelLoader
                 }
                 foreach (string f in installedFMFiles)
                 {
-                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
+                    string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
 
-                    if (fn.EqualsI(Paths.FMSelInf) ||
-                        fn.EqualsI(_startMisSav) ||
+                    if (fn.PathEqualsI(Paths.FMSelInf) ||
+                        fn.PathEqualsI(_startMisSav) ||
                         IsSaveOrScreenshot(fn, game))
                     {
                         continue;
@@ -559,7 +567,7 @@ namespace AngelLoader
                     bool found = false;
                     for (int i = 0; i < archive.Entries.Count; i++)
                     {
-                        if (archive.Entries[i].FullName.EqualsI(fn))
+                        if (archive.Entries[i].FullName.PathEqualsI(fn))
                         {
                             found = true;
                             break;
@@ -575,12 +583,12 @@ namespace AngelLoader
                 for (int i = 0; i < archive.ArchiveFileData.Count; i++)
                 {
                     var entry = archive.ArchiveFileData[i];
-                    string efn = entry.FileName.ToForwardSlashes();
+                    string efn = entry.FileName;
 
-                    if (efn.EqualsI(Paths.FMSelInf) ||
-                        efn.EqualsI(_startMisSav) ||
+                    if (efn.PathEqualsI(Paths.FMSelInf) ||
+                        efn.PathEqualsI(_startMisSav) ||
                         // IsDirectory has been unreliable in the past, so check manually here too
-                        entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1] == '/') ||
+                        entry.IsDirectory || (efn.Length > 0 && efn[efn.Length - 1].IsDirSep()) ||
                         IsSaveOrScreenshot(efn, game))
                     {
                         continue;
@@ -619,19 +627,18 @@ namespace AngelLoader
                 foreach (string f in installedFMFiles)
                 {
                     string fnTemp = Path.GetFileName(f);
-                    if (fnTemp.EqualsI(Paths.FMSelInf) || fnTemp.EqualsI(_startMisSav))
+                    if (fnTemp.PathEqualsI(Paths.FMSelInf) || fnTemp.PathEqualsI(_startMisSav))
                     {
                         continue;
                     }
 
-                    string fn = f.Substring(fmInstalledPath.Length).ToForwardSlashes().Trim(CA_ForwardSlash);
+                    string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
 
                     bool found = false;
                     for (int i = 0; i < archive.ArchiveFileData.Count; i++)
                     {
                         var entry = archive.ArchiveFileData[i];
-                        string efn = entry.FileName.ToForwardSlashes();
-                        if (!entry.IsDirectory && efn.EqualsI(fn))
+                        if (!entry.IsDirectory && entry.FileName.PathEqualsI(fn))
                         {
                             found = true;
                             break;

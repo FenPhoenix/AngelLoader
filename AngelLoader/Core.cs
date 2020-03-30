@@ -227,12 +227,12 @@ namespace AngelLoader
 
             bool archivePathsChanged =
                 !startup &&
-                (!Config.FMArchivePaths.SequenceEqual(sf.OutConfig.FMArchivePaths, StringComparer.OrdinalIgnoreCase) ||
+                (!Config.FMArchivePaths.PathSequenceEqualI(sf.OutConfig.FMArchivePaths) ||
                  Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
 
             bool gamePathsChanged =
                 !startup &&
-                !Config.GameExes.SequenceEqual(sf.OutConfig.GameExes, StringComparer.OrdinalIgnoreCase);
+                !Config.GameExes.PathSequenceEqualI(sf.OutConfig.GameExes);
 
             // We need these in order to decide which, if any, startup config infos to re-read
             bool[] individualGamePathsChanged = new bool[SupportedGameCount];
@@ -240,7 +240,8 @@ namespace AngelLoader
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 individualGamePathsChanged[i] =
-                    !startup && !Config.GetGameExe((GameIndex)i).EqualsI(sf.OutConfig.GetGameExe((GameIndex)i));
+                    !startup &&
+                    !Config.GetGameExe((GameIndex)i).PathEqualsI(sf.OutConfig.GetGameExe((GameIndex)i));
             }
 
             bool gameOrganizationChanged =
@@ -1321,7 +1322,7 @@ namespace AngelLoader
             for (int i = 0; i < readmeFiles.Count; i++)
             {
                 if (i > 0 && !StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i]))
-                        .EqualsI(StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i - 1]))))
+                    .EqualsI(StripPunctuation(Path.GetFileNameWithoutExtension(readmeFiles[i - 1]))))
                 {
                     allEqual = false;
                     break;

@@ -231,6 +231,7 @@ namespace AngelLoader.WinAPI
                 {
                     string fullName = returnFullPaths
                         // Exception could occur here
+                        // @DIRSEP: Matching behavior of GetFiles()? Is it? Or does it just return whatever it gets from Windows?
                         ? Path.Combine(path, findData.cFileName).ToSystemDirSeps()
                         : findData.cFileName;
 

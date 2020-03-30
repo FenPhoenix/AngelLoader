@@ -264,8 +264,7 @@ namespace AngelLoader
 
         internal static bool PathIsRelative(string path) =>
             path.Length > 1 && path[0] == '.' &&
-            (path[1] == '/' || path[1] == '\\' ||
-             (path[1] == '.' && path.Length > 2 && (path[2] == '/' || path[2] == '\\')));
+            (path[1].IsDirSep() || (path[1] == '.' && path.Length > 2 && path[2].IsDirSep()));
 
         internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)
         {
@@ -371,8 +370,8 @@ namespace AngelLoader
             {
                 for (int i = 0; i < Config.GameExes.Length; i++)
                 {
-                    string exe = Config.GetGameExe((GameIndex)i).ToBackSlashes();
-                    if (!exe.IsEmpty() && fnb.EqualsI(exe.ToBackSlashes())) return true;
+                    string exe = Config.GetGameExe((GameIndex)i);
+                    if (!exe.IsEmpty() && fnb.PathEqualsI(exe)) return true;
                 }
 
                 return false;
@@ -408,12 +407,11 @@ namespace AngelLoader
                     //Log.Info("Process filename: " + fn);
                     if (!fn.IsEmpty())
                     {
-                        string fnb = fn.ToBackSlashes();
                         if ((checkAllGames &&
-                             (AnyGameRunning(fnb) ||
-                              (!T2MPExe().IsEmpty() && fnb.EqualsI(T2MPExe().ToBackSlashes())))) ||
+                             (AnyGameRunning(fn) ||
+                              (!T2MPExe().IsEmpty() && fn.PathEqualsI(T2MPExe())))) ||
                             (!checkAllGames &&
-                             (!gameExe.IsEmpty() && fnb.EqualsI(gameExe.ToBackSlashes()))))
+                             (!gameExe.IsEmpty() && fn.PathEqualsI(gameExe))))
                         {
                             string logExe = checkAllGames ? "a game exe" : gameExe;
 
@@ -455,7 +453,8 @@ namespace AngelLoader
                         {
                             string dir = dirs[di];
                             if (!dir.GetDirNameFast().EqualsI(".fix") &&
-                                !dir.ToSystemDirSeps().ContainsI(Path.DirectorySeparatorChar + ".fix" + Path.DirectorySeparatorChar))
+                                // @DIRSEP: '/' conversion due to string.ContainsI()
+                                !dir.ToForwardSlashes().ContainsI("/.fix/"))
                             {
                                 paths.Add(dir);
                             }

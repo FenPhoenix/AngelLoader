@@ -130,6 +130,18 @@ namespace AngelLoader
             return false;
         }
 
+        internal static bool PathContainsI(this List<string> value, string substring)
+        {
+            for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI(substring)) return true;
+            return false;
+        }
+
+        internal static bool PathContainsI(this string[] value, string substring)
+        {
+            for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI(substring)) return true;
+            return false;
+        }
+
         #endregion
 
         #region Equals
@@ -331,6 +343,19 @@ namespace AngelLoader
             return Math.Max(i1, i2);
         }
 
+        internal static bool PathSequenceEqualI(this IList<string> first, IList<string> second)
+        {
+            int firstCount;
+            if ((firstCount = first.Count) != second.Count) return false;
+
+            for (int i = 0; i < firstCount; i++)
+            {
+                if (!first[i].PathEqualsI(second[i])) return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Path equality check ignoring case and directory separator differences.
         /// </summary>
@@ -445,6 +470,12 @@ namespace AngelLoader
 
             return true;
         }
+
+        internal static bool IsDirSep(this char character) => character == '/' || character == '\\';
+
+        internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
+
+        internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
 
         #endregion
 

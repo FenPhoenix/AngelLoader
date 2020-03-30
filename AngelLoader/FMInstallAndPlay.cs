@@ -241,11 +241,12 @@ namespace AngelLoader
 
             for (int i = 0; i < 3; i++)
             {
-                string keyDir = i switch { 0 => "books", 1 => "intrface", _ => "strings" };
+                string keyDir = i switch { 0 => "/books", 1 => "/intrface", _ => "/strings" };
 
                 for (int j = 0; j < searchList.Count; j++)
                 {
-                    if (j < searchList.Count - 1 && searchList[j].EndsWithI(Path.DirectorySeparatorChar + keyDir))
+                    if (j < searchList.Count - 1 &&
+                        searchList[j].PathEndsWithI(keyDir))
                     {
                         string item = searchList[j];
                         searchList.RemoveAt(j);
@@ -274,6 +275,8 @@ namespace AngelLoader
         private static (bool Success, List<string> Languages)
         GetFMSupportedLanguagesFromArchive(string archiveName, bool earlyOutOnEnglish)
         {
+            // @DIRSEP: '/' conversion in here due to string.IndexOf()
+
             (bool, List<string>) failed = (false, new List<string>());
 
             string archivePath = FindFMArchive(archiveName);
@@ -715,8 +718,8 @@ namespace AngelLoader
                 {
                     return line.StartsWithI(fmSelectorKey) && line.Length > fmSelectorKey.Length &&
                            char.IsWhiteSpace(line[fmSelectorKey.Length]) &&
-                           (selectorFileName = line.Substring(fmSelectorKey.Length + 1).ToBackSlashes()).EndsWithI(".dll") &&
-                           !selectorFileName.EqualsI(stubPath) &&
+                           (selectorFileName = line.Substring(fmSelectorKey.Length + 1)).EndsWithI(".dll") &&
+                           !selectorFileName.PathEqualsI(stubPath) &&
                            !GetFullPath(gamePath, selectorFileName).IsEmpty() &&
                            File.Exists(Path.Combine(gamePath, selectorFileName))
                         ? selectorFileName
@@ -742,12 +745,12 @@ namespace AngelLoader
 
                     if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
                     {
-                        if (!commentedSelectorsList.ContainsI(selectorFileName)) commentedSelectorsList.Add(selectorFileName);
+                        if (!commentedSelectorsList.PathContainsI(selectorFileName)) commentedSelectorsList.Add(selectorFileName);
                     }
                 }
                 else if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
                 {
-                    if (!selectorsList.ContainsI(selectorFileName)) selectorsList.Add(selectorFileName);
+                    if (!selectorsList.PathContainsI(selectorFileName)) selectorsList.Add(selectorFileName);
                 }
             }
 
@@ -784,7 +787,7 @@ namespace AngelLoader
                 return false;
             }
 
-            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName).ToBackSlashes();
+            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
 
             bool changeLoaderIfResetting = true;
 
@@ -802,14 +805,14 @@ namespace AngelLoader
                     string selectorFileName;
                     if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
                         char.IsWhiteSpace(lt[fmSelectorKey.Length]) &&
-                        (selectorFileName = lt.Substring(fmSelectorKey.Length + 1).ToBackSlashes()).EndsWithI(".dll"))
+                        (selectorFileName = lt.Substring(fmSelectorKey.Length + 1)).EndsWithI(".dll"))
                     {
-                        if (!tempSelectorsList.ContainsI(selectorFileName)) tempSelectorsList.Add(selectorFileName);
+                        if (!tempSelectorsList.PathContainsI(selectorFileName)) tempSelectorsList.Add(selectorFileName);
                     }
                 }
 
                 if (tempSelectorsList.Count > 0 &&
-                   !tempSelectorsList[tempSelectorsList.Count - 1].EqualsI(stubPath))
+                   !tempSelectorsList[tempSelectorsList.Count - 1].PathEqualsI(stubPath))
                 {
                     changeLoaderIfResetting = false;
                 }
@@ -878,8 +881,8 @@ namespace AngelLoader
                 {
                     if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
                         char.IsWhiteSpace(lt[fmSelectorKey.Length]) && lt
-                            .Substring(fmSelectorKey.Length + 1).TrimStart().ToBackSlashes()
-                            .EqualsI(selectorPath.ToBackSlashes()))
+                            .Substring(fmSelectorKey.Length + 1).TrimStart()
+                            .PathEqualsI(selectorPath))
                     {
                         if (loaderIsAlreadyUs)
                         {
@@ -991,7 +994,7 @@ namespace AngelLoader
 
             // Confirmed SU can read the selector value with both forward and backward slashes
 
-            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName).ToBackSlashes();
+            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
 
             string selectorPath;
 
@@ -1033,15 +1036,15 @@ namespace AngelLoader
                 #endregion
 
                 // If loader is not us, leave it be
-                if (!prevFMSelectorValue.ToBackSlashes().EqualsI(stubPath) &&
+                if (!prevFMSelectorValue.PathEqualsI(stubPath) &&
                     !(startupFMSelectorLines.Count > 0 &&
-                     startupFMSelectorLines[0].EqualsI(Paths.StubFileName)))
+                     startupFMSelectorLines[0].PathEqualsI(Paths.StubFileName)))
                 {
                     selectorPath = "";
                     changeLoaderIfResetting = false;
                 }
                 else if (startupFMSelectorLines.Count > 0 &&
-                    startupFMSelectorLines[0].EqualsI(Paths.StubFileName) ||
+                    startupFMSelectorLines[0].PathEqualsI(Paths.StubFileName) ||
                     prevFMSelectorValue.IsEmpty())
                 {
                     selectorPath = "fmsel.dll";
@@ -1049,7 +1052,7 @@ namespace AngelLoader
                 else
                 {
                     selectorPath = startupFMSelectorLines.Count == 0 ||
-                                   !startupFMSelectorLines[0].ToBackSlashes().EqualsI(stubPath)
+                                   !startupFMSelectorLines[0].PathEqualsI(stubPath)
                         ? startupFMSelectorLines[0]
                         : "fmsel.dll";
                 }
@@ -1278,14 +1281,14 @@ namespace AngelLoader
                     {
                         var entry = archive.Entries[i];
 
-                        string fileName = entry.FullName.ToBackSlashes();
+                        string fileName = entry.FullName;
 
-                        if (fileName[fileName.Length - 1] == '\\') continue;
+                        if (fileName[fileName.Length - 1].IsDirSep()) continue;
 
-                        if (fileName.Contains('\\'))
+                        if (fileName.ContainsDirSep())
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                fileName.Substring(0, fileName.LastIndexOf('\\'))));
+                                fileName.Substring(0, fileName.LastIndexOfDirSep())));
                         }
 
                         string extractedName = Path.Combine(fmInstalledPath, fileName);

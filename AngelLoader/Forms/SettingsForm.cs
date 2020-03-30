@@ -1016,7 +1016,7 @@ namespace AngelLoader.Forms
         {
             foreach (object item in PathsPage.FMArchivePathsListBox.Items)
             {
-                if (item.ToString().EqualsI(path)) return true;
+                if (item.ToString().PathEqualsI(path)) return true;
             }
 
             return false;
