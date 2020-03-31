@@ -312,14 +312,13 @@ namespace AngelLoader.CustomControls
                         {
                             var fe = new FMScanner.SimpleHelpers.FileEncoding();
                             Encoding enc = fe.DetectFileEncoding(fs, Encoding.Default);
-                            
+
                             fs.Position = 0;
-                            
+
                             using var sr = new StreamReader(fs, enc);
                             Text = sr.ReadToEnd();
-                            
-                            break;
                         }
+                        break;
                 }
             }
             finally
