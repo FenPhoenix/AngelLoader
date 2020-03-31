@@ -12,15 +12,15 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <Nullable>enable</Nullable>
-    
+
     <AssemblyTitle>AngelLoader</AssemblyTitle>
     <Product>AngelLoader</Product>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>A standalone fan mission loader and manager for Thief Gold, Thief II, Thief: Deadly Shadows, and System Shock 2.</Description>
     <Copyright>Copyright © 2018 - 2020</Copyright>
-    <Version>1.4</Version>
-    <AssemblyVersion>1.4</AssemblyVersion>
-    <FileVersion>1.4</FileVersion>
+    <Version>1.4.1</Version>
+    <AssemblyVersion>1.4.1</AssemblyVersion>
+    <FileVersion>1.4.1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
