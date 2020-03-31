@@ -12,7 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.2.258" />
+    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.2.265" />
     <PackageReference Include="Ude.NetStandard" Version="1.2.0" />
   </ItemGroup>
 
