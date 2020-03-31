@@ -1906,8 +1906,9 @@ namespace AngelLoader.Forms
             {
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
-                    string fmAuthor = FMsViewList[FMsDGV.FilterShownIndexList[i]].Author;
-                    if (!fmAuthor.ContainsI(FMsDGV.Filter.Author))
+                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        !fm.Author.ContainsI(FMsDGV.Filter.Author))
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
