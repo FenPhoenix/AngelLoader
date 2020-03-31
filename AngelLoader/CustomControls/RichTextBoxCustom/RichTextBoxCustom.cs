@@ -306,7 +306,12 @@ namespace AngelLoader.CustomControls
                         break;
                     case ReadmeType.PlainText:
                         ContentIsPlainText = true;
-                        LoadFile(path, RichTextBoxStreamType.PlainText);
+                        // Load the file ourselves so we can do some rudimentary encoding detection. Otherwise
+                        // it just loads with frigging whatever (default system encoding maybe?)
+                        using (var sr = new StreamReader(path, detectEncodingFromByteOrderMarks: true))
+                        {
+                            Text = sr.ReadToEnd();
+                        }
                         break;
                 }
             }
