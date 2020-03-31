@@ -928,7 +928,9 @@ namespace AngelLoader.Forms
 
             if (!Visible) Show();
 
-            if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
+#if !ReleasePublic
+            //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
+#endif
         }
 
         private void SetWindowStateAndSize()

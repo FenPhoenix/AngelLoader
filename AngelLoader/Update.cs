@@ -18,6 +18,7 @@ namespace AngelLoader
 
         internal static void Cancel() => CheckForUpdatesCTS.CancelIfNotDisposed();
 
+#if CHECK_UPDATES
         internal static async Task Check()
         {
 #if !CHECK_UPDATES
@@ -159,6 +160,7 @@ namespace AngelLoader
                 }
             }
         }
+#endif
 
         private static byte[] HexStringToBytes(string value)
         {

@@ -342,7 +342,7 @@ namespace AngelLoader.DataClasses
 
         internal bool UseShortGameTabNames = false;
 
-        private uint _daysRecent = 15;
+        private uint _daysRecent = Defaults.DaysRecent;
         internal uint DaysRecent { get => _daysRecent; set => _daysRecent = value.Clamp((uint)0, Defaults.MaxDaysRecent); }
         internal bool ShowRecentAtTop;
 
@@ -353,6 +353,8 @@ namespace AngelLoader.DataClasses
         internal bool ForceWindowed = false;
 #endif
 
+#if !ReleasePublic
         internal bool CheckForUpdatesOnStartup = true;
+#endif
     }
 }
