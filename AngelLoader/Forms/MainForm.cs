@@ -3254,7 +3254,8 @@ namespace AngelLoader.Forms
                     if (!safeReadme.IsEmpty())
                     {
                         fm.SelectedReadme = safeReadme;
-                        ReadmeComboBoxFillAndSelect(readmeFiles, safeReadme);
+                        // @DIRSEP: Pass only fm.SelectedReadme, otherwise we might end up with un-normalized dirseps
+                        ReadmeComboBoxFillAndSelect(readmeFiles, fm.SelectedReadme);
                     }
                     else
                     {

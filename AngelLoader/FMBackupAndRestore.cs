@@ -366,8 +366,7 @@ namespace AngelLoader
                                         // the FM folder
                                         !val.StartsWithDirSep() &&
                                         !val.Contains(':') &&
-                                        // Critical: Check both / and \ here because we have no dirsep-agnostic
-                                        // string.Contains()
+                                        // @DIRSEP: Critical: Check both / and \ here because we have no dirsep-agnostic string.Contains()
                                         !val.Contains("./") &&
                                         !val.Contains(".\\"))
                                     {

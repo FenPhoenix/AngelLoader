@@ -40,7 +40,10 @@ namespace AngelLoader.DataClasses
         internal bool Installed;
 
         internal bool NoReadmes;
-        internal string SelectedReadme = "";
+
+        private string _selectedReadme = "";
+        // @DIRSEP: Always backslashes for backward compatibility and prevention of find misses in readme chooser box
+        internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
         // [FenGen:DoNotSerialize]
         private ulong _sizeBytes = 0;
