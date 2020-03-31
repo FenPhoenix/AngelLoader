@@ -302,7 +302,7 @@ namespace AngelLoader.DataClasses
 
         private float _readmeZoomFactor = 1;
         internal float ReadmeZoomFactor { get => _readmeZoomFactor; set => _readmeZoomFactor = value.Clamp(0.1f, 5.0f); }
-        internal bool ReadmeUseFixedWidthFont = false;
+        internal bool ReadmeUseFixedWidthFont = true;
 
         #endregion
 
