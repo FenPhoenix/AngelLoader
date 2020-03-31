@@ -3218,7 +3218,7 @@ namespace AngelLoader.Forms
             var readmeFiles = cacheData.Readmes;
             readmeFiles.Sort();
 
-            if (!readmeFiles.ContainsI(fm.SelectedReadme)) fm.SelectedReadme = "";
+            if (!readmeFiles.PathContainsI(fm.SelectedReadme)) fm.SelectedReadme = "";
 
             using (new DisableEvents(this)) ChooseReadmeComboBox.ClearFullItems();
 

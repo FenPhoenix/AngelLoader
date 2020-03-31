@@ -130,12 +130,14 @@ namespace AngelLoader
             {
                 try
                 {
+                    // Returns filenames only (not full paths)
                     var files = FastIO.GetFilesTopOnly_FMs(archivePaths[ai], "*", out List<DateTime> dateTimes);
                     for (int fi = 0; fi < files.Count; fi++)
                     {
                         string f = files[fi];
                         // Only do .ContainsI() if we're searching multiple directories. Otherwise we're guaranteed
                         // no duplicates and can avoid the expensive lookup.
+                        // @DIRSEP: These are filename only, no need for PathContainsI()
                         if ((onlyOnePath || !fmArchives.ContainsI(f)) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
                         {
                             fmArchives.Add(f);
