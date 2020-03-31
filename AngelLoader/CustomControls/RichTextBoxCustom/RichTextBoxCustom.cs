@@ -306,13 +306,20 @@ namespace AngelLoader.CustomControls
                         break;
                     case ReadmeType.PlainText:
                         ContentIsPlainText = true;
-                        // Load the file ourselves so we can do some rudimentary encoding detection. Otherwise
-                        // it just loads with frigging whatever (default system encoding maybe?)
-                        using (var sr = new StreamReader(path, detectEncodingFromByteOrderMarks: true))
+                        // Load the file ourselves so we can do encoding detection. Otherwise it just loads with
+                        // frigging whatever (default system encoding maybe?)
+                        using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                         {
+                            var fe = new FMScanner.SimpleHelpers.FileEncoding();
+                            Encoding enc = fe.DetectFileEncoding(fs, Encoding.Default);
+                            
+                            fs.Position = 0;
+                            
+                            using var sr = new StreamReader(fs, enc);
                             Text = sr.ReadToEnd();
+                            
+                            break;
                         }
-                        break;
                 }
             }
             finally
