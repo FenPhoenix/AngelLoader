@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -466,11 +465,11 @@ namespace AngelLoader
     {
         public int Compare(CatAndTags x, CatAndTags y)
         {
-            Debug.Assert(!x.Category.IsEmpty(), "CategoryComparer: x.Name is null or empty");
-            Debug.Assert(!y.Category.IsEmpty(), "CategoryComparer: y.Name is null or empty");
+            AssertR(!x.Category.IsEmpty(), "CategoryComparer: x.Name is null or empty");
+            AssertR(!y.Category.IsEmpty(), "CategoryComparer: y.Name is null or empty");
 
-            Debug.Assert(x.Category.ToLowerInvariant() == x.Category, "CategoryComparer: x.Name is not lowercase");
-            Debug.Assert(y.Category.ToLowerInvariant() == y.Category, "CategoryComparer: y.Name is not lowercase");
+            AssertR(x.Category.ToLowerInvariant() == x.Category, "CategoryComparer: x.Name is not lowercase");
+            AssertR(y.Category.ToLowerInvariant() == y.Category, "CategoryComparer: y.Name is not lowercase");
 
             // Category names are supposed to always be lowercase, so don't waste time checking
             return string.Compare(x.Category, y.Category, StringComparison.Ordinal);
@@ -481,11 +480,11 @@ namespace AngelLoader
     {
         public int Compare(GlobalCatAndTags x, GlobalCatAndTags y)
         {
-            Debug.Assert(!x.Category.Name.IsEmpty(), "CategoryComparer: x.Name is null or empty");
-            Debug.Assert(!y.Category.Name.IsEmpty(), "CategoryComparer: y.Name is null or empty");
+            AssertR(!x.Category.Name.IsEmpty(), "CategoryComparer: x.Name is null or empty");
+            AssertR(!y.Category.Name.IsEmpty(), "CategoryComparer: y.Name is null or empty");
 
-            Debug.Assert(x.Category.Name.ToLowerInvariant() == x.Category.Name, "CategoryComparer: x.Name is not lowercase");
-            Debug.Assert(y.Category.Name.ToLowerInvariant() == y.Category.Name, "CategoryComparer: y.Name is not lowercase");
+            AssertR(x.Category.Name.ToLowerInvariant() == x.Category.Name, "CategoryComparer: x.Name is not lowercase");
+            AssertR(y.Category.Name.ToLowerInvariant() == y.Category.Name, "CategoryComparer: y.Name is not lowercase");
 
             // Category names are supposed to always be lowercase, so don't waste time checking
             return string.Compare(x.Category.Name, y.Category.Name, StringComparison.Ordinal);

@@ -33,7 +33,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -2296,13 +2295,24 @@ namespace AngelLoader.Forms
 
             // PERF: ~0.14ms per FM for en-US Long Date format
             // PERF_TODO: Test with custom - dt.ToString() might be slow?
-            static string FormattedDate(DateTime dt) => Config.DateFormat switch
+            static string FormatDate(DateTime dt) => Config.DateFormat switch
             {
                 DateFormat.CurrentCultureShort => dt.ToShortDateString(),
                 DateFormat.CurrentCultureLong => dt.ToLongDateString(),
                 DateFormat.Custom => dt.ToString(Config.DateCustomFormatString),
                 _ => throw new Exception("Config.DateFormat is not what it should be!")
             };
+
+            static string FormatSize(ulong size)
+            {
+                if (size == 0) return "";
+
+                return size < ByteSize.MB
+                    ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
+                    : size >= ByteSize.MB && size < ByteSize.GB
+                        ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
+                        : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
+            }
 
             switch ((Column)e.ColumnIndex)
             {
@@ -2356,7 +2366,7 @@ namespace AngelLoader.Forms
 
                 case Column.Size:
                     // This conversion takes like 1ms over the entire 1545 set, so no problem
-                    e.Value = fm.SizeBytes.FormatSize();
+                    e.Value = FormatSize(fm.SizeBytes);
                     break;
 
                 case Column.Rating:
@@ -2382,16 +2392,16 @@ namespace AngelLoader.Forms
                     break;
 
                 case Column.ReleaseDate:
-                    e.Value = fm.ReleaseDate.DateTime != null ? FormattedDate((DateTime)fm.ReleaseDate.DateTime) : "";
+                    e.Value = fm.ReleaseDate.DateTime != null ? FormatDate((DateTime)fm.ReleaseDate.DateTime) : "";
                     break;
 
                 case Column.LastPlayed:
-                    e.Value = fm.LastPlayed.DateTime != null ? FormattedDate((DateTime)fm.LastPlayed.DateTime) : "";
+                    e.Value = fm.LastPlayed.DateTime != null ? FormatDate((DateTime)fm.LastPlayed.DateTime) : "";
                     break;
 
                 case Column.DateAdded:
                     // Convert to local time: very important. We don't do it earlier for startup perf reasons.
-                    e.Value = fm.DateAdded != null ? FormattedDate(((DateTime)fm.DateAdded).ToLocalTime()) : "";
+                    e.Value = fm.DateAdded != null ? FormatDate(((DateTime)fm.DateAdded).ToLocalTime()) : "";
                     break;
 
                 case Column.DisabledMods:
@@ -3481,8 +3491,8 @@ namespace AngelLoader.Forms
                 }
             }
 
-            Debug.Assert(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
-            Debug.Assert(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
+            AssertR(gameSelFM != null, "gameSelFM is null: Selected tab is not being handled");
+            AssertR(gameFilter != null, "gameFilter is null: Selected tab is not being handled");
 
             return (gameSelFM!, gameFilter!);
         }
@@ -3825,7 +3835,7 @@ namespace AngelLoader.Forms
 
         private void AddTagOperation(FanMission fm, string catAndTag)
         {
-            if (catAndTag.CountChars(':') <= 1 && !catAndTag.IsWhiteSpace())
+            if (!catAndTag.CharCountIsAtLeast(':', 2) && !catAndTag.IsWhiteSpace())
             {
                 FMTags.AddTagToFM(fm, catAndTag);
                 DisplayFMTags(fm.Tags);
@@ -4006,7 +4016,7 @@ namespace AngelLoader.Forms
                 }
             }
 
-            Debug.Assert(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
+            AssertR(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
 
             if (!s.Checked && TopRightTabControl.TabPages.Count == 1)
             {

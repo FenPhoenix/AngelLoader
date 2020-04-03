@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -611,7 +610,7 @@ namespace AngelLoader
                 _ => null
             };
 
-            Debug.Assert(comparer != null, nameof(comparer) + "==null: column not being handled");
+            AssertR(comparer != null, nameof(comparer) + "==null: column not being handled");
 
             // @R#_FALSE_POSITIVE
             comparer!.SortOrder = sortDirection;
@@ -749,7 +748,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    path = Paths.RelativeToAbsolute(gamePath, path);
+                    path = RelativeToAbsolute(gamePath, path);
                 }
                 catch (Exception)
                 {

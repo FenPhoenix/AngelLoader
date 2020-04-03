@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -98,7 +97,7 @@ namespace AngelLoader
 
         private static CacheData GetCacheableDataInFMInstalledDir(FanMission fm)
         {
-            Debug.Assert(fm.Installed, "fm.Installed is false when it should be true");
+            AssertR(fm.Installed, "fm.Installed is false when it should be true");
 
             string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
 
@@ -128,7 +127,7 @@ namespace AngelLoader
         {
             var readmes = new List<string>();
 
-            Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
+            AssertR(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
             string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
 

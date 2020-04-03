@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -889,7 +888,7 @@ namespace AngelLoader.Forms
                 page == OtherPage ? _inOtherVScrollPos :
                 (int?)null;
 
-            Debug.Assert(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
+            AssertR(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
 
             page.SetVScrollPos((int)pos);
         }

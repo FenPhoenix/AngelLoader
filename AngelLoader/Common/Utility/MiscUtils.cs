@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Text;
+using System.Threading;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using SevenZip;
@@ -17,6 +18,15 @@ namespace AngelLoader
 {
     public static partial class Misc
     {
+        // Depend on non-defined symbol if we're in public release profile, to prevent the bloat of calls to this
+#if ReleasePublic || NoAsserts
+        [Conditional("_AngelLoader_In_Release_Public_Mode")]
+#endif
+        [PublicAPI]
+        [AssertionMethod]
+        public static void AssertR([AssertionCondition(AssertionConditionType.IS_TRUE)] bool condition, string message, string detailedMessage = "")
+            => Trace.Assert(condition, message, detailedMessage);
+
         #region Process.Start with UseShellExecute on
 
         /// <summary>
@@ -261,10 +271,6 @@ namespace AngelLoader
         }
 
 #endif
-
-        internal static bool PathIsRelative(string path) =>
-            path.Length > 1 && path[0] == '.' &&
-            (path[1].IsDirSep() || (path[1] == '.' && path.Length > 2 && path[2].IsDirSep()));
 
         internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)
         {
@@ -532,6 +538,27 @@ namespace AngelLoader
             {
                 Log("Unable to set file attributes for " + fileOnDiskFullPath, ex);
             }
+        }
+
+        #endregion
+
+        internal static void CancelIfNotDisposed(this CancellationTokenSource value)
+        {
+            try { value.Cancel(); } catch (ObjectDisposedException) { }
+        }
+
+        #region Clear and add
+
+        internal static void ClearAndAdd<T>(this List<T> list, params T[] items)
+        {
+            list.Clear();
+            list.AddRange(items);
+        }
+
+        internal static void ClearAndAdd<T>(this List<T> list, IEnumerable<T> items)
+        {
+            list.Clear();
+            list.AddRange(items);
         }
 
         #endregion

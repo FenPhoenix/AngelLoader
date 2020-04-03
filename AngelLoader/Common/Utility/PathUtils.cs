@@ -2,12 +2,22 @@
 using System.Collections.Generic;
 using System.IO;
 using static System.StringComparison;
-using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    internal static class PathUtils
+    public static partial class Misc
     {
+        internal static bool PathIsRelative(string path) =>
+            path.Length > 1 && path[0] == '.' &&
+            (path[1].IsDirSep() || (path[1] == '.' && path.Length > 2 && path[2].IsDirSep()));
+
+        internal static string RelativeToAbsolute(string basePath, string relativePath)
+        {
+            AssertR(!basePath.IsEmpty(), "basePath is null or empty");
+
+            return relativePath.IsEmpty() ? basePath : Path.GetFullPath(Path.Combine(basePath, relativePath));
+        }
+
         #region Forward/backslash conversion
 
         internal static string ToForwardSlashes(this string value) => value.Replace('\\', '/');

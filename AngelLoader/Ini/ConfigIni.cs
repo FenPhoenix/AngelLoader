@@ -35,7 +35,7 @@ namespace AngelLoader
             // DisplayIndex,Width,Visible
             // 0,100,True
 
-            if (str.CountChars(',') == 0) return null;
+            if (!str.Contains(',')) return null;
 
             string[] cProps = str.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
             if (cProps.Length == 0) return null;
@@ -83,7 +83,7 @@ namespace AngelLoader
             foreach (string item in tagsArray)
             {
                 string cat, tag;
-                int colonCount = item.CountChars(':');
+                int colonCount = item.CountCharsUpToAmount(':', 2);
                 if (colonCount > 1) continue;
                 if (colonCount == 1)
                 {

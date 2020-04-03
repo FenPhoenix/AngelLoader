@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Text;
-using System.Threading;
-using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static System.StringComparison;
-using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    internal static class Extensions
+    public static partial class Misc
     {
         /// <summary>
         /// Returns the number of times a character appears in a string. Avoids whatever silly overhead junk Count(predicate) is doing.
@@ -25,6 +21,44 @@ namespace AngelLoader
             for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
 
             return count;
+        }
+
+        /// <summary>
+        /// Returns the number of times a character appears in a string, earlying-out once it's counted <paramref name="maxToCount"/>
+        /// occurrences.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="character"></param>
+        /// <param name="maxToCount">The maximum number of occurrences to count before earlying-out.</param>
+        /// <returns></returns>
+        internal static int CountCharsUpToAmount(this string value, char character, int maxToCount)
+        {
+            int foundCount = 0;
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] == character)
+                {
+                    foundCount++;
+                    if (foundCount == maxToCount) break;
+                }
+            }
+
+            return foundCount;
+        }
+
+        internal static bool CharCountIsAtLeast(this string value, char character, int count, int start = 0)
+        {
+            int foundCount = 0;
+            for (int i = start; i < value.Length; i++)
+            {
+                if (value[i] == character)
+                {
+                    foundCount++;
+                    if (foundCount == count) return true;
+                }
+            }
+
+            return false;
         }
 
         #region Contains
@@ -198,22 +232,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Clear and add
-
-        internal static void ClearAndAdd<T>(this List<T> list, params T[] items)
-        {
-            list.Clear();
-            list.AddRange(items);
-        }
-
-        internal static void ClearAndAdd<T>(this List<T> list, IEnumerable<T> items)
-        {
-            list.Clear();
-            list.AddRange(items);
-        }
-
-        #endregion
-
         #region Clamping
 
         /// <summary>
@@ -237,17 +255,6 @@ namespace AngelLoader
         internal static int ClampToZero(this int value) => Math.Max(value, 0);
 
         #endregion
-
-        internal static string FormatSize(this ulong size)
-        {
-            if (size == 0) return "";
-
-            return size < ByteSize.MB
-                 ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
-                 : size >= ByteSize.MB && size < ByteSize.GB
-                 ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
-                 : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
-        }
 
         #region FM installed name conversion
 
@@ -330,10 +337,5 @@ namespace AngelLoader
         }
 
         #endregion
-
-        internal static void CancelIfNotDisposed(this CancellationTokenSource value)
-        {
-            try { value.Cancel(); } catch (ObjectDisposedException) { }
-        }
     }
 }

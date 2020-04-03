@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -282,7 +281,7 @@ namespace AngelLoader
                         string numStr = (i + 2).ToString();
                         instDir = instDir.Substring(0, (instDir.Length - 2) - numStr.Length) + "(" + numStr + ")";
 
-                        Debug.Assert(truncate && instDir.Length == 30,
+                        AssertR(truncate && instDir.Length == 30,
                             nameof(instDir) + "should have been truncated but its length is not 30");
 
                         i++;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -85,7 +84,7 @@ namespace AngelLoader.CustomControls
         {
             DoubleBuffered = true;
 
-            Debug.Assert(Enum.GetValues(typeof(Column)).Length == ColumnHeaderLLMenu.ColumnCheckedStates.Length,
+            AssertR(Enum.GetValues(typeof(Column)).Length == ColumnHeaderLLMenu.ColumnCheckedStates.Length,
                 nameof(Column) + ".Length != " + nameof(ColumnHeaderLLMenu.ColumnCheckedStates) + ".Length");
         }
 #pragma warning restore 8618
@@ -115,7 +114,7 @@ namespace AngelLoader.CustomControls
         /// <returns></returns>
         internal FanMission GetSelectedFM()
         {
-            Debug.Assert(SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
+            AssertR(SelectedRows.Count > 0, "GetSelectedFM: no rows selected!");
 
             return GetFMFromIndex(SelectedRows[0].Index);
         }

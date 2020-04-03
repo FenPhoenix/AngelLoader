@@ -76,7 +76,7 @@ namespace AngelLoader
         internal static List<string> GetMatchingTagsList(string searchText)
         {
             // Smartasses who try to break it get nothing
-            if (searchText.CountChars(':') > 1 || searchText.IsWhiteSpace()) return new List<string>();
+            if (searchText.CharCountIsAtLeast(':', 2) || searchText.IsWhiteSpace()) return new List<string>();
 
             (string First, string Second) text;
 
@@ -181,7 +181,7 @@ namespace AngelLoader
             {
                 string cat, tag;
 
-                int colonCount = item.CountChars(':');
+                int colonCount = item.CountCharsUpToAmount(':', 2);
 
                 // No way josé
                 if (colonCount > 1) continue;

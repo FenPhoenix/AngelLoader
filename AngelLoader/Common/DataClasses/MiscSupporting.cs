@@ -1,7 +1,6 @@
 ﻿#define FenGen_TypeSource
 
 using System;
-using System.Diagnostics;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -147,7 +146,7 @@ namespace AngelLoader.DataClasses
 
             int[] set = { -1, -1, -1, -1, -1 };
 
-            Debug.Assert(set.Length == TopRightTabsCount, nameof(set) + ".Length != " + nameof(TopRightTabsCount));
+            AssertR(set.Length == TopRightTabsCount, nameof(set) + ".Length != " + nameof(TopRightTabsCount));
 
             // PERF: Unmeasurable. LINQ Distinct().Count() was 6ms. Sheesh.
             for (int i = 0; i < Tabs.Length; i++)

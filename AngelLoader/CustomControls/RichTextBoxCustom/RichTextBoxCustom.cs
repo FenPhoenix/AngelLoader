@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -268,7 +267,7 @@ namespace AngelLoader.CustomControls
         /// <param name="fileType"></param>
         internal void LoadContent(string path, ReadmeType fileType)
         {
-            Debug.Assert(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
+            AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
 
             SaveZoom();
 

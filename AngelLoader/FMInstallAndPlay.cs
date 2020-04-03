@@ -691,14 +691,13 @@ namespace AngelLoader
             string gamePath)
         {
             // Handle relative paths
-            // TODO: Duplicate code
             static string GetFullPath(string _gamePath, string path)
             {
                 if (PathIsRelative(path))
                 {
                     try
                     {
-                        return Paths.RelativeToAbsolute(_gamePath, path);
+                        return RelativeToAbsolute(_gamePath, path);
                     }
                     catch (Exception)
                     {
@@ -1132,7 +1131,7 @@ namespace AngelLoader
         {
             #region Checks
 
-            Debug.Assert(!fm.Installed, "!fm.Installed");
+            AssertR(!fm.Installed, "!fm.Installed");
 
             if (fm.Game == Game.Null)
             {
@@ -1154,7 +1153,7 @@ namespace AngelLoader
                 return false;
             }
 
-            Debug.Assert(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
+            AssertR(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
             string gameExe = Config.GetGameExeUnsafe(fm.Game);
             string gameName = GetGameNameFromGameType(fm.Game);

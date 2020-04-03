@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>AnyCPU;x86</Platforms>
     <LangVersion>latest</LangVersion>
-    <Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly</Configurations>
+    <Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly;Release_Testing_NoAsserts</Configurations>
     <StartupObject>AngelLoader.Program</StartupObject>
     <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -36,6 +36,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x86'">
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing_NoAsserts|x86'">
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;Release,Release_Testing,NoAsserts</DefineConstants>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
 

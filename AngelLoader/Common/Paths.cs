@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Security;
 using AngelLoader.WinAPI;
@@ -194,13 +193,6 @@ namespace AngelLoader
                     Log("Exception creating temp path " + path, ex);
                 }
             }
-        }
-
-        internal static string RelativeToAbsolute(string basePath, string relativePath)
-        {
-            Debug.Assert(!basePath.IsEmpty(), "basePath is null or empty");
-
-            return relativePath.IsEmpty() ? basePath : Path.GetFullPath(Path.Combine(basePath, relativePath));
         }
 
         #endregion

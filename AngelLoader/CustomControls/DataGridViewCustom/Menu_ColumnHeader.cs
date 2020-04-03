@@ -12,7 +12,7 @@ namespace AngelLoader.CustomControls
             #region Control backing fields
 
             private static bool _constructed;
-            // Internal only because of a Debug.Assert() for length and I don't wanna make a method just for that
+            // Internal only because of an assert for length and I don't wanna make a method just for that
             internal static readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true, true };
 
             #endregion

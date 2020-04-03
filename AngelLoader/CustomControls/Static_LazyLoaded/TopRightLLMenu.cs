@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.CustomControls.Static_LazyLoaded
 {
@@ -99,8 +99,8 @@ namespace AngelLoader.CustomControls.Static_LazyLoaded
 
         internal static void Localize()
         {
-            Debug.Assert(_checkedStates.Length == Misc.TopRightTabsCount,
-                nameof(_checkedStates) + ".Length != " + nameof(Misc.TopRightTabsCount) + ".Length");
+            AssertR(_checkedStates.Length == TopRightTabsCount,
+                nameof(_checkedStates) + ".Length != " + nameof(TopRightTabsCount) + ".Length");
 
             if (!_constructed) return;
 
