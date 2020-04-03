@@ -890,7 +890,7 @@ namespace AngelLoader.Forms
 
             AssertR(pos != null, nameof(pos) + " is null: settings page is not being handled in " + nameof(SetPageScrollPos));
 
-            page.SetVScrollPos((int)pos);
+            page.SetVScrollPos((int)pos!);
         }
 
         private void ShowPage(int index, bool initialCall = false)

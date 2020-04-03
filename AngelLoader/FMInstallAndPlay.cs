@@ -756,7 +756,7 @@ namespace AngelLoader
             return
                 selectorsList.Count > 0 ? selectorsList[selectorsList.Count - 1] :
                 commentedSelectorsList.Count > 0 ? commentedSelectorsList[commentedSelectorsList.Count - 1] :
-                "fmsel.dll";
+                Paths.FMSelDll;
         }
 
         // 2019-10-16: We also now force the loader to start in the config files rather than just on the command
@@ -1046,14 +1046,14 @@ namespace AngelLoader
                     startupFMSelectorLines[0].PathEqualsI(Paths.StubFileName) ||
                     prevFMSelectorValue.IsEmpty())
                 {
-                    selectorPath = "fmsel.dll";
+                    selectorPath = Paths.FMSelDll;
                 }
                 else
                 {
                     selectorPath = startupFMSelectorLines.Count == 0 ||
                                    !startupFMSelectorLines[0].PathEqualsI(stubPath)
                         ? startupFMSelectorLines[0]
-                        : "fmsel.dll";
+                        : Paths.FMSelDll;
                 }
             }
             else
@@ -1131,7 +1131,7 @@ namespace AngelLoader
         {
             #region Checks
 
-            AssertR(!fm.Installed, "!fm.Installed");
+            AssertR(!fm.Installed, "fm.Installed == false");
 
             if (fm.Game == Game.Null)
             {

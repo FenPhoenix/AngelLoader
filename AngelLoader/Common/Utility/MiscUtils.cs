@@ -299,19 +299,8 @@ namespace AngelLoader
             {
                 try
                 {
-                    if (convertToLocal)
-                    {
-                        return DateTimeOffset
-                            .FromUnixTimeSeconds(result)
-                            .DateTime
-                            .ToLocalTime();
-                    }
-                    else
-                    {
-                        return DateTimeOffset
-                            .FromUnixTimeSeconds(result)
-                            .DateTime;
-                    }
+                    DateTime dt = DateTimeOffset.FromUnixTimeSeconds(result).DateTime;
+                    return convertToLocal ? dt.ToLocalTime() : dt;
                 }
                 catch (ArgumentOutOfRangeException)
                 {

@@ -124,6 +124,8 @@ namespace AngelLoader
 
         internal const string FMSelInf = "fmsel.inf";
 
+        internal const string FMSelDll = "fmsel.dll";
+
         internal const string DromEdExe = "DromEd.exe";
         internal const string ShockEdExe = "ShockEd.exe";
 
