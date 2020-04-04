@@ -1,0 +1,1 @@
+GitHub doesn't let you source from anything other than "docs" folder (despite that being with 99% certainty already used for actual docs) or another branch (despite you then not being able to automatically dump files or update files in there without swapping your branches back and forth locally) or another repo (despite that being silly)
