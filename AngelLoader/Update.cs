@@ -1,4 +1,4 @@
-﻿//#define CHECK_UPDATES
+﻿#define CHECK_UPDATES
 using System;
 using System.Globalization;
 using System.IO;
@@ -21,13 +21,10 @@ namespace AngelLoader
 #if CHECK_UPDATES
         internal static async Task Check()
         {
-#if !CHECK_UPDATES
-            return;
-#endif
-
             CheckForUpdatesCTS = new CancellationTokenSource();
 
-            const string uri = "http://fenphoenix.com/apps/AngelLoader/_test/al_update_ini_test.ini";
+            //const string uri = "https://fenphoenix.github.io/AngelLoader/al_update/al_update.ini";
+            const string uri = "https://fenphoenix.github.io/AngelLoader/al_update_testing/al_update.ini";
             const string localFile = @"C:\al_update_ini_test.ini";
 
             using var wc = new WebClient();
