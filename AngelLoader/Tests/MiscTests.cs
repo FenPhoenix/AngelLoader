@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using Xunit;
 
@@ -11,6 +12,28 @@ namespace AngelLoader.Tests
 {
     public class MiscTests
     {
+        [Fact]
+        public void DirSepAgnosticism_Test()
+        {
+            string test1 = @"/sdDSFDSfsFdsFs:sdf\dsFS/ds/fsd\fsd\fsd\fSw3e4rf324r4\3ntr 345t qtefg afa fds \\ff/SD|f/ds\f/ds\f /\34/ \3/\ 432/\f 43/\f /\";
+            string test2 = @"\sdDSfdSfsFdsFs:sdf\dsFS/ds/fsd\fsd\fsd\fSw3e4rf324r4\3ntR 345T QtEFG afA Fds //ff/SD|f/ds\f/ds\f //34/ \3/\ 432//F 43/\f /\";
+
+            string test_utf_1 = @"/sdDSFDSfsFdsFs:sdf\dsFS/ds/fsd\fsd\fsd\fSw3e4rf324r4\3ntr 345t qtefg afa fds" + "\uF09F\uA4A3\u00E9" + @" \\ff/SD|f/ds\f/ds\f /\34/ \3/\ 432/\f 43/\f /\";
+            string test_utf_2 = @"\sdDSfdSfsFdsFs:sdf\dsFS/ds/fsd\fsd\fsd\fSw3e4rf324r4\3ntR 345T QtEFG afA Fds" + "\uF09F\uA4A3\u00C9" + @" //ff\SD|f/ds\f/ds\f //34/ /3\\ 432//F 43/\f //";
+
+            Assert.True(test1.PathEqualsI(test2));
+            Assert.True(test_utf_1.PathEqualsI(test_utf_2));
+            Assert.True("qvdcsac uhjytjghne/\\".DirSepCountIsAtLeast(2));
+            Assert.True("qvdcsac uhjyt/j/g\\hne/\\".DirSepCountIsAtLeast(2));
+            Assert.False("qvdcsac uhjyt/j/g\\hne/\\".DirSepCountIsAtLeast(15));
+
+            Assert.True(test_utf_1.Substring(0, 90).PathStartsWithI(test_utf_2.Substring(0, 90)));
+            Assert.True(test_utf_1.Substring(0, 70).PathEndsWithI(test_utf_2.Substring(0, 70)));
+
+            Assert.False(test_utf_1.Substring(0, 90).PathStartsWithI(test_utf_2.Substring(0, 96)));
+            Assert.False(test_utf_1.Substring(0, 70).PathEndsWithI(test_utf_2.Substring(0, 90)));
+        }
+
         [Fact]
         public void ReadConfigIni_Test()
         {

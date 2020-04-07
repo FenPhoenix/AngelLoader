@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using static System.StringComparison;
 
 namespace AngelLoader
@@ -40,22 +41,10 @@ namespace AngelLoader
             int i1 = path.LastIndexOf('\\');
             int i2 = path.LastIndexOf('/');
 
-            if (i1 == -1 && i2 == -1) return path;
-
-            return path.Substring(Math.Max(i1, i2) + 1);
+            return i1 == -1 && i2 == -1 ? path : path.Substring(Math.Max(i1, i2) + 1);
         }
 
-        internal static string GetDirNameFast(this string path)
-        {
-            path = path.TrimEnd(CA_BS_FS);
-
-            int i1 = path.LastIndexOf('\\');
-            int i2 = path.LastIndexOf('/');
-
-            if (i1 == -1 && i2 == -1) return path;
-
-            return path.Substring(Math.Max(i1, i2) + 1);
-        }
+        internal static string GetDirNameFast(this string path) => GetFileNameFast(path.TrimEnd(CA_BS_FS));
 
         #endregion
 
@@ -104,6 +93,13 @@ namespace AngelLoader
             return count;
         }
 
+        /// <summary>
+        /// Counts dir seps up to <paramref name="count"/> occurrences and then returns, skipping further counting.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="count"></param>
+        /// <param name="start"></param>
+        /// <returns></returns>
         internal static bool DirSepCountIsAtLeast(this string value, int count, int start = 0)
         {
             int foundCount = 0;
@@ -126,9 +122,7 @@ namespace AngelLoader
             int i1 = value.LastIndexOf('/');
             int i2 = value.LastIndexOf('\\');
 
-            if (i1 == -1 && i2 == -1) return -1;
-
-            return Math.Max(i1, i2);
+            return i1 == -1 && i2 == -1 ? -1 : Math.Max(i1, i2);
         }
 
         #endregion
@@ -140,13 +134,17 @@ namespace AngelLoader
             int firstCount;
             if ((firstCount = first.Count) != second.Count) return false;
 
-            for (int i = 0; i < firstCount; i++)
-            {
-                if (!first[i].PathEqualsI(second[i])) return false;
-            }
-
+            for (int i = 0; i < firstCount; i++) if (!first[i].PathEqualsI(second[i])) return false;
             return true;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool PathCharsConsideredEqual(char char1, char char2) =>
+            char1 == char2 ||
+            ((char1 == '\\' || char1 == '/') &&
+             (char2 == '\\' || char2 == '/')) ||
+            ((char1 >= 65 && char1 <= 90 && char2 >= 97 && char2 <= 122 && char1 == char2 - 32) ||
+             (char1 >= 97 && char1 <= 122 && char2 >= 65 && char2 <= 90 && char1 == char2 + 32));
 
         /// <summary>
         /// Path equality check ignoring case and directory separator differences.
@@ -159,7 +157,6 @@ namespace AngelLoader
             if (first == second) return true;
 
             int firstLen = first.Length;
-
             if (firstLen != second.Length) return false;
 
             for (int i = 0; i < firstLen; i++)
@@ -174,16 +171,7 @@ namespace AngelLoader
                            CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                    (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                    (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
+                if (!PathCharsConsideredEqual(fc, sc)) return false;
             }
 
             return true;
@@ -197,9 +185,10 @@ namespace AngelLoader
         /// <returns></returns>
         internal static bool PathStartsWithI(this string first, string second)
         {
-            if (first == null || first.Length < second.Length) return false;
+            int secondLength;
+            if (first == null || first.Length < (secondLength = second.Length)) return false;
 
-            for (int i = 0; i < second.Length; i++)
+            for (int i = 0; i < secondLength; i++)
             {
                 char fc = first[i];
                 char sc = second[i];
@@ -211,16 +200,7 @@ namespace AngelLoader
                            CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                     (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
+                if (!PathCharsConsideredEqual(fc, sc)) return false;
             }
 
             return true;
@@ -234,9 +214,10 @@ namespace AngelLoader
         /// <returns></returns>
         internal static bool PathEndsWithI(this string first, string second)
         {
-            if (first == null || first.Length < second.Length) return false;
+            int firstLength, secondLength;
+            if (first == null || (firstLength = first.Length) < (secondLength = second.Length)) return false;
 
-            for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
+            for (int fi = firstLength - secondLength, si = 0; fi < firstLength; fi++, si++)
             {
                 char fc = first[fi];
                 char sc = second[si];
@@ -248,16 +229,7 @@ namespace AngelLoader
                            CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                     (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
+                if (!PathCharsConsideredEqual(fc, sc)) return false;
             }
 
             return true;
