@@ -140,9 +140,8 @@ namespace AngelLoader
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool PathCharsConsideredEqual_Win(char char1, char char2) =>
-            char1 == char2 ||
-            (char1.IsDirSep() && char2.IsDirSep()) ||
-            char1.EqualsIAscii(char2);
+            char1.EqualsIAscii(char2) ||
+            (char1.IsDirSep() && char2.IsDirSep());
 
         /// <summary>
         /// Path equality check ignoring case and directory separator differences.

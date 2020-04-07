@@ -19,6 +19,7 @@ namespace AngelLoader
 
         [PublicAPI]
         internal static bool EqualsIAscii(this char char1, char char2) =>
+            char1 == char2 ||
             (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
             (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
 
