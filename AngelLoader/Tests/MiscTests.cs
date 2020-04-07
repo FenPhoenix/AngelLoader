@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define UNIT_TESTS
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using Xunit;
+
+#if UNIT_TESTS
 
 namespace AngelLoader.Tests
 {
@@ -100,3 +104,5 @@ namespace AngelLoader.Tests
         }
     }
 }
+
+#endif
