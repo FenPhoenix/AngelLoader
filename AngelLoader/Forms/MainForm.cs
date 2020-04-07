@@ -2496,7 +2496,7 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if ((e.KeyChar >= 65 && e.KeyChar <= 90) || (e.KeyChar >= 97 && e.KeyChar <= 122))
+            if(e.KeyChar.IsAsciiAlpha())
             {
                 int rowIndex = -1;
 

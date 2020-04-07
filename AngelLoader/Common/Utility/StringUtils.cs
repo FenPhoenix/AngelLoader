@@ -9,6 +9,40 @@ namespace AngelLoader
 {
     public static partial class Misc
     {
+        #region ASCII-specific
+
+        [PublicAPI]
+        internal static bool IsAsciiUpper(this char c) => c >= 65 && c <= 90;
+
+        [PublicAPI]
+        internal static bool IsAsciiLower(this char c) => c >= 97 && c <= 122;
+
+        [PublicAPI]
+        internal static bool EqualsIAscii(this char char1, char char2) =>
+            (char1.IsAsciiUpper() && char2.IsAsciiLower() && char1 == char2 - 32) ||
+            (char1.IsAsciiLower() && char2.IsAsciiUpper() && char1 == char2 + 32);
+
+        [PublicAPI]
+        internal static bool IsAsciiAlpha(this char c) => c.IsAsciiUpper() || c.IsAsciiLower();
+
+        [PublicAPI]
+        internal static bool IsAsciiNumeric(this char c) => c >= 48 && c <= 57;
+
+        [PublicAPI]
+        internal static bool IsAsciiAlphanumeric(this char c) => c.IsAsciiAlpha() || c.IsAsciiNumeric();
+
+        [PublicAPI]
+        internal static bool IsAsciiAlphaUpper(this string str)
+        {
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (!str[i].IsAsciiUpper()) return false;
+            }
+            return true;
+        }
+
+        #endregion
+
         /// <summary>
         /// Returns the number of times a character appears in a string. Avoids whatever silly overhead junk Count(predicate) is doing.
         /// </summary>
@@ -213,18 +247,7 @@ namespace AngelLoader
                         : str.EndsWith(value, OrdinalIgnoreCase);
                 }
 
-                if (str[si] >= 65 && str[si] <= 90 && value[vi] >= 97 && value[vi] <= 122)
-                {
-                    if (str[si] != value[vi] - 32) return false;
-                }
-                else if (value[vi] >= 65 && value[vi] <= 90 && str[si] >= 97 && str[si] <= 122)
-                {
-                    if (str[si] != value[vi] + 32) return false;
-                }
-                else if (str[si] != value[vi])
-                {
-                    return false;
-                }
+                if (!str[si].EqualsIAscii(value[vi])) return false;
             }
 
             return true;

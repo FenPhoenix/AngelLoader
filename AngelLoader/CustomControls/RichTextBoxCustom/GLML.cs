@@ -6,23 +6,6 @@ namespace AngelLoader.CustomControls
 {
     internal sealed partial class RichTextBoxCustom
     {
-        #region Helpers
-
-        private static bool IsAlphaUpper(string str)
-        {
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (str[i] < 65 || str[i] > 90) return false;
-            }
-            return true;
-        }
-
-        private static bool IsAlpha(char c) => (c >= 65 && c <= 90) || (c >= 97 && c <= 122);
-
-        private static bool IsAlphanumeric(char c) => IsAlpha(c) || (c >= 48 && c <= 57);
-
-        #endregion
-
         private static string GLMLToRTF(string text)
         {
             // ReSharper disable StringLiteralTypo
@@ -138,7 +121,7 @@ namespace AngelLoader.CustomControls
                                     if (!lastTagWasLineBreak) sb.Append(@"\line ");
                                     sb.Append(HorizontalLine);
                                 }
-                                else if (!IsAlphaUpper(tag))
+                                else if (!tag.IsAsciiAlphaUpper())
                                 {
                                     sb.Append("[GL");
                                     sb.Append(subSB);
@@ -186,7 +169,7 @@ namespace AngelLoader.CustomControls
                                 {
                                     sb.Append(@"\line\line ");
                                 }
-                                else if (!IsAlphaUpper(tag))
+                                else if (!tag.IsAsciiAlphaUpper())
                                 {
                                     sb.Append("[/GL");
                                     sb.Append(subSB);
@@ -251,7 +234,7 @@ namespace AngelLoader.CustomControls
                         }
                     }
                     // HTML Unicode named character references
-                    else if (i < text.Length - 3 && IsAlpha(text[i + 1]))
+                    else if (i < text.Length - 3 && text[i + 1].IsAsciiAlpha())
                     {
                         for (int j = i + 1; i < text.Length; j++)
                         {
@@ -273,7 +256,7 @@ namespace AngelLoader.CustomControls
                                 break;
                             }
                             // Support named references with numbers somewhere after their first char ("blk34" for instance)
-                            else if (!IsAlphanumeric(text[j]))
+                            else if (!text[j].IsAsciiAlphanumeric())
                             {
                                 sb.Append('&');
                                 sb.Append(subSB);

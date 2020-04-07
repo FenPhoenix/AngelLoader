@@ -139,12 +139,10 @@ namespace AngelLoader
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool PathCharsConsideredEqual(char char1, char char2) =>
+        private static bool PathCharsConsideredEqual_Win(char char1, char char2) =>
             char1 == char2 ||
-            ((char1 == '\\' || char1 == '/') &&
-             (char2 == '\\' || char2 == '/')) ||
-            ((char1 >= 65 && char1 <= 90 && char2 >= 97 && char2 <= 122 && char1 == char2 - 32) ||
-             (char1 >= 97 && char1 <= 122 && char2 >= 65 && char2 <= 90 && char1 == char2 + 32));
+            (char1.IsDirSep() && char2.IsDirSep()) ||
+            char1.EqualsIAscii(char2);
 
         /// <summary>
         /// Path equality check ignoring case and directory separator differences.
@@ -171,7 +169,7 @@ namespace AngelLoader
                            CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (!PathCharsConsideredEqual(fc, sc)) return false;
+                if (!PathCharsConsideredEqual_Win(fc, sc)) return false;
             }
 
             return true;
@@ -200,7 +198,7 @@ namespace AngelLoader
                            CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (!PathCharsConsideredEqual(fc, sc)) return false;
+                if (!PathCharsConsideredEqual_Win(fc, sc)) return false;
             }
 
             return true;
@@ -229,7 +227,7 @@ namespace AngelLoader
                            CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (!PathCharsConsideredEqual(fc, sc)) return false;
+                if (!PathCharsConsideredEqual_Win(fc, sc)) return false;
             }
 
             return true;

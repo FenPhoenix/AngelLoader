@@ -35,6 +35,13 @@ namespace AngelLoader.Tests
         }
 
         [Fact]
+        public void EqualsI_Test()
+        {
+            Assert.True("sdfsdfsdSDFSDfdsfsDFSDEFfw342f 324f23r2r 3r23r @#$%$5$#%543"
+                .EqualsI("SDfsdFsdSdfSDfdsfsDFSDEFfw342f 324f23r2r 3r23r @#$%$5$#%543"));
+        }
+
+        [Fact]
         public void ReadConfigIni_Test()
         {
             // TODO: Assert against all possible bad data that I can think of here
