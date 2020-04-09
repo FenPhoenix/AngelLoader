@@ -87,6 +87,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -94,7 +95,7 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetDir)AngelLoader_Stub.dll" "$(SolutionDir)AngelLoader\bin\x86\Debug" /y</Command>
+      <Command>xcopy "$(TargetDir)AngelLoader_Stub.dll" "$(SolutionDir)temp_transfer_bin" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
