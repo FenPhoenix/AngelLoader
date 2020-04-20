@@ -633,7 +633,6 @@ namespace AngelLoader
                         ((DateTime)fm.DateAdded).ToLocalTime().CompareTo(dtNow) <= 0 &&
                         (dtNow - ((DateTime)fm.DateAdded).ToLocalTime()).TotalDays <= Config.DaysRecent)
                     {
-
                         tempFMs.Add(fm);
                     }
                 }
@@ -658,7 +657,7 @@ namespace AngelLoader
         #region Get info from game config files
 
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
-            List<string> FMSelectorLines, bool AlwaysShowLoader)
+                         List<string> FMSelectorLines, bool AlwaysShowLoader)
         GetInfoFromCamModIni(string gamePath, out Error error, bool langOnly = false)
         {
             string CreateAndReturnFMsPath()
@@ -763,7 +762,7 @@ namespace AngelLoader
         }
 
         private static (Error Error, bool UseCentralSaves, string FMInstallPath,
-            string PrevFMSelectorValue, bool AlwaysShowLoader)
+                        string PrevFMSelectorValue, bool AlwaysShowLoader)
         GetInfoFromSneakyOptionsIni()
         {
             string soIni = Paths.GetSneakyOptionsIni();
@@ -1599,8 +1598,8 @@ namespace AngelLoader
             #region Main window state
 
             Config.MainWindowState = mainWindowState;
-            Config.MainWindowSize = new Size { Width = mainWindowSize.Width, Height = mainWindowSize.Height };
-            Config.MainWindowLocation = new Point(mainWindowLocation.X, mainWindowLocation.Y);
+            Config.MainWindowSize = mainWindowSize;
+            Config.MainWindowLocation = mainWindowLocation;
             Config.MainSplitterPercent = mainSplitterPercent;
             Config.TopSplitterPercent = topSplitterPercent;
 

@@ -1250,10 +1250,9 @@ namespace AngelLoader.Forms
         private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (EventsDisabled) return;
-            var s = LangComboBox;
             try
             {
-                Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, s.SelectedBackingItem() + ".ini"));
+                Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, LangComboBox.SelectedBackingItem() + ".ini"));
                 Localize();
                 if (!Startup) LocalizeOwnerForm();
             }

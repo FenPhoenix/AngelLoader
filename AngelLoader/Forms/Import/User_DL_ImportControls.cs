@@ -29,11 +29,10 @@ namespace AngelLoader.Forms.Import
 
         private void AutodetectCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            var s = AutodetectCheckBox;
-            DarkLoaderIniTextBox.ReadOnly = s.Checked;
-            DarkLoaderIniBrowseButton.Enabled = !s.Checked;
+            DarkLoaderIniTextBox.ReadOnly = AutodetectCheckBox.Checked;
+            DarkLoaderIniBrowseButton.Enabled = !AutodetectCheckBox.Checked;
 
-            if (s.Checked) DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
+            if (AutodetectCheckBox.Checked) DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
         }
 
         internal void Localize()
