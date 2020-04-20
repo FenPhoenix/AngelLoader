@@ -54,6 +54,7 @@ namespace AngelLoader.Forms
         private readonly int?[] PageVScrollValues;
 
         private readonly TextBox[] ExePathTextBoxes;
+        private readonly TextBox[] ErrorableTextBoxes;
 
         #endregion
 
@@ -111,6 +112,16 @@ namespace AngelLoader.Forms
                 PathsPage.Thief3ExePathTextBox,
                 PathsPage.SS2ExePathTextBox,
                 PathsPage.SteamExeTextBox
+            };
+
+            ErrorableTextBoxes = new[]
+            {
+                PathsPage.Thief1ExePathTextBox,
+                PathsPage.Thief2ExePathTextBox,
+                PathsPage.Thief3ExePathTextBox,
+                PathsPage.SS2ExePathTextBox,
+                PathsPage.SteamExeTextBox,
+                PathsPage.BackupPathTextBox
             };
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
@@ -686,7 +697,22 @@ namespace AngelLoader.Forms
             if (error)
             {
                 e.Cancel = true;
+
+                // Currently, all errors happen on the Paths page, so go to that page automatically.
                 PathsRadioButton.Checked = true;
+
+                // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
+                // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
+                // to make it clear.
+                foreach (TextBox tb in ErrorableTextBoxes)
+                {
+                    if (PathErrorIsSet(tb))
+                    {
+                        PathsPage.PagePanel.ScrollControlIntoView(tb);
+                        break;
+                    }
+                }
+
                 return;
             }
             else
@@ -1248,13 +1274,15 @@ namespace AngelLoader.Forms
             {
                 foreach (var tb in ExePathTextBoxes)
                 {
-                    if (tb.Tag is PathError gError && gError == PathError.True) return;
+                    if (PathErrorIsSet(tb)) return;
                 }
             }
 
             ErrorLabel.Text = shown ? LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid : "";
             ErrorLabel.Visible = shown;
         }
+
+        private static bool PathErrorIsSet(Control control) => control.Tag is PathError pathError && pathError == PathError.True;
 
         private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
         {
