@@ -1198,9 +1198,9 @@ namespace FMScanner
                     }
 
                     // TODO: Maybe extract this again, but then I have to extract MapFileExists() too
-                    if (_scanOptions.ScanCustomResources)
+                    if (!_ss2Fingerprinted || _scanOptions.ScanCustomResources)
                     {
-                        // TODO: I already have baseDirFiles; see if this EnumerateDirectories can be removed
+                        // TODO: I already have baseDirFiles; see if this GetDirectories can be removed
                         // Even a janky scan through baseDirFiles would probably be faster than hitting the disk
                         var baseDirFolders = new List<string>();
                         foreach (string f in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
@@ -1208,61 +1208,64 @@ namespace FMScanner
                             baseDirFolders.Add(f.Substring(f.LastIndexOfDirSep() + 1));
                         }
 
-                        foreach (NameAndIndex f in intrfaceDirFiles)
+                        if (_scanOptions.ScanCustomResources)
                         {
-                            if (fmd.HasAutomap == null &&
-                                f.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
-                                f.Name.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
-                                f.Name.EndsWithRaDotBin())
+                            foreach (NameAndIndex f in intrfaceDirFiles)
                             {
-                                fmd.HasAutomap = true;
-                                // Definitely a clever deduction, definitely not a sneaky hack for GatB-T2
-                                fmd.HasMap = true;
-                                break;
+                                if (fmd.HasAutomap == null &&
+                                    f.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
+                                    f.Name.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                                    f.Name.EndsWithRaDotBin())
+                                {
+                                    fmd.HasAutomap = true;
+                                    // Definitely a clever deduction, definitely not a sneaky hack for GatB-T2
+                                    fmd.HasMap = true;
+                                    break;
+                                }
+
+                                if (fmd.HasMap == null && MapFileExists(f.Name)) fmd.HasMap = true;
                             }
 
-                            if (fmd.HasMap == null && MapFileExists(f.Name)) fmd.HasMap = true;
+                            if (fmd.HasMap == null) fmd.HasMap = false;
+                            if (fmd.HasAutomap == null) fmd.HasAutomap = false;
+
+                            fmd.HasCustomMotions =
+                                baseDirFolders.ContainsI(FMDirs.Motions) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Motions), MotionFilePatterns);
+
+                            fmd.HasMovies =
+                                (baseDirFolders.ContainsI(FMDirs.Movies) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Movies), SA_AllFiles)) ||
+                                (baseDirFolders.ContainsI(FMDirs.Cutscenes) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Cutscenes), SA_AllFiles));
+
+                            fmd.HasCustomTextures =
+                                baseDirFolders.ContainsI(FMDirs.Fam) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Fam), ImageFilePatterns);
+
+                            fmd.HasCustomObjects =
+                                baseDirFolders.ContainsI(FMDirs.Obj) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Obj), SA_AllBinFiles);
+
+                            fmd.HasCustomCreatures =
+                                baseDirFolders.ContainsI(FMDirs.Mesh) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), SA_AllBinFiles);
+
+                            fmd.HasCustomScripts =
+                                baseDirFiles.Any(x => ScriptFileExtensions.ContainsI(Path.GetExtension(x.Name))) ||
+                                (baseDirFolders.ContainsI(FMDirs.Scripts) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), SA_AllFiles));
+
+                            fmd.HasCustomSounds =
+                                (baseDirFolders.ContainsI(FMDirs.Snd) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd), SA_AllFiles)) ||
+                                 (baseDirFolders.ContainsI(FMDirs.Snd2) &&
+                                  FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd2), SA_AllFiles));
+
+                            fmd.HasCustomSubtitles =
+                                baseDirFolders.ContainsI(FMDirs.Subtitles) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
                         }
-
-                        if (fmd.HasMap == null) fmd.HasMap = false;
-                        if (fmd.HasAutomap == null) fmd.HasAutomap = false;
-
-                        fmd.HasCustomMotions =
-                            baseDirFolders.ContainsI(FMDirs.Motions) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Motions), MotionFilePatterns);
-
-                        fmd.HasMovies =
-                            (baseDirFolders.ContainsI(FMDirs.Movies) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Movies), SA_AllFiles)) ||
-                            (baseDirFolders.ContainsI(FMDirs.Cutscenes) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Cutscenes), SA_AllFiles));
-
-                        fmd.HasCustomTextures =
-                            baseDirFolders.ContainsI(FMDirs.Fam) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Fam), ImageFilePatterns);
-
-                        fmd.HasCustomObjects =
-                            baseDirFolders.ContainsI(FMDirs.Obj) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Obj), SA_AllBinFiles);
-
-                        fmd.HasCustomCreatures =
-                            baseDirFolders.ContainsI(FMDirs.Mesh) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), SA_AllBinFiles);
-
-                        fmd.HasCustomScripts =
-                            baseDirFiles.Any(x => ScriptFileExtensions.ContainsI(Path.GetExtension(x.Name))) ||
-                            (baseDirFolders.ContainsI(FMDirs.Scripts) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), SA_AllFiles));
-
-                        fmd.HasCustomSounds =
-                            (baseDirFolders.ContainsI(FMDirs.Snd) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd), SA_AllFiles)) ||
-                             (baseDirFolders.ContainsI(FMDirs.Snd2) &&
-                              FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd2), SA_AllFiles));
-
-                        fmd.HasCustomSubtitles =
-                            baseDirFolders.ContainsI(FMDirs.Subtitles) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
 
                         if (!_ss2Fingerprinted &&
                             (baseDirFolders.ContainsI(FMDirs.Cutscenes) ||
