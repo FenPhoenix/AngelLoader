@@ -9,7 +9,7 @@ namespace AngelLoader.CustomControls
     {
         private bool _checked;
 
-        // @R#_FALSE_POSITIVE?
+        // @R#_FALSE_POSITIVE?: It doesn't make sense to call event handlers "nullable" does it?
         public event EventHandler? CheckedChanged;
 
         [Browsable(true)]

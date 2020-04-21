@@ -18,11 +18,7 @@ namespace AngelLoader.DataClasses
             GameExes = new string[SupportedGameCount];
             GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
-            // TODO: We don't use these currently because we grab them from cam_mod.ini right when we need them
-#if false
-            FMLanguages = new string[SupportedGameCount];
-            FMForcedLanguages = new bool[SupportedGameCount];
-#endif
+
             GameEditorDetected = new bool[SupportedGameCount];
             UseSteamSwitches = new bool[SupportedGameCount];
             StartupFMSelectorLines = new List<string>[SupportedGameCount];
@@ -36,9 +32,7 @@ namespace AngelLoader.DataClasses
                 GameExes[i] = "";
                 GamePaths[i] = "";
                 FMInstallPaths[i] = "";
-#if false
-                FMLanguages[i] = "";
-#endif
+
                 UseSteamSwitches[i] = true;
                 StartupFMSelectorLines[i] = new List<string>();
             }
@@ -116,40 +110,6 @@ namespace AngelLoader.DataClasses
         internal string GetFMInstallPathUnsafe(Game game) => FMInstallPaths[(uint)GameToGameIndex(game)];
 
         internal void SetFMInstallPath(GameIndex index, string value) => FMInstallPaths[(uint)index] = value;
-
-        #endregion
-
-        #region FM language and forced-language
-
-#if false
-
-        internal readonly string[] FMLanguages;
-
-        internal string GetPerGameFMLanguage(GameIndex index) => FMLanguages[(uint)index];
-
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal string GetPerGameFMLanguageUnsafe(Game game) => FMLanguages[(uint)GameToGameIndex(game)];
-
-        internal void SetPerGameFMLanguage(GameIndex index, string value) => FMLanguages[(uint)index] = value;
-
-        internal readonly bool[] FMForcedLanguages;
-
-        internal bool GetPerGameFMForcedLanguage(GameIndex index) => FMForcedLanguages[(uint)index];
-
-        /// <summary>
-        /// This may throw if <paramref name="game"/> can't convert to a <see cref="GameIndex"/>. Do a guard check first!
-        /// </summary>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        internal bool GetPerGameFMForcedLanguageUnsafe(Game game) => FMForcedLanguages[(uint)GameToGameIndex(game)];
-
-        internal void SetPerGameFMForcedLanguage(GameIndex index, bool value) => FMForcedLanguages[(uint)index] = value;
-
-#endif
 
         #endregion
 

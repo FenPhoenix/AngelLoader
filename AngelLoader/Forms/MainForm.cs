@@ -4024,7 +4024,7 @@ namespace AngelLoader.Forms
                 return;
             }
 
-            TopRightTabControl.ShowTab(tab, s.Checked);
+            TopRightTabControl.ShowTab(tab!, s.Checked);
         }
 
         #endregion

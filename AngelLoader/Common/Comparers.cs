@@ -161,7 +161,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                // @R#_FALSE_POSITIVE
                 x.Game == y.Game ? TitleCompare(x, y) :
                 x.Game == Game.Null ? -1 :
                 y.Game == Game.Null ? 1 :
@@ -178,7 +177,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                // @R#_FALSE_POSITIVE
                 x.Installed == y.Installed ? TitleCompare(x, y) :
                 // Installed goes on top, non-installed (blank icon) goes on bottom
                 x.Installed && !y.Installed ? -1 : 1;
@@ -194,7 +192,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                // @R#_FALSE_POSITIVE
                 x.Archive.IsEmpty() ? -1 :
                 y.Archive.IsEmpty() ? 1 :
                 string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
@@ -210,7 +207,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                // @R#_FALSE_POSITIVE
                 x.Author == y.Author ? TitleCompare(x, y) :
                 x.Author.IsEmpty() ? -1 :
                 y.Author.IsEmpty() ? 1 :
@@ -227,7 +223,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                // @R#_FALSE_POSITIVE
                 x.SizeBytes == y.SizeBytes ? TitleCompare(x, y) :
                 x.SizeBytes == 0 ? -1 :
                 y.SizeBytes == 0 ? 1 :
@@ -260,7 +255,6 @@ namespace AngelLoader
 #endif
             {
                 ret =
-                    // @R#_FALSE_POSITIVE
                     x.Rating == y.Rating ? TitleCompare(x, y) :
                     x.Rating == 0 ? -1 :
                     y.Rating == 0 ? 1 :
@@ -295,7 +289,6 @@ namespace AngelLoader
 #endif
             {
                 ret =
-                    // @R#_FALSE_POSITIVE
                     !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
                     x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
                         (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
@@ -318,7 +311,6 @@ namespace AngelLoader
             // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
             // sorted out of name order because of an invisible time difference.
             int ret;
-            // @R#_FALSE_POSITIVE
             if (x.ReleaseDate.DateTime == null && y.ReleaseDate.DateTime == null)
             {
                 ret = TitleCompare(x, y);
@@ -348,7 +340,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
-            // @R#_FALSE_POSITIVE
             if (x.LastPlayed.DateTime == null && y.LastPlayed.DateTime == null)
             {
                 ret = TitleCompare(x, y);
@@ -380,7 +371,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
-            // @R#_FALSE_POSITIVE
             if (x.DateAdded == null && y.DateAdded == null)
             {
                 ret = TitleCompare(x, y);
@@ -411,7 +401,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                // @R#_FALSE_POSITIVE
                 x.DisableAllMods && !y.DisableAllMods ? -1 :
                 !x.DisableAllMods && y.DisableAllMods ? 1 :
                 (x.DisableAllMods && y.DisableAllMods) || x.DisabledMods == y.DisabledMods ? TitleCompare(x, y) :
@@ -431,7 +420,6 @@ namespace AngelLoader
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
-                // @R#_FALSE_POSITIVE
                 x.CommentSingleLine == y.CommentSingleLine ? TitleCompare(x, y) :
                 // Sort this column content-first for better UX
                 x.CommentSingleLine.IsEmpty() ? 1 :
@@ -493,7 +481,6 @@ namespace AngelLoader
 
     internal sealed class CatItemComparer : IComparer<GlobalCatOrTag>
     {
-        // @R#_FALSE_POSITIVE
         public int Compare(GlobalCatOrTag x, GlobalCatOrTag y) => string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
     }
 
