@@ -7,6 +7,11 @@ namespace AngelLoader.Forms
     // @GENGAMES: There's game-related stuff in here
     public static class Images
     {
+        // @GENGAMES: Putting these into an array doesn't really gain us anything and loses us robustness, so leave them
+        // We would have to say ResourceManager.GetObject(nameof(gameIndex) + "_16") etc. and that doesn't even
+        // work due to SS2 -> Shock2_16 etc. naming. We'd have to remember to name our resources properly or it
+        // would fail silently, so really it's best to just leave these as hard-converts even though we really
+        // want to get rid of individually-specified games.
         private static Bitmap? _Thief1_16;
         private static Bitmap? _Thief2_16;
         private static Bitmap? _Thief3_16;

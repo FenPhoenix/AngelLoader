@@ -349,12 +349,7 @@ namespace AngelLoader.Forms
         private readonly ToolStripButtonCustom[] FilterByGameButtonsInOrder;
         private readonly TabPage[] TopRightTabsInOrder;
 
-        private enum KeepSel
-        {
-            False,
-            True,
-            TrueNearest
-        }
+        private enum KeepSel { False, True, TrueNearest }
 
         private enum ZoomFMsDGVType
         {
@@ -375,11 +370,8 @@ namespace AngelLoader.Forms
         // We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
         // Resources every time is enormously expensive, causing laggy scrolling and just generally wasting good
         // cycles. So we copy them only once to these local bitmaps, and voila, instant scrolling performance.
-        // TODO: @GENGAMES: put the game icons into an array
-        private Bitmap? Thief1Icon;
-        private Bitmap? Thief2Icon;
-        private Bitmap? Thief3Icon;
-        private Bitmap? SS2Icon;
+        private readonly Bitmap?[] GameIcons = new Bitmap?[SupportedGameCount];
+
         private Bitmap? BlankIcon;
         private Bitmap? CheckIcon;
         private Bitmap? RedQuestionMarkIcon;
@@ -2224,11 +2216,11 @@ namespace AngelLoader.Forms
             // The arrays are obstacles to lazy-loading, but see if we still get good scrolling perf when we look
             // them up and load the individual images as needed, rather than all at once here
 
-            // TODO: @GENGAMES: Put these into an array
-            Thief1Icon = Images.Thief1_21;
-            Thief2Icon = Images.Thief2_21;
-            Thief3Icon = Images.Thief3_21;
-            SS2Icon = Images.Shock2_21;
+            // @GENGAMES: We would prefer to put these in an array, but see Images class for why we can't really do that
+            GameIcons[(int)Thief1] = Images.Thief1_21;
+            GameIcons[(int)Thief2] = Images.Thief2_21;
+            GameIcons[(int)Thief3] = Images.Thief3_21;
+            GameIcons[(int)SS2] = Images.Shock2_21;
 
             BlankIcon = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
             CheckIcon = Resources.CheckCircle;
@@ -2312,17 +2304,11 @@ namespace AngelLoader.Forms
             switch ((Column)e.ColumnIndex)
             {
                 case Column.Game:
-                    e.Value = fm.Game switch
-                    {
-                        // TODO: @GENGAMES
-                        Game.Thief1 => Thief1Icon,
-                        Game.Thief2 => Thief2Icon,
-                        Game.Thief3 => Thief3Icon,
-                        Game.SS2 => SS2Icon,
-                        Game.Unsupported => RedQuestionMarkIcon,
+                    e.Value =
+                        GameIsKnownAndSupported(fm.Game) ? GameIcons[(int)GameToGameIndex(fm.Game)] :
+                        fm.Game == Game.Unsupported ? RedQuestionMarkIcon :
                         // Can't say null, or else it sets an ugly red-x image
-                        _ => BlankIcon
-                    };
+                        BlankIcon;
                     break;
 
                 case Column.Installed:
