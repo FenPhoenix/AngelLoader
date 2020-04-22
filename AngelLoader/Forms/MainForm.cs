@@ -499,6 +499,13 @@ namespace AngelLoader.Forms
             const bool BlockMessage = true;
             const bool PassMessageOn = false;
 
+            static bool TryGetHWndFromMousePos(Message msg, out IntPtr result)
+            {
+                Point pos = new Point(msg.LParam.ToInt32() & 0xffff, msg.LParam.ToInt32() >> 16);
+                result = InteropMisc.WindowFromPoint(pos);
+                return result != IntPtr.Zero && Control.FromHandle(result) != null;
+            }
+
             // Note: CanFocus will be false if there are modal windows open
 
             // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
@@ -506,16 +513,10 @@ namespace AngelLoader.Forms
             #region Mouse
             if (m.Msg == InteropMisc.WM_MOUSEWHEEL)
             {
-                #region Temp hack
-
                 // IMPORTANT! Do this check inside each if block rather than above, because the message may not
                 // be a mousemove message, and in that case we'd be trying to get a window point from a random
                 // value, and that causes the min,max,close button flickering.
-                Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
-                IntPtr hWnd = InteropMisc.WindowFromPoint(pos);
-                if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
-
-                #endregion
+                if (!TryGetHWndFromMousePos(m, out IntPtr hWnd)) return PassMessageOn;
 
                 if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
@@ -543,19 +544,24 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
+                    // Stupid hack to fix "send mousewheel to underlying control and block further messages"
+                    // functionality still not being fully reliable. We need to focus the parent control sometimes
+                    // inexplicably. Sure. Whole point is to avoid having to do that, but sure.
+                    if (CursorOverControl(TopSplitContainer.Panel2))
+                    {
+                        TopSplitContainer.Panel2.Focus();
+                    }
+                    else if (CursorOverControl(MainSplitContainer.Panel2))
+                    {
+                        MainSplitContainer.Panel2.Focus();
+                    }
                     InteropMisc.SendMessage(hWnd, m.Msg, m.WParam, m.LParam);
                 }
                 return BlockMessage;
             }
             else if (m.Msg == InteropMisc.WM_MOUSEHWHEEL)
             {
-                #region Temp hack (see above)
-
-                Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
-                IntPtr hWnd = InteropMisc.WindowFromPoint(pos);
-                if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) return PassMessageOn;
-
-                #endregion
+                if (!TryGetHWndFromMousePos(m, out _)) return PassMessageOn;
 
                 if (ViewBlocked) return BlockMessage;
 
@@ -3034,10 +3040,10 @@ namespace AngelLoader.Forms
             // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
             // Thief 3 difficulties: Easy, Normal, Hard, Expert
             // SS2 difficulties: Easy, Normal, Hard, Impossible
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Normal, GetLocalizedDifficultyName(fm, FinishedOn.Normal));
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Hard, GetLocalizedDifficultyName(fm, FinishedOn.Hard));
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Expert, GetLocalizedDifficultyName(fm, FinishedOn.Expert));
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, GetLocalizedDifficultyName(fm, FinishedOn.Extreme));
+            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Normal, GetLocalizedDifficultyName(fm, Difficulty.Normal));
+            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Hard, GetLocalizedDifficultyName(fm, Difficulty.Hard));
+            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Expert, GetLocalizedDifficultyName(fm, Difficulty.Expert));
+            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Extreme, GetLocalizedDifficultyName(fm, Difficulty.Extreme));
             // FinishedOnUnknownMenuItem text stays the same
 
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
@@ -3103,12 +3109,12 @@ namespace AngelLoader.Forms
             }
             else
             {
-                var val = (FinishedOn)fm.FinishedOn;
+                var val = (Difficulty)fm.FinishedOn;
                 // I don't have to disable events because I'm only wired up to Click, not Checked
-                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Normal, (val & FinishedOn.Normal) == FinishedOn.Normal);
-                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Hard, (val & FinishedOn.Hard) == FinishedOn.Hard);
-                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Expert, (val & FinishedOn.Expert) == FinishedOn.Expert);
-                FMsDGV.SetFinishedOnMenuItemChecked(FinishedOn.Extreme, (val & FinishedOn.Extreme) == FinishedOn.Extreme);
+                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Normal, (val & Difficulty.Normal) == Difficulty.Normal);
+                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Hard, (val & Difficulty.Hard) == Difficulty.Hard);
+                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Expert, (val & Difficulty.Expert) == Difficulty.Expert);
+                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Extreme, (val & Difficulty.Extreme) == Difficulty.Extreme);
                 FMsDGV.SetFinishedOnUnknownMenuItemChecked(false);
             }
 

@@ -247,17 +247,7 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanGameType)
                     {
-                        // @GENGAMES: Do a hard convert at the API boundary, even though these now match the ordering
-                        // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
-                        sel.Game = scannedFM.Game switch
-                        {
-                            FMScanner.Game.Unsupported => GameSupport.Game.Unsupported,
-                            FMScanner.Game.Thief1 => GameSupport.Game.Thief1,
-                            FMScanner.Game.Thief2 => GameSupport.Game.Thief2,
-                            FMScanner.Game.Thief3 => GameSupport.Game.Thief3,
-                            FMScanner.Game.SS2 => GameSupport.Game.SS2,
-                            _ => GameSupport.Game.Null
-                        };
+                        sel.Game = ScannerGameToGame(scannedFM.Game);
                     }
 
                     // TODO: Uncomment if you start using this

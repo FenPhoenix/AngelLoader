@@ -89,20 +89,32 @@ namespace AngelLoader
 
         #endregion
 
-        internal static string GetLocalizedDifficultyName(FanMission? fm, FinishedOn difficulty)
+        internal static string GetLocalizedDifficultyName(FanMission? fm, Difficulty difficulty)
         {
             bool fmIsT3 = fm != null && fm.Game == Game.Thief3;
             bool fmIsSS2 = fm != null && fm.Game == Game.SS2;
 
             return difficulty switch
             {
-                FinishedOn.Normal => fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal,
-                FinishedOn.Hard => fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard,
-                FinishedOn.Expert => fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert,
-                FinishedOn.Extreme => fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme,
+                Difficulty.Normal => fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal,
+                Difficulty.Hard => fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard,
+                Difficulty.Expert => fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert,
+                Difficulty.Extreme => fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme,
                 _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
             };
         }
+
+        // @GENGAMES: Do a hard convert at the API boundary, even though these now match the ordering
+        // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
+        internal static Game ScannerGameToGame(FMScanner.Game scannerGame) => scannerGame switch
+        {
+            FMScanner.Game.Unsupported => Game.Unsupported,
+            FMScanner.Game.Thief1 => Game.Thief1,
+            FMScanner.Game.Thief2 => Game.Thief2,
+            FMScanner.Game.Thief3 => Game.Thief3,
+            FMScanner.Game.SS2 => Game.SS2,
+            _ => Game.Null
+        };
 
         #region Get game name from game type
 

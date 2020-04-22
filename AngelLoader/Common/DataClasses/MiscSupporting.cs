@@ -89,7 +89,7 @@ namespace AngelLoader.DataClasses
     internal enum FinishedState : uint { Null = 0, Finished = 1, Unfinished = 2 }
 
     [Flags, PublicAPI]
-    internal enum FinishedOn : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
+    internal enum Difficulty : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
 
     // IMPORTANT: Do not rename elements or compatibility will break!
     [Flags]

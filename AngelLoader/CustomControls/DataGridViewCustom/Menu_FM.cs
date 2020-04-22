@@ -348,10 +348,10 @@ namespace AngelLoader.CustomControls
 
             FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
 
-            FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Normal).EscapeAmpersands();
-            FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Hard).EscapeAmpersands();
-            FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Expert).EscapeAmpersands();
-            FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Extreme).EscapeAmpersands();
+            FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Normal).EscapeAmpersands();
+            FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Hard).EscapeAmpersands();
+            FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Expert).EscapeAmpersands();
+            FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Extreme).EscapeAmpersands();
             FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown.EscapeAmpersands();
 
             #endregion
@@ -488,13 +488,13 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        internal void SetFinishedOnMenuItemChecked(FinishedOn finishedOn, bool value)
+        internal void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
         {
             if (value && !_fmMenuConstructed) _finishedOnUnknownChecked = false;
 
-            switch (finishedOn)
+            switch (difficulty)
             {
-                case FinishedOn.Normal:
+                case Difficulty.Normal:
                     if (_fmMenuConstructed)
                     {
                         FinishedOnNormalMenuItem!.Checked = value;
@@ -504,7 +504,7 @@ namespace AngelLoader.CustomControls
                         _finishedOnNormalChecked = value;
                     }
                     break;
-                case FinishedOn.Hard:
+                case Difficulty.Hard:
                     if (_fmMenuConstructed)
                     {
                         FinishedOnHardMenuItem!.Checked = value;
@@ -514,7 +514,7 @@ namespace AngelLoader.CustomControls
                         _finishedOnHardChecked = value;
                     }
                     break;
-                case FinishedOn.Expert:
+                case Difficulty.Expert:
                     if (_fmMenuConstructed)
                     {
                         FinishedOnExpertMenuItem!.Checked = value;
@@ -524,7 +524,7 @@ namespace AngelLoader.CustomControls
                         _finishedOnExpertChecked = value;
                     }
                     break;
-                case FinishedOn.Extreme:
+                case Difficulty.Extreme:
                     if (_fmMenuConstructed)
                     {
                         FinishedOnExtremeMenuItem!.Checked = value;
@@ -537,20 +537,20 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        internal void SetFinishedOnMenuItemText(FinishedOn finishedOn, string text)
+        internal void SetFinishedOnMenuItemText(Difficulty difficulty, string text)
         {
-            switch (finishedOn)
+            switch (difficulty)
             {
-                case FinishedOn.Normal:
+                case Difficulty.Normal:
                     if (_fmMenuConstructed) FinishedOnNormalMenuItem!.Text = text;
                     break;
-                case FinishedOn.Hard:
+                case Difficulty.Hard:
                     if (_fmMenuConstructed) FinishedOnHardMenuItem!.Text = text;
                     break;
-                case FinishedOn.Expert:
+                case Difficulty.Expert:
                     if (_fmMenuConstructed) FinishedOnExpertMenuItem!.Text = text;
                     break;
-                case FinishedOn.Extreme:
+                case Difficulty.Extreme:
                     if (_fmMenuConstructed) FinishedOnExtremeMenuItem!.Text = text;
                     break;
             }
