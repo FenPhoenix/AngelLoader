@@ -125,7 +125,7 @@ namespace FMScanner
                 }
             }
 
-            return index > -1;
+            return false;
         }
 
         #endregion

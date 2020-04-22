@@ -126,7 +126,7 @@ namespace FMScanner.SimpleHelpers
         /// <param name="rawData">The raw data.</param>
         /// <param name="start">The start.</param>
         /// <param name="count">The count.</param>
-        private bool CheckForTextualData(byte[] rawData, int start, int count)
+        private static bool CheckForTextualData(byte[] rawData, int start, int count)
         {
             if (rawData.Length < count || count < 4 || start + 1 >= count)
             {
@@ -166,7 +166,7 @@ namespace FMScanner.SimpleHelpers
         /// <param name="rawData">The raw data.</param>
         /// <param name="start">The start.</param>
         /// <returns></returns>
-        private bool CheckForByteOrderMark(byte[] rawData, int start = 0)
+        private static bool CheckForByteOrderMark(byte[] rawData, int start = 0)
         {
             if (rawData.Length - start < 4) return false;
 

@@ -674,7 +674,7 @@ namespace AngelLoader.CustomControls
         {
             for (int i = 0; i < FMContextMenuDisposables?.Length; i++)
             {
-                FMContextMenuDisposables[i]?.Dispose();
+                FMContextMenuDisposables?[i]?.Dispose();
             }
         }
     }

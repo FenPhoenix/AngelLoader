@@ -317,7 +317,7 @@ namespace AngelLoader.CustomControls
             {
                 for (int i = 0; i < ColumnHeaderMenuDisposables?.Length; i++)
                 {
-                    ColumnHeaderMenuDisposables[i]?.Dispose();
+                    ColumnHeaderMenuDisposables?[i]?.Dispose();
                 }
             }
 

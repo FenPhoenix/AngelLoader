@@ -241,7 +241,7 @@ namespace AngelLoader
                         existingFM.InstalledDir = fm.InstalledDir;
                         existingFM.Installed = true;
                         existingFM.Game = fm.Game;
-                        if (existingFM.DateAdded == null) existingFM.DateAdded = fm.DateAdded;
+                        existingFM.DateAdded ??= fm.DateAdded;
                         FMDataIniList.RemoveAt(i);
                         i--;
                     }
@@ -338,7 +338,7 @@ namespace AngelLoader
                         }
                         fm.NoArchive = false;
 
-                        if (fm.DateAdded == null) fm.DateAdded = dateTimes[ai];
+                        fm.DateAdded ??= dateTimes[ai];
 
                         checkedArray[i] = true;
                         existingFound = true;
@@ -347,7 +347,7 @@ namespace AngelLoader
                     else if (!checkedArray[i] &&
                              !fm.Archive.IsEmpty() && fm.Archive.EqualsI(archive))
                     {
-                        if (fm.DateAdded == null) fm.DateAdded = dateTimes[ai];
+                        fm.DateAdded ??= dateTimes[ai];
 
                         checkedArray[i] = true;
                         existingFound = true;
@@ -392,7 +392,7 @@ namespace AngelLoader
                     {
                         fm.Game = gFM.Game;
                         fm.Installed = true;
-                        if (fm.DateAdded == null) fm.DateAdded = dateTimes[gFMi];
+                        fm.DateAdded ??= dateTimes[gFMi];
 
                         checkedArray[i] = true;
                         existingFound = true;

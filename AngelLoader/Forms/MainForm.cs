@@ -179,7 +179,7 @@ namespace AngelLoader.Forms
         public void ShowFMsListZoomButtons(bool visible)
         {
             Lazy_FMsListZoomButtons.SetVisible(this, visible);
-            FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
+            SetFilterBarWidth();
         }
 
         public void ClearUIAndCurrentInternalFilter()
@@ -979,11 +979,7 @@ namespace AngelLoader.Forms
             Application.AddMessageFilter(this);
         }
 
-#if DEBUG
         private void MainForm_Shown(object sender, EventArgs e)
-#else
-        private static void MainForm_Shown(object sender, EventArgs e)
-#endif
         {
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
 #if RT_StartupOnly
@@ -1492,21 +1488,23 @@ namespace AngelLoader.Forms
 
         private void PositionFilterBarAfterTabs()
         {
-            int FilterBarAfterTabsX;
+            int filterBarAfterTabsX;
             // In case I decide to allow a variable number of tabs based on which games are defined
             if (GamesTabControl.TabCount == 0)
             {
-                FilterBarAfterTabsX = 0;
+                filterBarAfterTabsX = 0;
             }
             else
             {
                 var lastRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
-                FilterBarAfterTabsX = lastRect.X + lastRect.Width + 5;
+                filterBarAfterTabsX = lastRect.X + lastRect.Width + 5;
             }
 
-            FilterBarFLP.Location = new Point(FilterBarAfterTabsX, FilterBarFLP.Location.Y);
-            FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
+            FilterBarFLP.Location = new Point(filterBarAfterTabsX, FilterBarFLP.Location.Y);
+            SetFilterBarWidth();
         }
+
+        private void SetFilterBarWidth() => FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
 
         // Separate so we can call it from _Load on startup (because it needs the form to be loaded to layout the
         // controls properly) but keep the rest of the work before load
@@ -1778,12 +1776,9 @@ namespace AngelLoader.Forms
         {
             FanMission? oldSelectedFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
-            if (selectedFM == null)
-            {
-                selectedFM = keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
-                    ? FMsDGV.GetSelectedFMPosInfo()
-                    : null;
-            }
+            selectedFM ??= keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
+                ? FMsDGV.GetSelectedFMPosInfo()
+                : null;
 
             KeepSel keepSel =
                 selectedFM != null ? KeepSel.TrueNearest :
@@ -2496,7 +2491,7 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar.IsAsciiAlpha())
+            if (e.KeyChar.IsAsciiAlpha())
             {
                 int rowIndex = -1;
 
@@ -2652,12 +2647,7 @@ namespace AngelLoader.Forms
         }
 #endif
 
-#if DEBUG
-        private async void SettingsButton_Click(object sender, EventArgs e)
-#else
-        private static async void SettingsButton_Click(object sender, EventArgs e)
-#endif
-            => await Core.OpenSettings();
+        private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
         #endregion
 
@@ -4096,12 +4086,7 @@ namespace AngelLoader.Forms
             if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
         }
 
-#if DEBUG
-        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
-#else
-        private static void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
-#endif
-            => Core.OpenLink(e.LinkText);
+        private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
 
         private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
 
@@ -4370,6 +4355,8 @@ namespace AngelLoader.Forms
 
         private void ScanAllFMsButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanAllFMsButton(ScanAllFMsButton, e);
 
+        // Keep this one static because it calls out to the internal ButtonPainter rather than external Core, so
+        // it's fine even if we modularize the view
 #if DEBUG
         private void ScanIconButtons_Paint(object sender, PaintEventArgs e)
 #else

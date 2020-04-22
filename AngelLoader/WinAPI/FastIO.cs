@@ -99,8 +99,8 @@ namespace AngelLoader.WinAPI
 
         private static void ThrowException(string searchPattern, int err, string path)
         {
-            if (searchPattern == null) searchPattern = "<null>";
-            if (path == null) path = "<null>";
+            searchPattern ??= "<null>";
+            path ??= "<null>";
 
             var ex = new Win32Exception(err);
             throw new Win32Exception(err,
@@ -327,7 +327,8 @@ namespace AngelLoader.WinAPI
         internal static bool SearchDirForLanguages(string path, List<string> searchList, List<string> retList,
             bool earlyOutOnEnglish)
         {
-            // Always do this
+            // Vital, path must not have a trailing separator
+            // We also normalize it manually because we use \?\\ which skips normalization
             path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
 
             using var findHandle = FindFirstFileEx(@"\\?\" + path + "\\*",

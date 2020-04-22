@@ -18,7 +18,7 @@ namespace AngelLoader
         internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions? scanOptions = null)
         {
             // NULL_TODO: We could avoid a nullable by having a different way to do the default thing
-            if (scanOptions == null) scanOptions = GetDefaultScanOptions();
+            scanOptions ??= GetDefaultScanOptions();
             bool success = await ScanFM(fm, scanOptions);
             if (success) await Core.View.RefreshSelectedFM(refreshReadme: false);
         }

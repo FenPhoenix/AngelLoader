@@ -377,13 +377,11 @@ namespace AngelLoader
                 // Recycle the buffer - avoids GC house party
                 _buffer.Clear();
 
-                using (var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId))
+                using var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId);
+                if (!hProc.IsInvalid)
                 {
-                    if (!hProc.IsInvalid)
-                    {
-                        int size = _buffer.Capacity;
-                        if (QueryFullProcessImageName(hProc, 0, _buffer, ref size)) return _buffer.ToString();
-                    }
+                    int size = _buffer.Capacity;
+                    if (QueryFullProcessImageName(hProc, 0, _buffer, ref size)) return _buffer.ToString();
                 }
                 return "";
             }

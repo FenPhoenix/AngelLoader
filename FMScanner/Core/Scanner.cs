@@ -251,113 +251,112 @@ namespace FMScanner
 
             // Init and dispose rtfBox here to avoid cross-thread exceptions.
             // For performance, we only have one instance and we just change its content as needed.
-            using (var rtfBox = new RichTextBox())
+            using var rtfBox = new RichTextBox();
+
+            ProgressReport progressReport = new ProgressReport();
+
+            for (int i = 0; i < missions.Count; i++)
             {
-                ProgressReport progressReport = new ProgressReport();
+                _readmeFiles.Clear();
+                _fmDirFileInfos.Clear();
+                _ss2Fingerprinted = false;
 
-                for (int i = 0; i < missions.Count; i++)
+                bool nullAlreadyAdded = false;
+
+                #region Init
+
+                if (missions[i].Path.IsEmpty())
                 {
-                    _readmeFiles.Clear();
-                    _fmDirFileInfos.Clear();
-                    _ss2Fingerprinted = false;
+                    missions[i].Path = "";
+                    scannedFMDataList.Add(null);
+                    nullAlreadyAdded = true;
+                }
+                else
+                {
+                    string fm = missions[i].Path;
+                    _fmIsZip = fm.ExtIsZip() || fm.ExtIs7z();
 
-                    bool nullAlreadyAdded = false;
+                    _archive?.Dispose();
 
-                    #region Init
-
-                    if (missions[i].Path.IsEmpty())
+                    if (_fmIsZip)
                     {
-                        missions[i].Path = "";
-                        scannedFMDataList.Add(null);
-                        nullAlreadyAdded = true;
+                        _archivePath = fm;
+                        try
+                        {
+                            _fmWorkingPath = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(_archivePath).Trim());
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(LogFile, "Path.Combine error, paths are probably invalid", ex);
+                            scannedFMDataList.Add(null);
+                            nullAlreadyAdded = true;
+                        }
                     }
                     else
                     {
-                        string fm = missions[i].Path;
-                        _fmIsZip = fm.ExtIsZip() || fm.ExtIs7z();
-
-                        _archive?.Dispose();
-
-                        if (_fmIsZip)
-                        {
-                            _archivePath = fm;
-                            try
-                            {
-                                _fmWorkingPath = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(_archivePath).Trim());
-                            }
-                            catch (Exception ex)
-                            {
-                                Log(LogFile, "Path.Combine error, paths are probably invalid", ex);
-                                scannedFMDataList.Add(null);
-                                nullAlreadyAdded = true;
-                            }
-                        }
-                        else
-                        {
-                            _fmWorkingPath = fm;
-                        }
+                        _fmWorkingPath = fm;
                     }
+                }
 
-                    #endregion
+                #endregion
 
-                    #region Report progress and handle cancellation
+                #region Report progress and handle cancellation
 
-                    cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
-                    if (progress != null)
+                if (progress != null)
+                {
+                    // Recycle one object to minimize GC
+                    progressReport.FMName = missions[i].Path;
+                    progressReport.FMNumber = i + 1;
+                    progressReport.FMsTotal = missions.Count;
+                    progressReport.Percent = (100 * (i + 1)) / missions.Count;
+                    progressReport.Finished = false;
+
+                    progress.Report(progressReport);
+                }
+
+                #endregion
+
+                Log(LogFile, "About to scan " + missions[i], methodName: false);
+
+                // If there was an error then we already added null to the list. DON'T add any extra items!
+                if (!nullAlreadyAdded)
+                {
+                    ScannedFMData scannedFM = null;
+                    ScanOptions _tempScanOptions = null;
+                    try
                     {
-                        // Recycle one object to minimize GC
-                        progressReport.FMName = missions[i].Path;
-                        progressReport.FMNumber = i + 1;
-                        progressReport.FMsTotal = missions.Count;
-                        progressReport.Percent = (100 * (i + 1)) / missions.Count;
-                        progressReport.Finished = false;
-
-                        progress.Report(progressReport);
-                    }
-
-                    #endregion
-
-                    Log(LogFile, "About to scan " + missions[i], methodName: false);
-
-                    // If there was an error then we already added null to the list. DON'T add any extra items!
-                    if (!nullAlreadyAdded)
-                    {
-                        ScannedFMData scannedFM = null;
-                        ScanOptions _tempScanOptions = null;
+                        if (missions[i].ForceFullScan)
+                        {
+                            _tempScanOptions = _scanOptions.DeepCopy();
+                            _scanOptions = FullScanOptions.DeepCopy();
+                        }
                         try
                         {
-                            if (missions[i].ForceFullScan)
-                            {
-                                _tempScanOptions = _scanOptions.DeepCopy();
-                                _scanOptions = FullScanOptions.DeepCopy();
-                            }
-                            try
-                            {
-                                scannedFM = ScanCurrentFM(rtfBox);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log(LogFile, "Exception in FM scan", ex);
-                            }
-                            scannedFMDataList.Add(scannedFM);
+                            scannedFM = ScanCurrentFM(rtfBox);
                         }
-                        finally
+                        catch (Exception ex)
                         {
-                            if (missions[i].ForceFullScan)
-                            {
-                                _scanOptions = _tempScanOptions!.DeepCopy();
-                            }
+                            Log(LogFile, "Exception in FM scan", ex);
+                        }
+                        scannedFMDataList.Add(scannedFM);
+                    }
+                    finally
+                    {
+                        if (missions[i].ForceFullScan)
+                        {
+                            _scanOptions = _tempScanOptions!.DeepCopy();
                         }
                     }
+                }
 
-                    Log(LogFile, "Finished scanning " + missions[i], methodName: false);
+                Log(LogFile, "Finished scanning " + missions[i], methodName: false);
 
-                    if (progress != null && i == missions.Count - 1)
-                    {
-                        progressReport.Finished = true;
-                        progress.Report(progressReport);
-                    }
+                if (progress != null && i == missions.Count - 1)
+                {
+                    progressReport.Finished = true;
+                    progress.Report(progressReport);
                 }
             }
 
@@ -1130,16 +1129,16 @@ namespace FMScanner
 
                     if (_scanOptions.ScanCustomResources)
                     {
-                        if (fmd.HasMap == null) fmd.HasMap = false;
-                        if (fmd.HasAutomap == null) fmd.HasAutomap = false;
-                        if (fmd.HasCustomMotions == null) fmd.HasCustomMotions = false;
-                        if (fmd.HasMovies == null) fmd.HasMovies = false;
-                        if (fmd.HasCustomTextures == null) fmd.HasCustomTextures = false;
-                        if (fmd.HasCustomObjects == null) fmd.HasCustomObjects = false;
-                        if (fmd.HasCustomCreatures == null) fmd.HasCustomCreatures = false;
-                        if (fmd.HasCustomScripts == null) fmd.HasCustomScripts = false;
-                        if (fmd.HasCustomSounds == null) fmd.HasCustomSounds = false;
-                        if (fmd.HasCustomSubtitles == null) fmd.HasCustomSubtitles = false;
+                        fmd.HasMap ??= false;
+                        fmd.HasAutomap ??= false;
+                        fmd.HasCustomMotions ??= false;
+                        fmd.HasMovies ??= false;
+                        fmd.HasCustomTextures ??= false;
+                        fmd.HasCustomObjects ??= false;
+                        fmd.HasCustomCreatures ??= false;
+                        fmd.HasCustomScripts ??= false;
+                        fmd.HasCustomSounds ??= false;
+                        fmd.HasCustomSubtitles ??= false;
                     }
                 }
             }
@@ -1226,8 +1225,8 @@ namespace FMScanner
                                 if (fmd.HasMap == null && MapFileExists(f.Name)) fmd.HasMap = true;
                             }
 
-                            if (fmd.HasMap == null) fmd.HasMap = false;
-                            if (fmd.HasAutomap == null) fmd.HasAutomap = false;
+                            fmd.HasMap ??= false;
+                            fmd.HasAutomap ??= false;
 
                             fmd.HasCustomMotions =
                                 baseDirFolders.ContainsI(FMDirs.Motions) &&
@@ -3342,11 +3341,9 @@ namespace FMScanner
             Encoding enc = _fileEncoding.DetectFileEncoding(file);
 
             var lines = new List<string>();
-            using (StreamReader streamReader = new StreamReader(file, enc ?? Encoding.GetEncoding(1252)))
-            {
-                string str;
-                while ((str = streamReader.ReadLine()) != null) lines.Add(str);
-            }
+            using StreamReader streamReader = new StreamReader(file, enc ?? Encoding.GetEncoding(1252));
+            string str;
+            while ((str = streamReader.ReadLine()) != null) lines.Add(str);
             return lines;
         }
 

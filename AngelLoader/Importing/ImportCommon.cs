@@ -134,22 +134,19 @@ namespace AngelLoader.Importing
         MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport? fields = null
             /*, bool addMergedFMsToPriorityList = false*/)
         {
-            if (fields == null)
+            fields ??= new FieldsToImport
             {
-                fields = new FieldsToImport
-                {
-                    Title = true,
-                    ReleaseDate = true,
-                    LastPlayed = true,
-                    FinishedOn = true,
-                    Comment = true,
-                    Rating = true,
-                    DisabledMods = true,
-                    Tags = true,
-                    SelectedReadme = true,
-                    Size = true
-                };
-            }
+                Title = true,
+                ReleaseDate = true,
+                LastPlayed = true,
+                FinishedOn = true,
+                Comment = true,
+                Rating = true,
+                DisabledMods = true,
+                Tags = true,
+                SelectedReadme = true,
+                Size = true
+            };
 
             // Perf
             int initCount = FMDataIniList.Count;
