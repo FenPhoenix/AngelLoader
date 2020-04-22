@@ -10,6 +10,7 @@ namespace AngelLoader.Forms.Import
 {
     public partial class User_FMSel_NDL_ImportControls : UserControl
     {
+        // @GENGAMES
         internal string Thief1IniFile => Thief1IniTextBox.Text;
         internal string Thief2IniFile => Thief2IniTextBox.Text;
         internal string Thief3IniFile => Thief3IniTextBox.Text;
@@ -56,7 +57,7 @@ namespace AngelLoader.Forms.Import
 
         private void AutodetectGameIni(GameIndex game, TextBox textBox)
         {
-            string iniFile = ImportType == ImportType.NewDarkLoader ? "NewDarkLoader.ini" : "fmsel.ini";
+            string iniFile = ImportType == ImportType.NewDarkLoader ? Paths.NewDarkLoaderIni : Paths.FMSelIni;
 
             string fmsPath = Config.GetFMInstallPath(game);
             if (fmsPath.IsWhiteSpace())

@@ -89,6 +89,21 @@ namespace AngelLoader
 
         #endregion
 
+        internal static string GetLocalizedDifficultyName(FanMission? fm, FinishedOn difficulty)
+        {
+            bool fmIsT3 = fm != null && fm.Game == Game.Thief3;
+            bool fmIsSS2 = fm != null && fm.Game == Game.SS2;
+
+            return difficulty switch
+            {
+                FinishedOn.Normal => fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal,
+                FinishedOn.Hard => fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard,
+                FinishedOn.Expert => fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert,
+                FinishedOn.Extreme => fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme,
+                _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
+            };
+        }
+
         #region Get game name from game type
 
         internal static string GetGameNameFromGameType(GameIndex gameIndex) => GetGameNameFromGameType(GameIndexToGame(gameIndex));

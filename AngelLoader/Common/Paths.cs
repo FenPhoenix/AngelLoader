@@ -134,6 +134,8 @@ namespace AngelLoader
         internal const string DarkLoaderSaveBakDir = "DarkLoader";
 
         internal const string DarkLoaderIni = "DarkLoader.ini";
+        internal const string NewDarkLoaderIni = "NewDarkLoader.ini";
+        internal const string FMSelIni = "fmsel.ini";
 
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");
 

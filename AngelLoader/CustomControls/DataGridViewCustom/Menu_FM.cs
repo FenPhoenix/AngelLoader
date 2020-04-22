@@ -309,6 +309,7 @@ namespace AngelLoader.CustomControls
             // make sure those items' text is set correctly.
             FanMission? selFM = SelectedRows.Count > 0 ? GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
+            // @GENGAMES
             bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
 
             #endregion
@@ -347,13 +348,10 @@ namespace AngelLoader.CustomControls
 
             FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
 
-            bool fmIsT3 = selFM != null && selFM.Game == Game.Thief3;
-            bool fmIsSS2 = selFM != null && selFM.Game == Game.SS2;
-
-            FinishedOnNormalMenuItem!.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal).EscapeAmpersands();
-            FinishedOnHardMenuItem!.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard).EscapeAmpersands();
-            FinishedOnExpertMenuItem!.Text = (fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert).EscapeAmpersands();
-            FinishedOnExtremeMenuItem!.Text = (fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme).EscapeAmpersands();
+            FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Normal).EscapeAmpersands();
+            FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Hard).EscapeAmpersands();
+            FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Expert).EscapeAmpersands();
+            FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(selFM, FinishedOn.Extreme).EscapeAmpersands();
             FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown.EscapeAmpersands();
 
             #endregion

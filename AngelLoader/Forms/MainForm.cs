@@ -3034,15 +3034,15 @@ namespace AngelLoader.Forms
             // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
             // Thief 3 difficulties: Easy, Normal, Hard, Expert
             // SS2 difficulties: Easy, Normal, Hard, Impossible
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Normal, fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal);
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Hard, fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard);
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Expert, fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert);
-            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme);
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Normal, GetLocalizedDifficultyName(fm, FinishedOn.Normal));
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Hard, GetLocalizedDifficultyName(fm, FinishedOn.Hard));
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Expert, GetLocalizedDifficultyName(fm, FinishedOn.Expert));
+            FMsDGV.SetFinishedOnMenuItemText(FinishedOn.Extreme, GetLocalizedDifficultyName(fm, FinishedOn.Extreme));
             // FinishedOnUnknownMenuItem text stays the same
 
-            bool installable = GameIsKnownAndSupported(fm.Game);
+            bool gameIsSupported = GameIsKnownAndSupported(fm.Game);
 
-            FMsDGV.SetInstallUninstallMenuItemEnabled(installable);
+            FMsDGV.SetInstallUninstallMenuItemEnabled(gameIsSupported);
             FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
             FMsDGV.SetOpenInDromEdMenuItemText(fmIsSS2);
 
@@ -3050,12 +3050,12 @@ namespace AngelLoader.Forms
 
             FMsDGV.SetPlayFMInMPMenuItemVisible(fm.Game == Game.Thief2 && Config.T2MPDetected);
 
-            InstallUninstallFMLLButton.SetEnabled(installable);
+            InstallUninstallFMLLButton.SetEnabled(gameIsSupported);
             // Special-cased; don't autosize this one
             InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
 
-            FMsDGV.SetPlayFMMenuItemEnabled(installable);
-            PlayFMButton.Enabled = installable;
+            FMsDGV.SetPlayFMMenuItemEnabled(gameIsSupported);
+            PlayFMButton.Enabled = gameIsSupported;
 
             FMsDGV.SetScanFMMenuItemEnabled(true);
 
