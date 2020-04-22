@@ -1919,7 +1919,7 @@ namespace AngelLoader.Forms
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
                     var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (fm.Game == Game.Unsupported && !FilterShowUnsupportedButton.Checked)
+                    if (fm.Game == Game.Unsupported)
                     {
                         FMsDGV.FilterShownIndexList.RemoveAt(i);
                         i--;
