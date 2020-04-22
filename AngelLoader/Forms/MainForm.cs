@@ -123,6 +123,35 @@ namespace AngelLoader.Forms
             }
         }
 
+        public Filter GetFilter() => FMsDGV.Filter;
+        public string GetTitleFilter() => FilterTitleTextBox.Text;
+        public string GetAuthorFilter() => FilterAuthorTextBox.Text;
+
+        public bool[] GetGameFilters()
+        {
+            bool[] gamesChecked = new bool[SupportedGameCount];
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                gamesChecked[i] = FilterByGameButtonsInOrder[i].Checked;
+            }
+
+            return gamesChecked;
+        }
+
+        public bool GetFinishedFilter() => FilterByFinishedButton.Checked;
+        public bool GetUnfinishedFilter() => FilterByUnfinishedButton.Checked;
+        public bool GetShowUnsupportedFilter() => FilterShowUnsupportedButton.Checked;
+        public List<int> GetFilterShownIndexList() => FMsDGV.FilterShownIndexList;
+        public void SetFiltered(bool value) => FMsDGV.Filtered = value;
+
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+        public string GetDebug1Text() => DebugLabel.Text;
+        public string GetDebug2Text() => DebugLabel2.Text;
+        public void SetDebug1Text(string value) => DebugLabel.Text = value;
+        public void SetDebug2Text(string value) => DebugLabel2.Text = value;
+#endif
+
         public void Localize() => Localize(startup: false);
 
         public void ChangeReadmeBoxFont(bool useFixed) => ReadmeRichTextBox.SetFontType(useFixed);
@@ -915,7 +944,7 @@ namespace AngelLoader.Forms
                 await FMScan.ScanNewFMs();
             }
 
-            SetFilter();
+            Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
                 await DisplaySelectedFM(true);
@@ -1789,7 +1818,7 @@ namespace AngelLoader.Forms
 
             SortFMsDGV((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
-            SetFilter();
+            Core.SetFilter();
             if (RefreshFMsList(selectedFM, keepSelection: keepSel))
             {
                 // DEBUG: Keep this in for testing this because the whole thing is irrepressibly finicky
@@ -1815,382 +1844,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
-        //       the majority had no tags for this test.
-        //       This was tested with the Release_Testing (optimized) profile.
-        //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
-        //       given this is a reasonably naive implementation with no real attempt to be clever.
-        private void SetFilter()
-        {
-#if DEBUG || (Release_Testing && !RT_StartupOnly)
-            DebugLabel2.Text = int.TryParse(DebugLabel2.Text, out int result) ? (result + 1).ToString() : "1";
-#endif
 
-            #region Set filters that are stored in control state
-
-            FMsDGV.Filter.Title = FilterTitleTextBox.Text;
-            FMsDGV.Filter.Author = FilterAuthorTextBox.Text;
-
-            FMsDGV.Filter.Games = Game.Null;
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                if (FilterByGameButtonsInOrder[i].Checked) FMsDGV.Filter.Games |= GameIndexToGame((GameIndex)i);
-            }
-
-            FMsDGV.Filter.Finished = FinishedState.Null;
-            if (FilterByFinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Finished;
-            if (FilterByUnfinishedButton.Checked) FMsDGV.Filter.Finished |= FinishedState.Unfinished;
-
-            FMsDGV.Filter.ShowUnsupported = FilterShowUnsupportedButton.Checked;
-
-            #endregion
-
-            FMsDGV.FilterShownIndexList.Clear();
-
-            // This one gets checked in a loop, so cache it. Others are only checked twice at most, so leave them
-            // be.
-            bool titleIsWhitespace = FMsDGV.Filter.Title.IsWhiteSpace();
-
-            #region Early out
-
-            if (titleIsWhitespace &&
-                FMsDGV.Filter.Author.IsWhiteSpace() &&
-                FMsDGV.Filter.Games == Game.Null &&
-                FMsDGV.Filter.Tags.IsEmpty() &&
-                FMsDGV.Filter.ReleaseDateFrom == null &&
-                FMsDGV.Filter.ReleaseDateTo == null &&
-                FMsDGV.Filter.LastPlayedFrom == null &&
-                FMsDGV.Filter.LastPlayedTo == null &&
-                FMsDGV.Filter.RatingFrom == -1 &&
-                FMsDGV.Filter.RatingTo == 10 &&
-                (FMsDGV.Filter.Finished == FinishedState.Null ||
-                 ((FMsDGV.Filter.Finished & FinishedState.Finished) == FinishedState.Finished &&
-                 (FMsDGV.Filter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished)) &&
-                FMsDGV.Filter.ShowUnsupported)
-            {
-                FMsDGV.Filtered = false;
-
-                return;
-            }
-
-            #endregion
-
-            #region Title / initial
-
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                var fm = FMsViewList[i];
-
-                if (fm.MarkedRecent ||
-                    titleIsWhitespace ||
-                    fm.Title.ContainsI(FMsDGV.Filter.Title) ||
-                    (fm.Archive.ExtIsArchive()
-                        ? fm.Archive.IndexOf(FMsDGV.Filter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
-                        : fm.Archive.ContainsI(FMsDGV.Filter.Title)))
-                {
-                    FMsDGV.FilterShownIndexList.Add(i);
-                }
-            }
-
-            #endregion
-
-            #region Author
-
-            if (!FMsDGV.Filter.Author.IsWhiteSpace())
-            {
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (!fm.MarkedRecent &&
-                        !fm.Author.ContainsI(FMsDGV.Filter.Author))
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Show unsupported
-
-            if (!FMsDGV.Filter.ShowUnsupported)
-            {
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (fm.Game == Game.Unsupported)
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Games
-
-            if (FMsDGV.Filter.Games > Game.Null)
-            {
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (GameIsKnownAndSupported(fm.Game) &&
-                        (Config.GameOrganization == GameOrganization.ByTab || !fm.MarkedRecent) &&
-                        (FMsDGV.Filter.Games & fm.Game) != fm.Game)
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Tags
-
-            if (FMsDGV.Filter.Tags.AndTags.Count > 0 ||
-                FMsDGV.Filter.Tags.OrTags.Count > 0 ||
-                FMsDGV.Filter.Tags.NotTags.Count > 0)
-            {
-                CatAndTagsList andTags = FMsDGV.Filter.Tags.AndTags;
-                CatAndTagsList orTags = FMsDGV.Filter.Tags.OrTags;
-                CatAndTagsList notTags = FMsDGV.Filter.Tags.NotTags;
-
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-
-                    if (fm.MarkedRecent) continue;
-
-                    if (fm.Tags.Count == 0 && notTags.Count == 0)
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                        continue;
-                    }
-
-                    // I don't ever want to see these damn things again
-
-                    #region And
-
-                    if (andTags.Count > 0)
-                    {
-                        bool andPass = true;
-                        foreach (CatAndTags andTag in andTags)
-                        {
-                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == andTag.Category);
-                            if (match == null)
-                            {
-                                andPass = false;
-                                break;
-                            }
-
-                            if (andTag.Tags.Count > 0)
-                            {
-                                foreach (string andTagTag in andTag.Tags)
-                                {
-                                    if (match.Tags.FirstOrDefault(x => x == andTagTag) == null)
-                                    {
-                                        andPass = false;
-                                        break;
-                                    }
-                                }
-
-                                if (!andPass) break;
-                            }
-                        }
-
-                        if (!andPass)
-                        {
-                            FMsDGV.FilterShownIndexList.RemoveAt(i);
-                            i--;
-                            continue;
-                        }
-                    }
-
-                    #endregion
-
-                    #region Or
-
-                    if (orTags.Count > 0)
-                    {
-                        bool orPass = false;
-                        foreach (CatAndTags orTag in orTags)
-                        {
-                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == orTag.Category);
-                            if (match == null) continue;
-
-                            if (orTag.Tags.Count > 0)
-                            {
-                                foreach (string orTagTag in orTag.Tags)
-                                {
-                                    if (match.Tags.FirstOrDefault(x => x == orTagTag) != null)
-                                    {
-                                        orPass = true;
-                                        break;
-                                    }
-                                }
-
-                                if (orPass) break;
-                            }
-                            else
-                            {
-                                orPass = true;
-                            }
-                        }
-
-                        if (!orPass)
-                        {
-                            FMsDGV.FilterShownIndexList.RemoveAt(i);
-                            i--;
-                            continue;
-                        }
-                    }
-
-                    #endregion
-
-                    #region Not
-
-                    if (notTags.Count > 0)
-                    {
-                        bool notPass = true;
-                        foreach (CatAndTags notTag in notTags)
-                        {
-                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == notTag.Category);
-                            if (match == null) continue;
-
-                            if (notTag.Tags.Count == 0)
-                            {
-                                notPass = false;
-                                continue;
-                            }
-
-                            if (notTag.Tags.Count > 0)
-                            {
-                                foreach (string notTagTag in notTag.Tags)
-                                {
-                                    if (match.Tags.FirstOrDefault(x => x == notTagTag) != null)
-                                    {
-                                        notPass = false;
-                                        break;
-                                    }
-                                }
-
-                                if (!notPass) break;
-                            }
-                        }
-
-                        if (!notPass)
-                        {
-                            FMsDGV.FilterShownIndexList.RemoveAt(i);
-                            i--;
-                            continue;
-                        }
-                    }
-
-                    #endregion
-                }
-            }
-
-            #endregion
-
-            #region Rating
-
-            if (!(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10))
-            {
-                int rf = FMsDGV.Filter.RatingFrom;
-                int rt = FMsDGV.Filter.RatingTo;
-
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (!fm.MarkedRecent &&
-                        (fm.Rating < rf || fm.Rating > rt))
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Release date
-
-            if (FMsDGV.Filter.ReleaseDateFrom != null || FMsDGV.Filter.ReleaseDateTo != null)
-            {
-                DateTime? rdf = FMsDGV.Filter.ReleaseDateFrom;
-                DateTime? rdt = FMsDGV.Filter.ReleaseDateTo;
-
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (!fm.MarkedRecent &&
-                        (fm.ReleaseDate.DateTime == null ||
-                        (rdf != null &&
-                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
-                        (rdt != null &&
-                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdt.Value.Date) > 0)))
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Last played
-
-            if (FMsDGV.Filter.LastPlayedFrom != null || FMsDGV.Filter.LastPlayedTo != null)
-            {
-                DateTime? lpdf = FMsDGV.Filter.LastPlayedFrom;
-                DateTime? lpdt = FMsDGV.Filter.LastPlayedTo;
-
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    if (!fm.MarkedRecent &&
-                        (fm.LastPlayed.DateTime == null ||
-                        (lpdf != null &&
-                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
-                        (lpdt != null &&
-                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdt.Value.Date) > 0)))
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            #endregion
-
-            #region Finished
-
-            if (FMsDGV.Filter.Finished > FinishedState.Null)
-            {
-                for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
-                {
-                    var fm = FMsViewList[FMsDGV.FilterShownIndexList[i]];
-                    uint fmFinished = fm.FinishedOn;
-                    bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
-
-                    if (!fm.MarkedRecent &&
-                        (((fmFinished > 0 || fmFinishedOnUnknown) && (FMsDGV.Filter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
-                        (fmFinished == 0 && !fmFinishedOnUnknown && (FMsDGV.Filter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished)))
-                    {
-                        FMsDGV.FilterShownIndexList.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
-            #endregion
-
-            FMsDGV.Filtered = true;
-        }
 
         #region FMsDGV event handlers
 
@@ -2414,7 +2068,7 @@ namespace AngelLoader.Forms
 
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
-            if (FMsDGV.Filtered) SetFilter();
+            if (FMsDGV.Filtered) Core.SetFilter();
             if (RefreshFMsList(selFM, keepSelection: KeepSel.TrueNearest, fromColumnClick: true))
             {
                 if (selFM != null && FMsDGV.RowSelected() &&

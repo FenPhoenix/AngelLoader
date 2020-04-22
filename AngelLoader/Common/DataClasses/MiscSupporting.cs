@@ -205,7 +205,7 @@ namespace AngelLoader.DataClasses
 
     #region Filter
 
-    internal sealed class Filter
+    public sealed class Filter
     {
         internal void Clear(bool clearGames = true)
         {

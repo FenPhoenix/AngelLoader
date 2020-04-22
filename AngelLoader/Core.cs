@@ -653,6 +653,389 @@ namespace AngelLoader
             }
         }
 
+        // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
+        //       the majority had no tags for this test.
+        //       This was tested with the Release_Testing (optimized) profile.
+        //       All in all, I'd say performance is looking really good. Certainly better than I was expecting,
+        //       given this is a reasonably naive implementation with no real attempt to be clever.
+        internal static void SetFilter()
+        {
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+            View.SetDebug2Text(int.TryParse(View.GetDebug2Text(), out int result) ? (result + 1).ToString() : "1");
+#endif
+
+            Filter viewFilter = View.GetFilter();
+
+            #region Set filters that are stored in control state
+
+            viewFilter.Title = View.GetTitleFilter();
+            viewFilter.Author = View.GetAuthorFilter();
+
+            bool[] gameFiltersChecked = View.GetGameFilters();
+            viewFilter.Games = Game.Null;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (gameFiltersChecked[i]) viewFilter.Games |= GameIndexToGame((GameIndex)i);
+            }
+
+            viewFilter.Finished = FinishedState.Null;
+            if (View.GetFinishedFilter()) viewFilter.Finished |= FinishedState.Finished;
+            if (View.GetUnfinishedFilter()) viewFilter.Finished |= FinishedState.Unfinished;
+
+            viewFilter.ShowUnsupported = View.GetShowUnsupportedFilter();
+
+            #endregion
+
+            var filterShownIndexList = View.GetFilterShownIndexList();
+
+            filterShownIndexList.Clear();
+
+            // This one gets checked in a loop, so cache it. Others are only checked twice at most, so leave them
+            // be.
+            bool titleIsWhitespace = viewFilter.Title.IsWhiteSpace();
+
+            #region Early out
+
+            // Not only an early-out, but also the only place where Filtered can be set to false, so it's vital
+            if (titleIsWhitespace &&
+                viewFilter.Author.IsWhiteSpace() &&
+                viewFilter.Games == Game.Null &&
+                viewFilter.Tags.IsEmpty() &&
+                viewFilter.ReleaseDateFrom == null &&
+                viewFilter.ReleaseDateTo == null &&
+                viewFilter.LastPlayedFrom == null &&
+                viewFilter.LastPlayedTo == null &&
+                viewFilter.RatingFrom == -1 &&
+                viewFilter.RatingTo == 10 &&
+                (viewFilter.Finished == FinishedState.Null ||
+                 ((viewFilter.Finished & FinishedState.Finished) == FinishedState.Finished &&
+                 (viewFilter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished)) &&
+                viewFilter.ShowUnsupported)
+            {
+                View.SetFiltered(false);
+
+                return;
+            }
+
+            #endregion
+
+            #region Title / initial
+
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                var fm = FMsViewList[i];
+
+                if (fm.MarkedRecent ||
+                    titleIsWhitespace ||
+                    fm.Title.ContainsI(viewFilter.Title) ||
+                    (fm.Archive.ExtIsArchive()
+                        ? fm.Archive.IndexOf(viewFilter.Title, 0, fm.Archive.LastIndexOf('.'), StringComparison.OrdinalIgnoreCase) > -1
+                        : fm.Archive.ContainsI(viewFilter.Title)))
+                {
+                    filterShownIndexList.Add(i);
+                }
+            }
+
+            #endregion
+
+            #region Author
+
+            if (!viewFilter.Author.IsWhiteSpace())
+            {
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        !fm.Author.ContainsI(viewFilter.Author))
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Show unsupported
+
+            if (!viewFilter.ShowUnsupported)
+            {
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (fm.Game == Game.Unsupported)
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Games
+
+            if (viewFilter.Games > Game.Null)
+            {
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (GameIsKnownAndSupported(fm.Game) &&
+                        (Config.GameOrganization == GameOrganization.ByTab || !fm.MarkedRecent) &&
+                        (viewFilter.Games & fm.Game) != fm.Game)
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Tags
+
+            if (viewFilter.Tags.AndTags.Count > 0 ||
+                viewFilter.Tags.OrTags.Count > 0 ||
+                viewFilter.Tags.NotTags.Count > 0)
+            {
+                CatAndTagsList andTags = viewFilter.Tags.AndTags;
+                CatAndTagsList orTags = viewFilter.Tags.OrTags;
+                CatAndTagsList notTags = viewFilter.Tags.NotTags;
+
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+
+                    if (fm.MarkedRecent) continue;
+
+                    if (fm.Tags.Count == 0 && notTags.Count == 0)
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+
+                    // I don't ever want to see these damn things again
+
+                    #region And
+
+                    if (andTags.Count > 0)
+                    {
+                        bool andPass = true;
+                        foreach (CatAndTags andTag in andTags)
+                        {
+                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == andTag.Category);
+                            if (match == null)
+                            {
+                                andPass = false;
+                                break;
+                            }
+
+                            if (andTag.Tags.Count > 0)
+                            {
+                                foreach (string andTagTag in andTag.Tags)
+                                {
+                                    if (match.Tags.FirstOrDefault(x => x == andTagTag) == null)
+                                    {
+                                        andPass = false;
+                                        break;
+                                    }
+                                }
+
+                                if (!andPass) break;
+                            }
+                        }
+
+                        if (!andPass)
+                        {
+                            filterShownIndexList.RemoveAt(i);
+                            i--;
+                            continue;
+                        }
+                    }
+
+                    #endregion
+
+                    #region Or
+
+                    if (orTags.Count > 0)
+                    {
+                        bool orPass = false;
+                        foreach (CatAndTags orTag in orTags)
+                        {
+                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == orTag.Category);
+                            if (match == null) continue;
+
+                            if (orTag.Tags.Count > 0)
+                            {
+                                foreach (string orTagTag in orTag.Tags)
+                                {
+                                    if (match.Tags.FirstOrDefault(x => x == orTagTag) != null)
+                                    {
+                                        orPass = true;
+                                        break;
+                                    }
+                                }
+
+                                if (orPass) break;
+                            }
+                            else
+                            {
+                                orPass = true;
+                            }
+                        }
+
+                        if (!orPass)
+                        {
+                            filterShownIndexList.RemoveAt(i);
+                            i--;
+                            continue;
+                        }
+                    }
+
+                    #endregion
+
+                    #region Not
+
+                    if (notTags.Count > 0)
+                    {
+                        bool notPass = true;
+                        foreach (CatAndTags notTag in notTags)
+                        {
+                            CatAndTags? match = fm.Tags.FirstOrDefault(x => x.Category == notTag.Category);
+                            if (match == null) continue;
+
+                            if (notTag.Tags.Count == 0)
+                            {
+                                notPass = false;
+                                continue;
+                            }
+
+                            if (notTag.Tags.Count > 0)
+                            {
+                                foreach (string notTagTag in notTag.Tags)
+                                {
+                                    if (match.Tags.FirstOrDefault(x => x == notTagTag) != null)
+                                    {
+                                        notPass = false;
+                                        break;
+                                    }
+                                }
+
+                                if (!notPass) break;
+                            }
+                        }
+
+                        if (!notPass)
+                        {
+                            filterShownIndexList.RemoveAt(i);
+                            i--;
+                            continue;
+                        }
+                    }
+
+                    #endregion
+                }
+            }
+
+            #endregion
+
+            #region Rating
+
+            if (!(viewFilter.RatingFrom == -1 && viewFilter.RatingTo == 10))
+            {
+                int rf = viewFilter.RatingFrom;
+                int rt = viewFilter.RatingTo;
+
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        (fm.Rating < rf || fm.Rating > rt))
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Release date
+
+            if (viewFilter.ReleaseDateFrom != null || viewFilter.ReleaseDateTo != null)
+            {
+                DateTime? rdf = viewFilter.ReleaseDateFrom;
+                DateTime? rdt = viewFilter.ReleaseDateTo;
+
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        (fm.ReleaseDate.DateTime == null ||
+                        (rdf != null &&
+                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdf.Value.Date) < 0) ||
+                        (rdt != null &&
+                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(rdt.Value.Date) > 0)))
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Last played
+
+            if (viewFilter.LastPlayedFrom != null || viewFilter.LastPlayedTo != null)
+            {
+                DateTime? lpdf = viewFilter.LastPlayedFrom;
+                DateTime? lpdt = viewFilter.LastPlayedTo;
+
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (!fm.MarkedRecent &&
+                        (fm.LastPlayed.DateTime == null ||
+                        (lpdf != null &&
+                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdf.Value.Date) < 0) ||
+                        (lpdt != null &&
+                         fm.LastPlayed.DateTime.Value.Date.CompareTo(lpdt.Value.Date) > 0)))
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Finished
+
+            if (viewFilter.Finished > FinishedState.Null)
+            {
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    uint fmFinished = fm.FinishedOn;
+                    bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
+
+                    if (!fm.MarkedRecent &&
+                        (((fmFinished > 0 || fmFinishedOnUnknown) && (viewFilter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
+                        (fmFinished == 0 && !fmFinishedOnUnknown && (viewFilter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished)))
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            View.SetFiltered(true);
+        }
+
         #region Get info from game config files
 
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,

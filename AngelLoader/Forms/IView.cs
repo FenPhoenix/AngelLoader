@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -39,6 +40,21 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <returns></returns>
         Task FinishInitAndShow();
+        Filter GetFilter();
+        string GetTitleFilter();
+        string GetAuthorFilter();
+        bool[] GetGameFilters();
+        bool GetFinishedFilter();
+        bool GetUnfinishedFilter();
+        bool GetShowUnsupportedFilter();
+        List<int> GetFilterShownIndexList();
+        void SetFiltered(bool value);
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+        string GetDebug1Text();
+        string GetDebug2Text();
+        void SetDebug1Text(string value);
+        void SetDebug2Text(string value);
+#endif
         int GetRowCount();
         void SetRowCount(int count);
         void ShowOnly();
