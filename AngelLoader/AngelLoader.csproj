@@ -118,6 +118,7 @@
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ListMessageBoxForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx" />
