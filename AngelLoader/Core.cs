@@ -1924,15 +1924,20 @@ namespace AngelLoader
             FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
         }
 
-        internal static void DeleteFMArchive(FanMission fm)
+        internal static async Task DeleteFMArchive(FanMission fm)
         {
+            var finalArchives = new List<string>();
+
             var archives = FindFMArchive_Multiple(fm.Archive);
             if (archives.Count == 0)
             {
                 View.ShowAlert(LText.DeleteFM.ArchiveNotFound, LText.AlertMessages.DeleteFM);
+                return;
             }
             else if (archives.Count == 1)
             {
+                // TODO: We want a red icon by the OK button here too, but can't with Ookii Dialogs.
+                // Use custom one and allow hiding of the selection stuff and bottom message?
                 var (cancel, _) = View.AskToContinueYesNoCustomStrings(
                     message: LText.DeleteFM.AboutToDelete + "\r\n\r\n" +
                              archives[0],
@@ -1944,15 +1949,27 @@ namespace AngelLoader
                     defaultButton: ButtonType.No);
 
                 if (cancel) return;
+
+                finalArchives.ClearAndAdd(archives[0]);
             }
             else
             {
-                string s = "";
-                foreach (var a in archives) s += (!s.IsEmpty() ? "\r\n" : "") + a;
-                View.ShowAlert("Multiple archives:\r\n\r\n" + s, LText.AlertMessages.DeleteFM);
+                using var f = new ListMessageBoxForm(
+                    messageTop: LText.DeleteFM.DuplicateArchivesFound,
+                    messageBottom: LText.DeleteFM.ChooseWhichArchivesToDelete,
+                    title: LText.DeleteFM.DeleteFMFromDisk,
+                    icon: MessageBoxIcon.Warning,
+                    okText: LText.DeleteFM.DeleteFMsFromDisk,
+                    cancelText: LText.Global.Cancel,
+                    okIsDangerous: true,
+                    choiceStrings: archives.ToArray());
+
+                if (f.ShowDialog() != DialogResult.OK) return;
+
+                finalArchives.ClearAndAdd(f.SelectedItems);
             }
 
-            string testFile = @"C:\vb_del_test.tmp";
+            const string testFile = @"C:\vb_del_test.tmp";
             using (var sw = new StreamWriter(testFile, append: false))
             {
                 for (int i = 0; i < 50_000_000; i++) sw.Write("0");
@@ -1962,11 +1979,25 @@ namespace AngelLoader
 
             try
             {
-                FileSystem.DeleteFile(testFile, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+                View.ShowProgressBox(ProgressTasks.DeleteFMArchive);
+                await Task.Run(() =>
+                {
+                    FileSystem.DeleteFile(testFile, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+                    // TODO: Flip the switch when ready to test with real archives
+                    //foreach (string archive in finalArchives)
+                    //{
+                    //    FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+                    //}
+                });
             }
             catch (Exception ex)
             {
+                // TODO: Make this a friendlier message
                 View.ShowAlert("Exception deleting file: " + ex.Message, LText.AlertMessages.Alert);
+            }
+            finally
+            {
+                View.HideProgressBox();
             }
         }
 

@@ -93,6 +93,16 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ExclMarkCircleRed_14 {
+            get {
+                object obj = ResourceManager.GetObject("ExclMarkCircleRed_14", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap FilterByFinished {
             get {
                 object obj = ResourceManager.GetObject("FilterByFinished", resourceCulture);

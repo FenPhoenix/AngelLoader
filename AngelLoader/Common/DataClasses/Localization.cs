@@ -39,6 +39,8 @@ namespace AngelLoader.DataClasses
             internal static string RemoveEllipses = "Remove...";
             internal static string Reset = "Reset";
             internal static string Autodetect = "Autodetect";
+            internal static string SelectAll = "Select all";
+            internal static string SelectNone = "Select none";
             [FenGenBlankLine]
             internal static string Unrated = "Unrated";
             internal static string None = "None";
@@ -144,9 +146,12 @@ namespace AngelLoader.DataClasses
 
         internal static class DeleteFM
         {
-            internal static string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, uninstall it.";
+            internal static string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, simply uninstall it.";
             internal static string AboutToDelete = "The following FM archive is about to be deleted from disk:";
+            internal static string DuplicateArchivesFound = "Multiple archives with the same name were found in one or more FM archive directories.";
+            internal static string ChooseWhichArchivesToDelete = "Please choose which archives(s) you want to delete.";
             internal static string DeleteFMFromDisk = "Delete FM";
+            internal static string DeleteFMsFromDisk = "Delete FM(s)";
         }
 
         internal static class Difficulties
@@ -341,6 +346,7 @@ namespace AngelLoader.DataClasses
             internal static string ImportingFromNewDarkLoader = "Importing from NewDarkLoader...";
             internal static string ImportingFromFMSel = "Importing from FMSel...";
             internal static string CachingReadmeFiles = "Caching readme files...";
+            internal static string DeletingFMArchive = "Deleting FM archive...";
         }
 
         internal static class SettingsWindow
@@ -507,8 +513,6 @@ namespace AngelLoader.DataClasses
             internal static string ReleaseDate = "Release date";
             internal static string Tags = "Tags";
             [FenGenBlankLine]
-            internal static string SelectAll = "Select all";
-            internal static string SelectNone = "Select none";
             internal static string Scan = "Scan";
             [FenGenBlankLine]
             internal static string NothingWasScanned = "No options were selected; no FMs have been scanned.";

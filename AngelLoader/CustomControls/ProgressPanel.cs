@@ -41,6 +41,7 @@ namespace AngelLoader.CustomControls
                 ProgressTasks.ImportFromNDL => LText.ProgressBox.ImportingFromNewDarkLoader,
                 ProgressTasks.ImportFromFMSel => LText.ProgressBox.ImportingFromFMSel,
                 ProgressTasks.CacheFM => LText.ProgressBox.CachingReadmeFiles,
+                ProgressTasks.DeleteFMArchive => LText.ProgressBox.DeletingFMArchive,
                 _ => ""
             };
 
@@ -54,7 +55,8 @@ namespace AngelLoader.CustomControls
                 progressTask == ProgressTasks.ConvertFiles ||
                 progressTask == ProgressTasks.ImportFromDarkLoader ||
                 progressTask == ProgressTasks.ImportFromNDL ||
-                progressTask == ProgressTasks.ImportFromFMSel)
+                progressTask == ProgressTasks.ImportFromFMSel ||
+                progressTask == ProgressTasks.DeleteFMArchive)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
                 if (Owner?.IsHandleCreated == true) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);

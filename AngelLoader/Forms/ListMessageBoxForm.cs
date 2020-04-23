@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
+using AngelLoader.Properties;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class ListMessageBoxForm : Form
+    public sealed partial class ListMessageBoxForm : Form, Misc.ILocalizable
     {
+        #region P/Invoke crap
+
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         private enum SHSTOCKICONID : uint
         {
@@ -22,24 +21,6 @@ namespace AngelLoader.Forms
             SIID_WARNING = 78,
             SIID_INFO = 79,
             SIID_ERROR = 80
-        }
-
-        private static SHSTOCKICONID GetSystemIcon(MessageBoxIcon icon)
-        {
-            return
-                  icon == MessageBoxIcon.Error ||
-                  icon == MessageBoxIcon.Hand ||
-                  icon == MessageBoxIcon.Stop
-                ? SHSTOCKICONID.SIID_ERROR
-                : icon == MessageBoxIcon.Question
-                ? SHSTOCKICONID.SIID_HELP
-                : icon == MessageBoxIcon.Exclamation ||
-                  icon == MessageBoxIcon.Warning
-                ? SHSTOCKICONID.SIID_WARNING
-                : icon == MessageBoxIcon.Asterisk ||
-                  icon == MessageBoxIcon.Information
-                ? SHSTOCKICONID.SIID_INFO
-                : throw new ArgumentOutOfRangeException();
         }
 
         [Flags]
@@ -78,8 +59,12 @@ namespace AngelLoader.Forms
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool DestroyIcon(IntPtr hIcon);
 
+        #endregion
+
+        public readonly List<string> SelectedItems = new List<string>();
+
         public ListMessageBoxForm(string messageTop, string messageBottom, string title, MessageBoxIcon icon,
-            string[] choiceStrings)
+            string okText, string cancelText, bool okIsDangerous, string[] choiceStrings)
         {
             InitializeComponent();
 
@@ -88,21 +73,31 @@ namespace AngelLoader.Forms
                 throw new ArgumentException(@"Null or empty", nameof(choiceStrings));
             }
 
-            CreateHandle();
+            #region Set passed-in values
+
+            if (icon != MessageBoxIcon.None) SetIcon(icon);
 
             Text = title;
             MessageTopLabel.Text = messageTop;
             MessageBottomLabel.Text = messageBottom;
 
-            const int bottomAreaHeight = 42;
-
+            // Set this first: the list is now populated
             for (int i = 0; i < choiceStrings.Length; i++)
             {
                 ChoiceListBox.Items.Add(choiceStrings[i]);
             }
 
-            ChoiceListBox.Height = ChoiceListBox.GetItemHeight(0) * (ChoiceListBox.Items.Count + 1).Clamp(6, 21);
+            #endregion
 
+            #region Autosize controls
+
+            // Set this second: the list is now sized based on its content
+            ChoiceListBox.Height =
+                (ChoiceListBox.ItemHeight * ChoiceListBox.Items.Count.Clamp(5, 20)) +
+                ((SystemInformation.BorderSize.Height * 4) + 3);
+
+            // Set this third: all controls sizes are now set, so we can size the window
+            const int bottomAreaHeight = 42;
             ClientSize = new Size(ClientSize.Width, bottomAreaHeight +
                                                     OuterTLP.Margin.Top +
                                                     OuterTLP.Margin.Bottom +
@@ -123,37 +118,72 @@ namespace AngelLoader.Forms
                                                     MessageBottomLabel.Margin.Bottom +
                                                     MessageBottomLabel.Height);
 
+            // These can be set anywhere as they don't affect the vertical sizing code
             int innerControlWidth = MainFLP.Width - 10;
+            MessageTopLabel.Width = innerControlWidth;
             ChoiceListBox.Width = innerControlWidth;
             SelectButtonsFLP.Width = innerControlWidth + 1;
+            MessageBottomLabel.Width = innerControlWidth;
+
+            if (okIsDangerous)
+            {
+                OKButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+                OKButton.ImageAlign = ContentAlignment.MiddleLeft;
+                OKButton.Image = Resources.ExclMarkCircleRed_14;
+            }
+
+            OKButton.SetTextAutoSize(okText, OKButton.Width);
+            Cancel_Button.SetTextAutoSize(cancelText, Cancel_Button.Width);
+
+            #endregion
 
             ChoiceListBox.SetSelected(0, true);
 
-            if (icon != MessageBoxIcon.None)
+            Localize();
+        }
+
+        private void SetIcon(MessageBoxIcon icon)
+        {
+            SHSTOCKICONINFO sii = new SHSTOCKICONINFO();
+            try
             {
-                SHSTOCKICONID sysIcon = GetSystemIcon(icon);
+                SHSTOCKICONID sysIcon =
+                      icon == MessageBoxIcon.Error ||
+                      icon == MessageBoxIcon.Hand ||
+                      icon == MessageBoxIcon.Stop
+                    ? SHSTOCKICONID.SIID_ERROR
+                    : icon == MessageBoxIcon.Question
+                    ? SHSTOCKICONID.SIID_HELP
+                    : icon == MessageBoxIcon.Exclamation ||
+                      icon == MessageBoxIcon.Warning
+                    ? SHSTOCKICONID.SIID_WARNING
+                    : icon == MessageBoxIcon.Asterisk ||
+                      icon == MessageBoxIcon.Information
+                    ? SHSTOCKICONID.SIID_INFO
+                    : throw new ArgumentOutOfRangeException();
 
-                SHSTOCKICONINFO sii = new SHSTOCKICONINFO();
-                try
-                {
-                    sii.cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO));
+                sii.cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO));
 
-                    int result = SHGetStockIconInfo(sysIcon, SHGSI.SHGSI_ICON, ref sii);
-                    Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
+                int result = SHGetStockIconInfo(sysIcon, SHGSI.SHGSI_ICON, ref sii);
+                Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
 
-                    IconPictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();
-                }
-                catch
-                {
-                    // "Wrong style" image (different style from the MessageBox one) but better than nothing if
-                    // the above fails
-                    IconPictureBox.Image = SystemIcons.Warning.ToBitmap();
-                }
-                finally
-                {
-                    DestroyIcon(sii.hIcon);
-                }
+                IconPictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();
             }
+            catch
+            {
+                // "Wrong style" image (different style from the MessageBox one) but better than nothing if the
+                // above fails
+                IconPictureBox.Image = SystemIcons.Warning.ToBitmap();
+            }
+            finally
+            {
+                DestroyIcon(sii.hIcon);
+            }
+        }
+
+        public void Localize()
+        {
+            SelectAllButton.SetTextAutoSize(LText.Global.SelectAll, SelectAllButton.Width);
         }
 
         private void SelectAllButton_Click(object sender, EventArgs e)
@@ -167,9 +197,21 @@ namespace AngelLoader.Forms
             }
         }
 
-        private void ListMessageBoxForm_Load(object sender, EventArgs e)
+        // Shouldn't happen, but just in case
+        private void ChoiceListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            OKButton.Enabled = ChoiceListBox.SelectedIndex > -1;
+        }
 
+        private void ListMessageBoxForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (DialogResult == DialogResult.OK && ChoiceListBox.SelectedIndex > -1)
+            {
+                foreach (object item in ChoiceListBox.SelectedItems)
+                {
+                    SelectedItems.Add(item.ToString());
+                }
+            }
         }
     }
 }

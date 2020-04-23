@@ -74,6 +74,14 @@ namespace AngelLoader
                         {
                             LText.Global.Autodetect = lt.Substring(11);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("SelectAll="))
+                        {
+                            LText.Global.SelectAll = lt.Substring(10);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("SelectNone="))
+                        {
+                            LText.Global.SelectNone = lt.Substring(11);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("Unrated="))
                         {
                             LText.Global.Unrated = lt.Substring(8);
@@ -410,9 +418,21 @@ namespace AngelLoader
                         {
                             LText.DeleteFM.AboutToDelete = lt.Substring(14);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("DuplicateArchivesFound="))
+                        {
+                            LText.DeleteFM.DuplicateArchivesFound = lt.Substring(23);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("ChooseWhichArchivesToDelete="))
+                        {
+                            LText.DeleteFM.ChooseWhichArchivesToDelete = lt.Substring(28);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("DeleteFMFromDisk="))
                         {
                             LText.DeleteFM.DeleteFMFromDisk = lt.Substring(17);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMsFromDisk="))
+                        {
+                            LText.DeleteFM.DeleteFMsFromDisk = lt.Substring(18);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
@@ -1070,6 +1090,10 @@ namespace AngelLoader
                         {
                             LText.ProgressBox.CachingReadmeFiles = lt.Substring(19);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("DeletingFMArchive="))
+                        {
+                            LText.ProgressBox.DeletingFMArchive = lt.Substring(18);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -1581,14 +1605,6 @@ namespace AngelLoader
                         else if (lt.StartsWithFast_NoNullChecks("Tags="))
                         {
                             LText.ScanAllFMsBox.Tags = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SelectAll="))
-                        {
-                            LText.ScanAllFMsBox.SelectAll = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SelectNone="))
-                        {
-                            LText.ScanAllFMsBox.SelectNone = lt.Substring(11);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("Scan="))
                         {

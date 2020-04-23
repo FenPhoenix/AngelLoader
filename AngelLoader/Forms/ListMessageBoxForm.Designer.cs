@@ -50,9 +50,8 @@
             // 
             // MessageTopLabel
             // 
-            this.MessageTopLabel.AutoSize = true;
-            this.MessageTopLabel.Location = new System.Drawing.Point(0, 0);
-            this.MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.MessageTopLabel.Location = new System.Drawing.Point(0, 18);
+            this.MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 18, 3, 18);
             this.MessageTopLabel.Name = "MessageTopLabel";
             this.MessageTopLabel.Size = new System.Drawing.Size(74, 13);
             this.MessageTopLabel.TabIndex = 0;
@@ -60,12 +59,10 @@
             // 
             // IconPictureBox
             // 
-            this.IconPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.IconPictureBox.Location = new System.Drawing.Point(21, 3);
-            this.IconPictureBox.Margin = new System.Windows.Forms.Padding(21, 3, 0, 3);
+            this.IconPictureBox.Location = new System.Drawing.Point(21, 21);
+            this.IconPictureBox.Margin = new System.Windows.Forms.Padding(21, 21, 0, 3);
             this.IconPictureBox.Name = "IconPictureBox";
-            this.IconPictureBox.Size = new System.Drawing.Size(32, 282);
+            this.IconPictureBox.Size = new System.Drawing.Size(32, 32);
             this.IconPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.IconPictureBox.TabIndex = 1;
             this.IconPictureBox.TabStop = false;
@@ -103,28 +100,32 @@
             // 
             this.ChoiceListBox.FormattingEnabled = true;
             this.ChoiceListBox.HorizontalScrollbar = true;
-            this.ChoiceListBox.Location = new System.Drawing.Point(3, 16);
+            this.ChoiceListBox.IntegralHeight = false;
+            this.ChoiceListBox.Location = new System.Drawing.Point(3, 52);
             this.ChoiceListBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.ChoiceListBox.Name = "ChoiceListBox";
             this.ChoiceListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.ChoiceListBox.Size = new System.Drawing.Size(493, 95);
-            this.ChoiceListBox.TabIndex = 1;
+            this.ChoiceListBox.TabIndex = 0;
+            this.ChoiceListBox.SelectedIndexChanged += new System.EventHandler(this.ChoiceListBox_SelectedIndexChanged);
             // 
             // SelectButtonsFLP
             // 
             this.SelectButtonsFLP.Controls.Add(this.SelectAllButton);
             this.SelectButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.SelectButtonsFLP.Location = new System.Drawing.Point(3, 111);
+            this.SelectButtonsFLP.Location = new System.Drawing.Point(3, 147);
             this.SelectButtonsFLP.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.SelectButtonsFLP.Name = "SelectButtonsFLP";
-            this.SelectButtonsFLP.Size = new System.Drawing.Size(493, 22);
+            this.SelectButtonsFLP.Size = new System.Drawing.Size(493, 23);
             this.SelectButtonsFLP.TabIndex = 2;
             // 
             // SelectAllButton
             // 
+            this.SelectAllButton.AutoSize = true;
             this.SelectAllButton.Location = new System.Drawing.Point(418, 0);
             this.SelectAllButton.Margin = new System.Windows.Forms.Padding(0);
             this.SelectAllButton.Name = "SelectAllButton";
+            this.SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SelectAllButton.Size = new System.Drawing.Size(75, 23);
             this.SelectAllButton.TabIndex = 0;
             this.SelectAllButton.Text = "Select all";
@@ -133,8 +134,8 @@
             // 
             // MessageBottomLabel
             // 
-            this.MessageBottomLabel.AutoSize = true;
-            this.MessageBottomLabel.Location = new System.Drawing.Point(3, 136);
+            this.MessageBottomLabel.Location = new System.Drawing.Point(3, 173);
+            this.MessageBottomLabel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 18);
             this.MessageBottomLabel.Name = "MessageBottomLabel";
             this.MessageBottomLabel.Size = new System.Drawing.Size(88, 13);
             this.MessageBottomLabel.TabIndex = 3;
@@ -168,8 +169,12 @@
             // 
             // Cancel_Button
             // 
-            this.Cancel_Button.Location = new System.Drawing.Point(486, 3);
+            this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.Cancel_Button.Location = new System.Drawing.Point(486, 6);
+            this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 0;
             this.Cancel_Button.Text = "Cancel";
@@ -177,33 +182,41 @@
             // 
             // OKButton
             // 
-            this.OKButton.Location = new System.Drawing.Point(405, 3);
+            this.OKButton.AutoSize = true;
+            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.OKButton.Location = new System.Drawing.Point(405, 6);
+            this.OKButton.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.OKButton.Name = "OKButton";
+            this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 0;
+            this.OKButton.TabIndex = 1;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
             // ListMessageBoxForm
             // 
+            this.AcceptButton = this.Cancel_Button;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(570, 336);
             this.Controls.Add(this.OuterTLP);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ListMessageBoxForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "ListMessageBoxForm";
-            this.Load += new System.EventHandler(this.ListMessageBoxForm_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ListMessageBoxForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();
             this.ContentTLP.ResumeLayout(false);
             this.MainFLP.ResumeLayout(false);
-            this.MainFLP.PerformLayout();
             this.SelectButtonsFLP.ResumeLayout(false);
+            this.SelectButtonsFLP.PerformLayout();
             this.OuterTLP.ResumeLayout(false);
             this.BottomFLP.ResumeLayout(false);
+            this.BottomFLP.PerformLayout();
             this.ResumeLayout(false);
 
         }

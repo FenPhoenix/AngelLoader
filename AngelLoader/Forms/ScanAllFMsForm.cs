@@ -43,8 +43,8 @@ namespace AngelLoader.Forms
             ReleaseDateCheckBox.Text = LText.ScanAllFMsBox.ReleaseDate;
             TagsCheckBox.Text = LText.ScanAllFMsBox.Tags;
 
-            SelectAllButton.SetTextAutoSize(LText.ScanAllFMsBox.SelectAll);
-            SelectNoneButton.SetTextAutoSize(LText.ScanAllFMsBox.SelectNone);
+            SelectAllButton.SetTextAutoSize(LText.Global.SelectAll);
+            SelectNoneButton.SetTextAutoSize(LText.Global.SelectNone);
 
             ScanButton.SetTextAutoSize(LText.ScanAllFMsBox.Scan, ScanButton.Width);
             Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);

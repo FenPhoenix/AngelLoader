@@ -73,28 +73,30 @@ namespace AngelLoader.Forms
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 
-        private void TestButton_Click(object sender, EventArgs e)
+        private async void TestButton_Click(object sender, EventArgs e)
         {
+#if false
             //MessageBox.Show("test\r\ntest\r\ntest", "test", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //MessageBox.Show("test\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\n", "test", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             string[] choices =
             {
-                @"C:\super_long_path_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_.zip",
-                @"C:\ultra_long_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_path_123211243242.zip",
-                @"C:\short1.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
+                //@"C:\super_long_path_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_.zip",
+                //@"C:\ultra_long_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_path_123211243242.zip",
+                //@"C:\short1.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
+                //@"C:\short2.zip",
                 @"C:\short2.zip",
                 @"C:\short2.zip",
                 @"C:\short2.zip",
@@ -103,16 +105,19 @@ namespace AngelLoader.Forms
                 @"C:\short2.zip",
             };
 
-            using (var f = new ListMessageBoxForm("test\r\ntest\r\ntest", "bottom message", "Test title", MessageBoxIcon.Warning,
-                choices))
+            using (var f = new ListMessageBoxForm("test\r\ntest\r\ntest", "bottom message", "Test title",
+                MessageBoxIcon.Warning, "OK", "Cancel", true, choices))
             {
-                f.ShowDialog();
+                var result = f.ShowDialog();
+                Trace.WriteLine(result);
             }
 
             return;
 
+#endif
+
             if (!FMsDGV.RowSelected()) return;
-            Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
+            await Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
