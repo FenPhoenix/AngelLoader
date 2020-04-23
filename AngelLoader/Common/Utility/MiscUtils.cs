@@ -536,10 +536,10 @@ namespace AngelLoader
 
         #region Clear and add
 
-        internal static void ClearAndAdd<T>(this List<T> list, params T[] items)
+        internal static void ClearAndAdd<T>(this List<T> list, T item)
         {
             list.Clear();
-            list.AddRange(items);
+            list.Add(item);
         }
 
         internal static void ClearAndAdd<T>(this List<T> list, IEnumerable<T> items)
