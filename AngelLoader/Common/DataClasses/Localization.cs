@@ -82,6 +82,7 @@ namespace AngelLoader.DataClasses
             internal static string Uninstall = "Uninstall";
             internal static string BackUp = "Back up";
             internal static string DontBackUp = "Don't back up";
+            internal static string DeleteFM = "Delete FM";
             [FenGenBlankLine]
             internal static string DontAskAgain = "Don't ask again";
             [FenGenBlankLine]
@@ -139,6 +140,13 @@ namespace AngelLoader.DataClasses
             internal static string Scan_ExceptionInScanMultiple = "There was a problem scanning the FMs. See the log file for error details.";
             [FenGenBlankLine]
             internal static string FindFMs_ExceptionReadingFMDataIni = "There was a problem reading the FM data ini file. See the log file for error details.";
+        }
+
+        internal static class DeleteFM
+        {
+            internal static string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, uninstall it.";
+            internal static string AboutToDelete = "The following FM archive is about to be deleted from disk:";
+            internal static string DeleteFMFromDisk = "Delete FM";
         }
 
         internal static class Difficulties

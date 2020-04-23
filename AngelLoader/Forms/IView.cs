@@ -74,11 +74,11 @@ namespace AngelLoader.Forms
 
         (bool Cancel, bool DontAskAgain)
         AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-                                        string? yes, string? no);
+                                        string? yes, string? no, ButtonType? defaultButton = null);
 
         (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-                                             string yes, string no, string cancel);
+                                             string yes, string no, string cancel, ButtonType? defaultButton = null);
 
         void ChangeReadmeBoxFont(bool useFixed);
 

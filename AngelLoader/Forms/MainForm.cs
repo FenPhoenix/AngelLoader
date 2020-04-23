@@ -75,8 +75,44 @@ namespace AngelLoader.Forms
 
         private void TestButton_Click(object sender, EventArgs e)
         {
-            //if (!FMsDGV.RowSelected()) return;
-            //Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
+            //MessageBox.Show("test\r\ntest\r\ntest", "test", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            string[] choices =
+            {
+                @"C:\super_long_path_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_.zip",
+                @"C:\ultra_long_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_path_123211243242.zip",
+                @"C:\short1.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+                @"C:\short2.zip",
+            };
+
+            using (var f = new ListMessageBoxForm("test\r\ntest\r\ntest", "bottom message", "Test title", MessageBoxIcon.Warning,
+                choices))
+            {
+                f.ShowDialog();
+            }
+
+            return;
+
+            if (!FMsDGV.RowSelected()) return;
+            Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
@@ -294,7 +330,7 @@ namespace AngelLoader.Forms
 
         public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
-            bool showDontAskAgain, string yes, string no, string cancel)
+            bool showDontAskAgain, string yes, string no, string cancel, ButtonType? defaultButton = null)
         {
             using var d = new TaskDialog();
             using var yesButton = new TaskDialogButton(yes);
@@ -310,6 +346,21 @@ namespace AngelLoader.Forms
             d.Buttons.Add(yesButton);
             d.Buttons.Add(noButton);
             d.Buttons.Add(cancelButton);
+            if (defaultButton != null)
+            {
+                switch (defaultButton)
+                {
+                    case ButtonType.Yes:
+                        yesButton.Default = true;
+                        break;
+                    case ButtonType.No:
+                        noButton.Default = true;
+                        break;
+                    case ButtonType.Cancel:
+                        cancelButton.Default = true;
+                        break;
+                }
+            }
             var buttonClicked = d.ShowDialog();
             bool canceled = buttonClicked == null || buttonClicked == cancelButton;
             bool cont = buttonClicked == yesButton;
@@ -319,7 +370,7 @@ namespace AngelLoader.Forms
 
         public (bool Cancel, bool DontAskAgain)
         AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-            string? yes, string? no)
+            string? yes, string? no, ButtonType? defaultButton = null)
         {
             using var d = new TaskDialog();
             using var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
@@ -333,6 +384,18 @@ namespace AngelLoader.Forms
             if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
             d.Buttons.Add(yesButton);
             d.Buttons.Add(noButton);
+            if (defaultButton != null)
+            {
+                switch (defaultButton)
+                {
+                    case ButtonType.Yes:
+                        yesButton.Default = true;
+                        break;
+                    case ButtonType.No:
+                        noButton.Default = true;
+                        break;
+                }
+            }
             var buttonClicked = d.ShowDialog();
             bool cancel = buttonClicked != yesButton;
             bool dontAskAgain = d.IsVerificationChecked;

@@ -26,6 +26,7 @@ using AngelLoader.Forms;
 using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
+using AngelLoader.WinAPI.Ookii.Dialogs;
 using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
@@ -1928,17 +1929,27 @@ namespace AngelLoader
             var archives = FindFMArchive_Multiple(fm.Archive);
             if (archives.Count == 0)
             {
-                View.ShowAlert("No archive(s) found for this FM.", LText.AlertMessages.Alert);
+                View.ShowAlert(LText.DeleteFM.ArchiveNotFound, LText.AlertMessages.DeleteFM);
             }
             else if (archives.Count == 1)
             {
-                View.ShowAlert(archives[0], LText.AlertMessages.Alert);
+                var (cancel, _) = View.AskToContinueYesNoCustomStrings(
+                    message: LText.DeleteFM.AboutToDelete + "\r\n\r\n" +
+                             archives[0],
+                    title: LText.AlertMessages.DeleteFM,
+                    icon: TaskDialogIcon.Warning,
+                    showDontAskAgain: false,
+                    yes: LText.DeleteFM.DeleteFMFromDisk,
+                    no: LText.Global.Cancel,
+                    defaultButton: ButtonType.No);
+
+                if (cancel) return;
             }
             else
             {
                 string s = "";
                 foreach (var a in archives) s += (!s.IsEmpty() ? "\r\n" : "") + a;
-                View.ShowAlert("Multiple archives:\r\n\r\n" + s, LText.AlertMessages.Alert);
+                View.ShowAlert("Multiple archives:\r\n\r\n" + s, LText.AlertMessages.DeleteFM);
             }
 
             string testFile = @"C:\vb_del_test.tmp";

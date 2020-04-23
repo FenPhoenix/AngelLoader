@@ -214,6 +214,10 @@ namespace AngelLoader
                         {
                             LText.AlertMessages.DontBackUp = lt.Substring(11);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("DeleteFM="))
+                        {
+                            LText.AlertMessages.DeleteFM = lt.Substring(9);
+                        }
                         else if (lt.StartsWithFast_NoNullChecks("DontAskAgain="))
                         {
                             LText.AlertMessages.DontAskAgain = lt.Substring(13);
@@ -385,6 +389,30 @@ namespace AngelLoader
                         else if (lt.StartsWithFast_NoNullChecks("FindFMs_ExceptionReadingFMDataIni="))
                         {
                             LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni = lt.Substring(34);
+                        }
+                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                else if (lineT == "[DeleteFM]")
+                {
+                    while (i < lines.Length - 1)
+                    {
+                        string lt = lines[i + 1].TrimStart();
+                        if (lt.StartsWithFast_NoNullChecks("ArchiveNotFound="))
+                        {
+                            LText.DeleteFM.ArchiveNotFound = lt.Substring(16);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("AboutToDelete="))
+                        {
+                            LText.DeleteFM.AboutToDelete = lt.Substring(14);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMFromDisk="))
+                        {
+                            LText.DeleteFM.DeleteFMFromDisk = lt.Substring(17);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
