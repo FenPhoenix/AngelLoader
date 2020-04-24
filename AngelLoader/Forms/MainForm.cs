@@ -1886,8 +1886,6 @@ namespace AngelLoader.Forms
             }
         }
 
-
-
         #region FMsDGV event handlers
 
         // Coloring the recent rows here because if we do it in _CellValueNeeded, we get a brief flash of the
@@ -1944,7 +1942,7 @@ namespace AngelLoader.Forms
                 Resources.Stars5
             };
 
-            // IMPORTANT: These must be in this exact order, as it matches FinishedOn flags.
+            // IMPORTANT: These must be in this exact order, as it matches Difficulty flags.
             // Any other order and it will pick the wrong image.
             FinishedOnIcons = new[]
             {
