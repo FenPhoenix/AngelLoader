@@ -1958,37 +1958,34 @@ namespace AngelLoader
 
         internal static async Task DeleteFMArchive(FanMission fm)
         {
-            var finalArchives = new List<string>();
-
             var archives = FindFMArchive_Multiple(fm.Archive);
             if (archives.Count == 0)
             {
                 View.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFM);
                 return;
             }
-            else
-            {
-                bool singleArchive = archives.Count == 1;
-                string[]? choiceStrings = singleArchive ? null : archives.ToArray();
-                string messageTop = singleArchive
+
+            bool singleArchive = archives.Count == 1;
+
+            var finalArchives = new List<string>();
+
+            using (var f = new MessageBoxCustomForm(
+                messageTop: singleArchive
                     ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
-                    : LText.FMDeletion.DuplicateArchivesFound;
-                string okText = singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs;
-
-                using var f = new MessageBoxCustomForm(
-                    messageTop: messageTop,
-                    messageBottom: "",
-                    title: LText.FMDeletion.DeleteFM,
-                    icon: MessageBoxIcon.Warning,
-                    okText: okText,
-                    cancelText: LText.Global.Cancel,
-                    okIsDangerous: true,
-                    choiceStrings: choiceStrings);
-
+                    : LText.FMDeletion.DuplicateArchivesFound,
+                messageBottom: "",
+                title: LText.FMDeletion.DeleteFM,
+                icon: MessageBoxIcon.Warning,
+                okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
+                cancelText: LText.Global.Cancel,
+                okIsDangerous: true,
+                choiceStrings: singleArchive ? null : archives.ToArray()))
+            {
                 if (f.ShowDialog() != DialogResult.OK) return;
 
-                finalArchives.ClearAndAdd(singleArchive ? archives : f.SelectedItems);
+                finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
             }
+
             try
             {
                 View.ShowProgressBox(ProgressTasks.DeleteFMArchive);
@@ -2003,17 +2000,20 @@ namespace AngelLoader
                         catch (Exception ex)
                         {
                             Log(nameof(DeleteFMArchive) + ": Exception deleting file '" + archive + "'", ex);
-                            View.ShowAlert(
-                                LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" +
-                                archive,
-                                LText.AlertMessages.Error);
+                            View.InvokeSync(new Action(() =>
+                            {
+                                View.ShowAlert(
+                                     LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" +
+                                     archive,
+                                     LText.AlertMessages.Error);
+                            }));
                         }
                     }
                 });
             }
             finally
             {
-                var newArchives = FindFMArchive_Multiple(fm.Archive);
+                var newArchives = await Task.Run(() => FindFMArchive_Multiple(fm.Archive));
 
                 View.HideProgressBox();
 
