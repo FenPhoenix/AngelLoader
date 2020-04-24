@@ -64,17 +64,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Forms\Import\ImportFromMultipleLoadersForm.cs" />
-    <Compile Remove="Forms\Import\ImportFromMultipleLoadersForm.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Forms\Import\ImportFromMultipleLoadersForm.resx" />
-    <EmbeddedResource Remove="Forms\Import\ImportFromMultipleLoadersForm.cs" />
-    <EmbeddedResource Remove="Forms\Import\ImportFromMultipleLoadersForm.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="7z.Libs" Version="19.0.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Nullable" Version="1.2.1">
