@@ -17,10 +17,15 @@ namespace FenGen
             //var destFile = Path.Combine(Core.ALProjectPath, @"Ini\FMData.cs");
             //Core.GenerateFMData(sourceFile, destFile);
             //await Roslyn_Test.RunRoslynTest();
+
+#if false
             var langFile = Path.Combine(Core.ALProjectPath, @"Languages\English.ini");
             StateVars.WriteTestLangFile = true;
             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
             LanguageGen.Generate(langFile);
+#endif
+
+            VisLoc.Generate();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

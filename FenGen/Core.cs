@@ -36,7 +36,8 @@ namespace FenGen
         Config,
         Language,
         Version,
-        MainFormBacking
+        MainFormBacking,
+        VisLoc
     }
 
     internal enum VersionType
@@ -172,10 +173,12 @@ namespace FenGen
         private static MainForm View;
 #endif
 
+        internal static string ALSolutionPath;
         internal static string ALProjectPath;
 
         internal static void Init()
         {
+            ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
             ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
 
 #if Release
@@ -251,6 +254,15 @@ namespace FenGen
                             StateVars.WriteTestLangFile = true;
                             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
                             LanguageGen.Generate(langFile);
+                        }
+                        break;
+                    case "-visloc":
+                        // switched off for now
+                        break;
+                        if (!GenTasks.Contains(GenType.VisLoc))
+                        {
+                            GenTasks.Add(GenType.VisLoc);
+                            VisLoc.Generate();
                         }
                         break;
                     default:
