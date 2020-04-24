@@ -73,51 +73,8 @@ namespace AngelLoader.Forms
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
 
-        private async void TestButton_Click(object sender, EventArgs e)
+        private void TestButton_Click(object sender, EventArgs e)
         {
-#if false
-            //MessageBox.Show("test\r\ntest\r\ntest", "test", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //MessageBox.Show("test\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\ntest\r\n", "test", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-            string[] choices =
-            {
-                //@"C:\super_long_path_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_.zip",
-                //@"C:\ultra_long_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_blah_path_123211243242.zip",
-                //@"C:\short1.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                //@"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-                @"C:\short2.zip",
-            };
-
-            using (var f = new ListMessageBoxForm("test\r\ntest\r\ntest", "bottom message", "Test title",
-                MessageBoxIcon.Warning, "OK", "Cancel", true, choices))
-            {
-                var result = f.ShowDialog();
-                Trace.WriteLine(result);
-            }
-
-            return;
-
-#endif
-
-            if (!FMsDGV.RowSelected()) return;
-            await Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
         }
 
         private void Test2Button_Click(object sender, EventArgs e)
@@ -163,6 +120,8 @@ namespace AngelLoader.Forms
                 this.ResumeDrawing();
             }
         }
+
+        public SelectedFM? GetSelectedFMPosInfo() => FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
         public Filter GetFilter() => FMsDGV.Filter;
         public string GetTitleFilter() => FilterTitleTextBox.Text;
@@ -1125,12 +1084,27 @@ namespace AngelLoader.Forms
                 e.SuppressKeyPress = true;
             }
 
+            // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
+            // the FMs list
+            if ((FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused) &&
+                (e.KeyCode == Keys.Home || e.KeyCode == Keys.End))
+            {
+                return;
+            }
+
             if (e.KeyCode == Keys.Enter)
             {
                 if (FMsDGV.Focused && FMsDGV.RowSelected() && GameIsKnownAndSupported(FMsDGV.GetSelectedFM().Game))
                 {
                     e.SuppressKeyPress = true;
                     await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM(), askConfIfRequired: true);
+                }
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                if (FMsDGV.Focused && FMsDGV.RowSelected())
+                {
+                    await Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
                 }
             }
             else if (e.KeyCode == Keys.Escape)
@@ -1191,7 +1165,7 @@ namespace AngelLoader.Forms
                 {
                     if (e.Shift && !e.Control && !e.Alt)
                     {
-                        await RefreshFromDisk();
+                        await Core.RefreshFromDisk();
                         e.SuppressKeyPress = true;
                     }
                     else if (!e.Shift)
@@ -2227,7 +2201,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        #endregion    
+        #endregion
 
         private void FMsDGV_KeyDown(object sender, KeyEventArgs e)
         {
@@ -2250,13 +2224,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        private async Task RefreshFromDisk()
-        {
-            SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
-            using (new DisableEvents(this)) await FMScan.FindNewFMsAndScanNew();
-            await SortAndSetFilter(selFM, forceDisplayFM: true);
-        }
 
         #endregion
 
@@ -2642,6 +2609,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.SetInstallUninstallMenuItemText(true);
             FMsDGV.SetInstallUninstallMenuItemEnabled(false);
+            FMsDGV.SetDeleteFMMenuItemEnabled(false);
             FMsDGV.SetOpenInDromEdMenuItemText(false);
 
             // Special-cased; don't autosize this one
@@ -2772,6 +2740,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.SetInstallUninstallMenuItemEnabled(gameIsSupported);
             FMsDGV.SetInstallUninstallMenuItemText(!fm.Installed);
+            FMsDGV.SetDeleteFMMenuItemEnabled(true);
             FMsDGV.SetOpenInDromEdMenuItemText(fmIsSS2);
 
             FMsDGV.SetOpenInDromEdVisible(GameIsDark(fm.Game) && Config.GetGameEditorDetectedUnsafe(fm.Game));
@@ -4026,7 +3995,7 @@ namespace AngelLoader.Forms
 
         internal void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
 
-        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await RefreshFromDisk();
+        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
 
         private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 

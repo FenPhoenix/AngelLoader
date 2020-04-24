@@ -49,6 +49,12 @@ namespace AngelLoader
             FMDataIniList.Clear();
             FMsViewList.Clear();
 
+            // Mark this false because this flag is only there as a perf hack to make SetFilter() not have to
+            // iterate the FMs list for deletion markers unless it's actually going to find something. Our FMs'
+            // deletion markers will disappear here implicitly because the objects are destroyed and new ones
+            // created, but we need to explicitly set our perf-hack bool to false too.
+            Core.OneOrMoreFMsAreMarkedDeleted = false;
+
             bool fmDataIniExists = File.Exists(Paths.FMDataIni);
 
             if (fmDataIniExists)

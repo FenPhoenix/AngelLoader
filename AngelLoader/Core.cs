@@ -26,7 +26,6 @@ using AngelLoader.Forms;
 using AngelLoader.Forms.Import;
 using AngelLoader.Importing;
 using AngelLoader.WinAPI;
-using AngelLoader.WinAPI.Ookii.Dialogs;
 using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
@@ -42,6 +41,10 @@ namespace AngelLoader
 #pragma warning disable CS8618
         internal static IView View;
 #pragma warning restore CS8618
+
+        // Stupid hack for perf and nice UX when deleting FMs (we filter out deleted ones until the next find from
+        // disk, when we remove them properly)
+        internal static bool OneOrMoreFMsAreMarkedDeleted;
 
         internal static void Init(Task configTask)
         {
@@ -654,6 +657,13 @@ namespace AngelLoader
             }
         }
 
+        public static async Task RefreshFromDisk()
+        {
+            SelectedFM? selFM = View.GetSelectedFMPosInfo();
+            using (new DisableEvents(View)) await FMScan.FindNewFMsAndScanNew();
+            await View.SortAndSetFilter(selFM, forceDisplayFM: true);
+        }
+
         // PERF: 0.7~2.2ms with every filter set (including a bunch of tag filters), over 1098 set. But note that
         //       the majority had no tags for this test.
         //       This was tested with the Release_Testing (optimized) profile.
@@ -710,8 +720,9 @@ namespace AngelLoader
                 viewFilter.RatingTo == 10 &&
                 (viewFilter.Finished == FinishedState.Null ||
                  ((viewFilter.Finished & FinishedState.Finished) == FinishedState.Finished &&
-                 (viewFilter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished)) &&
-                viewFilter.ShowUnsupported)
+                  (viewFilter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished)) &&
+                viewFilter.ShowUnsupported &&
+                !OneOrMoreFMsAreMarkedDeleted)
             {
                 View.SetFiltered(false);
 
@@ -1025,6 +1036,23 @@ namespace AngelLoader
                     if (!fm.MarkedRecent &&
                         (((fmFinished > 0 || fmFinishedOnUnknown) && (viewFilter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
                         (fmFinished == 0 && !fmFinishedOnUnknown && (viewFilter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished)))
+                    {
+                        filterShownIndexList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Marked deleted (special case)
+
+            if (OneOrMoreFMsAreMarkedDeleted)
+            {
+                for (int i = 0; i < filterShownIndexList.Count; i++)
+                {
+                    var fm = FMsViewList[filterShownIndexList[i]];
+                    if (fm.MarkedDeleted)
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
@@ -1855,6 +1883,10 @@ namespace AngelLoader
 
             int index = url.IndexOf("$TITLE$", StringComparison.OrdinalIgnoreCase);
 
+            // Possible exceptions are:
+            // ArgumentNullException (stringToEscape is null)
+            // UriFormatException (The length of stringToEscape exceeds 32766 characters)
+            // Those are both checked for above so we're good.
             string finalUrl = Uri.EscapeUriString(index == -1
                 ? url
                 : url.Substring(0, index) + fmTitle + url.Substring(index + "$TITLE$".Length));
@@ -1931,73 +1963,69 @@ namespace AngelLoader
             var archives = FindFMArchive_Multiple(fm.Archive);
             if (archives.Count == 0)
             {
-                View.ShowAlert(LText.DeleteFM.ArchiveNotFound, LText.AlertMessages.DeleteFM);
+                View.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFM);
                 return;
-            }
-            else if (archives.Count == 1)
-            {
-                // TODO: We want a red icon by the OK button here too, but can't with Ookii Dialogs.
-                // Use custom one and allow hiding of the selection stuff and bottom message?
-                var (cancel, _) = View.AskToContinueYesNoCustomStrings(
-                    message: LText.DeleteFM.AboutToDelete + "\r\n\r\n" +
-                             archives[0],
-                    title: LText.AlertMessages.DeleteFM,
-                    icon: TaskDialogIcon.Warning,
-                    showDontAskAgain: false,
-                    yes: LText.DeleteFM.DeleteFMFromDisk,
-                    no: LText.Global.Cancel,
-                    defaultButton: ButtonType.No);
-
-                if (cancel) return;
-
-                finalArchives.ClearAndAdd(archives[0]);
             }
             else
             {
-                using var f = new ListMessageBoxForm(
-                    messageTop: LText.DeleteFM.DuplicateArchivesFound,
-                    messageBottom: LText.DeleteFM.ChooseWhichArchivesToDelete,
-                    title: LText.DeleteFM.DeleteFMFromDisk,
+                bool singleArchive = archives.Count == 1;
+                string[]? choiceStrings = singleArchive ? null : archives.ToArray();
+                string messageTop = singleArchive
+                    ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
+                    : LText.FMDeletion.DuplicateArchivesFound;
+                string okText = singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs;
+
+                using var f = new MessageBoxCustomForm(
+                    messageTop: messageTop,
+                    messageBottom: "",
+                    title: LText.FMDeletion.DeleteFM,
                     icon: MessageBoxIcon.Warning,
-                    okText: LText.DeleteFM.DeleteFMsFromDisk,
+                    okText: okText,
                     cancelText: LText.Global.Cancel,
                     okIsDangerous: true,
-                    choiceStrings: archives.ToArray());
+                    choiceStrings: choiceStrings);
 
                 if (f.ShowDialog() != DialogResult.OK) return;
 
-                finalArchives.ClearAndAdd(f.SelectedItems);
+                finalArchives.ClearAndAdd(singleArchive ? archives : f.SelectedItems);
             }
-
-            const string testFile = @"C:\vb_del_test.tmp";
-            using (var sw = new StreamWriter(testFile, append: false))
-            {
-                for (int i = 0; i < 50_000_000; i++) sw.Write("0");
-            }
-
-            View.ShowAlert("created test file", "Test");
-
             try
             {
                 View.ShowProgressBox(ProgressTasks.DeleteFMArchive);
                 await Task.Run(() =>
                 {
-                    FileSystem.DeleteFile(testFile, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
-                    // TODO: Flip the switch when ready to test with real archives
-                    //foreach (string archive in finalArchives)
-                    //{
-                    //    FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
-                    //}
+                    foreach (string archive in finalArchives)
+                    {
+                        try
+                        {
+                            FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(nameof(DeleteFMArchive) + ": Exception deleting file '" + archive + "'", ex);
+                            View.ShowAlert(
+                                LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" +
+                                archive,
+                                LText.AlertMessages.Error);
+                        }
+                    }
                 });
-            }
-            catch (Exception ex)
-            {
-                // TODO: Make this a friendlier message
-                View.ShowAlert("Exception deleting file: " + ex.Message, LText.AlertMessages.Alert);
             }
             finally
             {
+                var newArchives = FindFMArchive_Multiple(fm.Archive);
+
                 View.HideProgressBox();
+
+                if (newArchives.Count == 0 && !fm.Installed)
+                {
+                    // Disgusting hack that results in a better user experience than the "proper" way of reloading
+                    // the list from disk immediately
+                    fm.MarkedDeleted = true;
+                    OneOrMoreFMsAreMarkedDeleted = true;
+
+                    await View.SortAndSetFilter(View.GetSelectedFMPosInfo(), keepSelection: true);
+                }
             }
         }
 

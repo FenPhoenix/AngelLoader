@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class ListMessageBoxForm : Form, Misc.ILocalizable
+    public sealed partial class MessageBoxCustomForm : Form, Misc.ILocalizable
     {
         #region P/Invoke crap
 
@@ -61,74 +61,83 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private readonly bool _multiChoice;
+        private const int _bottomAreaHeight = 42;
+        private const int _leftAreaWidth = 60;
+        private const int _edgePadding = 21;
+
         public readonly List<string> SelectedItems = new List<string>();
 
-        public ListMessageBoxForm(string messageTop, string messageBottom, string title, MessageBoxIcon icon,
-            string okText, string cancelText, bool okIsDangerous, string[] choiceStrings)
+        public MessageBoxCustomForm(string messageTop, string messageBottom, string title, MessageBoxIcon icon,
+            string okText, string cancelText, bool okIsDangerous, string[]? choiceStrings = null)
         {
             InitializeComponent();
 
-            if (choiceStrings == null || choiceStrings.Length == 0)
-            {
-                throw new ArgumentException(@"Null or empty", nameof(choiceStrings));
-            }
+            _multiChoice = choiceStrings?.Length > 0;
+
+            #region Set fonts
+
+            // Set these after InitializeComponent() in case that sets other fonts, but before anything else
+            MessageTopLabel.Font = SystemFonts.MessageBoxFont;
+            MessageBottomLabel.Font = SystemFonts.MessageBoxFont;
+            SelectAllButton.Font = SystemFonts.MessageBoxFont;
+            OKButton.Font = SystemFonts.MessageBoxFont;
+            Cancel_Button.Font = SystemFonts.MessageBoxFont;
+            ChoiceListBox.Font = SystemFonts.DefaultFont;
+
+            #endregion
 
             #region Set passed-in values
 
-            if (icon != MessageBoxIcon.None) SetIcon(icon);
+            if (icon != MessageBoxIcon.None) SetMessageBoxIcon(icon);
 
             Text = title;
             MessageTopLabel.Text = messageTop;
             MessageBottomLabel.Text = messageBottom;
 
-            // Set this first: the list is now populated
-            for (int i = 0; i < choiceStrings.Length; i++)
+            if (_multiChoice)
             {
-                ChoiceListBox.Items.Add(choiceStrings[i]);
+                // Set this first: the list is now populated
+                for (int i = 0; i < choiceStrings!.Length; i++)
+                {
+                    ChoiceListBox.Items.Add(choiceStrings[i]);
+                }
+            }
+            else
+            {
+                ChoiceListBox.Hide();
+                SelectButtonsFLP.Hide();
+                MessageBottomLabel.Hide();
             }
 
             #endregion
 
             #region Autosize controls
 
-            // Set this second: the list is now sized based on its content
-            ChoiceListBox.Height =
-                (ChoiceListBox.ItemHeight * ChoiceListBox.Items.Count.Clamp(5, 20)) +
-                ((SystemInformation.BorderSize.Height * 4) + 3);
-
-            // Set this third: all controls sizes are now set, so we can size the window
-            const int bottomAreaHeight = 42;
-            ClientSize = new Size(ClientSize.Width, bottomAreaHeight +
-                                                    OuterTLP.Margin.Top +
-                                                    OuterTLP.Margin.Bottom +
-                                                    ContentTLP.Margin.Top +
-                                                    ContentTLP.Margin.Bottom +
-                                                    MainFLP.Margin.Top +
-                                                    MainFLP.Margin.Bottom +
-                                                    MessageTopLabel.Margin.Top +
-                                                    MessageTopLabel.Margin.Bottom +
-                                                    MessageTopLabel.Height +
-                                                    ChoiceListBox.Margin.Top +
-                                                    ChoiceListBox.Margin.Bottom +
-                                                    ChoiceListBox.Height +
-                                                    SelectButtonsFLP.Margin.Top +
-                                                    SelectButtonsFLP.Margin.Bottom +
-                                                    SelectButtonsFLP.Height +
-                                                    MessageBottomLabel.Margin.Top +
-                                                    MessageBottomLabel.Margin.Bottom +
-                                                    MessageBottomLabel.Height);
-
-            // These can be set anywhere as they don't affect the vertical sizing code
             int innerControlWidth = MainFLP.Width - 10;
-            MessageTopLabel.Width = innerControlWidth;
-            ChoiceListBox.Width = innerControlWidth;
-            SelectButtonsFLP.Width = innerControlWidth + 1;
-            MessageBottomLabel.Width = innerControlWidth;
+            MessageTopLabel.MaximumSize = new Size(innerControlWidth, MessageTopLabel.MaximumSize.Height);
+            MessageBottomLabel.MaximumSize = new Size(innerControlWidth, MessageBottomLabel.MaximumSize.Height);
 
+            // Set this second: the list is now sized based on its content
+            if (_multiChoice)
+            {
+                ChoiceListBox.Height =
+                    (ChoiceListBox.ItemHeight * ChoiceListBox.Items.Count.Clamp(5, 20)) +
+                    ((SystemInformation.BorderSize.Height * 4) + 3);
+            }
+
+            // Set these before window autosizing
+            if (_multiChoice)
+            {
+                ChoiceListBox.Width = innerControlWidth;
+                SelectButtonsFLP.Width = innerControlWidth + 1;
+            }
+
+            // Set these before setting button text
             if (okIsDangerous)
             {
                 OKButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-                OKButton.ImageAlign = ContentAlignment.MiddleLeft;
+                OKButton.ImageAlign = ContentAlignment.MiddleCenter;
                 OKButton.Image = Resources.ExclMarkCircleRed_14;
             }
 
@@ -137,12 +146,60 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            ChoiceListBox.SetSelected(0, true);
-
             Localize();
+
+            SelectButtonsFLP.Height = SelectAllButton.Height;
+
+            #region Autosize window
+
+            // Run this after localization, so we have the right button widths
+
+            #region Local functions
+
+            static int GetFlowLayoutPanelControlsWidthAll(FlowLayoutPanel flp)
+            {
+                int ret = 0;
+                for (int i = 0; i < flp.Controls.Count; i++)
+                {
+                    Control c = flp.Controls[i];
+                    ret += c.Margin.Left + c.Margin.Right + c.Width;
+                }
+                ret += flp.Padding.Left + flp.Padding.Right;
+
+                return ret;
+            }
+
+            int GetControlFullHeight(Control control, bool onlyIfVisible = false) =>
+                !onlyIfVisible || _multiChoice
+                    ? control.Margin.Top +
+                      control.Margin.Bottom +
+                      control.Height
+                    : 0;
+
+            static int MathMax4(int num1, int num2, int num3, int num4) => Math.Max(Math.Max(Math.Max(num1, num2), num3), num4);
+
+            #endregion
+
+            // Set this last: all controls sizes are now set, so we can size the window
+            ClientSize = new Size(
+                 width: _leftAreaWidth +
+                        MathMax4(GetFlowLayoutPanelControlsWidthAll(BottomFLP),
+                                 MessageTopLabel.Width,
+                                 _multiChoice ? MessageBottomLabel.Width : 0,
+                                 _multiChoice ? SelectButtonsFLP.Width : 0) +
+                        _edgePadding,
+                height: _bottomAreaHeight +
+                        GetControlFullHeight(MessageTopLabel) +
+                        GetControlFullHeight(ChoiceListBox, onlyIfVisible: true) +
+                        GetControlFullHeight(SelectButtonsFLP, onlyIfVisible: true) +
+                       (_multiChoice && messageBottom.IsEmpty() ? _edgePadding : GetControlFullHeight(MessageBottomLabel, onlyIfVisible: true)));
+
+            #endregion
+
+            if (ChoiceListBox.Items.Count > 0) ChoiceListBox.SetSelected(0, true);
         }
 
-        private void SetIcon(MessageBoxIcon icon)
+        private void SetMessageBoxIcon(MessageBoxIcon icon)
         {
             SHSTOCKICONINFO sii = new SHSTOCKICONINFO();
             try
@@ -183,7 +240,10 @@ namespace AngelLoader.Forms
 
         public void Localize()
         {
-            SelectAllButton.SetTextAutoSize(LText.Global.SelectAll, SelectAllButton.Width);
+            if (_multiChoice)
+            {
+                SelectAllButton.SetTextAutoSize(LText.Global.SelectAll, SelectAllButton.Width);
+            }
         }
 
         private void SelectAllButton_Click(object sender, EventArgs e)
@@ -200,12 +260,12 @@ namespace AngelLoader.Forms
         // Shouldn't happen, but just in case
         private void ChoiceListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            OKButton.Enabled = ChoiceListBox.SelectedIndex > -1;
+            if (_multiChoice) OKButton.Enabled = ChoiceListBox.SelectedIndex > -1;
         }
 
-        private void ListMessageBoxForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void MessageBoxCustomForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (DialogResult == DialogResult.OK && ChoiceListBox.SelectedIndex > -1)
+            if (DialogResult == DialogResult.OK && _multiChoice && ChoiceListBox.SelectedIndex > -1)
             {
                 foreach (object item in ChoiceListBox.SelectedItems)
                 {

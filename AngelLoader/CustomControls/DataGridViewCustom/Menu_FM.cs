@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Properties;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -23,6 +24,7 @@ namespace AngelLoader.CustomControls
         private bool _openInDromEdMenuItemVisible;
         private bool _playFMInMPMenuItemVisible;
         private bool _convertAudioSubMenuEnabled;
+        private bool _deleteFMMenuItemEnabled;
         private int _rating = -1;
         private bool _finishedOnNormalChecked;
         private bool _finishedOnHardChecked;
@@ -47,6 +49,10 @@ namespace AngelLoader.CustomControls
         private ToolStripMenuItem? PlayFMInMPMenuItem;
         private ToolStripMenuItem? PlayFMAdvancedMenuItem;
         private ToolStripMenuItem? InstallUninstallMenuItem;
+
+        private ToolStripSeparator? DeleteFMSep;
+
+        private ToolStripMenuItem? DeleteFMMenuItem;
 
         private ToolStripSeparator? OpenInDromEdSep;
 
@@ -108,6 +114,9 @@ namespace AngelLoader.CustomControls
 
                 InstallUninstallMenuItem = new ToolStripMenuItem { Name = nameof(InstallUninstallMenuItem) },
 
+                DeleteFMSep = new ToolStripSeparator { Name = nameof(DeleteFMSep) },
+                DeleteFMMenuItem = new ToolStripMenuItem { Name = nameof(DeleteFMMenuItem), Image = Resources.ExclMarkCircleRed_14 },
+
                 OpenInDromEdSep = new ToolStripSeparator { Name = nameof(OpenInDromEdSep) },
                 OpenInDromEdMenuItem = new ToolStripMenuItem { Name = nameof(OpenInDromEdMenuItem) },
 
@@ -157,6 +166,8 @@ namespace AngelLoader.CustomControls
                 PlayFMInMPMenuItem,
                 //PlayFMAdvancedMenuItem,
                 InstallUninstallMenuItem,
+                DeleteFMSep,
+                DeleteFMMenuItem,
                 OpenInDromEdSep,
                 OpenInDromEdMenuItem,
                 FMContextMenuSep1,
@@ -211,6 +222,7 @@ namespace AngelLoader.CustomControls
             PlayFMMenuItem.Click += PlayFMMenuItem_Click;
             PlayFMInMPMenuItem.Click += PlayFMInMPMenuItem_Click;
             InstallUninstallMenuItem.Click += InstallUninstallMenuItem_Click;
+            DeleteFMMenuItem.Click += DeleteFMMenuItem_Click;
             OpenInDromEdMenuItem.Click += OpenInDromEdMenuItem_Click;
             ScanFMMenuItem.Click += ScanFMMenuItem_Click;
             ConvertWAVsTo16BitMenuItem.Click += ConvertWAVsTo16BitMenuItem_Click;
@@ -249,6 +261,7 @@ namespace AngelLoader.CustomControls
             #region Set main menu item values
 
             InstallUninstallMenuItem.Enabled = _installUninstallMenuEnabled;
+            DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
             SetConcreteInstallUninstallMenuItemText(_sayInstall);
             SetConcreteDromEdMenuItemText(_sayShockEd);
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
@@ -325,6 +338,9 @@ namespace AngelLoader.CustomControls
             #endregion
 
             SetConcreteInstallUninstallMenuItemText(sayInstall);
+
+            DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM.EscapeAmpersands();
+
             SetConcreteDromEdMenuItemText(sayShockEd);
 
             ScanFMMenuItem!.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
@@ -409,6 +425,18 @@ namespace AngelLoader.CustomControls
             else
             {
                 _installUninstallMenuEnabled = value;
+            }
+        }
+
+        internal void SetDeleteFMMenuItemEnabled(bool value)
+        {
+            if (_fmMenuConstructed)
+            {
+                DeleteFMMenuItem!.Enabled = value;
+            }
+            else
+            {
+                _deleteFMMenuItemEnabled = value;
             }
         }
 
@@ -592,6 +620,8 @@ namespace AngelLoader.CustomControls
         private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: true);
 
         private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(GetSelectedFM());
+
+        private async void DeleteFMMenuItem_Click(object sender, EventArgs e) => await Core.DeleteFMArchive(GetSelectedFM());
 
         private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
         {

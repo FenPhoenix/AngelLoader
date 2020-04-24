@@ -10,7 +10,7 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms
 {
     [PublicAPI]
-    internal interface IView : ILocalizable
+    internal interface IView : ILocalizable, IEventDisabler
     {
         #region Progress box
 
@@ -40,6 +40,7 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <returns></returns>
         Task FinishInitAndShow();
+        SelectedFM? GetSelectedFMPosInfo();
         Filter GetFilter();
         string GetTitleFilter();
         string GetAuthorFilter();
@@ -49,12 +50,14 @@ namespace AngelLoader.Forms
         bool GetShowUnsupportedFilter();
         List<int> GetFilterShownIndexList();
         void SetFiltered(bool value);
+
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         string GetDebug1Text();
         string GetDebug2Text();
         void SetDebug1Text(string value);
         void SetDebug2Text(string value);
 #endif
+
         int GetRowCount();
         void SetRowCount(int count);
         void ShowOnly();

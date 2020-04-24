@@ -75,6 +75,11 @@ namespace AngelLoader.DataClasses
         // [FenGen:DoNotSerialize]
         internal bool MarkedRecent;
 
+        // Disgusting hack to let an FM disappear from the list after being deleted. It will only be filtered out,
+        // but on next run of the FM finder, it will be properly removed if the archive is no longer there.
+        // [FenGen:DoNotSerialize]
+        internal bool MarkedDeleted;
+
         // [FenGen:DoNotSerialize]
         private uint _finishedOn = 0;
         // [FenGen:NumericEmpty=0]

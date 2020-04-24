@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class ListMessageBoxForm
+    partial class MessageBoxCustomForm
     {
         /// <summary>
         /// Required designer variable.
@@ -50,8 +50,9 @@
             // 
             // MessageTopLabel
             // 
+            this.MessageTopLabel.AutoSize = true;
             this.MessageTopLabel.Location = new System.Drawing.Point(0, 18);
-            this.MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 18, 3, 18);
+            this.MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 18, 3, 21);
             this.MessageTopLabel.Name = "MessageTopLabel";
             this.MessageTopLabel.Size = new System.Drawing.Size(74, 13);
             this.MessageTopLabel.TabIndex = 0;
@@ -76,11 +77,12 @@
             this.ContentTLP.Controls.Add(this.IconPictureBox, 0, 0);
             this.ContentTLP.Controls.Add(this.MainFLP, 1, 0);
             this.ContentTLP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ContentTLP.Location = new System.Drawing.Point(3, 3);
+            this.ContentTLP.Location = new System.Drawing.Point(0, 0);
+            this.ContentTLP.Margin = new System.Windows.Forms.Padding(0);
             this.ContentTLP.Name = "ContentTLP";
             this.ContentTLP.RowCount = 1;
             this.ContentTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.ContentTLP.Size = new System.Drawing.Size(564, 288);
+            this.ContentTLP.Size = new System.Drawing.Size(570, 294);
             this.ContentTLP.TabIndex = 2;
             // 
             // MainFLP
@@ -91,9 +93,10 @@
             this.MainFLP.Controls.Add(this.MessageBottomLabel);
             this.MainFLP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.MainFLP.Location = new System.Drawing.Point(63, 3);
+            this.MainFLP.Location = new System.Drawing.Point(60, 0);
+            this.MainFLP.Margin = new System.Windows.Forms.Padding(0);
             this.MainFLP.Name = "MainFLP";
-            this.MainFLP.Size = new System.Drawing.Size(498, 282);
+            this.MainFLP.Size = new System.Drawing.Size(510, 294);
             this.MainFLP.TabIndex = 2;
             // 
             // ChoiceListBox
@@ -101,8 +104,8 @@
             this.ChoiceListBox.FormattingEnabled = true;
             this.ChoiceListBox.HorizontalScrollbar = true;
             this.ChoiceListBox.IntegralHeight = false;
-            this.ChoiceListBox.Location = new System.Drawing.Point(3, 52);
-            this.ChoiceListBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.ChoiceListBox.Location = new System.Drawing.Point(0, 55);
+            this.ChoiceListBox.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
             this.ChoiceListBox.Name = "ChoiceListBox";
             this.ChoiceListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.ChoiceListBox.Size = new System.Drawing.Size(493, 95);
@@ -113,8 +116,8 @@
             // 
             this.SelectButtonsFLP.Controls.Add(this.SelectAllButton);
             this.SelectButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.SelectButtonsFLP.Location = new System.Drawing.Point(3, 147);
-            this.SelectButtonsFLP.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.SelectButtonsFLP.Location = new System.Drawing.Point(0, 150);
+            this.SelectButtonsFLP.Margin = new System.Windows.Forms.Padding(0);
             this.SelectButtonsFLP.Name = "SelectButtonsFLP";
             this.SelectButtonsFLP.Size = new System.Drawing.Size(493, 23);
             this.SelectButtonsFLP.TabIndex = 2;
@@ -134,8 +137,9 @@
             // 
             // MessageBottomLabel
             // 
-            this.MessageBottomLabel.Location = new System.Drawing.Point(3, 173);
-            this.MessageBottomLabel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 18);
+            this.MessageBottomLabel.AutoSize = true;
+            this.MessageBottomLabel.Location = new System.Drawing.Point(0, 176);
+            this.MessageBottomLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 21);
             this.MessageBottomLabel.Name = "MessageBottomLabel";
             this.MessageBottomLabel.Size = new System.Drawing.Size(88, 13);
             this.MessageBottomLabel.TabIndex = 3;
@@ -149,6 +153,7 @@
             this.OuterTLP.Controls.Add(this.BottomFLP, 0, 1);
             this.OuterTLP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OuterTLP.Location = new System.Drawing.Point(0, 0);
+            this.OuterTLP.Margin = new System.Windows.Forms.Padding(0);
             this.OuterTLP.Name = "OuterTLP";
             this.OuterTLP.RowCount = 2;
             this.OuterTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -158,21 +163,24 @@
             // 
             // BottomFLP
             // 
+            this.BottomFLP.BackColor = System.Drawing.SystemColors.Control;
             this.BottomFLP.Controls.Add(this.Cancel_Button);
             this.BottomFLP.Controls.Add(this.OKButton);
             this.BottomFLP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomFLP.Location = new System.Drawing.Point(3, 297);
+            this.BottomFLP.Location = new System.Drawing.Point(0, 294);
+            this.BottomFLP.Margin = new System.Windows.Forms.Padding(0);
             this.BottomFLP.Name = "BottomFLP";
-            this.BottomFLP.Size = new System.Drawing.Size(564, 36);
+            this.BottomFLP.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
+            this.BottomFLP.Size = new System.Drawing.Size(570, 42);
             this.BottomFLP.TabIndex = 3;
             // 
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(486, 6);
-            this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.Cancel_Button.Location = new System.Drawing.Point(480, 9);
+            this.Cancel_Button.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -184,8 +192,8 @@
             // 
             this.OKButton.AutoSize = true;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(405, 6);
-            this.OKButton.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.OKButton.Location = new System.Drawing.Point(395, 9);
+            this.OKButton.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -193,25 +201,27 @@
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
-            // ListMessageBoxForm
+            // MessageBoxCustomForm
             // 
             this.AcceptButton = this.Cancel_Button;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Window;
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(570, 336);
             this.Controls.Add(this.OuterTLP);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ListMessageBoxForm";
+            this.Name = "MessageBoxCustomForm";
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "ListMessageBoxForm";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ListMessageBoxForm_FormClosing);
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "MessageBoxCustomForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MessageBoxCustomForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();
             this.ContentTLP.ResumeLayout(false);
             this.MainFLP.ResumeLayout(false);
+            this.MainFLP.PerformLayout();
             this.SelectButtonsFLP.ResumeLayout(false);
             this.SelectButtonsFLP.PerformLayout();
             this.OuterTLP.ResumeLayout(false);

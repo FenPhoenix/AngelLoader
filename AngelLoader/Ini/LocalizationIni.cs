@@ -234,10 +234,6 @@ namespace AngelLoader
                         {
                             LText.AlertMessages.AppClosing_OperationInProgress = lt.Substring(31);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("WebSearchURL_IsInvalid="))
-                        {
-                            LText.AlertMessages.WebSearchURL_IsInvalid = lt.Substring(23);
-                        }
                         else if (lt.StartsWithFast_NoNullChecks("WebSearchURL_ProblemOpening="))
                         {
                             LText.AlertMessages.WebSearchURL_ProblemOpening = lt.Substring(28);
@@ -318,10 +314,6 @@ namespace AngelLoader
                         {
                             LText.AlertMessages.Play_ExecutableNotFoundFM = lt.Substring(26);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Play_GameIsRunning="))
-                        {
-                            LText.AlertMessages.Play_GameIsRunning = lt.Substring(19);
-                        }
                         else if (lt.StartsWithFast_NoNullChecks("Play_AnyGameIsRunning="))
                         {
                             LText.AlertMessages.Play_AnyGameIsRunning = lt.Substring(22);
@@ -398,6 +390,10 @@ namespace AngelLoader
                         {
                             LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni = lt.Substring(34);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("DeleteFM_UnableToDelete="))
+                        {
+                            LText.AlertMessages.DeleteFM_UnableToDelete = lt.Substring(24);
+                        }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
@@ -405,34 +401,30 @@ namespace AngelLoader
                         i++;
                     }
                 }
-                else if (lineT == "[DeleteFM]")
+                else if (lineT == "[FMDeletion]")
                 {
                     while (i < lines.Length - 1)
                     {
                         string lt = lines[i + 1].TrimStart();
                         if (lt.StartsWithFast_NoNullChecks("ArchiveNotFound="))
                         {
-                            LText.DeleteFM.ArchiveNotFound = lt.Substring(16);
+                            LText.FMDeletion.ArchiveNotFound = lt.Substring(16);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("AboutToDelete="))
                         {
-                            LText.DeleteFM.AboutToDelete = lt.Substring(14);
+                            LText.FMDeletion.AboutToDelete = lt.Substring(14);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("DuplicateArchivesFound="))
                         {
-                            LText.DeleteFM.DuplicateArchivesFound = lt.Substring(23);
+                            LText.FMDeletion.DuplicateArchivesFound = lt.Substring(23);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("ChooseWhichArchivesToDelete="))
+                        else if (lt.StartsWithFast_NoNullChecks("DeleteFM="))
                         {
-                            LText.DeleteFM.ChooseWhichArchivesToDelete = lt.Substring(28);
+                            LText.FMDeletion.DeleteFM = lt.Substring(9);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMFromDisk="))
+                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMs="))
                         {
-                            LText.DeleteFM.DeleteFMFromDisk = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMsFromDisk="))
-                        {
-                            LText.DeleteFM.DeleteFMsFromDisk = lt.Substring(18);
+                            LText.FMDeletion.DeleteFMs = lt.Substring(10);
                         }
                         else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
@@ -649,6 +641,10 @@ namespace AngelLoader
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_UninstallFM="))
                         {
                             LText.FMsList.FMMenu_UninstallFM = lt.Substring(19);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_DeleteFM="))
+                        {
+                            LText.FMsList.FMMenu_DeleteFM = lt.Substring(16);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("FMMenu_OpenInDromEd="))
                         {

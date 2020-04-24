@@ -90,7 +90,6 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal static string AppClosing_OperationInProgress = "An operation is in progress. Please cancel or wait for it to finish.";
             [FenGenBlankLine]
-            internal static string WebSearchURL_IsInvalid = "The specified site to search is not a valid URL.";
             internal static string WebSearchURL_ProblemOpening = "There was a problem opening the specified web search URL.";
             [FenGenBlankLine]
             internal static string Install_UnknownGameType = "This FM's game type is unknown, so it can't be installed.";
@@ -115,7 +114,6 @@ namespace AngelLoader.DataClasses
             internal static string Play_ExecutableNotFound = "Executable file not specified or not found. Unable to play.";
             internal static string Play_GamePathNotFound = "Game path not found. Unable to play.";
             internal static string Play_ExecutableNotFoundFM = "Executable file not specified or not found. Unable to play FM.";
-            internal static string Play_GameIsRunning = "Game is already running. Exit it first!";
             internal static string Play_AnyGameIsRunning = "One or more supported games are already running. Please exit them first.";
             internal static string Play_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to play.";
             internal static string Play_ConfirmMessage = "Play FM?";
@@ -142,16 +140,17 @@ namespace AngelLoader.DataClasses
             internal static string Scan_ExceptionInScanMultiple = "There was a problem scanning the FMs. See the log file for error details.";
             [FenGenBlankLine]
             internal static string FindFMs_ExceptionReadingFMDataIni = "There was a problem reading the FM data ini file. See the log file for error details.";
+            [FenGenBlankLine]
+            internal static string DeleteFM_UnableToDelete = "The following FM archive could not be deleted:";
         }
 
-        internal static class DeleteFM
+        internal static class FMDeletion
         {
             internal static string ArchiveNotFound = "This FM's archive could not be found. To delete this FM permanently, simply uninstall it.";
             internal static string AboutToDelete = "The following FM archive is about to be deleted from disk:";
-            internal static string DuplicateArchivesFound = "Multiple archives with the same name were found in one or more FM archive directories.";
-            internal static string ChooseWhichArchivesToDelete = "Please choose which archives(s) you want to delete.";
-            internal static string DeleteFMFromDisk = "Delete FM";
-            internal static string DeleteFMsFromDisk = "Delete FM(s)";
+            internal static string DuplicateArchivesFound = "Multiple archives with the same name were found. Please choose which archives(s) you want to delete.";
+            internal static string DeleteFM = "Delete FM";
+            internal static string DeleteFMs = "Delete FM(s)";
         }
 
         internal static class Difficulties
@@ -217,6 +216,7 @@ namespace AngelLoader.DataClasses
             internal static string FMMenu_PlayFM_Multiplayer = "Play FM (multiplayer)";
             internal static string FMMenu_InstallFM = "Install FM";
             internal static string FMMenu_UninstallFM = "Uninstall FM";
+            internal static string FMMenu_DeleteFM = "Delete FM archive";
             internal static string FMMenu_OpenInDromEd = "Open FM in DromEd";
             internal static string FMMenu_OpenInShockEd = "Open FM in ShockEd";
             internal static string FMMenu_Rating = "Rating";

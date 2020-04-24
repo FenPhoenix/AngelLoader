@@ -469,8 +469,15 @@ namespace AngelLoader
 
             foreach (string path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
             {
-                string f = Path.Combine(path, fmArchive);
-                if (File.Exists(f)) return f;
+                try
+                {
+                    string f = Path.Combine(path, fmArchive);
+                    if (File.Exists(f)) return f;
+                }
+                catch (Exception ex)
+                {
+                    Log(nameof(FindFMArchive) + ": exception in Path.Combine(" + nameof(path) + ", " + nameof(fmArchive) + ")", ex);
+                }
             }
 
             return "";
@@ -484,8 +491,15 @@ namespace AngelLoader
 
             foreach (string path in GetFMArchivePaths())
             {
-                string f = Path.Combine(path, fmArchive);
-                if (File.Exists(f)) list.Add(f);
+                try
+                {
+                    string f = Path.Combine(path, fmArchive);
+                    if (File.Exists(f)) list.Add(f);
+                }
+                catch (Exception ex)
+                {
+                    Log(nameof(FindFMArchive_Multiple) + ": exception in Path.Combine(" + nameof(path) + ", " + nameof(fmArchive) + ")", ex);
+                }
             }
 
             return list;
