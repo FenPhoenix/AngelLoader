@@ -115,6 +115,7 @@
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="CustomControls\ProgressPanel.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MessageBoxCustomForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx" />
