@@ -99,6 +99,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--
+      None of these are required or contain anything of use. All they do is bloat up the executable for no reason.
+      We hate bloat so out they go.
+    -->
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx" />
@@ -112,6 +116,11 @@
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx" />
 
+    <!--
+      The only resx file that's actually required is the main one here. It contains all the images and icons.
+      If it were up to me we wouldn't use this either, as it's accessed through horrendous reflection that takes
+      all day about getting images (that's why we cache them), but whatcha gonna do.
+    -->
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -121,8 +130,10 @@
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
   </Target>
-  <!--"NG7zLibs_net_AfterBuild" is a 7z.libs target. We have to run after it if we want the 7z.dll file to exist so we can copy it. Blah.-->
-  <!--It underlines the string like it doesn't exist, but it does find it. Tested.-->
+  <!--
+    "NG7zLibs_net_AfterBuild" is a 7z.libs target. We have to run after it if we want the 7z.dll file to exist so
+    we can copy it. Blah. Also, it underlines the string like it doesn't exist, but it does find it. Tested.
+  -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" DependsOnTargets="NG7zLibs_net_AfterBuild">
     <Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
   </Target>
