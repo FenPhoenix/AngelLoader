@@ -115,7 +115,7 @@ namespace AngelLoader.CustomControls
                 InstallUninstallMenuItem = new ToolStripMenuItem { Name = nameof(InstallUninstallMenuItem) },
 
                 DeleteFMSep = new ToolStripSeparator { Name = nameof(DeleteFMSep) },
-                DeleteFMMenuItem = new ToolStripMenuItem { Name = nameof(DeleteFMMenuItem), Image = Resources.ExclMarkCircleRed_14 },
+                DeleteFMMenuItem = new ToolStripMenuItem { Name = nameof(DeleteFMMenuItem), Image = Resources.Trash_16 },
 
                 OpenInDromEdSep = new ToolStripSeparator { Name = nameof(OpenInDromEdSep) },
                 OpenInDromEdMenuItem = new ToolStripMenuItem { Name = nameof(OpenInDromEdMenuItem) },
