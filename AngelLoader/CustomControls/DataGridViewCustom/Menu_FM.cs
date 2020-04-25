@@ -428,18 +428,6 @@ namespace AngelLoader.CustomControls
             }
         }
 
-        internal void SetDeleteFMMenuItemEnabled(bool value)
-        {
-            if (_fmMenuConstructed)
-            {
-                DeleteFMMenuItem!.Enabled = value;
-            }
-            else
-            {
-                _deleteFMMenuItemEnabled = value;
-            }
-        }
-
         internal void SetInstallUninstallMenuItemText(bool sayInstall)
         {
             if (_fmMenuConstructed)
@@ -449,6 +437,18 @@ namespace AngelLoader.CustomControls
             else
             {
                 _sayInstall = sayInstall;
+            }
+        }
+
+        internal void SetDeleteFMMenuItemEnabled(bool value)
+        {
+            if (_fmMenuConstructed)
+            {
+                DeleteFMMenuItem!.Enabled = value;
+            }
+            else
+            {
+                _deleteFMMenuItemEnabled = value;
             }
         }
 

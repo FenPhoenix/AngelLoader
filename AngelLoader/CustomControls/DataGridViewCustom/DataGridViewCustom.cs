@@ -54,8 +54,17 @@ namespace AngelLoader.CustomControls
         {
             column.Visible = visible;
             // Fix for zero-height glitch when Rating column gets swapped out when all columns are hidden
-            column.Width++;
-            column.Width--;
+            try
+            {
+                column.Width++;
+                column.Width--;
+            }
+            // stupid OCD check in case adding 1 would take us over 65536
+            catch (ArgumentOutOfRangeException)
+            {
+                column.Width--;
+                column.Width++;
+            }
         }
 
         private void SetConcreteInstallUninstallMenuItemText(bool sayInstall)
@@ -269,7 +278,7 @@ namespace AngelLoader.CustomControls
 
             try
             {
-                SelectedRows[0].Cells[FirstDisplayedCell.ColumnIndex].Selected = true;
+                SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
             }
             catch
             {
