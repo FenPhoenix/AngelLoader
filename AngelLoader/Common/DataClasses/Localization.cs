@@ -216,7 +216,7 @@ namespace AngelLoader.DataClasses
             internal static string FMMenu_PlayFM_Multiplayer = "Play FM (multiplayer)";
             internal static string FMMenu_InstallFM = "Install FM";
             internal static string FMMenu_UninstallFM = "Uninstall FM";
-            internal static string FMMenu_DeleteFM = "Delete FM archive";
+            internal static string FMMenu_DeleteFM = "Delete FM archive...";
             internal static string FMMenu_OpenInDromEd = "Open FM in DromEd";
             internal static string FMMenu_OpenInShockEd = "Open FM in ShockEd";
             internal static string FMMenu_Rating = "Rating";
