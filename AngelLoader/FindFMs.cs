@@ -382,7 +382,7 @@ namespace AngelLoader
             {
                 var gFM = installedList[gFMi];
 
-                // bool check seems to be faster than a null check
+                // bool check seems to be faster than a string-null-or-empty check
                 bool isEmpty = gFM.InstalledDir.IsEmpty();
 
                 bool existingFound = false;
