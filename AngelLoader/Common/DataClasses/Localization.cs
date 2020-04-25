@@ -84,7 +84,7 @@ namespace AngelLoader.DataClasses
             internal static string Uninstall = "Uninstall";
             internal static string BackUp = "Back up";
             internal static string DontBackUp = "Don't back up";
-            internal static string DeleteFM = "Delete FM";
+            internal static string DeleteFMArchive = "Delete FM archive";
             [FenGenBlankLine]
             internal static string DontAskAgain = "Don't ask again";
             [FenGenBlankLine]

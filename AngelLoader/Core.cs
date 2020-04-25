@@ -1961,7 +1961,7 @@ namespace AngelLoader
             var archives = FindFMArchive_Multiple(fm.Archive);
             if (archives.Count == 0)
             {
-                View.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFM);
+                View.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
                 return;
             }
 
@@ -1974,7 +1974,7 @@ namespace AngelLoader
                     ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
                     : LText.FMDeletion.DuplicateArchivesFound,
                 messageBottom: "",
-                title: LText.FMDeletion.DeleteFM,
+                title: LText.AlertMessages.DeleteFMArchive,
                 icon: MessageBoxIcon.Warning,
                 okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
                 cancelText: LText.Global.Cancel,

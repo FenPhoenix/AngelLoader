@@ -222,9 +222,9 @@ namespace AngelLoader
                         {
                             LText.AlertMessages.DontBackUp = lt.Substring(11);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("DeleteFM="))
+                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMArchive="))
                         {
-                            LText.AlertMessages.DeleteFM = lt.Substring(9);
+                            LText.AlertMessages.DeleteFMArchive = lt.Substring(16);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("DontAskAgain="))
                         {
