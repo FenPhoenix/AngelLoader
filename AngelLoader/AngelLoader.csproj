@@ -102,6 +102,9 @@
     <!--
       None of these are required or contain anything of use. All they do is bloat up the executable for no reason.
       We hate bloat so out they go.
+      We keep them for the Debug profile to keep the designer happy (Debug is the only profile where we use the
+      generated designer code, otherwise we use the manual fast-init version with no redundant cruft, which is
+      not designable).
     -->
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx" />
