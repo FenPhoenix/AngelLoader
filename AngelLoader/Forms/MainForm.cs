@@ -29,7 +29,7 @@
   controls on each tab page (in case the tabs are visible but not selected on startup)
  -Game buttons and game tabs (one or the other will be invisible on startup)
  -DataGridView images at a more granular level (right now they're all loaded at once as soon as any are needed)
- */
+*/
 
 using System;
 using System.Collections.Generic;

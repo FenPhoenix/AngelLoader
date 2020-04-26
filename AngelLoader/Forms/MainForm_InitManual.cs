@@ -1425,7 +1425,7 @@ namespace AngelLoader.Forms
 
             #region Readme control buttons
 
-            // BackColor for these gets set in ShowReadme()
+            // BackColor for these gets set when the readme box is shown or hidden
 
             // 
             // ReadmeFullScreenButton
