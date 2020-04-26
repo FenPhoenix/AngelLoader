@@ -2024,7 +2024,7 @@ namespace AngelLoader
                     fm.MarkedDeleted = true;
                     OneOrMoreFMsAreMarkedDeleted = true;
 
-                    await View.SortAndSetFilter(View.GetSelectedFMPosInfo(), keepSelection: true);
+                    await View.SortAndSetFilter(keepSelection: true);
                 }
             }
         }
