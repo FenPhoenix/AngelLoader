@@ -1848,6 +1848,8 @@ namespace AngelLoader.Forms
         public async Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
             bool keepSelection = true, bool gameTabSwitch = false)
         {
+            bool selFMWasPassedIn = selectedFM != null;
+
             FanMission? oldSelectedFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFM() : null;
 
             selectedFM ??= keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
@@ -1859,7 +1861,7 @@ namespace AngelLoader.Forms
                 keepSelection || gameTabSwitch ? KeepSel.True : KeepSel.False;
 
             // Fix: in RefreshFMsList, CurrentSelFM was being used when coming from no FMs listed to some FMs listed
-            if (!gameTabSwitch && selectedFM == null && oldSelectedFM == null) keepSel = KeepSel.False;
+            if (!gameTabSwitch && !selFMWasPassedIn && oldSelectedFM == null) keepSel = KeepSel.False;
 
             if (gameTabSwitch) forceDisplayFM = true;
 
