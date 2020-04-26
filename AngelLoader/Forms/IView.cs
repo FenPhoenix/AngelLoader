@@ -49,7 +49,6 @@ namespace AngelLoader.Forms
         bool GetUnfinishedFilter();
         bool GetShowUnsupportedFilter();
         List<int> GetFilterShownIndexList();
-        void SetFiltered(bool value);
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         string GetDebug1Text();

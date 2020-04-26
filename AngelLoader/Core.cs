@@ -705,31 +705,12 @@ namespace AngelLoader
             // be.
             bool titleIsWhitespace = viewFilter.Title.IsWhiteSpace();
 
-            #region Early out
-
-            // Not only an early-out, but also the only place where Filtered can be set to false, so it's vital
-            if (titleIsWhitespace &&
-                viewFilter.Author.IsWhiteSpace() &&
-                viewFilter.Games == Game.Null &&
-                viewFilter.Tags.IsEmpty() &&
-                viewFilter.ReleaseDateFrom == null &&
-                viewFilter.ReleaseDateTo == null &&
-                viewFilter.LastPlayedFrom == null &&
-                viewFilter.LastPlayedTo == null &&
-                viewFilter.RatingFrom == -1 &&
-                viewFilter.RatingTo == 10 &&
-                (viewFilter.Finished == FinishedState.Null ||
-                 ((viewFilter.Finished & FinishedState.Finished) == FinishedState.Finished &&
-                  (viewFilter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished)) &&
-                viewFilter.ShowUnsupported &&
-                !OneOrMoreFMsAreMarkedDeleted)
-            {
-                View.SetFiltered(false);
-
-                return;
-            }
-
-            #endregion
+            // Note: we used to have an early-out here if all filter options were off, but since the filter
+            // requires ShowUnsupported to be active to be considered "off", in practice, the early-out would
+            // almost never be run. For this reason, and also because it required a janky bool to tell the
+            // difference between between "filtered index list is empty because all FMs are filtered or because
+            // none are", we just always indirect our indexes through the filtered list now even in the rare case
+            // where we don't need to.
 
             #region Title / initial
 
@@ -1061,8 +1042,6 @@ namespace AngelLoader
             }
 
             #endregion
-
-            View.SetFiltered(true);
         }
 
         #region Get info from game config files

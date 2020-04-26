@@ -143,7 +143,6 @@ namespace AngelLoader.Forms
         public bool GetUnfinishedFilter() => FilterByUnfinishedButton.Checked;
         public bool GetShowUnsupportedFilter() => FilterShowUnsupportedButton.Checked;
         public List<int> GetFilterShownIndexList() => FMsDGV.FilterShownIndexList;
-        public void SetFiltered(bool value) => FMsDGV.Filtered = value;
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         public string GetDebug1Text() => DebugLabel.Text;
@@ -1901,7 +1900,7 @@ namespace AngelLoader.Forms
         {
             if (CellValueNeededDisabled) return;
 
-            if (FMsDGV.Filtered && FMsDGV.FilterShownIndexList.Count == 0) return;
+            if (FMsDGV.FilterShownIndexList.Count == 0) return;
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
@@ -1983,7 +1982,7 @@ namespace AngelLoader.Forms
         {
             if (CellValueNeededDisabled) return;
 
-            if (FMsDGV.Filtered && FMsDGV.FilterShownIndexList.Count == 0) return;
+            if (FMsDGV.FilterShownIndexList.Count == 0) return;
 
             var fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
@@ -2115,7 +2114,7 @@ namespace AngelLoader.Forms
 
             SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
-            if (FMsDGV.Filtered) Core.SetFilter();
+            Core.SetFilter();
             if (RefreshFMsList(selFM, keepSelection: KeepSel.TrueNearest, fromColumnClick: true))
             {
                 if (selFM != null && FMsDGV.RowSelected() &&
@@ -2500,7 +2499,7 @@ namespace AngelLoader.Forms
                 // -the subsequent row count set from being really slow
                 FMsDGV.Rows.Clear();
 
-                FMsDGV.RowCount = FMsDGV.Filtered ? FMsDGV.FilterShownIndexList.Count : FMsViewList.Count;
+                FMsDGV.RowCount = FMsDGV.FilterShownIndexList.Count;
 
                 if (FMsDGV.RowCount == 0)
                 {

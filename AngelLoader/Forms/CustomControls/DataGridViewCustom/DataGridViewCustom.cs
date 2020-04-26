@@ -33,14 +33,6 @@ namespace AngelLoader.Forms.CustomControls
         #region Filter
 
         internal readonly Filter Filter = new Filter();
-
-        // Slightly janky separate value here, but we need it because:
-        // -We can't check the filtered index list for length > 0 because it could be empty when ALL FMs are being
-        //  filtered as well as when none are
-        // -We could check Filter.IsEmpty(), but that's slow to do in a loop (and we do sometimes need to do it
-        //  in a loop)
-        internal bool Filtered = false;
-
         internal readonly List<int> FilterShownIndexList = new List<int>();
 
         #endregion
@@ -114,7 +106,7 @@ namespace AngelLoader.Forms.CustomControls
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal FanMission GetFMFromIndex(int index) => FMsViewList[Filtered ? FilterShownIndexList[index] : index];
+        internal FanMission GetFMFromIndex(int index) => FMsViewList[FilterShownIndexList[index]];
 
         /// <summary>
         /// Gets the currently selected FM, taking the currently set filters into account.
@@ -132,13 +124,13 @@ namespace AngelLoader.Forms.CustomControls
             // Graceful default if a value is missing
             if (installedName.IsEmpty()) return 0;
 
-            for (int i = 0; i < (Filtered ? FilterShownIndexList.Count : FMsViewList.Count); i++)
+            for (int i = 0; i < FilterShownIndexList.Count; i++)
             {
                 if (GetFMFromIndex(i).InstalledDir.EqualsI(installedName)) return i;
             }
 
             // If a refresh has caused our selected FM to be filtered out, find the next closest one
-            if (Filtered && findNearest)
+            if (findNearest)
             {
                 for (int i = 0; i < FMsViewList.Count; i++)
                 {
