@@ -269,6 +269,7 @@ namespace AngelLoader.Forms.CustomControls
 
             try
             {
+                // Note: we need to do this null check here, otherwise get an exception that doesn't get caught(!!!)
                 SelectedRows[0].Cells[FirstDisplayedCell?.ColumnIndex ?? 0].Selected = true;
             }
             catch
