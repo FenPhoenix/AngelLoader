@@ -886,8 +886,7 @@ namespace AngelLoader.Forms
             // you shut down without loading a readme, whereupon it will save out ZoomFactor which is still 1.0.
             // You can't just save out StoredZoomFactor either because it doesn't change when the user zooms, as
             // there's no event for that. Fun.
-            ReadmeRichTextBox.StoredZoomFactor = Config.ReadmeZoomFactor;
-            ReadmeRichTextBox.ZoomFactor = ReadmeRichTextBox.StoredZoomFactor;
+            ReadmeRichTextBox.SetAndStoreZoomFactor(Config.ReadmeZoomFactor);
 
             #endregion
 
