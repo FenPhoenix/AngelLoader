@@ -18,6 +18,33 @@ namespace AngelLoader
 {
     public static partial class Misc
     {
+        internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
+        internal static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
+
+        #region Clamping
+
+        /// <summary>
+        /// Clamps a number to between min and max.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T>
+        {
+            return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
+        }
+
+        /// <summary>
+        /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>
+        /// unchanged.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static int ClampToZero(this int value) => Math.Max(value, 0);
+
+        #endregion
+
         // Depend on non-defined symbol if we're in public release profile, to prevent the bloat of calls to this
 #if ReleasePublic || NoAsserts
         [Conditional("_AngelLoader_In_Release_Public_Mode")]
@@ -183,6 +210,36 @@ namespace AngelLoader
 
 #if false
         
+        internal static int IndexOfByteSequence(this byte[] input, byte[] pattern)
+        {
+            var firstByte = pattern[0];
+            int index = Array.IndexOf(input, firstByte);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (index + i >= input.Length) return -1;
+                    if (pattern[i] != input[index + i])
+                    {
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return -1;
+                        break;
+                    }
+
+                    if (i == pattern.Length - 1) return index;
+                }
+            }
+
+            return index;
+        }
+
+        // Used for detecting NewDark version of NewDark executables
+        private static readonly byte[] ProductVersionBytes = Encoding.ASCII.GetBytes(new[]
+        {
+            'P', '\0', 'r', '\0', 'o', '\0', 'd', '\0', 'u', '\0', 'c', '\0', 't', '\0',
+            'V', '\0', 'e', '\0', 'r', '\0', 's', '\0', 'i', '\0', 'o', '\0', 'n', '\0', '\0', '\0'
+        });
+
         internal static string CreateTitle()
         {
             string ret = "";
@@ -228,7 +285,7 @@ namespace AngelLoader
                 if (streamLen > int.MaxValue) return Error.ExeIsLargerThanInt;
 
                 // Search starting at 88% through the file: 91% (average location) plus some wiggle room (fastest)
-                long pos = (long)((88.0d / 100) * streamLen);
+                long pos = GetValueFromPercent(88.0d, streamLen);
                 long byteCount = streamLen - pos;
                 br.BaseStream.Position = pos;
                 byte[] bytes = new byte[byteCount];

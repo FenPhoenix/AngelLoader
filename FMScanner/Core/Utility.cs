@@ -835,6 +835,8 @@ namespace FMScanner
 
         #endregion
 
+        internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
+
         internal static bool StringToDate(string dateString, out DateTime dateTime)
         {
             dateString = dateString.Replace(",", " ");

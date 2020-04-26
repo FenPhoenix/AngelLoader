@@ -1295,7 +1295,7 @@ namespace AngelLoader
 
                         UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
 
-                        int percent = (100 * (i + 1)) / filesCount;
+                        int percent = GetPercentFromValue(i + 1, filesCount);
 
                         Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
 

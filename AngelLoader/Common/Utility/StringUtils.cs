@@ -256,30 +256,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Clamping
-
-        /// <summary>
-        /// Clamps a number to between min and max.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T>
-        {
-            return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
-        }
-
-        /// <summary>
-        /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>
-        /// unchanged.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        internal static int ClampToZero(this int value) => Math.Max(value, 0);
-
-        #endregion
-
         #region FM installed name conversion
 
         /// <summary>
