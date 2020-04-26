@@ -15,9 +15,6 @@ namespace AngelLoader.CustomControls
 
         private bool LinkCursor;
 
-        // TODO: See if this can be removed.
-        private bool initialReadmeZoomSet = true;
-
         private float _storedZoomFactor = 1.0f;
 
         #region Workaround to fix black transparent regions in images
@@ -121,15 +118,7 @@ namespace AngelLoader.CustomControls
         {
             // Because the damn thing resets its zoom every time you load new content, we have to keep a global
             // var with the zoom value and keep both values in sync.
-            if (initialReadmeZoomSet)
-            {
-                initialReadmeZoomSet = false;
-            }
-            else
-            {
-                // Don't do this if we're just starting up, because then it will throw away our saved value
-                StoredZoomFactor = ZoomFactor.Clamp(0.1f, 5.0f);
-            }
+            StoredZoomFactor = ZoomFactor.Clamp(0.1f, 5.0f);
         }
 
         private void RestoreZoom()
