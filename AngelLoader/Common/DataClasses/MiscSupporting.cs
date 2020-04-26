@@ -358,6 +358,14 @@ namespace AngelLoader.DataClasses
     internal enum SettingsTab { Paths, FMDisplay, Other }
 
     // TODO: This name is confusing, it sounds like it refers to an entire FanMission object or something
+    // Naming this is brutally difficult. If we call it SelectedFM, it sounds like it's encapsulating an entire
+    // FM object, and var names ("selectedFM" / "selFM") sound like they're of type FanMission. FMSelectionData
+    // or FMSelectionInfo is likely to be shortened to fmSelData/fmSelInfo, and then it sounds like we're talking
+    // about FMSel the application. Calling it FMInstNameAndScrollIndex is clear and descriptive but annoyingly
+    // long and shortening it is impossible (fmINASI?!). Also, we have multiple of them (one per game tab and then
+    // one global), so that would now be FMInstNameAndScrollIndexes which is an awkward half-plural.
+    // SelectionMetadata? SelectedFMTag/Handle? Maybe we put an underscore like fm_SelData?
+    // Maybe FMInstNameAndScrollIndex really is the least worst name here.
     public sealed class SelectedFM
     {
         internal void DeepCopyTo(SelectedFM dest)
