@@ -1111,6 +1111,12 @@ namespace AngelLoader.Forms
                 CancelResizables();
 
                 AddTagLLDropDown.HideAndClear();
+
+                // Easy way to "get out" of the filter if you want to use Home and End again
+                if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
+                {
+                    FMsDGV.Focus();
+                }
             }
             #region FMsDGV nav
             else if (e.KeyCode == Keys.Home || (e.Control && e.KeyCode == Keys.Up))
