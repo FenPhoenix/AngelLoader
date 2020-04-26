@@ -147,7 +147,7 @@ namespace AngelLoader.DataClasses
 
         // @GENGAMES: Miscellaneous game-specific stuff
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)
-        internal bool T2MPDetected;
+        internal bool T2MPDetected = false;
 
         internal bool T3UseCentralSaves = false;
 
@@ -304,7 +304,7 @@ namespace AngelLoader.DataClasses
 
         private uint _daysRecent = Defaults.DaysRecent;
         internal uint DaysRecent { get => _daysRecent; set => _daysRecent = value.Clamp((uint)0, Defaults.MaxDaysRecent); }
-        internal bool ShowRecentAtTop;
+        internal bool ShowRecentAtTop = false;
 
         //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
 

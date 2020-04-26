@@ -26,6 +26,15 @@ namespace AngelLoader.DataClasses
         // as being able to import from three other loaders, we need a simple way to say "scan on select or not".
         internal bool MarkedScanned;
 
+        // For drawing rows in "Recently-Added Yellow" color
+        // [FenGen:DoNotSerialize]
+        internal bool MarkedRecent;
+
+        // Disgusting hack to let an FM disappear from the list after being deleted. It will only be filtered out,
+        // but on next run of the FM finder, it will be properly removed if the archive is no longer there.
+        // [FenGen:DoNotSerialize]
+        internal bool MarkedDeleted;
+
         internal string Archive = "";
         internal string InstalledDir = "";
 
@@ -59,26 +68,12 @@ namespace AngelLoader.DataClasses
         internal readonly ExpandableDate LastPlayed = new ExpandableDate();
 
         // We get this value for free when we get the FM archives and dirs on startup, but this value is fragile:
-        // it updates whenever the user so much as moves the file or folder. We should store it here to keep it
-        // permanent even across moves, new PCs or Windows installs with file restores, etc.
-        // NOTE: What we should be doing is marking down the date when we added a given FM to the list, but we
-        // would need to have done that from the start for it to work, because now we don't know the add date for
-        // anything in the list previously. What we could do is just have a filter button "Show new FMs only" and
-        // start tracking added-dates from here on out, and just say anything that doesn't have a date is just
-        // ignored and considered not new.
+        // it updates whenever the user so much as moves the file or folder. We store it here to keep it permanent
+        // even across moves, new PCs or Windows installs with file restores, etc.
         // NOTE: This is not an ExpandableDate, because the way we get the date value is not in unix hex string
         // format, and it's expensive to convert it to such. With a regular nullable DateTime we're only paying
         // like 3-5ms extra on startup (for 1574 FMs), so it's good enough for now.
         internal DateTime? DateAdded = null;
-
-        // For drawing rows in "Recently-Added Yellow" color
-        // [FenGen:DoNotSerialize]
-        internal bool MarkedRecent;
-
-        // Disgusting hack to let an FM disappear from the list after being deleted. It will only be filtered out,
-        // but on next run of the FM finder, it will be properly removed if the archive is no longer there.
-        // [FenGen:DoNotSerialize]
-        internal bool MarkedDeleted;
 
         // [FenGen:DoNotSerialize]
         private uint _finishedOn = 0;
