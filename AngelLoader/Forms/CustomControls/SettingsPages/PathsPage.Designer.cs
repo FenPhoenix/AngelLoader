@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.CustomControls.SettingsPages
+﻿namespace AngelLoader.Forms.CustomControls.SettingsPages
 {
     partial class PathsPage
     {

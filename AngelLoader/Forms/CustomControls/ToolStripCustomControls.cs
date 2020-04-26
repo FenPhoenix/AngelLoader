@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     internal sealed class ToolStripCustom : ToolStrip
     {

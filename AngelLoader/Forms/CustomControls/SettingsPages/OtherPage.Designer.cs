@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.CustomControls.SettingsPages
+﻿namespace AngelLoader.Forms.CustomControls.SettingsPages
 {
     partial class OtherPage
     {
@@ -37,7 +37,7 @@
             this.PlayFMOnDCOrEnterGroupBox = new System.Windows.Forms.GroupBox();
             this.ConfirmPlayOnDCOrEnterCheckBox = new System.Windows.Forms.CheckBox();
             this.LanguageGroupBox = new System.Windows.Forms.GroupBox();
-            this.LanguageComboBox = new AngelLoader.CustomControls.ComboBoxCustom();
+            this.LanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
             this.WebSearchGroupBox = new System.Windows.Forms.GroupBox();
             this.WebSearchUrlResetButton = new System.Windows.Forms.Button();
             this.WebSearchTitleExplanationLabel = new System.Windows.Forms.Label();
@@ -391,7 +391,7 @@
         internal System.Windows.Forms.GroupBox PlayFMOnDCOrEnterGroupBox;
         internal System.Windows.Forms.CheckBox ConfirmPlayOnDCOrEnterCheckBox;
         internal System.Windows.Forms.GroupBox LanguageGroupBox;
-        internal ComboBoxCustom LanguageComboBox;
+        internal AngelLoader.Forms.CustomControls.ComboBoxCustom LanguageComboBox;
         internal System.Windows.Forms.GroupBox WebSearchGroupBox;
         internal System.Windows.Forms.Button WebSearchUrlResetButton;
         internal System.Windows.Forms.Label WebSearchTitleExplanationLabel;

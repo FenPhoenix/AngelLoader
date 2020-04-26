@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 
-namespace AngelLoader.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     // @GENGAMES
     internal static class PlayOriginalGameLLMenu

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     internal class TabControlCustom : TabControl
     {

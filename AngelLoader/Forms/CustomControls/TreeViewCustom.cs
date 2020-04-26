@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     internal sealed class TreeViewCustom : TreeView
     {

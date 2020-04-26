@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
 using AngelLoader.DataClasses; // for LText in disabled multi loaders menu item
-using AngelLoader.Forms;
 
-namespace AngelLoader.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     internal static class ImportFromLLMenu
     {

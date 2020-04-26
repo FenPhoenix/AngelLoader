@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.CustomControls;
+using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
 

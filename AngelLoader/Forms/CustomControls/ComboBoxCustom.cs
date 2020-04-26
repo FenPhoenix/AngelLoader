@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.WinAPI;
 using JetBrains.Annotations;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public class ComboBoxCustom : ComboBox
     {

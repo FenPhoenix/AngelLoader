@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace AngelLoader.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     internal static class AltTitlesLLMenu
     {

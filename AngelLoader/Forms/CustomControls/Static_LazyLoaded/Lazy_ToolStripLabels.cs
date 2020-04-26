@@ -1,10 +1,9 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 #pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
 
-namespace AngelLoader.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     internal enum Lazy_ToolStripLabel
     {

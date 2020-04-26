@@ -16,7 +16,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.OriginTreeView = new AngelLoader.CustomControls.TreeViewCustom();
+            this.OriginTreeView = new AngelLoader.Forms.CustomControls.TreeViewCustom();
             this.AndTreeView = new System.Windows.Forms.TreeView();
             this.OrTreeView = new System.Windows.Forms.TreeView();
             this.NotTreeView = new System.Windows.Forms.TreeView();
@@ -37,8 +37,8 @@
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.toolStripCustom1 = new AngelLoader.CustomControls.ToolStripCustom();
-            this.toolStripSeparatorCustom1 = new AngelLoader.CustomControls.ToolStripSeparatorCustom();
+            this.toolStripCustom1 = new AngelLoader.Forms.CustomControls.ToolStripCustom();
+            this.toolStripSeparatorCustom1 = new AngelLoader.Forms.CustomControls.ToolStripSeparatorCustom();
             this.MoveButtonsPanel = new System.Windows.Forms.Panel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.FindTagTextBox = new System.Windows.Forms.TextBox();
@@ -366,7 +366,7 @@
 
         #endregion
 
-        private AngelLoader.CustomControls.TreeViewCustom OriginTreeView;
+        private AngelLoader.Forms.CustomControls.TreeViewCustom OriginTreeView;
         private System.Windows.Forms.TreeView AndTreeView;
         private System.Windows.Forms.TreeView OrTreeView;
         private System.Windows.Forms.TreeView NotTreeView;
@@ -387,8 +387,8 @@
         private System.Windows.Forms.Button RemoveSelectedOrButton;
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private CustomControls.ToolStripCustom toolStripCustom1;
-        private CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom1;
+        private AngelLoader.Forms.CustomControls.ToolStripCustom toolStripCustom1;
+        private AngelLoader.Forms.CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom1;
         private System.Windows.Forms.Panel MoveButtonsPanel;
         private System.Windows.Forms.ToolTip MainToolTip;
         private System.Windows.Forms.TextBox FindTagTextBox;

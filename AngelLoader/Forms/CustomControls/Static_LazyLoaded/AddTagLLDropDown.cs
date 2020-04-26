@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Forms;
 
-namespace AngelLoader.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     internal static class AddTagLLDropDown
     {

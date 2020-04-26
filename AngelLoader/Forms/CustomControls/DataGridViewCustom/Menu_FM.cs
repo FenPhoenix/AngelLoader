@@ -8,7 +8,7 @@ using AngelLoader.Properties;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class DataGridViewCustom
     {

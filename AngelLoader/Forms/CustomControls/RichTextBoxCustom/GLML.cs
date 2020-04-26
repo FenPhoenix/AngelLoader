@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom
     {

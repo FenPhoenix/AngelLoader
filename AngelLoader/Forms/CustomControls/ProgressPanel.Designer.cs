@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.CustomControls
+﻿namespace AngelLoader.Forms.CustomControls
 {
     partial class ProgressPanel
     {

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class DataGridViewCustom
     {

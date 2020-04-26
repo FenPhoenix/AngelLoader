@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public class ArrowButton : Button
     {

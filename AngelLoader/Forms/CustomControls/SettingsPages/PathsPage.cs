@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using JetBrains.Annotations;
 
-namespace AngelLoader.CustomControls.SettingsPages
+namespace AngelLoader.Forms.CustomControls.SettingsPages
 {
     [PublicAPI]
     public partial class PathsPage : UserControl, Interfaces.ISettingsPage

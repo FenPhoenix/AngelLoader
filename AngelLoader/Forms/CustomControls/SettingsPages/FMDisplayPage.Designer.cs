@@ -1,4 +1,4 @@
-﻿namespace AngelLoader.CustomControls.SettingsPages
+﻿namespace AngelLoader.Forms.CustomControls.SettingsPages
 {
     partial class FMDisplayPage
     {
@@ -488,7 +488,7 @@
         internal System.Windows.Forms.RadioButton OrganizeGamesInOneListRadioButton;
         internal System.Windows.Forms.Panel PagePanel;
         internal System.Windows.Forms.Control DummyAutoScrollPanel;
-        private System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
+        internal System.Windows.Forms.FlowLayoutPanel PreviewDateFlowLayoutPanel;
         internal System.Windows.Forms.Label PreviewDateLabel;
         internal System.Windows.Forms.CheckBox UseShortGameTabNamesCheckBox;
         internal System.Windows.Forms.GroupBox RecentFMsGroupBox;

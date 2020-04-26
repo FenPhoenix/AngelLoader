@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.Forms;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed class SplitContainerCustom : SplitContainer
     {

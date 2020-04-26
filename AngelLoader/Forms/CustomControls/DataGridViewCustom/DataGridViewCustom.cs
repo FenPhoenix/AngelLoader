@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class DataGridViewCustom : DataGridView
     {

@@ -22,10 +22,10 @@
             this.ErrorLabel = new System.Windows.Forms.Label();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.MainSplitContainer = new AngelLoader.CustomControls.SplitContainerCustom();
-            this.OtherRadioButton = new AngelLoader.CustomControls.RadioButtonCustom();
-            this.FMDisplayRadioButton = new AngelLoader.CustomControls.RadioButtonCustom();
-            this.PathsRadioButton = new AngelLoader.CustomControls.RadioButtonCustom();
+            this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
+            this.OtherRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
+            this.FMDisplayRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
+            this.PathsRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.BottomFlowLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -226,9 +226,9 @@
         private System.Windows.Forms.ToolTip MainToolTip;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.Label ErrorLabel;
-        private AngelLoader.CustomControls.SplitContainerCustom MainSplitContainer;
-        private CustomControls.RadioButtonCustom OtherRadioButton;
-        private CustomControls.RadioButtonCustom FMDisplayRadioButton;
-        private CustomControls.RadioButtonCustom PathsRadioButton;
+        private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
+        private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;
+        private AngelLoader.Forms.CustomControls.RadioButtonCustom FMDisplayRadioButton;
+        private AngelLoader.Forms.CustomControls.RadioButtonCustom PathsRadioButton;
     }
 }

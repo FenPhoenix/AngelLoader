@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 using AngelLoader.WinAPI.Taskbar;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public partial class ProgressPanel : UserControl
     {

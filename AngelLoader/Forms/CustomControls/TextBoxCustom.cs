@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     // Also lifted straight from Autovid but with a couple improvements
     public sealed class TextBoxCustom : TextBox

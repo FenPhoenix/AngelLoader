@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms;
 
-namespace AngelLoader.CustomControls.Static_LazyLoaded
+namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
     internal static class Lazy_FMsListZoomButtons
     {

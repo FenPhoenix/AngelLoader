@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
-namespace AngelLoader.CustomControls
+namespace AngelLoader.Forms.CustomControls
 {
     public sealed partial class DataGridViewCustom
     {

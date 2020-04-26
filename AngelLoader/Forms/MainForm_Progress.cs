@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using AngelLoader.CustomControls;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
