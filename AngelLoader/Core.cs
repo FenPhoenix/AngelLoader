@@ -708,9 +708,9 @@ namespace AngelLoader
             // Note: we used to have an early-out here if all filter options were off, but since the filter
             // requires ShowUnsupported to be active to be considered "off", in practice, the early-out would
             // almost never be run. For this reason, and also because it required a janky bool to tell the
-            // difference between between "filtered index list is empty because all FMs are filtered or because
-            // none are", we just always indirect our indexes through the filtered list now even in the rare case
-            // where we don't need to.
+            // difference between "filtered index list is empty because all FMs are filtered or because none are",
+            // we just always indirect our indexes through the filtered list now even in the rare case where we
+            // don't need to.
 
             #region Title / initial
 
