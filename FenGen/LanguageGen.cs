@@ -502,7 +502,7 @@ namespace FenGen
                         swl(6, "}");
                         if (!keysElseIf) keysElseIf = true;
                     }
-                    swl(6, "else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')");
+                    swl(6, "else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')");
                     swl(6, "{");
                     swl(7, "break;");
                     swl(6, "}");

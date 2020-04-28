@@ -26,7 +26,7 @@ namespace AngelLoader
                         {
                             LText.Meta.TranslatedLanguageName = lt.Substring(23);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -154,7 +154,7 @@ namespace AngelLoader
                         {
                             LText.Global.SystemShock2_Colon = lt.Substring(19);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -182,7 +182,7 @@ namespace AngelLoader
                         {
                             LText.BrowseDialogs.DMLFiles = lt.Substring(9);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -394,7 +394,7 @@ namespace AngelLoader
                         {
                             LText.AlertMessages.DeleteFM_UnableToDelete = lt.Substring(24);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -426,7 +426,7 @@ namespace AngelLoader
                         {
                             LText.FMDeletion.DeleteFMs = lt.Substring(10);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -466,7 +466,7 @@ namespace AngelLoader
                         {
                             LText.Difficulties.Unknown = lt.Substring(8);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -534,7 +534,7 @@ namespace AngelLoader
                         {
                             LText.FilterBar.ResetLayoutButtonToolTip = lt.Substring(25);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -682,7 +682,7 @@ namespace AngelLoader
                         {
                             LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs = lt.Substring(35);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -758,7 +758,7 @@ namespace AngelLoader
                         {
                             LText.StatisticsTab.RescanCustomResources = lt.Substring(22);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -834,7 +834,7 @@ namespace AngelLoader
                         {
                             LText.EditFMTab.RescanForReadmes = lt.Substring(17);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -850,7 +850,7 @@ namespace AngelLoader
                         {
                             LText.CommentTab.TabText = lt.Substring(8);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -886,7 +886,7 @@ namespace AngelLoader
                         {
                             LText.TagsTab.AskRemoveTag = lt.Substring(13);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -922,7 +922,7 @@ namespace AngelLoader
                         {
                             LText.PatchTab.OpenFMFolder = lt.Substring(13);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -962,7 +962,7 @@ namespace AngelLoader
                         {
                             LText.ReadmeArea.UnableToLoadReadme = lt.Substring(19);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -978,7 +978,7 @@ namespace AngelLoader
                         {
                             LText.PlayOriginalGameMenu.Thief2_Multiplayer = lt.Substring(19);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1022,7 +1022,7 @@ namespace AngelLoader
                         {
                             LText.MainButtons.Settings = lt.Substring(9);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1090,7 +1090,7 @@ namespace AngelLoader
                         {
                             LText.ProgressBox.DeletingFMArchive = lt.Substring(18);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1338,7 +1338,7 @@ namespace AngelLoader
                         {
                             LText.SettingsWindow.Other_ReadmeUseFixedWidthFont = lt.Substring(30);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1374,7 +1374,7 @@ namespace AngelLoader
                         {
                             LText.DateFilterBox.NoMaximum = lt.Substring(10);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1426,7 +1426,7 @@ namespace AngelLoader
                         {
                             LText.TagsFilterBox.ClearAllToolTip = lt.Substring(16);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1450,7 +1450,7 @@ namespace AngelLoader
                         {
                             LText.RatingFilterBox.To = lt.Substring(3);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1554,7 +1554,7 @@ namespace AngelLoader
                         {
                             LText.Importing.ImportData_Size = lt.Substring(16);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
@@ -1610,7 +1610,7 @@ namespace AngelLoader
                         {
                             LText.ScanAllFMsBox.NothingWasScanned = lt.Substring(18);
                         }
-                        else if (!string.IsNullOrEmpty(lt) && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;
                         }
