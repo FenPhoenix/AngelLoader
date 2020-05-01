@@ -2119,7 +2119,7 @@ namespace AngelLoader
         // @CAN_RUN_BEFORE_VIEW_INIT
         private static void DoShutdownTasks()
         {
-            // Restore previous loader (or FMSel if all else fails) on shutdown.
+            // Before shutdown, remove our footprints from any config files we may have temporarily stomped on.
             // If it fails, oh well. It's no worse than before, we just end up with ourselves as the loader,
             // and the user will get a message about that if they start the game later.
             try
