@@ -230,22 +230,22 @@ namespace AngelLoader.Forms.CustomControls
 
             foreach (ToolStripMenuItem item in RatingMenuItem.DropDownItems)
             {
-                item.Click += RatingMenuItemsClick;
+                item.Click += RatingMenuItems_Click;
                 item.CheckedChanged += RatingRCMenuItems_CheckedChanged;
             }
 
-            RatingMenuUnrated.Click += RatingMenuItemsClick;
-            Rating0MenuItem.Click += RatingMenuItemsClick;
-            Rating1MenuItem.Click += RatingMenuItemsClick;
-            Rating2MenuItem.Click += RatingMenuItemsClick;
-            Rating3MenuItem.Click += RatingMenuItemsClick;
-            Rating4MenuItem.Click += RatingMenuItemsClick;
-            Rating5MenuItem.Click += RatingMenuItemsClick;
-            Rating6MenuItem.Click += RatingMenuItemsClick;
-            Rating7MenuItem.Click += RatingMenuItemsClick;
-            Rating8MenuItem.Click += RatingMenuItemsClick;
-            Rating9MenuItem.Click += RatingMenuItemsClick;
-            Rating10MenuItem.Click += RatingMenuItemsClick;
+            RatingMenuUnrated.Click += RatingMenuItems_Click;
+            Rating0MenuItem.Click += RatingMenuItems_Click;
+            Rating1MenuItem.Click += RatingMenuItems_Click;
+            Rating2MenuItem.Click += RatingMenuItems_Click;
+            Rating3MenuItem.Click += RatingMenuItems_Click;
+            Rating4MenuItem.Click += RatingMenuItems_Click;
+            Rating5MenuItem.Click += RatingMenuItems_Click;
+            Rating6MenuItem.Click += RatingMenuItems_Click;
+            Rating7MenuItem.Click += RatingMenuItems_Click;
+            Rating8MenuItem.Click += RatingMenuItems_Click;
+            Rating9MenuItem.Click += RatingMenuItems_Click;
+            Rating10MenuItem.Click += RatingMenuItems_Click;
 
             FinishedOnNormalMenuItem.Click += FinishedOnMenuItems_Click;
             FinishedOnHardMenuItem.Click += FinishedOnMenuItems_Click;
@@ -635,15 +635,17 @@ namespace AngelLoader.Forms.CustomControls
 
         private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await FMAudio.ConvertOGGsToWAVs(GetSelectedFM(), true);
 
-        private void RatingMenuItemsClick(object sender, EventArgs e)
+        private void RatingMenuItems_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < RatingMenuItem!.DropDownItems.Count; i++)
             {
-                if (RatingMenuItem.DropDownItems[i] != sender) continue;
-                GetSelectedFM().Rating = i - 1;
-                Owner.RefreshSelectedFM(refreshReadme: false);
-                Ini.WriteFullFMDataIni();
-                break;
+                if (RatingMenuItem.DropDownItems[i] == sender)
+                {
+                    GetSelectedFM().Rating = i - 1;
+                    Owner.RefreshSelectedFM(refreshReadme: false);
+                    Ini.WriteFullFMDataIni();
+                    break;
+                }
             }
         }
 
