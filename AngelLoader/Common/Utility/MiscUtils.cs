@@ -193,8 +193,10 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(game);
             if (gamePath.IsEmpty()) return "";
 
-            string edExe = Path.Combine(gamePath, game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe);
-            return File.Exists(edExe) ? edExe : "";
+            string exe = game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe;
+            return TryCombineFilePathAndCheckExistence(gamePath, exe, out string fullPathExe)
+                ? fullPathExe
+                : "";
         }
 
         internal static string GetT2MultiplayerExe()
@@ -202,8 +204,84 @@ namespace AngelLoader
             string gamePath = Config.GetGamePath(Thief2);
             if (gamePath.IsEmpty()) return "";
 
-            string t2MPExe = Path.Combine(gamePath, Paths.T2MPExe);
-            return File.Exists(t2MPExe) ? t2MPExe : "";
+            return TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
+                ? fullPathExe
+                : "";
+        }
+
+        #endregion
+
+        #region Try combine path and check existence
+
+        internal static bool TryCombineFilePathAndCheckExistence(string pathPart1, string pathPart2,
+            out string combinedPath)
+        {
+            try
+            {
+                string ret = Path.Combine(pathPart1, pathPart2);
+                if (File.Exists(ret))
+                {
+                    combinedPath = ret;
+                    return true;
+                }
+                else
+                {
+                    combinedPath = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                combinedPath = "";
+                return false;
+            }
+        }
+
+        internal static bool TryCombineFilePathAndCheckExistence(string pathPart1, string pathPart2, string pathPart3,
+            out string combinedPath)
+        {
+            try
+            {
+                string ret = Path.Combine(pathPart1, pathPart2, pathPart3);
+                if (File.Exists(ret))
+                {
+                    combinedPath = ret;
+                    return true;
+                }
+                else
+                {
+                    combinedPath = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                combinedPath = "";
+                return false;
+            }
+        }
+
+        internal static bool TryCombineFilePathAndCheckExistence(string[] pathParts, out string combinedPath)
+        {
+            try
+            {
+                string ret = Path.Combine(pathParts);
+                if (File.Exists(ret))
+                {
+                    combinedPath = ret;
+                    return true;
+                }
+                else
+                {
+                    combinedPath = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                combinedPath = "";
+                return false;
+            }
         }
 
         #endregion
@@ -526,14 +604,9 @@ namespace AngelLoader
 
             foreach (string path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
             {
-                try
+                if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {
-                    string f = Path.Combine(path, fmArchive);
-                    if (File.Exists(f)) return f;
-                }
-                catch (Exception ex)
-                {
-                    Log(nameof(FindFMArchive) + ": exception in Path.Combine(" + nameof(path) + ", " + nameof(fmArchive) + ")", ex);
+                    return f;
                 }
             }
 
@@ -548,14 +621,9 @@ namespace AngelLoader
 
             foreach (string path in GetFMArchivePaths())
             {
-                try
+                if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {
-                    string f = Path.Combine(path, fmArchive);
-                    if (File.Exists(f)) list.Add(f);
-                }
-                catch (Exception ex)
-                {
-                    Log(nameof(FindFMArchive_Multiple) + ": exception in Path.Combine(" + nameof(path) + ", " + nameof(fmArchive) + ")", ex);
+                    list.Add(f);
                 }
             }
 

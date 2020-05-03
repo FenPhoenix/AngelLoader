@@ -538,8 +538,7 @@ namespace AngelLoader
             const string fmLanguage = "fm_language";
             const string fmLanguageForced = "fm_language_forced";
 
-            string camCfg = Path.Combine(gamePath, Paths.CamCfg);
-            if (!File.Exists(camCfg))
+            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamCfg, out string camCfg))
             {
                 Log(Paths.CamCfg + " not found for " + gamePath, stackTrace: true);
                 return;
@@ -768,8 +767,7 @@ namespace AngelLoader
             const string fmSelectorKey = "fm_selector";
             const string fmCommentLine = "always start the FM Selector (if one is present)";
 
-            string camModIni = Path.Combine(gamePath, Paths.CamModIni);
-            if (!File.Exists(camModIni))
+            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
                 Log(Paths.CamModIni + " not found for " + Config.GetGameExe(game), stackTrace: true);
                 return false;

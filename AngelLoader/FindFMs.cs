@@ -99,7 +99,6 @@ namespace AngelLoader
                 perGameInstFMDirsDatesList.Add(new List<DateTime>());
 
                 string instPath = Config.FMInstallPaths[gi];
-
                 if (Directory.Exists(instPath))
                 {
                     try

@@ -1065,12 +1065,10 @@ namespace AngelLoader
                 return fmsPath;
             }
 
-            string camModIni = Path.Combine(gamePath, Paths.CamModIni);
-
             var fmSelectorLines = new List<string>();
             bool alwaysShowLoader = false;
 
-            if (!File.Exists(camModIni))
+            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
             {
                 //error = Error.CamModIniNotFound;
                 error = Error.None;

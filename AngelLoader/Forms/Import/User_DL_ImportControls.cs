@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AngelLoader.Logger;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.Import
 {
@@ -70,8 +71,10 @@ namespace AngelLoader.Forms.Import
                 {
                     foreach (string loc in dlLocations)
                     {
-                        string dlIni = Path.Combine(drive.Name, loc, Paths.DarkLoaderIni);
-                        if (File.Exists(dlIni)) return dlIni;
+                        if (TryCombineFilePathAndCheckExistence(drive.Name, loc, Paths.DarkLoaderIni, out string dlIni))
+                        {
+                            return dlIni;
+                        }
                     }
                 }
                 catch (Exception ex)

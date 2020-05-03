@@ -66,8 +66,9 @@ namespace AngelLoader.Forms.Import
             }
             else
             {
-                string iniFileFull = Path.Combine(fmsPath, iniFile);
-                textBox.Text = File.Exists(iniFileFull) ? iniFileFull : "";
+                textBox.Text = TryCombineFilePathAndCheckExistence(fmsPath, iniFile, out string iniFileFull)
+                    ? iniFileFull
+                    : "";
             }
         }
 
