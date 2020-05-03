@@ -244,7 +244,9 @@ namespace AngelLoader.Forms.CustomControls
 
                                 if (HTMLNamedEntities.Entities.TryGetValue(name, out string value))
                                 {
-                                    sb.Append(@"\u" + value + "?");
+                                    sb.Append(@"\u");
+                                    sb.Append(value);
+                                    sb.Append('?');
                                 }
                                 else
                                 {

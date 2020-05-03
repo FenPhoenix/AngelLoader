@@ -177,55 +177,55 @@ namespace AngelLoader
             }
             if (FMHasResource(fm, CustomResources.Automap))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Automap));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Scripts))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Scripts));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Textures))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Textures));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Sounds))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Sounds));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Objects))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Objects));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Creatures))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Creatures));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Motions))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Motions));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Movies))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Movies));
                 notEmpty = true;
             }
             if (FMHasResource(fm, CustomResources.Subtitles))
             {
-                if (notEmpty) sb.Append(",");
+                if (notEmpty) sb.Append(',');
                 sb.Append(nameof(CustomResources.Subtitles));
             }
 

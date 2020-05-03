@@ -57,16 +57,6 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Private methods
 
-        private int FindColumnIndexByDisplayIndex(int displayIndex)
-        {
-            for (int i = 0; i < Columns.Count; i++)
-            {
-                if (Columns[i].DisplayIndex == displayIndex) return Columns[i].Index;
-            }
-
-            return -1;
-        }
-
         /// <summary>
         /// Returns true if base.OnMouseDown(e) should be called afterwards, false if it shouldn't.
         /// </summary>
@@ -113,6 +103,16 @@ namespace AngelLoader.Forms.CustomControls
                 #endregion
 
                 #region Set column resize to "in progress"
+
+                int FindColumnIndexByDisplayIndex(int displayIndex)
+                {
+                    for (int i = 0; i < Columns.Count; i++)
+                    {
+                        if (Columns[i].DisplayIndex == displayIndex) return Columns[i].Index;
+                    }
+
+                    return -1;
+                }
 
                 // When we're dragging a column divider, we always want to resize the column to the left of it.
                 // But the hit test will report the right-side column if our mouse is to the right of the divider
