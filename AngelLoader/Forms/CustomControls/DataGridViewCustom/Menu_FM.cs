@@ -61,7 +61,7 @@ namespace AngelLoader.Forms.CustomControls
         private ToolStripSeparator? FMContextMenuSep1;
 
         private ToolStripMenuItem? ScanFMMenuItem;
-        private ToolStripMenuItem? ConvertAudioRCSubMenu;
+        private ToolStripMenuItem? ConvertAudioMenuItem;
         private ToolStripMenuItem? ConvertWAVsTo16BitMenuItem;
         private ToolStripMenuItem? ConvertOGGsToWAVsMenuItem;
 
@@ -124,7 +124,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 ScanFMMenuItem = new ToolStripMenuItem { Name = nameof(ScanFMMenuItem) },
 
-                ConvertAudioRCSubMenu = new ToolStripMenuItem { Name = nameof(ConvertAudioRCSubMenu) },
+                ConvertAudioMenuItem = new ToolStripMenuItem { Name = nameof(ConvertAudioMenuItem) },
                 ConvertWAVsTo16BitMenuItem = new ToolStripMenuItem { Name = nameof(ConvertWAVsTo16BitMenuItem) },
                 ConvertOGGsToWAVsMenuItem = new ToolStripMenuItem { Name = nameof(ConvertOGGsToWAVsMenuItem) },
 
@@ -172,7 +172,7 @@ namespace AngelLoader.Forms.CustomControls
                 OpenInDromEdMenuItem,
                 FMContextMenuSep1,
                 ScanFMMenuItem,
-                ConvertAudioRCSubMenu,
+                ConvertAudioMenuItem,
                 FMContextMenuSep2,
                 RatingMenuItem,
                 FinishedOnMenuItem,
@@ -180,7 +180,7 @@ namespace AngelLoader.Forms.CustomControls
                 WebSearchMenuItem
             });
 
-            ConvertAudioRCSubMenu.DropDownItems.AddRange(new ToolStripItem[]
+            ConvertAudioMenuItem.DropDownItems.AddRange(new ToolStripItem[]
             {
                 ConvertWAVsTo16BitMenuItem,
                 ConvertOGGsToWAVsMenuItem
@@ -269,7 +269,7 @@ namespace AngelLoader.Forms.CustomControls
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
             OpenInDromEdSep.Visible = _openInDromEdSepVisible;
             OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
-            ConvertAudioRCSubMenu.Enabled = _convertAudioSubMenuEnabled;
+            ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
 
             #region Set Finished On checked values
 
@@ -347,7 +347,7 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Convert audio submenu
 
-            ConvertAudioRCSubMenu!.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
+            ConvertAudioMenuItem!.Text = LText.FMsList.FMMenu_ConvertAudio.EscapeAmpersands();
             ConvertWAVsTo16BitMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit.EscapeAmpersands();
             ConvertOGGsToWAVsMenuItem!.Text = LText.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs.EscapeAmpersands();
 
@@ -494,7 +494,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (_fmMenuConstructed)
             {
-                ConvertAudioRCSubMenu!.Enabled = value;
+                ConvertAudioMenuItem!.Enabled = value;
             }
             else
             {
