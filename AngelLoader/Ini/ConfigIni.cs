@@ -924,6 +924,7 @@ namespace AngelLoader
                 string ret = "";
 
                 // Hmm... doesn't make for good code, but fast...
+                // @GENGAMES
                 bool notEmpty = false;
 
                 if ((games & Game.Thief1) == Game.Thief1)
@@ -1057,17 +1058,8 @@ namespace AngelLoader
                 {
                     #region Set i-dependent values
 
-                    // @GENGAMES: Manual because we need a 0th option for just the global filter
-                    Filter filter = fi switch
-                    {
-                        0 => config.Filter,
-                        1 => config.GameTabsState.GetFilter(Thief1),
-                        2 => config.GameTabsState.GetFilter(Thief2),
-                        3 => config.GameTabsState.GetFilter(Thief3),
-                        _ => config.GameTabsState.GetFilter(SS2)
-                    };
-
-                    string p = fi switch { 0 => "", 1 => "T1", 2 => "T2", 3 => "T3", _ => "SS2" };
+                    Filter filter = fi == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(fi - 1));
+                    string p = fi == 0 ? "" : GetGameTypePrefix((GameIndex)(fi - 1));
 
                     #endregion
 

@@ -10,6 +10,8 @@ namespace AngelLoader
     [PublicAPI]
     internal static class GameSupport
     {
+        internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;
+
         // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in
         // the code that need updating.
 
@@ -51,9 +53,18 @@ namespace AngelLoader
 
         #endregion
 
-        internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;
-
         internal static string GetGameSteamId(GameIndex index) => SteamAppIds[(int)index];
+
+        // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility. Don't change
+        // the existing values, only add new ones!
+        internal static string GetGameTypePrefix(GameIndex index) => index switch
+        {
+            GameIndex.Thief1 => "T1",
+            GameIndex.Thief2 => "T2",
+            GameIndex.Thief3 => "T3",
+            GameIndex.SS2 => "SS2",
+            _ => throw new ArgumentOutOfRangeException(nameof(index), ((uint)index).ToString(), nameof(GameIndex) + @" argument out of range.")
+        };
 
         #region Conversion
 
