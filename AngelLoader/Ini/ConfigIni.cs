@@ -66,17 +66,24 @@ namespace AngelLoader
             return ret;
         }
 
-        private static void ReadTags(string line, Filter filter, string prefix)
+        private static void ReadTags(string line, Game game)
         {
+            Filter filter = GameIsKnownAndSupported(game)
+                ? Config.GameTabsState.GetFilter(GameToGameIndex(game))
+                : Config.Filter;
+
+            // TODO: This line-passing-and-reading business is still a little janky
             CatAndTagsList? tagsList =
-                line.StartsWithFast_NoNullChecks(prefix + "FilterTagsAnd=") ? filter.Tags.AndTags :
-                line.StartsWithFast_NoNullChecks(prefix + "FilterTagsOr=") ? filter.Tags.OrTags :
-                line.StartsWithFast_NoNullChecks(prefix + "FilterTagsNot=") ? filter.Tags.NotTags :
+                line.StartsWithFast_NoNullChecks("And=") ? filter.Tags.AndTags :
+                line.StartsWithFast_NoNullChecks("Or=") ? filter.Tags.OrTags :
+                line.StartsWithFast_NoNullChecks("Not=") ? filter.Tags.NotTags :
                 null;
+
+            if (tagsList == null) return;
 
             string val = line.Substring(line.IndexOf('=') + 1);
 
-            if (tagsList == null || val.IsWhiteSpace()) return;
+            if (val.IsWhiteSpace()) return;
 
             string[] tagsArray = val.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
 
@@ -143,17 +150,19 @@ namespace AngelLoader
         {
             string[] iniLines = File.ReadAllLines(path);
 
-            foreach (string line in iniLines)
+            for (int li = 0; li < iniLines.Length; li++)
             {
-                if (!line.Contains('=')) continue;
-
-                string lineT = line.TrimStart();
+                // PERF: It's okay to do a TrimStart() right off the bat since blank lines are the rare case.
+                // And having only one (trimmed) line string prevents us from accidentally using the un-trimmed
+                // one by accident like we previously did in here.
+                string lineT = iniLines[li].TrimStart();
+                if (!lineT.Contains('=')) continue;
 
                 if (lineT.Length > 0 && (lineT[0] == ';' || lineT[0] == '[')) continue;
 
                 string val = lineT.Substring(lineT.IndexOf('=') + 1);
 
-                if (lineT.StartsWithFast_NoNullChecks("Column") && line[6] != '=')
+                if (lineT.StartsWithFast_NoNullChecks("Column") && lineT[6] != '=')
                 {
                     string colName = lineT.Substring(6, lineT.IndexOf('=') - 6);
 
@@ -298,25 +307,26 @@ namespace AngelLoader
                 // Note: These lines can't index past the end, because we won't get here unless the line contains
                 // '=' and since there are no '=' chars in the checked strings, we know the length must be at least
                 // checked string length + 1
-                else if (lineT.StartsWithFast_NoNullChecks("FilterTags") && line[10] != '=')
+                // TODO: This is downright dangerous, having not one but two int literals per. Be EXTREMELY careful if modifying these!
+                else if (lineT.StartsWithFast_NoNullChecks("FilterTags") && lineT[10] != '=')
                 {
-                    ReadTags(lineT, config.Filter, "");
+                    ReadTags(lineT.Substring(10), Game.Null);
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("T1FilterTags") && line[12] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("T1FilterTags") && lineT[12] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.GetFilter(Thief1), "T1");
+                    ReadTags(lineT.Substring(12), Game.Thief1);
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("T2FilterTags") && line[12] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("T2FilterTags") && lineT[12] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.GetFilter(Thief2), "T2");
+                    ReadTags(lineT.Substring(12), Game.Thief2);
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("T3FilterTags") && line[12] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("T3FilterTags") && lineT[12] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.GetFilter(Thief3), "T3");
+                    ReadTags(lineT.Substring(12), Game.Thief3);
                 }
-                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterTags") && line[13] != '=')
+                else if (lineT.StartsWithFast_NoNullChecks("SS2FilterTags") && lineT[13] != '=')
                 {
-                    ReadTags(lineT, config.GameTabsState.GetFilter(SS2), "SS2");
+                    ReadTags(lineT.Substring(13), Game.SS2);
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("FilterGames="))
                 {
@@ -996,17 +1006,32 @@ namespace AngelLoader
 
                 #region Paths
 
-                sw.WriteLine("T1Exe=" + config.GetGameExe(Thief1).Trim());
-                sw.WriteLine("T2Exe=" + config.GetGameExe(Thief2).Trim());
-                sw.WriteLine("T3Exe=" + config.GetGameExe(Thief3).Trim());
-                sw.WriteLine("SS2Exe=" + config.GetGameExe(SS2).Trim());
+                #region Game exes
+
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    sw.WriteLine(GetGameTypePrefix(gameIndex) + "Exe=" + config.GetGameExe(gameIndex).Trim());
+                }
+
+                #endregion
+
+                #region Steam
 
                 sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
-                sw.WriteLine("T1UseSteam=" + config.GetUseSteamSwitch(Thief1));
-                sw.WriteLine("T2UseSteam=" + config.GetUseSteamSwitch(Thief2));
-                sw.WriteLine("T3UseSteam=" + config.GetUseSteamSwitch(Thief3));
-                sw.WriteLine("SS2UseSteam=" + config.GetUseSteamSwitch(SS2));
+
+                // @GENGAMES
+                // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
+                // read-only "IsOnSteam" bool and check it before writing/reading this
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    sw.WriteLine(GetGameTypePrefix(gameIndex) + "UseSteam=" + config.GetUseSteamSwitch(gameIndex));
+                }
+
                 sw.WriteLine(nameof(config.SteamExe) + "=" + config.SteamExe);
+
+                #endregion
 
                 sw.WriteLine(nameof(config.FMsBackupPath) + "=" + config.FMsBackupPath.Trim());
                 foreach (string path in config.FMArchivePaths) sw.WriteLine("FMArchivePath=" + path.Trim());
@@ -1054,16 +1079,12 @@ namespace AngelLoader
                     ? ""
                     : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
 
-                for (int fi = 0; fi < 5; fi++)
+                for (int i = 0; i < SupportedGameCount + 1; i++)
                 {
-                    #region Set i-dependent values
+                    Filter filter = i == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(i - 1));
+                    string p = i == 0 ? "" : GetGameTypePrefix((GameIndex)(i - 1));
 
-                    Filter filter = fi == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(fi - 1));
-                    string p = fi == 0 ? "" : GetGameTypePrefix((GameIndex)(fi - 1));
-
-                    #endregion
-
-                    if (fi == 0) sw.WriteLine("FilterGames=" + commaCombineGameFlags(config.Filter.Games));
+                    if (i == 0) sw.WriteLine("FilterGames=" + commaCombineGameFlags(config.Filter.Games));
 
                     sw.WriteLine(p + "FilterTitle=" + filter.Title);
                     sw.WriteLine(p + "FilterAuthor=" + filter.Author);
@@ -1137,16 +1158,14 @@ namespace AngelLoader
 
                 #region Selected FM
 
-                sw.WriteLine("SelFMInstDir=" + config.SelFM.InstalledName);
-                sw.WriteLine("SelFMIndexFromTop=" + config.SelFM.IndexFromTop);
-                sw.WriteLine("T1SelFMInstDir=" + config.GameTabsState.GetSelectedFM(Thief1).InstalledName);
-                sw.WriteLine("T1SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(Thief1).IndexFromTop);
-                sw.WriteLine("T2SelFMInstDir=" + config.GameTabsState.GetSelectedFM(Thief2).InstalledName);
-                sw.WriteLine("T2SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(Thief2).IndexFromTop);
-                sw.WriteLine("T3SelFMInstDir=" + config.GameTabsState.GetSelectedFM(Thief3).InstalledName);
-                sw.WriteLine("T3SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(Thief3).IndexFromTop);
-                sw.WriteLine("SS2SelFMInstDir=" + config.GameTabsState.GetSelectedFM(SS2).InstalledName);
-                sw.WriteLine("SS2SelFMIndexFromTop=" + config.GameTabsState.GetSelectedFM(SS2).IndexFromTop);
+                for (int i = 0; i < SupportedGameCount + 1; i++)
+                {
+                    SelectedFM selFM = i == 0 ? config.SelFM : config.GameTabsState.GetSelectedFM((GameIndex)(i - 1));
+                    string p = i == 0 ? "" : GetGameTypePrefix((GameIndex)(i - 1));
+
+                    sw.WriteLine(p + "SelFMInstDir=" + selFM.InstalledName);
+                    sw.WriteLine(p + "SelFMIndexFromTop=" + selFM.IndexFromTop);
+                }
 
                 #endregion
 
