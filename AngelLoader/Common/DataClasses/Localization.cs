@@ -56,7 +56,9 @@ namespace AngelLoader.DataClasses
 
         internal static class Meta
         {
-            [FenGenComment("This should be the name of this file's language in this file's language.\r\nExample: English should be English, French should be Français, etc.")]
+            [FenGenComment(
+@"This should be the name of this file's language in this file's language.
+Example: English should be English, French should be Français, etc.")]
             internal static string TranslatedLanguageName = "English";
         }
 
@@ -208,7 +210,7 @@ namespace AngelLoader.DataClasses
             internal static string UnfinishedToolTip = "Unfinished";
             internal static string RatingToolTip = "Rating";
             [FenGenBlankLine]
-            internal static string ShowJunk = "Show FMs marked as \"unsupported game or non-FM archive\"";
+            internal static string ShowUnsupported = "Show FMs marked as \"unsupported game or non-FM archive\"";
             internal static string ShowRecentAtTop = "Show recently added FMs at the top of the list";
             [FenGenBlankLine]
             internal static string RefreshFromDiskButtonToolTip = "Refresh from disk";

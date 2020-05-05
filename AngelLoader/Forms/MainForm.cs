@@ -1323,7 +1323,7 @@ namespace AngelLoader.Forms
                     UpdateRatingLabel();
                 }
 
-                FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowJunk;
+                FilterShowUnsupportedButton.ToolTipText = LText.FilterBar.ShowUnsupported;
                 FilterShowRecentAtTopButton.ToolTipText = LText.FilterBar.ShowRecentAtTop;
 
                 #endregion

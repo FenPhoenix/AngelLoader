@@ -510,9 +510,9 @@ namespace AngelLoader
                         {
                             LText.FilterBar.RatingToolTip = lt.Substring(14);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("ShowJunk="))
+                        else if (lt.StartsWithFast_NoNullChecks("ShowUnsupported="))
                         {
-                            LText.FilterBar.ShowJunk = lt.Substring(9);
+                            LText.FilterBar.ShowUnsupported = lt.Substring(16);
                         }
                         else if (lt.StartsWithFast_NoNullChecks("ShowRecentAtTop="))
                         {
