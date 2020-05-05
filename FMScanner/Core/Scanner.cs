@@ -1837,16 +1837,19 @@ namespace FMScanner
 
                     // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                     // alone.
-                    char[] rtfHeader = new char[6];
-                    using (var sr = _fmIsZip
-                        ? new StreamReader(readmeStream, Encoding.ASCII, false, 6, true)
-                        : new StreamReader(readmeFileOnDisk, Encoding.ASCII, false, 6))
+                    byte[] rtfHeader;
+                    using (var br = _fmIsZip
+                        ? new BinaryReader(readmeStream, Encoding.ASCII, leaveOpen: true)
+                        : new BinaryReader(new FileStream(readmeFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false))
                     {
-                        sr.ReadBlock(rtfHeader, 0, 6);
+                        // Null is a stupid micro-optimization so we don't waste a 6-byte alloc.
+                        rtfHeader = br.BaseStream.Length >= RtfTags.HeaderBytesLength
+                            ? br.ReadBytes(RtfTags.HeaderBytesLength)
+                            : null;
                     }
                     if (_fmIsZip) readmeStream.Position = 0;
 
-                    if (string.Concat(rtfHeader).EqualsI(@"{\rtf1"))
+                    if (rtfHeader != null && rtfHeader.SequenceEqual(RtfTags.HeaderBytes))
                     {
                         bool success;
                         if (_fmIsZip)

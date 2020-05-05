@@ -167,6 +167,8 @@ namespace FMScanner
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static class RtfTags
     {
+        internal static readonly byte[] HeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
+        internal const int HeaderBytesLength = 6; // stupid micro-optimization
         internal static readonly byte[] shppict = Encoding.ASCII.GetBytes(@"\*\shppict");
         internal static readonly byte[] objdata = Encoding.ASCII.GetBytes(@"\*\objdata");
         internal static readonly byte[] nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");

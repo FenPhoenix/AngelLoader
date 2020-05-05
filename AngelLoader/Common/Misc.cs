@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
@@ -123,6 +124,8 @@ namespace AngelLoader
         #endregion
 
         #region Preset char arrays
+
+        internal static readonly byte[] RTFHeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
 
         // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time
         internal static readonly char[] CA_Comma = { ',' };

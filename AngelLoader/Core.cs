@@ -1620,6 +1620,7 @@ namespace AngelLoader
 
         #region Readme
 
+        // TODO: Make this actually exception-safe (FMIsReallyInstalled doesn't throw, but Path.Combine() might)
         private static string GetReadmeFileFullPath(FanMission fm) =>
             FMIsReallyInstalled(fm)
                 ? Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir, fm.SelectedReadme)
@@ -1633,12 +1634,23 @@ namespace AngelLoader
             if (fm.SelectedReadme.ExtIsHtml()) return (readmeOnDisk, ReadmeType.HTML);
             if (fm.SelectedReadme.ExtIsGlml()) return (readmeOnDisk, ReadmeType.GLML);
 
-            char[] rtfHeader = new char[6];
+            int headerLen = RTFHeaderBytes.Length;
+
+            byte[] buffer = new byte[headerLen];
 
             // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
-            using (var sr = new StreamReader(readmeOnDisk, Encoding.ASCII)) sr.ReadBlock(rtfHeader, 0, 6);
+            using (var fs = new FileStream(readmeOnDisk, FileMode.Open, FileAccess.Read))
+            {
+                // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
+                // end up with an "unable to load readme" error.
+                if (fs.Length >= headerLen)
+                {
+                    using var br = new BinaryReader(fs, Encoding.ASCII);
+                    buffer = br.ReadBytes(headerLen);
+                }
+            }
 
-            var rType = string.Concat(rtfHeader).EqualsI(@"{\rtf1") ? ReadmeType.RichText : ReadmeType.PlainText;
+            var rType = buffer.SequenceEqual(RTFHeaderBytes) ? ReadmeType.RichText : ReadmeType.PlainText;
 
             return (readmeOnDisk, rType);
         }
