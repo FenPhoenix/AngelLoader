@@ -23,7 +23,7 @@ namespace AngelLoader
             if (success) await Core.View.RefreshSelectedFM(refreshReadme: false);
         }
 
-        internal static Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true);
+        internal static async Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => await ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true);
 
         internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions,
             bool scanFullIfNew = false, bool hideBoxIfZip = false)
