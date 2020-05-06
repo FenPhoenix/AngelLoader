@@ -2191,7 +2191,9 @@ namespace FMScanner
                         lineT.StartsWithI("A Thief fan") ||
                         lineT.StartsWithI("A fan mission") ||
                         lineT.StartsWithI("A Thief 3") ||
-                        AThief3Mission.Match(lineT).Success)
+                        AThief3Mission.Match(lineT).Success ||
+                        lineT.StartsWithI("A System Shock") ||
+                        lineT.StartsWithI("An SS2"))
                     {
                         for (int j = 0; j < i; j++)
                         {
