@@ -76,7 +76,7 @@ namespace AngelLoader
         /// <returns></returns>
         internal static bool ContainsDirSep(this string value)
         {
-            for (int i = 0; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') return true;
+            for (int i = 0; i < value.Length; i++) if (value[i].IsDirSep()) return true;
             return false;
         }
 
@@ -89,7 +89,7 @@ namespace AngelLoader
         internal static int CountDirSeps(this string value, int start = 0)
         {
             int count = 0;
-            for (int i = start; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') count++;
+            for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
             return count;
         }
 
@@ -105,7 +105,7 @@ namespace AngelLoader
             int foundCount = 0;
             for (int i = start; i < value.Length; i++)
             {
-                if (value[i] == '/' || value[i] == '\\') foundCount++;
+                if (value[i].IsDirSep()) foundCount++;
                 if (foundCount == count) return true;
             }
 
@@ -232,10 +232,13 @@ namespace AngelLoader
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsDirSep(this char character) => character == '/' || character == '\\';
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
 
         #endregion

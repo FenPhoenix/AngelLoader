@@ -80,7 +80,7 @@ namespace FMScanner
         {
             for (int ri = 0; ri < value.Length; ri++)
             {
-                if (value[ri] == '/' || value[ri] == '\\')
+                if (value[ri].IsDirSep())
                 {
                     value = value.Remove(ri, 1).Insert(ri, rnd.Next(0, 2) == 0 ? "\\" : "/");
                 }
@@ -373,11 +373,7 @@ namespace FMScanner
             // critical that we always know we have a dir separator on the end so we don't end up with a leading
             // one on the string when we remove this from the start of it
 
-            if (_fmWorkingPath[_fmWorkingPath.Length - 1] != '\\' &&
-                _fmWorkingPath[_fmWorkingPath.Length - 1] != '/')
-            {
-                _fmWorkingPath += "\\";
-            }
+            if (!_fmWorkingPath.EndsWithDirSep()) _fmWorkingPath += "\\";
 
 #if DEBUG_RANDOMIZE_DIR_SEPS
 

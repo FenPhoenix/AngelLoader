@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using static System.StringComparison;
@@ -99,8 +100,6 @@ namespace FMScanner
             return false;
         }
 
-        #region Fast byte[] / char[] search
-
         // I don't know if this is "supposed" to be the fastest way, but every other algorithm I've tried is at
         // least 2-8x slower. IndexOf() calls an internal method TrySZIndexOf() which is obviously some voodoo
         // speed demon stuff because none of this Moyer-Bohr-Kensington-Smythe-Wappcapplet fancy stuff beats it.
@@ -127,8 +126,6 @@ namespace FMScanner
 
             return false;
         }
-
-        #endregion
 
         #region Contains
 
@@ -183,6 +180,15 @@ namespace FMScanner
 
         #region Path-specific string queries (separator-agnostic)
 
+        [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsDirSep(this char character) => character == '/' || character == '\\';
+
+        [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
+
+        [PublicAPI, MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
+
         // Note: We hardcode '/' and '\' for now because we can get paths from archive files too, where the dir
         // sep chars are in no way guaranteed to match those of the OS.
         // Not like any OS is likely to use anything other than '/' or '\' anyway.
@@ -197,7 +203,7 @@ namespace FMScanner
         /// <returns></returns>
         internal static bool ContainsDirSep(this string value)
         {
-            for (int i = 0; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') return true;
+            for (int i = 0; i < value.Length; i++) if (value[i].IsDirSep()) return true;
             return false;
         }
 
@@ -210,7 +216,7 @@ namespace FMScanner
         internal static int CountDirSeps(this string value, int start = 0)
         {
             int count = 0;
-            for (int i = start; i < value.Length; i++) if (value[i] == '/' || value[i] == '\\') count++;
+            for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
             return count;
         }
 
@@ -219,7 +225,7 @@ namespace FMScanner
             int foundCount = 0;
             for (int i = start; i < value.Length; i++)
             {
-                if (value[i] == '/' || value[i] == '\\') foundCount++;
+                if (value[i].IsDirSep()) foundCount++;
                 if (foundCount == count) return true;
             }
 
@@ -241,6 +247,15 @@ namespace FMScanner
             return Math.Max(i1, i2);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool AsciiPathCharsConsideredEqual_Win(char char1, char char2)
+        {
+            return (char1 == char2 ||
+                    (char1.IsDirSep() && char2.IsDirSep()) ||
+                    ((char1 >= 65 && char1 <= 90 && char2 >= 97 && char2 <= 122 && char1 == char2 - 32) ||
+                     (char1 >= 97 && char1 <= 122 && char2 >= 65 && char2 <= 90 && char1 == char2 + 32)));
+        }
+
         /// <summary>
         /// Path equality check ignoring case and directory separator differences.
         /// </summary>
@@ -252,7 +267,6 @@ namespace FMScanner
             if (first == second) return true;
 
             int firstLen = first.Length;
-
             if (firstLen != second.Length) return false;
 
             for (int i = 0; i < firstLen; i++)
@@ -267,16 +281,7 @@ namespace FMScanner
                            CanonicalizePath(first).Equals(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                    (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                    (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
+                if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
             }
 
             return true;
@@ -304,16 +309,7 @@ namespace FMScanner
                            CanonicalizePath(first).StartsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                     (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
+                if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
             }
 
             return true;
@@ -341,16 +337,7 @@ namespace FMScanner
                            CanonicalizePath(first).EndsWith(CanonicalizePath(second), OrdinalIgnoreCase);
                 }
 
-                if (fc == sc ||
-                    ((fc == '\\' || fc == '/') &&
-                     (sc == '\\' || sc == '/')) ||
-                    ((fc >= 65 && fc <= 90 && sc >= 97 && sc <= 122 && fc == sc - 32) ||
-                     (fc >= 97 && fc <= 122 && sc >= 65 && sc <= 90 && fc == sc + 32)))
-                {
-                    continue;
-                }
-
-                return false;
+                if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
             }
 
             return true;
@@ -718,6 +705,7 @@ namespace FMScanner
                     }
                 }
 
+                // TODO: Make IsAsciiUpper()/IsAsciiLower() etc. functions for these to be extra tidy if you want
                 if (str[si] >= 65 && str[si] <= 90 && value[vi] >= 97 && value[vi] <= 122)
                 {
                     if (caseComparison == CaseComparison.GivenOrLower || str[si] != value[vi] - 32) return false;
