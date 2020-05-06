@@ -189,6 +189,7 @@ namespace FMScanner
         internal static readonly char[] CA_Backslash = { '\\' };
         internal static readonly char[] CA_DoubleQuote = { '\"' };
         internal static readonly char[] CA_UnicodeQuotes = { Constants.uldq, Constants.urdq };
+        internal static readonly string[] SA_CRLF = { "\r\n" };
         internal static readonly string[] SA_DoubleSpaces = { "  " };
         internal static readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
         internal static readonly string[] SA_AllFiles = { "*" };
@@ -411,6 +412,9 @@ namespace FMScanner
     {
         internal static readonly Regex GLMLTagRegex =
             new Regex(@"\[/?GL[A-Z]+\]", RegexOptions.Compiled);
+
+        internal static readonly Regex AThief3Mission =
+            new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly", RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         internal static readonly Regex OpenParenSpacesRegex =
             new Regex(@"\(\s+", RegexOptions.Compiled);

@@ -1874,19 +1874,31 @@ namespace FMScanner
 
                         // Convert GLML files to plaintext by stripping the markup. Fortunately this is extremely
                         // easy as all tags are of the form [GLWHATEVER][/GLWHATEVER]. Very nice, very simple.
-                        if (last.FileName.ExtIsGlml())
+                        bool extIsGlml = last.FileName.ExtIsGlml();
+                        if (extIsGlml)
                         {
                             for (int i = 0; i < last.Lines.Count; i++)
                             {
                                 var matches = GLMLTagRegex.Matches(last.Lines[i]);
                                 foreach (Match m in matches)
                                 {
+                                    // We put linebreaks in the middle of lines here, but see below for the fixup
                                     last.Lines[i] = last.Lines[i].Replace(m.Value, m.Value == "[GLNL]" ? "\r\n" : "");
                                 }
                             }
                         }
 
                         last.Text = string.Join("\r\n", last.Lines);
+
+                        if (extIsGlml)
+                        {
+                            // We may have inserted CRLFs into the middle of lines, so re-split the text into
+                            // lines again to ensure no line contains CRLFs (ie. every CRLF will result in a
+                            // separate line).
+                            // This was working before out of sheer luck that [GLNL] tags were only occurring at
+                            // the end of lines, but this isn't technically guaranteed.
+                            last.Lines = last.Text.Split(SA_CRLF, StringSplitOptions.None).ToList();
+                        }
                     }
                 }
                 finally
@@ -2177,7 +2189,9 @@ namespace FMScanner
                         lineT.StartsWithI("A Thief Gold fan") ||
                         lineT.StartsWithI("A Thief 1 fan") ||
                         lineT.StartsWithI("A Thief fan") ||
-                        lineT.StartsWithI("A fan mission"))
+                        lineT.StartsWithI("A fan mission") ||
+                        lineT.StartsWithI("A Thief 3") ||
+                        AThief3Mission.Match(lineT).Success)
                     {
                         for (int j = 0; j < i; j++)
                         {
