@@ -47,4 +47,7 @@ if %ConfigurationName% == Release_Public (
 
 "%system%xcopy" "%SolutionDir%BinReleaseOnly" "%destDir%" /y /i /e
 
-"%system%xcopy" "%SolutionDir%doc" "%destDir%doc\" /y /i /e
+rem Exlude "history" dir without having to copy and delete it afterwards (it's large)
+rem or write out an excludes file
+"%system%xcopy" "%SolutionDir%doc\*.html" "%destDir%doc\" /y /i
+"%system%xcopy" "%SolutionDir%doc\images" "%destDir%doc\images" /y /i /e
