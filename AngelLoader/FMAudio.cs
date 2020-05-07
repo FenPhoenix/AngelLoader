@@ -296,18 +296,17 @@ namespace AngelLoader
 
         private static List<string> GetFMSoundPathsByGame(FanMission fm)
         {
-            // Guard for the below unsafe Game conversion
+            // Guard for the below unsafe Game conversion, and:
+            // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
+            // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
+            // assume Thief 3 doesn't need it and leave it at that.
             if (!GameIsDark(fm.Game)) return new List<string>();
 
             string instPath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
             string sndPath = Path.Combine(instPath, "snd");
-            return
-                fm.Game == Game.SS2 ? new List<string> { sndPath, Path.Combine(instPath, "snd2") } :
-                GameIsDark(fm.Game) ? new List<string> { sndPath } :
-                // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
-                // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
-                // assume Thief 3 doesn't need it and leave it at that.
-                new List<string>();
+            return fm.Game == Game.SS2
+                ? new List<string> { sndPath, Path.Combine(instPath, "snd2") }
+                : new List<string> { sndPath };
         }
 
         #endregion
