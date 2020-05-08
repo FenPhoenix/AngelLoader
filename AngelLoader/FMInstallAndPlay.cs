@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
@@ -140,6 +141,8 @@ namespace AngelLoader
             string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
 
+            AddMissFlagFileIfRequired(fm);
+
             WriteStubCommFile(fm, gamePath);
 
             StartExe(gameExe, workingPath, args);
@@ -196,6 +199,9 @@ namespace AngelLoader
             // Since we don't use the stub currently, set this here
             // TODO: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
             SetCamCfgLanguage(gamePath, "");
+
+            // Why not
+            AddMissFlagFileIfRequired(fm);
 
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
             StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
@@ -671,6 +677,79 @@ namespace AngelLoader
         }
 
         #endregion
+
+        private static void AddMissFlagFileIfRequired(FanMission fm)
+        {
+            // Only T1 and T2 have/require missflag.str
+            if (fm.Game != Game.Thief1 && fm.Game != Game.Thief2) return;
+
+            string instFMsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+
+            string fmInstalledPath;
+            try
+            {
+                fmInstalledPath = Path.Combine(instFMsBasePath, fm.InstalledDir);
+
+                if (!Directory.Exists(fmInstalledPath)) return;
+
+                string stringsPath = Path.Combine(fmInstalledPath, "strings");
+                string missFlagFile = Path.Combine(stringsPath, "missflag.str");
+
+                if (File.Exists(missFlagFile))
+                {
+                    // Be unnecessarily clever by counting empty missflag.str files as nonexistent
+                    var lines = File.ReadAllLines(missFlagFile, Encoding.UTF8);
+                    if (lines.Length > 0)
+                    {
+                        for (int i = 0; i < lines.Length; i++) if (!lines[i].IsWhiteSpace()) return;
+                    }
+                }
+
+                string[] misFiles = Directory.GetFiles(fmInstalledPath, "miss*.mis", SearchOption.TopDirectoryOnly);
+                var misNums = new List<int>();
+                foreach (string mf in misFiles)
+                {
+                    Match m = Regex.Match(mf, @"miss(?<Num>[123456789]+).mis", RegexOptions.IgnoreCase);
+                    if (m.Success && int.TryParse(m.Groups["Num"].Value, out int result))
+                    {
+                        misNums.Add(result);
+                    }
+                }
+
+                if (misNums.Count == 0) return;
+
+                misNums.Sort();
+
+                Directory.CreateDirectory(stringsPath);
+
+                int lastMisNum = misNums[misNums.Count - 1];
+
+                var missFlagLines = new List<string>();
+                for (int i = 1; i <= lastMisNum; i++)
+                {
+                    string curLine = "miss_" + i + ": ";
+                    if (misNums.Contains(i))
+                    {
+                        curLine += "\"no_briefing, no_loadout";
+                        if (i == lastMisNum) curLine += ", end";
+                        curLine += "\"";
+                    }
+                    else
+                    {
+                        curLine += "\"skip\"";
+                    }
+
+                    missFlagLines.Add(curLine);
+                }
+
+                File.WriteAllLines(missFlagFile, missFlagLines, new UTF8Encoding(false, true));
+            }
+            catch (Exception ex)
+            {
+                Log(nameof(AddMissFlagFileIfRequired) + ": Exception trying to write missflag.str file", ex);
+                return;
+            }
+        }
 
         #region Set us as selector
 
@@ -1239,6 +1318,9 @@ namespace AngelLoader
                     Log("Exception in audio conversion", ex);
                 }
             }
+
+            // Don't be lazy about this; there can be no harm and only benefits by doing it right away
+            AddMissFlagFileIfRequired(fm);
 
             // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
             try
