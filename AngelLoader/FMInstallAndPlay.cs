@@ -695,21 +695,20 @@ namespace AngelLoader
                 string stringsPath = Path.Combine(fmInstalledPath, "strings");
                 string missFlagFile = Path.Combine(stringsPath, "missflag.str");
 
-                if (File.Exists(missFlagFile))
+                bool MissFlagFilesExist()
                 {
-                    // Be unnecessarily clever by counting empty missflag.str files as nonexistent
-                    var lines = File.ReadAllLines(missFlagFile, Encoding.UTF8);
-                    if (lines.Length > 0)
-                    {
-                        for (int i = 0; i < lines.Length; i++) if (!lines[i].IsWhiteSpace()) return;
-                    }
+                    // Missflag.str could be in a subdirectory too! Don't make a new one in that case!
+                    string[] missFlag = Directory.GetFiles(stringsPath, "missflag.str", SearchOption.AllDirectories);
+                    return missFlag.Length > 0;
                 }
+
+                if (MissFlagFilesExist()) return;
 
                 string[] misFiles = Directory.GetFiles(fmInstalledPath, "miss*.mis", SearchOption.TopDirectoryOnly);
                 var misNums = new List<int>();
                 foreach (string mf in misFiles)
                 {
-                    Match m = Regex.Match(mf, @"miss(?<Num>[123456789]+).mis", RegexOptions.IgnoreCase);
+                    Match m = Regex.Match(mf, @"miss(?<Num>[0123456789]+).mis", RegexOptions.IgnoreCase);
                     if (m.Success && int.TryParse(m.Groups["Num"].Value, out int result))
                     {
                         misNums.Add(result);
