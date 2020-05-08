@@ -697,6 +697,7 @@ namespace AngelLoader
 
                 bool MissFlagFilesExist()
                 {
+                    if (!Directory.Exists(stringsPath)) return false;
                     // Missflag.str could be in a subdirectory too! Don't make a new one in that case!
                     string[] missFlag = Directory.GetFiles(stringsPath, "missflag.str", SearchOption.AllDirectories);
                     return missFlag.Length > 0;
@@ -708,7 +709,7 @@ namespace AngelLoader
                 var misNums = new List<int>();
                 foreach (string mf in misFiles)
                 {
-                    Match m = Regex.Match(mf, @"miss(?<Num>[0123456789]+).mis", RegexOptions.IgnoreCase);
+                    Match m = Regex.Match(mf, @"miss(?<Num>\d+).mis", RegexOptions.IgnoreCase);
                     if (m.Success && int.TryParse(m.Groups["Num"].Value, out int result))
                     {
                         misNums.Add(result);
