@@ -19,6 +19,123 @@ Thanks for checking it out!
 
 ## List of new strings by version
 
+### v1.4.2:
+
+#### English.ini:  
+
+The following two lines have been moved from `[ScanAllFMsBox]` to `[Global]`:  
+
+`SelectAll=Select all`  
+`SelectNone=Select none`  
+
+The rest of the differences follow:
+
+```diff
+[AlertMessages]
+...
++ DeleteFMArchive=Delete FM archive
+...
+- WebSearchURL_IsInvalid=The specified site to search is not a valid URL.
+...
+- Play_GameIsRunning=Game is already running. Exit it first!
+...
++ DeleteFM_UnableToDelete=The following FM archive could not be deleted:
+```
+
+```diff
++ [FMDeletion]
++ ArchiveNotFound=This FM's archive could not be found. To delete this FM permanently, simply uninstall it.
++ AboutToDelete=The following FM archive is about to be deleted from disk:
++ DuplicateArchivesFound=Multiple archives with the same name were found. Please choose which archives(s) you want to delete.
++ DeleteFM=Delete FM
++ DeleteFMs=Delete FM(s)
+```
+
+```diff
+[FilterBar]
+- ShowJunk=Show FMs marked as "unsupported game or non-FM archive"
++ ShowUnsupported=Show FMs marked as "unsupported game or non-FM archive"
+```
+
+```diff
+[FMsList]
+...
+FMMenu_PlayFM=Play FM
+FMMenu_PlayFM_Multiplayer=Play FM (multiplayer)
+FMMenu_InstallFM=Install FM
+FMMenu_UninstallFM=Uninstall FM
++ FMMenu_DeleteFM=Delete FM archive
+FMMenu_OpenInDromEd=Open FM in DromEd
+FMMenu_OpenInShockEd=Open FM in ShockEd
+FMMenu_Rating=Rating
+FMMenu_FinishedOn=Finished on
+FMMenu_ConvertAudio=Convert audio
+FMMenu_ScanFM=Scan FM
+FMMenu_WebSearch=Web search
+...
+```
+
+```diff
+[ProgressBox]
+...
+Scanning=Scanning...
+InstallingFM=Installing FM...
+UninstallingFM=Uninstalling FM...
+ConvertingFiles=Converting files...
+CheckingInstalledFMs=Checking installed FMs...
+ReportScanningFirst=Scanning 
+ReportScanningBetweenNumAndTotal= of 
+ReportScanningLast=...
+CancelingInstall=Canceling install...
+ImportingFromDarkLoader=Importing from DarkLoader...
+ImportingFromNewDarkLoader=Importing from NewDarkLoader...
+ImportingFromFMSel=Importing from FMSel...
+CachingReadmeFiles=Caching readme files...
++ DeletingFMArchive=Deleting FM archive...
+```
+
+#### Documentation:
+
+#### Images:
+The following image has been **updated** to show the new "Delete FM archive" menu item:  
+`fm_right_click_menu.png`  
+
+#### AngelLoader documentation.html:
+
+```diff
+<h3><a name="mission_list" />Mission list</h3>
+
+<p><img src="images/fms_list_960.png" /></p>
+
+This is the main area where fan missions are displayed, sorted, and filtered. You can change the columns' size, <a href="#column_header_context_menu">visibility</a>, and order.
+Drag a column left or right to change its order. Clicking on a column header will sort by that column. Click once to sort by ascending, and click again to sort by descending.
+Double-click the size grip to the right of a column to auto-size that column to fit its content.
+<p>Right-click on any column header or any blank space in the list to bring up the <a href="#column_header_context_menu">column header context menu</a>.</p>
+<p>Right-click on an FM to bring up the <a href="#fm_context_menu">FM context menu</a>.</p>
+<p>Double-click on a mission or press Enter when a mission is selected to play that mission. By default you will be asked for confirmation in this case; see <a href="#settings_play_on_dc_or_enter_ask">Play FM on double-click / Enter</a>.</p>
++ 
++ Press the Delete key while an FM is selected to delete that FM's archive from disk. You will be asked for confirmation first.
+
+<p>You can zoom the FMs list either with the zoom buttons on the top bar, or with <code>Ctrl++</code>,<code>Ctrl+-</code>, and <code>Ctrl+0</code>, or with Ctrl+mousewheel.
+```
+```diff
+<p><img src="images/fm_right_click_menu.png" /></p>
+
+Right-click on a fan mission in the list to bring up this menu.
+
+<h4>Play FM</h4>
+Plays the currently selected FM. If the FM is not installed, it will be installed automatically first.
+
+<h4>Play FM (multiplayer)</h4>
+This item will only appear if Thief2MP.exe was found in the Thief 2 directory. Clicking it will allow you to play the selected FM in multiplayer mode (requires NewDark 1.27 or later). If the FM is not installed, it will be installed automatically first.
+
+<h4>Install / Uninstall FM</h4>
+If the currently selected FM is not installed, this will install it; otherwise, it will uninstall it.
+
++ <h4>Delete FM archive</h4>
++ This will allow you to delete an FM's archive from disk. You can also press the Delete key while the FMs list is focused to achieve the same thing. In both cases, you will be asked for confirmation first.
+```
+
 ### v1.4.1:
 
 No localizable text changes.
