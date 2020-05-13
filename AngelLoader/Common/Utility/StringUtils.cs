@@ -262,7 +262,7 @@ namespace AngelLoader
         /// Format an FM archive name to conform to NewDarkLoader's FM install directory name requirements.
         /// </summary>
         /// <param name="archiveName">Filename without path or extension.</param>
-        /// <param name="truncate"></param>
+        /// <param name="truncate">Whether to truncate the name to 30 characters or less.</param>
         /// <returns></returns>
         internal static string ToInstDirNameNDL(this string archiveName, bool truncate = true) => ToInstDirName(archiveName, "+.~ ", truncate);
 
