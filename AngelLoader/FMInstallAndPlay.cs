@@ -141,7 +141,7 @@ namespace AngelLoader
             string args = !steamArgs.IsEmpty() ? steamArgs : "-fm";
 #endif
 
-            AddMissFlagFileIfRequired(fm);
+            GenerateMissFlagFileIfRequired(fm);
 
             WriteStubCommFile(fm, gamePath);
 
@@ -201,7 +201,7 @@ namespace AngelLoader
             SetCamCfgLanguage(gamePath, "");
 
             // Why not
-            AddMissFlagFileIfRequired(fm);
+            GenerateMissFlagFileIfRequired(fm);
 
             // We don't need the stub for DromEd, cause we don't need to pass anything except the fm folder
             StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"");
@@ -678,7 +678,7 @@ namespace AngelLoader
 
         #endregion
 
-        private static void AddMissFlagFileIfRequired(FanMission fm)
+        private static void GenerateMissFlagFileIfRequired(FanMission fm)
         {
             // Only T1 and T2 have/require missflag.str
             if (fm.Game != Game.Thief1 && fm.Game != Game.Thief2) return;
@@ -746,7 +746,7 @@ namespace AngelLoader
             }
             catch (Exception ex)
             {
-                Log(nameof(AddMissFlagFileIfRequired) + ": Exception trying to write missflag.str file", ex);
+                Log(nameof(GenerateMissFlagFileIfRequired) + ": Exception trying to write missflag.str file", ex);
                 return;
             }
         }
@@ -1320,7 +1320,7 @@ namespace AngelLoader
             }
 
             // Don't be lazy about this; there can be no harm and only benefits by doing it right away
-            AddMissFlagFileIfRequired(fm);
+            GenerateMissFlagFileIfRequired(fm);
 
             // TODO: Put up a "Restoring saves and screenshots" box here to avoid the "converting files" one lasting beyond its time?
             try
