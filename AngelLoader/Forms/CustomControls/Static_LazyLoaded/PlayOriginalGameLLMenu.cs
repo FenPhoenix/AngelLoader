@@ -4,7 +4,7 @@ using AngelLoader.DataClasses;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
-    // @GENGAMES
+    // @GENGAMES - Play original game menu
     internal static class PlayOriginalGameLLMenu
     {
         private static bool _constructed;

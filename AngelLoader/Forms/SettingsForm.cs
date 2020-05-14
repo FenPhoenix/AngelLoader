@@ -30,7 +30,7 @@ namespace AngelLoader.Forms
     -Page ctors - lazy-loading these would be a giant headache - not really worth it
     */
 
-    // @GENGAMES: There's game stuff in here of course
+    // @GENGAMES - SettingsForm: lots of manual game stuff in here. Good candidate for a massive gengames cleanup.
     internal sealed partial class SettingsForm : Form, IEventDisabler
     {
         #region Private fields
@@ -111,6 +111,7 @@ namespace AngelLoader.Forms
                 PathsPage.Thief2ExePathTextBox,
                 PathsPage.Thief3ExePathTextBox,
                 PathsPage.SS2ExePathTextBox,
+
                 PathsPage.SteamExeTextBox
             };
 
@@ -120,6 +121,7 @@ namespace AngelLoader.Forms
                 PathsPage.Thief2ExePathTextBox,
                 PathsPage.Thief3ExePathTextBox,
                 PathsPage.SS2ExePathTextBox,
+
                 PathsPage.SteamExeTextBox,
                 PathsPage.BackupPathTextBox
             };

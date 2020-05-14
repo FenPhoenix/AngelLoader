@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Importing;
+using static AngelLoader.GameSupport;
 
 namespace AngelLoader.Forms.Import
 {
@@ -58,14 +59,11 @@ namespace AngelLoader.Forms.Import
         {
             if (DialogResult != DialogResult.OK) return;
 
-            // TODO: @GENGAMES: Put these into an array
-            IniFiles = new List<string>
+            IniFiles = new List<string>(SupportedGameCount);
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                ImportControls.Thief1IniFile.Trim(),
-                ImportControls.Thief2IniFile.Trim(),
-                ImportControls.Thief3IniFile.Trim(),
-                ImportControls.SS2IniFile.Trim()
-            };
+                IniFiles.Add(ImportControls.GetIniFile((GameIndex)i));
+            }
 
             ImportTitle = ImportTitleCheckBox.Checked;
             ImportReleaseDate = ImportReleaseDateCheckBox.Checked;

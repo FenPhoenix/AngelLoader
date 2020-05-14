@@ -203,7 +203,7 @@ namespace AngelLoader
             if (!fm.Installed || !GameIsDark(fm.Game)) return (false, false);
 
             string gameExe = Config.GetGameExeUnsafe(fm.Game);
-            string gameName = GetGameNameFromGameType(fm.Game);
+            string gameName = GetLocalizedGameName(fm.Game);
             if (GameIsRunning(gameExe))
             {
                 Core.View.ShowAlert(

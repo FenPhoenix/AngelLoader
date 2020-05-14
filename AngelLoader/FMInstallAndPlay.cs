@@ -612,7 +612,7 @@ namespace AngelLoader
         {
             var failed = (Success: false, GameExe: "", GamePath: "");
 
-            string gameName = GetGameNameFromGameType(gameIndex);
+            string gameName = GetLocalizedGameName(gameIndex);
 
             string gameExe = Config.GetGameExe(gameIndex);
 
@@ -1233,7 +1233,7 @@ namespace AngelLoader
             AssertR(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
 
             string gameExe = Config.GetGameExeUnsafe(fm.Game);
-            string gameName = GetGameNameFromGameType(fm.Game);
+            string gameName = GetLocalizedGameName(fm.Game);
             if (!File.Exists(gameExe))
             {
                 Core.View.ShowAlert(gameName + ":\r\n" +
@@ -1488,7 +1488,7 @@ namespace AngelLoader
             }
 
             string gameExe = Config.GetGameExeUnsafe(fm.Game);
-            string gameName = GetGameNameFromGameType(fm.Game);
+            string gameName = GetLocalizedGameName(fm.Game);
             if (GameIsRunning(gameExe))
             {
                 Core.View.ShowAlert(

@@ -97,14 +97,6 @@ namespace AngelLoader
             internal const int GB = MB * 1024;
         }
 
-        [PublicAPI]
-        internal enum Selector
-        {
-            FMSel,
-            NewDarkLoader,
-            AngelLoader
-        }
-
         // Public for param accessibility reasons or whatever
         public enum ProgressTasks
         {
@@ -145,7 +137,7 @@ namespace AngelLoader
         internal static readonly string[]
         FMSupportedLanguages =
         {
-            "english",    // en, must be first
+            "english",    // en, eng (must be first)
             "czech",      // cz
             "dutch",      // nl
             "french",     // fr

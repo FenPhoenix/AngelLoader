@@ -374,8 +374,8 @@ namespace AngelLoader.Forms
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameTabsInOrder[i].Text = Config.UseShortGameTabNames
-                    ? GetShortGameNameFromGameType((GameIndex)i)
-                    : GetGameNameFromGameType((GameIndex)i);
+                    ? GetShortLocalizedGameName((GameIndex)i)
+                    : GetLocalizedGameName((GameIndex)i);
             }
 
             // Prevents the couple-pixel-high tab page from extending out too far and becoming visible
@@ -765,7 +765,7 @@ namespace AngelLoader.Forms
 #endif
 
             // -------- New games go here!
-            // @GENGAMES
+            // @GENGAMES - tabs and filter buttons
             GameTabsInOrder = new[]
             {
                 Thief1TabPage,
@@ -773,7 +773,6 @@ namespace AngelLoader.Forms
                 Thief3TabPage,
                 SS2TabPage
             };
-
             FilterByGameButtonsInOrder = new[]
             {
                 FilterByThief1Button,
@@ -972,7 +971,7 @@ namespace AngelLoader.Forms
             Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
-                await DisplaySelectedFM(true);
+                await DisplaySelectedFM(refreshReadme: true);
             }
 
             FMsDGV.Focus();
@@ -1295,7 +1294,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    FilterByGameButtonsInOrder[i].ToolTipText = GetGameNameFromGameType((GameIndex)i);
+                    FilterByGameButtonsInOrder[i].ToolTipText = GetLocalizedGameName((GameIndex)i);
                 }
 
                 FilterTitleLabel.Text = LText.FilterBar.Title;
@@ -1887,7 +1886,7 @@ namespace AngelLoader.Forms
                     // Fix: when resetting release date filter the readme wouldn't load for the selected FM
                     oldSelectedFM == null)
                 {
-                    await DisplaySelectedFM(true);
+                    await DisplaySelectedFM(refreshReadme: true);
                 }
             }
         }
@@ -2120,7 +2119,7 @@ namespace AngelLoader.Forms
                 if (selFM != null && FMsDGV.RowSelected() &&
                     selFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir)
                 {
-                    await DisplaySelectedFM(true);
+                    await DisplaySelectedFM(refreshReadme: true);
                 }
             }
         }
@@ -2256,7 +2255,7 @@ namespace AngelLoader.Forms
             ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
 
-        // @GENGAMES
+        // @GENGAMES - Play original game menu Click handler
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
             var item = (ToolStripMenuItem)sender;

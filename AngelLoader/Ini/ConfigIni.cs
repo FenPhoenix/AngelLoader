@@ -183,7 +183,7 @@ namespace AngelLoader
                     if (!ContainsColWithId(config, col)) config.Columns.Add(col);
                 }
                 #region Filter
-                // @GENGAMES
+                // @GENGAMES - Config reader - filter
                 else if (lineT.StartsWithFast_NoNullChecks("FilterTitle="))
                 {
                     config.Filter.Title = val;
@@ -433,7 +433,6 @@ namespace AngelLoader
                 {
                     config.GameTabsState.GetFilter(SS2).ShowUnsupported = val.EqualsTrue();
                 }
-
                 #endregion
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.EnableArticles) + "="))
                 {
@@ -565,6 +564,7 @@ namespace AngelLoader
                 {
                     config.LaunchGamesWithSteam = val.EqualsTrue();
                 }
+                // @GENGAMES - Config reader - Steam
                 else if (lineT.StartsWithFast_NoNullChecks("T1UseSteam="))
                 {
                     config.SetUseSteamSwitch(Thief1, val.EqualsTrue());
@@ -586,6 +586,7 @@ namespace AngelLoader
                     config.SteamExe = val.Trim();
                 }
                 #endregion
+                // @GENGAMES - Config reader - Exes
                 else if (lineT.StartsWithFast_NoNullChecks("T1Exe="))
                 {
                     config.SetGameExe(Thief1, val.Trim());
@@ -624,6 +625,7 @@ namespace AngelLoader
                         _ => Thief1
                     };
                 }
+                // @GENGAMES - Config reader - Selected FM pos infos
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMInstDir="))
                 {
                     config.GameTabsState.GetSelectedFM(Thief1).InstalledName = val;
@@ -910,7 +912,6 @@ namespace AngelLoader
         }
 
         // This is faster with reflection removed.
-        // @GENGAMES
         internal static void WriteConfigIni(ConfigData config, string fileName)
         {
             static string commaCombine<T>(List<T> list) where T : notnull
@@ -934,7 +935,7 @@ namespace AngelLoader
                 string ret = "";
 
                 // Hmm... doesn't make for good code, but fast...
-                // @GENGAMES
+                // @GENGAMES - Config writer - Comma combine game flags
                 bool notEmpty = false;
 
                 if ((games & Game.Thief1) == Game.Thief1)
@@ -1020,7 +1021,7 @@ namespace AngelLoader
 
                 sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
 
-                // @GENGAMES
+                // @GENGAMES - Config writer - Steam
                 // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
                 // read-only "IsOnSteam" bool and check it before writing/reading this
                 for (int i = 0; i < SupportedGameCount; i++)

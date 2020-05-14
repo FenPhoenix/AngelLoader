@@ -322,7 +322,7 @@ namespace AngelLoader.Forms.CustomControls
             // make sure those items' text is set correctly.
             FanMission? selFM = SelectedRows.Count > 0 ? GetSelectedFM() : null;
             bool sayInstall = selFM == null || !selFM.Installed;
-            // @GENGAMES
+            // @GENGAMES - Localize FM context menu - "sayShockEd"
             bool sayShockEd = selFM != null && selFM.Game == Game.SS2;
 
             #endregion

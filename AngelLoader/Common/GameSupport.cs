@@ -129,9 +129,9 @@ namespace AngelLoader
 
         #region Get game name from game type
 
-        internal static string GetGameNameFromGameType(GameIndex gameIndex) => GetGameNameFromGameType(GameIndexToGame(gameIndex));
+        internal static string GetLocalizedGameName(GameIndex gameIndex) => GetLocalizedGameName(GameIndexToGame(gameIndex));
 
-        internal static string GetGameNameFromGameType(Game game) => game switch
+        internal static string GetLocalizedGameName(Game game) => game switch
         {
             Game.Thief1 => LText.Global.Thief1,
             Game.Thief2 => LText.Global.Thief2,
@@ -140,9 +140,9 @@ namespace AngelLoader
             _ => "[UnknownGameType]"
         };
 
-        internal static string GetShortGameNameFromGameType(GameIndex gameIndex) => GetShortGameNameFromGameType(GameIndexToGame(gameIndex));
+        internal static string GetShortLocalizedGameName(GameIndex gameIndex) => GetShortLocalizedGameName(GameIndexToGame(gameIndex));
 
-        internal static string GetShortGameNameFromGameType(Game game) => game switch
+        internal static string GetShortLocalizedGameName(Game game) => game switch
         {
             Game.Thief1 => LText.Global.Thief1_Short,
             Game.Thief2 => LText.Global.Thief2_Short,
