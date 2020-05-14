@@ -1012,7 +1012,7 @@ namespace AngelLoader
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     GameIndex gameIndex = (GameIndex)i;
-                    sw.WriteLine(GetGameTypePrefix(gameIndex) + "Exe=" + config.GetGameExe(gameIndex).Trim());
+                    sw.WriteLine(GetGamePrefix(gameIndex) + "Exe=" + config.GetGameExe(gameIndex).Trim());
                 }
 
                 #endregion
@@ -1027,7 +1027,7 @@ namespace AngelLoader
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     GameIndex gameIndex = (GameIndex)i;
-                    sw.WriteLine(GetGameTypePrefix(gameIndex) + "UseSteam=" + config.GetUseSteamSwitch(gameIndex));
+                    sw.WriteLine(GetGamePrefix(gameIndex) + "UseSteam=" + config.GetUseSteamSwitch(gameIndex));
                 }
 
                 sw.WriteLine(nameof(config.SteamExe) + "=" + config.SteamExe);
@@ -1083,7 +1083,7 @@ namespace AngelLoader
                 for (int i = 0; i < SupportedGameCount + 1; i++)
                 {
                     Filter filter = i == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(i - 1));
-                    string p = i == 0 ? "" : GetGameTypePrefix((GameIndex)(i - 1));
+                    string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
 
                     if (i == 0) sw.WriteLine("FilterGames=" + commaCombineGameFlags(config.Filter.Games));
 
@@ -1162,7 +1162,7 @@ namespace AngelLoader
                 for (int i = 0; i < SupportedGameCount + 1; i++)
                 {
                     SelectedFM selFM = i == 0 ? config.SelFM : config.GameTabsState.GetSelectedFM((GameIndex)(i - 1));
-                    string p = i == 0 ? "" : GetGameTypePrefix((GameIndex)(i - 1));
+                    string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
 
                     sw.WriteLine(p + "SelFMInstDir=" + selFM.InstalledName);
                     sw.WriteLine(p + "SelFMIndexFromTop=" + selFM.IndexFromTop);

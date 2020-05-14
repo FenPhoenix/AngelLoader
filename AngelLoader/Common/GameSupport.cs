@@ -43,6 +43,16 @@ namespace AngelLoader
             SS2
         }
 
+        // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility. Don't change
+        // the existing values, only add new ones!
+        private static readonly string[] GamePrefixes =
+        {
+            "T1",
+            "T2",
+            "T3",
+            "SS2"
+        };
+
         private static readonly string[] SteamAppIds =
         {
             "211600", // Thief Gold
@@ -53,18 +63,9 @@ namespace AngelLoader
 
         #endregion
 
-        internal static string GetGameSteamId(GameIndex index) => SteamAppIds[(int)index];
+        internal static string GetGamePrefix(GameIndex index) => GamePrefixes[(int)index];
 
-        // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility. Don't change
-        // the existing values, only add new ones!
-        internal static string GetGameTypePrefix(GameIndex index) => index switch
-        {
-            GameIndex.Thief1 => "T1",
-            GameIndex.Thief2 => "T2",
-            GameIndex.Thief3 => "T3",
-            GameIndex.SS2 => "SS2",
-            _ => throw new ArgumentOutOfRangeException(nameof(index), ((uint)index).ToString(), nameof(GameIndex) + @" argument out of range.")
-        };
+        internal static string GetGameSteamId(GameIndex index) => SteamAppIds[(int)index];
 
         #region Conversion
 
