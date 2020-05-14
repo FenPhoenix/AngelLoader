@@ -2730,13 +2730,7 @@ namespace AngelLoader.Forms
             // We should never get here when FMsList.Count == 0, but hey
             if (FMsViewList.Count > 0) ScanAllFMsButton.Enabled = true;
 
-            // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
-            // Thief 3 difficulties: Easy, Normal, Hard, Expert
-            // SS2 difficulties: Easy, Normal, Hard, Impossible
-            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Normal, GetLocalizedDifficultyName(fm, Difficulty.Normal));
-            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Hard, GetLocalizedDifficultyName(fm, Difficulty.Hard));
-            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Expert, GetLocalizedDifficultyName(fm, Difficulty.Expert));
-            FMsDGV.SetFinishedOnMenuItemText(Difficulty.Extreme, GetLocalizedDifficultyName(fm, Difficulty.Extreme));
+            FMsDGV.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
             // FinishedOnUnknownMenuItem text stays the same
 
             bool gameIsSupported = GameIsKnownAndSupported(fm.Game);

@@ -364,10 +364,7 @@ namespace AngelLoader.Forms.CustomControls
 
             FinishedOnMenuItem!.Text = LText.FMsList.FMMenu_FinishedOn.EscapeAmpersands();
 
-            FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Normal).EscapeAmpersands();
-            FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Hard).EscapeAmpersands();
-            FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Expert).EscapeAmpersands();
-            FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(selFM, Difficulty.Extreme).EscapeAmpersands();
+            SetGameSpecificFinishedOnMenuItemsText(selFM?.Game ?? Game.Null);
             FinishedOnUnknownMenuItem!.Text = LText.Difficulties.Unknown.EscapeAmpersands();
 
             #endregion
@@ -565,23 +562,17 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetFinishedOnMenuItemText(Difficulty difficulty, string text)
+        // Thief 1+2 difficulties: Normal, Hard, Expert, Extreme ("Extreme" is for DarkLoader compatibility)
+        // Thief 3 difficulties: Easy, Normal, Hard, Expert
+        // SS2 difficulties: Easy, Normal, Hard, Impossible
+        internal void SetGameSpecificFinishedOnMenuItemsText(Game game)
         {
-            switch (difficulty)
-            {
-                case Difficulty.Normal:
-                    if (_fmMenuConstructed) FinishedOnNormalMenuItem!.Text = text;
-                    break;
-                case Difficulty.Hard:
-                    if (_fmMenuConstructed) FinishedOnHardMenuItem!.Text = text;
-                    break;
-                case Difficulty.Expert:
-                    if (_fmMenuConstructed) FinishedOnExpertMenuItem!.Text = text;
-                    break;
-                case Difficulty.Extreme:
-                    if (_fmMenuConstructed) FinishedOnExtremeMenuItem!.Text = text;
-                    break;
-            }
+            if (!_fmMenuConstructed) return;
+
+            FinishedOnNormalMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Normal).EscapeAmpersands();
+            FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Hard).EscapeAmpersands();
+            FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Expert).EscapeAmpersands();
+            FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Extreme).EscapeAmpersands();
         }
 
         internal void SetFinishedOnUnknownMenuItemChecked(bool value)

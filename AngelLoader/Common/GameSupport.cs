@@ -101,17 +101,31 @@ namespace AngelLoader
 
         #endregion
 
-        internal static string GetLocalizedDifficultyName(FanMission? fm, Difficulty difficulty)
+        internal static string GetLocalizedDifficultyName(Game game, Difficulty difficulty)
         {
-            bool fmIsT3 = fm != null && fm.Game == Game.Thief3;
-            bool fmIsSS2 = fm != null && fm.Game == Game.SS2;
-
-            return difficulty switch
+            // More verbose but also more clear
+            return game == Game.Thief3 ? difficulty switch
             {
-                Difficulty.Normal => fmIsT3 || fmIsSS2 ? LText.Difficulties.Easy : LText.Difficulties.Normal,
-                Difficulty.Hard => fmIsT3 || fmIsSS2 ? LText.Difficulties.Normal : LText.Difficulties.Hard,
-                Difficulty.Expert => fmIsT3 || fmIsSS2 ? LText.Difficulties.Hard : LText.Difficulties.Expert,
-                Difficulty.Extreme => fmIsT3 ? LText.Difficulties.Expert : fmIsSS2 ? LText.Difficulties.Impossible : LText.Difficulties.Extreme,
+                Difficulty.Normal => LText.Difficulties.Easy,
+                Difficulty.Hard => LText.Difficulties.Normal,
+                Difficulty.Expert => LText.Difficulties.Hard,
+                Difficulty.Extreme => LText.Difficulties.Expert,
+                _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
+            }
+            : game == Game.SS2 ? difficulty switch
+            {
+                Difficulty.Normal => LText.Difficulties.Easy,
+                Difficulty.Hard => LText.Difficulties.Normal,
+                Difficulty.Expert => LText.Difficulties.Hard,
+                Difficulty.Extreme => LText.Difficulties.Impossible,
+                _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
+            }
+            : difficulty switch
+            {
+                Difficulty.Normal => LText.Difficulties.Normal,
+                Difficulty.Hard => LText.Difficulties.Hard,
+                Difficulty.Expert => LText.Difficulties.Expert,
+                Difficulty.Extreme => LText.Difficulties.Extreme,
                 _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
             };
         }
