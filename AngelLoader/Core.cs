@@ -682,7 +682,7 @@ namespace AngelLoader
             viewFilter.Title = View.GetTitleFilter();
             viewFilter.Author = View.GetAuthorFilter();
 
-            bool[] gameFiltersChecked = View.GetGameFilters();
+            bool[] gameFiltersChecked = View.GetGameFiltersEnabledStates();
             viewFilter.Games = Game.Null;
             for (int i = 0; i < SupportedGameCount; i++)
             {

@@ -127,7 +127,7 @@ namespace AngelLoader.Forms
         public string GetTitleFilter() => FilterTitleTextBox.Text;
         public string GetAuthorFilter() => FilterAuthorTextBox.Text;
 
-        public bool[] GetGameFilters()
+        public bool[] GetGameFiltersEnabledStates()
         {
             bool[] gamesChecked = new bool[SupportedGameCount];
 

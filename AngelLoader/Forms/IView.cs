@@ -44,7 +44,7 @@ namespace AngelLoader.Forms
         Filter GetFilter();
         string GetTitleFilter();
         string GetAuthorFilter();
-        bool[] GetGameFilters();
+        bool[] GetGameFiltersEnabledStates();
         bool GetFinishedFilter();
         bool GetUnfinishedFilter();
         bool GetShowUnsupportedFilter();
