@@ -55,7 +55,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm : Form, IView, IEventDisabler, IKeyPressDisabler, IMessageFilter
+    public partial class MainForm : Form, IView, IKeyPressDisabler, IMessageFilter
     {
         // We don't need to dispose anything on here really, because the app closes when the form closes, so
         // Windows will dispose it all anyway
