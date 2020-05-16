@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms
 {
-    public sealed partial class MessageBoxCustomForm : Form, Misc.ILocalizable
+    public sealed partial class MessageBoxCustomForm : Form
     {
         #region P/Invoke crap
 
@@ -238,7 +238,7 @@ namespace AngelLoader.Forms
             }
         }
 
-        public void Localize()
+        private void Localize()
         {
             if (_multiChoice)
             {
