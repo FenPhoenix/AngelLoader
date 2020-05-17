@@ -4,7 +4,7 @@ using AngelLoader.DataClasses;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {
-    // @GENGAMES - Play original game menu
+    // @GENGAMES (Play original game menu): Begin
     internal static class PlayOriginalGameLLMenu
     {
         private static bool _constructed;
@@ -94,4 +94,5 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             SS2MenuItem.Text = LText.Global.SystemShock2.EscapeAmpersands();
         }
     }
+    // @GENGAMES (Play original game menu): End
 }

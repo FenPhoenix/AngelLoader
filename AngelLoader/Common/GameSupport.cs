@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader
 {
-    // @GENGAMES: The main location to add games
+    // @GENGAMES (GameSupport): Begin
     [PublicAPI]
     internal static class GameSupport
     {
@@ -130,7 +130,7 @@ namespace AngelLoader
             };
         }
 
-        // @GENGAMES: Do a hard convert at the API boundary, even though these now match the ordering
+        // Do a hard convert at the API boundary, even though these now match the ordering
         // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
         internal static Game ScannerGameToGame(FMScanner.Game scannerGame) => scannerGame switch
         {
@@ -187,4 +187,5 @@ namespace AngelLoader
 
         #endregion
     }
+    // @GENGAMES (GameSupport): End
 }

@@ -765,7 +765,7 @@ namespace AngelLoader.Forms
 #endif
 
             // -------- New games go here!
-            // @GENGAMES - tabs and filter buttons
+            // @GENGAMES (tabs and filter buttons): Begin
             GameTabsInOrder = new[]
             {
                 Thief1TabPage,
@@ -780,6 +780,7 @@ namespace AngelLoader.Forms
                 FilterByThief3Button,
                 FilterBySS2Button
             };
+            // @GENGAMES (tabs and filter buttons): End
 
             // Putting these into a list whose order matches the enum allows us to just iterate the list without
             // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
@@ -1921,11 +1922,13 @@ namespace AngelLoader.Forms
             // The arrays are obstacles to lazy-loading, but see if we still get good scrolling perf when we look
             // them up and load the individual images as needed, rather than all at once here
 
-            // @GENGAMES: We would prefer to put these in an array, but see Images class for why we can't really do that
+            // @GENGAMES (Game icons for FMs list): Begin
+            // We would prefer to put these in an array, but see Images class for why we can't really do that
             GameIcons[(int)Thief1] = Images.Thief1_21;
             GameIcons[(int)Thief2] = Images.Thief2_21;
             GameIcons[(int)Thief3] = Images.Thief3_21;
             GameIcons[(int)SS2] = Images.Shock2_21;
+            // @GENGAMES (Game icons for FMs list): End
 
             BlankIcon = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
             CheckIcon = Resources.CheckCircle;
@@ -2240,7 +2243,8 @@ namespace AngelLoader.Forms
 
         #region Play original game
 
-        // @GENGAMES: Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
+        // @GENGAMES (Play original game menu event handlers): Begin
+        // Because of the T2MP menu item breaking up the middle there, we can't array/index these menu items.
         // Just gonna have to leave this part as-is.
         private void PlayOriginalGameButton_Click(object sender, EventArgs e)
         {
@@ -2255,7 +2259,6 @@ namespace AngelLoader.Forms
             ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
 
-        // @GENGAMES - Play original game menu Click handler
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
             var item = (ToolStripMenuItem)sender;
@@ -2270,6 +2273,7 @@ namespace AngelLoader.Forms
 
             FMInstallAndPlay.PlayOriginalGame(game, playMP);
         }
+        // @GENGAMES (Play original game menu event handlers): End
 
         #endregion
 

@@ -183,7 +183,7 @@ namespace AngelLoader
                     if (!ContainsColWithId(config, col)) config.Columns.Add(col);
                 }
                 #region Filter
-                // @GENGAMES - Config reader - filter
+                // @GENGAMES (Config reader - Filter): Begin
                 else if (lineT.StartsWithFast_NoNullChecks("FilterTitle="))
                 {
                     config.Filter.Title = val;
@@ -433,6 +433,7 @@ namespace AngelLoader
                 {
                     config.GameTabsState.GetFilter(SS2).ShowUnsupported = val.EqualsTrue();
                 }
+                // @GENGAMES (Config reader - Filter): End
                 #endregion
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.EnableArticles) + "="))
                 {
@@ -564,7 +565,7 @@ namespace AngelLoader
                 {
                     config.LaunchGamesWithSteam = val.EqualsTrue();
                 }
-                // @GENGAMES - Config reader - Steam
+                // @GENGAMES (Config reader - Steam): Begin
                 else if (lineT.StartsWithFast_NoNullChecks("T1UseSteam="))
                 {
                     config.SetUseSteamSwitch(Thief1, val.EqualsTrue());
@@ -585,8 +586,9 @@ namespace AngelLoader
                 {
                     config.SteamExe = val.Trim();
                 }
+                // @GENGAMES (Config reader - Steam): End
                 #endregion
-                // @GENGAMES - Config reader - Exes
+                // @GENGAMES (Config reader - Exes): Begin
                 else if (lineT.StartsWithFast_NoNullChecks("T1Exe="))
                 {
                     config.SetGameExe(Thief1, val.Trim());
@@ -603,6 +605,7 @@ namespace AngelLoader
                 {
                     config.SetGameExe(SS2, val.Trim());
                 }
+                // @GENGAMES (Config reader - Exes): End
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.GameOrganization) + "="))
                 {
                     var field = typeof(GameOrganization).GetField(val, BFlagsEnum);
@@ -625,7 +628,7 @@ namespace AngelLoader
                         _ => Thief1
                     };
                 }
-                // @GENGAMES - Config reader - Selected FM pos infos
+                // @GENGAMES (Config reader - Selected FM pos infos): Begin
                 else if (lineT.StartsWithFast_NoNullChecks("T1SelFMInstDir="))
                 {
                     config.GameTabsState.GetSelectedFM(Thief1).InstalledName = val;
@@ -681,6 +684,7 @@ namespace AngelLoader
                         config.SelFM.IndexFromTop = result;
                     }
                 }
+                // @GENGAMES (Config reader - Selected FM pos infos): End
                 else if (lineT.StartsWithFast_NoNullChecks(nameof(config.DateFormat) + "="))
                 {
                     var field = typeof(DateFormat).GetField(val, BFlagsEnum);
@@ -935,7 +939,7 @@ namespace AngelLoader
                 string ret = "";
 
                 // Hmm... doesn't make for good code, but fast...
-                // @GENGAMES - Config writer - Comma combine game flags
+                // @GENGAMES (Config writer - Comma combine game flags): Begin
                 bool notEmpty = false;
 
                 if ((games & Game.Thief1) == Game.Thief1)
@@ -960,6 +964,7 @@ namespace AngelLoader
                     if (notEmpty) ret += ",";
                     ret += nameof(Game.SS2);
                 }
+                // @GENGAMES (Config writer - Comma combine game flags): End
 
                 return ret;
             }
@@ -1021,7 +1026,7 @@ namespace AngelLoader
 
                 sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
 
-                // @GENGAMES - Config writer - Steam
+                // @GENGAMES (Config writer - Steam): Begin
                 // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
                 // read-only "IsOnSteam" bool and check it before writing/reading this
                 for (int i = 0; i < SupportedGameCount; i++)
@@ -1029,6 +1034,7 @@ namespace AngelLoader
                     GameIndex gameIndex = (GameIndex)i;
                     sw.WriteLine(GetGamePrefix(gameIndex) + "UseSteam=" + config.GetUseSteamSwitch(gameIndex));
                 }
+                // @GENGAMES (Config writer - Steam): End
 
                 sw.WriteLine(nameof(config.SteamExe) + "=" + config.SteamExe);
 

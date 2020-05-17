@@ -84,7 +84,7 @@ Example: English should be English, French should be Français, etc.")]
             internal static string MegabyteShort = "MB";
             internal static string GigabyteShort = "GB";
             [FenGenBlankLine]
-            // @GENGAMES: Add the main stuff here
+            // @GENGAMES (Localization - Global): Begin
             internal static string Thief1 = "Thief 1";
             internal static string Thief2 = "Thief 2";
             internal static string Thief3 = "Thief 3";
@@ -99,6 +99,7 @@ Example: English should be English, French should be Français, etc.")]
             internal static string Thief2_Colon = "Thief 2:";
             internal static string Thief3_Colon = "Thief 3:";
             internal static string SystemShock2_Colon = "System Shock 2:";
+            // @GENGAMES (Localization - Global): End
         }
 
         internal static class BrowseDialogs
@@ -156,7 +157,9 @@ Example: English should be English, French should be Français, etc.")]
             internal static string ShockEd_ExecutableNotFound = "ShockEd.exe was not found in the game directory. Unable to open FM.";
             internal static string DromEd_UnknownGameType = "Selected FM's game type is not known. The FM is either not scanned or is not an FM. Unable to open FM.";
             [FenGenBlankLine]
+            // @GENGAMES (Localization - Alerts - Dark multiplayer): Begin
             internal static string Thief2_Multiplayer_ExecutableNotFound = "Thief2MP.exe was not found in the game directory. Unable to play FM in multiplayer mode.";
+            // @GENGAMES (Localization - Alerts - Dark multiplayer): End
             [FenGenBlankLine]
             internal static string Patch_AddDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to add patch.";
             internal static string Patch_AddDML_UnableToAdd = "Unable to add patch to fan mission folder.";
@@ -269,7 +272,9 @@ Example: English should be English, French should be Français, etc.")]
             [FenGenBlankLine]
             internal static string CustomResources = "Custom resources:";
             internal static string CustomResourcesNotScanned = "Custom resources not scanned.";
+            // @GENGAMES (Localization - Custom resource detection not supported): Begin
             internal static string CustomResourcesNotSupportedForThief3 = "Custom resource detection is not supported for Thief 3 FMs.";
+            // @GENGAMES (Localization - Custom resource detection not supported): End
             internal static string NoFMSelected = "No FM selected.";
             [FenGenBlankLine]
             internal static string Map = "Map";
@@ -392,8 +397,10 @@ Example: English should be English, French should be Français, etc.")]
             internal static string InitialSettings_TabText = "Initial Settings";
             [FenGenBlankLine]
             internal static string Paths_PathsToGameExes = "Paths to game executables";
+            // @GENGAMES (Localization - SettingsWindow - exe paths): Begin
             internal static string Paths_DarkEngineGamesRequireNewDark = "* Thief 1, Thief 2 and System Shock 2 require NewDark.";
             internal static string Paths_Thief3RequiresSneakyUpgrade = "* Thief 3 requires the Sneaky Upgrade 1.1.9.1 or above.";
+            // @GENGAMES (Localization - SettingsWindow - exe paths): End
             [FenGenBlankLine]
             internal static string Paths_SteamOptions = "Steam options";
             internal static string Paths_PathToSteamExecutable = "Path to Steam executable (optional):";

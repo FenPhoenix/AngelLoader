@@ -145,11 +145,14 @@ namespace AngelLoader.DataClasses
 
         internal string SteamExe = "";
 
-        // @GENGAMES: Miscellaneous game-specific stuff
+        // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): Begin
+        
         // New for T2 NewDark 1.27: Multiplayer support (beta, and T2 only)
         internal bool T2MPDetected = false;
-
+        
         internal bool T3UseCentralSaves = false;
+        
+        // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): End
 
         #endregion
 
