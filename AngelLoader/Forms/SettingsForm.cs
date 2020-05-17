@@ -8,12 +8,12 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.SettingsPages;
-using AngelLoader.DataClasses;
 using AngelLoader.WinAPI.Dialogs;
 using static AngelLoader.Forms.CustomControls.SettingsPages.Interfaces;
-using static AngelLoader.GameSupport.GameIndex;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -30,7 +30,6 @@ namespace AngelLoader.Forms
     -Page ctors - lazy-loading these would be a giant headache - not really worth it
     */
 
-    // @GENGAMES - SettingsForm: lots of manual game stuff in here. Good candidate for a massive gengames cleanup.
     internal sealed partial class SettingsForm : Form, IEventDisabler
     {
         #region Private fields
@@ -55,6 +54,11 @@ namespace AngelLoader.Forms
 
         private readonly TextBox[] ExePathTextBoxes;
         private readonly TextBox[] ErrorableTextBoxes;
+
+        private readonly Label[] GameExeLabels;
+        private readonly TextBox[] GameExeTextBoxes;
+        private readonly Button[] GameExeBrowseButtons;
+        private readonly CheckBox[] GameUseSteamCheckBoxes;
 
         #endregion
 
@@ -105,26 +109,63 @@ namespace AngelLoader.Forms
             LangGroupBox = OtherPage.LanguageGroupBox;
             LangComboBox = OtherPage.LanguageComboBox;
 
-            ExePathTextBoxes = new[]
+            // @GENGAMES (Settings): Begin
+            GameExeLabels = new[]
+            {
+                PathsPage.Thief1ExePathLabel,
+                PathsPage.Thief2ExePathLabel,
+                PathsPage.Thief3ExePathLabel,
+                PathsPage.SS2ExePathLabel
+            };
+            GameExeTextBoxes = new[]
             {
                 PathsPage.Thief1ExePathTextBox,
                 PathsPage.Thief2ExePathTextBox,
                 PathsPage.Thief3ExePathTextBox,
-                PathsPage.SS2ExePathTextBox,
-
-                PathsPage.SteamExeTextBox
+                PathsPage.SS2ExePathTextBox
             };
-
-            ErrorableTextBoxes = new[]
+            GameExeBrowseButtons = new[]
             {
-                PathsPage.Thief1ExePathTextBox,
-                PathsPage.Thief2ExePathTextBox,
-                PathsPage.Thief3ExePathTextBox,
-                PathsPage.SS2ExePathTextBox,
-
-                PathsPage.SteamExeTextBox,
-                PathsPage.BackupPathTextBox
+                PathsPage.Thief1ExePathBrowseButton,
+                PathsPage.Thief2ExePathBrowseButton,
+                PathsPage.Thief3ExePathBrowseButton,
+                PathsPage.SS2ExePathBrowseButton
             };
+            GameUseSteamCheckBoxes = new[]
+            {
+                PathsPage.Thief1UseSteamCheckBox,
+                PathsPage.Thief2UseSteamCheckBox,
+                PathsPage.Thief3UseSteamCheckBox,
+                PathsPage.SS2UseSteamCheckBox
+            };
+
+            // TODO: @GENGAMES (Settings): We've traded one form of jank for another
+            // In our quest to be fast and lean, we're using arrays instead of lists here. That means we have to
+            // do this hideous SupportedGameCount + n thing instead of just being able to say AddRange(games)
+            // then Add(whatever else) afterwards.
+            // Still, this jank is now at least localized to this one small area and we'll know immediately if we
+            // get it wrong (we'll crash on OOB).
+
+            #region Exe path textboxes
+
+            ExePathTextBoxes = new TextBox[SupportedGameCount + 1];
+            Array.Copy(GameExeTextBoxes, 0, ExePathTextBoxes, 0, SupportedGameCount);
+
+            ExePathTextBoxes[SupportedGameCount] = PathsPage.SteamExeTextBox;
+
+            #endregion
+
+            #region Errorable textboxes
+
+            ErrorableTextBoxes = new TextBox[SupportedGameCount + 2];
+            Array.Copy(GameExeTextBoxes, 0, ErrorableTextBoxes, 0, SupportedGameCount);
+
+            ErrorableTextBoxes[SupportedGameCount] = PathsPage.SteamExeTextBox;
+            ErrorableTextBoxes[SupportedGameCount + 1] = PathsPage.BackupPathTextBox;
+
+            #endregion
+
+            // @GENGAMES (Settings): End
 
             PageRadioButtons = new[] { PathsRadioButton, FMDisplayRadioButton, OtherRadioButton };
 
@@ -233,18 +274,16 @@ namespace AngelLoader.Forms
 
             #region Paths page
 
-            PathsPage.Thief1ExePathTextBox.Text = config.GetGameExe(Thief1);
-            PathsPage.Thief2ExePathTextBox.Text = config.GetGameExe(Thief2);
-            PathsPage.Thief3ExePathTextBox.Text = config.GetGameExe(Thief3);
-            PathsPage.SS2ExePathTextBox.Text = config.GetGameExe(SS2);
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                GameExeTextBoxes[i].Text = config.GetGameExe(gameIndex);
+                GameUseSteamCheckBoxes[i].Checked = config.GetUseSteamSwitch(gameIndex);
+            }
 
             PathsPage.SteamExeTextBox.Text = config.SteamExe;
             PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
             PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked = config.LaunchGamesWithSteam;
-            PathsPage.T1UseSteamCheckBox.Checked = config.GetUseSteamSwitch(Thief1);
-            PathsPage.T2UseSteamCheckBox.Checked = config.GetUseSteamSwitch(Thief2);
-            PathsPage.T3UseSteamCheckBox.Checked = config.GetUseSteamSwitch(Thief3);
-            PathsPage.SS2UseSteamCheckBox.Checked = config.GetUseSteamSwitch(SS2);
             SetUseSteamGameCheckBoxesEnabled(config.LaunchGamesWithSteam);
 
             PathsPage.BackupPathTextBox.Text = config.FMsBackupPath;
@@ -422,15 +461,11 @@ namespace AngelLoader.Forms
             // Comes last so we don't have to use any DisableEvents blocks
             #region Hook up page events
 
-            PathsPage.Thief1ExePathTextBox.Leave += ExePathTextBoxes_Leave;
-            PathsPage.Thief2ExePathTextBox.Leave += ExePathTextBoxes_Leave;
-            PathsPage.Thief3ExePathTextBox.Leave += ExePathTextBoxes_Leave;
-            PathsPage.SS2ExePathTextBox.Leave += ExePathTextBoxes_Leave;
-
-            PathsPage.Thief1ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
-            PathsPage.Thief2ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
-            PathsPage.Thief3ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
-            PathsPage.SS2ExePathBrowseButton.Click += ExePathBrowseButtons_Click;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameExeTextBoxes[i].Leave += ExePathTextBoxes_Leave;
+                GameExeBrowseButtons[i].Click += ExePathBrowseButtons_Click;
+            }
 
             PathsPage.SteamExeTextBox.Leave += ExePathTextBoxes_Leave;
             PathsPage.LaunchTheseGamesThroughSteamCheckBox.CheckedChanged += LaunchTheseGamesThroughSteamCheckBox_CheckedChanged;
@@ -493,10 +528,10 @@ namespace AngelLoader.Forms
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
         {
-            PathsPage.T1UseSteamCheckBox.Enabled = enabled;
-            PathsPage.T2UseSteamCheckBox.Enabled = enabled;
-            PathsPage.T3UseSteamCheckBox.Enabled = enabled;
-            PathsPage.SS2UseSteamCheckBox.Enabled = enabled;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameUseSteamCheckBoxes[i].Enabled = enabled;
+            }
         }
 
         private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -520,28 +555,23 @@ namespace AngelLoader.Forms
                     ? LText.SettingsWindow.InitialSettings_TabText
                     : LText.SettingsWindow.Paths_TabText;
 
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    GameExeLabels[i].Text = GetLocalizedGameNameColon(gameIndex);
+                    GameUseSteamCheckBoxes[i].Text = GetLocalizedGameName(gameIndex);
+                    GameExeBrowseButtons[i].SetTextAutoSize(GameExeTextBoxes[i], LText.Global.BrowseEllipses);
+                }
+
                 PathsPage.PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
-                PathsPage.Thief1ExePathLabel.Text = LText.Global.Thief1_Colon;
-                PathsPage.Thief2ExePathLabel.Text = LText.Global.Thief2_Colon;
-                PathsPage.Thief3ExePathLabel.Text = LText.Global.Thief3_Colon;
-                PathsPage.SS2ExePathLabel.Text = LText.Global.SystemShock2_Colon;
 
                 PathsPage.SteamOptionsGroupBox.Text = LText.SettingsWindow.Paths_SteamOptions;
                 PathsPage.SteamExeLabel.Text = LText.SettingsWindow.Paths_PathToSteamExecutable;
                 PathsPage.LaunchTheseGamesThroughSteamCheckBox.Text = LText.SettingsWindow.Paths_LaunchTheseGamesThroughSteam;
-                PathsPage.T1UseSteamCheckBox.Text = LText.Global.Thief1;
-                PathsPage.T2UseSteamCheckBox.Text = LText.Global.Thief2;
-                PathsPage.T3UseSteamCheckBox.Text = LText.Global.Thief3;
-                PathsPage.SS2UseSteamCheckBox.Text = LText.Global.SystemShock2;
 
                 PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
-                // Manual "flow layout" for textbox/browse button combos
-                PathsPage.Thief1ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief1ExePathTextBox, LText.Global.BrowseEllipses);
-                PathsPage.Thief2ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief2ExePathTextBox, LText.Global.BrowseEllipses);
-                PathsPage.Thief3ExePathBrowseButton.SetTextAutoSize(PathsPage.Thief3ExePathTextBox, LText.Global.BrowseEllipses);
-                PathsPage.SS2ExePathBrowseButton.SetTextAutoSize(PathsPage.SS2ExePathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
 
@@ -737,17 +767,15 @@ namespace AngelLoader.Forms
 
             #region Paths page
 
-            OutConfig.SetGameExe(Thief1, PathsPage.Thief1ExePathTextBox.Text.Trim());
-            OutConfig.SetGameExe(Thief2, PathsPage.Thief2ExePathTextBox.Text.Trim());
-            OutConfig.SetGameExe(Thief3, PathsPage.Thief3ExePathTextBox.Text.Trim());
-            OutConfig.SetGameExe(SS2, PathsPage.SS2ExePathTextBox.Text.Trim());
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gameIndex = (GameIndex)i;
+                OutConfig.SetGameExe(gameIndex, GameExeTextBoxes[i].Text.Trim());
+                OutConfig.SetUseSteamSwitch(gameIndex, GameUseSteamCheckBoxes[i].Checked);
+            }
 
             OutConfig.SteamExe = PathsPage.SteamExeTextBox.Text.Trim();
             OutConfig.LaunchGamesWithSteam = PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked;
-            OutConfig.SetUseSteamSwitch(Thief1, PathsPage.T1UseSteamCheckBox.Checked);
-            OutConfig.SetUseSteamSwitch(Thief2, PathsPage.T2UseSteamCheckBox.Checked);
-            OutConfig.SetUseSteamSwitch(Thief3, PathsPage.T3UseSteamCheckBox.Checked);
-            OutConfig.SetUseSteamSwitch(SS2, PathsPage.SS2UseSteamCheckBox.Checked);
 
             OutConfig.FMsBackupPath = PathsPage.BackupPathTextBox.Text.Trim();
 
@@ -977,12 +1005,16 @@ namespace AngelLoader.Forms
 
         private void ExePathBrowseButtons_Click(object sender, EventArgs e)
         {
-            var tb =
-                sender == PathsPage.Thief1ExePathBrowseButton ? PathsPage.Thief1ExePathTextBox :
-                sender == PathsPage.Thief2ExePathBrowseButton ? PathsPage.Thief2ExePathTextBox :
-                sender == PathsPage.Thief3ExePathBrowseButton ? PathsPage.Thief3ExePathTextBox :
-                sender == PathsPage.SS2ExePathBrowseButton ? PathsPage.SS2ExePathTextBox :
-                PathsPage.SteamExeTextBox;
+            TextBox? tb = null;
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (sender == GameExeBrowseButtons[i])
+                {
+                    tb = GameExeTextBoxes[i];
+                    break;
+                }
+            }
+            tb ??= PathsPage.SteamExeTextBox;
 
             string initialPath = "";
             try

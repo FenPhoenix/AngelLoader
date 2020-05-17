@@ -33,10 +33,10 @@
             this.SteamOptionsGroupBox = new System.Windows.Forms.GroupBox();
             this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
             this.LaunchTheseGamesThroughSteamCheckBox = new System.Windows.Forms.CheckBox();
-            this.T1UseSteamCheckBox = new System.Windows.Forms.CheckBox();
+            this.Thief1UseSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.SS2UseSteamCheckBox = new System.Windows.Forms.CheckBox();
-            this.T3UseSteamCheckBox = new System.Windows.Forms.CheckBox();
-            this.T2UseSteamCheckBox = new System.Windows.Forms.CheckBox();
+            this.Thief3UseSteamCheckBox = new System.Windows.Forms.CheckBox();
+            this.Thief2UseSteamCheckBox = new System.Windows.Forms.CheckBox();
             this.SteamExeLabel = new System.Windows.Forms.Label();
             this.SteamExeTextBox = new System.Windows.Forms.TextBox();
             this.SteamExeBrowseButton = new System.Windows.Forms.Button();
@@ -118,10 +118,10 @@
             // LaunchTheseGamesThroughSteamPanel
             // 
             this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.LaunchTheseGamesThroughSteamCheckBox);
-            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.T1UseSteamCheckBox);
+            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.Thief1UseSteamCheckBox);
             this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.SS2UseSteamCheckBox);
-            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.T3UseSteamCheckBox);
-            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.T2UseSteamCheckBox);
+            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.Thief3UseSteamCheckBox);
+            this.LaunchTheseGamesThroughSteamPanel.Controls.Add(this.Thief2UseSteamCheckBox);
             this.LaunchTheseGamesThroughSteamPanel.Enabled = false;
             this.LaunchTheseGamesThroughSteamPanel.Location = new System.Drawing.Point(16, 72);
             this.LaunchTheseGamesThroughSteamPanel.Name = "LaunchTheseGamesThroughSteamPanel";
@@ -142,15 +142,15 @@
             // 
             // T1UseSteamCheckBox
             // 
-            this.T1UseSteamCheckBox.AutoSize = true;
-            this.T1UseSteamCheckBox.Checked = true;
-            this.T1UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.T1UseSteamCheckBox.Location = new System.Drawing.Point(8, 24);
-            this.T1UseSteamCheckBox.Name = "T1UseSteamCheckBox";
-            this.T1UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T1UseSteamCheckBox.TabIndex = 1;
-            this.T1UseSteamCheckBox.Text = "Thief 1";
-            this.T1UseSteamCheckBox.UseVisualStyleBackColor = true;
+            this.Thief1UseSteamCheckBox.AutoSize = true;
+            this.Thief1UseSteamCheckBox.Checked = true;
+            this.Thief1UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Thief1UseSteamCheckBox.Location = new System.Drawing.Point(8, 24);
+            this.Thief1UseSteamCheckBox.Name = "Thief1UseSteamCheckBox";
+            this.Thief1UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
+            this.Thief1UseSteamCheckBox.TabIndex = 1;
+            this.Thief1UseSteamCheckBox.Text = "Thief 1";
+            this.Thief1UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
             // SS2UseSteamCheckBox
             // 
@@ -166,27 +166,27 @@
             // 
             // T3UseSteamCheckBox
             // 
-            this.T3UseSteamCheckBox.AutoSize = true;
-            this.T3UseSteamCheckBox.Checked = true;
-            this.T3UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.T3UseSteamCheckBox.Location = new System.Drawing.Point(8, 56);
-            this.T3UseSteamCheckBox.Name = "T3UseSteamCheckBox";
-            this.T3UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T3UseSteamCheckBox.TabIndex = 3;
-            this.T3UseSteamCheckBox.Text = "Thief 3";
-            this.T3UseSteamCheckBox.UseVisualStyleBackColor = true;
+            this.Thief3UseSteamCheckBox.AutoSize = true;
+            this.Thief3UseSteamCheckBox.Checked = true;
+            this.Thief3UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Thief3UseSteamCheckBox.Location = new System.Drawing.Point(8, 56);
+            this.Thief3UseSteamCheckBox.Name = "Thief3UseSteamCheckBox";
+            this.Thief3UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
+            this.Thief3UseSteamCheckBox.TabIndex = 3;
+            this.Thief3UseSteamCheckBox.Text = "Thief 3";
+            this.Thief3UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
             // T2UseSteamCheckBox
             // 
-            this.T2UseSteamCheckBox.AutoSize = true;
-            this.T2UseSteamCheckBox.Checked = true;
-            this.T2UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.T2UseSteamCheckBox.Location = new System.Drawing.Point(8, 40);
-            this.T2UseSteamCheckBox.Name = "T2UseSteamCheckBox";
-            this.T2UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.T2UseSteamCheckBox.TabIndex = 2;
-            this.T2UseSteamCheckBox.Text = "Thief 2";
-            this.T2UseSteamCheckBox.UseVisualStyleBackColor = true;
+            this.Thief2UseSteamCheckBox.AutoSize = true;
+            this.Thief2UseSteamCheckBox.Checked = true;
+            this.Thief2UseSteamCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.Thief2UseSteamCheckBox.Location = new System.Drawing.Point(8, 40);
+            this.Thief2UseSteamCheckBox.Name = "Thief2UseSteamCheckBox";
+            this.Thief2UseSteamCheckBox.Size = new System.Drawing.Size(59, 17);
+            this.Thief2UseSteamCheckBox.TabIndex = 2;
+            this.Thief2UseSteamCheckBox.Text = "Thief 2";
+            this.Thief2UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
             // SteamExeLabel
             // 
@@ -549,9 +549,9 @@
         internal System.Windows.Forms.TextBox SteamExeTextBox;
         internal System.Windows.Forms.Button SteamExeBrowseButton;
         internal System.Windows.Forms.GroupBox SteamOptionsGroupBox;
-        internal System.Windows.Forms.CheckBox T3UseSteamCheckBox;
-        internal System.Windows.Forms.CheckBox T2UseSteamCheckBox;
-        internal System.Windows.Forms.CheckBox T1UseSteamCheckBox;
+        internal System.Windows.Forms.CheckBox Thief3UseSteamCheckBox;
+        internal System.Windows.Forms.CheckBox Thief2UseSteamCheckBox;
+        internal System.Windows.Forms.CheckBox Thief1UseSteamCheckBox;
         internal System.Windows.Forms.Panel LaunchTheseGamesThroughSteamPanel;
         internal System.Windows.Forms.CheckBox LaunchTheseGamesThroughSteamCheckBox;
         internal System.Windows.Forms.Label SS2ExePathLabel;

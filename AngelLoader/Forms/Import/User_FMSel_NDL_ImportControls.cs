@@ -15,12 +15,13 @@ namespace AngelLoader.Forms.Import
         private readonly (GroupBox GroupBox, CheckBox AutodetectCheckBox, TextBox TextBox, Button BrowseButton)[]
         GameIniItems;
 
-        internal string GetIniFile(GameIndex game) => GameIniItems[(int)game].TextBox.Text;
+        internal string GetIniFile(GameIndex gameIndex) => GameIniItems[(int)gameIndex].TextBox.Text;
 
         public User_FMSel_NDL_ImportControls()
         {
             InitializeComponent();
 
+            // @GENGAMES (ImportControls): Begin
             GameIniItems = new[]
             {
                 (
@@ -48,6 +49,7 @@ namespace AngelLoader.Forms.Import
                     SS2IniBrowseButton
                 )
             };
+            // @GENGAMES (ImportControls): End
         }
 
         internal void Init(ImportType importType)

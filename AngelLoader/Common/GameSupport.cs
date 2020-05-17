@@ -152,7 +152,7 @@ namespace AngelLoader
             Game.Thief2 => LText.Global.Thief2,
             Game.Thief3 => LText.Global.Thief3,
             Game.SS2 => LText.Global.SystemShock2,
-            _ => "[UnknownGameType]"
+            _ => throw new ArgumentOutOfRangeException(nameof(game), game, nameof(GetLocalizedGameName) + @": Game not in range")
         };
 
         internal static string GetShortLocalizedGameName(GameIndex gameIndex) => GetShortLocalizedGameName(GameIndexToGame(gameIndex));
@@ -163,7 +163,18 @@ namespace AngelLoader
             Game.Thief2 => LText.Global.Thief2_Short,
             Game.Thief3 => LText.Global.Thief3_Short,
             Game.SS2 => LText.Global.SystemShock2_Short,
-            _ => "[UnknownShortGameType]"
+            _ => throw new ArgumentOutOfRangeException(nameof(game), game, nameof(GetShortLocalizedGameName) + @": Game not in range")
+        };
+
+        internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => GetLocalizedGameNameColon(GameIndexToGame(gameIndex));
+
+        internal static string GetLocalizedGameNameColon(Game game) => game switch
+        {
+            Game.Thief1 => LText.Global.Thief1_Colon,
+            Game.Thief2 => LText.Global.Thief2_Colon,
+            Game.Thief3 => LText.Global.Thief3_Colon,
+            Game.SS2 => LText.Global.SystemShock2_Colon,
+            _ => throw new ArgumentOutOfRangeException(nameof(game), game, nameof(GetLocalizedGameNameColon) + @": Game not in range")
         };
 
         #endregion
