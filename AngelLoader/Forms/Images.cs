@@ -3,7 +3,10 @@ using AngelLoader.Properties;
 
 namespace AngelLoader.Forms
 {
-    // This class and everything accessible inside it needs to be public for the designers to recognize it
+    // Pulling an image from Resources is an expensive operation, so if we're going to load an image multiple times,
+    // we want to cache it in a Bitmap object. Images that are loaded only once are not present here, as they would
+    // derive no performance benefit.
+    // NOTE: This class and everything accessible inside it needs to be public for the designers to recognize it.
     public static class Images
     {
         #region Games
