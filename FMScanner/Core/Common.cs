@@ -402,7 +402,8 @@ namespace FMScanner
             new Regex(@"\[/?GL[A-Z]+\]", RegexOptions.Compiled);
 
         internal static readonly Regex AThief3Mission =
-            new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly", RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly",
+                RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         internal static readonly Regex OpenParenSpacesRegex =
             new Regex(@"\(\s+", RegexOptions.Compiled);
@@ -412,7 +413,7 @@ namespace FMScanner
 
         internal static readonly Regex DaySuffixesRegex =
             new Regex(@"\d(?<Suffix>(st|nd|rd|th)).+",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+                RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         internal static readonly Regex VersionExclude1Regex =
             new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
@@ -429,7 +430,8 @@ namespace FMScanner
 
         // This doesn't need to be a regex really, but it takes like 5.4 microseconds per FM, so, yeah
         internal static readonly Regex NewGameStrTitleRegex =
-            new Regex(@"^skip_training\:\s*""(?<Title>.+)""", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            new Regex(@"^skip_training\:\s*""(?<Title>.+)""",
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         // TODO: This one looks iffy though
         internal static readonly Regex VersionFirstNumberRegex =
@@ -440,25 +442,34 @@ namespace FMScanner
         internal static readonly Regex[] NewDarkVersionRegexes =
         {
             new Regex(@"NewDark (?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(
                 @"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(
                 @"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture)
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture)
 
             // Original regex for reference - slow!
             // @"((?<Name>(""*New *Dark""*( Version| Patch)*|Dark *Engine|(?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief *2|Thief *II|The Metal Age)) *V?(\.| )*(?<Version>\d\.\d+)|\D(?<Version>\d\.\d+) +(version of |(?!\r\n).?)New *Dark(?! *\d\.\d+)|Thief Gold( Patch)* (?<Version>(?!1\.33|1\.37)\d\.\d+))",
@@ -468,16 +479,20 @@ namespace FMScanner
         {
             new Regex(
                 @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(
                 @"(A )?Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?) (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+by (?<Author>.+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(
                 @"A(n)? (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+(made\s+)?by\s+(?<Author>.+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(
                 @"A(n)? .+(-| )part\s+Thief( Gold |: The Dark Project |\s*2(: The Metal Age )?)\s+(fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+((made\s+by)|by|from)\s+(?<Author>.+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture)
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture)
         };
 
         private const string CopyrightSecondPart =
@@ -493,15 +508,20 @@ namespace FMScanner
             new Regex(
                 //language=regexp
                 @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(
                 //language=regexp
-                @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture),
+                @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" +
+                CopyrightSecondPart,
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture),
             new Regex(
                 //language=regexp
-                @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture)
+                @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" +
+                CopyrightSecondPart,
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
+                RegexOptions.ExplicitCapture)
         };
 
         // This one is only to be used if we know the above line says "Copyright" or something, because it has
@@ -511,19 +531,19 @@ namespace FMScanner
             new Regex(
                 //language=regexp
                 @"^(Copyright )?(\(c\)|\u00A9|@) ?" + CopyrightSecondPart,
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         internal static readonly Regex AuthorGeneralCopyrightRegex =
             new Regex(
                 //language=regexp
                 @"^(Copyright )?(\(c\)|\u00A9) ?" + CopyrightSecondPart,
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         internal static readonly Regex CopyrightAuthorYearRegex = new Regex(@" \d+.*$", RegexOptions.Compiled);
 
         internal static readonly Regex TitleByAuthorRegex =
             new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
     }
 
     /// <summary>

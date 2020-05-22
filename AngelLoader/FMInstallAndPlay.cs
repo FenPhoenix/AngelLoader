@@ -709,7 +709,7 @@ namespace AngelLoader
                 var misNums = new List<int>();
                 foreach (string mf in misFiles)
                 {
-                    Match m = Regex.Match(mf, @"miss(?<Num>\d+).mis", RegexOptions.IgnoreCase);
+                    Match m = Regex.Match(mf, @"miss(?<Num>\d+).mis", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
                     if (m.Success && int.TryParse(m.Groups["Num"].Value, out int result))
                     {
                         misNums.Add(result);

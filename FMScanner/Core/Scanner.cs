@@ -879,7 +879,7 @@ namespace FMScanner
                 }
 
                 // PERF: 5ms over the whole 1098 set, whatever
-                Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, RegexOptions.IgnoreCase);
+                Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
                 if (match.Success) continue;
 
                 if (fmData.TagsString != "") fmData.TagsString += ", ";
@@ -2040,8 +2040,8 @@ namespace FMScanner
                     {
                         lineStartsWithKey = true;
                         // Regex perf: fast enough not to worry about it
-                        if (Regex.Match(lineStartTrimmed, @"^" + x + @"\s*(:|-|\u2013)", RegexOptions.IgnoreCase)
-                            .Success)
+                        if (Regex.Match(lineStartTrimmed, @"^" + x + @"\s*(:|-|\u2013)",
+                            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Success)
                         {
                             lineStartsWithKeyAndSeparatorChar = true;
                             break;
