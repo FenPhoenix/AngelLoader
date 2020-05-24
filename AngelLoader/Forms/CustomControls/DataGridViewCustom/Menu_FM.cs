@@ -156,6 +156,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 WebSearchMenuItem = new ToolStripMenuItem { Name = nameof(WebSearchMenuItem) }
             };
+
             #endregion
 
             #region Add items to menu
@@ -234,19 +235,6 @@ namespace AngelLoader.Forms.CustomControls
                 item.CheckedChanged += RatingRCMenuItems_CheckedChanged;
             }
 
-            RatingMenuUnrated.Click += RatingMenuItems_Click;
-            Rating0MenuItem.Click += RatingMenuItems_Click;
-            Rating1MenuItem.Click += RatingMenuItems_Click;
-            Rating2MenuItem.Click += RatingMenuItems_Click;
-            Rating3MenuItem.Click += RatingMenuItems_Click;
-            Rating4MenuItem.Click += RatingMenuItems_Click;
-            Rating5MenuItem.Click += RatingMenuItems_Click;
-            Rating6MenuItem.Click += RatingMenuItems_Click;
-            Rating7MenuItem.Click += RatingMenuItems_Click;
-            Rating8MenuItem.Click += RatingMenuItems_Click;
-            Rating9MenuItem.Click += RatingMenuItems_Click;
-            Rating10MenuItem.Click += RatingMenuItems_Click;
-
             FinishedOnNormalMenuItem.Click += FinishedOnMenuItems_Click;
             FinishedOnHardMenuItem.Click += FinishedOnMenuItems_Click;
             FinishedOnExpertMenuItem.Click += FinishedOnMenuItems_Click;
@@ -308,10 +296,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        #endregion
-
-        #region API methods
-
         private void SetFMMenuTextToLocalized()
         {
             if (!_fmMenuConstructed) return;
@@ -371,6 +355,73 @@ namespace AngelLoader.Forms.CustomControls
 
             WebSearchMenuItem!.Text = LText.FMsList.FMMenu_WebSearch.EscapeAmpersands();
         }
+
+        private void SetFinishedOnUnknownMenuItemChecked(bool value)
+        {
+            if (_fmMenuConstructed)
+            {
+                FinishedOnUnknownMenuItem!.Checked = value;
+            }
+            else
+            {
+                _finishedOnUnknownChecked = value;
+            }
+
+            if (value) UncheckFinishedOnMenuItemsExceptUnknown();
+        }
+
+        private void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
+        {
+            if (value && !_fmMenuConstructed) _finishedOnUnknownChecked = false;
+
+            switch (difficulty)
+            {
+                case Difficulty.Normal:
+                    if (_fmMenuConstructed)
+                    {
+                        FinishedOnNormalMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnNormalChecked = value;
+                    }
+                    break;
+                case Difficulty.Hard:
+                    if (_fmMenuConstructed)
+                    {
+                        FinishedOnHardMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnHardChecked = value;
+                    }
+                    break;
+                case Difficulty.Expert:
+                    if (_fmMenuConstructed)
+                    {
+                        FinishedOnExpertMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExpertChecked = value;
+                    }
+                    break;
+                case Difficulty.Extreme:
+                    if (_fmMenuConstructed)
+                    {
+                        FinishedOnExtremeMenuItem!.Checked = value;
+                    }
+                    else
+                    {
+                        _finishedOnExtremeChecked = value;
+                    }
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region API methods
 
         internal void UpdateRatingList(bool fmSelStyle)
         {
@@ -513,52 +564,20 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        internal void SetFinishedOnMenuItemChecked(Difficulty difficulty, bool value)
+        internal void SetFinishedOnMenuItemsChecked(Difficulty difficulty, bool finishedOnUnknown)
         {
-            if (value && !_fmMenuConstructed) _finishedOnUnknownChecked = false;
-
-            switch (difficulty)
+            if (finishedOnUnknown)
             {
-                case Difficulty.Normal:
-                    if (_fmMenuConstructed)
-                    {
-                        FinishedOnNormalMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnNormalChecked = value;
-                    }
-                    break;
-                case Difficulty.Hard:
-                    if (_fmMenuConstructed)
-                    {
-                        FinishedOnHardMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnHardChecked = value;
-                    }
-                    break;
-                case Difficulty.Expert:
-                    if (_fmMenuConstructed)
-                    {
-                        FinishedOnExpertMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnExpertChecked = value;
-                    }
-                    break;
-                case Difficulty.Extreme:
-                    if (_fmMenuConstructed)
-                    {
-                        FinishedOnExtremeMenuItem!.Checked = value;
-                    }
-                    else
-                    {
-                        _finishedOnExtremeChecked = value;
-                    }
-                    break;
+                SetFinishedOnUnknownMenuItemChecked(true);
+            }
+            else
+            {
+                // I don't have to disable events because I'm only wired up to Click, not Checked
+                SetFinishedOnMenuItemChecked(Difficulty.Normal, (difficulty & Difficulty.Normal) == Difficulty.Normal);
+                SetFinishedOnMenuItemChecked(Difficulty.Hard, (difficulty & Difficulty.Hard) == Difficulty.Hard);
+                SetFinishedOnMenuItemChecked(Difficulty.Expert, (difficulty & Difficulty.Expert) == Difficulty.Expert);
+                SetFinishedOnMenuItemChecked(Difficulty.Extreme, (difficulty & Difficulty.Extreme) == Difficulty.Extreme);
+                SetFinishedOnUnknownMenuItemChecked(false);
             }
         }
 
@@ -573,20 +592,6 @@ namespace AngelLoader.Forms.CustomControls
             FinishedOnHardMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Hard).EscapeAmpersands();
             FinishedOnExpertMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Expert).EscapeAmpersands();
             FinishedOnExtremeMenuItem!.Text = GetLocalizedDifficultyName(game, Difficulty.Extreme).EscapeAmpersands();
-        }
-
-        internal void SetFinishedOnUnknownMenuItemChecked(bool value)
-        {
-            if (_fmMenuConstructed)
-            {
-                FinishedOnUnknownMenuItem!.Checked = value;
-            }
-            else
-            {
-                _finishedOnUnknownChecked = value;
-            }
-
-            if (value) UncheckFinishedOnMenuItemsExceptUnknown();
         }
 
         internal void ClearFinishedOnMenuItemChecks()
@@ -645,7 +650,10 @@ namespace AngelLoader.Forms.CustomControls
             var s = (ToolStripMenuItem)sender;
             if (!s.Checked) return;
 
-            foreach (ToolStripMenuItem item in RatingMenuItem!.DropDownItems) if (item != s) item.Checked = false;
+            foreach (ToolStripMenuItem item in RatingMenuItem!.DropDownItems)
+            {
+                if (item != s) item.Checked = false;
+            }
         }
 
         private void FinishedOnMenuItems_Click(object sender, EventArgs e)

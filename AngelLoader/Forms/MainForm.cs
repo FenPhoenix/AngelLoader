@@ -2795,20 +2795,7 @@ namespace AngelLoader.Forms
 
             #region FinishedOn
 
-            if (fm.FinishedOnUnknown)
-            {
-                FMsDGV.SetFinishedOnUnknownMenuItemChecked(true);
-            }
-            else
-            {
-                var val = (Difficulty)fm.FinishedOn;
-                // I don't have to disable events because I'm only wired up to Click, not Checked
-                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Normal, (val & Difficulty.Normal) == Difficulty.Normal);
-                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Hard, (val & Difficulty.Hard) == Difficulty.Hard);
-                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Expert, (val & Difficulty.Expert) == Difficulty.Expert);
-                FMsDGV.SetFinishedOnMenuItemChecked(Difficulty.Extreme, (val & Difficulty.Extreme) == Difficulty.Extreme);
-                FMsDGV.SetFinishedOnUnknownMenuItemChecked(false);
-            }
+            FMsDGV.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
             #endregion
 
