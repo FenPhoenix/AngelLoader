@@ -966,7 +966,8 @@ namespace FMScanner
 
             if (_fmIsZip || _scanOptions.ScanSize)
             {
-                for (int i = 0; i < (_fmIsZip ? _archive.Entries.Count : _fmDirFileInfos.Count); i++)
+                int filesCount = _fmIsZip ? _archive.Entries.Count : _fmDirFileInfos.Count;
+                for (int i = 0; i < filesCount; i++)
                 {
                     string fn = _fmIsZip
                         ? _archive.Entries[i].FullName
@@ -3228,7 +3229,7 @@ namespace FMScanner
             try
             {
                 var ds = Directory.GetDirectories(fmWorkingPath, "*", SearchOption.TopDirectoryOnly);
-                for (var i = 0; i < ds.Length; i++) Directory.Delete(ds[i], true);
+                for (int i = 0; i < ds.Length; i++) Directory.Delete(ds[i], true);
 
                 Directory.Delete(fmWorkingPath, recursive: true);
             }

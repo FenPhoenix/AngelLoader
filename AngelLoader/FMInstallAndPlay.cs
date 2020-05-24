@@ -313,7 +313,8 @@ namespace AngelLoader
                     sevenZipArchive = new SevenZipExtractor(archivePath);
                 }
 
-                for (int i = 0; i < (fmIsZip ? zipArchive!.Entries.Count : (int)sevenZipArchive!.FilesCount); i++)
+                int filesCount = fmIsZip ? zipArchive!.Entries.Count : (int)sevenZipArchive!.FilesCount;
+                for (int i = 0; i < filesCount; i++)
                 {
                     string fn = fmIsZip
                         // ZipArchiveFast guarantees full names to never contain backslashes

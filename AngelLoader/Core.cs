@@ -316,7 +316,7 @@ namespace AngelLoader
                 }
             }
 
-            for (int i = 0; i < Config.GameExes.Length; i++)
+            for (int i = 0; i < SupportedGameCount; i++)
             {
                 Config.GameExes[i] = sf.OutConfig.GameExes[i];
             }
@@ -336,7 +336,7 @@ namespace AngelLoader
             Config.SteamExe = sf.OutConfig.SteamExe;
             Config.LaunchGamesWithSteam = sf.OutConfig.LaunchGamesWithSteam;
 
-            for (int i = 0; i < Config.UseSteamSwitches.Length; i++)
+            for (int i = 0; i < SupportedGameCount; i++)
             {
                 Config.UseSteamSwitches[i] = sf.OutConfig.UseSteamSwitches[i];
             }

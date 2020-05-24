@@ -498,7 +498,7 @@ namespace AngelLoader
 
             static bool AnyGameRunning(string fnb)
             {
-                for (int i = 0; i < Config.GameExes.Length; i++)
+                for (int i = 0; i < SupportedGameCount; i++)
                 {
                     string exe = Config.GetGameExe((GameIndex)i);
                     if (!exe.IsEmpty() && fnb.PathEqualsI(exe)) return true;

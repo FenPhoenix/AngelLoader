@@ -378,7 +378,8 @@ namespace AngelLoader
                     using var extractor = new SevenZipExtractor(fmArchivePath);
 
                     var indexesList = new List<int>();
-                    for (int i = 0; i < extractor.FilesCount; i++)
+                    uint extractorFilesCount = extractor.FilesCount;
+                    for (int i = 0; i < extractorFilesCount; i++)
                     {
                         var entry = extractor.ArchiveFileData[i];
                         string fn = entry.FileName;
