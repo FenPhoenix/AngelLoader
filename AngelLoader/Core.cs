@@ -701,8 +701,7 @@ namespace AngelLoader
 
             filterShownIndexList.Clear();
 
-            // This one gets checked in a loop, so cache it. Others are only checked twice at most, so leave them
-            // be.
+            // This one gets checked in a loop, so cache it. Others are only checked once, so leave them be.
             bool titleIsWhitespace = viewFilter.Title.IsWhiteSpace();
 
             // Note: we used to have an early-out here if all filter options were off, but since the filter
