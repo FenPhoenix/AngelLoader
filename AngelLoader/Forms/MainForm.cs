@@ -2377,7 +2377,7 @@ namespace AngelLoader.Forms
             if (!startup)
             {
                 var oldRatingColumn = FMsDGV.Columns[(int)Column.Rating];
-                newRatingColumn.Width = newRatingColumn == RatingTextColumn
+                newRatingColumn!.Width = newRatingColumn == RatingTextColumn
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
                     : FMsDGV.RowTemplate.Height == 22
@@ -2395,7 +2395,7 @@ namespace AngelLoader.Forms
                     try
                     {
                         FMsDGV.Columns.RemoveAt((int)Column.Rating);
-                        FMsDGV.Columns.Insert((int)Column.Rating, newRatingColumn);
+                        FMsDGV.Columns.Insert((int)Column.Rating, newRatingColumn!);
                     }
                     finally
                     {

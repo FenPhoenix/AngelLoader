@@ -98,7 +98,7 @@ namespace AngelLoader.DataClasses
 
         #region FM install paths
 
-        internal readonly string[] FMInstallPaths;
+        private readonly string[] FMInstallPaths;
 
         internal string GetFMInstallPath(GameIndex index) => FMInstallPaths[(uint)index];
 
@@ -135,7 +135,7 @@ namespace AngelLoader.DataClasses
 
         #region Use Steam switches
 
-        internal readonly bool[] UseSteamSwitches;
+        private readonly bool[] UseSteamSwitches;
 
         internal bool GetUseSteamSwitch(GameIndex index) => UseSteamSwitches[(uint)index];
 

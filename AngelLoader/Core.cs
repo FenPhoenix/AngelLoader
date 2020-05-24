@@ -294,7 +294,7 @@ namespace AngelLoader
             {
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    var game = (GameIndex)i;
+                    GameIndex game = (GameIndex)i;
                     string gameExe = Config.GetGameExe(game);
                     // Only try to reset the loader on the old game if the old game was actually specified,
                     // obviously
@@ -316,9 +316,11 @@ namespace AngelLoader
                 }
             }
 
+            // TODO (OpenSettings): Can some of these SupportedGameCount loops be combined into one?
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                Config.GameExes[i] = sf.OutConfig.GameExes[i];
+                GameIndex gameIndex = (GameIndex)i;
+                Config.SetGameExe(gameIndex, sf.OutConfig.GetGameExe(gameIndex));
             }
 
             // TODO: These should probably go in the Settings form along with the cam_mod.ini check
@@ -338,7 +340,8 @@ namespace AngelLoader
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                Config.UseSteamSwitches[i] = sf.OutConfig.UseSteamSwitches[i];
+                GameIndex gameIndex = (GameIndex)i;
+                Config.SetUseSteamSwitch(gameIndex, sf.OutConfig.GetUseSteamSwitch(gameIndex));
             }
 
             Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
@@ -505,7 +508,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    gamePath = Path.GetDirectoryName(gameExe);
+                    gamePath = Path.GetDirectoryName(gameExe) ?? "";
                 }
                 catch
                 {

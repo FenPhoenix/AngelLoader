@@ -98,7 +98,7 @@ namespace AngelLoader
                 perGameInstFMDirsList.Add(new List<string>());
                 perGameInstFMDirsDatesList.Add(new List<DateTime>());
 
-                string instPath = Config.FMInstallPaths[gi];
+                string instPath = Config.GetFMInstallPath((GameIndex)gi);
                 if (Directory.Exists(instPath))
                 {
                     try
@@ -462,7 +462,7 @@ namespace AngelLoader
 
                 fm.NoArchive = false;
 
-                WriteFMSelInf(fm, fmselInf, tryArchive);
+                if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, tryArchive);
 
                 return tryArchive;
             }
@@ -505,7 +505,7 @@ namespace AngelLoader
             if (!GameIsKnownAndSupported(fm.Game)) return null;
 
             // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
-            string fmInstPath = Config.FMInstallPaths[(int)GameToGameIndex(fm.Game)];
+            string fmInstPath = Config.GetFMInstallPathUnsafe(fm.Game);
 
             return fmInstPath.IsEmpty() ? null : Path.Combine(fmInstPath, fm.InstalledDir, Paths.FMSelInf);
         }
