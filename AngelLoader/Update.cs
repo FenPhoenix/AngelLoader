@@ -1,4 +1,6 @@
-﻿#define CHECK_UPDATES
+﻿//#define CHECK_UPDATES
+
+#if CHECK_UPDATES
 using System;
 using System.Globalization;
 using System.IO;
@@ -18,7 +20,6 @@ namespace AngelLoader
 
         internal static void Cancel() => CheckForUpdatesCTS.CancelIfNotDisposed();
 
-#if CHECK_UPDATES
         internal static async Task Check()
         {
             CheckForUpdatesCTS = new CancellationTokenSource();
@@ -157,7 +158,6 @@ namespace AngelLoader
                 }
             }
         }
-#endif
 
         private static byte[] HexStringToBytes(string value)
         {
@@ -239,3 +239,4 @@ namespace AngelLoader
         }
     }
 }
+#endif

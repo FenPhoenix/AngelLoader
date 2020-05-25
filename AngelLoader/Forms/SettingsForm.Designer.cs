@@ -21,14 +21,14 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.ErrorLabel = new System.Windows.Forms.Label();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.MainErrorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.OtherRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.FMDisplayRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.PathsRadioButton = new AngelLoader.Forms.CustomControls.RadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
             this.BottomFlowLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MainErrorProvider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
@@ -78,9 +78,9 @@
             // ErrorLabel
             // 
             this.ErrorLabel.AutoSize = true;
-            this.errorProvider1.SetError(this.ErrorLabel, "Error");
+            this.MainErrorProvider.SetError(this.ErrorLabel, "Error");
             this.ErrorLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.errorProvider1.SetIconAlignment(this.ErrorLabel, System.Windows.Forms.ErrorIconAlignment.MiddleLeft);
+            this.MainErrorProvider.SetIconAlignment(this.ErrorLabel, System.Windows.Forms.ErrorIconAlignment.MiddleLeft);
             this.ErrorLabel.Location = new System.Drawing.Point(462, 12);
             this.ErrorLabel.Margin = new System.Windows.Forms.Padding(3, 12, 3, 0);
             this.ErrorLabel.Name = "ErrorLabel";
@@ -89,10 +89,10 @@
             this.ErrorLabel.Text = "[ErrorLabel]";
             this.ErrorLabel.Visible = false;
             // 
-            // errorProvider1
+            // MainErrorProvider
             // 
-            this.errorProvider1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-            this.errorProvider1.ContainerControl = this;
+            this.MainErrorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.MainErrorProvider.ContainerControl = this;
             // 
             // MainSplitContainer
             // 
@@ -209,7 +209,7 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SettingsForm_KeyDown);
             this.BottomFlowLayoutPanel.ResumeLayout(false);
             this.BottomFlowLayoutPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MainErrorProvider)).EndInit();
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).EndInit();
@@ -224,7 +224,7 @@
         private System.Windows.Forms.Button Cancel_Button;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.ToolTip MainToolTip;
-        private System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.ErrorProvider MainErrorProvider;
         private System.Windows.Forms.Label ErrorLabel;
         private AngelLoader.Forms.CustomControls.SplitContainerCustom MainSplitContainer;
         private AngelLoader.Forms.CustomControls.RadioButtonCustom OtherRadioButton;

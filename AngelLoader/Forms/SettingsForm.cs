@@ -524,6 +524,8 @@ namespace AngelLoader.Forms
             }
 
             Localize(suspendResume: false);
+
+            CheckForErrors();
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
@@ -654,11 +656,77 @@ namespace AngelLoader.Forms
 
                     #endregion
                 }
+
+                ErrorLabel.Text = LText.SettingsWindow.Paths_ErrorSomePathsAreInvalid;
+                MainErrorProvider.SetError(ErrorLabel, LText.AlertMessages.Error);
             }
             finally
             {
                 if (suspendResume) this.ResumeDrawing();
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns><see langword="true"/> if there were errors, <see langword="false"/> otherwise.</returns>
+        private bool CheckForErrors()
+        {
+            bool error = false;
+
+            // TODO: Check for cam_mod.ini etc. to be thorough
+
+            foreach (var tb in ExePathTextBoxes)
+            {
+                if (!tb.Text.IsWhiteSpace() && !File.Exists(tb.Text))
+                {
+                    error = true;
+                    ShowPathError(tb, true);
+                }
+            }
+
+            if (!Directory.Exists(PathsPage.BackupPathTextBox.Text))
+            {
+                error = true;
+                ShowPathError(PathsPage.BackupPathTextBox, true);
+            }
+
+            if (error)
+            {
+                // Currently, all errors happen on the Paths page, so go to that page automatically.
+                PathsRadioButton.Checked = true;
+
+                // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
+                // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
+                // to make it clear.
+                foreach (TextBox tb in ErrorableTextBoxes)
+                {
+                    if (PathErrorIsSet(tb))
+                    {
+                        PathsPage.PagePanel.ScrollControlIntoView(tb);
+                        break;
+                    }
+                }
+
+                return true;
+            }
+            else
+            {
+                foreach (var tb in ExePathTextBoxes)
+                {
+                    tb.BackColor = SystemColors.Window;
+                    tb.Tag = PathError.False;
+                }
+                PathsPage.BackupPathTextBox.BackColor = SystemColors.Window;
+                PathsPage.BackupPathTextBox.Tag = PathError.False;
+                ErrorLabel.Hide();
+
+                // Extremely petty visual nicety - makes the error stuff go away before the form closes
+                Refresh();
+                PathsPage.Refresh();
+            }
+
+            return false;
         }
 
         private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -705,65 +773,11 @@ namespace AngelLoader.Forms
 
             if (!Startup) FormatArticles();
 
-            #region Checks
-
-            bool error = false;
-
-            // TODO: Check for cam_mod.ini etc. to be thorough
-
-            foreach (var tb in ExePathTextBoxes)
-            {
-                if (!tb.Text.IsWhiteSpace() && !File.Exists(tb.Text))
-                {
-                    error = true;
-                    ShowPathError(tb, true);
-                }
-            }
-
-            if (!Directory.Exists(PathsPage.BackupPathTextBox.Text))
-            {
-                error = true;
-                ShowPathError(PathsPage.BackupPathTextBox, true);
-            }
-
-            if (error)
+            if (CheckForErrors())
             {
                 e.Cancel = true;
-
-                // Currently, all errors happen on the Paths page, so go to that page automatically.
-                PathsRadioButton.Checked = true;
-
-                // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
-                // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen
-                // to make it clear.
-                foreach (TextBox tb in ErrorableTextBoxes)
-                {
-                    if (PathErrorIsSet(tb))
-                    {
-                        PathsPage.PagePanel.ScrollControlIntoView(tb);
-                        break;
-                    }
-                }
-
                 return;
             }
-            else
-            {
-                foreach (var tb in ExePathTextBoxes)
-                {
-                    tb.BackColor = SystemColors.Window;
-                    tb.Tag = PathError.False;
-                }
-                PathsPage.BackupPathTextBox.BackColor = SystemColors.Window;
-                PathsPage.BackupPathTextBox.Tag = PathError.False;
-                ErrorLabel.Hide();
-
-                // Extremely petty visual nicety - makes the error stuff go away before the form closes
-                Refresh();
-                PathsPage.Refresh();
-            }
-
-            #endregion
 
             #region Paths page
 
@@ -1019,7 +1033,7 @@ namespace AngelLoader.Forms
             string initialPath = "";
             try
             {
-                initialPath = Path.GetDirectoryName(tb.Text);
+                initialPath = Path.GetDirectoryName(tb.Text) ?? "";
             }
             catch
             {
@@ -1094,7 +1108,7 @@ namespace AngelLoader.Forms
             {
                 try
                 {
-                    d.InitialDirectory = Path.GetDirectoryName(initDir);
+                    d.InitialDirectory = Path.GetDirectoryName(initDir) ?? "";
                 }
                 catch
                 {

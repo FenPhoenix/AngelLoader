@@ -1518,7 +1518,7 @@ namespace AngelLoader
 
                 string fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive));
 
-                if (fmArchivePath.IsEmpty())
+                if (fmArchivePath!.IsEmpty())
                 {
                     var (cancel, _) = Core.View.AskToContinueYesNoCustomStrings(
                         LText.AlertMessages.Uninstall_ArchiveNotFound, LText.AlertMessages.Warning,

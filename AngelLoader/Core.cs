@@ -86,7 +86,7 @@ namespace AngelLoader
                             // just don't set them if we don't have a game exe
                             string gameExe = Config.GetGameExe((GameIndex)i);
                             gameExeExists[i] = !gameExe.IsEmpty() && File.Exists(gameExe);
-                            if (gameExeExists[i]) SetGameData((GameIndex)i, storeConfigInfo: true);
+                            if (gameExeExists[i]) SetGameDataFromDisk((GameIndex)i, storeConfigInfo: true);
                         }
 
                         Error error =
@@ -242,9 +242,10 @@ namespace AngelLoader
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
+                GameIndex gameIndex = (GameIndex)i;
                 individualGamePathsChanged[i] =
                     !startup &&
-                    !Config.GetGameExe((GameIndex)i).PathEqualsI(sf.OutConfig.GetGameExe((GameIndex)i));
+                    !Config.GetGameExe(gameIndex).PathEqualsI(sf.OutConfig.GetGameExe(gameIndex));
             }
 
             bool gameOrganizationChanged =
@@ -294,16 +295,16 @@ namespace AngelLoader
             {
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    GameIndex game = (GameIndex)i;
-                    string gameExe = Config.GetGameExe(game);
+                    GameIndex gameIndex = (GameIndex)i;
+                    string gameExe = Config.GetGameExe(gameIndex);
                     // Only try to reset the loader on the old game if the old game was actually specified,
                     // obviously
                     if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace())
                     {
                         // For Dark, we need to know if the game exe itself actually exists.
-                        if (GameIsDark(game) && File.Exists(gameExe))
+                        if (GameIsDark(gameIndex) && File.Exists(gameExe))
                         {
-                            ResetDarkConfigFileValues(game);
+                            ResetDarkConfigFileValues(gameIndex);
                         }
                         else
                         {
@@ -316,33 +317,24 @@ namespace AngelLoader
                 }
             }
 
-            // TODO (OpenSettings): Can some of these SupportedGameCount loops be combined into one?
+            // Game paths should have been checked and verified before OK was clicked, so assume they're good here
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gameIndex = (GameIndex)i;
+
+                // This must be done first!
                 Config.SetGameExe(gameIndex, sf.OutConfig.GetGameExe(gameIndex));
-            }
 
-            // TODO: These should probably go in the Settings form along with the cam_mod.ini check
-            // Note: SettingsForm is supposed to check these for validity, so we shouldn't have any exceptions
-            //       being thrown here.
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
                 // Set it regardless of game existing, because we want to blank the data
-                SetGameData((GameIndex)i, storeConfigInfo: startup || individualGamePathsChanged[i]);
+                SetGameDataFromDisk(gameIndex, storeConfigInfo: startup || individualGamePathsChanged[i]);
+
+                Config.SetUseSteamSwitch(gameIndex, sf.OutConfig.GetUseSteamSwitch(gameIndex));
             }
 
             #endregion
 
             Config.SteamExe = sf.OutConfig.SteamExe;
             Config.LaunchGamesWithSteam = sf.OutConfig.LaunchGamesWithSteam;
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gameIndex = (GameIndex)i;
-                Config.SetUseSteamSwitch(gameIndex, sf.OutConfig.GetUseSteamSwitch(gameIndex));
-            }
 
             Config.FMsBackupPath = sf.OutConfig.FMsBackupPath;
 
@@ -474,7 +466,6 @@ namespace AngelLoader
 
             #region Call appropriate refresh method (if applicable)
 
-            // Game paths should have been checked and verified before OK was clicked, so assume they're good here
             if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged ||
                 daysRecentChanged)
             {
@@ -498,7 +489,13 @@ namespace AngelLoader
             #endregion
         }
 
-        private static void SetGameData(GameIndex game, bool storeConfigInfo)
+        /// <summary>
+        /// Sets the per-game config data that we pull directly from the game folders on disk. Game paths,
+        /// FM install paths, editors detected, pre-modification cam_mod.ini lines, etc.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="storeConfigInfo"></param>
+        private static void SetGameDataFromDisk(GameIndex game, bool storeConfigInfo)
         {
             string gameExe = Config.GetGameExe(game);
             bool gameExeSpecified = !gameExe.IsWhiteSpace();
@@ -1815,7 +1812,7 @@ namespace AngelLoader
                 }
             }
 
-            if (safeReadme.IsEmpty())
+            if (safeReadme!.IsEmpty())
             {
                 int numSafe = 0;
                 int safeIndex = -1;

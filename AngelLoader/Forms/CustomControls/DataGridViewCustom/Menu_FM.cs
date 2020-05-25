@@ -252,6 +252,8 @@ namespace AngelLoader.Forms.CustomControls
             DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
             SetConcreteInstallUninstallMenuItemText(_sayInstall);
             SetConcreteDromEdMenuItemText(_sayShockEd);
+            // @R#_FALSE_POSITIVE: If you put any method calls at all before these lines, they trigger as possibly null.
+            // After and they don't. Even dummy calls to empty methods cause it. I don't even know wtf with this one.
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;

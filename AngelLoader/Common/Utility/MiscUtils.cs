@@ -68,7 +68,7 @@ namespace AngelLoader
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.IO.FileNotFoundException">The PATH environment variable has a string containing quotes.</exception>
         [PublicAPI]
-        internal static Process ProcessStart_UseShellExecute(string fileName)
+        internal static Process? ProcessStart_UseShellExecute(string fileName)
         {
             return Process.Start(new ProcessStartInfo { FileName = fileName, UseShellExecute = true });
         }
@@ -89,7 +89,7 @@ namespace AngelLoader
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.IO.FileNotFoundException">The PATH environment variable has a string containing quotes.</exception>
         [PublicAPI]
-        internal static Process ProcessStart_UseShellExecute(string fileName, string arguments)
+        internal static Process? ProcessStart_UseShellExecute(string fileName, string arguments)
         {
             return Process.Start(new ProcessStartInfo { FileName = fileName, Arguments = arguments, UseShellExecute = true });
         }
@@ -116,7 +116,7 @@ namespace AngelLoader
         /// The sum of the length of the arguments and the length of the full path to the process exceeds 2080. The error message associated with this exception can be one of the following: "The data area passed to a system call is too small." or "Access is denied."</exception>
         /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on operating systems without shell support such as Nano Server (.NET Core only).</exception>
         [PublicAPI]
-        internal static Process ProcessStart_UseShellExecute(ProcessStartInfo startInfo, bool overrideUseShellExecuteToOn = true)
+        internal static Process? ProcessStart_UseShellExecute(ProcessStartInfo startInfo, bool overrideUseShellExecuteToOn = true)
         {
             if (overrideUseShellExecuteToOn) startInfo.UseShellExecute = true;
             return Process.Start(startInfo);
@@ -141,7 +141,7 @@ namespace AngelLoader
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on Linux or macOS (.NET Core only).</exception>
         [PublicAPI]
-        internal static Process ProcessStart_UseShellExecute(string fileName, string arguments, string userName, SecureString password, string domain)
+        internal static Process? ProcessStart_UseShellExecute(string fileName, string arguments, string userName, SecureString password, string domain)
         {
             return Process.Start(new ProcessStartInfo
             {
@@ -170,7 +170,7 @@ namespace AngelLoader
         /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
         /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on Linux or macOS (.NET Core only).</exception>
         [PublicAPI]
-        internal static Process ProcessStart_UseShellExecute(string fileName, string userName, SecureString password, string domain)
+        internal static Process? ProcessStart_UseShellExecute(string fileName, string userName, SecureString password, string domain)
         {
             return Process.Start(new ProcessStartInfo
             {

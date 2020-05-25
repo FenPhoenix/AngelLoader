@@ -467,7 +467,7 @@ namespace AngelLoader
                 return tryArchive;
             }
 
-            if (!File.Exists(fmselInf)) return FixUp();
+            if (!File.Exists(fmselInf!)) return FixUp();
 
             string[] lines;
             try
