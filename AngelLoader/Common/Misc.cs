@@ -192,6 +192,11 @@ namespace AngelLoader
 
         internal static class Defaults
         {
+            #region Main window
+
+            internal const int MainWindowWidth = 1280;
+            internal const int MainWindowHeight = 720;
+
             internal const int MainWindowX = 50;
             internal const int MainWindowY = 50;
 
@@ -200,6 +205,18 @@ namespace AngelLoader
 
             internal const float TopSplitterPercent = 0.741f;
             internal const float MainSplitterPercent = 0.4425f;
+
+            internal const float FMsListFontSizeInPoints = 8.25f;
+
+            #endregion
+
+            #region Settings window
+
+            internal const int SettingsWindowWidth = 710;
+            internal const int SettingsWindowHeight = 708;
+            internal const int SettingsWindowSplitterDistance = 155;
+
+            #endregion
 
             internal const string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
 
@@ -231,8 +248,8 @@ namespace AngelLoader
         #region DisableEvents
 
         /*
-         Implement the interface on your form, and put guard clauses on all your event handlers that you want to be
-         disableable:
+         Implement the interface on your form, and put guard clauses on all your event handlers that you want to
+         be disableable:
 
          if (EventsDisabled) return;
 

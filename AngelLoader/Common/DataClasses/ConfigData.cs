@@ -191,7 +191,7 @@ namespace AngelLoader.DataClasses
         internal Column SortedColumn = Column.Title;
         internal SortOrder SortDirection = SortOrder.Ascending;
 
-        private float _fMsListFontSizeInPoints = 8.25f;
+        private float _fMsListFontSizeInPoints = Defaults.FMsListFontSizeInPoints;
         internal float FMsListFontSizeInPoints
         {
             get => _fMsListFontSizeInPoints;
@@ -216,17 +216,6 @@ namespace AngelLoader.DataClasses
         // Session-only; don't write out
         internal readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
 
-        #region Settings window state
-
-        internal SettingsTab SettingsTab = SettingsTab.Paths;
-        internal Size SettingsWindowSize = new Size(710, 708);
-        internal int SettingsWindowSplitterDistance = 155;
-        internal int SettingsPathsVScrollPos = 0;
-        internal int SettingsFMDisplayVScrollPos = 0;
-        internal int SettingsOtherVScrollPos = 0;
-
-        #endregion
-
         #region Date format
 
         internal DateFormat DateFormat = DateFormat.CurrentCultureShort;
@@ -246,8 +235,8 @@ namespace AngelLoader.DataClasses
         #region Main window state
 
         internal FormWindowState MainWindowState = FormWindowState.Maximized;
-        internal Size MainWindowSize = new Size(1280, 720);
-        internal Point MainWindowLocation = new Point(100, 100);
+        internal Size MainWindowSize = new Size(Defaults.MainWindowWidth, Defaults.MainWindowHeight);
+        internal Point MainWindowLocation = new Point(Defaults.MainWindowX, Defaults.MainWindowY);
 
         private float _mainSplitterPercent = Defaults.MainSplitterPercent;
         internal float MainSplitterPercent { get => _mainSplitterPercent; set => _mainSplitterPercent = value.Clamp(0, 1.0f); }
@@ -258,6 +247,17 @@ namespace AngelLoader.DataClasses
         internal bool TopRightPanelCollapsed = false;
 
         internal readonly TopRightTabsData TopRightTabsData = new TopRightTabsData();
+
+        #endregion
+
+        #region Settings window state
+
+        internal SettingsTab SettingsTab = SettingsTab.Paths;
+        internal Size SettingsWindowSize = new Size(Defaults.SettingsWindowWidth, Defaults.SettingsWindowHeight);
+        internal int SettingsWindowSplitterDistance = Defaults.SettingsWindowSplitterDistance;
+        internal int SettingsPathsVScrollPos = 0;
+        internal int SettingsFMDisplayVScrollPos = 0;
+        internal int SettingsOtherVScrollPos = 0;
 
         #endregion
 
