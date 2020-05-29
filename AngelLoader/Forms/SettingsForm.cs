@@ -37,6 +37,7 @@ namespace AngelLoader.Forms
         private readonly ILocalizable? OwnerForm;
 
         private readonly bool Startup;
+        private readonly bool CleanStart;
 
         #region Copies of passed-in data
 
@@ -80,7 +81,7 @@ namespace AngelLoader.Forms
         private readonly OtherPage OtherPage;
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup)
+        internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup, bool cleanStart)
         {
             InitializeComponent();
 
@@ -88,6 +89,7 @@ namespace AngelLoader.Forms
             KeyPreview = true;
 
             Startup = startup;
+            CleanStart = cleanStart;
             OwnerForm = ownerForm;
 
             #region Init copies of passed-in data
@@ -525,7 +527,13 @@ namespace AngelLoader.Forms
 
             Localize(suspendResume: false);
 
-            CheckForErrors();
+            // This could maybe feel intrusive if we do it every time we open, so only do it on startup. It's
+            // much more important / useful to do it on startup, because we're likely only to open on startup
+            // if there's already an error. But, we also want to suppress errors if we're starting for the first
+            // time ever. In that case, invalid fields aren't conceptually "errors", but rather the user just
+            // hasn't filled them in yet. We'll error on OK click if we have to, but present a pleasanter UX
+            // prior to then.
+            if (Startup && !CleanStart) CheckForErrors();
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
@@ -667,7 +675,7 @@ namespace AngelLoader.Forms
         }
 
         /// <summary>
-        /// 
+        /// Sets or removes error visuals as necessary, and returns a bool for whether there were errors or not.
         /// </summary>
         /// <returns><see langword="true"/> if there were errors, <see langword="false"/> otherwise.</returns>
         private bool CheckForErrors()

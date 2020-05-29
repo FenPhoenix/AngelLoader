@@ -49,6 +49,8 @@ namespace AngelLoader
         internal static void Init(Task configTask)
         {
             bool openSettings;
+            // This is if we have no config file; in that case we assume we're starting for the first time ever
+            bool cleanStart = false;
             try
             {
                 #region Create required directories
@@ -109,6 +111,8 @@ namespace AngelLoader
                 else
                 {
                     openSettings = true;
+                    // We're starting for the first time ever (assumed)
+                    cleanStart = true;
                 }
 
                 #endregion
@@ -184,7 +188,7 @@ namespace AngelLoader
                 // safe. Don't put this inside a try block, or it won't be safe. It has to really be the last
                 // thing run in the method.
 #pragma warning disable 4014
-                OpenSettings(startup: true);
+                OpenSettings(startup: true, cleanStart: cleanStart);
 #pragma warning restore 4014
                 // ReSharper disable once RedundantJumpStatement
                 return; // return for clarity of intent
@@ -198,9 +202,9 @@ namespace AngelLoader
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        public static async Task OpenSettings(bool startup = false)
+        public static async Task OpenSettings(bool startup = false, bool cleanStart = false)
         {
-            using var sf = new SettingsForm(View, Config, startup);
+            using var sf = new SettingsForm(View, Config, startup, cleanStart);
 
             // This needs to be separate so the below "always-save" stuff can work
             var result = sf.ShowDialog();
