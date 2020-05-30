@@ -34,10 +34,10 @@ namespace AngelLoader.Forms
     {
         #region Private fields
 
-        private readonly ILocalizable? OwnerForm;
+        private readonly ILocalizable? _ownerForm;
 
-        private readonly bool Startup;
-        private readonly bool CleanStart;
+        private readonly bool _startup;
+        private readonly bool _cleanStart;
 
         #region Copies of passed-in data
 
@@ -51,7 +51,7 @@ namespace AngelLoader.Forms
 
         private readonly RadioButtonCustom[] PageRadioButtons;
         private readonly ISettingsPage[] Pages;
-        private readonly int?[] PageVScrollValues;
+        private readonly int?[] _pageVScrollValues;
 
         private readonly TextBox[] ExePathTextBoxes;
         private readonly TextBox[] ErrorableTextBoxes;
@@ -61,24 +61,24 @@ namespace AngelLoader.Forms
         private readonly Button[] GameExeBrowseButtons;
         private readonly CheckBox[] GameUseSteamCheckBoxes;
 
-        #endregion
-
-        public readonly ConfigData OutConfig;
-
-        private enum PathError { True, False }
-
         // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
         // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
         private readonly DateTime _exampleDate = new DateTime(DateTime.Now.Year, 8, 4);
 
-        public bool EventsDisabled { get; set; }
-
         private readonly ComboBoxCustom LangComboBox;
-
         private readonly GroupBox LangGroupBox;
+
         private readonly PathsPage PathsPage;
         private readonly FMDisplayPage FMDisplayPage;
         private readonly OtherPage OtherPage;
+
+        private enum PathError { True, False }
+
+        public bool EventsDisabled { get; set; }
+
+        #endregion
+
+        public readonly ConfigData OutConfig;
 
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup, bool cleanStart)
@@ -88,9 +88,9 @@ namespace AngelLoader.Forms
             // Needed for Esc-to-cancel-drag and stuff
             KeyPreview = true;
 
-            Startup = startup;
-            CleanStart = cleanStart;
-            OwnerForm = ownerForm;
+            _startup = startup;
+            _cleanStart = cleanStart;
+            _ownerForm = ownerForm;
 
             #region Init copies of passed-in data
 
@@ -112,6 +112,7 @@ namespace AngelLoader.Forms
             LangComboBox = OtherPage.LanguageComboBox;
 
             // @GENGAMES (Settings): Begin
+
             GameExeLabels = new[]
             {
                 PathsPage.Thief1ExePathLabel,
@@ -173,7 +174,7 @@ namespace AngelLoader.Forms
 
             // These are nullable because null values get put INTO them later. So not a mistake to fill them with
             // non-nullable ints right off the bat.
-            PageVScrollValues = new int?[]
+            _pageVScrollValues = new int?[]
             {
                 _inPathsVScrollPos,
                 _inFMDisplayVScrollPos,
@@ -533,7 +534,7 @@ namespace AngelLoader.Forms
             // time ever. In that case, invalid fields aren't conceptually "errors", but rather the user just
             // hasn't filled them in yet. We'll error on OK click if we have to, but present a pleasanter UX
             // prior to then.
-            if (Startup && !CleanStart) CheckForErrors();
+            if (_startup && !_cleanStart) CheckForErrors();
         }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
@@ -554,14 +555,14 @@ namespace AngelLoader.Forms
             if (suspendResume) this.SuspendDrawing();
             try
             {
-                Text = Startup ? LText.SettingsWindow.StartupTitleText : LText.SettingsWindow.TitleText;
+                Text = _startup ? LText.SettingsWindow.StartupTitleText : LText.SettingsWindow.TitleText;
 
                 OKButton.SetTextAutoSize(LText.Global.OK, ((Size)OKButton.Tag).Width);
                 Cancel_Button.SetTextAutoSize(LText.Global.Cancel, ((Size)Cancel_Button.Tag).Width);
 
                 #region Paths tab
 
-                PathsRadioButton.Text = Startup
+                PathsRadioButton.Text = _startup
                     ? LText.SettingsWindow.InitialSettings_TabText
                     : LText.SettingsWindow.Paths_TabText;
 
@@ -596,7 +597,7 @@ namespace AngelLoader.Forms
 
                 #endregion
 
-                if (Startup)
+                if (_startup)
                 {
                     LangGroupBox.Text = LText.SettingsWindow.Other_Language;
                 }
@@ -751,9 +752,9 @@ namespace AngelLoader.Forms
 
             // If some pages haven't had their vertical scroll value loaded, just take the value from the backing
             // store
-            OutConfig.SettingsPathsVScrollPos = PageVScrollValues[0] ?? PathsPage.GetVScrollPos();
-            OutConfig.SettingsFMDisplayVScrollPos = PageVScrollValues[1] ?? FMDisplayPage.GetVScrollPos();
-            OutConfig.SettingsOtherVScrollPos = PageVScrollValues[2] ?? OtherPage.GetVScrollPos();
+            OutConfig.SettingsPathsVScrollPos = _pageVScrollValues[0] ?? PathsPage.GetVScrollPos();
+            OutConfig.SettingsFMDisplayVScrollPos = _pageVScrollValues[1] ?? FMDisplayPage.GetVScrollPos();
+            OutConfig.SettingsOtherVScrollPos = _pageVScrollValues[2] ?? OtherPage.GetVScrollPos();
 
             #endregion
 
@@ -761,7 +762,7 @@ namespace AngelLoader.Forms
 
             if (DialogResult != DialogResult.OK)
             {
-                if (!Startup && !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
+                if (!_startup && !LangComboBox.SelectedBackingItem().EqualsI(_inLanguage))
                 {
                     try
                     {
@@ -779,7 +780,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            if (!Startup) FormatArticles();
+            if (!_startup) FormatArticles();
 
             if (CheckForErrors())
             {
@@ -809,7 +810,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            if (Startup)
+            if (_startup)
             {
                 OutConfig.Language = LangComboBox.SelectedBackingItem();
             }
@@ -975,7 +976,7 @@ namespace AngelLoader.Forms
         {
             if (Pages[index].IsVisible) return;
 
-            if (Startup)
+            if (_startup)
             {
                 // Don't bother with position saving if this is the Initial Settings window
                 PathsPage.Show();
@@ -985,7 +986,7 @@ namespace AngelLoader.Forms
                 int pagesLength = Pages.Length;
                 if (index < 0 || index > pagesLength - 1) return;
 
-                bool pagePosWasStored = PageVScrollValues[index] != null;
+                bool pagePosWasStored = _pageVScrollValues[index] != null;
                 try
                 {
                     if (!initialCall && pagePosWasStored) this.SuspendDrawing();
@@ -1005,7 +1006,7 @@ namespace AngelLoader.Forms
                             Pages[index].ShowPage();
                         }
 
-                        PageVScrollValues[index] = null;
+                        _pageVScrollValues[index] = null;
                     }
                 }
                 finally
@@ -1310,7 +1311,7 @@ namespace AngelLoader.Forms
             {
                 Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, LangComboBox.SelectedBackingItem() + ".ini"));
                 Localize();
-                if (!Startup) LocalizeOwnerForm();
+                if (!_startup) LocalizeOwnerForm();
             }
             catch (Exception ex)
             {
@@ -1358,8 +1359,8 @@ namespace AngelLoader.Forms
 
         private void LocalizeOwnerForm()
         {
-            try { OwnerForm!.Localize(); }
-            catch (Exception ex) { Log(nameof(OwnerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex); }
+            try { _ownerForm!.Localize(); }
+            catch (Exception ex) { Log(nameof(_ownerForm) + " was null or some other exotic exception occurred - not supposed to happen", ex); }
         }
 
         /// <summary>
