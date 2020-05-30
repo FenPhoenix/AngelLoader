@@ -295,31 +295,7 @@ namespace AngelLoader
 
             // Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to
             // the old ones.
-            if (gamePathsChanged)
-            {
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    GameIndex gameIndex = (GameIndex)i;
-                    string gameExe = Config.GetGameExe(gameIndex);
-                    // Only try to reset the loader on the old game if the old game was actually specified,
-                    // obviously
-                    if (individualGamePathsChanged[i] && !gameExe.IsWhiteSpace())
-                    {
-                        // For Dark, we need to know if the game exe itself actually exists.
-                        if (GameIsDark(gameIndex) && File.Exists(gameExe))
-                        {
-                            ResetDarkConfigFileValues(gameIndex);
-                        }
-                        else
-                        {
-                            // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game
-                            // itself existing is not technically a requirement.
-                            string soIni = Paths.GetSneakyOptionsIni();
-                            if (!soIni.IsEmpty() && File.Exists(soIni)) FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
-                        }
-                    }
-                }
-            }
+            if (gamePathsChanged) ResetTempGameConfigChanges(individualGamePathsChanged);
 
             // Game paths should have been checked and verified before OK was clicked, so assume they're good here
             for (int i = 0; i < SupportedGameCount; i++)
@@ -1942,12 +1918,6 @@ namespace AngelLoader
 
         #endregion
 
-        private static void ResetDarkConfigFileValues(GameIndex game)
-        {
-            FMInstallAndPlay.SetCamCfgLanguage(Config.GetGamePath(game), "");
-            FMInstallAndPlay.SetDarkFMSelector(game, Config.GetGamePath(game), resetSelector: true);
-        }
-
         internal static async Task DeleteFMArchive(FanMission fm)
         {
             var archives = FindFMArchive_Multiple(fm.Archive);
@@ -2129,35 +2099,64 @@ namespace AngelLoader
             Environment.Exit(exitCode);
         }
 
+        /// <summary>
+        /// Remove our footprints from any config files we may have temporarily stomped on.
+        /// If it fails, oh well. It's no worse than before, we just end up with ourselves as the loader,
+        /// and the user will get a message about that if they start the game later.
+        /// </summary>
+        /// <param name="perGameGoFlags">
+        /// An array of bools, of length <see cref="SupportedGameCount"/>. Each bool says whether to go ahead and
+        /// do the reset work for that game. If false, we skip it.
+        /// </param>
         // @CAN_RUN_BEFORE_VIEW_INIT
-        private static void DoShutdownTasks()
+        private static void ResetTempGameConfigChanges(bool[]? perGameGoFlags = null)
         {
-            // Before shutdown, remove our footprints from any config files we may have temporarily stomped on.
-            // If it fails, oh well. It's no worse than before, we just end up with ourselves as the loader,
-            // and the user will get a message about that if they start the game later.
-            try
+            AssertR(perGameGoFlags == null || perGameGoFlags.Length == SupportedGameCount,
+                nameof(perGameGoFlags) + " length does not match " + nameof(SupportedGameCount));
+
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                for (int i = 0; i < SupportedGameCount; i++)
+                GameIndex gameIndex = (GameIndex)i;
+                string gameExe = Config.GetGameExe(gameIndex);
+                try
                 {
-                    string exe = Config.GetGameExe((GameIndex)i);
-                    if (!exe.IsEmpty())
+                    if ((perGameGoFlags == null || perGameGoFlags[i]) &&
+                        // Only try to un-stomp the configs for the game if the game was actually specified
+                        !gameExe.IsWhiteSpace())
                     {
-                        var game = (GameIndex)i;
-                        if (GameIsDark(game))
+                        // For Dark, we need to know if the game exe itself actually exists.
+                        if (GameIsDark(gameIndex) && File.Exists(gameExe))
                         {
-                            ResetDarkConfigFileValues(game);
+                            FMInstallAndPlay.SetCamCfgLanguage(Config.GetGamePath(gameIndex), "");
+                            FMInstallAndPlay.SetDarkFMSelector(gameIndex, Config.GetGamePath(gameIndex), resetSelector: true);
                         }
                         else
                         {
-                            FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
+                            // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game
+                            // itself existing is not technically a requirement.
+                            string soIni = Paths.GetSneakyOptionsIni();
+                            if (!soIni.IsEmpty() && File.Exists(soIni))
+                            {
+                                FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
+                            }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    Log(nameof(ResetTempGameConfigChanges) + ": Exception trying to unset temp config values\r\n" +
+                        "GameIndex: " + gameIndex + "\r\n" +
+                        "GameExe: " + gameExe,
+                        ex);
+                }
             }
-            catch (Exception ex)
-            {
-                Log("Exception trying to write to config files to unset " + Paths.StubFileName + " as the loader on shutdown", ex);
-            }
+        }
+
+        // @CAN_RUN_BEFORE_VIEW_INIT
+        private static void DoShutdownTasks()
+        {
+            // Currently just this, but we may want to add other things later
+            ResetTempGameConfigChanges();
         }
 
         #endregion
