@@ -963,7 +963,7 @@ namespace AngelLoader.Forms
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (ViewListUnscanned.Count > 0)
+            if (FMsViewListUnscanned.Count > 0)
             {
                 Show();
                 await FMScan.ScanNewFMs();
@@ -1413,7 +1413,7 @@ namespace AngelLoader.Forms
                 {
                     EditFMRatingComboBox.Items[0] = LText.Global.Unrated;
                     if (EditFMLanguageComboBox.Items.Count > 0 &&
-                        EditFMLanguageComboBox.BackingItems[0].EqualsI(DefaultLangKey))
+                        EditFMLanguageComboBox.BackingItems[0].EqualsI(FMLanguages.DefaultLangKey))
                     {
                         EditFMLanguageComboBox.Items[0] = LText.EditFMTab.DefaultLanguage;
                     }
@@ -2651,7 +2651,7 @@ namespace AngelLoader.Forms
                 EditFMRatingComboBox.SelectedIndex = 0;
 
                 EditFMLanguageComboBox.ClearFullItems();
-                EditFMLanguageComboBox.AddFullItem(DefaultLangKey, LText.EditFMTab.DefaultLanguage);
+                EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
                 EditFMLanguageComboBox.SelectedIndex = 0;
 
                 foreach (Control c in EditFMTabPage.Controls)
@@ -2967,12 +2967,12 @@ namespace AngelLoader.Forms
             using (disableEvents ? new DisableEvents(this) : null)
             {
                 EditFMLanguageComboBox.ClearFullItems();
-                EditFMLanguageComboBox.AddFullItem(DefaultLangKey, LText.EditFMTab.DefaultLanguage);
+                EditFMLanguageComboBox.AddFullItem(FMLanguages.DefaultLangKey, LText.EditFMTab.DefaultLanguage);
 
                 if (!GameIsDark(fm.Game))
                 {
                     EditFMLanguageComboBox.SelectedIndex = 0;
-                    fm.SelectedLang = DefaultLangKey;
+                    fm.SelectedLang = FMLanguages.DefaultLangKey;
                     return;
                 }
 
@@ -2980,30 +2980,30 @@ namespace AngelLoader.Forms
 
                 if (doScan)
                 {
-                    FMInstallAndPlay.FillFMSupportedLangs(fm, removeEnglish: false);
+                    FMLanguages.FillFMSupportedLangs(fm, removeEnglish: false);
                 }
 
                 var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
-                var sortedLangs = doScan ? langs : FMInstallAndPlay.SortLangsToSpec(langs);
+                var sortedLangs = doScan ? langs : FMLanguages.SortLangsToSpec(langs);
                 fm.Langs = "";
                 for (int i = 0; i < sortedLangs.Count; i++)
                 {
                     string langLower = sortedLangs[i].ToLowerInvariant();
-                    EditFMLanguageComboBox.AddFullItem(langLower, FMLangsTranslated[langLower]);
+                    EditFMLanguageComboBox.AddFullItem(langLower, FMLanguages.Translated[langLower]);
 
                     // Rewrite the FM's lang string for cleanliness, in case it contains unsupported langs or
                     // other nonsense
-                    if (!langLower.EqualsI(DefaultLangKey))
+                    if (!langLower.EqualsI(FMLanguages.DefaultLangKey))
                     {
                         if (!fm.Langs.IsEmpty()) fm.Langs += ",";
                         fm.Langs += langLower;
                     }
                 }
 
-                if (fm.SelectedLang.EqualsI(DefaultLangKey))
+                if (fm.SelectedLang.EqualsI(FMLanguages.DefaultLangKey))
                 {
                     EditFMLanguageComboBox.SelectedIndex = 0;
-                    fm.SelectedLang = DefaultLangKey;
+                    fm.SelectedLang = FMLanguages.DefaultLangKey;
                 }
                 else
                 {
@@ -3012,7 +3012,7 @@ namespace AngelLoader.Forms
 
                     fm.SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
                         ? EditFMLanguageComboBox.SelectedBackingItem()
-                        : DefaultLangKey;
+                        : FMLanguages.DefaultLangKey;
                 }
             }
         }
@@ -3333,7 +3333,7 @@ namespace AngelLoader.Forms
 
             FMsDGV.GetSelectedFM().SelectedLang = EditFMLanguageComboBox.SelectedIndex > -1
                 ? EditFMLanguageComboBox.SelectedBackingItem()
-                : DefaultLangKey;
+                : FMLanguages.DefaultLangKey;
             Ini.WriteFullFMDataIni();
         }
 

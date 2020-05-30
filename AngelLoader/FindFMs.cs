@@ -526,7 +526,7 @@ namespace AngelLoader
 
         private static void BuildViewList(List<string> fmArchives, List<List<string>> perGameInstalledFMDirsList)
         {
-            ViewListUnscanned.Clear();
+            FMsViewListUnscanned.Clear();
 
             var boolsList = new List<bool?>(SupportedGameCount);
             for (int i = 0; i < SupportedGameCount; i++) boolsList.Add(null);
@@ -595,7 +595,7 @@ namespace AngelLoader
                 #endregion
 
                 // Perf so we don't have to iterate the list again later
-                if (FMNeedsScan(fm)) ViewListUnscanned.Add(i);
+                if (FMNeedsScan(fm)) FMsViewListUnscanned.Add(i);
 
                 fm.Title =
                     !fm.Title.IsEmpty() ? fm.Title :

@@ -295,7 +295,7 @@ namespace AngelLoader
 
             // Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to
             // the old ones.
-            if (gamePathsChanged) ResetTempGameConfigChanges(individualGamePathsChanged);
+            if (gamePathsChanged) GameConfigFiles.ResetGameConfigTempChanges(individualGamePathsChanged);
 
             // Game paths should have been checked and verified before OK was clicked, so assume they're good here
             for (int i = 0; i < SupportedGameCount; i++)
@@ -451,7 +451,7 @@ namespace AngelLoader
             {
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    if (ViewListUnscanned.Count > 0) await FMScan.ScanNewFMs();
+                    if (FMsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs();
                 }
 
                 bool keepSel = !gameOrganizationChanged;
@@ -1721,10 +1721,10 @@ namespace AngelLoader
                 string langLower = Config.Language.ToLowerInvariant();
                 // Because we allow arbitrary languages, it's theoretically possible to get one that doesn't have
                 // a language code.
-                bool langCodeExists = LangCodes.ContainsKey(langLower);
-                string langCode = langCodeExists ? LangCodes[langLower] : "";
-                bool altLangCodeExists = AltLangCodes.ContainsKey(langCode);
-                string altLangCode = altLangCodeExists ? AltLangCodes[langCode] : "";
+                bool langCodeExists = FMLanguages.LangCodes.ContainsKey(langLower);
+                string langCode = langCodeExists ? FMLanguages.LangCodes[langLower] : "";
+                bool altLangCodeExists = FMLanguages.AltLangCodes.ContainsKey(langCode);
+                string altLangCode = altLangCodeExists ? FMLanguages.AltLangCodes[langCode] : "";
 
                 var safeReadmes = new List<string>();
                 foreach (string rf in readmeFiles)
@@ -2099,64 +2099,11 @@ namespace AngelLoader
             Environment.Exit(exitCode);
         }
 
-        /// <summary>
-        /// Remove our footprints from any config files we may have temporarily stomped on.
-        /// If it fails, oh well. It's no worse than before, we just end up with ourselves as the loader,
-        /// and the user will get a message about that if they start the game later.
-        /// </summary>
-        /// <param name="perGameGoFlags">
-        /// An array of bools, of length <see cref="SupportedGameCount"/>. Each bool says whether to go ahead and
-        /// do the reset work for that game. If false, we skip it.
-        /// </param>
-        // @CAN_RUN_BEFORE_VIEW_INIT
-        private static void ResetTempGameConfigChanges(bool[]? perGameGoFlags = null)
-        {
-            AssertR(perGameGoFlags == null || perGameGoFlags.Length == SupportedGameCount,
-                nameof(perGameGoFlags) + " length does not match " + nameof(SupportedGameCount));
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameIndex gameIndex = (GameIndex)i;
-                string gameExe = Config.GetGameExe(gameIndex);
-                try
-                {
-                    if ((perGameGoFlags == null || perGameGoFlags[i]) &&
-                        // Only try to un-stomp the configs for the game if the game was actually specified
-                        !gameExe.IsWhiteSpace())
-                    {
-                        // For Dark, we need to know if the game exe itself actually exists.
-                        if (GameIsDark(gameIndex) && File.Exists(gameExe))
-                        {
-                            FMInstallAndPlay.SetCamCfgLanguage(Config.GetGamePath(gameIndex), "");
-                            FMInstallAndPlay.SetDarkFMSelector(gameIndex, Config.GetGamePath(gameIndex), resetSelector: true);
-                        }
-                        else
-                        {
-                            // For Thief 3, we actually just want to know if SneakyOptions.ini exists. The game
-                            // itself existing is not technically a requirement.
-                            string soIni = Paths.GetSneakyOptionsIni();
-                            if (!soIni.IsEmpty() && File.Exists(soIni))
-                            {
-                                FMInstallAndPlay.SetT3FMSelector(resetSelector: true);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log(nameof(ResetTempGameConfigChanges) + ": Exception trying to unset temp config values\r\n" +
-                        "GameIndex: " + gameIndex + "\r\n" +
-                        "GameExe: " + gameExe,
-                        ex);
-                }
-            }
-        }
-
         // @CAN_RUN_BEFORE_VIEW_INIT
         private static void DoShutdownTasks()
         {
             // Currently just this, but we may want to add other things later
-            ResetTempGameConfigChanges();
+            GameConfigFiles.ResetGameConfigTempChanges();
         }
 
         #endregion

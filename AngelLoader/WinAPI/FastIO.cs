@@ -348,7 +348,7 @@ namespace AngelLoader.WinAPI
                     (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT &&
                     findData.cFileName != "." && findData.cFileName != "..")
                 {
-                    if (FMSupportedLanguages.ContainsI(findData.cFileName))
+                    if (FMLanguages.Supported.ContainsI(findData.cFileName))
                     {
                         // Add lang dir to found langs list, but not to search list - don't search within lang
                         // dirs (matching FMSel behavior)

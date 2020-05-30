@@ -310,7 +310,7 @@ namespace AngelLoader
             {
                 // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
                 // (not FMsViewList)
-                foreach (int index in ViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
+                foreach (int index in FMsViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
             }
             catch
             {
@@ -323,7 +323,7 @@ namespace AngelLoader
             finally
             {
                 // Critical that this gets cleared immediately after use!
-                ViewListUnscanned.Clear();
+                FMsViewListUnscanned.Clear();
             }
 
             if (fmsToScan.Count > 0)
@@ -343,7 +343,7 @@ namespace AngelLoader
         {
             FindFMs.Find();
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (ViewListUnscanned.Count > 0) await ScanNewFMs();
+            if (FMsViewListUnscanned.Count > 0) await ScanNewFMs();
         }
 
         internal static async Task ScanAndFind(List<FanMission> fms, FMScanner.ScanOptions scanOptions)

@@ -34,6 +34,14 @@ namespace AngelLoader
             internal int Index = -1;
         }
 
+        // We might want to add other things (thumbnails etc.) later, so it's a class
+        internal class CacheData
+        {
+            internal readonly List<string> Readmes;
+            internal CacheData() => Readmes = new List<string>();
+            internal CacheData(List<string> readmes) => Readmes = readmes;
+        }
+
         // If some files exist but not all that are in the zip, the user can just re-scan for this data by clicking
         // a button, so don't worry about it
         internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)

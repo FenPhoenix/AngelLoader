@@ -13,6 +13,8 @@ namespace AngelLoader
         // Perf: so we only have to get it once
         internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
 
+        #region Global state
+        
         internal static readonly ConfigData Config = new ConfigData();
 
         #region Categories and tags
@@ -74,7 +76,7 @@ namespace AngelLoader
 
         #endregion
 
-        #region FMs lists
+        #region FM lists
 
         // PERF_TODO: Set capacity later when we read FMData.ini and we count the [FM] entries in the file
         internal static readonly List<FanMission> FMDataIniList = new List<FanMission>();
@@ -82,7 +84,9 @@ namespace AngelLoader
 
         // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned FMs.
         // This will contain indexes into FMDataIniList (not FMsViewList!)
-        internal static readonly List<int> ViewListUnscanned = new List<int>();
+        internal static readonly List<int> FMsViewListUnscanned = new List<int>();
+
+        #endregion
 
         #endregion
 
@@ -113,6 +117,8 @@ namespace AngelLoader
 
         public enum Direction { Left, Right, Up, Down }
 
+        internal enum ReadmeType { PlainText, RichText, HTML, GLML }
+
         #endregion
 
         #region Preset char arrays
@@ -130,65 +136,6 @@ namespace AngelLoader
         internal static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
         #endregion
-
-        internal const string DefaultLangKey = "default";
-
-        // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
-        internal static readonly string[]
-        FMSupportedLanguages =
-        {
-            "english",    // en, eng (must be first)
-            "czech",      // cz
-            "dutch",      // nl
-            "french",     // fr
-            "german",     // de
-            "hungarian",  // hu
-            "italian",    // it
-            "japanese",   // ja, jp
-            "polish",     // pl
-            "russian",    // ru
-            "spanish"     // es
-        };
-
-        internal static readonly Dictionary<string, string>
-        LangCodes = new Dictionary<string, string>(11)
-        {
-            { "english", "en" },
-            { "czech", "cz" },
-            { "dutch", "nl" },
-            { "french", "fr" },
-            { "german", "de" },
-            { "hungarian", "hu" },
-            { "italian", "it" },
-            { "japanese", "ja" },
-            { "polish", "pl" },
-            { "russian", "ru" },
-            { "spanish", "es" }
-        };
-
-        internal static readonly Dictionary<string, string>
-        AltLangCodes = new Dictionary<string, string>(2)
-        {
-            { "en", "eng" },
-            { "ja", "jp" }
-        };
-
-        // For manual selection of language for playing an FM
-        internal static readonly Dictionary<string, string>
-        FMLangsTranslated = new Dictionary<string, string>(11)
-        {
-            { "english", "English" },
-            { "czech", "Čeština" },
-            { "dutch", "Nederlands" },
-            { "french", "Français" },
-            { "german", "Deutsch" },
-            { "hungarian", "Magyar" },
-            { "italian", "Italiano" },
-            { "japanese", "日本語" },
-            { "polish", "Polski" },
-            { "russian", "Русский" },
-            { "spanish", "Español" }
-        };
 
         internal static class Defaults
         {
@@ -228,20 +175,6 @@ namespace AngelLoader
             //internal static ConfigVar CV_ForceOldMantle = new ConfigVar { Command = "-new_mantle" };
             //internal static ConfigVar CV_ForceNewMantle = new ConfigVar { Command = "+new_mantle" };
         }
-
-        #region FM cache (readmes etc.)
-
-        // We might want to add other things (thumbnails etc.) later, so it's a class
-        internal class CacheData
-        {
-            internal readonly List<string> Readmes;
-            internal CacheData() => Readmes = new List<string>();
-            internal CacheData(List<string> readmes) => Readmes = readmes;
-        }
-
-        internal enum ReadmeType { PlainText, RichText, HTML, GLML }
-
-        #endregion
 
         #region Interfaces
 
