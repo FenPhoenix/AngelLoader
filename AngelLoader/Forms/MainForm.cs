@@ -1169,7 +1169,7 @@ namespace AngelLoader.Forms
                 {
                     if (e.Shift && !e.Control && !e.Alt)
                     {
-                        await Core.RefreshFromDisk();
+                        await Core.RefreshFMsListFromDisk();
                         e.SuppressKeyPress = true;
                     }
                     else if (!e.Shift)
@@ -3983,7 +3983,7 @@ namespace AngelLoader.Forms
 
         internal void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
 
-        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFromDisk();
+        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFMsListFromDisk();
 
         private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 

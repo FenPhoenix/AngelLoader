@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
@@ -10,6 +12,209 @@ namespace AngelLoader
 {
     internal static class GameConfigFiles
     {
+        #region Read
+
+        internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
+                         List<string> FMSelectorLines, bool AlwaysShowLoader)
+        GetInfoFromCamModIni(string gamePath, out Error error, bool langOnly = false)
+        {
+            string CreateAndReturnFMsPath()
+            {
+                string fmsPath = Path.Combine(gamePath, "FMs");
+                try
+                {
+                    Directory.CreateDirectory(fmsPath);
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception creating FM installed base dir", ex);
+                }
+
+                return fmsPath;
+            }
+
+            var fmSelectorLines = new List<string>();
+            bool alwaysShowLoader = false;
+
+            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
+            {
+                //error = Error.CamModIniNotFound;
+                error = Error.None;
+                return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false);
+            }
+
+            string path = "";
+            string fm_language = "";
+            bool fm_language_forced = false;
+
+            using (var sr = new StreamReader(camModIni))
+            {
+                /*
+                 Conforms to the way NewDark reads it:
+                 - Zero or more whitespace characters allowed at the start of the line (before the key)
+                 - The key-value separator is one or more whitespace characters
+                 - Keys are case-insensitive
+                 - If duplicate keys exist, later ones replace earlier ones
+                 - Comment lines start with ;
+                 - No section headers
+                */
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.IsEmpty()) continue;
+
+                    line = line.TrimStart();
+
+                    // Quick check; these lines will be checked more thoroughly when we go to use them
+                    if (!langOnly && line.ContainsI("fm_selector")) fmSelectorLines.Add(line);
+                    if (!langOnly && line.Trim().EqualsI("fm")) alwaysShowLoader = true;
+
+                    if (line.IsEmpty() || line[0] == ';') continue;
+
+                    if (!langOnly && line.StartsWithI(@"fm_path") && line.Length > 7 && char.IsWhiteSpace(line[7]))
+                    {
+                        path = line.Substring(7).Trim();
+                    }
+                    else if (line.StartsWithI(@"fm_language") && line.Length > 11 && char.IsWhiteSpace(line[11]))
+                    {
+                        fm_language = line.Substring(11).Trim();
+                    }
+                    else if (line.StartsWithI(@"fm_language_forced"))
+                    {
+                        if (line.Trim().Length == 18)
+                        {
+                            fm_language_forced = true;
+                        }
+                        else if (char.IsWhiteSpace(line[18]))
+                        {
+                            fm_language_forced = line.Substring(18).Trim() != "0";
+                        }
+                    }
+                }
+            }
+
+            if (langOnly)
+            {
+                error = Error.None;
+                return ("", fm_language, fm_language_forced, new List<string>(), false);
+            }
+
+            if (PathIsRelative(path))
+            {
+                try
+                {
+                    path = RelativeToAbsolute(gamePath, path);
+                }
+                catch (Exception)
+                {
+                    error = Error.None;
+                    return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
+                }
+            }
+
+            error = Error.None;
+            return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(),
+                fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
+        }
+
+        internal static (Error Error, bool UseCentralSaves, string FMInstallPath,
+                        string PrevFMSelectorValue, bool AlwaysShowLoader)
+        GetInfoFromSneakyOptionsIni()
+        {
+            string soIni = Paths.GetSneakyOptionsIni();
+            Error soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
+            if (soError != Error.None)
+            {
+                // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
+                MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return (soError, false, "", "", false);
+            }
+
+            bool ignoreSavesKeyFound = false;
+            bool ignoreSavesKey = true;
+
+            bool fmInstPathFound = false;
+            string fmInstPath = "";
+
+            bool externSelectorFound = false;
+            string prevFMSelectorValue = "";
+
+            bool alwaysShowLoaderFound = false;
+            bool alwaysShowLoader = false;
+
+            string[] lines = File.ReadAllLines(soIni);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string lineT = lines[i].Trim();
+                if (lineT.EqualsI("[Loader]"))
+                {
+                    /*
+                     Conforms to the way Sneaky Upgrade reads it:
+                     - Whitespace allowed on both sides of section headers (but not within brackets)
+                     - Section headers and keys are case-insensitive
+                     - Key-value separator is '='
+                     - Whitespace allowed on left side of key (but not right side before '=')
+                     - Case-insensitive "true" is true, anything else is false
+                     - If duplicate keys exist, the earliest one is used
+                    */
+                    while (i < lines.Length - 1)
+                    {
+                        string lt = lines[i + 1].Trim();
+                        if (!ignoreSavesKeyFound &&
+                            !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSavesKey="))
+                        {
+                            ignoreSavesKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
+                            ignoreSavesKeyFound = true;
+                        }
+                        else if (!fmInstPathFound &&
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("InstallPath="))
+                        {
+                            fmInstPath = lt.Substring(lt.IndexOf('=') + 1).Trim();
+                            fmInstPathFound = true;
+                        }
+                        else if (!externSelectorFound &&
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("ExternSelector="))
+                        {
+                            prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
+                            externSelectorFound = true;
+                        }
+                        else if (!alwaysShowLoaderFound &&
+                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("AlwaysShow="))
+                        {
+                            alwaysShowLoader = lt.Substring(lt.IndexOf('=') + 1).Trim().EqualsTrue();
+                            alwaysShowLoaderFound = true;
+                        }
+                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+
+                        // TODO: @Robustness: Easy to forget to add stuff here, and I don't think we need this really
+                        // as long as we're only in the Loader section, it doesn't really give a speedup I don't
+                        // think
+                        if (ignoreSavesKeyFound &&
+                            fmInstPathFound &&
+                            externSelectorFound &&
+                            alwaysShowLoaderFound)
+                        {
+                            break;
+                        }
+
+                        i++;
+                    }
+                    break;
+                }
+            }
+
+            return fmInstPathFound
+                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
+                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, alwaysShowLoader);
+        }
+
+        #endregion
+
+        #region Write
+
         /// <summary>
         /// Remove our footprints from any config files we may have temporarily stomped on.
         /// If it fails, oh well. It's no worse than before, we just end up with ourselves as the loader,
@@ -553,6 +758,8 @@ namespace AngelLoader
 
             return true;
         }
+
+        #endregion
 
         #endregion
     }

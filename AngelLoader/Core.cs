@@ -23,8 +23,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
-using AngelLoader.Forms.Import;
-using AngelLoader.Importing;
 using AngelLoader.WinAPI;
 using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.GameSupport;
@@ -473,11 +471,11 @@ namespace AngelLoader
         /// Sets the per-game config data that we pull directly from the game folders on disk. Game paths,
         /// FM install paths, editors detected, pre-modification cam_mod.ini lines, etc.
         /// </summary>
-        /// <param name="game"></param>
+        /// <param name="gameIndex"></param>
         /// <param name="storeConfigInfo"></param>
-        private static void SetGameDataFromDisk(GameIndex game, bool storeConfigInfo)
+        private static void SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
         {
-            string gameExe = Config.GetGameExe(game);
+            string gameExe = Config.GetGameExe(gameIndex);
             bool gameExeSpecified = !gameExe.IsWhiteSpace();
 
             string gamePath = "";
@@ -494,16 +492,16 @@ namespace AngelLoader
             }
 
             // This must come first, so below methods can use it
-            Config.SetGamePath(game, gamePath);
-            if (GameIsDark(game))
+            Config.SetGamePath(gameIndex, gamePath);
+            if (GameIsDark(gameIndex))
             {
                 var data = gameExeSpecified
-                    ? GetInfoFromCamModIni(gamePath, out Error _)
+                    ? GameConfigFiles.GetInfoFromCamModIni(gamePath, out Error _)
                     : (FMsPath: "", FMLanguage: "", FMLanguageForced: false, FMSelectorLines: new List<string>(),
                         AlwaysShowLoader: false);
 
-                Config.SetFMInstallPath(game, data.FMsPath);
-                Config.SetGameEditorDetected(game, gameExeSpecified && !GetEditorExe(game).IsEmpty());
+                Config.SetFMInstallPath(gameIndex, data.FMsPath);
+                Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !GetEditorExe(gameIndex).IsEmpty());
 #if false
                 Config.SetPerGameFMLanguage(game, data.FMLanguage);
                 Config.SetPerGameFMForcedLanguage(game, data.FMLanguageForced);
@@ -513,23 +511,23 @@ namespace AngelLoader
                 {
                     if (gameExeSpecified)
                     {
-                        Config.SetStartupFMSelectorLines(game, data.FMSelectorLines);
-                        Config.SetStartupAlwaysStartSelector(game, data.AlwaysShowLoader);
+                        Config.SetStartupFMSelectorLines(gameIndex, data.FMSelectorLines);
+                        Config.SetStartupAlwaysStartSelector(gameIndex, data.AlwaysShowLoader);
                     }
                     else
                     {
-                        Config.GetStartupFMSelectorLines(game).Clear();
-                        Config.SetStartupAlwaysStartSelector(game, false);
+                        Config.GetStartupFMSelectorLines(gameIndex).Clear();
+                        Config.SetStartupAlwaysStartSelector(gameIndex, false);
                     }
                 }
 
-                if (game == Thief2) Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe().IsEmpty();
+                if (gameIndex == Thief2) Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe().IsEmpty();
             }
             else
             {
                 if (gameExeSpecified)
                 {
-                    var t3Data = GetInfoFromSneakyOptionsIni();
+                    var t3Data = GameConfigFiles.GetInfoFromSneakyOptionsIni();
                     if (t3Data.Error == Error.None)
                     {
                         Config.SetFMInstallPath(Thief3, t3Data.FMInstallPath);
@@ -637,7 +635,7 @@ namespace AngelLoader
             }
         }
 
-        public static async Task RefreshFromDisk()
+        public static async Task RefreshFMsListFromDisk()
         {
             SelectedFM? selFM = View.GetSelectedFMPosInfo();
             using (new DisableEvents(View)) await FMScan.FindNewFMsAndScanNew();
@@ -1022,207 +1020,6 @@ namespace AngelLoader
 
             #endregion
         }
-
-        #region Get info from game config files
-
-        internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
-                         List<string> FMSelectorLines, bool AlwaysShowLoader)
-        GetInfoFromCamModIni(string gamePath, out Error error, bool langOnly = false)
-        {
-            string CreateAndReturnFMsPath()
-            {
-                string fmsPath = Path.Combine(gamePath, "FMs");
-                try
-                {
-                    Directory.CreateDirectory(fmsPath);
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception creating FM installed base dir", ex);
-                }
-
-                return fmsPath;
-            }
-
-            var fmSelectorLines = new List<string>();
-            bool alwaysShowLoader = false;
-
-            if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
-            {
-                //error = Error.CamModIniNotFound;
-                error = Error.None;
-                return (!langOnly ? CreateAndReturnFMsPath() : "", "", false, fmSelectorLines, false);
-            }
-
-            string path = "";
-            string fm_language = "";
-            bool fm_language_forced = false;
-
-            using (var sr = new StreamReader(camModIni))
-            {
-                /*
-                 Conforms to the way NewDark reads it:
-                 - Zero or more whitespace characters allowed at the start of the line (before the key)
-                 - The key-value separator is one or more whitespace characters
-                 - Keys are case-insensitive
-                 - If duplicate keys exist, later ones replace earlier ones
-                 - Comment lines start with ;
-                 - No section headers
-                */
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.IsEmpty()) continue;
-
-                    line = line.TrimStart();
-
-                    // Quick check; these lines will be checked more thoroughly when we go to use them
-                    if (!langOnly && line.ContainsI("fm_selector")) fmSelectorLines.Add(line);
-                    if (!langOnly && line.Trim().EqualsI("fm")) alwaysShowLoader = true;
-
-                    if (line.IsEmpty() || line[0] == ';') continue;
-
-                    if (!langOnly && line.StartsWithI(@"fm_path") && line.Length > 7 && char.IsWhiteSpace(line[7]))
-                    {
-                        path = line.Substring(7).Trim();
-                    }
-                    else if (line.StartsWithI(@"fm_language") && line.Length > 11 && char.IsWhiteSpace(line[11]))
-                    {
-                        fm_language = line.Substring(11).Trim();
-                    }
-                    else if (line.StartsWithI(@"fm_language_forced"))
-                    {
-                        if (line.Trim().Length == 18)
-                        {
-                            fm_language_forced = true;
-                        }
-                        else if (char.IsWhiteSpace(line[18]))
-                        {
-                            fm_language_forced = line.Substring(18).Trim() != "0";
-                        }
-                    }
-                }
-            }
-
-            if (langOnly)
-            {
-                error = Error.None;
-                return ("", fm_language, fm_language_forced, new List<string>(), false);
-            }
-
-            if (PathIsRelative(path))
-            {
-                try
-                {
-                    path = RelativeToAbsolute(gamePath, path);
-                }
-                catch (Exception)
-                {
-                    error = Error.None;
-                    return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
-                }
-            }
-
-            error = Error.None;
-            return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(),
-                fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
-        }
-
-        private static (Error Error, bool UseCentralSaves, string FMInstallPath,
-                        string PrevFMSelectorValue, bool AlwaysShowLoader)
-        GetInfoFromSneakyOptionsIni()
-        {
-            string soIni = Paths.GetSneakyOptionsIni();
-            Error soError = soIni.IsEmpty() ? Error.SneakyOptionsNoRegKey : !File.Exists(soIni) ? Error.SneakyOptionsNotFound : Error.None;
-            if (soError != Error.None)
-            {
-                // Has to be MessageBox (not View.ShowAlert()) because the view may not have been created yet
-                MessageBox.Show(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return (soError, false, "", "", false);
-            }
-
-            bool ignoreSavesKeyFound = false;
-            bool ignoreSavesKey = true;
-
-            bool fmInstPathFound = false;
-            string fmInstPath = "";
-
-            bool externSelectorFound = false;
-            string prevFMSelectorValue = "";
-
-            bool alwaysShowLoaderFound = false;
-            bool alwaysShowLoader = false;
-
-            string[] lines = File.ReadAllLines(soIni);
-            for (int i = 0; i < lines.Length; i++)
-            {
-                string lineT = lines[i].Trim();
-                if (lineT.EqualsI("[Loader]"))
-                {
-                    /*
-                     Conforms to the way Sneaky Upgrade reads it:
-                     - Whitespace allowed on both sides of section headers (but not within brackets)
-                     - Section headers and keys are case-insensitive
-                     - Key-value separator is '='
-                     - Whitespace allowed on left side of key (but not right side before '=')
-                     - Case-insensitive "true" is true, anything else is false
-                     - If duplicate keys exist, the earliest one is used
-                    */
-                    while (i < lines.Length - 1)
-                    {
-                        string lt = lines[i + 1].Trim();
-                        if (!ignoreSavesKeyFound &&
-                            !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("IgnoreSavesKey="))
-                        {
-                            ignoreSavesKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
-                            ignoreSavesKeyFound = true;
-                        }
-                        else if (!fmInstPathFound &&
-                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("InstallPath="))
-                        {
-                            fmInstPath = lt.Substring(lt.IndexOf('=') + 1).Trim();
-                            fmInstPathFound = true;
-                        }
-                        else if (!externSelectorFound &&
-                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("ExternSelector="))
-                        {
-                            prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
-                            externSelectorFound = true;
-                        }
-                        else if (!alwaysShowLoaderFound &&
-                                 !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI("AlwaysShow="))
-                        {
-                            alwaysShowLoader = lt.Substring(lt.IndexOf('=') + 1).Trim().EqualsTrue();
-                            alwaysShowLoaderFound = true;
-                        }
-                        else if (!lt.IsEmpty() && lt[0] == '[' && lt[lt.Length - 1] == ']')
-                        {
-                            break;
-                        }
-
-                        // TODO: @Robustness: Easy to forget to add stuff here, and I don't think we need this really
-                        // as long as we're only in the Loader section, it doesn't really give a speedup I don't
-                        // think
-                        if (ignoreSavesKeyFound &&
-                            fmInstPathFound &&
-                            externSelectorFound &&
-                            alwaysShowLoaderFound)
-                        {
-                            break;
-                        }
-
-                        i++;
-                    }
-                    break;
-                }
-            }
-
-            return fmInstPathFound
-                ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
-                : (Error.T3FMInstPathNotFound, false, "", prevFMSelectorValue, alwaysShowLoader);
-        }
-
-        #endregion
 
         #region DML
 
@@ -1788,6 +1585,20 @@ namespace AngelLoader
             Config.ReadmeZoomFactor = readmeZoomFactor;
         }
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
+        internal static void EnvironmentExitDoShutdownTasks(int exitCode)
+        {
+            DoShutdownTasks();
+            Environment.Exit(exitCode);
+        }
+
+        // @CAN_RUN_BEFORE_VIEW_INIT
+        private static void DoShutdownTasks()
+        {
+            // Currently just this, but we may want to add other things later
+            GameConfigFiles.ResetGameConfigTempChanges();
+        }
+
         internal static void Shutdown()
         {
             try
@@ -1804,20 +1615,6 @@ namespace AngelLoader
             DoShutdownTasks();
 
             Application.Exit();
-        }
-
-        // @CAN_RUN_BEFORE_VIEW_INIT
-        internal static void EnvironmentExitDoShutdownTasks(int exitCode)
-        {
-            DoShutdownTasks();
-            Environment.Exit(exitCode);
-        }
-
-        // @CAN_RUN_BEFORE_VIEW_INIT
-        private static void DoShutdownTasks()
-        {
-            // Currently just this, but we may want to add other things later
-            GameConfigFiles.ResetGameConfigTempChanges();
         }
 
         #endregion
