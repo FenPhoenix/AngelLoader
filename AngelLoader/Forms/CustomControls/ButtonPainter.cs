@@ -4,6 +4,8 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
+    // Normally you would use images pulled from Resources for this. But to avoid bloating up our executable and
+    // bogging down startup time, we just draw images ourselves where it's reasonable to do so.
     internal static class ButtonPainter
     {
         #region Global
