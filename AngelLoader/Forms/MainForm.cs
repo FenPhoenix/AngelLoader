@@ -2322,11 +2322,11 @@ namespace AngelLoader.Forms
             ShowMenu(ImportFromLLMenu.ImportFromMenu, ImportButton, MenuPos.TopLeft);
         }
 
-        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromDarkLoader();
+        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromDarkLoader();
 
-        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromNDLOrFMSel(ImportType.FMSel);
+        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromNDLOrFMSel(ImportType.FMSel);
 
-        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await Core.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
+        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
 #if DEBUG
         internal async void ImportFromMultipleLoadersMenuItem_Click(object sender, EventArgs e)
