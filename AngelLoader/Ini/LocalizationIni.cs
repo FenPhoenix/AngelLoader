@@ -394,6 +394,14 @@ namespace AngelLoader
                         {
                             LText.AlertMessages.DeleteFM_UnableToDelete = lt.Substring(24);
                         }
+                        else if (lt.StartsWithFast_NoNullChecks("Help_HelpFileNotFound="))
+                        {
+                            LText.AlertMessages.Help_HelpFileNotFound = lt.Substring(22);
+                        }
+                        else if (lt.StartsWithFast_NoNullChecks("Help_UnableToOpenHelpFile="))
+                        {
+                            LText.AlertMessages.Help_UnableToOpenHelpFile = lt.Substring(26);
+                        }
                         else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
                         {
                             break;

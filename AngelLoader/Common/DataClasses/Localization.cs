@@ -179,6 +179,9 @@ Example: English should be English, French should be Français, etc.")]
             internal static string FindFMs_ExceptionReadingFMDataIni = "There was a problem reading the FM data ini file. See the log file for error details.";
             [FenGenBlankLine]
             internal static string DeleteFM_UnableToDelete = "The following FM archive could not be deleted:";
+            [FenGenBlankLine]
+            internal static string Help_HelpFileNotFound = "Help file not found.";
+            internal static string Help_UnableToOpenHelpFile = "Unable to open help file.";
         }
 
         internal static class FMDeletion

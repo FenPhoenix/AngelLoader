@@ -1431,8 +1431,14 @@ namespace AngelLoader
 
             // TODO: Un-hardcode this
             string helpFile = "file://" + Path.Combine(Paths.Doc, "AngelLoader documentation.html");
-            string finalPath;
 
+            if (!File.Exists(helpFile))
+            {
+                View.ShowAlert(LText.AlertMessages.Help_HelpFileNotFound, LText.AlertMessages.Alert);
+                return;
+            }
+
+            string finalPath;
             try
             {
                 File.WriteAllText(Paths.HelpRedirectFilePath, @"<meta http-equiv=""refresh"" content=""0; URL=" + helpFile + section + @""" />");
@@ -1451,7 +1457,7 @@ namespace AngelLoader
             catch (Exception ex)
             {
                 Log(nameof(OpenHelpFile) + ": Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
-                MessageBox.Show("Unable to open help file.");
+                View.ShowAlert(LText.AlertMessages.Help_UnableToOpenHelpFile, LText.AlertMessages.Alert);
             }
         }
 
