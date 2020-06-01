@@ -3,20 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-using AngelLoader.WinAPI;
 using AngelLoader.WinAPI.Ookii.Dialogs;
 using SevenZip;
 using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
-#pragma warning disable CS8509 // Switch expression doesn't handle all possible inputs
 
 namespace AngelLoader
 {
