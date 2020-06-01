@@ -422,8 +422,6 @@ namespace AngelLoader
                 return false;
             }
 
-            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
-
             bool changeLoaderIfResetting = true;
 
             if (resetSelector)
@@ -447,7 +445,7 @@ namespace AngelLoader
                 }
 
                 if (tempSelectorsList.Count > 0 &&
-                   !tempSelectorsList[tempSelectorsList.Count - 1].PathEqualsI(stubPath))
+                   !tempSelectorsList[tempSelectorsList.Count - 1].PathEqualsI(Paths.StubPath))
                 {
                     changeLoaderIfResetting = false;
                 }
@@ -459,8 +457,8 @@ namespace AngelLoader
             var startupFMSelectorLines = Config.GetStartupFMSelectorLines(game);
             string selectorPath = resetSelector
                 ? FindPreviousSelector(startupFMSelectorLines.Count > 0 ? startupFMSelectorLines : lines,
-                    fmSelectorKey, stubPath, gamePath)
-                : stubPath;
+                    fmSelectorKey, Paths.StubPath, gamePath)
+                : Paths.StubPath;
 
             bool prevAlwaysLoadSelector = Config.GetStartupAlwaysStartSelector(game);
 
@@ -629,8 +627,6 @@ namespace AngelLoader
 
             // Confirmed SU can read the selector value with both forward and backward slashes
 
-            string stubPath = Path.Combine(Paths.Startup, Paths.StubFileName);
-
             string selectorPath;
 
             bool changeLoaderIfResetting = true;
@@ -671,7 +667,7 @@ namespace AngelLoader
                 #endregion
 
                 // If loader is not us, leave it be
-                if (!prevFMSelectorValue.PathEqualsI(stubPath) &&
+                if (!prevFMSelectorValue.PathEqualsI(Paths.StubPath) &&
                     !(startupFMSelectorLines.Count > 0 &&
                      startupFMSelectorLines[0].PathEqualsI(Paths.StubFileName)))
                 {
@@ -687,14 +683,14 @@ namespace AngelLoader
                 else
                 {
                     selectorPath = startupFMSelectorLines.Count == 0 ||
-                                   !startupFMSelectorLines[0].PathEqualsI(stubPath)
+                                   !startupFMSelectorLines[0].PathEqualsI(Paths.StubPath)
                         ? startupFMSelectorLines[0]
                         : Paths.FMSelDll;
                 }
             }
             else
             {
-                selectorPath = stubPath;
+                selectorPath = Paths.StubPath;
             }
 
             #endregion

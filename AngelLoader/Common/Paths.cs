@@ -119,6 +119,7 @@ namespace AngelLoader
         #endregion
 
         internal const string StubFileName = "AngelLoader_Stub.dll";
+        internal static readonly string StubPath = Path.Combine(Startup, StubFileName);
 
         internal const string FMBackupSuffix = ".FMSelBak.zip";
 
