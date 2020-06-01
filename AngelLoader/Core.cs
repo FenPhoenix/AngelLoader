@@ -1430,20 +1430,18 @@ namespace AngelLoader
             Paths.CreateOrClearTempPath(Paths.HelpTemp);
 
             // TODO: Un-hardcode this
-            string helpSectionURIBase = "file://" + Path.Combine(Paths.Doc, "AngelLoader documentation.html");
-            string helpSectionURI = helpSectionURIBase + section;
-
+            string helpFile = "file://" + Path.Combine(Paths.Doc, "AngelLoader documentation.html");
             string finalPath;
 
             try
             {
-                File.WriteAllText(Paths.HelpRedirectFilePath, @"<meta http-equiv=""refresh"" content=""0; URL=" + helpSectionURI + @""" />");
+                File.WriteAllText(Paths.HelpRedirectFilePath, @"<meta http-equiv=""refresh"" content=""0; URL=" + helpFile + section + @""" />");
                 finalPath = Paths.HelpRedirectFilePath;
             }
             catch (Exception ex)
             {
                 Log(nameof(OpenHelpFile) + ": Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
-                finalPath = helpSectionURIBase;
+                finalPath = helpFile;
             }
 
             try
