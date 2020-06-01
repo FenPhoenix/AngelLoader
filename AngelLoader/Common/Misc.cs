@@ -14,7 +14,7 @@ namespace AngelLoader
         internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
 
         #region Global state
-        
+
         internal static readonly ConfigData Config = new ConfigData();
 
         #region Categories and tags
@@ -118,6 +118,27 @@ namespace AngelLoader
         public enum Direction { Left, Right, Up, Down }
 
         internal enum ReadmeType { PlainText, RichText, HTML, GLML }
+
+        internal static class HelpSections
+        {
+            internal const string InitialSettings = "#initial_setup";
+            internal const string PathsSettings = "#settings_paths_section";
+            internal const string FMDisplaySettings = "#settings_fm_display_section";
+            internal const string OtherSettings = "#settings_other_section";
+
+            internal const string MainWindow = "#main_window";
+            internal const string MissionList = "#mission_list";
+            internal const string ColumnHeaderContextMenu = "#column_header_context_menu";
+            internal const string FMContextMenu = "#fm_context_menu";
+            
+            internal const string StatsTab = "#stats_tab";
+            internal const string EditFMTab = "#edit_fm_tab";
+            internal const string CommentTab = "#comment_tab";
+            internal const string TagsTag = "#tags_tab";
+            internal const string PatchTab = "#patch_tab";
+
+            internal const string ReadmeArea = "#readme_area";
+        }
 
         #endregion
 

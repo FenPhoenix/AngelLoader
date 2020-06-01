@@ -24,6 +24,10 @@ namespace AngelLoader
 
         private static readonly string _baseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
 
+        internal static readonly string HelpTemp = Path.Combine(_baseTemp, "Help");
+
+        internal static readonly string HelpRedirectFilePath = Path.Combine(HelpTemp, "redir.html");
+
         internal static readonly string FMScannerTemp = Path.Combine(_baseTemp, "FMScan");
 
         internal static readonly string StubCommTemp = Path.Combine(_baseTemp, "Stub");
@@ -140,6 +144,8 @@ namespace AngelLoader
         internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");
 
         internal static readonly string Data = Path.Combine(Startup, "Data");
+
+        internal static readonly string Doc = Path.Combine(Startup, "doc");
 
         internal static readonly string Languages = Path.Combine(Data, "Languages");
 

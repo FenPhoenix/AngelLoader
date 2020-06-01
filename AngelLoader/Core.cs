@@ -1415,6 +1415,48 @@ namespace AngelLoader
             }
         }
 
+        internal static void OpenHelpFile(string section)
+        {
+            /*
+             We want to go directly to the relevant section of the manual, but Process.Start() won't let us open
+             a file URL with an anchor tag stuck on the end. We could try to detect the user's default browser
+             and start it directly with the passed file URL and that would work, but finding the default browser
+             appears to be of dubious reliability and I wouldn't trust it to be future proof as far as I could
+             throw it. So we just do this crappy hack where we make a temp file that just redirects to our anchor-
+             postfixed URL and then open that with Process.Start(). We get auto-navigated to our section and there
+             you go.
+            */
+
+            Paths.CreateOrClearTempPath(Paths.HelpTemp);
+
+            // TODO: Un-hardcode this
+            string helpSectionURIBase = "file://" + Path.Combine(Paths.Doc, "AngelLoader documentation.html");
+            string helpSectionURI = helpSectionURIBase + section;
+
+            string finalPath;
+
+            try
+            {
+                File.WriteAllText(Paths.HelpRedirectFilePath, @"<meta http-equiv=""refresh"" content=""0; URL=" + helpSectionURI + @""" />");
+                finalPath = Paths.HelpRedirectFilePath;
+            }
+            catch (Exception ex)
+            {
+                Log(nameof(OpenHelpFile) + ": Exception writing temp help redirect file. Using un-anchored path (help file will be positioned at top, not at requested section)...", ex);
+                finalPath = helpSectionURIBase;
+            }
+
+            try
+            {
+                ProcessStart_UseShellExecute(finalPath);
+            }
+            catch (Exception ex)
+            {
+                Log(nameof(OpenHelpFile) + ": Exception in " + nameof(ProcessStart_UseShellExecute) + ". Couldn't open help file.", ex);
+                MessageBox.Show("Unable to open help file.");
+            }
+        }
+
         internal static void OpenLink(string link)
         {
             try

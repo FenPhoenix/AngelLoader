@@ -133,7 +133,7 @@ Whenever new FMs are detected, they will be automatically scanned. If you cancel
 <h4>Filter bar</h4>
 Here you can choose to filter your FM list by game, title, author, release date, last played date, tags, finished status, and rating. If you've chosen to organize your games by tab, then these tabs will take the place of the game filter buttons.
 
-<h4><a name="show_junk" />Show FMs marked as "unsupported game or non-FM archive"</h4>
+<h4><a name="show_unsupported" />Show FMs marked as "unsupported game or non-FM archive"</h4>
 This allows archives marked as Unknown (<img src="images/red_circle_question_mark_21.png" />) (archives that were rejected as not being FMs) to be displayed in the list. If support for new games is added in the future, you can use this to show previously unsupported FMs so you can re-scan them individually if you wish.
 
 <h4><a name="show_recent_at_top" />Show recently added FMs at the top of the list</h4>
@@ -156,7 +156,7 @@ Resets the main window to its default proportions.
 <h4>Draggable splitters</h4>
 You can drag these horizontally or vertically to resize the sections of the window. If you drag at the corner between the two splitters, you can resize all three main sections at once.
 
-<h4>Readme area</h4>
+<h4><a name="readme_area" />Readme area</h4>
 Here is where the selected FM's readme is displayed. If there are multiple readmes, AngelLoader will attempt to detect one that doesn't contain spoilers (lootlists, walkthroughs, etc.).
 If it finds one, it will choose that readme automatically. If a non-spoiler readme is unable to be detected with certainty, you will be given a choice of which readme to view.
 In this case, this list of readmes will be the only thing displayed in the readme section. Once you've selected a readme, you will thereafter
@@ -216,7 +216,7 @@ Displays an icon based on which game the mission is for. If unknown, it will be 
 <img src="images/Thief2_21.png" /> - Thief II<br>
 <img src="images/Thief3_21.png" /> - Thief: Deadly Shadows<br>
 <img src="images/Shock2_21.png" /> - System Shock 2<br>
-<img src="images/red_circle_question_mark_21.png" /> - Unsupported mission or non-mission archive (these only appear when the <a href="#show_junk">Show Unsupported</a> filter is enabled).</p>
+<img src="images/red_circle_question_mark_21.png" /> - Unsupported mission or non-mission archive (these only appear when the <a href="#show_unsupported">Show Unsupported</a> filter is enabled).</p>
 
 <h4>Installed</h4>
 Displays a <img src="images/green_check_21.png" /> icon if an FM is installed; otherwise remains blank.
@@ -318,7 +318,7 @@ These tabs allow you to edit the selected FM's data and to view more detailed in
 <h4>Collapse / expand button</h4>
 Click this to collapse (hide) the top-right section. Click it again to expand it.
 
-<h4>Statistics tab</h4>
+<h4><a name="stats_tab" />Statistics tab</h4>
 
 <p><img src="images/stats_tab.png" /></p>
 
@@ -350,19 +350,19 @@ You can disable certain mods per-mission here. To see which mods you have instal
 <h4>Language selection</h4>
 Here you can choose to play an FM in a particular language. Only languages the FM supports will be available.
 
-<h4>Comment tab</h4>
+<h4><a name="comment_tab" />Comment tab</h4>
 
 <p><img src="images/comment_tab.png" /></p>
 
 Here you can enter a comment for the FM. This comment will also be displayed in the Comments column (up to the first 100 characters or the first linebreak, whichever comes first), and will update as you type.
 
-<h4>Tags tab</h4>
+<h4><a name="tags_tab" />Tags tab</h4>
 
 <p><img src="images/tags_tab.png" /></p>
 
 Here you can manage the FM's tags. You can click the <b>Add from list...</b> button to choose a tag from the global list (which includes standard presets as well as any other tags that have been found for any other FMs), or you can start typing in the textbox to see a real-time list of tags and categories that match what you've typed. If no matching tag or category is found, a new one is created. The format for creating a new tag is <code>category: tag</code>. If you don't specify a category when creating a new tag, that tag will be placed in the <code>misc</code> category.
 
-<h4>Patch &amp; Customize tab</h4>
+<h4><a name="patch_tab" />Patch &amp; Customize tab</h4>
 
 <p><img src="images/patch_tab.png" /></p>
 

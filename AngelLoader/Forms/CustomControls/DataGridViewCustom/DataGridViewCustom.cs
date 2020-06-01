@@ -99,6 +99,10 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        internal bool FMContextMenuVisible => FMContextMenu?.Visible == true;
+
+        internal bool ColumnHeaderMenuVisible => ColumnHeaderLLMenu.Visible;
+
         #region Get FM / FM data
 
         /// <summary>

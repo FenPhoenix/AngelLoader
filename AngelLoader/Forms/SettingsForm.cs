@@ -1355,6 +1355,17 @@ namespace AngelLoader.Forms
                     Close();
                 }
             }
+            else if (e.KeyCode == Keys.F1)
+            {
+                string section =
+                    _startup ? HelpSections.InitialSettings :
+                    PathsPage.IsVisible ? HelpSections.PathsSettings :
+                    FMDisplayPage.IsVisible ? HelpSections.FMDisplaySettings :
+                    OtherPage.IsVisible ? HelpSections.OtherSettings :
+                    "";
+
+                if (!section.IsEmpty()) Core.OpenHelpFile(section);
+            }
         }
 
         private void LocalizeOwnerForm()

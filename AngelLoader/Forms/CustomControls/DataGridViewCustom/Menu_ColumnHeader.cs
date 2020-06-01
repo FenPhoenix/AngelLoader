@@ -97,9 +97,11 @@ namespace AngelLoader.Forms.CustomControls
 
             #endregion
 
-            #region Internal methods
+            #region API methods
 
             internal static ContextMenuStrip? GetContextMenu() => ColumnHeaderContextMenu;
+
+            internal static bool Visible => _constructed && ColumnHeaderContextMenu!.Visible;
 
             internal static void Construct(DataGridViewCustom owner)
             {

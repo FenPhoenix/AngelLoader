@@ -684,6 +684,20 @@ namespace AngelLoader.Forms
             else if (m.Msg == InteropMisc.WM_KEYDOWN)
             {
                 if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
+
+                int wParam = (int)m.WParam;
+
+                if (wParam == (int)Keys.F1 && CanFocus)
+                {
+                    string section =
+                        FMsDGV.FMContextMenuVisible ? HelpSections.FMContextMenu :
+                        FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
+                        // TODO: How to handle context-sensitive F1 pressing?
+                        // We could go by focus or by mouseover... each would be imperfect. Hm.
+                        HelpSections.MainWindow;
+
+                    Core.OpenHelpFile(section);
+                }
             }
             else if (m.Msg == InteropMisc.WM_KEYUP)
             {
