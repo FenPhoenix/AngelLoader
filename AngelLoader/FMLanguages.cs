@@ -12,6 +12,8 @@ namespace AngelLoader
 {
     internal static class FMLanguages
     {
+        #region Public fields
+
         internal const string DefaultLangKey = "default";
 
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
@@ -70,6 +72,8 @@ namespace AngelLoader
             { "russian", "Русский" },
             { "spanish", "Español" }
         };
+
+        #endregion
 
         internal static List<string> SortLangsToSpec(List<string> langs)
         {

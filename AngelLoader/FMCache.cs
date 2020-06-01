@@ -15,13 +15,20 @@ namespace AngelLoader
 {
     internal static class FMCache
     {
-        private static readonly string[] ImageFileExtensions =
+        private const string _t3ReadmeDir1 = "Fan Mission Extras";
+        private const string _t3ReadmeDir1S = _t3ReadmeDir1 + "/";
+        private const string _t3ReadmeDir2 = "FanMissionExtras";
+        private const string _t3ReadmeDir2S = _t3ReadmeDir2 + "/";
+
+        private static readonly string[]
+        _imageFileExtensions =
         {
             ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp", ".jpg", ".jpeg", ".tiff"
         };
 
         // Try to reject formats that don't make sense. Exclude instead of include for future-proofing.
-        private static readonly string[] HTMLRefExcludes =
+        private static readonly string[]
+        _htmlRefExcludes =
         {
             ".osm", ".exe", ".ose", ".mis", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav", ".mp3", ".ogg",
             ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv", ".flv", ".log",
@@ -111,8 +118,8 @@ namespace AngelLoader
 
             string path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
             var files = FastIO.GetFilesTopOnly(path, "*");
-            string t3ReadmePath1 = Path.Combine(path, Paths.T3ReadmeDir1);
-            string t3ReadmePath2 = Path.Combine(path, Paths.T3ReadmeDir2);
+            string t3ReadmePath1 = Path.Combine(path, _t3ReadmeDir1);
+            string t3ReadmePath2 = Path.Combine(path, _t3ReadmeDir2);
             if (Directory.Exists(t3ReadmePath1)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath1, "*"));
             if (Directory.Exists(t3ReadmePath2)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath2, "*"));
 
@@ -151,7 +158,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < 2; i++)
                 {
-                    string t3ReadmePath = Path.Combine(fmCachePath, i == 0 ? Paths.T3ReadmeDir1 : Paths.T3ReadmeDir2);
+                    string t3ReadmePath = Path.Combine(fmCachePath, i == 0 ? _t3ReadmeDir1 : _t3ReadmeDir2);
 
                     if (Directory.Exists(t3ReadmePath))
                     {
@@ -247,7 +254,7 @@ namespace AngelLoader
                 for (int i = 0; i < archive.Entries.Count; i++)
                 {
                     var e = archive.Entries[i];
-                    if (e.Name.IsEmpty() || !e.Name.Contains('.') || HTMLRefExcludes.Any(e.Name.EndsWithI))
+                    if (e.Name.IsEmpty() || !e.Name.Contains('.') || _htmlRefExcludes.Any(e.Name.EndsWithI))
                     {
                         continue;
                     }
@@ -269,8 +276,8 @@ namespace AngelLoader
                 for (int ri = 0; ri < htmlRefFiles.Count; ri++)
                 {
                     NameAndIndex f = htmlRefFiles[ri];
-                    if (HTMLRefExcludes.Any(f.Name.EndsWithI) ||
-                        ImageFileExtensions.Any(f.Name.EndsWithI))
+                    if (_htmlRefExcludes.Any(f.Name.EndsWithI) ||
+                        _imageFileExtensions.Any(f.Name.EndsWithI))
                     {
                         continue;
                     }
@@ -290,7 +297,7 @@ namespace AngelLoader
                     for (int ei = 0; ei < archive.Entries.Count; ei++)
                     {
                         var e = archive.Entries[ei];
-                        if (e.Name.IsEmpty() || !e.Name.Contains('.') || HTMLRefExcludes.Any(e.Name.EndsWithI))
+                        if (e.Name.IsEmpty() || !e.Name.Contains('.') || _htmlRefExcludes.Any(e.Name.EndsWithI))
                         {
                             continue;
                         }
@@ -333,13 +340,13 @@ namespace AngelLoader
                     string? t3ReadmeDir = null;
                     if (fn.CountDirSeps() == 1)
                     {
-                        if (fn.PathStartsWithI(Paths.T3ReadmeDir1S))
+                        if (fn.PathStartsWithI(_t3ReadmeDir1S))
                         {
-                            t3ReadmeDir = Paths.T3ReadmeDir1;
+                            t3ReadmeDir = _t3ReadmeDir1;
                         }
-                        else if (fn.PathStartsWithI(Paths.T3ReadmeDir2S))
+                        else if (fn.PathStartsWithI(_t3ReadmeDir2S))
                         {
-                            t3ReadmeDir = Paths.T3ReadmeDir2;
+                            t3ReadmeDir = _t3ReadmeDir2;
                         }
                         else
                         {
@@ -393,8 +400,8 @@ namespace AngelLoader
                         string fn = entry.FileName;
                         if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
                             ((fn.CountDirSeps() == 1 &&
-                              (fn.PathStartsWithI(Paths.T3ReadmeDir1S) ||
-                               fn.PathStartsWithI(Paths.T3ReadmeDir2S))) ||
+                              (fn.PathStartsWithI(_t3ReadmeDir1S) ||
+                               fn.PathStartsWithI(_t3ReadmeDir2S))) ||
                              !fn.ContainsDirSep()))
                         {
                             indexesList.Add(i);

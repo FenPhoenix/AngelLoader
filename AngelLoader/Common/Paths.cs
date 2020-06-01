@@ -161,11 +161,6 @@ namespace AngelLoader
         internal static readonly string FFmpegExe = Path.Combine(Startup, "ffmpeg", "ffmpeg.exe");
         internal static readonly string FFprobeExe = Path.Combine(Startup, "ffmpeg", "ffprobe.exe");
 
-        internal const string T3ReadmeDir1 = "Fan Mission Extras";
-        internal const string T3ReadmeDir1S = T3ReadmeDir1 + "/";
-        internal const string T3ReadmeDir2 = "FanMissionExtras";
-        internal const string T3ReadmeDir2S = T3ReadmeDir2 + "/";
-
         #region Methods
 
         internal static void CreateOrClearTempPath(string path)

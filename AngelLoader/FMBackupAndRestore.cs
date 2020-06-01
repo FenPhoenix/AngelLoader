@@ -41,15 +41,19 @@ namespace AngelLoader
 
         // Note: Either dirsep is okay because our comparisons are dirsep-agnostic in here
 
-        private const string _t3SavesDir = "SaveGames";
-        private const string _t3SavesDirS = _t3SavesDir + "/";
         private const string _darkSavesDir = "saves";
         private const string _darkSavesDirS = _darkSavesDir + "/";
+
+        private const string _t3SavesDir = "SaveGames";
+        private const string _t3SavesDirS = _t3SavesDir + "/";
+
         private const string _ss2CurrentDir = "current";
         private const string _ss2CurrentDirS = _ss2CurrentDir + "/";
+
         // For multiplayer (currently T2-only)
         private const string _darkNetSavesDir = "netsaves";
         private const string _darkNetSavesDirS = _darkNetSavesDir + "/";
+
         private const string _screensDir = "screenshots";
         private const string _screensDirS = _screensDir + "/";
 
