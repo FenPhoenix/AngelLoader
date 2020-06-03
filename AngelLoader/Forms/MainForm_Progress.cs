@@ -14,15 +14,20 @@ namespace AngelLoader.Forms
 
         private ProgressPanel? ProgressBox;
 
+        // Progress box not being null does not necessarily mean it's fully constructed.
+        private bool _progressBoxConstructed;
+
         private void ConstructProgressBox()
         {
-            if (ProgressBox != null) return;
+            if (_progressBoxConstructed) return;
 
             ProgressBox = new ProgressPanel();
             Controls.Add(ProgressBox);
             ProgressBox.Inject(this);
             ProgressBox.Localize();
             ProgressBox.Anchor = AnchorStyles.None;
+
+            _progressBoxConstructed = true;
         }
 
         private void LocalizeProgressBox() => ProgressBox?.Localize();
