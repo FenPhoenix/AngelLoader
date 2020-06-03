@@ -73,6 +73,7 @@ namespace AngelLoader.DataClasses
         // NOTE: This is not an ExpandableDate, because the way we get the date value is not in unix hex string
         // format, and it's expensive to convert it to such. With a regular nullable DateTime we're only paying
         // like 3-5ms extra on startup (for 1574 FMs), so it's good enough for now.
+        // [FenGen:DoNotConvertDateTimeToLocal]
         internal DateTime? DateAdded = null;
 
         // [FenGen:DoNotSerialize]
@@ -91,6 +92,8 @@ namespace AngelLoader.DataClasses
 
         // [FenGen:DoNotSerialize]
         internal bool ResourcesScanned;
+        // [FenGen:IniName=HasResources]
+        // [FenGen:InsertAfter=LegacyCustomResources]
         internal CustomResources Resources = CustomResources.None;
 
         internal bool LangsScanned;

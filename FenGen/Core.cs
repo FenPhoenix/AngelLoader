@@ -15,7 +15,7 @@ namespace FenGen
     {
         internal string Type;
         internal string Name;
-        internal string WriteName;
+        internal string IniName;
         internal string ListItemPrefix;
         internal ListType ListType = ListType.MultipleLines;
         internal ListDistinctType ListDistinctType = ListDistinctType.None;
@@ -23,6 +23,9 @@ namespace FenGen
         internal List<string> EnumValues = new List<string>();
         internal long? NumericEmpty;
         internal bool DoNotTrimValue;
+        internal bool DoNotConvertDateTimeToLocal;
+        internal string Comment;
+        internal CustomCodeBlockNames CodeBlockToInsertAfter = CustomCodeBlockNames.None;
     }
 
     internal sealed class FieldList : List<Field>
@@ -60,6 +63,12 @@ namespace FenGen
         CaseInsensitive
     }
 
+    internal enum CustomCodeBlockNames
+    {
+        None,
+        LegacyCustomResources
+    }
+
     internal static class StateVars
     {
         internal static string TestFile;
@@ -82,6 +91,75 @@ namespace FenGen
             "double",
             "decimal"
         };
+
+        private static class CustomCodeBlocks
+        {
+            internal static string[] LegacyCustomResourceReads =
+            {
+                "                #region Old resource format - backward compatibility, we still have to be able to read it",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasMap=\"))",
+                "                {",
+                "                    string val = lineT.Substring(7);",
+                "                    SetFMResource(fm, CustomResources.Map, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasAutomap=\"))",
+                "                {",
+                "                    string val = lineT.Substring(11);",
+                "                    SetFMResource(fm, CustomResources.Automap, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasScripts=\"))",
+                "                {",
+                "                    string val = lineT.Substring(11);",
+                "                    SetFMResource(fm, CustomResources.Scripts, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasTextures=\"))",
+                "                {",
+                "                    string val = lineT.Substring(12);",
+                "                    SetFMResource(fm, CustomResources.Textures, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasSounds=\"))",
+                "                {",
+                "                    string val = lineT.Substring(10);",
+                "                    SetFMResource(fm, CustomResources.Sounds, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasObjects=\"))",
+                "                {",
+                "                    string val = lineT.Substring(11);",
+                "                    SetFMResource(fm, CustomResources.Objects, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasCreatures=\"))",
+                "                {",
+                "                    string val = lineT.Substring(13);",
+                "                    SetFMResource(fm, CustomResources.Creatures, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasMotions=\"))",
+                "                {",
+                "                    string val = lineT.Substring(11);",
+                "                    SetFMResource(fm, CustomResources.Motions, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasMovies=\"))",
+                "                {",
+                "                    string val = lineT.Substring(10);",
+                "                    SetFMResource(fm, CustomResources.Movies, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                else if (lineT.StartsWithFast_NoNullChecks(\"HasSubtitles=\"))",
+                "                {",
+                "                    string val = lineT.Substring(13);",
+                "                    SetFMResource(fm, CustomResources.Subtitles, val.EqualsTrue());",
+                "                    resourcesFound = true;",
+                "                }",
+                "                #endregion"
+            };
+        }
 
         private static readonly List<GenType> GenTasks = new List<GenType>();
 
@@ -440,31 +518,46 @@ namespace FenGen
 
             bool wroteHasXFields = false;
 
+            CustomCodeBlockNames customCodeBlockToInsertAfterField = CustomCodeBlockNames.None;
+
             for (int i = 0; i < Fields.Count; i++)
             {
+                if (customCodeBlockToInsertAfterField != CustomCodeBlockNames.None)
+                {
+                    switch (customCodeBlockToInsertAfterField)
+                    {
+                        case CustomCodeBlockNames.LegacyCustomResources:
+                            foreach (string line in CustomCodeBlocks.LegacyCustomResourceReads)
+                            {
+                                sw.WriteLine(line);
+                            }
+                            break;
+                    }
+                }
+
                 var field = Fields[i];
                 string objDotField = obj + "." + field.Name;
 
                 string optElse = i > 0 ? "else " : "";
 
-                string fieldWriteName = field.WriteName.IsEmpty() ? field.Name : field.WriteName;
+                string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
                 string lineTrimmedVersion = field.DoNotTrimValue ? "lineTS" : "lineT";
 
                 sw.WriteLine(
                     Indent(4) +
                     optElse +
-                    "if (lineT.StartsWithFast_NoNullChecks(\"" + fieldWriteName + "=\"))\r\n" +
+                    "if (lineT.StartsWithFast_NoNullChecks(\"" + fieldIniName + "=\"))\r\n" +
                     Indent(4) + "{\r\n" +
-                    Indent(5) + "string val = " + lineTrimmedVersion + ".Substring(" + (fieldWriteName.Length + 1) + ");");
+                    Indent(5) + "string val = " + lineTrimmedVersion + ".Substring(" + (fieldIniName.Length + 1) + ");");
 
                 //sw.WriteLine(
                 //    Indent(4) +
                 //    optElse +
-                //    "if (!" + field.Name + "Read && lineT.StartsWithFast_NoNullChecks(\"" + fieldWriteName + "=\"))\r\n" +
+                //    "if (!" + field.Name + "Read && lineT.StartsWithFast_NoNullChecks(\"" + fieldIniName + "=\"))\r\n" +
                 //    Indent(4) + "{\r\n" +
                 //    Indent(5) + field.Name + "Read = true;\r\n" +
-                //    Indent(5) + "string val = lineT.Substring(" + (fieldWriteName.Length + 1) + ");");
+                //    Indent(5) + "string val = lineT.Substring(" + (fieldIniName.Length + 1) + ");");
 
                 if (field.Type.StartsWith("List<"))
                 {
@@ -642,6 +735,12 @@ namespace FenGen
                 }
                 else if (field.Type == "DateTime?")
                 {
+
+                    sw.WriteLine(Indent(5) + "// PERF: Don't convert to local here; do it at display time\r\n" +
+                                 Indent(5) + objDotField + " = ConvertHexUnixDateToDateTime(val, convertToLocal: " +
+                                 (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
+
+                    /*
                     sw.WriteLine(Indent(5) + "bool success = long.TryParse(\r\n" +
                                  Indent(6) + "val,\r\n" +
                                  Indent(6) + "NumberStyles.HexNumber,\r\n" +
@@ -668,10 +767,19 @@ namespace FenGen
                                  Indent(5) + "{\r\n" +
                                  Indent(6) + objDotField + " = null;\r\n" +
                                  Indent(5) + "}");
+                    */
+                }
+                else if (field.Type == "CustomResources")
+                {
+                    // Totally shouldn't be hardcoded...
+                    sw.WriteLine(Indent(5) + obj + ".ResourcesScanned = !val.EqualsI(\"NotScanned\");\r\n" +
+                                 Indent(5) + "FillFMHasXFields(fm, val);");
                 }
 
                 // if
                 sw.WriteLine(Indent(4) + "}");
+
+                customCodeBlockToInsertAfterField = field.CodeBlockToInsertAfter;
             }
 
             foreach (string line in ReaderKeepLines) sw.WriteLine(line);
@@ -695,7 +803,7 @@ namespace FenGen
             {
                 string objDotField = obj + "." + field.Name;
 
-                string fieldWriteName = field.WriteName.IsEmpty() ? field.Name : field.WriteName;
+                string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
                 //if (field.Type == "List<string>")
                 if (field.Type.StartsWith("List<"))
@@ -709,14 +817,14 @@ namespace FenGen
                         //if (Fields.WriteEmptyValues)
 #if true
                         {
-                            sw.WriteLine(Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + s);");
+                            sw.WriteLine(Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + s);");
                         }
                         // Disabled for now, for AngelLoader-specific perf
 #else
                         {
                             sw.WriteLine(Indent(6) + "if (!string.IsNullOrEmpty(s))\r\n" +
                                          Indent(6) + "{\r\n" +
-                                         Indent(7) + "sw.WriteLine(\"" + fieldWriteName + "=\" + s);\r\n" +
+                                         Indent(7) + "sw.WriteLine(\"" + fieldIniName + "=\" + s);\r\n" +
                                          Indent(6) + "}");
                         }
 #endif
@@ -729,14 +837,14 @@ namespace FenGen
                     if (Fields.WriteEmptyValues)
                     {
                         sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ");");
+                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");");
                     }
                     else
                     {
                         sw.WriteLine(
                             Indent(5) + "if (!string.IsNullOrEmpty(" + objDotField + "))\r\n" +
                             Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ");\r\n" +
+                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");\r\n" +
                             Indent(5) + "}");
                     }
                 }
@@ -745,7 +853,7 @@ namespace FenGen
                     if (Fields.WriteEmptyValues)
                     {
                         sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
                             ".ToString());");
                     }
                     else
@@ -753,7 +861,7 @@ namespace FenGen
                         sw.WriteLine(
                             Indent(5) + "if (" + objDotField + ")\r\n" +
                             Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
                             ".ToString());\r\n" +
                             Indent(5) + "}");
                     }
@@ -761,7 +869,7 @@ namespace FenGen
                 else if (field.Type == "bool?")
                 {
                     // Dumb special-case for the moment
-                    if (fieldWriteName.StartsWith("Has"))
+                    if (fieldIniName.StartsWith("Has"))
                     {
                         if (!wroteHasXValues)
                         {
@@ -782,7 +890,7 @@ namespace FenGen
                         if (Fields.WriteEmptyValues)
                         {
                             sw.WriteLine(
-                                Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                                Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
                                 ".ToString());");
                         }
                         else
@@ -790,7 +898,7 @@ namespace FenGen
                             sw.WriteLine(
                                 Indent(5) + "if (" + objDotField + " != null)\r\n" +
                                 Indent(5) + "{\r\n" +
-                                Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                                Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
                                 ".ToString());\r\n" +
                                 Indent(5) + "}");
                         }
@@ -807,13 +915,13 @@ namespace FenGen
                         sw.WriteLine(
                             Indent(5) + "if (" + objDotField + " != " + field.NumericEmpty + ")\r\n" +
                             Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".ToString(" + optCulture + "));\r\n" +
+                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));\r\n" +
                             Indent(5) + "}");
                     }
                     else
                     {
                         sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".ToString(" + optCulture + "));");
+                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));");
                     }
                 }
                 else if (field.Type[field.Type.Length - 1] == '?' &&
@@ -826,14 +934,14 @@ namespace FenGen
                     if (Fields.WriteEmptyValues)
                     {
                         sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".ToString(" + optCulture + "));");
+                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));");
                     }
                     else
                     {
                         sw.WriteLine(
                             Indent(5) + "if (" + objDotField + " != null)\r\n" +
                             Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".ToString(" + optCulture + "));\r\n" +
+                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));\r\n" +
                             Indent(5) + "}");
                     }
                 }
@@ -842,7 +950,7 @@ namespace FenGen
                     if (Fields.WriteEmptyValues)
                     {
                         sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
                             ".ToString());");
                     }
                     else
@@ -850,7 +958,7 @@ namespace FenGen
                         sw.WriteLine(
                             Indent(5) + "if (" + objDotField + " != Game.Null)\r\n" +
                             Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField +
+                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
                             ".ToString());\r\n" +
                             Indent(5) + "}");
                     }
@@ -860,14 +968,14 @@ namespace FenGen
                     if (Fields.WriteEmptyValues)
                     {
                         sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".UnixDateString);");
+                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".UnixDateString);");
                     }
                     else
                     {
                         sw.WriteLine(
                             Indent(5) + "if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))\r\n" +
                             Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + " + objDotField + ".UnixDateString);\r\n" +
+                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".UnixDateString);\r\n" +
                             Indent(5) + "}");
                     }
                 }
@@ -878,7 +986,7 @@ namespace FenGen
                         sw.WriteLine(
                             Indent(5) + "var val = new DateTimeOffset((DateTime)" + objDotField +
                             ").ToUnixTimeSeconds().ToString(\"X\");\r\n" +
-                            Indent(5) + "sw.WriteLine(\"" + fieldWriteName + "=\" + val);");
+                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + val);");
                     }
                     else
                     {
@@ -887,7 +995,7 @@ namespace FenGen
                             Indent(5) + "{\r\n" +
                             Indent(6) + "var val = new DateTimeOffset((DateTime)" + objDotField +
                             ").ToUnixTimeSeconds().ToString(\"X\");\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldWriteName + "=\" + val);\r\n" +
+                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + val);\r\n" +
                             Indent(5) + "}");
                     }
                 }
@@ -912,7 +1020,7 @@ namespace FenGen
             bool inClass = false;
 
             bool doNotSerializeNextLine = false;
-            string writeNameForThisField = null;
+            string iniNameForThisField = null;
             string listItemPrefixForThisField = null;
             var listTypeForThisField = ListType.MultipleLines;
             var listDistinctTypeForThisField = ListDistinctType.None;
@@ -920,6 +1028,9 @@ namespace FenGen
             var enumValuesForThisField = new List<string>();
             long? numericEmptyForThisField = null;
             bool doNotTrimValueForThisField = false;
+            bool doNotConvertDateTimeToLocalForThisField = false;
+            string commentForThisField = null;
+            var codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
 
             for (int i = 0; i < sourceLines.Length; i++)
             {
@@ -953,7 +1064,6 @@ namespace FenGen
                     continue;
                 }
 
-
                 if (doNotSerializeNextLine)
                 {
                     if (!string.IsNullOrWhiteSpace(line)) doNotSerializeNextLine = false;
@@ -977,6 +1087,28 @@ namespace FenGen
                         {
                             doNotTrimValueForThisField = true;
                             continue;
+                        }
+
+                        if (attr == "[FenGen:DoNotConvertDateTimeToLocal]")
+                        {
+                            doNotConvertDateTimeToLocalForThisField = true;
+                            continue;
+                        }
+
+                        if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("InsertAfter="))
+                        {
+                            string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
+                            if (val == nameof(CustomCodeBlockNames.LegacyCustomResources))
+                            {
+                                codeBlockToInsertAfterThisField = CustomCodeBlockNames.LegacyCustomResources;
+                                continue;
+                            }
+                        }
+
+                        if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("Comment="))
+                        {
+                            string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
+                            commentForThisField = !val.IsWhiteSpace() ? val : null;
                         }
 
                         if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("EnumValues="))
@@ -1031,8 +1163,8 @@ namespace FenGen
 
                             switch (key)
                             {
-                                case "WriteName":
-                                    writeNameForThisField = val;
+                                case "IniName":
+                                    iniNameForThisField = val;
                                     break;
                                 case "ListItemPrefix":
                                     listItemPrefixForThisField = val;
@@ -1069,10 +1201,10 @@ namespace FenGen
                 Fields.Add(new Field());
                 var last = Fields[Fields.Count - 1];
 
-                if (!writeNameForThisField.IsEmpty())
+                if (!iniNameForThisField.IsEmpty())
                 {
-                    last.WriteName = writeNameForThisField;
-                    writeNameForThisField = null;
+                    last.IniName = iniNameForThisField;
+                    iniNameForThisField = null;
                 }
                 if (!listItemPrefixForThisField.IsEmpty())
                 {
@@ -1094,9 +1226,21 @@ namespace FenGen
                     last.NumericEmpty = numericEmptyForThisField;
                     numericEmptyForThisField = null;
                 }
+                if (!commentForThisField.IsEmpty())
+                {
+                    last.Comment = commentForThisField;
+                    commentForThisField = null;
+                }
+                if (codeBlockToInsertAfterThisField != CustomCodeBlockNames.None)
+                {
+                    last.CodeBlockToInsertAfter = codeBlockToInsertAfterThisField;
+                    codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
+                }
 
                 last.DoNotTrimValue = doNotTrimValueForThisField;
                 doNotTrimValueForThisField = false;
+                last.DoNotConvertDateTimeToLocal = doNotConvertDateTimeToLocalForThisField;
+                doNotConvertDateTimeToLocalForThisField = false;
                 last.ListType = listTypeForThisField;
                 listTypeForThisField = ListType.MultipleLines;
                 last.ListDistinctType = listDistinctTypeForThisField;
