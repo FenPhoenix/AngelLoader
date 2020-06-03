@@ -13,12 +13,10 @@ rem Autogenerate code
 rem ---
 set FenGen="%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
 
-rem 2019-11-05: Don't generate FMData for now, as there's a lot of new manual stuff in there at the moment
-rem set fenGenArgs=-fmdata -language_t
-set fenGenArgs=-language_t
+set fenGenArgs=-fmdata -language_t
+rem set fenGenArgs=-language_t
 
 %FenGen% %fenGenArgs%
 rem ---
 
-rem "%system%xcopy" "%SolutionDir%ffmpeg" "%TargetDir%ffmpeg" /y /i
 "%system%xcopy" "%SolutionDir%temp_transfer_bin\*.*" "%TargetDir%" /y /i

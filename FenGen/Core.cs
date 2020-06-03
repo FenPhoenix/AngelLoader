@@ -94,7 +94,7 @@ namespace FenGen
 
         private static class CustomCodeBlocks
         {
-            internal static string[] LegacyCustomResourceReads =
+            internal static readonly string[] LegacyCustomResourceReads =
             {
                 "                #region Old resource format - backward compatibility, we still have to be able to read it",
                 "                else if (lineT.StartsWithFast_NoNullChecks(\"HasMap=\"))",
@@ -238,13 +238,15 @@ namespace FenGen
 
         private static string[] WriteFMDataIniTopLines { get; } =
         {
-            "        internal static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
+            "        private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
             "        {",
-            "            using (var sw = new StreamWriter(fileName, false, Encoding.UTF8))",
+            "            // Averaged over the 1573 FMs in my FMData.ini file (in new HasResources format)",
+            "            const int averageFMEntryCharCount = 378;",
+            "            var sb = new StringBuilder(averageFMEntryCharCount * fmDataList.Count);",
+            "",
+            "            foreach (FanMission fm in fmDataList)",
             "            {",
-            "                foreach (FanMission fm in fmDataList)",
-            "                {",
-            "                    sw.WriteLine(\"[FM]\");",
+            "                sb.AppendLine(\"[FM]\");",
             ""
         };
 
@@ -308,7 +310,7 @@ namespace FenGen
                         break;
                     case "-fmdata":
                         // Switched this off due to the extensive manual edits for new HasResources format
-                        break;
+                        //break;
                         if (!GenTasks.Contains(GenType.FMData))
                         {
                             GenTasks.Add(GenType.FMData);
@@ -736,7 +738,7 @@ namespace FenGen
                 else if (field.Type == "DateTime?")
                 {
 
-                    sw.WriteLine(Indent(5) + "// PERF: Don't convert to local here; do it at display time\r\n" +
+                    sw.WriteLine(Indent(5) + "// PERF: Don't convert to local here; do it at display-time\r\n" +
                                  Indent(5) + objDotField + " = ConvertHexUnixDateToDateTime(val, convertToLocal: " +
                                  (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
 
@@ -782,6 +784,8 @@ namespace FenGen
                 customCodeBlockToInsertAfterField = field.CodeBlockToInsertAfter;
             }
 
+            sw.WriteLine(Indent(4) + "if (resourcesFound) fm.ResourcesScanned = true;");
+
             foreach (string line in ReaderKeepLines) sw.WriteLine(line);
 
             // for
@@ -799,25 +803,42 @@ namespace FenGen
 
             bool wroteHasXValues = false;
 
+
+            const string toString = "ToString()";
+            const string unixDateString = "UnixDateString";
+
             foreach (var field in Fields)
             {
                 string objDotField = obj + "." + field.Name;
-
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
+
+                void swlSBAppend(int indent, string objField, string value, string suffix = "")
+                {
+                    if (!suffix.IsEmpty()) suffix = "." + suffix;
+                    sw.WriteLine(Indent(indent) + "sb.Append(\"" + objField + "=\");");
+                    if (fieldIniName == "DateAdded")
+                    {
+                        // Disgusting >:(
+                        sw.WriteLine(Indent(indent) + "// Again, important to convert to local time here because we don't do it on startup.");
+                    }
+                    sw.WriteLine(Indent(indent) + "sb.AppendLine(" + value + suffix + ");");
+                }
+
 
                 //if (field.Type == "List<string>")
                 if (field.Type.StartsWith("List<"))
                 {
+                    bool listTypeIsString = field.Type == "List<string>";
                     if (field.ListType == ListType.MultipleLines)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "foreach (var s in " + objDotField + ")\r\n" +
-                            Indent(5) + "{");
+                        string foreachType = listTypeIsString ? "string" : "var";
+                        sw.WriteLine(Indent(4) + "foreach (" + foreachType + " s in " + objDotField + ")");
+                        sw.WriteLine(Indent(4) + "{");
 
                         //if (Fields.WriteEmptyValues)
 #if true
                         {
-                            sw.WriteLine(Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + s);");
+                            swlSBAppend(5, fieldIniName, "s", !listTypeIsString ? toString : "");
                         }
                         // Disabled for now, for AngelLoader-specific perf
 #else
@@ -829,45 +850,41 @@ namespace FenGen
                         }
 #endif
 
-                        sw.WriteLine(Indent(5) + "}");
+                        sw.WriteLine(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "string")
                 {
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");");
+                        sw.WriteLine(Indent(4) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");");
+                        swlSBAppend(4, fieldIniName, objDotField);
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (!string.IsNullOrEmpty(" + objDotField + "))\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");\r\n" +
-                            Indent(5) + "}");
+                        sw.WriteLine(Indent(4) + "if (!string.IsNullOrEmpty(" + objDotField + "))");
+                        sw.WriteLine(Indent(4) + "{");
+                        swlSBAppend(5, fieldIniName, objDotField);
+                        sw.WriteLine(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "bool")
                 {
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
-                            ".ToString());");
+                        swlSBAppend(4, fieldIniName, objDotField, toString);
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (" + objDotField + ")\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
-                            ".ToString());\r\n" +
-                            Indent(5) + "}");
+                        sw.WriteLine(Indent(4) + "if (" + objDotField + ")");
+                        sw.WriteLine(Indent(4) + "{");
+                        swlSBAppend(5, fieldIniName, objDotField, toString);
+                        sw.WriteLine(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "bool?")
                 {
+#if false
                     // Dumb special-case for the moment
                     if (fieldIniName.StartsWith("Has"))
                     {
@@ -886,21 +903,18 @@ namespace FenGen
                         }
                     }
                     else
+#endif
                     {
                         if (Fields.WriteEmptyValues)
                         {
-                            sw.WriteLine(
-                                Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
-                                ".ToString());");
+                            swlSBAppend(4, fieldIniName, objDotField, toString);
                         }
                         else
                         {
-                            sw.WriteLine(
-                                Indent(5) + "if (" + objDotField + " != null)\r\n" +
-                                Indent(5) + "{\r\n" +
-                                Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
-                                ".ToString());\r\n" +
-                                Indent(5) + "}");
+                            sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
+                            sw.WriteLine(Indent(4) + "{");
+                            swlSBAppend(5, fieldIniName, obj, toString);
+                            sw.WriteLine(Indent(4) + "}");
                         }
                     }
                 }
@@ -912,16 +926,14 @@ namespace FenGen
 
                     if (!Fields.WriteEmptyValues && field.NumericEmpty != null)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (" + objDotField + " != " + field.NumericEmpty + ")\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));\r\n" +
-                            Indent(5) + "}");
+                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != " + field.NumericEmpty + ")");
+                        sw.WriteLine(Indent(4) + "{");
+                        swlSBAppend(5, fieldIniName, objDotField, "ToString(" + optCulture + ")");
+                        sw.WriteLine(Indent(4) + "}");
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));");
+                        swlSBAppend(4, fieldIniName, objDotField, "ToString(" + optCulture + ")");
                     }
                 }
                 else if (field.Type[field.Type.Length - 1] == '?' &&
@@ -933,81 +945,120 @@ namespace FenGen
 
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));");
+                        swlSBAppend(4, fieldIniName, objDotField, "ToString(" + optCulture + ")");
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (" + objDotField + " != null)\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".ToString(" + optCulture + "));\r\n" +
-                            Indent(5) + "}");
+                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
+                        sw.WriteLine(Indent(4) + "{");
+                        swlSBAppend(5, fieldIniName, objDotField, "ToString(" + optCulture + ")");
+                        sw.WriteLine(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "Game")
                 {
+                    // TODO: With all the GameSupport stuff, this is completely out of step. Put my foot down and fix this! (and the other one too)
+                    sw.WriteLine(Indent(4) + "switch (fm.Game)");
+                    sw.WriteLine(Indent(4) + "{");
+                    sw.WriteLine(Indent(5) + "// Much faster to do this than Enum.ToString()");
+                    sw.WriteLine(Indent(5) + "case Game.Thief1:");
+                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Thief1\");");
+                    sw.WriteLine(Indent(6) + "break;");
+                    sw.WriteLine(Indent(5) + "case Game.Thief2:");
+                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Thief2\");");
+                    sw.WriteLine(Indent(6) + "break;");
+                    sw.WriteLine(Indent(5) + "case Game.Thief3:");
+                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Thief3\");");
+                    sw.WriteLine(Indent(6) + "break;");
+                    sw.WriteLine(Indent(5) + "case Game.SS2:");
+                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=SS2\");");
+                    sw.WriteLine(Indent(6) + "break;");
+                    sw.WriteLine(Indent(5) + "case Game.Unsupported:");
+                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Unsupported\");");
+                    sw.WriteLine(Indent(6) + "break;");
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
-                            ".ToString());");
+                        sw.WriteLine(Indent(5) + "case Game.Null:");
+                        sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Null\");");
+                        sw.WriteLine(Indent(6) + "break;");
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (" + objDotField + " != Game.Null)\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField +
-                            ".ToString());\r\n" +
-                            Indent(5) + "}");
+                        sw.WriteLine(Indent(6) + "// Don't handle Game.Null because we don't want to write out defaults");
                     }
+                    sw.WriteLine(Indent(4) + "}");
                 }
                 else if (field.Type == "ExpandableDate")
                 {
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".UnixDateString);");
+                        swlSBAppend(4, fieldIniName, objDotField, unixDateString);
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ".UnixDateString);\r\n" +
-                            Indent(5) + "}");
+                        sw.WriteLine(Indent(4) + "if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))");
+                        sw.WriteLine(Indent(4) + "{");
+                        swlSBAppend(5, fieldIniName, objDotField, unixDateString);
+                        sw.WriteLine(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "DateTime?")
                 {
+                    // If we DIDN'T convert before, we need to convert now
+                    string val = !field.DoNotConvertDateTimeToLocal
+                        ? "new DateTimeOffset((DateTime)" + objDotField + ").ToUnixTimeSeconds().ToString(\"X\")" :
+                        "new DateTimeOffset(((DateTime)" + objDotField + ").ToLocalTime()).ToUnixTimeSeconds().ToString(\"X\")";
+
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(
-                            Indent(5) + "var val = new DateTimeOffset((DateTime)" + objDotField +
-                            ").ToUnixTimeSeconds().ToString(\"X\");\r\n" +
-                            Indent(5) + "sw.WriteLine(\"" + fieldIniName + "=\" + val);");
+                        swlSBAppend(4, fieldIniName, val);
                     }
                     else
                     {
-                        sw.WriteLine(
-                            Indent(5) + "if (" + objDotField + " != null)\r\n" +
-                            Indent(5) + "{\r\n" +
-                            Indent(6) + "var val = new DateTimeOffset((DateTime)" + objDotField +
-                            ").ToUnixTimeSeconds().ToString(\"X\");\r\n" +
-                            Indent(6) + "sw.WriteLine(\"" + fieldIniName + "=\" + val);\r\n" +
-                            Indent(5) + "}");
+                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
+                        sw.WriteLine(Indent(4) + "{");
+                        swlSBAppend(5, fieldIniName, val);
+                        sw.WriteLine(Indent(4) + "}");
                     }
+                }
+                else if (field.Type == "CustomResources")
+                {
+                    sw.WriteLine("#if write_old_resources_style");
+                    sw.WriteLine(Indent(4) + "if (fm.ResourcesScanned)");
+                    sw.WriteLine(Indent(4) + "{");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasMap=\" + FMHasResource(fm, CustomResources.Map).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasAutomap=\" + FMHasResource(fm, CustomResources.Automap).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasScripts=\" + FMHasResource(fm, CustomResources.Scripts).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasTextures=\" + FMHasResource(fm, CustomResources.Textures).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasSounds=\" + FMHasResource(fm, CustomResources.Sounds).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasObjects=\" + FMHasResource(fm, CustomResources.Objects).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasCreatures=\" + FMHasResource(fm, CustomResources.Creatures).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasMotions=\" + FMHasResource(fm, CustomResources.Motions).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasMovies=\" + FMHasResource(fm, CustomResources.Movies).ToString());");
+                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasSubtitles=\" + FMHasResource(fm, CustomResources.Subtitles).ToString());");
+                    sw.WriteLine(Indent(4) + "}");
+                    sw.WriteLine("#else");
+                    sw.WriteLine(Indent(4) + "sb.Append(\"" + fieldIniName + "=\");");
+                    sw.WriteLine(Indent(4) + "if (fm.ResourcesScanned)");
+                    sw.WriteLine(Indent(4) + "{");
+                    sw.WriteLine(Indent(5) + "CommaCombineHasXFields(fm, sb);");
+                    sw.WriteLine(Indent(4) + "}");
+                    sw.WriteLine(Indent(4) + "else");
+                    sw.WriteLine(Indent(4) + "{");
+                    sw.WriteLine(Indent(5) + "sb.AppendLine(\"NotScanned\");");
+                    sw.WriteLine(Indent(4) + "}");
+                    sw.WriteLine("#endif");
                 }
             }
 
             foreach (string line in WriterKeepLines) sw.WriteLine(line);
 
             // for
-            sw.WriteLine(Indent(4) + "}");
-
-            // using
             sw.WriteLine(Indent(3) + "}");
+
+            sw.WriteLine();
+            sw.WriteLine(Indent(3) + "using var sw = new StreamWriter(fileName, false, Encoding.UTF8);");
+            sw.WriteLine(Indent(3) + "sw.Write(sb.ToString());");
 
             // method WriteFMDataIni
             sw.WriteLine(Indent(2) + "}");

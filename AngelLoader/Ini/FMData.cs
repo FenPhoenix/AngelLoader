@@ -383,8 +383,6 @@ namespace AngelLoader
                     // Again, important to convert to local time here because we don't do it on startup.
                     sb.AppendLine(new DateTimeOffset(((DateTime)fm.DateAdded).ToLocalTime()).ToUnixTimeSeconds().ToString("X"));
                 }
-                // NOTE: This is not in itself an enum, it's a uint, so it's fast. We just cast it to an enum
-                // later on, but no worries here.
                 if (fm.FinishedOn != 0)
                 {
                     sb.Append("FinishedOn=");
@@ -413,16 +411,16 @@ namespace AngelLoader
 #if write_old_resources_style
                 if (fm.ResourcesScanned)
                 {
-                    sb.AppendLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
-                    sb.AppendLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
-                    sb.AppendLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
-                    sb.AppendLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
-                    sb.AppendLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
-                    sb.AppendLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
-                    sb.AppendLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
-                    sb.AppendLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
-                    sb.AppendLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
-                    sb.AppendLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
+                sb.AppendLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
+                sb.AppendLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
+                sb.AppendLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
+                sb.AppendLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
+                sb.AppendLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
+                sb.AppendLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
+                sb.AppendLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
+                sb.AppendLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
+                sb.AppendLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
+                sb.AppendLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
                 }
 #else
                 sb.Append("HasResources=");
