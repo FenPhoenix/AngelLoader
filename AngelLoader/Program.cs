@@ -80,8 +80,6 @@ namespace AngelLoader
             #endregion
 
             Application.Run(new AppContext(configTask));
-
-            GC.KeepAlive(mutex);
         }
     }
 
