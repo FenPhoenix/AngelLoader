@@ -17,6 +17,7 @@ namespace AngelLoader
         internal const string DefaultLangKey = "default";
 
         // This is for passing to the game via the stub to match FMSel's behavior (Dark only)
+        // Immediate use, so don't bother lazy-loading
         internal static readonly string[]
         Supported =
         {
@@ -33,8 +34,9 @@ namespace AngelLoader
             "spanish"     // es
         };
 
-        internal static readonly Dictionary<string, string>
-        LangCodes = new Dictionary<string, string>(11)
+        private static Dictionary<string, string>? _langCodes;
+        internal static Dictionary<string, string>
+        LangCodes => _langCodes ??= new Dictionary<string, string>(11)
         {
             { "english", "en" },
             { "czech", "cz" },
@@ -49,14 +51,16 @@ namespace AngelLoader
             { "spanish", "es" }
         };
 
-        internal static readonly Dictionary<string, string>
-        AltLangCodes = new Dictionary<string, string>(2)
+        private static Dictionary<string, string>? _altLangCodes;
+        internal static Dictionary<string, string>
+        AltLangCodes => _altLangCodes ??= new Dictionary<string, string>(2)
         {
             { "en", "eng" },
             { "ja", "jp" }
         };
 
         // For manual selection of language for playing an FM
+        // Immediate use, so don't bother lazy-loading
         internal static readonly Dictionary<string, string>
         Translated = new Dictionary<string, string>(11)
         {
@@ -74,6 +78,8 @@ namespace AngelLoader
         };
 
         #endregion
+
+        #region Methods
 
         internal static List<string> SortLangsToSpec(List<string> langs)
         {
@@ -341,5 +347,7 @@ namespace AngelLoader
                 return new List<string>();
             }
         }
+
+        #endregion
     }
 }
