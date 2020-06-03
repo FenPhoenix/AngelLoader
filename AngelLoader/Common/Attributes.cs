@@ -23,7 +23,11 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
-        internal class FenGenLocalizationReadWriteClass : Attribute { }
+        internal class FenGenLocalizationReadWriteClassAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Enum)]
+        internal class FenGenGameSourceEnumAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]

@@ -1,8 +1,9 @@
-﻿#define FenGen_TypeSource
+﻿#define FenGen_GameSupport
 
 using System;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AngelLoader.Attributes;
 
 namespace AngelLoader
 {
@@ -18,7 +19,7 @@ namespace AngelLoader
         #region Game enums
 
         // This is flags so we can combine its values for filtering by multiple games.
-        [Flags]
+        [Flags, FenGenGameSourceEnum]
         internal enum Game : uint
         {
             Null = 0,
