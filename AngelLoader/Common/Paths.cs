@@ -9,6 +9,9 @@ namespace AngelLoader
 {
     internal static class Paths
     {
+        // Fields that will, or will most likely, be used pretty much right away are initialized normally here.
+        // Fields that are likely not to be used right away are lazy-loaded.
+
 #if Release_Testing
         internal const string Startup = @"C:\AngelLoader";
 #elif Release
@@ -17,25 +20,34 @@ namespace AngelLoader
         internal const string Startup = @"C:\AngelLoader";
 #endif
 
-        internal static readonly string LogFile = Path.Combine(Startup, "AngelLoader_log.txt");
-        internal static readonly string ScannerLogFile = Path.Combine(Startup, "FMScanner_log.txt");
+        internal static readonly string LogFile = PathCombineFast_NoChecks(Startup, "AngelLoader_log.txt");
+        internal static readonly string ScannerLogFile = PathCombineFast_NoChecks(Startup, "FMScanner_log.txt");
 
         #region Temp
 
+        // @Robustness: I guess this could throw if GetTempPath() returns something with invalid chars(?)
+        // Probably can be considered practically impossible... But check if doing cross-platform?
+        // -Keep Path.Combine() so we at least throw and exit if that happens though
+        // -Also keep this immediately-loaded for the above reason
         private static readonly string _baseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
 
-        internal static readonly string HelpTemp = Path.Combine(_baseTemp, "Help");
+        private static string? _helpTemp;
+        internal static string HelpTemp => _helpTemp ??= PathCombineFast_NoChecks(_baseTemp, "Help");
 
-        internal static readonly string HelpRedirectFilePath = Path.Combine(HelpTemp, "redir.html");
+        private static string? _helpRedirectFilePath;
+        internal static string HelpRedirectFilePath => _helpRedirectFilePath ??= PathCombineFast_NoChecks(HelpTemp, "redir.html");
 
-        internal static readonly string FMScannerTemp = Path.Combine(_baseTemp, "FMScan");
+        private static string? _fmScannerTemp;
+        internal static string FMScannerTemp => _fmScannerTemp ??= PathCombineFast_NoChecks(_baseTemp, "FMScan");
 
-        internal static readonly string StubCommTemp = Path.Combine(_baseTemp, "Stub");
+        private static string? _stubCommTemp;
+        internal static string StubCommTemp => _stubCommTemp ??= PathCombineFast_NoChecks(_baseTemp, "Stub");
 
+        private static string? _stubCommFilePath;
         /// <summary>
         /// Tells the stub dll what to do.
         /// </summary>
-        internal static readonly string StubCommFilePath = Path.Combine(StubCommTemp, "al_stub_args.tmp");
+        internal static string StubCommFilePath => _stubCommFilePath ??= PathCombineFast_NoChecks(StubCommTemp, "al_stub_args.tmp");
 
         #endregion
 
@@ -119,7 +131,9 @@ namespace AngelLoader
         #endregion
 
         internal const string StubFileName = "AngelLoader_Stub.dll";
-        internal static readonly string StubPath = Path.Combine(Startup, StubFileName);
+
+        private static string? _stubPath;
+        internal static string StubPath => _stubPath ??= PathCombineFast_NoChecks(Startup, StubFileName);
 
         internal const string FMBackupSuffix = ".FMSelBak.zip";
 
@@ -142,26 +156,51 @@ namespace AngelLoader
         internal const string NewDarkLoaderIni = "NewDarkLoader.ini";
         internal const string FMSelIni = "fmsel.ini";
 
-        internal static readonly string DarkLoaderSaveOrigBakDir = Path.Combine(DarkLoaderSaveBakDir, "Original");
+        private static string? _darkLoaderSaveOrigBakDir;
+        internal static string DarkLoaderSaveOrigBakDir => _darkLoaderSaveOrigBakDir ??= PathCombineFast_NoChecks(DarkLoaderSaveBakDir, "Original");
 
-        internal static readonly string Data = Path.Combine(Startup, "Data");
+        internal static readonly string Data = PathCombineFast_NoChecks(Startup, "Data");
 
-        internal static readonly string Doc = Path.Combine(Startup, "doc");
+        private static string? _doc;
+        internal static string Doc => _doc ??= PathCombineFast_NoChecks(Startup, "doc");
 
-        internal static readonly string Languages = Path.Combine(Data, "Languages");
+        internal static readonly string Languages = PathCombineFast_NoChecks(Data, "Languages");
 
+        private static string? _fmsCache;
         /// <summary>
         /// For caching readmes and whatever else we want from non-installed FM archives
         /// </summary>
-        internal static readonly string FMsCache = Path.Combine(Data, "FMsCache");
+        internal static string FMsCache => _fmsCache ??= PathCombineFast_NoChecks(Data, "FMsCache");
 
-        internal static readonly string ConfigIni = Path.Combine(Data, "Config.ini");
-        internal static readonly string FMDataIni = Path.Combine(Data, "FMData.ini");
+        internal static readonly string ConfigIni = PathCombineFast_NoChecks(Data, "Config.ini");
+        internal static readonly string FMDataIni = PathCombineFast_NoChecks(Data, "FMData.ini");
 
-        internal static readonly string FFmpegExe = Path.Combine(Startup, "ffmpeg", "ffmpeg.exe");
-        internal static readonly string FFprobeExe = Path.Combine(Startup, "ffmpeg", "ffprobe.exe");
+        private static string? _ffmpegExe;
+        internal static string FFmpegExe => _ffmpegExe ??= PathCombineFast_NoChecks(Startup, "ffmpeg", "ffmpeg.exe");
+
+        private static string? _ffprobeExe;
+        internal static string FFprobeExe => _ffprobeExe ??= PathCombineFast_NoChecks(Startup, "ffmpeg", "ffprobe.exe");
 
         #region Methods
+
+        #region Private
+
+        private static string PathCombineFast_NoChecks(string path1, string path2, string path3)
+        {
+            return PathCombineFast_NoChecks(PathCombineFast_NoChecks(path1, path2), path3);
+        }
+
+        private static string PathCombineFast_NoChecks(string path1, string path2)
+        {
+            char c = path1[path1.Length - 1];
+            return c == Path.DirectorySeparatorChar ||
+                   c == Path.AltDirectorySeparatorChar ||
+                   c == Path.VolumeSeparatorChar
+                ? path1 + path2
+                : path1 + "\\" + path2;
+        }
+
+        #endregion
 
         internal static void CreateOrClearTempPath(string path)
         {
