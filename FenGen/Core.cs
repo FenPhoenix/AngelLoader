@@ -22,6 +22,7 @@ namespace FenGen
         internal Dictionary<string, string> EnumMap = new Dictionary<string, string>();
         internal List<string> EnumValues = new List<string>();
         internal long? NumericEmpty;
+        internal bool DoNotTrimValue;
     }
 
     internal sealed class FieldList : List<Field>
@@ -116,7 +117,8 @@ namespace FenGen
             "",
             "            foreach (string line in iniLines)",
             "            {",
-            "                string lineT = line.TrimStart();",
+            "                string lineTS = line.TrimStart();",
+            "                string lineT = lineTS.TrimEnd();",
             "",
             "                if (lineT.Length > 0 && lineT[0] == '[')",
             "                {",
@@ -130,6 +132,8 @@ namespace FenGen
             "                }",
             "",
             "                if (fmsListIsEmpty) continue;",
+            "",
+            "                bool resourcesFound = false;",
             "",
             "                // Comment chars (;) and blank lines will be rejected implicitly.",
             "                // Since they're rare cases, checking for them would only slow us down.",
@@ -445,12 +449,14 @@ namespace FenGen
 
                 string fieldWriteName = field.WriteName.IsEmpty() ? field.Name : field.WriteName;
 
+                string lineTrimmedVersion = field.DoNotTrimValue ? "lineTS" : "lineT";
+
                 sw.WriteLine(
                     Indent(4) +
                     optElse +
                     "if (lineT.StartsWithFast_NoNullChecks(\"" + fieldWriteName + "=\"))\r\n" +
                     Indent(4) + "{\r\n" +
-                    Indent(5) + "string val = lineT.Substring(" + (fieldWriteName.Length + 1) + ");");
+                    Indent(5) + "string val = " + lineTrimmedVersion + ".Substring(" + (fieldWriteName.Length + 1) + ");");
 
                 //sw.WriteLine(
                 //    Indent(4) +
@@ -913,6 +919,7 @@ namespace FenGen
             var enumMapForThisField = new Dictionary<string, string>();
             var enumValuesForThisField = new List<string>();
             long? numericEmptyForThisField = null;
+            bool doNotTrimValueForThisField = false;
 
             for (int i = 0; i < sourceLines.Length; i++)
             {
@@ -963,6 +970,12 @@ namespace FenGen
                         if (attr == "[FenGen:DoNotSerialize]")
                         {
                             doNotSerializeNextLine = true;
+                            continue;
+                        }
+
+                        if (attr == "[FenGen:DoNotTrimValue]")
+                        {
+                            doNotTrimValueForThisField = true;
                             continue;
                         }
 
@@ -1082,6 +1095,8 @@ namespace FenGen
                     numericEmptyForThisField = null;
                 }
 
+                last.DoNotTrimValue = doNotTrimValueForThisField;
+                doNotTrimValueForThisField = false;
                 last.ListType = listTypeForThisField;
                 listTypeForThisField = ListType.MultipleLines;
                 last.ListDistinctType = listDistinctTypeForThisField;

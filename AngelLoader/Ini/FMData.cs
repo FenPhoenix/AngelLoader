@@ -25,7 +25,8 @@ namespace AngelLoader
 
             foreach (string line in iniLines)
             {
-                string lineT = line.Trim();
+                string lineTS = line.TrimStart();
+                string lineT = lineTS.TrimEnd();
 
                 if (lineT.Length > 0 && lineT[0] == '[')
                 {
@@ -170,7 +171,7 @@ namespace AngelLoader
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("Comment="))
                 {
-                    string val = lineT.Substring(8);
+                    string val = lineTS.Substring(8);
                     fm.Comment = val;
                 }
                 else if (lineT.StartsWithFast_NoNullChecks("DisabledMods="))

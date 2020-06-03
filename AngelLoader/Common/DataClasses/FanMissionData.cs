@@ -83,6 +83,7 @@ namespace AngelLoader.DataClasses
 
         // [FenGen:DoNotSerialize]
         internal string CommentSingleLine = "";
+        // [FenGen:DoNotTrimValue]
         internal string Comment = "";
 
         internal string DisabledMods = "";
