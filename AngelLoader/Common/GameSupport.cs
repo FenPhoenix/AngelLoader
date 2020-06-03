@@ -15,7 +15,7 @@ namespace AngelLoader
         // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in
         // the code that need updating.
 
-        #region Enums
+        #region Game enums
 
         // This is flags so we can combine its values for filtering by multiple games.
         [Flags]
@@ -43,9 +43,14 @@ namespace AngelLoader
             SS2
         }
 
+        #endregion
+
+        #region Per-game constants
+
         // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility. Don't change
         // the existing values, only add new ones!
-        private static readonly string[] GamePrefixes =
+        private static readonly string[]
+        GamePrefixes =
         {
             "T1",
             "T2",
@@ -53,7 +58,8 @@ namespace AngelLoader
             "SS2"
         };
 
-        private static readonly string[] SteamAppIds =
+        private static readonly string[]
+        SteamAppIds =
         {
             "211600", // Thief Gold
             "211740", // Thief 2
@@ -99,7 +105,21 @@ namespace AngelLoader
             _ => Game.SS2
         };
 
+        // Do a hard convert at the API boundary, even though these now match the ordering
+        // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
+        internal static Game ScannerGameToGame(FMScanner.Game scannerGame) => scannerGame switch
+        {
+            FMScanner.Game.Unsupported => Game.Unsupported,
+            FMScanner.Game.Thief1 => Game.Thief1,
+            FMScanner.Game.Thief2 => Game.Thief2,
+            FMScanner.Game.Thief3 => Game.Thief3,
+            FMScanner.Game.SS2 => Game.SS2,
+            _ => Game.Null
+        };
+
         #endregion
+
+        #region Get game-related localized strings
 
         internal static string GetLocalizedDifficultyName(Game game, Difficulty difficulty)
         {
@@ -129,20 +149,6 @@ namespace AngelLoader
                 _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
             };
         }
-
-        // Do a hard convert at the API boundary, even though these now match the ordering
-        // NOTE: One is flags and the other isn't, so remember that if you ever want to array-ize this!
-        internal static Game ScannerGameToGame(FMScanner.Game scannerGame) => scannerGame switch
-        {
-            FMScanner.Game.Unsupported => Game.Unsupported,
-            FMScanner.Game.Thief1 => Game.Thief1,
-            FMScanner.Game.Thief2 => Game.Thief2,
-            FMScanner.Game.Thief3 => Game.Thief3,
-            FMScanner.Game.SS2 => Game.SS2,
-            _ => Game.Null
-        };
-
-        #region Get game name from game type
 
         internal static string GetLocalizedGameName(GameIndex gameIndex) => GetLocalizedGameName(GameIndexToGame(gameIndex));
 
