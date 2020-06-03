@@ -15,6 +15,7 @@ namespace FenGen
         Language,
         Version,
         MainFormBacking,
+        GameSupport,
         VisLoc
     }
 
@@ -23,18 +24,25 @@ namespace FenGen
         Beta,
         PublicRelease
     }
-    
+
+    internal sealed class GameSourceEnum
+    {
+        internal string Name = "";
+        internal readonly List<string> Items = new List<string>();
+    }
+
     internal static class StateVars
     {
         internal static string TestFile;
         internal static bool WriteTestLangFile;
+        internal static GameSourceEnum GamesEnum;
     }
 
     internal static class Core
     {
         private static readonly List<GenType> GenTasks = new List<GenType>();
 
-        #if DEBUG
+#if DEBUG
         private static MainForm View;
 #endif
 
@@ -93,6 +101,7 @@ namespace FenGen
                         if (!GenTasks.Contains(GenType.FMData))
                         {
                             GenTasks.Add(GenType.FMData);
+                            Games.FillGamesEnum();
                             string sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
                             string destFile = Path.Combine(ALProjectPath, @"Ini\FMData.cs");
                             FMData.Generate(sourceFile, destFile);
@@ -117,6 +126,13 @@ namespace FenGen
                             StateVars.WriteTestLangFile = true;
                             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
                             LanguageGen.Generate(langFile);
+                        }
+                        break;
+                    case "-game_support":
+                        if (!GenTasks.Contains(GenType.GameSupport))
+                        {
+                            GenTasks.Add(GenType.GameSupport);
+                            Games.Generate();
                         }
                         break;
                     case "-visloc":

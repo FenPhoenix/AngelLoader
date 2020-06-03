@@ -24,8 +24,9 @@ namespace FenGen
             StateVars.TestFile = @"C:\AngelLoader\Data\Languages\TestLang.ini";
             LanguageGen.Generate(langFile);
 #endif
+            //VisLoc.Generate();
 
-            VisLoc.Generate();
+            Games.Generate();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

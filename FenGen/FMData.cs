@@ -555,34 +555,22 @@ namespace FenGen
                 }
                 else if (field.Type == "Game")
                 {
-                    // TODO:
-                    // This is not automated enough. If I add another thing to the enum, it WON'T be picked up
-                    // here unless I specifically add it. :(
-                    sw.WriteLine(Indent(5) + "val = val.Trim();\r\n" +
-                                 Indent(5) + "if (val.EqualsI(nameof(Game.Thief1)))\r\n" +
-                                 Indent(5) + "{\r\n" +
-                                 Indent(6) + objDotField + " = Game.Thief1;\r\n" +
-                                 Indent(5) + "}\r\n" +
-                                 Indent(5) + "else if (val.EqualsI(nameof(Game.Thief2)))\r\n" +
-                                 Indent(5) + "{\r\n" +
-                                 Indent(6) + objDotField + " = Game.Thief2;\r\n" +
-                                 Indent(5) + "}\r\n" +
-                                 Indent(5) + "else if (val.EqualsI(nameof(Game.Thief3)))\r\n" +
-                                 Indent(5) + "{\r\n" +
-                                 Indent(6) + objDotField + " = Game.Thief3;\r\n" +
-                                 Indent(5) + "}\r\n" +
-                                 Indent(5) + "else if (val.EqualsI(nameof(Game.SS2)))\r\n" +
-                                 Indent(5) + "{\r\n" +
-                                 Indent(6) + objDotField + " = Game.SS2;\r\n" +
-                                 Indent(5) + "}\r\n" +
-                                 Indent(5) + "else if (val.EqualsI(nameof(Game.Unsupported)))\r\n" +
-                                 Indent(5) + "{\r\n" +
-                                 Indent(6) + objDotField + " = Game.Unsupported;\r\n" +
-                                 Indent(5) + "}\r\n" +
-                                 Indent(5) + "else\r\n" +
-                                 Indent(5) + "{\r\n" +
-                                 Indent(6) + objDotField + " = Game.Null;\r\n" +
-                                 Indent(5) + "}");
+                    sw.WriteLine(Indent(5) + "val = val.Trim();");
+
+                    var gamesEnum = StateVars.GamesEnum;
+                    for (int gi = 1; gi < gamesEnum.Items.Count; gi++)
+                    {
+                        string ifType = gi > 1 ? "else if" : "if";
+                        string gameDotGameType = gamesEnum.Name + "." + gamesEnum.Items[gi];
+                        sw.WriteLine(Indent(5) + ifType + " (val.EqualsI(nameof(" + gameDotGameType + ")))");
+                        sw.WriteLine(Indent(5) + "{");
+                        sw.WriteLine(Indent(6) + objDotField + " = " + gameDotGameType + ";");
+                        sw.WriteLine(Indent(5) + "}");
+                    }
+                    sw.WriteLine(Indent(5) + "else");
+                    sw.WriteLine(Indent(5) + "{");
+                    sw.WriteLine(Indent(6) + objDotField + " = " + gamesEnum.Name + "." + gamesEnum.Items[0] + ";");
+                    sw.WriteLine(Indent(5) + "}");
                 }
                 else if (field.Type == "ExpandableDate")
                 {
@@ -805,36 +793,29 @@ namespace FenGen
                         sw.WriteLine(Indent(4) + "}");
                     }
                 }
-                else if (field.Type == "Game")
+                else if (field.Type == StateVars.GamesEnum.Name)
                 {
-                    // TODO: With all the GameSupport stuff, this is completely out of step. Put my foot down and fix this! (and the other one too)
-                    sw.WriteLine(Indent(4) + "switch (fm.Game)");
+                    var gamesEnum = StateVars.GamesEnum;
+
+                    sw.WriteLine(Indent(4) + "switch (fm." + gamesEnum.Name + ")");
                     sw.WriteLine(Indent(4) + "{");
-                    sw.WriteLine(Indent(5) + "// Much faster to do this than Enum.ToString()");
-                    sw.WriteLine(Indent(5) + "case Game.Thief1:");
-                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Thief1\");");
-                    sw.WriteLine(Indent(6) + "break;");
-                    sw.WriteLine(Indent(5) + "case Game.Thief2:");
-                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Thief2\");");
-                    sw.WriteLine(Indent(6) + "break;");
-                    sw.WriteLine(Indent(5) + "case Game.Thief3:");
-                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Thief3\");");
-                    sw.WriteLine(Indent(6) + "break;");
-                    sw.WriteLine(Indent(5) + "case Game.SS2:");
-                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=SS2\");");
-                    sw.WriteLine(Indent(6) + "break;");
-                    sw.WriteLine(Indent(5) + "case Game.Unsupported:");
-                    sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Unsupported\");");
-                    sw.WriteLine(Indent(6) + "break;");
+                    for (int gi = 1; gi < gamesEnum.Items.Count; gi++)
+                    {
+                        if (gi == 1) sw.WriteLine(Indent(5) + "// Much faster to do this than Enum.ToString()");
+                        sw.WriteLine(Indent(5) + "case " + gamesEnum.Name + "." + gamesEnum.Items[gi] + ":");
+                        sw.WriteLine(Indent(6) + "sb.AppendLine(\"" + gamesEnum.Name + "=" + gamesEnum.Items[gi] + "\");");
+                        sw.WriteLine(Indent(6) + "break;");
+                    }
+                    string gameDotGameTypeZero = gamesEnum.Name + "." + gamesEnum.Items[0];
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(Indent(5) + "case Game.Null:");
-                        sw.WriteLine(Indent(6) + "sb.AppendLine(\"Game=Null\");");
+                        sw.WriteLine(Indent(5) + "case " + gameDotGameTypeZero + ":");
+                        sw.WriteLine(Indent(6) + "sb.AppendLine(\"" + gameDotGameTypeZero + "\");");
                         sw.WriteLine(Indent(6) + "break;");
                     }
                     else
                     {
-                        sw.WriteLine(Indent(6) + "// Don't handle Game.Null because we don't want to write out defaults");
+                        sw.WriteLine(Indent(6) + "// Don't handle " + gameDotGameTypeZero + " because we don't want to write out defaults");
                     }
                     sw.WriteLine(Indent(4) + "}");
                 }
