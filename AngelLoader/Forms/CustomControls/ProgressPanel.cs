@@ -73,7 +73,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private void ShowThis()
         {
-            Log(nameof(ShowThis) + " called", methodName: false);
             Owner!.EnableEverything(false);
             Enabled = true;
 

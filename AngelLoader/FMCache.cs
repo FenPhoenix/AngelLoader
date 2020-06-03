@@ -375,8 +375,6 @@ namespace AngelLoader
 
         private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
-            Log(nameof(SevenZipExtract) + ": about to show progress box and extract", methodName: false);
-
             // Critical
             Core.View.ShowOnly();
 

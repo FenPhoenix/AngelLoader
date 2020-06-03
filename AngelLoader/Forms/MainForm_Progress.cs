@@ -50,8 +50,6 @@ namespace AngelLoader.Forms
         public void ShowProgressBox(ProgressTasks progressTask, bool suppressShow = false)
         {
             ConstructProgressBox();
-
-            Log(nameof(ShowProgressBox) + ": " + progressTask, methodName: false);
             ProgressBox!.ShowProgressWindow(progressTask, suppressShow);
         }
 

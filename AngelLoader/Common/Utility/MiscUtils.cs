@@ -482,9 +482,6 @@ namespace AngelLoader
 
         internal static bool GameIsRunning(string gameExe, bool checkAllGames = false)
         {
-            //Log("Checking if " + gameExe + " is running. Listing processes...");
-            Log("Checking if " + gameExe + " is running.");
-
             #region Local functions
 
             string t2MPExe = "";

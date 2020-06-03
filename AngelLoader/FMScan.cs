@@ -42,7 +42,6 @@ namespace AngelLoader
 
                 if (hideBoxIfZip && scanningOne)
                 {
-                    Log(nameof(ScanFMs) + ": Scanning one", methodName: false);
                     // Just use a cheap check and throw up the progress box for .7z files, otherwise not. Not as
                     // nice as the timer method, but that can cause race conditions I don't know how to fix, so
                     // whatever.
@@ -77,9 +76,6 @@ namespace AngelLoader
                 ScanCts = new CancellationTokenSource();
 
                 var fms = new List<FMScanner.FMToScan>();
-
-                Log(nameof(ScanFMs) + ": about to call " + nameof(GetFMArchivePaths) + " with subfolders=" +
-                    Config.FMArchivePathsIncludeSubfolders);
 
                 // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                 // cause then it will hit the actual disk rather than just going through a list of paths in
