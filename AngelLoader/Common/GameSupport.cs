@@ -11,6 +11,14 @@ namespace AngelLoader
     [PublicAPI]
     internal static class GameSupport
     {
+        /*
+        Musings on gen format?
+        Name=Thief1, IniPrefix=T1, LPrefix=Thief1, @Dark
+        Name=Thief2, IniPrefix=T2, LPrefix=Thief2, @Dark
+        Name=Thief3, IniPrefix=T3, LPrefix=Thief3,
+        Name=SS2,    IniPrefix=SS2,LPrefix=SystemShock2, @Dark
+        */
+
         internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;
 
         // As much as possible, put all the game stuff in here, so when I add a new game I minimize the places in

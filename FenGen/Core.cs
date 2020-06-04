@@ -128,7 +128,6 @@ namespace FenGen
 #endif
 
             // args[0] is always the application filename
-            //string[] args = Environment.GetCommandLineArgs();
 
 #if PROFILING
             string[] args =
