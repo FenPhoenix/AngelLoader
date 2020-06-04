@@ -1,7 +1,6 @@
 ﻿#define FenGen_ConfigDest
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -11,7 +10,6 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
-using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
