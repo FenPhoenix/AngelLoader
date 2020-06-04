@@ -218,114 +218,116 @@ namespace FenGen
             const string className = "FanMission";
             ReadSourceFields(className, sourceFile);
 
-            using (var sr = new StreamReader(destFile))
+            // Always do an atomic read operation, because we may want to open the same file
+            // for other purposes in the middle of it (we had an access exception before)
+            var lines = File.ReadAllLines(destFile);
+
+            int openBraces = 0;
+            bool inClass = false;
+            bool inReaderKeepBlock = false;
+            bool inWriterKeepBlock = false;
+            foreach (string line in lines)
             {
-                int openBraces = 0;
-                bool inClass = false;
-                bool inReaderKeepBlock = false;
-                bool inWriterKeepBlock = false;
-                string line;
-                while ((line = sr.ReadLine()) != null)
+                string lineT = line.Trim();
+
+                if (!inClass)
                 {
-                    string lineT = line.Trim();
+                    if (lineT.StartsWith("{")) openBraces++;
+                    DestTopLines.Add(line);
+                    if (openBraces == 2) inClass = true;
+                    continue;
+                }
 
-                    if (!inClass)
-                    {
-                        if (lineT.StartsWith("{")) openBraces++;
-                        DestTopLines.Add(line);
-                        if (openBraces == 2) inClass = true;
-                        continue;
-                    }
-
-                    if (inReaderKeepBlock || inWriterKeepBlock)
-                    {
-                        if (lineT.StartsWith("//"))
-                        {
-                            string attr = lineT.Substring(2).Trim();
-                            switch (attr)
-                            {
-                                case "[FenGen:EndReaderKeepBlock]":
-                                    ReaderKeepLines.Add(line);
-                                    inReaderKeepBlock = false;
-                                    break;
-                                case "[FenGen:EndWriterKeepBlock]":
-                                    WriterKeepLines.Add(line);
-                                    inWriterKeepBlock = false;
-                                    break;
-                                default:
-                                    if (inReaderKeepBlock)
-                                    {
-                                        ReaderKeepLines.Add(line);
-                                    }
-                                    else if (inWriterKeepBlock)
-                                    {
-                                        WriterKeepLines.Add(line);
-                                    }
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            if (inReaderKeepBlock)
-                            {
-                                ReaderKeepLines.Add(line);
-                            }
-                            else
-                            {
-                                WriterKeepLines.Add(line);
-                            }
-                        }
-
-                        continue;
-                    }
-
+                if (inReaderKeepBlock || inWriterKeepBlock)
+                {
                     if (lineT.StartsWith("//"))
                     {
                         string attr = lineT.Substring(2).Trim();
                         switch (attr)
                         {
-                            case "[FenGen:BeginReaderKeepBlock]":
+                            case "[FenGen:EndReaderKeepBlock]":
                                 ReaderKeepLines.Add(line);
-                                inReaderKeepBlock = true;
-                                continue;
-                            case "[FenGen:BeginWriterKeepBlock]":
+                                inReaderKeepBlock = false;
+                                break;
+                            case "[FenGen:EndWriterKeepBlock]":
                                 WriterKeepLines.Add(line);
-                                inWriterKeepBlock = true;
-                                continue;
+                                inWriterKeepBlock = false;
+                                break;
+                            default:
+                                if (inReaderKeepBlock)
+                                {
+                                    ReaderKeepLines.Add(line);
+                                }
+                                else if (inWriterKeepBlock)
+                                {
+                                    WriterKeepLines.Add(line);
+                                }
+                                break;
                         }
+                    }
+                    else
+                    {
+                        if (inReaderKeepBlock)
+                        {
+                            ReaderKeepLines.Add(line);
+                        }
+                        else
+                        {
+                            WriterKeepLines.Add(line);
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (lineT.StartsWith("//"))
+                {
+                    string attr = lineT.Substring(2).Trim();
+                    switch (attr)
+                    {
+                        case "[FenGen:BeginReaderKeepBlock]":
+                            ReaderKeepLines.Add(line);
+                            inReaderKeepBlock = true;
+                            continue;
+                        case "[FenGen:BeginWriterKeepBlock]":
+                            WriterKeepLines.Add(line);
+                            inWriterKeepBlock = true;
+                            continue;
                     }
                 }
             }
 
-            using var sw = new StreamWriter(destFile, append: false);
+            var writeLines = new List<string>();
 
-            foreach (string l in DestTopLines) sw.WriteLine(l);
+            foreach (string l in DestTopLines) writeLines.Add(l);
 
             //string obj = GenType == GenType.FMData ? "fm" : "config";
             const string obj = "fm";
 
-            WriteReader(sw, obj);
+            WriteReader(writeLines, obj);
 
-            sw.WriteLine();
+            writeLines.Add("");
 
-            WriteWriter(sw, obj);
+            WriteWriter(writeLines, obj);
 
             // class
-            sw.WriteLine(Indent(1) + "}");
+            writeLines.Add(Indent(1) + "}");
 
             // namespace
-            sw.WriteLine("}");
+            writeLines.Add("}");
+
+            File.WriteAllLines(destFile, writeLines);
         }
 
-        private static void WriteReader(StreamWriter sw, string obj)
+        private static void WriteReader(List<string> wl, string obj)
         {
             if (TopCodeLines.Length > 0)
             {
-                sw.WriteLine(Indent(2) + GenMessages.SupportingCode);
-                foreach (string l in TopCodeLines) sw.WriteLine(l);
+                wl.Add(Indent(2) + GenMessages.SupportingCode);
+                foreach (string l in TopCodeLines) wl.Add(l);
             }
 
-            sw.WriteLine(Indent(2) + GenMessages.Method);
+            wl.Add(Indent(2) + GenMessages.Method);
 
             //var topLines = (GenType == GenType.FMData
             //    ? ReadFMDataIniTopLines
@@ -333,7 +335,7 @@ namespace FenGen
 
             string[] topLines = ReadFMDataIniTopLines;
 
-            foreach (string l in topLines) sw.WriteLine(l);
+            foreach (string l in topLines) wl.Add(l);
 
             CustomCodeBlockNames customCodeBlockToInsertAfterField = CustomCodeBlockNames.None;
 
@@ -356,7 +358,7 @@ namespace FenGen
                         case CustomCodeBlockNames.LegacyCustomResources:
                             foreach (string line in CustomCodeBlocks.LegacyCustomResourceReads)
                             {
-                                sw.WriteLine(line);
+                                wl.Add(line);
                             }
                             break;
                     }
@@ -371,7 +373,7 @@ namespace FenGen
 
                 string lineTrimmedVersion = field.DoNotTrimValue ? "lineTS" : "lineT";
 
-                sw.WriteLine(
+                wl.Add(
                     Indent(4) +
                     optElse +
                     "if (lineT.StartsWithFast_NoNullChecks(\"" + fieldIniName + "=\"))\r\n" +
@@ -404,7 +406,7 @@ namespace FenGen
                         {
                             // Null-check version - just use readonly List<string> blah = new List<string>();
                             // to avoid having to check null
-                            //sw.WriteLine(
+                            //sw.Add(
                             //    Indent(5) + "if (" + objDotField + " == null)\r\n" +
                             //    Indent(5) + "{\r\n" +
                             //    Indent(6) + objDotField + " = new List<string>();\r\n" +
@@ -414,7 +416,7 @@ namespace FenGen
                             //    Indent(6) + objListSet + "\r\n" +
                             //    Indent(5) + "}");
 
-                            sw.WriteLine(
+                            wl.Add(
                                 Indent(5) + "if (!string.IsNullOrEmpty(val))\r\n" +
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + objListSet + "\r\n" +
@@ -422,7 +424,7 @@ namespace FenGen
                         }
                         else
                         {
-                            sw.WriteLine(
+                            wl.Add(
                                 Indent(5) + objDotField + ".Clear();\r\n" +
                                 Indent(5) + "string[] items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);\r\n" +
                                 Indent(5) + "for (int a = 0; a < items.Length; a++)\r\n" +
@@ -437,7 +439,7 @@ namespace FenGen
                         string floatArgs = GetFloatArgsRead(listType);
                         if (field.ListType == ListType.MultipleLines)
                         {
-                            sw.WriteLine(
+                            wl.Add(
                                 Indent(5) + "if (" + objDotField + " == null)\r\n" +
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + objDotField + " = new List<" + listType + ">();\r\n" +
@@ -450,7 +452,7 @@ namespace FenGen
                         }
                         else
                         {
-                            sw.WriteLine(
+                            wl.Add(
                                 Indent(5) + objDotField + ".Clear();\r\n" +
                                 Indent(5) + "string[] items = val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);\r\n" +
                                 Indent(5) + "for (int a = 0; a < items.Length; a++)\r\n" +
@@ -467,15 +469,15 @@ namespace FenGen
                 }
                 else if (field.Type == "string")
                 {
-                    sw.WriteLine(Indent(5) + objDotField + " = val;");
+                    wl.Add(Indent(5) + objDotField + " = val;");
                 }
                 else if (field.Type == "bool")
                 {
-                    sw.WriteLine(Indent(5) + objDotField + " = val.EqualsTrue();");
+                    wl.Add(Indent(5) + objDotField + " = val.EqualsTrue();");
                 }
                 else if (field.Type == "bool?")
                 {
-                    sw.WriteLine(Indent(5) + objDotField + " =\r\n" +
+                    wl.Add(Indent(5) + objDotField + " =\r\n" +
                                  Indent(6) + "!string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;");
                 }
                 else if (NumericTypes.Contains(field.Type))
@@ -483,12 +485,12 @@ namespace FenGen
                     string floatArgs = GetFloatArgsRead(field.Type);
                     if (field.NumericEmpty != null && field.NumericEmpty != 0)
                     {
-                        sw.WriteLine(Indent(5) + "bool success = " + field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);");
-                        sw.WriteLine(Indent(5) + objDotField + " = success ? result : " + field.NumericEmpty + ";");
+                        wl.Add(Indent(5) + "bool success = " + field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);");
+                        wl.Add(Indent(5) + objDotField + " = success ? result : " + field.NumericEmpty + ";");
                     }
                     else
                     {
-                        sw.WriteLine(Indent(5) + field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);\r\n" +
+                        wl.Add(Indent(5) + field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);\r\n" +
                                      Indent(5) + objDotField + " = result;");
                     }
                 }
@@ -497,7 +499,7 @@ namespace FenGen
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                    sw.WriteLine(Indent(5) + "bool success = " + ftNonNull + ".TryParse(val, " + floatArgs + "out " + ftNonNull + " result);\r\n" +
+                    wl.Add(Indent(5) + "bool success = " + ftNonNull + ".TryParse(val, " + floatArgs + "out " + ftNonNull + " result);\r\n" +
                                  Indent(5) + "if (success)\r\n" +
                                  Indent(5) + "{\r\n" +
                                  Indent(6) + objDotField + " = result;\r\n" +
@@ -509,62 +511,63 @@ namespace FenGen
                 }
                 else if (field.Type == "Game")
                 {
-                    sw.WriteLine(Indent(5) + "val = val.Trim();");
+                    wl.Add(Indent(5) + "val = val.Trim();");
 
                     var gamesEnum = Cache.GamesEnum;
+
                     for (int gi = 1; gi < gamesEnum.Items.Count; gi++)
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.Items[gi];
-                        sw.WriteLine(Indent(5) + ifType + " (val.EqualsI(\"" + gamesEnum.Items[gi] + "\"))");
-                        sw.WriteLine(Indent(5) + "{");
-                        sw.WriteLine(Indent(6) + objDotField + " = " + gameDotGameType + ";");
-                        sw.WriteLine(Indent(5) + "}");
+                        wl.Add(Indent(5) + ifType + " (val.EqualsI(\"" + gamesEnum.Items[gi] + "\"))");
+                        wl.Add(Indent(5) + "{");
+                        wl.Add(Indent(6) + objDotField + " = " + gameDotGameType + ";");
+                        wl.Add(Indent(5) + "}");
                     }
-                    sw.WriteLine(Indent(5) + "else");
-                    sw.WriteLine(Indent(5) + "{");
-                    sw.WriteLine(Indent(6) + objDotField + " = " + gamesEnum.Name + "." + gamesEnum.Items[0] + ";");
-                    sw.WriteLine(Indent(5) + "}");
+                    wl.Add(Indent(5) + "else");
+                    wl.Add(Indent(5) + "{");
+                    wl.Add(Indent(6) + objDotField + " = " + gamesEnum.Name + "." + gamesEnum.Items[0] + ";");
+                    wl.Add(Indent(5) + "}");
                 }
                 else if (field.Type == "ExpandableDate")
                 {
-                    sw.WriteLine(Indent(5) + objDotField + ".UnixDateString = val;");
+                    wl.Add(Indent(5) + objDotField + ".UnixDateString = val;");
                 }
                 else if (field.Type == "DateTime?")
                 {
-                    sw.WriteLine(Indent(5) + "// PERF: Don't convert to local here; do it at display-time\r\n" +
+                    wl.Add(Indent(5) + "// PERF: Don't convert to local here; do it at display-time\r\n" +
                                  Indent(5) + objDotField + " = ConvertHexUnixDateToDateTime(val, convertToLocal: " +
                                  (!field.DoNotConvertDateTimeToLocal).ToString().ToLowerInvariant() + ");");
                 }
                 else if (field.Type == "CustomResources")
                 {
                     // Totally shouldn't be hardcoded...
-                    sw.WriteLine(Indent(5) + obj + ".ResourcesScanned = !val.EqualsI(\"NotScanned\");\r\n" +
+                    wl.Add(Indent(5) + obj + ".ResourcesScanned = !val.EqualsI(\"NotScanned\");\r\n" +
                                  Indent(5) + "FillFMHasXFields(fm, val);");
                 }
 
                 // if
-                sw.WriteLine(Indent(4) + "}");
+                wl.Add(Indent(4) + "}");
 
                 customCodeBlockToInsertAfterField = field.CodeBlockToInsertAfter;
             }
 
-            sw.WriteLine(Indent(4) + "if (resourcesFound) fm.ResourcesScanned = true;");
+            wl.Add(Indent(4) + "if (resourcesFound) fm.ResourcesScanned = true;");
 
-            foreach (string line in ReaderKeepLines) sw.WriteLine(line);
+            foreach (string line in ReaderKeepLines) wl.Add(line);
 
             // for
-            sw.WriteLine(Indent(3) + "}");
+            wl.Add(Indent(3) + "}");
 
             // method ReadFMDataIni
-            sw.WriteLine(Indent(2) + "}");
+            wl.Add(Indent(2) + "}");
         }
 
-        private static void WriteWriter(StreamWriter sw, string obj)
+        private static void WriteWriter(List<string> wl, string obj)
         {
-            sw.WriteLine(Indent(2) + GenMessages.Method);
+            wl.Add(Indent(2) + GenMessages.Method);
 
-            foreach (string l in WriteFMDataIniTopLines) sw.WriteLine(l);
+            foreach (string l in WriteFMDataIniTopLines) wl.Add(l);
 
             const string toString = "ToString()";
             const string unixDateString = "UnixDateString";
@@ -587,13 +590,13 @@ namespace FenGen
                 void swlSBAppend(int indent, string objField, string value, string suffix = "")
                 {
                     if (!suffix.IsEmpty()) suffix = "." + suffix;
-                    sw.WriteLine(Indent(indent) + "sb.Append(\"" + objField + "=\");");
+                    wl.Add(Indent(indent) + "sb.Append(\"" + objField + "=\");");
                     if (fieldIniName == "DateAdded")
                     {
                         // Disgusting >:(
-                        sw.WriteLine(Indent(indent) + "// Again, important to convert to local time here because we don't do it on startup.");
+                        wl.Add(Indent(indent) + "// Again, important to convert to local time here because we don't do it on startup.");
                     }
-                    sw.WriteLine(Indent(indent) + "sb.AppendLine(" + value + suffix + ");");
+                    wl.Add(Indent(indent) + "sb.AppendLine(" + value + suffix + ");");
                 }
 
                 if (field.Type.StartsWith("List<"))
@@ -602,8 +605,8 @@ namespace FenGen
                     if (field.ListType == ListType.MultipleLines)
                     {
                         string foreachType = listTypeIsString ? "string" : "var";
-                        sw.WriteLine(Indent(4) + "foreach (" + foreachType + " s in " + objDotField + ")");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "foreach (" + foreachType + " s in " + objDotField + ")");
+                        wl.Add(Indent(4) + "{");
 
                         //if (Fields.WriteEmptyValues)
 #if true
@@ -613,29 +616,29 @@ namespace FenGen
                         // Disabled for now, for AngelLoader-specific perf
 #else
                         {
-                            sw.WriteLine(Indent(6) + "if (!string.IsNullOrEmpty(s))\r\n" +
+                            sw.Add(Indent(6) + "if (!string.IsNullOrEmpty(s))\r\n" +
                                          Indent(6) + "{\r\n" +
                                          Indent(7) + "sw.WriteLine(\"" + fieldIniName + "=\" + s);\r\n" +
                                          Indent(6) + "}");
                         }
 #endif
 
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "string")
                 {
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(Indent(4) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");");
+                        wl.Add(Indent(4) + "sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");");
                         swlSBAppend(4, fieldIniName, objDotField);
                     }
                     else
                     {
-                        sw.WriteLine(Indent(4) + "if (!string.IsNullOrEmpty(" + objDotField + "))");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "if (!string.IsNullOrEmpty(" + objDotField + "))");
+                        wl.Add(Indent(4) + "{");
                         swlSBAppend(5, fieldIniName, objDotField);
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "bool")
@@ -646,10 +649,10 @@ namespace FenGen
                     }
                     else
                     {
-                        sw.WriteLine(Indent(4) + "if (" + objDotField + ")");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "if (" + objDotField + ")");
+                        wl.Add(Indent(4) + "{");
                         swlSBAppend(5, fieldIniName, objDotField, toString);
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "bool?")
@@ -660,10 +663,10 @@ namespace FenGen
                     }
                     else
                     {
-                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "if (" + objDotField + " != null)");
+                        wl.Add(Indent(4) + "{");
                         swlSBAppend(5, fieldIniName, obj, toString);
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                 }
                 else if (NumericTypes.Contains(field.Type))
@@ -671,10 +674,10 @@ namespace FenGen
                     string floatArgs = GetFloatArgsWrite(field.Type);
                     if (!Fields.WriteEmptyValues && field.NumericEmpty != null)
                     {
-                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != " + field.NumericEmpty + ")");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "if (" + objDotField + " != " + field.NumericEmpty + ")");
+                        wl.Add(Indent(4) + "{");
                         swlSBAppend(5, fieldIniName, objDotField, "ToString(" + floatArgs + ")");
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                     else
                     {
@@ -691,37 +694,37 @@ namespace FenGen
                     }
                     else
                     {
-                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "if (" + objDotField + " != null)");
+                        wl.Add(Indent(4) + "{");
                         swlSBAppend(5, fieldIniName, objDotField, "ToString(" + floatArgs + ")");
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == Cache.GamesEnum.Name)
                 {
                     var gamesEnum = Cache.GamesEnum;
 
-                    sw.WriteLine(Indent(4) + "switch (fm." + gamesEnum.Name + ")");
-                    sw.WriteLine(Indent(4) + "{");
+                    wl.Add(Indent(4) + "switch (fm." + gamesEnum.Name + ")");
+                    wl.Add(Indent(4) + "{");
                     for (int gi = 1; gi < gamesEnum.Items.Count; gi++)
                     {
-                        if (gi == 1) sw.WriteLine(Indent(5) + "// Much faster to do this than Enum.ToString()");
-                        sw.WriteLine(Indent(5) + "case " + gamesEnum.Name + "." + gamesEnum.Items[gi] + ":");
-                        sw.WriteLine(Indent(6) + "sb.AppendLine(\"" + gamesEnum.Name + "=" + gamesEnum.Items[gi] + "\");");
-                        sw.WriteLine(Indent(6) + "break;");
+                        if (gi == 1) wl.Add(Indent(5) + "// Much faster to do this than Enum.ToString()");
+                        wl.Add(Indent(5) + "case " + gamesEnum.Name + "." + gamesEnum.Items[gi] + ":");
+                        wl.Add(Indent(6) + "sb.AppendLine(\"" + gamesEnum.Name + "=" + gamesEnum.Items[gi] + "\");");
+                        wl.Add(Indent(6) + "break;");
                     }
                     string gameDotGameTypeZero = gamesEnum.Name + "." + gamesEnum.Items[0];
                     if (Fields.WriteEmptyValues)
                     {
-                        sw.WriteLine(Indent(5) + "case " + gameDotGameTypeZero + ":");
-                        sw.WriteLine(Indent(6) + "sb.AppendLine(\"" + gameDotGameTypeZero + "\");");
-                        sw.WriteLine(Indent(6) + "break;");
+                        wl.Add(Indent(5) + "case " + gameDotGameTypeZero + ":");
+                        wl.Add(Indent(6) + "sb.AppendLine(\"" + gameDotGameTypeZero + "\");");
+                        wl.Add(Indent(6) + "break;");
                     }
                     else
                     {
-                        sw.WriteLine(Indent(6) + "// Don't handle " + gameDotGameTypeZero + " because we don't want to write out defaults");
+                        wl.Add(Indent(6) + "// Don't handle " + gameDotGameTypeZero + " because we don't want to write out defaults");
                     }
-                    sw.WriteLine(Indent(4) + "}");
+                    wl.Add(Indent(4) + "}");
                 }
                 else if (field.Type == "ExpandableDate")
                 {
@@ -731,10 +734,10 @@ namespace FenGen
                     }
                     else
                     {
-                        sw.WriteLine(Indent(4) + "if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))");
+                        wl.Add(Indent(4) + "{");
                         swlSBAppend(5, fieldIniName, objDotField, unixDateString);
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "DateTime?")
@@ -750,53 +753,53 @@ namespace FenGen
                     }
                     else
                     {
-                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
-                        sw.WriteLine(Indent(4) + "{");
+                        wl.Add(Indent(4) + "if (" + objDotField + " != null)");
+                        wl.Add(Indent(4) + "{");
                         swlSBAppend(5, fieldIniName, val);
-                        sw.WriteLine(Indent(4) + "}");
+                        wl.Add(Indent(4) + "}");
                     }
                 }
                 else if (field.Type == "CustomResources")
                 {
-                    sw.WriteLine("#if write_old_resources_style");
-                    sw.WriteLine(Indent(4) + "if (fm.ResourcesScanned)");
-                    sw.WriteLine(Indent(4) + "{");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasMap=\" + FMHasResource(fm, CustomResources.Map).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasAutomap=\" + FMHasResource(fm, CustomResources.Automap).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasScripts=\" + FMHasResource(fm, CustomResources.Scripts).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasTextures=\" + FMHasResource(fm, CustomResources.Textures).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasSounds=\" + FMHasResource(fm, CustomResources.Sounds).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasObjects=\" + FMHasResource(fm, CustomResources.Objects).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasCreatures=\" + FMHasResource(fm, CustomResources.Creatures).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasMotions=\" + FMHasResource(fm, CustomResources.Motions).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasMovies=\" + FMHasResource(fm, CustomResources.Movies).ToString());");
-                    sw.WriteLine(Indent(4) + "sb.AppendLine(\"HasSubtitles=\" + FMHasResource(fm, CustomResources.Subtitles).ToString());");
-                    sw.WriteLine(Indent(4) + "}");
-                    sw.WriteLine("#else");
-                    sw.WriteLine(Indent(4) + "sb.Append(\"" + fieldIniName + "=\");");
-                    sw.WriteLine(Indent(4) + "if (fm.ResourcesScanned)");
-                    sw.WriteLine(Indent(4) + "{");
-                    sw.WriteLine(Indent(5) + "CommaCombineHasXFields(fm, sb);");
-                    sw.WriteLine(Indent(4) + "}");
-                    sw.WriteLine(Indent(4) + "else");
-                    sw.WriteLine(Indent(4) + "{");
-                    sw.WriteLine(Indent(5) + "sb.AppendLine(\"NotScanned\");");
-                    sw.WriteLine(Indent(4) + "}");
-                    sw.WriteLine("#endif");
+                    wl.Add("#if write_old_resources_style");
+                    wl.Add(Indent(4) + "if (fm.ResourcesScanned)");
+                    wl.Add(Indent(4) + "{");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasMap=\" + FMHasResource(fm, CustomResources.Map).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasAutomap=\" + FMHasResource(fm, CustomResources.Automap).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasScripts=\" + FMHasResource(fm, CustomResources.Scripts).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasTextures=\" + FMHasResource(fm, CustomResources.Textures).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasSounds=\" + FMHasResource(fm, CustomResources.Sounds).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasObjects=\" + FMHasResource(fm, CustomResources.Objects).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasCreatures=\" + FMHasResource(fm, CustomResources.Creatures).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasMotions=\" + FMHasResource(fm, CustomResources.Motions).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasMovies=\" + FMHasResource(fm, CustomResources.Movies).ToString());");
+                    wl.Add(Indent(4) + "sb.AppendLine(\"HasSubtitles=\" + FMHasResource(fm, CustomResources.Subtitles).ToString());");
+                    wl.Add(Indent(4) + "}");
+                    wl.Add("#else");
+                    wl.Add(Indent(4) + "sb.Append(\"" + fieldIniName + "=\");");
+                    wl.Add(Indent(4) + "if (fm.ResourcesScanned)");
+                    wl.Add(Indent(4) + "{");
+                    wl.Add(Indent(5) + "CommaCombineHasXFields(fm, sb);");
+                    wl.Add(Indent(4) + "}");
+                    wl.Add(Indent(4) + "else");
+                    wl.Add(Indent(4) + "{");
+                    wl.Add(Indent(5) + "sb.AppendLine(\"NotScanned\");");
+                    wl.Add(Indent(4) + "}");
+                    wl.Add("#endif");
                 }
             }
 
-            foreach (string line in WriterKeepLines) sw.WriteLine(line);
+            foreach (string line in WriterKeepLines) wl.Add(line);
 
             // for
-            sw.WriteLine(Indent(3) + "}");
+            wl.Add(Indent(3) + "}");
 
-            sw.WriteLine();
-            sw.WriteLine(Indent(3) + "using var sw = new StreamWriter(fileName, false, Encoding.UTF8);");
-            sw.WriteLine(Indent(3) + "sw.Write(sb.ToString());");
+            wl.Add("");
+            wl.Add(Indent(3) + "using var sw = new StreamWriter(fileName, false, Encoding.UTF8);");
+            wl.Add(Indent(3) + "sw.Write(sb.ToString());");
 
             // method WriteFMDataIni
-            sw.WriteLine(Indent(2) + "}");
+            wl.Add(Indent(2) + "}");
         }
 
         private static void ReadSourceFields(string className, string sourceFile)

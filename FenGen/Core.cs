@@ -35,10 +35,10 @@ namespace FenGen
 
     internal static class Cache
     {
-        internal static GameSourceEnum? GamesEnum;
-
-        private static string[]? _projectCodeFiles;
-        internal static string[] ProjectCodeFiles => _projectCodeFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories);
+        private static string _gameSupportFile = "";
+        internal static void SetGameSupportFile(string file) => _gameSupportFile = file;
+        private static GameSourceEnum? _gamesEnum;
+        internal static GameSourceEnum GamesEnum => _gamesEnum ??= Games.FillGamesEnum(_gameSupportFile);
     }
 
     internal static class GenFileTags
@@ -151,11 +151,10 @@ namespace FenGen
             }
 
             var genFileTags = new List<string>();
-            bool gameSupportRequested = false;
-            if (GenTaskActive(GenType.Language) || GenTaskActive(GenType.GameSupport))
+            bool gameSupportRequested = GenTaskActive(GenType.FMData) || GenTaskActive(GenType.GameSupport);
+            if (gameSupportRequested)
             {
                 genFileTags.Add(GenFileTags.GameSupport);
-                gameSupportRequested = true;
             }
             if (GenTaskActive(GenType.Language))
             {
@@ -171,15 +170,13 @@ namespace FenGen
 
             if (gameSupportRequested)
             {
-                // temp: fill it out beforehand to avoid file sharing exceptions
-                Cache.GamesEnum = Games.FillGamesEnum(taggedFilesDict![GenFileTags.GameSupport]);
-            }
-
-            if (GenTaskActive(GenType.FMData))
-            {
-                string sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
-                string destFile = Path.Combine(ALProjectPath, @"Ini\FMData.cs");
-                FMData.Generate(sourceFile, destFile);
+                Cache.SetGameSupportFile(taggedFilesDict![GenFileTags.GameSupport]);
+                if (GenTaskActive(GenType.FMData))
+                {
+                    string sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
+                    string destFile = Path.Combine(ALProjectPath, @"Ini\FMData.cs");
+                    FMData.Generate(sourceFile, destFile);
+                }
             }
             if (GenTaskActive(GenType.Language))
             {
@@ -209,7 +206,7 @@ namespace FenGen
                 taggedFiles[i] = new List<string>();
             }
 
-            string[] files = Cache.ProjectCodeFiles;
+            string[] files = Directory.GetFiles(ALProjectPath, "*.cs", SearchOption.AllDirectories);
             foreach (string f in files)
             {
                 using (var sr = new StreamReader(f))
