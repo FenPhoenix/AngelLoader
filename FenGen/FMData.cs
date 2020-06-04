@@ -822,6 +822,20 @@ namespace FenGen
             string commentForThisField = "";
             var codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
 
+            string GetAttrParam(string value, bool isString = false)
+            {
+                int index1;
+                int indexOfParen = value.IndexOf('(');
+                string ret = value
+                    .Substring(index1 = indexOfParen + 1, value.LastIndexOf(')') - index1)
+                    .Trim();
+                if (isString)
+                {
+                    ret = ret == "\"\"" ? "" : ret.Substring(1, ret.Length - 2);
+                }
+                return ret;
+            }
+
             for (int i = 0; i < sourceLines.Length; i++)
             {
                 string lineT = sourceLines[i].Trim();
@@ -829,22 +843,22 @@ namespace FenGen
                 if (!inClass)
                 {
                     bool lineIsClassDef = lineT.EndsWith("class " + className);
-
+                    
                     if (i > 0 && lineIsClassDef)
                     {
-                        string prevLine = sourceLines[i - 1].Trim();
-                        if (prevLine.StartsWith("//") && prevLine.Substring(2).Trim().StartsWith("[FenGen:") &&
-                            prevLine[prevLine.Length - 1] == ']')
+                        string prevLineT = sourceLines[i - 1].Trim();
+
+                        if (prevLineT.StartsWith("[") && prevLineT.EndsWith("]"))
                         {
-                            int ind;
-                            string kvp = prevLine.Substring(ind = prevLine.IndexOf(':') + 1, prevLine.Length - ind - 1);
-                            if (kvp.Contains("="))
+                            var indexOfParen = prevLineT.IndexOf('(');
+                            if (indexOfParen > -1)
                             {
-                                string key = kvp.Substring(0, kvp.IndexOf('=')).Trim();
-                                string val = kvp.Substring(kvp.IndexOf('=') + 1).Trim();
-                                if (key == "WriteEmptyValues")
+                                string attr = prevLineT.Trim('[', ']');
+                                string attrNamePart = attr.Substring(0, indexOfParen);
+                                if (GetAttributeName(attrNamePart, "FenGenWriteEmptyValues"))
                                 {
-                                    Fields.WriteEmptyValues = val.EqualsTrue();
+                                    string attrParam = GetAttrParam(attr);
+                                    Fields.WriteEmptyValues = attrParam.EqualsTrue();
                                 }
                             }
                         }
@@ -866,6 +880,7 @@ namespace FenGen
                 {
                     string attr = lineT.Trim('[', ']');
                     int indexOfParen = attr.IndexOf('(');
+
                     if (GetAttributeName(attr, "FenGenDoNotSerialize"))
                     {
                         doNotSerializeNextLine = true;
@@ -886,10 +901,7 @@ namespace FenGen
                         string attrNamePart = attr.Substring(0, indexOfParen);
                         if (GetAttributeName(attrNamePart, "FenGenNumericEmpty"))
                         {
-                            int index1;
-                            string attrParam = attr
-                                .Substring(index1 = indexOfParen + 1, attr.LastIndexOf(')') - index1)
-                                .Trim();
+                            string attrParam = GetAttrParam(attr);
                             if (long.TryParse(attrParam, out long result))
                             {
                                 numericEmptyForThisField = result;

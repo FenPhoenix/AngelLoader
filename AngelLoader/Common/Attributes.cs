@@ -28,6 +28,13 @@ namespace AngelLoader
             public FenGenNumericEmptyAttribute([UsedImplicitly] long value) { }
         }
 
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal class FenGenWriteEmptyValuesAttribute : Attribute
+        {
+            internal FenGenWriteEmptyValuesAttribute(bool value) { }
+        }
+
         /// <summary>
         /// This attribute should be used on the localization class. Only one instance of this attribute should
         /// be used, or else FenGen will throw an error.
