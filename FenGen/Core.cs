@@ -258,16 +258,10 @@ namespace FenGen
                     error = AddError(error, "-Multiple files found with '#define " + genFileTags[i] + "' at top");
                 }
             }
-
-            //if (sourceTaggedFiles.Count == 0) error = AddError(error, "-No tagged source file found");
-            //if (destTaggedFiles.Count == 0) error = AddError(error, "-No tagged destination file found");
-            //if (sourceTaggedFiles.Count > 1) error = AddError(error, "-Multiple tagged source files found");
-            //if (destTaggedFiles.Count > 1) error = AddError(error, "-Multiple tagged destination files found");
             if (!error.IsEmpty()) ThrowErrorAndTerminate(error);
 
             #endregion
 
-            //return (sourceTaggedFiles[0], destTaggedFiles[0]);
             var ret = new Dictionary<string, string>();
             for (int i = 0; i < genFileTags.Count; i++)
             {
