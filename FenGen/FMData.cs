@@ -337,9 +337,15 @@ namespace FenGen
 
             foreach (string l in topLines) sw.WriteLine(l);
 
-            bool wroteHasXFields = false;
-
             CustomCodeBlockNames customCodeBlockToInsertAfterField = CustomCodeBlockNames.None;
+
+            static string GetFloatArgsRead(string fieldType) =>
+                fieldType == "float" ||
+                fieldType == "float?" ||
+                fieldType == "double" ||
+                fieldType == "double?"
+                    ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo,"
+                    : "";
 
             for (int i = 0; i < Fields.Count; i++)
             {
@@ -428,6 +434,7 @@ namespace FenGen
                     }
                     else if (NumericTypes.Contains(listType))
                     {
+                        string floatArgs = GetFloatArgsRead(listType);
                         if (field.ListType == ListType.MultipleLines)
                         {
                             sw.WriteLine(
@@ -435,7 +442,7 @@ namespace FenGen
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + objDotField + " = new List<" + listType + ">();\r\n" +
                                 Indent(5) + "}\r\n" +
-                                Indent(5) + "bool success = " + listType + ".TryParse(val, out " + listType + " result);\r\n" +
+                                Indent(5) + "bool success = " + listType + ".TryParse(val, " + floatArgs + " out " + listType + " result);\r\n" +
                                 Indent(5) + "if(success)\r\n" +
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + objListSet + "\r\n" +
@@ -449,7 +456,7 @@ namespace FenGen
                                 Indent(5) + "for (int a = 0; a < items.Length; a++)\r\n" +
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + "items[a] = items[a].Trim();\r\n" +
-                                Indent(6) + "bool success = " + listType + ".TryParse(items[a], out " + listType + " result);\r\n" +
+                                Indent(6) + "bool success = " + listType + ".TryParse(items[a], " + floatArgs + " out " + listType + " result);\r\n" +
                                 Indent(6) + "if(success)\r\n" +
                                 Indent(6) + "{\r\n" +
                                 Indent(7) + objListSet + "\r\n" +
@@ -473,22 +480,24 @@ namespace FenGen
                 }
                 else if (NumericTypes.Contains(field.Type))
                 {
+                    string floatArgs = GetFloatArgsRead(field.Type);
                     if (field.NumericEmpty != null && field.NumericEmpty != 0)
                     {
-                        sw.WriteLine(Indent(5) + "bool success = " + field.Type + ".TryParse(val, out " + field.Type + " result);");
+                        sw.WriteLine(Indent(5) + "bool success = " + field.Type + ".TryParse(val, " + floatArgs + " out " + field.Type + " result);");
                         sw.WriteLine(Indent(5) + objDotField + " = success ? result : " + field.NumericEmpty + ";");
                     }
                     else
                     {
-                        sw.WriteLine(Indent(5) + field.Type + ".TryParse(val, out " + field.Type + " result);\r\n" +
+                        sw.WriteLine(Indent(5) + field.Type + ".TryParse(val, " + floatArgs + " out " + field.Type + " result);\r\n" +
                                      Indent(5) + objDotField + " = result;");
                     }
                 }
                 else if (field.Type[field.Type.Length - 1] == '?' &&
                         NumericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
+                    string floatArgs = GetFloatArgsRead(field.Type);
                     string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                    sw.WriteLine(Indent(5) + "bool success = " + ftNonNull + ".TryParse(val, out " + ftNonNull + " result);\r\n" +
+                    sw.WriteLine(Indent(5) + "bool success = " + ftNonNull + ".TryParse(val, " + floatArgs + " out " + ftNonNull + " result);\r\n" +
                                  Indent(5) + "if (success)\r\n" +
                                  Indent(5) + "{\r\n" +
                                  Indent(6) + objDotField + " = result;\r\n" +
@@ -559,6 +568,16 @@ namespace FenGen
 
             const string toString = "ToString()";
             const string unixDateString = "UnixDateString";
+
+            static string GetFloatArgsWrite(string fieldType) =>
+                fieldType == "float" ||
+                fieldType == "float?" ||
+                fieldType == "double" ||
+                fieldType == "double?" ||
+                fieldType == "decimal" ||
+                fieldType == "decimal?"
+                    ? "NumberFormatInfo.InvariantInfo"
+                    : "";
 
             foreach (var field in Fields)
             {
@@ -673,38 +692,32 @@ namespace FenGen
                 }
                 else if (NumericTypes.Contains(field.Type))
                 {
-                    string optCulture = field.Type == "float" || field.Type == "double" || field.Type == "decimal"
-                        ? "CultureInfo.InvariantCulture"
-                        : "";
-
+                    string floatArgs = GetFloatArgsWrite(field.Type);
                     if (!Fields.WriteEmptyValues && field.NumericEmpty != null)
                     {
                         sw.WriteLine(Indent(4) + "if (" + objDotField + " != " + field.NumericEmpty + ")");
                         sw.WriteLine(Indent(4) + "{");
-                        swlSBAppend(5, fieldIniName, objDotField, "ToString(" + optCulture + ")");
+                        swlSBAppend(5, fieldIniName, objDotField, "ToString(" + floatArgs + ")");
                         sw.WriteLine(Indent(4) + "}");
                     }
                     else
                     {
-                        swlSBAppend(4, fieldIniName, objDotField, "ToString(" + optCulture + ")");
+                        swlSBAppend(4, fieldIniName, objDotField, "ToString(" + floatArgs + ")");
                     }
                 }
                 else if (field.Type[field.Type.Length - 1] == '?' &&
                          NumericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
-                    string optCulture = field.Type == "float" || field.Type == "double" || field.Type == "decimal"
-                        ? "CultureInfo.InvariantCulture"
-                        : "";
-
+                    string floatArgs = GetFloatArgsWrite(field.Type);
                     if (Fields.WriteEmptyValues)
                     {
-                        swlSBAppend(4, fieldIniName, objDotField, "ToString(" + optCulture + ")");
+                        swlSBAppend(4, fieldIniName, objDotField, "ToString(" + floatArgs + ")");
                     }
                     else
                     {
                         sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
                         sw.WriteLine(Indent(4) + "{");
-                        swlSBAppend(5, fieldIniName, objDotField, "ToString(" + optCulture + ")");
+                        swlSBAppend(5, fieldIniName, objDotField, "ToString(" + floatArgs + ")");
                         sw.WriteLine(Indent(4) + "}");
                     }
                 }
