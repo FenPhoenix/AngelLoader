@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Logger;
 using static AngelLoader.Misc;
 
@@ -76,6 +78,7 @@ namespace AngelLoader
         }
 
         private static readonly ReaderWriterLockSlim FMDataIniRWLock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim ConfigIniRWLock = new ReaderWriterLockSlim();
 
         internal static void WriteFullFMDataIni()
         {
@@ -97,6 +100,30 @@ namespace AngelLoader
                 catch (Exception ex)
                 {
                     Log("Exception exiting " + nameof(FMDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
+                }
+            }
+        }
+
+        internal static void WriteFullConfigIni()
+        {
+            try
+            {
+                ConfigIniRWLock.EnterWriteLock();
+                WriteConfigIni(Config, Paths.ConfigIni);
+            }
+            catch (Exception ex)
+            {
+                Log("There was an error while writing to " + Paths.ConfigIni + ".", ex);
+            }
+            finally
+            {
+                try
+                {
+                    ConfigIniRWLock.ExitWriteLock();
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception exiting " + nameof(ConfigIniRWLock) + " in " + nameof(WriteFullConfigIni), ex);
                 }
             }
         }
@@ -230,6 +257,234 @@ namespace AngelLoader
             }
 
             sb.AppendLine();
+        }
+
+        #endregion
+
+        #region Config
+
+        private static bool ContainsColWithId(ConfigData _config, ColumnData _col)
+        {
+            foreach (ColumnData x in _config.Columns) if (x.Id == _col.Id) return true;
+            return false;
+        }
+
+        private static ColumnData? ConvertStringToColumnData(string str)
+        {
+            str = str.Trim().Trim(CA_Comma);
+
+            // DisplayIndex,Width,Visible
+            // 0,100,True
+
+            if (!str.Contains(',')) return null;
+
+            string[] cProps = str.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+            if (cProps.Length == 0) return null;
+
+            var ret = new ColumnData();
+            for (int i = 0; i < cProps.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        if (int.TryParse(cProps[i], out int di))
+                        {
+                            ret.DisplayIndex = di;
+                        }
+                        break;
+                    case 1:
+                        if (int.TryParse(cProps[i], out int width))
+                        {
+                            ret.Width = width > Defaults.MinColumnWidth ? width : Defaults.MinColumnWidth;
+                        }
+                        break;
+                    case 2:
+                        ret.Visible = cProps[i].EqualsTrue();
+                        break;
+                }
+            }
+
+            return ret;
+        }
+
+        private static void ReadTags(string line, Game game)
+        {
+            Filter filter = GameIsKnownAndSupported(game)
+                ? Config.GameTabsState.GetFilter(GameToGameIndex(game))
+                : Config.Filter;
+
+            // TODO: This line-passing-and-reading business is still a little janky
+            CatAndTagsList? tagsList =
+                line.StartsWithFast_NoNullChecks("And=") ? filter.Tags.AndTags :
+                line.StartsWithFast_NoNullChecks("Or=") ? filter.Tags.OrTags :
+                line.StartsWithFast_NoNullChecks("Not=") ? filter.Tags.NotTags :
+                null;
+
+            if (tagsList == null) return;
+
+            string val = line.Substring(line.IndexOf('=') + 1);
+
+            if (val.IsWhiteSpace()) return;
+
+            string[] tagsArray = val.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string item in tagsArray)
+            {
+                string cat, tag;
+                int colonCount = item.CountCharsUpToAmount(':', 2);
+                if (colonCount > 1) continue;
+                if (colonCount == 1)
+                {
+                    int index = item.IndexOf(':');
+                    cat = item.Substring(0, index).Trim().ToLowerInvariant();
+                    tag = item.Substring(index + 1).Trim();
+                    if (cat.IsEmpty()) continue;
+                }
+                else
+                {
+                    cat = "misc";
+                    tag = item.Trim();
+                }
+
+                CatAndTags? match = null;
+                for (int i = 0; i < tagsList.Count; i++)
+                {
+                    if (tagsList[i].Category == cat)
+                    {
+                        match = tagsList[i];
+                        break;
+                    }
+                }
+                if (match == null)
+                {
+                    tagsList.Add(new CatAndTags { Category = cat });
+                    if (!tag.IsEmpty()) tagsList[tagsList.Count - 1].Tags.Add(tag);
+                }
+                else
+                {
+                    if (!tag.IsEmpty() && !match.Tags.ContainsI(tag)) match.Tags.Add(tag);
+                }
+            }
+        }
+
+        private static void ReadFinishedStates(string val, Filter filter)
+        {
+            var list = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+            foreach (string finishedState in list)
+            {
+                switch (finishedState.Trim())
+                {
+                    case nameof(FinishedState.Finished):
+                        filter.Finished |= FinishedState.Finished;
+                        break;
+                    case nameof(FinishedState.Unfinished):
+                        filter.Finished |= FinishedState.Unfinished;
+                        break;
+                }
+            }
+        }
+
+        private static string CommaCombine<T>(List<T> list) where T : notnull
+        {
+            string ret = "";
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i > 0) ret += ",";
+                ret += list[i].ToString();
+            }
+
+            return ret;
+        }
+
+        // TODO: Figure out a better way to be fast without this dopey manual code. Code generation?
+        private static string CommaCombineGameFlags(Game games)
+        {
+            string ret = "";
+
+            // Hmm... doesn't make for good code, but fast...
+            // @GENGAMES (Config writer - Comma combine game flags): Begin
+            bool notEmpty = false;
+
+            if ((games & Game.Thief1) == Game.Thief1)
+            {
+                ret += nameof(Game.Thief1);
+                notEmpty = true;
+            }
+            if ((games & Game.Thief2) == Game.Thief2)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(Game.Thief2);
+                notEmpty = true;
+            }
+            if ((games & Game.Thief3) == Game.Thief3)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(Game.Thief3);
+                notEmpty = true;
+            }
+            if ((games & Game.SS2) == Game.SS2)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(Game.SS2);
+            }
+            // @GENGAMES (Config writer - Comma combine game flags): End
+
+            return ret;
+        }
+
+        private static string CommaCombineFinishedStates(FinishedState finished)
+        {
+            string ret = "";
+
+            bool notEmpty = false;
+
+            if ((finished & FinishedState.Finished) == FinishedState.Finished)
+            {
+                ret += nameof(FinishedState.Finished);
+                notEmpty = true;
+            }
+            if ((finished & FinishedState.Unfinished) == FinishedState.Unfinished)
+            {
+                if (notEmpty) ret += ",";
+                ret += nameof(FinishedState.Unfinished);
+            }
+
+            return ret;
+        }
+
+        private static string FilterDate(DateTime? dt) => dt == null
+            ? ""
+            : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
+
+        private static string TagsToString(CatAndTagsList tagsList)
+        {
+            var intermediateTagsList = new List<string>();
+            foreach (CatAndTags catAndTags in tagsList)
+            {
+                if (catAndTags.Tags.Count == 0)
+                {
+                    intermediateTagsList.Add(catAndTags.Category + ":");
+                }
+                else
+                {
+                    string catC = catAndTags.Category + ":";
+                    foreach (string tag in catAndTags.Tags)
+                    {
+                        intermediateTagsList.Add(catC + tag);
+                    }
+                }
+            }
+
+            string filterTagsString = "";
+            for (int ti = 0; ti < intermediateTagsList.Count; ti++)
+            {
+                if (ti > 0) filterTagsString += ",";
+                filterTagsString += intermediateTagsList[ti];
+            }
+
+            return filterTagsString;
         }
 
         #endregion

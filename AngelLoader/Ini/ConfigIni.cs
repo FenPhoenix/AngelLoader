@@ -28,123 +28,6 @@ namespace AngelLoader
         // Not autogenerating these, because there's too many special cases, and adding stuff by hand is not that
         // big of a deal really.
 
-        private static ColumnData? ConvertStringToColumnData(string str)
-        {
-            str = str.Trim().Trim(CA_Comma);
-
-            // DisplayIndex,Width,Visible
-            // 0,100,True
-
-            if (!str.Contains(',')) return null;
-
-            string[] cProps = str.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-            if (cProps.Length == 0) return null;
-
-            var ret = new ColumnData();
-            for (int i = 0; i < cProps.Length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        if (int.TryParse(cProps[i], out int di))
-                        {
-                            ret.DisplayIndex = di;
-                        }
-                        break;
-                    case 1:
-                        if (int.TryParse(cProps[i], out int width))
-                        {
-                            ret.Width = width > Defaults.MinColumnWidth ? width : Defaults.MinColumnWidth;
-                        }
-                        break;
-                    case 2:
-                        ret.Visible = cProps[i].EqualsTrue();
-                        break;
-                }
-            }
-
-            return ret;
-        }
-
-        private static void ReadTags(string line, Game game)
-        {
-            Filter filter = GameIsKnownAndSupported(game)
-                ? Config.GameTabsState.GetFilter(GameToGameIndex(game))
-                : Config.Filter;
-
-            // TODO: This line-passing-and-reading business is still a little janky
-            CatAndTagsList? tagsList =
-                line.StartsWithFast_NoNullChecks("And=") ? filter.Tags.AndTags :
-                line.StartsWithFast_NoNullChecks("Or=") ? filter.Tags.OrTags :
-                line.StartsWithFast_NoNullChecks("Not=") ? filter.Tags.NotTags :
-                null;
-
-            if (tagsList == null) return;
-
-            string val = line.Substring(line.IndexOf('=') + 1);
-
-            if (val.IsWhiteSpace()) return;
-
-            string[] tagsArray = val.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (string item in tagsArray)
-            {
-                string cat, tag;
-                int colonCount = item.CountCharsUpToAmount(':', 2);
-                if (colonCount > 1) continue;
-                if (colonCount == 1)
-                {
-                    int index = item.IndexOf(':');
-                    cat = item.Substring(0, index).Trim().ToLowerInvariant();
-                    tag = item.Substring(index + 1).Trim();
-                    if (cat.IsEmpty()) continue;
-                }
-                else
-                {
-                    cat = "misc";
-                    tag = item.Trim();
-                }
-
-                CatAndTags? match = null;
-                for (int i = 0; i < tagsList.Count; i++)
-                {
-                    if (tagsList[i].Category == cat)
-                    {
-                        match = tagsList[i];
-                        break;
-                    }
-                }
-                if (match == null)
-                {
-                    tagsList.Add(new CatAndTags { Category = cat });
-                    if (!tag.IsEmpty()) tagsList[tagsList.Count - 1].Tags.Add(tag);
-                }
-                else
-                {
-                    if (!tag.IsEmpty() && !match.Tags.ContainsI(tag)) match.Tags.Add(tag);
-                }
-            }
-        }
-
-        private static void ReadFinishedStates(string val, Filter filter)
-        {
-            var list = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
-                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-
-            foreach (string finishedState in list)
-            {
-                switch (finishedState.Trim())
-                {
-                    case nameof(FinishedState.Finished):
-                        filter.Finished |= FinishedState.Finished;
-                        break;
-                    case nameof(FinishedState.Unfinished):
-                        filter.Finished |= FinishedState.Unfinished;
-                        break;
-                }
-            }
-        }
-
         // I tried removing the reflection in this one and it measured no faster, so leaving it as is.
         internal static void ReadConfigIni(string path, ConfigData config)
         {
@@ -173,12 +56,6 @@ namespace AngelLoader
                     if (col == null) continue;
 
                     col.Id = (Column)field.GetValue(null);
-
-                    static bool ContainsColWithId(ConfigData _config, ColumnData _col)
-                    {
-                        foreach (ColumnData x in _config.Columns) if (x.Id == _col.Id) return true;
-                        return false;
-                    }
 
                     if (!ContainsColWithId(config, col)) config.Columns.Add(col);
                 }
@@ -918,79 +795,6 @@ namespace AngelLoader
         // This is faster with reflection removed.
         internal static void WriteConfigIni(ConfigData config, string fileName)
         {
-            static string commaCombine<T>(List<T> list) where T : notnull
-            {
-                string ret = "";
-                for (int i = 0; i < list.Count; i++)
-                {
-                    if (i > 0) ret += ",";
-                    ret += list[i].ToString();
-                }
-
-                return ret;
-            }
-
-            #region Enum-specific commaCombine() methods
-
-            // TODO: Figure out a better way to be fast without this dopey manual code. Code generation?
-
-            static string commaCombineGameFlags(Game games)
-            {
-                string ret = "";
-
-                // Hmm... doesn't make for good code, but fast...
-                // @GENGAMES (Config writer - Comma combine game flags): Begin
-                bool notEmpty = false;
-
-                if ((games & Game.Thief1) == Game.Thief1)
-                {
-                    ret += nameof(Game.Thief1);
-                    notEmpty = true;
-                }
-                if ((games & Game.Thief2) == Game.Thief2)
-                {
-                    if (notEmpty) ret += ",";
-                    ret += nameof(Game.Thief2);
-                    notEmpty = true;
-                }
-                if ((games & Game.Thief3) == Game.Thief3)
-                {
-                    if (notEmpty) ret += ",";
-                    ret += nameof(Game.Thief3);
-                    notEmpty = true;
-                }
-                if ((games & Game.SS2) == Game.SS2)
-                {
-                    if (notEmpty) ret += ",";
-                    ret += nameof(Game.SS2);
-                }
-                // @GENGAMES (Config writer - Comma combine game flags): End
-
-                return ret;
-            }
-
-            static string commaCombineFinishedStates(FinishedState finished)
-            {
-                string ret = "";
-
-                bool notEmpty = false;
-
-                if ((finished & FinishedState.Finished) == FinishedState.Finished)
-                {
-                    ret += nameof(FinishedState.Finished);
-                    notEmpty = true;
-                }
-                if ((finished & FinishedState.Unfinished) == FinishedState.Unfinished)
-                {
-                    if (notEmpty) ret += ",";
-                    ret += nameof(FinishedState.Unfinished);
-                }
-
-                return ret;
-            }
-
-            #endregion
-
             StreamWriter? sw = null;
             try
             {
@@ -1050,7 +854,7 @@ namespace AngelLoader
                 sw.WriteLine(nameof(config.UseShortGameTabNames) + "=" + config.UseShortGameTabNames);
 
                 sw.WriteLine(nameof(config.EnableArticles) + "=" + config.EnableArticles);
-                sw.WriteLine(nameof(config.Articles) + "=" + commaCombine(config.Articles));
+                sw.WriteLine(nameof(config.Articles) + "=" + CommaCombine(config.Articles));
                 sw.WriteLine(nameof(config.MoveArticlesToEnd) + "=" + config.MoveArticlesToEnd);
 
                 sw.WriteLine(nameof(config.RatingDisplayStyle) + "=" + config.RatingDisplayStyle);
@@ -1082,16 +886,12 @@ namespace AngelLoader
 
                 #region Filters
 
-                static string FilterDate(DateTime? dt) => dt == null
-                    ? ""
-                    : new DateTimeOffset((DateTime)dt).ToUnixTimeSeconds().ToString("X");
-
                 for (int i = 0; i < SupportedGameCount + 1; i++)
                 {
                     Filter filter = i == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(i - 1));
                     string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
 
-                    if (i == 0) sw.WriteLine("FilterGames=" + commaCombineGameFlags(config.Filter.Games));
+                    if (i == 0) sw.WriteLine("FilterGames=" + CommaCombineGameFlags(config.Filter.Games));
 
                     sw.WriteLine(p + "FilterTitle=" + filter.Title);
                     sw.WriteLine(p + "FilterAuthor=" + filter.Author);
@@ -1102,50 +902,17 @@ namespace AngelLoader
                     sw.WriteLine(p + "FilterLastPlayedFrom=" + FilterDate(filter.LastPlayedFrom));
                     sw.WriteLine(p + "FilterLastPlayedTo=" + FilterDate(filter.LastPlayedTo));
 
-                    sw.WriteLine(p + "FilterFinishedStates=" + commaCombineFinishedStates(filter.Finished));
+                    sw.WriteLine(p + "FilterFinishedStates=" + CommaCombineFinishedStates(filter.Finished));
 
                     sw.WriteLine(p + "FilterRatingFrom=" + filter.RatingFrom);
                     sw.WriteLine(p + "FilterRatingTo=" + filter.RatingTo);
 
                     sw.WriteLine(p + "FilterShowJunk=" + filter.ShowUnsupported);
 
-                    #region Tags
-
-                    static string TagsToString(CatAndTagsList tagsList)
-                    {
-                        var intermediateTagsList = new List<string>();
-                        foreach (CatAndTags catAndTags in tagsList)
-                        {
-                            if (catAndTags.Tags.Count == 0)
-                            {
-                                intermediateTagsList.Add(catAndTags.Category + ":");
-                            }
-                            else
-                            {
-                                string catC = catAndTags.Category + ":";
-                                foreach (string tag in catAndTags.Tags)
-                                {
-                                    intermediateTagsList.Add(catC + tag);
-                                }
-                            }
-                        }
-
-                        string filterTagsString = "";
-                        for (int ti = 0; ti < intermediateTagsList.Count; ti++)
-                        {
-                            if (ti > 0) filterTagsString += ",";
-                            filterTagsString += intermediateTagsList[ti];
-                        }
-
-                        return filterTagsString;
-                    }
-
                     sw.WriteLine(p + "FilterTagsAnd=" + TagsToString(filter.Tags.AndTags));
                     sw.WriteLine(p + "FilterTagsOr=" + TagsToString(filter.Tags.OrTags));
                     sw.WriteLine(p + "FilterTagsNot=" + TagsToString(filter.Tags.NotTags));
                 }
-
-                #endregion
 
                 #endregion
 
@@ -1209,10 +976,6 @@ namespace AngelLoader
                 sw.WriteLine(nameof(config.ReadmeUseFixedWidthFont) + "=" + config.ReadmeUseFixedWidthFont);
 
                 #endregion
-            }
-            catch (Exception ex)
-            {
-                Log("There was an error while writing to " + Paths.ConfigIni + ".", ex);
             }
             finally
             {
