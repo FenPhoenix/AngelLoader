@@ -881,7 +881,7 @@ namespace FenGen
                     string attr = lineT.Trim('[', ']');
                     int indexOfParen = attr.IndexOf('(');
 
-                    if (GetAttributeName(attr, "FenGenDoNotSerialize"))
+                    if (GetAttributeName(attr, "FenGenIgnore"))
                     {
                         doNotSerializeNextLine = true;
                         continue;

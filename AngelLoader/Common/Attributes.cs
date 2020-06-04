@@ -9,9 +9,12 @@ namespace AngelLoader
         // All attributes marked with a conditional based on a define that doesn't exist, so they won't be compiled
         // (we only need these for pre-build code generation)
 
+        /// <summary>
+        /// The generator will ignore this field or property and will not generate any code from it.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenDoNotSerializeAttribute : Attribute { }
+        internal class FenGenIgnoreAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
