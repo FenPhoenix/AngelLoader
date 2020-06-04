@@ -1,7 +1,7 @@
 ﻿// NOTE: This code is provided for completeness' sake. It was written to do the job quickly without regard to any
 // kind of good coding practices whatsoever. Don't write a public-facing program this way. Thank you.
 
-//#define PROFILING
+#define PROFILING
 
 using System;
 using System.Collections.Generic;

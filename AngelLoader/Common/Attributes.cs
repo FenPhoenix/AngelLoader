@@ -13,6 +13,21 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenDoNotSerializeAttribute : Attribute { }
 
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenDoNotTrimValueAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenNumericEmptyAttribute : Attribute
+        {
+            public FenGenNumericEmptyAttribute([UsedImplicitly] long value) { }
+        }
+
         /// <summary>
         /// This attribute should be used on the localization class. Only one instance of this attribute should
         /// be used, or else FenGen will throw an error.

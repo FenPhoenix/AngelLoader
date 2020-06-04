@@ -58,12 +58,12 @@ namespace AngelLoader.DataClasses
 
         [FenGenDoNotSerialize]
         private ulong _sizeBytes = 0;
-        // [FenGen:NumericEmpty=0]
+        [FenGenNumericEmpty(0)]
         internal ulong SizeBytes { get => _sizeBytes; set => _sizeBytes = value.Clamp(ulong.MinValue, ulong.MaxValue); }
 
         [FenGenDoNotSerialize]
         private int _rating = -1;
-        // [FenGen:NumericEmpty=-1]
+        [FenGenNumericEmpty(-1)]
         internal int Rating { get => _rating; set => _rating = value.Clamp(-1, 10); }
 
         internal readonly ExpandableDate ReleaseDate = new ExpandableDate();
@@ -75,18 +75,18 @@ namespace AngelLoader.DataClasses
         // NOTE: This is not an ExpandableDate, because the way we get the date value is not in unix hex string
         // format, and it's expensive to convert it to such. With a regular nullable DateTime we're only paying
         // like 3-5ms extra on startup (for 1574 FMs), so it's good enough for now.
-        // [FenGen:DoNotConvertDateTimeToLocal]
+        [FenGenDoNotConvertDateTimeToLocal]
         internal DateTime? DateAdded = null;
 
         [FenGenDoNotSerialize]
         private uint _finishedOn = 0;
-        // [FenGen:NumericEmpty=0]
+        [FenGenNumericEmpty(0)]
         internal uint FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0u, 15u); }
         internal bool FinishedOnUnknown;
 
         [FenGenDoNotSerialize]
         internal string CommentSingleLine = "";
-        // [FenGen:DoNotTrimValue]
+        [FenGenDoNotTrimValue]
         internal string Comment = "";
 
         internal string DisabledMods = "";

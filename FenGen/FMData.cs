@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using static FenGen.Misc;
 
@@ -864,10 +865,37 @@ namespace FenGen
                 if (lineT.StartsWith("[") && lineT.EndsWith("]"))
                 {
                     string attr = lineT.Trim('[', ']');
+                    int indexOfParen = attr.IndexOf('(');
                     if (GetAttributeName(attr, "FenGenDoNotSerialize"))
                     {
                         doNotSerializeNextLine = true;
                         continue;
+                    }
+                    else if (GetAttributeName(attr, "FenGenDoNotConvertDateTimeToLocal"))
+                    {
+                        doNotConvertDateTimeToLocalForThisField = true;
+                        continue;
+                    }
+                    else if (GetAttributeName(attr, "FenGenDoNotTrimValue"))
+                    {
+                        doNotTrimValueForThisField = true;
+                        continue;
+                    }
+                    else if (indexOfParen > -1)
+                    {
+                        string attrNamePart = attr.Substring(0, indexOfParen);
+                        if (GetAttributeName(attrNamePart, "FenGenNumericEmpty"))
+                        {
+                            int index1;
+                            string attrParam = attr
+                                .Substring(index1 = indexOfParen + 1, attr.LastIndexOf(')') - index1)
+                                .Trim();
+                            if (long.TryParse(attrParam, out long result))
+                            {
+                                numericEmptyForThisField = result;
+                            }
+                            continue;
+                        }
                     }
                 }
 
@@ -876,24 +904,6 @@ namespace FenGen
                     string attr = lineT.Substring(2).Trim();
                     if (attr.StartsWith("[FenGen:"))
                     {
-                        //if (attr == "[FenGen:DoNotSerialize]")
-                        //{
-                        //    doNotSerializeNextLine = true;
-                        //    continue;
-                        //}
-
-                        if (attr == "[FenGen:DoNotTrimValue]")
-                        {
-                            doNotTrimValueForThisField = true;
-                            continue;
-                        }
-
-                        if (attr == "[FenGen:DoNotConvertDateTimeToLocal]")
-                        {
-                            doNotConvertDateTimeToLocalForThisField = true;
-                            continue;
-                        }
-
                         if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("InsertAfter="))
                         {
                             string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
@@ -944,13 +954,6 @@ namespace FenGen
                                 }
                             }
 
-                            continue;
-                        }
-
-                        if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("NumericEmpty="))
-                        {
-                            string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
-                            if (long.TryParse(val, out long result)) numericEmptyForThisField = result;
                             continue;
                         }
 
