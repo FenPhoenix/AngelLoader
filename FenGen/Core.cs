@@ -46,6 +46,8 @@ namespace FenGen
         internal const string LocalizationSource = "FenGen_LocalizationSource";
         internal const string LocalizationDest = "FenGen_LocalizationDest";
         internal const string GameSupport = "FenGen_GameSupport";
+        internal const string FMDataSource = "FenGen_FMDataSource";
+        internal const string FMDataDest = "FenGen_FMDataDest";
     }
 
     internal static class GenTaskArgs
@@ -156,6 +158,11 @@ namespace FenGen
             {
                 genFileTags.Add(GenFileTags.GameSupport);
             }
+            if (GenTaskActive(GenType.FMData))
+            {
+                genFileTags.Add(GenFileTags.FMDataSource);
+                genFileTags.Add(GenFileTags.FMDataDest);
+            }
             if (GenTaskActive(GenType.Language))
             {
                 genFileTags.Add(GenFileTags.LocalizationSource);
@@ -171,12 +178,13 @@ namespace FenGen
             if (gameSupportRequested)
             {
                 Cache.SetGameSupportFile(taggedFilesDict![GenFileTags.GameSupport]);
-                if (GenTaskActive(GenType.FMData))
-                {
-                    string sourceFile = Path.Combine(ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
-                    string destFile = Path.Combine(ALProjectPath, @"Ini\FMData.cs");
-                    FMData.Generate(sourceFile, destFile);
-                }
+            }
+
+            if (GenTaskActive(GenType.FMData))
+            {
+                FMData.Generate(
+                    taggedFilesDict![GenFileTags.FMDataSource],
+                    taggedFilesDict![GenFileTags.FMDataDest]);
             }
             if (GenTaskActive(GenType.Language))
             {
