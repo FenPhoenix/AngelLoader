@@ -6,8 +6,10 @@ namespace AngelLoader
 {
     internal static class Attributes
     {
-        // All attributes marked with a conditional based on a define that doesn't exist, so they won't be compiled
-        // (we only need these for pre-build code generation)
+        // -All attributes marked with a conditional based on a define that doesn't exist, so they won't be
+        //  compiled (we only need these for pre-build code generation).
+        // -Conditionals are literals instead of a constant, because a constant would add something to the exe
+        //  but we don't want anything extra at all.
 
         /// <summary>
         /// The generator will ignore this field or property and will not generate any code from it.
