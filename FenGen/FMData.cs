@@ -342,7 +342,7 @@ namespace FenGen
                 fieldType == "float?" ||
                 fieldType == "double" ||
                 fieldType == "double?"
-                    ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo,"
+                    ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
 
             for (int i = 0; i < Fields.Count; i++)
@@ -440,7 +440,7 @@ namespace FenGen
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + objDotField + " = new List<" + listType + ">();\r\n" +
                                 Indent(5) + "}\r\n" +
-                                Indent(5) + "bool success = " + listType + ".TryParse(val, " + floatArgs + " out " + listType + " result);\r\n" +
+                                Indent(5) + "bool success = " + listType + ".TryParse(val, " + floatArgs + "out " + listType + " result);\r\n" +
                                 Indent(5) + "if(success)\r\n" +
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + objListSet + "\r\n" +
@@ -454,7 +454,7 @@ namespace FenGen
                                 Indent(5) + "for (int a = 0; a < items.Length; a++)\r\n" +
                                 Indent(5) + "{\r\n" +
                                 Indent(6) + "items[a] = items[a].Trim();\r\n" +
-                                Indent(6) + "bool success = " + listType + ".TryParse(items[a], " + floatArgs + " out " + listType + " result);\r\n" +
+                                Indent(6) + "bool success = " + listType + ".TryParse(items[a], " + floatArgs + "out " + listType + " result);\r\n" +
                                 Indent(6) + "if(success)\r\n" +
                                 Indent(6) + "{\r\n" +
                                 Indent(7) + objListSet + "\r\n" +
@@ -481,12 +481,12 @@ namespace FenGen
                     string floatArgs = GetFloatArgsRead(field.Type);
                     if (field.NumericEmpty != null && field.NumericEmpty != 0)
                     {
-                        sw.WriteLine(Indent(5) + "bool success = " + field.Type + ".TryParse(val, " + floatArgs + " out " + field.Type + " result);");
+                        sw.WriteLine(Indent(5) + "bool success = " + field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);");
                         sw.WriteLine(Indent(5) + objDotField + " = success ? result : " + field.NumericEmpty + ";");
                     }
                     else
                     {
-                        sw.WriteLine(Indent(5) + field.Type + ".TryParse(val, " + floatArgs + " out " + field.Type + " result);\r\n" +
+                        sw.WriteLine(Indent(5) + field.Type + ".TryParse(val, " + floatArgs + "out " + field.Type + " result);\r\n" +
                                      Indent(5) + objDotField + " = result;");
                     }
                 }
@@ -495,7 +495,7 @@ namespace FenGen
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                    sw.WriteLine(Indent(5) + "bool success = " + ftNonNull + ".TryParse(val, " + floatArgs + " out " + ftNonNull + " result);\r\n" +
+                    sw.WriteLine(Indent(5) + "bool success = " + ftNonNull + ".TryParse(val, " + floatArgs + "out " + ftNonNull + " result);\r\n" +
                                  Indent(5) + "if (success)\r\n" +
                                  Indent(5) + "{\r\n" +
                                  Indent(6) + objDotField + " = result;\r\n" +
