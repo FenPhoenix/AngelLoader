@@ -26,7 +26,11 @@ namespace FenGen
 #endif
             //VisLoc.Generate();
 
-            Games.Generate();
+            //string sourceFile = Path.Combine(Core.ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
+            //string destFile = Path.Combine(Core.ALProjectPath, @"Ini\FMData.cs");
+            //FMData.Generate(sourceFile, destFile);
+
+            Core.ReadArgsAndDoTasks();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
