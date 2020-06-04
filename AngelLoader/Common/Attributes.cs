@@ -9,6 +9,10 @@ namespace AngelLoader
         // All attributes marked with a conditional based on a define that doesn't exist, so they won't be compiled
         // (we only need these for pre-build code generation)
 
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenDoNotSerializeAttribute : Attribute { }
+
         /// <summary>
         /// This attribute should be used on the localization class. Only one instance of this attribute should
         /// be used, or else FenGen will throw an error.

@@ -823,11 +823,11 @@ namespace FenGen
 
             for (int i = 0; i < sourceLines.Length; i++)
             {
-                string line = sourceLines[i].Trim();
+                string lineT = sourceLines[i].Trim();
 
                 if (!inClass)
                 {
-                    bool lineIsClassDef = line.EndsWith("class " + className);
+                    bool lineIsClassDef = lineT.EndsWith("class " + className);
 
                     if (i > 0 && lineIsClassDef)
                     {
@@ -855,22 +855,32 @@ namespace FenGen
 
                 if (doNotSerializeNextLine)
                 {
-                    if (!string.IsNullOrWhiteSpace(line)) doNotSerializeNextLine = false;
+                    if (!string.IsNullOrWhiteSpace(lineT)) doNotSerializeNextLine = false;
                     continue;
                 }
 
-                if (line == "}") break;
+                if (lineT == "}") break;
 
-                if (line.StartsWith("//"))
+                if (lineT.StartsWith("[") && lineT.EndsWith("]"))
                 {
-                    string attr = line.Substring(2).Trim();
+                    string attr = lineT.Trim('[', ']');
+                    if (GetAttributeName(attr, "FenGenDoNotSerialize"))
+                    {
+                        doNotSerializeNextLine = true;
+                        continue;
+                    }
+                }
+
+                if (lineT.StartsWith("//"))
+                {
+                    string attr = lineT.Substring(2).Trim();
                     if (attr.StartsWith("[FenGen:"))
                     {
-                        if (attr == "[FenGen:DoNotSerialize]")
-                        {
-                            doNotSerializeNextLine = true;
-                            continue;
-                        }
+                        //if (attr == "[FenGen:DoNotSerialize]")
+                        //{
+                        //    doNotSerializeNextLine = true;
+                        //    continue;
+                        //}
 
                         if (attr == "[FenGen:DoNotTrimValue]")
                         {
@@ -977,12 +987,12 @@ namespace FenGen
                     continue;
                 }
 
-                int index = line.IndexOf('{');
-                if (index == -1) index = line.IndexOf('=');
-                if (index == -1) index = line.IndexOf(';');
+                int index = lineT.IndexOf('{');
+                if (index == -1) index = lineT.IndexOf('=');
+                if (index == -1) index = lineT.IndexOf(';');
                 if (index == -1) continue;
 
-                string line2 = line.Substring(0, index).Trim();
+                string line2 = lineT.Substring(0, index).Trim();
 
                 index = line2.LastIndexOf(' ');
                 if (index == -1) continue;

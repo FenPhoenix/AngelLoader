@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using static AngelLoader.Attributes;
 using static AngelLoader.GameSupport;
 
 namespace AngelLoader.DataClasses
@@ -27,12 +28,12 @@ namespace AngelLoader.DataClasses
         internal bool MarkedScanned;
 
         // For drawing rows in "Recently-Added Yellow" color
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         internal bool MarkedRecent;
 
         // Disgusting hack to let an FM disappear from the list after being deleted. It will only be filtered out,
         // but on next run of the FM finder, it will be properly removed if the archive is no longer there.
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         internal bool MarkedDeleted;
 
         internal string Archive = "";
@@ -50,17 +51,17 @@ namespace AngelLoader.DataClasses
 
         internal bool NoReadmes;
 
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         private string _selectedReadme = "";
         // @DIRSEP: Always backslashes for backward compatibility and prevention of find misses in readme chooser box
         internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         private ulong _sizeBytes = 0;
         // [FenGen:NumericEmpty=0]
         internal ulong SizeBytes { get => _sizeBytes; set => _sizeBytes = value.Clamp(ulong.MinValue, ulong.MaxValue); }
 
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         private int _rating = -1;
         // [FenGen:NumericEmpty=-1]
         internal int Rating { get => _rating; set => _rating = value.Clamp(-1, 10); }
@@ -77,13 +78,13 @@ namespace AngelLoader.DataClasses
         // [FenGen:DoNotConvertDateTimeToLocal]
         internal DateTime? DateAdded = null;
 
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         private uint _finishedOn = 0;
         // [FenGen:NumericEmpty=0]
         internal uint FinishedOn { get => _finishedOn; set => _finishedOn = value.Clamp(0u, 15u); }
         internal bool FinishedOnUnknown;
 
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         internal string CommentSingleLine = "";
         // [FenGen:DoNotTrimValue]
         internal string Comment = "";
@@ -91,7 +92,7 @@ namespace AngelLoader.DataClasses
         internal string DisabledMods = "";
         internal bool DisableAllMods;
 
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         internal bool ResourcesScanned;
         // [FenGen:IniName=HasResources]
         // [FenGen:InsertAfter=LegacyCustomResources]
@@ -101,7 +102,7 @@ namespace AngelLoader.DataClasses
         internal string Langs = "";
         internal string SelectedLang = "";
 
-        // [FenGen:DoNotSerialize]
+        [FenGenDoNotSerialize]
         internal readonly CatAndTagsList Tags = new CatAndTagsList();
         internal string TagsString = "";
     }
