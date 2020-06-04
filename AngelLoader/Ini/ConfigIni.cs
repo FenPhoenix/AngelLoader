@@ -795,192 +795,189 @@ namespace AngelLoader
         // This is faster with reflection removed.
         internal static void WriteConfigIni(ConfigData config, string fileName)
         {
-            StreamWriter? sw = null;
-            try
+            // 2020-06-03: My config file is ~4000 bytes (OneList, Thief2 filter only). 6000 gives reasonable
+            // headroom for avoiding reallocations.
+            var sb = new StringBuilder(6000);
+
+            #region Settings window
+
+            #region Settings window state
+
+            sb.AppendLine(nameof(config.SettingsTab) + "=" + config.SettingsTab);
+            sb.AppendLine(nameof(config.SettingsWindowSize) + "=" + config.SettingsWindowSize.Width + "," + config.SettingsWindowSize.Height);
+            sb.AppendLine(nameof(config.SettingsWindowSplitterDistance) + "=" + config.SettingsWindowSplitterDistance);
+
+            sb.AppendLine(nameof(config.SettingsPathsVScrollPos) + "=" + config.SettingsPathsVScrollPos);
+            sb.AppendLine(nameof(config.SettingsFMDisplayVScrollPos) + "=" + config.SettingsFMDisplayVScrollPos);
+            sb.AppendLine(nameof(config.SettingsOtherVScrollPos) + "=" + config.SettingsOtherVScrollPos);
+
+            #endregion
+
+            #region Paths
+
+            #region Game exes
+
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                sw = new StreamWriter(fileName, false, Encoding.UTF8);
-
-                #region Settings window
-
-                #region Settings window state
-
-                sw.WriteLine(nameof(config.SettingsTab) + "=" + config.SettingsTab);
-                sw.WriteLine(nameof(config.SettingsWindowSize) + "=" + config.SettingsWindowSize.Width + "," + config.SettingsWindowSize.Height);
-                sw.WriteLine(nameof(config.SettingsWindowSplitterDistance) + "=" + config.SettingsWindowSplitterDistance);
-
-                sw.WriteLine(nameof(config.SettingsPathsVScrollPos) + "=" + config.SettingsPathsVScrollPos);
-                sw.WriteLine(nameof(config.SettingsFMDisplayVScrollPos) + "=" + config.SettingsFMDisplayVScrollPos);
-                sw.WriteLine(nameof(config.SettingsOtherVScrollPos) + "=" + config.SettingsOtherVScrollPos);
-
-                #endregion
-
-                #region Paths
-
-                #region Game exes
-
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    GameIndex gameIndex = (GameIndex)i;
-                    sw.WriteLine(GetGamePrefix(gameIndex) + "Exe=" + config.GetGameExe(gameIndex).Trim());
-                }
-
-                #endregion
-
-                #region Steam
-
-                sw.WriteLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
-
-                // @GENGAMES (Config writer - Steam): Begin
-                // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
-                // read-only "IsOnSteam" bool and check it before writing/reading this
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    GameIndex gameIndex = (GameIndex)i;
-                    sw.WriteLine(GetGamePrefix(gameIndex) + "UseSteam=" + config.GetUseSteamSwitch(gameIndex));
-                }
-                // @GENGAMES (Config writer - Steam): End
-
-                sw.WriteLine(nameof(config.SteamExe) + "=" + config.SteamExe);
-
-                #endregion
-
-                sw.WriteLine(nameof(config.FMsBackupPath) + "=" + config.FMsBackupPath.Trim());
-                foreach (string path in config.FMArchivePaths) sw.WriteLine("FMArchivePath=" + path.Trim());
-                sw.WriteLine(nameof(config.FMArchivePathsIncludeSubfolders) + "=" + config.FMArchivePathsIncludeSubfolders);
-
-                #endregion
-
-                sw.WriteLine(nameof(config.GameOrganization) + "=" + config.GameOrganization);
-                sw.WriteLine(nameof(config.UseShortGameTabNames) + "=" + config.UseShortGameTabNames);
-
-                sw.WriteLine(nameof(config.EnableArticles) + "=" + config.EnableArticles);
-                sw.WriteLine(nameof(config.Articles) + "=" + CommaCombine(config.Articles));
-                sw.WriteLine(nameof(config.MoveArticlesToEnd) + "=" + config.MoveArticlesToEnd);
-
-                sw.WriteLine(nameof(config.RatingDisplayStyle) + "=" + config.RatingDisplayStyle);
-                sw.WriteLine(nameof(config.RatingUseStars) + "=" + config.RatingUseStars);
-
-                sw.WriteLine(nameof(config.DateFormat) + "=" + config.DateFormat);
-                sw.WriteLine(nameof(config.DateCustomFormat1) + "=" + config.DateCustomFormat1);
-                sw.WriteLine(nameof(config.DateCustomSeparator1) + "=" + config.DateCustomSeparator1);
-                sw.WriteLine(nameof(config.DateCustomFormat2) + "=" + config.DateCustomFormat2);
-                sw.WriteLine(nameof(config.DateCustomSeparator2) + "=" + config.DateCustomSeparator2);
-                sw.WriteLine(nameof(config.DateCustomFormat3) + "=" + config.DateCustomFormat3);
-                sw.WriteLine(nameof(config.DateCustomSeparator3) + "=" + config.DateCustomSeparator3);
-                sw.WriteLine(nameof(config.DateCustomFormat4) + "=" + config.DateCustomFormat4);
-
-                sw.WriteLine(nameof(config.DaysRecent) + "=" + config.DaysRecent);
-
-                sw.WriteLine(nameof(config.ConvertWAVsTo16BitOnInstall) + "=" + config.ConvertWAVsTo16BitOnInstall);
-                sw.WriteLine(nameof(config.ConvertOGGsToWAVsOnInstall) + "=" + config.ConvertOGGsToWAVsOnInstall);
-                sw.WriteLine(nameof(config.HideUninstallButton) + "=" + config.HideUninstallButton);
-                sw.WriteLine(nameof(config.HideFMListZoomButtons) + "=" + config.HideFMListZoomButtons);
-                sw.WriteLine(nameof(config.ConfirmUninstall) + "=" + config.ConfirmUninstall);
-                sw.WriteLine(nameof(config.BackupFMData) + "=" + config.BackupFMData);
-                sw.WriteLine(nameof(config.BackupAlwaysAsk) + "=" + config.BackupAlwaysAsk);
-                sw.WriteLine(nameof(config.Language) + "=" + config.Language);
-                sw.WriteLine(nameof(config.WebSearchUrl) + "=" + config.WebSearchUrl);
-                sw.WriteLine(nameof(config.ConfirmPlayOnDCOrEnter) + "=" + config.ConfirmPlayOnDCOrEnter);
-
-                #endregion
-
-                #region Filters
-
-                for (int i = 0; i < SupportedGameCount + 1; i++)
-                {
-                    Filter filter = i == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(i - 1));
-                    string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
-
-                    if (i == 0) sw.WriteLine("FilterGames=" + CommaCombineGameFlags(config.Filter.Games));
-
-                    sw.WriteLine(p + "FilterTitle=" + filter.Title);
-                    sw.WriteLine(p + "FilterAuthor=" + filter.Author);
-
-                    sw.WriteLine(p + "FilterReleaseDateFrom=" + FilterDate(filter.ReleaseDateFrom));
-                    sw.WriteLine(p + "FilterReleaseDateTo=" + FilterDate(filter.ReleaseDateTo));
-
-                    sw.WriteLine(p + "FilterLastPlayedFrom=" + FilterDate(filter.LastPlayedFrom));
-                    sw.WriteLine(p + "FilterLastPlayedTo=" + FilterDate(filter.LastPlayedTo));
-
-                    sw.WriteLine(p + "FilterFinishedStates=" + CommaCombineFinishedStates(filter.Finished));
-
-                    sw.WriteLine(p + "FilterRatingFrom=" + filter.RatingFrom);
-                    sw.WriteLine(p + "FilterRatingTo=" + filter.RatingTo);
-
-                    sw.WriteLine(p + "FilterShowJunk=" + filter.ShowUnsupported);
-
-                    sw.WriteLine(p + "FilterTagsAnd=" + TagsToString(filter.Tags.AndTags));
-                    sw.WriteLine(p + "FilterTagsOr=" + TagsToString(filter.Tags.OrTags));
-                    sw.WriteLine(p + "FilterTagsNot=" + TagsToString(filter.Tags.NotTags));
-                }
-
-                #endregion
-
-                #region Columns
-
-                sw.WriteLine(nameof(config.SortedColumn) + "=" + config.SortedColumn);
-                sw.WriteLine(nameof(config.SortDirection) + "=" + config.SortDirection);
-                sw.WriteLine(nameof(config.ShowRecentAtTop) + "=" + config.ShowRecentAtTop);
-                sw.WriteLine(nameof(config.FMsListFontSizeInPoints) + "=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
-
-                foreach (ColumnData col in config.Columns)
-                {
-                    sw.WriteLine("Column" + col.Id + "=" + col.DisplayIndex + "," + col.Width + "," + col.Visible);
-                }
-
-                #endregion
-
-                #region Selected FM
-
-                for (int i = 0; i < SupportedGameCount + 1; i++)
-                {
-                    SelectedFM selFM = i == 0 ? config.SelFM : config.GameTabsState.GetSelectedFM((GameIndex)(i - 1));
-                    string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
-
-                    sw.WriteLine(p + "SelFMInstDir=" + selFM.InstalledName);
-                    sw.WriteLine(p + "SelFMIndexFromTop=" + selFM.IndexFromTop);
-                }
-
-                #endregion
-
-                #region Main window state
-
-                sw.WriteLine(nameof(config.MainWindowState) + "=" +
-                             (config.MainWindowState == FormWindowState.Minimized
-                                 ? FormWindowState.Maximized
-                                 : config.MainWindowState));
-
-                sw.WriteLine(nameof(config.MainWindowSize) + "=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
-                sw.WriteLine(nameof(config.MainWindowLocation) + "=" + config.MainWindowLocation.X + "," + config.MainWindowLocation.Y);
-
-                sw.WriteLine(nameof(config.MainSplitterPercent) + "=" + config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-                sw.WriteLine(nameof(config.TopSplitterPercent) + "=" + config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-                sw.WriteLine(nameof(config.TopRightPanelCollapsed) + "=" + config.TopRightPanelCollapsed);
-
-                sw.WriteLine(nameof(config.GameTab) + "=" + config.GameTab);
-                sw.WriteLine("TopRightTab=" + config.TopRightTabsData.SelectedTab);
-
-                sw.WriteLine("StatsTabPosition=" + config.TopRightTabsData.StatsTab.Position);
-                sw.WriteLine("EditFMTabPosition=" + config.TopRightTabsData.EditFMTab.Position);
-                sw.WriteLine("CommentTabPosition=" + config.TopRightTabsData.CommentTab.Position);
-                sw.WriteLine("TagsTabPosition=" + config.TopRightTabsData.TagsTab.Position);
-                sw.WriteLine("PatchTabPosition=" + config.TopRightTabsData.PatchTab.Position);
-
-                sw.WriteLine("StatsTabVisible=" + config.TopRightTabsData.StatsTab.Visible);
-                sw.WriteLine("EditFMTabVisible=" + config.TopRightTabsData.EditFMTab.Visible);
-                sw.WriteLine("CommentTabVisible=" + config.TopRightTabsData.CommentTab.Visible);
-                sw.WriteLine("TagsTabVisible=" + config.TopRightTabsData.TagsTab.Visible);
-                sw.WriteLine("PatchTabVisible=" + config.TopRightTabsData.PatchTab.Visible);
-
-                sw.WriteLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
-                sw.WriteLine(nameof(config.ReadmeUseFixedWidthFont) + "=" + config.ReadmeUseFixedWidthFont);
-
-                #endregion
+                GameIndex gameIndex = (GameIndex)i;
+                sb.AppendLine(GetGamePrefix(gameIndex) + "Exe=" + config.GetGameExe(gameIndex).Trim());
             }
-            finally
+
+            #endregion
+
+            #region Steam
+
+            sb.AppendLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
+
+            // @GENGAMES (Config writer - Steam): Begin
+            // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
+            // read-only "IsOnSteam" bool and check it before writing/reading this
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                sw?.Dispose();
+                GameIndex gameIndex = (GameIndex)i;
+                sb.AppendLine(GetGamePrefix(gameIndex) + "UseSteam=" + config.GetUseSteamSwitch(gameIndex));
             }
+            // @GENGAMES (Config writer - Steam): End
+
+            sb.AppendLine(nameof(config.SteamExe) + "=" + config.SteamExe);
+
+            #endregion
+
+            sb.AppendLine(nameof(config.FMsBackupPath) + "=" + config.FMsBackupPath.Trim());
+            foreach (string path in config.FMArchivePaths) sb.AppendLine("FMArchivePath=" + path.Trim());
+            sb.AppendLine(nameof(config.FMArchivePathsIncludeSubfolders) + "=" + config.FMArchivePathsIncludeSubfolders);
+
+            #endregion
+
+            sb.AppendLine(nameof(config.GameOrganization) + "=" + config.GameOrganization);
+            sb.AppendLine(nameof(config.UseShortGameTabNames) + "=" + config.UseShortGameTabNames);
+
+            sb.AppendLine(nameof(config.EnableArticles) + "=" + config.EnableArticles);
+            sb.AppendLine(nameof(config.Articles) + "=" + CommaCombine(config.Articles));
+            sb.AppendLine(nameof(config.MoveArticlesToEnd) + "=" + config.MoveArticlesToEnd);
+
+            sb.AppendLine(nameof(config.RatingDisplayStyle) + "=" + config.RatingDisplayStyle);
+            sb.AppendLine(nameof(config.RatingUseStars) + "=" + config.RatingUseStars);
+
+            sb.AppendLine(nameof(config.DateFormat) + "=" + config.DateFormat);
+            sb.AppendLine(nameof(config.DateCustomFormat1) + "=" + config.DateCustomFormat1);
+            sb.AppendLine(nameof(config.DateCustomSeparator1) + "=" + config.DateCustomSeparator1);
+            sb.AppendLine(nameof(config.DateCustomFormat2) + "=" + config.DateCustomFormat2);
+            sb.AppendLine(nameof(config.DateCustomSeparator2) + "=" + config.DateCustomSeparator2);
+            sb.AppendLine(nameof(config.DateCustomFormat3) + "=" + config.DateCustomFormat3);
+            sb.AppendLine(nameof(config.DateCustomSeparator3) + "=" + config.DateCustomSeparator3);
+            sb.AppendLine(nameof(config.DateCustomFormat4) + "=" + config.DateCustomFormat4);
+
+            sb.AppendLine(nameof(config.DaysRecent) + "=" + config.DaysRecent);
+
+            sb.AppendLine(nameof(config.ConvertWAVsTo16BitOnInstall) + "=" + config.ConvertWAVsTo16BitOnInstall);
+            sb.AppendLine(nameof(config.ConvertOGGsToWAVsOnInstall) + "=" + config.ConvertOGGsToWAVsOnInstall);
+            sb.AppendLine(nameof(config.HideUninstallButton) + "=" + config.HideUninstallButton);
+            sb.AppendLine(nameof(config.HideFMListZoomButtons) + "=" + config.HideFMListZoomButtons);
+            sb.AppendLine(nameof(config.ConfirmUninstall) + "=" + config.ConfirmUninstall);
+            sb.AppendLine(nameof(config.BackupFMData) + "=" + config.BackupFMData);
+            sb.AppendLine(nameof(config.BackupAlwaysAsk) + "=" + config.BackupAlwaysAsk);
+            sb.AppendLine(nameof(config.Language) + "=" + config.Language);
+            sb.AppendLine(nameof(config.WebSearchUrl) + "=" + config.WebSearchUrl);
+            sb.AppendLine(nameof(config.ConfirmPlayOnDCOrEnter) + "=" + config.ConfirmPlayOnDCOrEnter);
+
+            #endregion
+
+            #region Filters
+
+            for (int i = 0; i < SupportedGameCount + 1; i++)
+            {
+                Filter filter = i == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(i - 1));
+                string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
+
+                if (i == 0) sb.AppendLine("FilterGames=" + CommaCombineGameFlags(config.Filter.Games));
+
+                sb.AppendLine(p + "FilterTitle=" + filter.Title);
+                sb.AppendLine(p + "FilterAuthor=" + filter.Author);
+
+                sb.AppendLine(p + "FilterReleaseDateFrom=" + FilterDate(filter.ReleaseDateFrom));
+                sb.AppendLine(p + "FilterReleaseDateTo=" + FilterDate(filter.ReleaseDateTo));
+
+                sb.AppendLine(p + "FilterLastPlayedFrom=" + FilterDate(filter.LastPlayedFrom));
+                sb.AppendLine(p + "FilterLastPlayedTo=" + FilterDate(filter.LastPlayedTo));
+
+                sb.AppendLine(p + "FilterFinishedStates=" + CommaCombineFinishedStates(filter.Finished));
+
+                sb.AppendLine(p + "FilterRatingFrom=" + filter.RatingFrom);
+                sb.AppendLine(p + "FilterRatingTo=" + filter.RatingTo);
+
+                sb.AppendLine(p + "FilterShowJunk=" + filter.ShowUnsupported);
+
+                sb.AppendLine(p + "FilterTagsAnd=" + TagsToString(filter.Tags.AndTags));
+                sb.AppendLine(p + "FilterTagsOr=" + TagsToString(filter.Tags.OrTags));
+                sb.AppendLine(p + "FilterTagsNot=" + TagsToString(filter.Tags.NotTags));
+            }
+
+            #endregion
+
+            #region Columns
+
+            sb.AppendLine(nameof(config.SortedColumn) + "=" + config.SortedColumn);
+            sb.AppendLine(nameof(config.SortDirection) + "=" + config.SortDirection);
+            sb.AppendLine(nameof(config.ShowRecentAtTop) + "=" + config.ShowRecentAtTop);
+            sb.AppendLine(nameof(config.FMsListFontSizeInPoints) + "=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
+
+            foreach (ColumnData col in config.Columns)
+            {
+                sb.AppendLine("Column" + col.Id + "=" + col.DisplayIndex + "," + col.Width + "," + col.Visible);
+            }
+
+            #endregion
+
+            #region Selected FM
+
+            for (int i = 0; i < SupportedGameCount + 1; i++)
+            {
+                SelectedFM selFM = i == 0 ? config.SelFM : config.GameTabsState.GetSelectedFM((GameIndex)(i - 1));
+                string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
+
+                sb.AppendLine(p + "SelFMInstDir=" + selFM.InstalledName);
+                sb.AppendLine(p + "SelFMIndexFromTop=" + selFM.IndexFromTop);
+            }
+
+            #endregion
+
+            #region Main window state
+
+            sb.AppendLine(nameof(config.MainWindowState) + "=" +
+                         (config.MainWindowState == FormWindowState.Minimized
+                             ? FormWindowState.Maximized
+                             : config.MainWindowState));
+
+            sb.AppendLine(nameof(config.MainWindowSize) + "=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
+            sb.AppendLine(nameof(config.MainWindowLocation) + "=" + config.MainWindowLocation.X + "," + config.MainWindowLocation.Y);
+
+            sb.AppendLine(nameof(config.MainSplitterPercent) + "=" + config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+            sb.AppendLine(nameof(config.TopSplitterPercent) + "=" + config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+            sb.AppendLine(nameof(config.TopRightPanelCollapsed) + "=" + config.TopRightPanelCollapsed);
+
+            sb.AppendLine(nameof(config.GameTab) + "=" + config.GameTab);
+            sb.AppendLine("TopRightTab=" + config.TopRightTabsData.SelectedTab);
+
+            sb.AppendLine("StatsTabPosition=" + config.TopRightTabsData.StatsTab.Position);
+            sb.AppendLine("EditFMTabPosition=" + config.TopRightTabsData.EditFMTab.Position);
+            sb.AppendLine("CommentTabPosition=" + config.TopRightTabsData.CommentTab.Position);
+            sb.AppendLine("TagsTabPosition=" + config.TopRightTabsData.TagsTab.Position);
+            sb.AppendLine("PatchTabPosition=" + config.TopRightTabsData.PatchTab.Position);
+
+            sb.AppendLine("StatsTabVisible=" + config.TopRightTabsData.StatsTab.Visible);
+            sb.AppendLine("EditFMTabVisible=" + config.TopRightTabsData.EditFMTab.Visible);
+            sb.AppendLine("CommentTabVisible=" + config.TopRightTabsData.CommentTab.Visible);
+            sb.AppendLine("TagsTabVisible=" + config.TopRightTabsData.TagsTab.Visible);
+            sb.AppendLine("PatchTabVisible=" + config.TopRightTabsData.PatchTab.Visible);
+
+            sb.AppendLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
+            sb.AppendLine(nameof(config.ReadmeUseFixedWidthFont) + "=" + config.ReadmeUseFixedWidthFont);
+
+            #endregion
+
+            using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
+            sw.Write(sb.ToString());
         }
     }
 }
