@@ -341,7 +341,9 @@ namespace FenGen
                 fieldType == "float" ||
                 fieldType == "float?" ||
                 fieldType == "double" ||
-                fieldType == "double?"
+                fieldType == "double?" ||
+                fieldType == "decimal" ||
+                fieldType == "decimal?"
                     ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                     : "";
 
@@ -594,8 +596,6 @@ namespace FenGen
                     sw.WriteLine(Indent(indent) + "sb.AppendLine(" + value + suffix + ");");
                 }
 
-
-                //if (field.Type == "List<string>")
                 if (field.Type.StartsWith("List<"))
                 {
                     bool listTypeIsString = field.Type == "List<string>";
@@ -654,38 +654,16 @@ namespace FenGen
                 }
                 else if (field.Type == "bool?")
                 {
-#if false
-                    // Dumb special-case for the moment
-                    if (fieldIniName.StartsWith("Has"))
+                    if (Fields.WriteEmptyValues)
                     {
-                        if (!wroteHasXValues)
-                        {
-                            sw.WriteLine(
-                                Indent(5) + "if (Misc.FMCustomResourcesScanned(fm))\r\n" +
-                                Indent(5) + "{\r\n" +
-                                Indent(6) + "sw.WriteLine(\"HasResources=\" + CommaCombineHasXFields(fm));\r\n" +
-                                Indent(5) + "}\r\n" +
-                                Indent(5) + "else\r\n" +
-                                Indent(5) + "{\r\n" +
-                                Indent(6) + "sw.WriteLine(\"HasResources=None\");\r\n" +
-                                Indent(5) + "}");
-                            wroteHasXValues = true;
-                        }
+                        swlSBAppend(4, fieldIniName, objDotField, toString);
                     }
                     else
-#endif
                     {
-                        if (Fields.WriteEmptyValues)
-                        {
-                            swlSBAppend(4, fieldIniName, objDotField, toString);
-                        }
-                        else
-                        {
-                            sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
-                            sw.WriteLine(Indent(4) + "{");
-                            swlSBAppend(5, fieldIniName, obj, toString);
-                            sw.WriteLine(Indent(4) + "}");
-                        }
+                        sw.WriteLine(Indent(4) + "if (" + objDotField + " != null)");
+                        sw.WriteLine(Indent(4) + "{");
+                        swlSBAppend(5, fieldIniName, obj, toString);
+                        sw.WriteLine(Indent(4) + "}");
                     }
                 }
                 else if (NumericTypes.Contains(field.Type))
