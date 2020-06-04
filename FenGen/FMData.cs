@@ -857,7 +857,7 @@ namespace FenGen
                             {
                                 string attr = prevLineT.Trim('[', ']');
                                 string attrNamePart = attr.Substring(0, indexOfParen);
-                                if (GetAttributeName(attrNamePart, "FenGenWriteEmptyValues"))
+                                if (GetAttributeName(attrNamePart, GenAttributes.FenGenWriteEmptyValues))
                                 {
                                     string attrParam = GetAttrParam(attr);
                                     Fields.WriteEmptyValues = attrParam.EqualsTrue();
@@ -883,17 +883,17 @@ namespace FenGen
                     string attr = lineT.Trim('[', ']');
                     int indexOfParen = attr.IndexOf('(');
 
-                    if (GetAttributeName(attr, "FenGenIgnore"))
+                    if (GetAttributeName(attr, GenAttributes.FenGenIgnore))
                     {
                         doNotSerializeNextLine = true;
                         continue;
                     }
-                    else if (GetAttributeName(attr, "FenGenDoNotConvertDateTimeToLocal"))
+                    else if (GetAttributeName(attr, GenAttributes.FenGenDoNotConvertDateTimeToLocal))
                     {
                         doNotConvertDateTimeToLocalForThisField = true;
                         continue;
                     }
-                    else if (GetAttributeName(attr, "FenGenDoNotTrimValue"))
+                    else if (GetAttributeName(attr, GenAttributes.FenGenDoNotTrimValue))
                     {
                         doNotTrimValueForThisField = true;
                         continue;
@@ -902,7 +902,7 @@ namespace FenGen
                     {
                         string attrNamePart = attr.Substring(0, indexOfParen);
                         string attrParam = GetAttrParam(attr);
-                        if (GetAttributeName(attrNamePart, "FenGenNumericEmpty"))
+                        if (GetAttributeName(attrNamePart, GenAttributes.FenGenNumericEmpty))
                         {
                             if (long.TryParse(attrParam, out long result))
                             {
@@ -910,19 +910,19 @@ namespace FenGen
                             }
                             continue;
                         }
-                        else if (GetAttributeName(attrNamePart, "FenGenListType"))
+                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenListType))
                         {
                             listTypeForThisField = attrParam == nameof(ListType.CommaSeparated)
                                 ? ListType.CommaSeparated
                                 : ListType.MultipleLines;
                             continue;
                         }
-                        else if (GetAttributeName(attrNamePart, "FenGenIniName"))
+                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenIniName))
                         {
                             iniNameForThisField = attrParam;
                             continue;
                         }
-                        else if (GetAttributeName(attrNamePart, "FenGenInsertAfter"))
+                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenInsertAfter))
                         {
                             codeBlockToInsertAfterThisField =
                                 attrParam == nameof(CustomCodeBlockNames.LegacyCustomResources)

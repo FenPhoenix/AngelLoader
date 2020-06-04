@@ -58,6 +58,23 @@ namespace FenGen
         internal const string GameSupport = "-game_support";
     }
 
+    internal static class GenAttributes
+    {
+        internal const string FenGenWriteEmptyValues = nameof(FenGenWriteEmptyValues);
+        internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
+        internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
+        internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
+        internal const string FenGenListType = nameof(FenGenListType);
+        internal const string FenGenIniName = nameof(FenGenIniName);
+        internal const string FenGenInsertAfter = nameof(FenGenInsertAfter);
+        internal const string FenGenIgnore = nameof(FenGenIgnore);
+        internal const string FenGenLocalizationClass = nameof(FenGenLocalizationClass);
+        internal const string FenGenLocalizationReadWriteClass = nameof(FenGenLocalizationReadWriteClass);
+        internal const string FenGenGameSourceEnum = nameof(FenGenGameSourceEnum);
+        internal const string FenGenComment = nameof(FenGenComment);
+        internal const string FenGenBlankLine = nameof(FenGenBlankLine);
+    }
+
     internal static class Core
     {
         private static readonly int GenTaskCount = Enum.GetValues(typeof(GenType)).Length;

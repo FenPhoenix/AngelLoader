@@ -40,8 +40,6 @@ namespace FenGen
         private static (string LangClassName, List<NamedDictionary> Dict)
         ReadSource(string file)
         {
-            const string FenGenLocalizationClassAttribute = "FenGenLocalizationClassAttribute";
-
             var retDict = new List<NamedDictionary>();
 
             string code = File.ReadAllText(file);
@@ -60,7 +58,7 @@ namespace FenGen
                 {
                     foreach (var attr in classItem.AttributeLists[0].Attributes)
                     {
-                        if (GetAttributeName(attr.Name.ToString(), FenGenLocalizationClassAttribute))
+                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenLocalizationClass))
                         {
                             attrMarkedClasses.Add(classItem);
                         }
@@ -70,12 +68,12 @@ namespace FenGen
 
             if (attrMarkedClasses.Count > 1)
             {
-                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenLocalizationClassAttribute + "'.";
+                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + GenAttributes.FenGenLocalizationClass + "'.";
                 ThrowErrorAndTerminate(multipleUsesError);
             }
             else if (attrMarkedClasses.Count == 0)
             {
-                const string noneFoundError = "ERROR: No uses of attribute '" + FenGenLocalizationClassAttribute +
+                const string noneFoundError = "ERROR: No uses of attribute '" + GenAttributes.FenGenLocalizationClass +
                     "' (No marked localization class found)";
                 ThrowErrorAndTerminate(noneFoundError);
             }
@@ -107,13 +105,13 @@ namespace FenGen
 
                     if (f is AttributeSyntax attr)
                     {
-                        if (GetAttributeName(attr.Name.ToString(), "FenGenComment"))
+                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenComment))
                         {
                             var exp = (LiteralExpressionSyntax)attr.ArgumentList.Arguments[0].Expression;
                             fValue = exp.Token.ValueText;
                             isComment = true;
                         }
-                        else if (GetAttributeName(attr.Name.ToString(), "FenGenBlankLine"))
+                        else if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenBlankLine))
                         {
                             var args = attr.ArgumentList;
                             if (args == null || args.Arguments.Count == 0)
@@ -162,8 +160,6 @@ namespace FenGen
         {
             #region Find the class we're going to write to
 
-            const string FenGenLocalizationReadClassAttribute = "FenGenLocalizationReadWriteClass";
-
             string code = File.ReadAllText(destFile);
             var tree = ParseTextFast(code);
 
@@ -179,7 +175,7 @@ namespace FenGen
                 {
                     foreach (var attr in classItem.AttributeLists[0].Attributes)
                     {
-                        if (GetAttributeName(attr.Name.ToString(), FenGenLocalizationReadClassAttribute))
+                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenLocalizationReadWriteClass))
                         {
                             attrMarkedClasses.Add(classItem);
                         }
@@ -189,12 +185,12 @@ namespace FenGen
 
             if (attrMarkedClasses.Count > 1)
             {
-                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenLocalizationReadClassAttribute + "'.";
+                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass + "'.";
                 ThrowErrorAndTerminate(multipleUsesError);
             }
             else if (attrMarkedClasses.Count == 0)
             {
-                const string noneFoundError = "ERROR: No uses of attribute '" + FenGenLocalizationReadClassAttribute +
+                const string noneFoundError = "ERROR: No uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass +
                                               "' (No marked localization class found)";
                 ThrowErrorAndTerminate(noneFoundError);
             }

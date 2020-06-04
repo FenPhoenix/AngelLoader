@@ -18,8 +18,6 @@ namespace FenGen
 
         private static GameSourceEnum ReadGameSourceEnum(string file)
         {
-            const string FenGenGameSourceEnumAttribute = "FenGenGameSourceEnum";
-
             var ret = new GameSourceEnum();
 
             string code = File.ReadAllText(file);
@@ -37,7 +35,7 @@ namespace FenGen
                 {
                     foreach (var attr in enumItem.AttributeLists[0].Attributes)
                     {
-                        if (GetAttributeName(attr.Name.ToString(), FenGenGameSourceEnumAttribute))
+                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenGameSourceEnum))
                         {
                             attrMarkedEnums.Add(enumItem);
                         }
@@ -47,12 +45,12 @@ namespace FenGen
 
             if (attrMarkedEnums.Count > 1)
             {
-                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + FenGenGameSourceEnumAttribute + "'.";
+                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + GenAttributes.FenGenGameSourceEnum + "'.";
                 ThrowErrorAndTerminate(multipleUsesError);
             }
             else if (attrMarkedEnums.Count == 0)
             {
-                const string noneFoundError = "ERROR: No uses of attribute '" + FenGenGameSourceEnumAttribute +
+                const string noneFoundError = "ERROR: No uses of attribute '" + GenAttributes.FenGenGameSourceEnum +
                                               "' (No marked game source enum found)";
                 ThrowErrorAndTerminate(noneFoundError);
             }
