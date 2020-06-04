@@ -20,10 +20,19 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
 
+        /// <summary>
+        /// Specifies that the value of this field or property (assumed to be a string) will not have whitespace
+        /// trimmed from the end of it on read.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenDoNotTrimValueAttribute : Attribute { }
 
+        /// <summary>
+        /// Specifies a number to be considered "empty" for the purposes of writeout. Empty values will not be
+        /// written to the ini file when <see cref="FenGenWriteEmptyValuesAttribute"/> is set to
+        /// <see langword="false"/>.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenNumericEmptyAttribute : Attribute
@@ -31,6 +40,9 @@ namespace AngelLoader
             public FenGenNumericEmptyAttribute([UsedImplicitly] long value) { }
         }
 
+        /// <summary>
+        /// List type can be "MultipleLines" or "CommaSeparated".
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenListTypeAttribute : Attribute
@@ -38,6 +50,9 @@ namespace AngelLoader
             public FenGenListTypeAttribute([UsedImplicitly] string value) { }
         }
 
+        /// <summary>
+        /// If this field or property should have a different name in the ini file, you can specify that name here.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenIniNameAttribute : Attribute
@@ -52,6 +67,10 @@ namespace AngelLoader
             public FenGenInsertAfterAttribute([UsedImplicitly] string value) { }
         }
 
+        /// <summary>
+        /// Specifies whether empty values will be written to the ini.
+        /// What constitutes "empty" will vary depending on type.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
         internal class FenGenWriteEmptyValuesAttribute : Attribute
