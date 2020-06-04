@@ -32,6 +32,27 @@ namespace AngelLoader
         }
 
         [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenListTypeAttribute : Attribute
+        {
+            public FenGenListTypeAttribute([UsedImplicitly] string value) { }
+        }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenIniNameAttribute : Attribute
+        {
+            public FenGenIniNameAttribute([UsedImplicitly] string value) { }
+        }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenInsertAfterAttribute : Attribute
+        {
+            public FenGenInsertAfterAttribute([UsedImplicitly] string value) { }
+        }
+
+        [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
         internal class FenGenWriteEmptyValuesAttribute : Attribute
         {

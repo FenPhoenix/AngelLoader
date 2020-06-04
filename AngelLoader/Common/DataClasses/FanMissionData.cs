@@ -13,6 +13,8 @@ namespace AngelLoader.DataClasses
      Notes to self:
         -Keep properties to one line, cause FenGen doesn't handle multiline ones
         -Keep names shortish for more performance when reading
+        -Only one attribute per set of []s is supported
+        -Attributes must be on the preceding line, same-line attributes are not supported
     */
 
     [FenGenWriteEmptyValues(false)]
@@ -40,7 +42,7 @@ namespace AngelLoader.DataClasses
         internal string InstalledDir = "";
 
         internal string Title = "";
-        // [FenGen:ListType=MultipleLines]
+        [FenGenListType("MultipleLines")]
         internal readonly List<string> AltTitles = new List<string>();
 
         internal string Author = "";
@@ -94,8 +96,8 @@ namespace AngelLoader.DataClasses
 
         [FenGenIgnore]
         internal bool ResourcesScanned;
-        // [FenGen:IniName=HasResources]
-        // [FenGen:InsertAfter=LegacyCustomResources]
+        [FenGenIniName("HasResources")]
+        [FenGenInsertAfter("LegacyCustomResources")]
         internal CustomResources Resources = CustomResources.None;
 
         internal bool LangsScanned;

@@ -822,14 +822,16 @@ namespace FenGen
             string commentForThisField = "";
             var codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
 
-            static string GetAttrParam(string value, bool isString = false)
+            static string GetAttrParam(string value)
             {
                 int index1;
                 int indexOfParen = value.IndexOf('(');
                 string ret = value
                     .Substring(index1 = indexOfParen + 1, value.LastIndexOf(')') - index1)
                     .Trim();
-                if (isString)
+
+                int retLength = ret.Length;
+                if (retLength >= 2 && ret[0] == '\"' && ret[retLength - 1] == '\"')
                 {
                     ret = ret == "\"\"" ? "" : ret.Substring(1, ret.Length - 2);
                 }
@@ -843,7 +845,7 @@ namespace FenGen
                 if (!inClass)
                 {
                     bool lineIsClassDef = lineT.EndsWith("class " + className);
-                    
+
                     if (i > 0 && lineIsClassDef)
                     {
                         string prevLineT = sourceLines[i - 1].Trim();
@@ -899,33 +901,43 @@ namespace FenGen
                     else if (indexOfParen > -1)
                     {
                         string attrNamePart = attr.Substring(0, indexOfParen);
+                        string attrParam = GetAttrParam(attr);
                         if (GetAttributeName(attrNamePart, "FenGenNumericEmpty"))
                         {
-                            string attrParam = GetAttrParam(attr);
                             if (long.TryParse(attrParam, out long result))
                             {
                                 numericEmptyForThisField = result;
                             }
                             continue;
                         }
+                        else if (GetAttributeName(attrNamePart, "FenGenListType"))
+                        {
+                            listTypeForThisField = attrParam == nameof(ListType.CommaSeparated)
+                                ? ListType.CommaSeparated
+                                : ListType.MultipleLines;
+                            continue;
+                        }
+                        else if (GetAttributeName(attrNamePart, "FenGenIniName"))
+                        {
+                            iniNameForThisField = attrParam;
+                            continue;
+                        }
+                        else if (GetAttributeName(attrNamePart, "FenGenInsertAfter"))
+                        {
+                            codeBlockToInsertAfterThisField =
+                                attrParam == nameof(CustomCodeBlockNames.LegacyCustomResources)
+                                    ? CustomCodeBlockNames.LegacyCustomResources
+                                    : CustomCodeBlockNames.None;
+                        }
                     }
                 }
 
+                // TODO: Aim is to remove this "comment attribute" section and have all of them be real attributes
                 if (lineT.StartsWith("//"))
                 {
                     string attr = lineT.Substring(2).Trim();
                     if (attr.StartsWith("[FenGen:"))
                     {
-                        if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("InsertAfter="))
-                        {
-                            string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
-                            if (val == nameof(CustomCodeBlockNames.LegacyCustomResources))
-                            {
-                                codeBlockToInsertAfterThisField = CustomCodeBlockNames.LegacyCustomResources;
-                                continue;
-                            }
-                        }
-
                         if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("Comment="))
                         {
                             string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
@@ -977,16 +989,8 @@ namespace FenGen
 
                             switch (key)
                             {
-                                case "IniName":
-                                    iniNameForThisField = val;
-                                    break;
                                 case "ListItemPrefix":
                                     listItemPrefixForThisField = val;
-                                    break;
-                                case "ListType":
-                                    listTypeForThisField = val == "CommaSeparated"
-                                            ? ListType.CommaSeparated
-                                            : ListType.MultipleLines;
                                     break;
                                 case "ListDistinctType":
                                     listDistinctTypeForThisField =
