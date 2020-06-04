@@ -9,10 +9,10 @@ namespace FenGen
     {
         private sealed class Field
         {
-            internal string Type;
-            internal string Name;
-            internal string IniName;
-            internal string ListItemPrefix;
+            internal string Type = "";
+            internal string Name = "";
+            internal string IniName = "";
+            internal string ListItemPrefix = "";
             internal ListType ListType = ListType.MultipleLines;
             internal ListDistinctType ListDistinctType = ListDistinctType.None;
             internal Dictionary<string, string> EnumMap = new Dictionary<string, string>();
@@ -20,7 +20,7 @@ namespace FenGen
             internal long? NumericEmpty;
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
-            internal string Comment;
+            internal string Comment = "";
             internal CustomCodeBlockNames CodeBlockToInsertAfter = CustomCodeBlockNames.None;
         }
 
@@ -224,11 +224,9 @@ namespace FenGen
                 bool inClass = false;
                 bool inReaderKeepBlock = false;
                 bool inWriterKeepBlock = false;
-                while (!sr.EndOfStream)
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    string line = sr.ReadLine();
-                    if (line == null) continue;
-
                     string lineT = line.Trim();
 
                     if (!inClass)
@@ -830,8 +828,8 @@ namespace FenGen
             bool inClass = false;
 
             bool doNotSerializeNextLine = false;
-            string iniNameForThisField = null;
-            string listItemPrefixForThisField = null;
+            string iniNameForThisField = "";
+            string listItemPrefixForThisField = "";
             var listTypeForThisField = ListType.MultipleLines;
             var listDistinctTypeForThisField = ListDistinctType.None;
             var enumMapForThisField = new Dictionary<string, string>();
@@ -839,7 +837,7 @@ namespace FenGen
             long? numericEmptyForThisField = null;
             bool doNotTrimValueForThisField = false;
             bool doNotConvertDateTimeToLocalForThisField = false;
-            string commentForThisField = null;
+            string commentForThisField = "";
             var codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
 
             for (int i = 0; i < sourceLines.Length; i++)
@@ -918,7 +916,7 @@ namespace FenGen
                         if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("Comment="))
                         {
                             string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
-                            commentForThisField = !val.IsWhiteSpace() ? val : null;
+                            commentForThisField = !val.IsWhiteSpace() ? val : "";
                         }
 
                         if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("EnumValues="))
@@ -1014,12 +1012,12 @@ namespace FenGen
                 if (!iniNameForThisField.IsEmpty())
                 {
                     last.IniName = iniNameForThisField;
-                    iniNameForThisField = null;
+                    iniNameForThisField = "";
                 }
                 if (!listItemPrefixForThisField.IsEmpty())
                 {
                     last.ListItemPrefix = listItemPrefixForThisField;
-                    listItemPrefixForThisField = null;
+                    listItemPrefixForThisField = "";
                 }
                 if (enumMapForThisField.Count > 0)
                 {
@@ -1039,7 +1037,7 @@ namespace FenGen
                 if (!commentForThisField.IsEmpty())
                 {
                     last.Comment = commentForThisField;
-                    commentForThisField = null;
+                    commentForThisField = "";
                 }
                 if (codeBlockToInsertAfterThisField != CustomCodeBlockNames.None)
                 {
