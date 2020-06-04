@@ -90,23 +90,23 @@ namespace AngelLoader
                 {
                     string val = lineT.Substring(5);
                     val = val.Trim();
-                    if (val.EqualsI(nameof(Game.Thief1)))
+                    if (val.EqualsI("Thief1"))
                     {
                         fm.Game = Game.Thief1;
                     }
-                    else if (val.EqualsI(nameof(Game.Thief2)))
+                    else if (val.EqualsI("Thief2"))
                     {
                         fm.Game = Game.Thief2;
                     }
-                    else if (val.EqualsI(nameof(Game.Thief3)))
+                    else if (val.EqualsI("Thief3"))
                     {
                         fm.Game = Game.Thief3;
                     }
-                    else if (val.EqualsI(nameof(Game.SS2)))
+                    else if (val.EqualsI("SS2"))
                     {
                         fm.Game = Game.SS2;
                     }
-                    else if (val.EqualsI(nameof(Game.Unsupported)))
+                    else if (val.EqualsI("Unsupported"))
                     {
                         fm.Game = Game.Unsupported;
                     }

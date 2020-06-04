@@ -516,7 +516,7 @@ namespace FenGen
                     {
                         string ifType = gi > 1 ? "else if" : "if";
                         string gameDotGameType = gamesEnum.Name + "." + gamesEnum.Items[gi];
-                        sw.WriteLine(Indent(5) + ifType + " (val.EqualsI(nameof(" + gameDotGameType + ")))");
+                        sw.WriteLine(Indent(5) + ifType + " (val.EqualsI(\"" + gamesEnum.Items[gi] + "\"))");
                         sw.WriteLine(Indent(5) + "{");
                         sw.WriteLine(Indent(6) + objDotField + " = " + gameDotGameType + ";");
                         sw.WriteLine(Indent(5) + "}");
