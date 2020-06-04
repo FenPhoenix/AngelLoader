@@ -822,7 +822,7 @@ namespace FenGen
             string commentForThisField = "";
             var codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
 
-            string GetAttrParam(string value, bool isString = false)
+            static string GetAttrParam(string value, bool isString = false)
             {
                 int index1;
                 int indexOfParen = value.IndexOf('(');
