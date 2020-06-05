@@ -18,7 +18,8 @@ namespace FenGen
         Config,
         Language,
         GameSupport,
-        VisLoc
+        VisLoc,
+        ExcludeResx
     }
 
     internal static class GenMessages
@@ -58,6 +59,7 @@ namespace FenGen
         internal const string Language = "-language";
         internal const string LanguageAndTest = "-language_t";
         internal const string GameSupport = "-game_support";
+        internal const string ExcludeResx = "-exclude_resx";
     }
 
     internal static class GenAttributes
@@ -104,6 +106,7 @@ namespace FenGen
 
         internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
         internal static readonly string ALProjectPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\AngelLoader"));
+        internal static readonly string ALProjectFile = Path.Combine(ALProjectPath, "AngelLoader.csproj");
 
         // PERF_TODO: Roslyn is so slow it's laughable. It takes 1.5 seconds just to run InitWorkspaceStuff() alone.
         // That's not even counting doing any actual work with it, which adds even more slug time.
@@ -139,7 +142,8 @@ namespace FenGen
             {
                 Environment.GetCommandLineArgs()[0],
                 GenTaskArgs.FMData,
-                GenTaskArgs.LanguageAndTest
+                GenTaskArgs.LanguageAndTest,
+                GenTaskArgs.ExcludeResx
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -163,6 +167,9 @@ namespace FenGen
                         break;
                     case GenTaskArgs.GameSupport:
                         SetGenTaskActive(GenType.GameSupport);
+                        break;
+                    case GenTaskArgs.ExcludeResx:
+                        SetGenTaskActive(GenType.ExcludeResx);
                         break;
                 }
 
@@ -222,6 +229,10 @@ namespace FenGen
             if (GenTaskActive(GenType.GameSupport))
             {
                 Games.Generate();
+            }
+            if (GenTaskActive(GenType.ExcludeResx))
+            {
+                ExcludeResx.Generate();
             }
         }
 
