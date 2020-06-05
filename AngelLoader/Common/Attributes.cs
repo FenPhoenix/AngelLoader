@@ -6,6 +6,10 @@ namespace AngelLoader
 {
     internal static class Attributes
     {
+        // IMPORTANT!
+        // Do NOT change the names of any FenGen attributes without also going in to FenGen and changing their
+        // names there. Otherwise FenGen will break!
+
         // -All attributes marked with a conditional based on a define that doesn't exist, so they won't be
         //  compiled (we only need these for pre-build code generation).
         // -Conditionals are literals instead of a constant, because a constant would add something to the exe
