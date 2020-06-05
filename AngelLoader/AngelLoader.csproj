@@ -93,34 +93,9 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
-    <!--
-      None of these are required or contain anything of use. All they do is bloat up the executable for no reason.
-      We hate bloat so out they go.
-      We keep them for the Debug profile to keep the designer happy (Debug is the only profile where we use the
-      generated designer code, otherwise we use the manual fast-init version with no redundant cruft, which is
-      not designable).
-    -->
-    <!--
-      Note! Whenever you edit a form that's associated with one of these, the relevant line here gets automatically
-      removed. Annoying. Do some FenGen magic to always make sure all resx files except Resources.resx are removed.
-    -->
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\ProgressPanel.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MessageBoxCustomForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\PathsPage.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\FMDisplayPage.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\OtherPage.resx" />
+  <Import Project="exclude_resx.props" />
 
+  <ItemGroup>
     <!--
       The only resx file that's actually required is the main one here. It contains all the images and icons.
       If it were up to me we wouldn't use this either, as it's accessed through horrendous reflection that takes
