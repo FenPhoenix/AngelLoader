@@ -101,6 +101,10 @@
       generated designer code, otherwise we use the manual fast-init version with no redundant cruft, which is
       not designable).
     -->
+    <!--
+      Note! Whenever you edit a form that's associated with one of these, the relevant line here gets automatically
+      removed. Annoying. Do some FenGen magic to always make sure all resx files except Resources.resx are removed.
+    -->
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx" />
@@ -113,6 +117,9 @@
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx" />
     <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\PathsPage.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\FMDisplayPage.resx" />
+    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\OtherPage.resx" />
 
     <!--
       The only resx file that's actually required is the main one here. It contains all the images and icons.
