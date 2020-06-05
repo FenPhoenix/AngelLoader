@@ -686,14 +686,38 @@ namespace AngelLoader.Forms
                 if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
 
                 int wParam = (int)m.WParam;
-
                 if (wParam == (int)Keys.F1 && CanFocus)
                 {
+                    static bool AnyControlFocusedIn(Control control)
+                    {
+                        if (control.Focused) return true;
+
+                        for (int i = 0; i < control.Controls.Count; i++)
+                        {
+                            if (AnyControlFocusedIn(control.Controls[i])) return true;
+                        }
+
+                        return false;
+                    }
+
+                    bool AnyControlFocusedInTabPage(TabPage tabPage) =>
+                        (TopRightTabControl.Focused && TopRightTabControl.SelectedTab == tabPage) ||
+                        AnyControlFocusedIn(tabPage);
+
                     string section =
+                        !EverythingPanel.Enabled ? HelpSections.MainWindow :
                         FMsDGV.FMContextMenuVisible ? HelpSections.FMContextMenu :
                         FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
-                        // TODO: How to handle context-sensitive F1 pressing?
-                        // We could go by focus or by mouseover... each would be imperfect. Hm.
+                        // TODO: We could try to be clever and take mouse position into account in some cases?
+                        AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
+                        TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
+                        AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
+                        AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
+                        // Add tag dropdown is in EverythingPanel, not tags tab page
+                        AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
+                        AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
+                        AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
+                        // TODO: Handle bottom area controls (we need a whole other section delimiter in the help file)
                         HelpSections.MainWindow;
 
                     Core.OpenHelpFile(section);

@@ -109,5 +109,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             TagsMenuItem!.Text = LText.TagsTab.TabText.EscapeAmpersands();
             PatchMenuItem!.Text = LText.PatchTab.TabText.EscapeAmpersands();
         }
+
+        internal static bool Focused => _constructed && Menu.Focused;
     }
 }

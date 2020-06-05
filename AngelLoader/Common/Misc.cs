@@ -134,7 +134,7 @@ namespace AngelLoader
             internal const string StatsTab = "#stats_tab";
             internal const string EditFMTab = "#edit_fm_tab";
             internal const string CommentTab = "#comment_tab";
-            internal const string TagsTag = "#tags_tab";
+            internal const string TagsTab = "#tags_tab";
             internal const string PatchTab = "#patch_tab";
 
             internal const string ReadmeArea = "#readme_area";
