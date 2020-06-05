@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FenGen
 {
@@ -23,6 +25,59 @@ namespace FenGen
             string ret = "";
             for (int i = 0; i < num; i++) ret += tab;
             return ret;
+        }
+
+        internal static bool HasAttribute(MemberDeclarationSyntax member, string attrName)
+        {
+            SeparatedSyntaxList<AttributeSyntax> attributes;
+            if (member.AttributeLists.Count > 0 &&
+                (attributes = member.AttributeLists[0].Attributes).Count > 0)
+            {
+                for (int i = 0; i < attributes.Count; i++)
+                {
+                    if (GetAttributeName(attrName, attributes[i].Name.ToString()))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        internal static MemberDeclarationSyntax
+        GetAttrMarkedItem(SyntaxTree tree, SyntaxKind syntaxKind, string attrName)
+        {
+            var attrMarkedItems = new List<MemberDeclarationSyntax>();
+
+            var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
+            foreach (SyntaxNode n in nodes)
+            {
+                if (!n.IsKind(syntaxKind)) continue;
+
+                var item = (MemberDeclarationSyntax)n;
+                if (item.AttributeLists.Count > 0 && item.AttributeLists[0].Attributes.Count > 0)
+                {
+                    foreach (var attr in item.AttributeLists[0].Attributes)
+                    {
+                        if (GetAttributeName(attr.Name.ToString(), attrName))
+                        {
+                            attrMarkedItems.Add(item);
+                        }
+                    }
+                }
+            }
+
+            if (attrMarkedItems.Count > 1)
+            {
+                ThrowErrorAndTerminate("ERROR: Multiple uses of attribute '" + attrName + "'.");
+            }
+            else if (attrMarkedItems.Count == 0)
+            {
+                ThrowErrorAndTerminate("ERROR: No uses of attribute '" + attrName + "'.");
+            }
+
+            return attrMarkedItems[0];
         }
 
         /// <summary>

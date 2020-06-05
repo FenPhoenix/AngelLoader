@@ -30,7 +30,9 @@ namespace FenGen
     internal sealed class GameSourceEnum
     {
         internal string Name = "";
-        internal readonly List<string> Items = new List<string>();
+        internal readonly List<string> GameEnumNames = new List<string>();
+        internal readonly List<string> GameIndexEnumNames = new List<string>();
+        internal readonly List<string> GamePrefixes = new List<string>();
     }
 
     internal static class Cache
@@ -70,9 +72,12 @@ namespace FenGen
         internal const string FenGenIgnore = nameof(FenGenIgnore);
         internal const string FenGenLocalizationClass = nameof(FenGenLocalizationClass);
         internal const string FenGenLocalizationReadWriteClass = nameof(FenGenLocalizationReadWriteClass);
-        internal const string FenGenGameSourceEnum = nameof(FenGenGameSourceEnum);
         internal const string FenGenComment = nameof(FenGenComment);
         internal const string FenGenBlankLine = nameof(FenGenBlankLine);
+
+        internal const string FenGenGameEnum = nameof(FenGenGameEnum);
+        internal const string FenGenNotAGameType = nameof(FenGenNotAGameType);
+        internal const string FenGenGamePrefixes = nameof(FenGenGamePrefixes);
     }
 
     internal static class Core

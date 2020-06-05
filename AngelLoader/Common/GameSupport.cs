@@ -1,6 +1,7 @@
 ﻿#define FenGen_GameSupport
 
 using System;
+using System.Diagnostics;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Attributes;
@@ -19,9 +20,10 @@ namespace AngelLoader
         #region Game enums
 
         // This is flags so we can combine its values for filtering by multiple games.
-        [Flags, FenGenGameSourceEnum]
+        [Flags, FenGenGameEnum]
         internal enum Game : uint
         {
+            [FenGenNotAGameType]
             Null = 0,
 
             // Known/supported games
@@ -30,6 +32,7 @@ namespace AngelLoader
             Thief3 = 4,
             SS2 = 8,
 
+            [FenGenNotAGameType]
             Unsupported = 16
         }
 

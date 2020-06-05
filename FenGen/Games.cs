@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,47 +23,52 @@ namespace FenGen
             var ret = new GameSourceEnum();
 
             string code = File.ReadAllText(file);
-            var tree = ParseTextFast(code);
+            SyntaxTree tree = ParseTextFast(code);
 
-            var attrMarkedEnums = new List<EnumDeclarationSyntax>();
+            var gameEnum = (EnumDeclarationSyntax)
+                GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenGameEnum);
 
-            var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
-            foreach (SyntaxNode n in nodes)
+            //var gamePrefixes = GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenGamePrefixes);
+
+            //ArrayTypeSyntax prefixesArray;
+            //foreach (var n in gamePrefixes.DescendantNodesAndSelf())
+            //{
+            //    if (n.IsKind(SyntaxKind.VariableDeclaration))
+            //    {
+            //        //Trace.WriteLine("var");
+            //        var subNode0 = n.ChildNodes().First();
+            //        //Trace.WriteLine(n.ChildNodes().First().Kind());
+            //        if (subNode0.IsKind(SyntaxKind.ArrayType))
+            //        {
+            //            var arrayItem = (ArrayTypeSyntax)subNode0;
+
+            //            //Trace.WriteLine(arrayItem.ElementType.ToString());
+
+            //            if (arrayItem.ElementType.ToString() == "string" ||
+            //                arrayItem.ElementType.ToString() == "String")
+            //            {
+            //                prefixesArray = arrayItem;
+            //            }
+            //            else
+            //            {
+            //                ThrowErrorAndTerminate("ERROR: Game prefix array is not of type string");
+            //            }
+            //        }
+            //    }
+            //}
+
+            //Trace.WriteLine("");
+
+            ret.Name = gameEnum.Identifier.ToString().Trim();
+            for (int i = 0; i < gameEnum.Members.Count; i++)
             {
-                if (!n.IsKind(SyntaxKind.EnumDeclaration)) continue;
-
-                var enumItem = (EnumDeclarationSyntax)n;
-                if (enumItem.AttributeLists.Count > 0 && enumItem.AttributeLists[0].Attributes.Count > 0)
+                var member = gameEnum.Members[i];
+                string memberName = member.Identifier.ToString();
+                ret.GameEnumNames.Add(memberName);
+                if (!HasAttribute(member, GenAttributes.FenGenNotAGameType))
                 {
-                    foreach (var attr in enumItem.AttributeLists[0].Attributes)
-                    {
-                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenGameSourceEnum))
-                        {
-                            attrMarkedEnums.Add(enumItem);
-                        }
-                    }
+                    ret.GameIndexEnumNames.Add(memberName);
                 }
-            }
-
-            if (attrMarkedEnums.Count > 1)
-            {
-                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + GenAttributes.FenGenGameSourceEnum + "'.";
-                ThrowErrorAndTerminate(multipleUsesError);
-            }
-            else if (attrMarkedEnums.Count == 0)
-            {
-                const string noneFoundError = "ERROR: No uses of attribute '" + GenAttributes.FenGenGameSourceEnum +
-                                              "' (No marked game source enum found)";
-                ThrowErrorAndTerminate(noneFoundError);
-            }
-
-            var gameSourceEnum = attrMarkedEnums[0];
-
-            ret.Name = gameSourceEnum.Identifier.ToString().Trim();
-
-            foreach (var member in gameSourceEnum.Members)
-            {
-                ret.Items.Add(member.Identifier.ToString());
             }
 
             return ret;

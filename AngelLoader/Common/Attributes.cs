@@ -98,7 +98,15 @@ namespace AngelLoader
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Enum)]
-        internal class FenGenGameSourceEnumAttribute : Attribute { }
+        internal class FenGenGameEnumAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field)]
+        internal class FenGenNotAGameTypeAttribute : Attribute { }
+
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Enum)]
+        internal class FenGenGamePrefixesAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]

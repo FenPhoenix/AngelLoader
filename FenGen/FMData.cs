@@ -516,18 +516,18 @@ namespace FenGen
 
                     var gamesEnum = Cache.GamesEnum;
 
-                    for (int gi = 1; gi < gamesEnum.Items.Count; gi++)
+                    for (int gi = 1; gi < gamesEnum.GameEnumNames.Count; gi++)
                     {
                         string ifType = gi > 1 ? "else if" : "if";
-                        string gameDotGameType = gamesEnum.Name + "." + gamesEnum.Items[gi];
-                        wl.Add(Indent(5) + ifType + " (val.EqualsI(\"" + gamesEnum.Items[gi] + "\"))");
+                        string gameDotGameType = gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi];
+                        wl.Add(Indent(5) + ifType + " (val.EqualsI(\"" + gamesEnum.GameEnumNames[gi] + "\"))");
                         wl.Add(Indent(5) + "{");
                         wl.Add(Indent(6) + objDotField + " = " + gameDotGameType + ";");
                         wl.Add(Indent(5) + "}");
                     }
                     wl.Add(Indent(5) + "else");
                     wl.Add(Indent(5) + "{");
-                    wl.Add(Indent(6) + objDotField + " = " + gamesEnum.Name + "." + gamesEnum.Items[0] + ";");
+                    wl.Add(Indent(6) + objDotField + " = " + gamesEnum.Name + "." + gamesEnum.GameEnumNames[0] + ";");
                     wl.Add(Indent(5) + "}");
                 }
                 else if (field.Type == "ExpandableDate")
@@ -707,14 +707,14 @@ namespace FenGen
 
                     wl.Add(Indent(4) + "switch (fm." + gamesEnum.Name + ")");
                     wl.Add(Indent(4) + "{");
-                    for (int gi = 1; gi < gamesEnum.Items.Count; gi++)
+                    for (int gi = 1; gi < gamesEnum.GameEnumNames.Count; gi++)
                     {
                         if (gi == 1) wl.Add(Indent(5) + "// Much faster to do this than Enum.ToString()");
-                        wl.Add(Indent(5) + "case " + gamesEnum.Name + "." + gamesEnum.Items[gi] + ":");
-                        wl.Add(Indent(6) + "sb.AppendLine(\"" + gamesEnum.Name + "=" + gamesEnum.Items[gi] + "\");");
+                        wl.Add(Indent(5) + "case " + gamesEnum.Name + "." + gamesEnum.GameEnumNames[gi] + ":");
+                        wl.Add(Indent(6) + "sb.AppendLine(\"" + gamesEnum.Name + "=" + gamesEnum.GameEnumNames[gi] + "\");");
                         wl.Add(Indent(6) + "break;");
                     }
-                    string gameDotGameTypeZero = gamesEnum.Name + "." + gamesEnum.Items[0];
+                    string gameDotGameTypeZero = gamesEnum.Name + "." + gamesEnum.GameEnumNames[0];
                     if (Fields.WriteEmptyValues)
                     {
                         wl.Add(Indent(5) + "case " + gameDotGameTypeZero + ":");
