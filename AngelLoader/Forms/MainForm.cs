@@ -704,21 +704,30 @@ namespace AngelLoader.Forms
                         (TopRightTabControl.Focused && TopRightTabControl.SelectedTab == tabPage) ||
                         AnyControlFocusedIn(tabPage);
 
-                    string section =
-                        !EverythingPanel.Enabled ? HelpSections.MainWindow :
-                        FMsDGV.FMContextMenuVisible ? HelpSections.FMContextMenu :
-                        FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
-                        // TODO: We could try to be clever and take mouse position into account in some cases?
-                        AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
-                        TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
-                        AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
-                        AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
-                        // Add tag dropdown is in EverythingPanel, not tags tab page
-                        AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
-                        AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
-                        AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
-                        // TODO: Handle bottom area controls (we need a whole other section delimiter in the help file)
-                        HelpSections.MainWindow;
+                    string section;
+                    try
+                    {
+                        section =
+                            !EverythingPanel.Enabled ? HelpSections.MainWindow :
+                            FMsDGV.FMContextMenuVisible ? HelpSections.FMContextMenu :
+                            FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
+                            // TODO: We could try to be clever and take mouse position into account in some cases?
+                            AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
+                            TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
+                            AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
+                            AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
+                            // Add tag dropdown is in EverythingPanel, not tags tab page
+                            AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
+                            AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
+                            AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
+                            // TODO: Handle bottom area controls (we need a whole other section delimiter in the help file)
+                            HelpSections.MainWindow;
+                    }
+                    // Paranoid fallback
+                    catch (StackOverflowException)
+                    {
+                        section = HelpSections.MainWindow;
+                    }
 
                     Core.OpenHelpFile(section);
                 }
