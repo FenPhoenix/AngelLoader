@@ -104,7 +104,6 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Enum)]
         internal class FenGenGameEnumAttribute : Attribute
         {
-            internal FenGenGameEnumAttribute([UsedImplicitly] string prefixes) { }
         }
 
         [Conditional("compile_FenGen_attributes")]

@@ -41,6 +41,7 @@ namespace FenGen
                 }
             }
 
+#if false
             var argsList = gameEnumAttr.ArgumentList;
             if (argsList == null || argsList.Arguments.Count == 0)
             {
@@ -55,6 +56,7 @@ namespace FenGen
             }
 
             ret.GamePrefixes.AddRange(prefixes);
+#endif
 
             return ret;
         }

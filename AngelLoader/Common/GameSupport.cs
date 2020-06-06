@@ -19,7 +19,7 @@ namespace AngelLoader
         #region Game enums
 
         // This is flags so we can combine its values for filtering by multiple games.
-        [Flags, FenGenGameEnum("T1,T2,T3,SS2")]
+        [Flags, FenGenGameEnum]
         internal enum Game : uint
         {
             [FenGenNotAGameType]
