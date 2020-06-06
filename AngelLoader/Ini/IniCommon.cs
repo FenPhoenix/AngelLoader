@@ -372,38 +372,19 @@ namespace AngelLoader
             return ret;
         }
 
-        // TODO: Figure out a better way to be fast without this dopey manual code. Code generation?
         private static string CommaCombineGameFlags(Game games)
         {
             string ret = "";
 
-            // Hmm... doesn't make for good code, but fast...
-            // @GENGAMES (Config writer - Comma combine game flags): Begin
-            bool notEmpty = false;
-
-            if ((games & Game.Thief1) == Game.Thief1)
+            for (int i = 0; i < SupportedGameCount; i++)
             {
-                ret += nameof(Game.Thief1);
-                notEmpty = true;
+                Game game = GameIndexToGame((GameIndex)i);
+                if ((games & game) == game)
+                {
+                    if (!ret.IsEmpty()) ret += ",";
+                    ret += game.ToString();
+                }
             }
-            if ((games & Game.Thief2) == Game.Thief2)
-            {
-                if (notEmpty) ret += ",";
-                ret += nameof(Game.Thief2);
-                notEmpty = true;
-            }
-            if ((games & Game.Thief3) == Game.Thief3)
-            {
-                if (notEmpty) ret += ",";
-                ret += nameof(Game.Thief3);
-                notEmpty = true;
-            }
-            if ((games & Game.SS2) == Game.SS2)
-            {
-                if (notEmpty) ret += ",";
-                ret += nameof(Game.SS2);
-            }
-            // @GENGAMES (Config writer - Comma combine game flags): End
 
             return ret;
         }
