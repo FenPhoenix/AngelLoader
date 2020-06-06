@@ -37,15 +37,17 @@ namespace AngelLoader
                 // And having only one (trimmed) line string prevents us from accidentally using the un-trimmed
                 // one by accident like we previously did in here.
                 string lineTS = iniLines[li].TrimStart();
-                if (!lineTS.Contains('=')) continue;
+
+                int indexOfEq = lineTS.IndexOf('=');
+                if (indexOfEq == -1) continue;
 
                 if (lineTS.Length > 0 && (lineTS[0] == ';' || lineTS[0] == '[')) continue;
 
-                string val = lineTS.Substring(lineTS.IndexOf('=') + 1);
+                string val = lineTS.Substring(indexOfEq + 1);
 
                 if (lineTS.StartsWithFast_NoNullChecks("Column") && lineTS[6] != '=')
                 {
-                    string colName = lineTS.Substring(6, lineTS.IndexOf('=') - 6);
+                    string colName = lineTS.Substring(6, indexOfEq - 6);
 
                     var field = typeof(Column).GetField(colName, BFlagsEnum);
                     if (field == null) continue;
@@ -58,7 +60,17 @@ namespace AngelLoader
                     if (!ContainsColWithId(config, col)) config.Columns.Add(col);
                 }
 
+                else if (lineTS.StartsWithFast_NoNullChecks("GameOrganization="))
+                {
+                    var field = typeof(GameOrganization).GetField(val, BFlagsEnum);
+                    if (field != null)
+                    {
+                        config.GameOrganization = (GameOrganization)field.GetValue(null);
+                    }
+                }
+
                 #region Filter
+
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterGames="))
                 {
                     string[] iniGames = val
@@ -201,7 +213,10 @@ namespace AngelLoader
                 {
                     ReadTags(config.GameTabsState.GetFilter(_gameIndex).Tags.NotTags, val);
                 }
+
                 #endregion
+
+                #region Articles
 
                 else if (lineTS.StartsWithFast_NoNullChecks("EnableArticles="))
                 {
@@ -217,6 +232,11 @@ namespace AngelLoader
                 {
                     config.MoveArticlesToEnd = val.EqualsTrue();
                 }
+
+                #endregion
+
+                #region Sorting
+
                 else if (lineTS.StartsWithFast_NoNullChecks("SortDirection="))
                 {
                     if (val.EqualsI("Ascending"))
@@ -236,17 +256,11 @@ namespace AngelLoader
                         config.SortedColumn = (Column)field.GetValue(null);
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("ShowRecentAtTop="))
-                {
-                    config.ShowRecentAtTop = val.EqualsTrue();
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("FMsListFontSizeInPoints="))
-                {
-                    if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
-                    {
-                        config.FMsListFontSizeInPoints = result;
-                    }
-                }
+
+                #endregion
+
+                #region Rating display style
+
                 else if (lineTS.StartsWithFast_NoNullChecks("RatingDisplayStyle="))
                 {
                     var field = typeof(RatingDisplayStyle).GetField(val, BFlagsEnum);
@@ -259,14 +273,11 @@ namespace AngelLoader
                 {
                     config.RatingUseStars = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("TopRightTab="))
-                {
-                    var field = typeof(TopRightTab).GetField(val, BFlagsEnum);
-                    if (field != null)
-                    {
-                        config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
-                    }
-                }
+
+                #endregion
+
+                #region Settings window state
+
                 else if (lineTS.StartsWithFast_NoNullChecks("SettingsTab="))
                 {
                     var field = typeof(SettingsTab).GetField(val, BFlagsEnum);
@@ -317,6 +328,8 @@ namespace AngelLoader
                     }
                 }
 
+                #endregion
+
                 else if (IsGamePrefixedLine(lineTS, "Exe=", out _gameIndex))
                 {
                     config.SetGameExe(_gameIndex, val.Trim());
@@ -337,6 +350,8 @@ namespace AngelLoader
                 }
                 #endregion
 
+                #region FM paths
+
                 else if (lineTS.StartsWithFast_NoNullChecks("FMsBackupPath="))
                 {
                     config.FMsBackupPath = val.Trim();
@@ -350,14 +365,8 @@ namespace AngelLoader
                     config.FMArchivePathsIncludeSubfolders = val.EqualsTrue();
                 }
 
-                else if (lineTS.StartsWithFast_NoNullChecks("GameOrganization="))
-                {
-                    var field = typeof(GameOrganization).GetField(val, BFlagsEnum);
-                    if (field != null)
-                    {
-                        config.GameOrganization = (GameOrganization)field.GetValue(null);
-                    }
-                }
+                #endregion
+
                 else if (lineTS.StartsWithFast_NoNullChecks("UseShortGameTabNames="))
                 {
                     config.UseShortGameTabNames = val.EqualsTrue();
@@ -379,6 +388,8 @@ namespace AngelLoader
                     // matching previous behavior
                     if (!found) config.GameTab = Thief1;
                 }
+
+                #region Selected FM info
 
                 // One list
                 else if (lineTS.StartsWithFast_NoNullChecks("SelFMInstDir="))
@@ -405,6 +416,10 @@ namespace AngelLoader
                         config.GameTabsState.GetSelectedFM(_gameIndex).IndexFromTop = result;
                     }
                 }
+
+                #endregion
+
+                #region Date format
 
                 else if (lineTS.StartsWithFast_NoNullChecks("DateFormat="))
                 {
@@ -442,13 +457,11 @@ namespace AngelLoader
                 {
                     config.DateCustomFormat4 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("DaysRecent="))
-                {
-                    if (uint.TryParse(val, out uint result))
-                    {
-                        config.DaysRecent = result;
-                    }
-                }
+
+                #endregion
+
+                #region Readme
+
                 else if (lineTS.StartsWithFast_NoNullChecks("ReadmeZoomFactor="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
@@ -460,6 +473,11 @@ namespace AngelLoader
                 {
                     config.ReadmeUseFixedWidthFont = val.EqualsTrue();
                 }
+
+                #endregion
+
+                #region Main window state
+
                 else if (lineTS.StartsWithFast_NoNullChecks("MainWindowState="))
                 {
                     var field = typeof(FormWindowState).GetField(val, BFlagsEnum);
@@ -516,49 +534,18 @@ namespace AngelLoader
                 {
                     config.TopRightPanelCollapsed = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("ConvertWAVsTo16BitOnInstall="))
+
+                #endregion
+
+                #region Top-right tabs
+
+                else if (lineTS.StartsWithFast_NoNullChecks("TopRightTab="))
                 {
-                    config.ConvertWAVsTo16BitOnInstall = val.EqualsTrue();
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("ConvertOGGsToWAVsOnInstall="))
-                {
-                    config.ConvertOGGsToWAVsOnInstall = val.EqualsTrue();
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("HideUninstallButton="))
-                {
-                    config.HideUninstallButton = val.EqualsTrue();
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("HideFMListZoomButtons="))
-                {
-                    config.HideFMListZoomButtons = val.EqualsTrue();
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("ConfirmUninstall="))
-                {
-                    config.ConfirmUninstall = val.EqualsTrue();
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("BackupFMData="))
-                {
-                    var field = typeof(BackupFMData).GetField(val, BFlagsEnum);
+                    var field = typeof(TopRightTab).GetField(val, BFlagsEnum);
                     if (field != null)
                     {
-                        config.BackupFMData = (BackupFMData)field.GetValue(null);
+                        config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
                     }
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("BackupAlwaysAsk="))
-                {
-                    config.BackupAlwaysAsk = val.EqualsTrue();
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("Language="))
-                {
-                    config.Language = val;
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("WebSearchUrl="))
-                {
-                    config.WebSearchUrl = val;
-                }
-                else if (lineTS.StartsWithFast_NoNullChecks("ConfirmPlayOnDCOrEnter="))
-                {
-                    config.ConfirmPlayOnDCOrEnter = val.EqualsTrue();
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("StatsTabPosition="))
                 {
@@ -604,6 +591,86 @@ namespace AngelLoader
                 else if (lineTS.StartsWithFast_NoNullChecks("PatchTabVisible="))
                 {
                     config.TopRightTabsData.PatchTab.Visible = val.EqualsTrue();
+                }
+
+                #endregion
+
+                #region Audio conversion
+
+                else if (lineTS.StartsWithFast_NoNullChecks("ConvertWAVsTo16BitOnInstall="))
+                {
+                    config.ConvertWAVsTo16BitOnInstall = val.EqualsTrue();
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("ConvertOGGsToWAVsOnInstall="))
+                {
+                    config.ConvertOGGsToWAVsOnInstall = val.EqualsTrue();
+                }
+
+                #endregion
+
+                #region Hide UI elements
+
+                else if (lineTS.StartsWithFast_NoNullChecks("HideUninstallButton="))
+                {
+                    config.HideUninstallButton = val.EqualsTrue();
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("HideFMListZoomButtons="))
+                {
+                    config.HideFMListZoomButtons = val.EqualsTrue();
+                }
+
+                #endregion
+
+                #region Uninstall / backup
+
+                else if (lineTS.StartsWithFast_NoNullChecks("ConfirmUninstall="))
+                {
+                    config.ConfirmUninstall = val.EqualsTrue();
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("BackupFMData="))
+                {
+                    var field = typeof(BackupFMData).GetField(val, BFlagsEnum);
+                    if (field != null)
+                    {
+                        config.BackupFMData = (BackupFMData)field.GetValue(null);
+                    }
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("BackupAlwaysAsk="))
+                {
+                    config.BackupAlwaysAsk = val.EqualsTrue();
+                }
+
+                #endregion
+
+                else if (lineTS.StartsWithFast_NoNullChecks("DaysRecent="))
+                {
+                    if (uint.TryParse(val, out uint result))
+                    {
+                        config.DaysRecent = result;
+                    }
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("Language="))
+                {
+                    config.Language = val;
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("WebSearchUrl="))
+                {
+                    config.WebSearchUrl = val;
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("ConfirmPlayOnDCOrEnter="))
+                {
+                    config.ConfirmPlayOnDCOrEnter = val.EqualsTrue();
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("ShowRecentAtTop="))
+                {
+                    config.ShowRecentAtTop = val.EqualsTrue();
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("FMsListFontSizeInPoints="))
+                {
+                    if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
+                    {
+                        config.FMsListFontSizeInPoints = result;
+                    }
                 }
             }
 

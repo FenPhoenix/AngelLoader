@@ -478,13 +478,25 @@ namespace AngelLoader
             }
         }
 
-        private static bool IsGamePrefixedLine(string lineTS, string keyWithEquals, out GameIndex gameIndex)
+        /// <summary>
+        /// If <paramref name="line"/> starts with any game prefix + <paramref name="keyWithEquals"/>,
+        /// returns <see langword="true"/> and <paramref name="gameIndex"/> will be the matching game. Otherwise,
+        /// returns <see langword="false"/> and <paramref name="gameIndex"/> will be 0.
+        /// For example, if <paramref name="line"/> is "T2Exe=C:\Thief2\Thief2.exe" and <paramref name="keyWithEquals"/>
+        /// is "Exe=", then <paramref name="gameIndex"/> will be <see langword="GameIndex.Thief2"/>.
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="keyWithEquals"></param>
+        /// <param name="gameIndex"></param>
+        /// <returns><see langword="true"/> if <paramref name="line"/> starts with any game prefix +
+        /// <paramref name="keyWithEquals"/>, otherwise <see langword="false"/>.</returns>
+        private static bool IsGamePrefixedLine(string line, string keyWithEquals, out GameIndex gameIndex)
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 GameIndex gi = (GameIndex)i;
                 string p = GetGamePrefix(gi);
-                if (lineTS.StartsWithFast_NoNullChecks(p + keyWithEquals))
+                if (line.StartsWithFast_NoNullChecks(p + keyWithEquals))
                 {
                     gameIndex = gi;
                     return true;

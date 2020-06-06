@@ -102,9 +102,7 @@ namespace AngelLoader
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Enum)]
-        internal class FenGenGameEnumAttribute : Attribute
-        {
-        }
+        internal class FenGenGameEnumAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field)]
