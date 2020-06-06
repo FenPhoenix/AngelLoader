@@ -25,39 +25,9 @@ namespace FenGen
             string code = File.ReadAllText(file);
             SyntaxTree tree = ParseTextFast(code);
 
-            var gameEnum = (EnumDeclarationSyntax)
-                GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenGameEnum);
-
-            //var gamePrefixes = GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenGamePrefixes);
-
-            //ArrayTypeSyntax prefixesArray;
-            //foreach (var n in gamePrefixes.DescendantNodesAndSelf())
-            //{
-            //    if (n.IsKind(SyntaxKind.VariableDeclaration))
-            //    {
-            //        //Trace.WriteLine("var");
-            //        var subNode0 = n.ChildNodes().First();
-            //        //Trace.WriteLine(n.ChildNodes().First().Kind());
-            //        if (subNode0.IsKind(SyntaxKind.ArrayType))
-            //        {
-            //            var arrayItem = (ArrayTypeSyntax)subNode0;
-
-            //            //Trace.WriteLine(arrayItem.ElementType.ToString());
-
-            //            if (arrayItem.ElementType.ToString() == "string" ||
-            //                arrayItem.ElementType.ToString() == "String")
-            //            {
-            //                prefixesArray = arrayItem;
-            //            }
-            //            else
-            //            {
-            //                ThrowErrorAndTerminate("ERROR: Game prefix array is not of type string");
-            //            }
-            //        }
-            //    }
-            //}
-
-            //Trace.WriteLine("");
+            var d = GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenGameEnum);
+            var gameEnum = (EnumDeclarationSyntax)d.Member;
+            AttributeSyntax gameEnumAttr = d.Attribute;
 
             ret.Name = gameEnum.Identifier.ToString().Trim();
             for (int i = 0; i < gameEnum.Members.Count; i++)
@@ -70,6 +40,21 @@ namespace FenGen
                     ret.GameIndexEnumNames.Add(memberName);
                 }
             }
+
+            var argsList = gameEnumAttr.ArgumentList;
+            if (argsList == null || argsList.Arguments.Count == 0)
+            {
+                ThrowErrorAndTerminate(GenAttributes.FenGenGameEnum + " was expected to have an argument but doesn't.");
+            }
+
+            string attrVal = argsList!.Arguments[0].ToString();
+            string[] prefixes = attrVal.Split(',');
+            if (prefixes.Length != ret.GameIndexEnumNames.Count)
+            {
+                ThrowErrorAndTerminate("Prefix list in " + GenAttributes.FenGenGameEnum + " doesn't match count of games");
+            }
+
+            ret.GamePrefixes.AddRange(prefixes);
 
             return ret;
         }

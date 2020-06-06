@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -45,10 +46,11 @@ namespace FenGen
             return false;
         }
 
-        internal static MemberDeclarationSyntax
+        internal static (MemberDeclarationSyntax Member, AttributeSyntax Attribute)
         GetAttrMarkedItem(SyntaxTree tree, SyntaxKind syntaxKind, string attrName)
         {
             var attrMarkedItems = new List<MemberDeclarationSyntax>();
+            AttributeSyntax? retAttr = null;
 
             var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
             foreach (SyntaxNode n in nodes)
@@ -63,6 +65,7 @@ namespace FenGen
                         if (GetAttributeName(attr.Name.ToString(), attrName))
                         {
                             attrMarkedItems.Add(item);
+                            retAttr = attr;
                         }
                     }
                 }
@@ -70,14 +73,14 @@ namespace FenGen
 
             if (attrMarkedItems.Count > 1)
             {
-                ThrowErrorAndTerminate("ERROR: Multiple uses of attribute '" + attrName + "'.");
+                ThrowErrorAndTerminate("Multiple uses of attribute '" + attrName + "'.");
             }
             else if (attrMarkedItems.Count == 0)
             {
-                ThrowErrorAndTerminate("ERROR: No uses of attribute '" + attrName + "'.");
+                ThrowErrorAndTerminate("No uses of attribute '" + attrName + "'.");
             }
 
-            return attrMarkedItems[0];
+            return (attrMarkedItems[0], retAttr!);
         }
 
         /// <summary>
@@ -114,6 +117,7 @@ namespace FenGen
             return line;
         }
 
+        [ContractAnnotation("=> halt")]
         internal static void ThrowErrorAndTerminate(string message)
         {
             Trace.WriteLine("FenGen: " + message + "\r\nTerminating FenGen.");

@@ -1,0 +1,57 @@
+﻿// Example game entry:
+
+// DisplayName=Thief 1
+// InternalName=Thief1
+// ShortName=T1
+// IniPrefix=T1
+// LTextPrefix=Thief1
+// DifficultyNames=Normal,Hard,Expert,Extreme
+// Flags=Dark
+
+// DisplayName (required):
+// This will be the English user-facing full name.
+
+// InternalName:
+// This will be the name of the enum member in the code.
+// If not specified, it will be DisplayName with spaces removed.
+
+// ShortName:
+// This will be the English user-facing short name.
+// If not specified, it will be DisplayName converted to an acronym. Example: "System Shock 2" becomes "SS2".
+
+// IniPrefix:
+// This will be the prefix used in ini files when a field needs to occur for every game.
+// For example, if IniPrefix is "T1", then Config.ini would have the keys "T1FilterTitle=", "T1FilterAuthor=" etc.
+// If not specified, it will be ShortName.
+
+// LTextPrefix:
+// Prefix to use in field names for localized-text object (ex. Thief1, Thief1_Short, Thief1_Colon).
+// If not specified, it will be InternalName.
+
+// DifficultyNames:
+// Names of all four difficulties. All four are required.
+// If not specified, it will be DefaultDifficultyNames.
+
+// Flags:
+// Set of flags for this game. Current supported: "Dark" - Game will marked as a Dark Engine game and code generated appropriately.
+
+[Global]
+DefaultDifficultyNames=Normal,Hard,Expert,Extreme
+
+[Game]
+DisplayName=Thief 1
+Flags=Dark
+
+[Game]
+DisplayName=Thief 2
+Flags=Dark
+
+[Game]
+DisplayName=Thief 3
+DifficultyNames=Easy,Normal,Hard,Expert
+
+[Game]
+DisplayName=System Shock 2
+InternalName=SS2
+DifficultyNames=Easy,Normal,Hard,Impossible
+Flags=Dark

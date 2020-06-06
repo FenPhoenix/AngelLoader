@@ -68,12 +68,12 @@ namespace FenGen
 
             if (attrMarkedClasses.Count > 1)
             {
-                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + GenAttributes.FenGenLocalizationClass + "'.";
+                const string multipleUsesError = "Multiple uses of attribute '" + GenAttributes.FenGenLocalizationClass + "'.";
                 ThrowErrorAndTerminate(multipleUsesError);
             }
             else if (attrMarkedClasses.Count == 0)
             {
-                const string noneFoundError = "ERROR: No uses of attribute '" + GenAttributes.FenGenLocalizationClass +
+                const string noneFoundError = "No uses of attribute '" + GenAttributes.FenGenLocalizationClass +
                     "' (No marked localization class found)";
                 ThrowErrorAndTerminate(noneFoundError);
             }
@@ -185,12 +185,12 @@ namespace FenGen
 
             if (attrMarkedClasses.Count > 1)
             {
-                const string multipleUsesError = "ERROR: Multiple uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass + "'.";
+                const string multipleUsesError = "Multiple uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass + "'.";
                 ThrowErrorAndTerminate(multipleUsesError);
             }
             else if (attrMarkedClasses.Count == 0)
             {
-                const string noneFoundError = "ERROR: No uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass +
+                const string noneFoundError = "No uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass +
                                               "' (No marked localization class found)";
                 ThrowErrorAndTerminate(noneFoundError);
             }
