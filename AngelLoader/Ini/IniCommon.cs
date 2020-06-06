@@ -251,9 +251,9 @@ namespace AngelLoader
 
         #region Config
 
-        private static bool ContainsColWithId(ConfigData _config, ColumnData _col)
+        private static bool ContainsColWithId(ConfigData config, ColumnData col)
         {
-            foreach (ColumnData x in _config.Columns) if (x.Id == _col.Id) return true;
+            foreach (ColumnData x in config.Columns) if (x.Id == col.Id) return true;
             return false;
         }
 
@@ -295,12 +295,8 @@ namespace AngelLoader
             return ret;
         }
 
-        private static void ReadTags(string line, Game game)
+        private static void ReadTags(string line, Filter filter)
         {
-            Filter filter = GameIsKnownAndSupported(game)
-                ? Config.GameTabsState.GetFilter(GameToGameIndex(game))
-                : Config.Filter;
-
             // TODO: This line-passing-and-reading business is still a little janky
             CatAndTagsList? tagsList =
                 line.StartsWithFast_NoNullChecks("And=") ? filter.Tags.AndTags :

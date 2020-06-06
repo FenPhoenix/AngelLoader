@@ -185,23 +185,23 @@ namespace AngelLoader
                 // TODO: This is downright dangerous, having not one but two int literals per. Be EXTREMELY careful if modifying these!
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterTags") && lineTS[10] != '=')
                 {
-                    ReadTags(lineTS.Substring(10), Game.Null);
+                    ReadTags(lineTS.Substring(10), config.Filter);
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("T1FilterTags") && lineTS[12] != '=')
                 {
-                    ReadTags(lineTS.Substring(12), Game.Thief1);
+                    ReadTags(lineTS.Substring(12), config.GameTabsState.GetFilter(Thief1));
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("T2FilterTags") && lineTS[12] != '=')
                 {
-                    ReadTags(lineTS.Substring(12), Game.Thief2);
+                    ReadTags(lineTS.Substring(12), config.GameTabsState.GetFilter(Thief2));
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("T3FilterTags") && lineTS[12] != '=')
                 {
-                    ReadTags(lineTS.Substring(12), Game.Thief3);
+                    ReadTags(lineTS.Substring(12), config.GameTabsState.GetFilter(Thief3));
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("SS2FilterTags") && lineTS[13] != '=')
                 {
-                    ReadTags(lineTS.Substring(13), Game.SS2);
+                    ReadTags(lineTS.Substring(13), config.GameTabsState.GetFilter(SS2));
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterGames="))
                 {
