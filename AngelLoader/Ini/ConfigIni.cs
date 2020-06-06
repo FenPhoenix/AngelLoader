@@ -59,7 +59,6 @@ namespace AngelLoader
                 }
 
                 #region Filter
-                // @GENGAMES (Config reader - Filter): Begin
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterGames="))
                 {
                     string[] iniGames = val
