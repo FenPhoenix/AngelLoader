@@ -480,7 +480,6 @@ namespace AngelLoader
                                   config.DateCustomFormat3 +
                                   sep3 +
                                   config.DateCustomFormat4;
-
             try
             {
                 // PERF: Passing an explicit DateTimeFormatInfo avoids a 5ms(!) hit that you take otherwise.
@@ -496,6 +495,23 @@ namespace AngelLoader
             {
                 config.DateFormat = DateFormat.CurrentCultureShort;
             }
+        }
+
+        private static bool IsGamePrefixedLine(string lineTS, string keyWithEquals, out GameIndex gameIndex)
+        {
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameIndex gi = (GameIndex)i;
+                string p = GetGamePrefix(gi);
+                if (lineTS.StartsWithFast_NoNullChecks(p + keyWithEquals))
+                {
+                    gameIndex = gi;
+                    return true;
+                }
+            }
+
+            gameIndex = 0;
+            return false;
         }
 
         #endregion
