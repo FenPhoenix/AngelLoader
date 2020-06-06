@@ -183,48 +183,96 @@ namespace AngelLoader
                 // '=' and since there are no '=' chars in the checked strings, we know the length must be at least
                 // checked string length + 1
                 // TODO: This is downright dangerous, having not one but two int literals per. Be EXTREMELY careful if modifying these!
-                else if (lineTS.StartsWithFast_NoNullChecks("FilterTags") && lineTS[10] != '=')
+                else if (lineTS.StartsWithFast_NoNullChecks("FilterTagsAnd="))
                 {
-                    ReadTags(lineTS.Substring(10), config.Filter);
+                    ReadTags(config.Filter.Tags.AndTags, val);
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("T1FilterTags") && lineTS[12] != '=')
+                else if (lineTS.StartsWithFast_NoNullChecks("FilterTagsOr="))
                 {
-                    ReadTags(lineTS.Substring(12), config.GameTabsState.GetFilter(Thief1));
+                    ReadTags(config.Filter.Tags.OrTags, val);
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("T2FilterTags") && lineTS[12] != '=')
+                else if (lineTS.StartsWithFast_NoNullChecks("FilterTagsNot="))
                 {
-                    ReadTags(lineTS.Substring(12), config.GameTabsState.GetFilter(Thief2));
+                    ReadTags(config.Filter.Tags.NotTags, val);
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("T3FilterTags") && lineTS[12] != '=')
+
+                else if (lineTS.StartsWithFast_NoNullChecks("T1FilterTagsAnd="))
                 {
-                    ReadTags(lineTS.Substring(12), config.GameTabsState.GetFilter(Thief3));
+                    ReadTags(config.GameTabsState.GetFilter(Thief1).Tags.AndTags, val);
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks("SS2FilterTags") && lineTS[13] != '=')
+                else if (lineTS.StartsWithFast_NoNullChecks("T1FilterTagsOr="))
                 {
-                    ReadTags(lineTS.Substring(13), config.GameTabsState.GetFilter(SS2));
+                    ReadTags(config.GameTabsState.GetFilter(Thief1).Tags.OrTags, val);
                 }
+                else if (lineTS.StartsWithFast_NoNullChecks("T1FilterTagsNot="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(Thief1).Tags.NotTags, val);
+                }
+
+                else if (lineTS.StartsWithFast_NoNullChecks("T2FilterTagsAnd="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(Thief2).Tags.AndTags, val);
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("T2FilterTagsOr="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(Thief2).Tags.OrTags, val);
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("T2FilterTagsNot="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(Thief2).Tags.NotTags, val);
+                }
+
+                else if (lineTS.StartsWithFast_NoNullChecks("T3FilterTagsAnd="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(Thief3).Tags.AndTags, val);
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("T3FilterTagsOr="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(Thief3).Tags.OrTags, val);
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("T3FilterTagsNot="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(Thief3).Tags.NotTags, val);
+                }
+
+                else if (lineTS.StartsWithFast_NoNullChecks("SS2FilterTagsAnd="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(SS2).Tags.AndTags, val);
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("SS2FilterTagsOr="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(SS2).Tags.OrTags, val);
+                }
+                else if (lineTS.StartsWithFast_NoNullChecks("SS2FilterTagsNot="))
+                {
+                    ReadTags(config.GameTabsState.GetFilter(SS2).Tags.NotTags, val);
+                }
+
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterGames="))
                 {
-                    var list = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
-                        .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                    string[] list = val
+                        .Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
+                        .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
+                    // TODO: @GENGAMES: Faster to do it manually
                     foreach (string game in list)
                     {
-                        // TODO: @GENGAMES: Faster to do it manually
-                        switch (game.Trim())
+                        string gameT = game.Trim();
+                        if (gameT == "Thief1")
                         {
-                            case nameof(Game.Thief1):
-                                config.Filter.Games |= Game.Thief1;
-                                break;
-                            case nameof(Game.Thief2):
-                                config.Filter.Games |= Game.Thief2;
-                                break;
-                            case nameof(Game.Thief3):
-                                config.Filter.Games |= Game.Thief3;
-                                break;
-                            case nameof(Game.SS2):
-                                config.Filter.Games |= Game.SS2;
-                                break;
+                            config.Filter.Games |= Game.Thief1;
+                        }
+                        else if (gameT == "Thief2")
+                        {
+                            config.Filter.Games |= Game.Thief2;
+                        }
+                        else if (gameT == "Thief3")
+                        {
+                            config.Filter.Games |= Game.Thief3;
+                        }
+                        else if (gameT == "SS2")
+                        {
+                            config.Filter.Games |= Game.SS2;
                         }
                     }
                 }
@@ -270,23 +318,23 @@ namespace AngelLoader
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.Filter);
+                    ReadFinishedStates(config.Filter, val);
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("T1FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.GetFilter(Thief1));
+                    ReadFinishedStates(config.GameTabsState.GetFilter(Thief1), val);
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("T2FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.GetFilter(Thief2));
+                    ReadFinishedStates(config.GameTabsState.GetFilter(Thief2), val);
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("T3FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.GetFilter(Thief3));
+                    ReadFinishedStates(config.GameTabsState.GetFilter(Thief3), val);
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("SS2FilterFinishedStates="))
                 {
-                    ReadFinishedStates(val, config.GameTabsState.GetFilter(SS2));
+                    ReadFinishedStates(config.GameTabsState.GetFilter(SS2), val);
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("FilterShowJunk="))
                 {
@@ -310,21 +358,22 @@ namespace AngelLoader
                 }
                 // @GENGAMES (Config reader - Filter): End
                 #endregion
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.EnableArticles) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("EnableArticles="))
                 {
                     config.EnableArticles = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.Articles) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("Articles="))
                 {
                     string[] articles = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
                     for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
-                    config.Articles.ClearAndAdd(articles.Distinct(StringComparer.OrdinalIgnoreCase));
+                    config.Articles.Clear();
+                    config.Articles.AddRange(articles.Distinct(StringComparer.OrdinalIgnoreCase));
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.MoveArticlesToEnd) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("MoveArticlesToEnd="))
                 {
                     config.MoveArticlesToEnd = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SortDirection) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SortDirection="))
                 {
                     if (val.EqualsI("Ascending"))
                     {
@@ -335,54 +384,126 @@ namespace AngelLoader
                         config.SortDirection = SortOrder.Descending;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SortedColumn) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SortedColumn="))
                 {
-                    var field = typeof(Column).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "Game")
                     {
-                        config.SortedColumn = (Column)field.GetValue(null);
+                        config.SortedColumn = Column.Game;
+                    }
+                    else if (val == "Installed")
+                    {
+                        config.SortedColumn = Column.Installed;
+                    }
+                    else if (val == "Title")
+                    {
+                        config.SortedColumn = Column.Title;
+                    }
+                    else if (val == "Archive")
+                    {
+                        config.SortedColumn = Column.Archive;
+                    }
+                    else if (val == "Author")
+                    {
+                        config.SortedColumn = Column.Author;
+                    }
+                    else if (val == "Size")
+                    {
+                        config.SortedColumn = Column.Size;
+                    }
+                    else if (val == "Rating")
+                    {
+                        config.SortedColumn = Column.Rating;
+                    }
+                    else if (val == "Finished")
+                    {
+                        config.SortedColumn = Column.Finished;
+                    }
+                    else if (val == "ReleaseDate")
+                    {
+                        config.SortedColumn = Column.ReleaseDate;
+                    }
+                    else if (val == "LastPlayed")
+                    {
+                        config.SortedColumn = Column.LastPlayed;
+                    }
+                    else if (val == "DateAdded")
+                    {
+                        config.SortedColumn = Column.DateAdded;
+                    }
+                    else if (val == "DisabledMods")
+                    {
+                        config.SortedColumn = Column.DisabledMods;
+                    }
+                    else if (val == "Comment")
+                    {
+                        config.SortedColumn = Column.Comment;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.ShowRecentAtTop) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("ShowRecentAtTop="))
                 {
                     config.ShowRecentAtTop = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.FMsListFontSizeInPoints) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("FMsListFontSizeInPoints="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
                     {
                         config.FMsListFontSizeInPoints = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.RatingDisplayStyle) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("RatingDisplayStyle="))
                 {
-                    var field = typeof(RatingDisplayStyle).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "FMSel")
                     {
-                        config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null);
+                        config.RatingDisplayStyle = RatingDisplayStyle.FMSel;
+                    }
+                    else if (val == "NewDarkLoader")
+                    {
+                        config.RatingDisplayStyle = RatingDisplayStyle.NewDarkLoader;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.RatingUseStars) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("RatingUseStars="))
                 {
                     config.RatingUseStars = val.EqualsTrue();
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("TopRightTab="))
                 {
-                    var field = typeof(TopRightTab).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "Statistics")
                     {
-                        config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
+                        config.TopRightTabsData.SelectedTab = TopRightTab.Statistics;
+                    }
+                    else if (val == "EditFM")
+                    {
+                        config.TopRightTabsData.SelectedTab = TopRightTab.EditFM;
+                    }
+                    else if (val == "Comment")
+                    {
+                        config.TopRightTabsData.SelectedTab = TopRightTab.Comment;
+                    }
+                    else if (val == "Tags")
+                    {
+                        config.TopRightTabsData.SelectedTab = TopRightTab.Tags;
+                    }
+                    else if (val == "Patch")
+                    {
+                        config.TopRightTabsData.SelectedTab = TopRightTab.Patch;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SettingsTab) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsTab="))
                 {
-                    var field = typeof(SettingsTab).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "Paths")
                     {
-                        config.SettingsTab = (SettingsTab)field.GetValue(null);
+                        config.SettingsTab = SettingsTab.Paths;
+                    }
+                    else if (val == "FMDisplay")
+                    {
+                        config.SettingsTab = SettingsTab.Paths;
+                    }
+                    else if (val == "Other")
+                    {
+                        config.SettingsTab = SettingsTab.Paths;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SettingsWindowSize) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsWindowSize="))
                 {
                     if (!val.Contains(',')) continue;
 
@@ -395,28 +516,28 @@ namespace AngelLoader
                         config.SettingsWindowSize = new Size(width, height);
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SettingsWindowSplitterDistance) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsWindowSplitterDistance="))
                 {
                     if (int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result))
                     {
                         config.SettingsWindowSplitterDistance = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SettingsPathsVScrollPos) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsPathsVScrollPos="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.SettingsPathsVScrollPos = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SettingsFMDisplayVScrollPos) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsFMDisplayVScrollPos="))
                 {
                     if (int.TryParse(val, out int result))
                     {
                         config.SettingsFMDisplayVScrollPos = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SettingsOtherVScrollPos) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SettingsOtherVScrollPos="))
                 {
                     if (int.TryParse(val, out int result))
                     {
@@ -427,16 +548,16 @@ namespace AngelLoader
                 {
                     config.FMArchivePaths.Add(val.Trim());
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.FMArchivePathsIncludeSubfolders) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("FMArchivePathsIncludeSubfolders="))
                 {
                     config.FMArchivePathsIncludeSubfolders = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.FMsBackupPath) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("FMsBackupPath="))
                 {
                     config.FMsBackupPath = val.Trim();
                 }
                 #region Steam
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.LaunchGamesWithSteam) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("LaunchGamesWithSteam="))
                 {
                     config.LaunchGamesWithSteam = val.EqualsTrue();
                 }
@@ -457,7 +578,7 @@ namespace AngelLoader
                 {
                     config.SetUseSteamSwitch(SS2, val.EqualsTrue());
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.SteamExe) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("SteamExe="))
                 {
                     config.SteamExe = val.Trim();
                 }
@@ -481,27 +602,39 @@ namespace AngelLoader
                     config.SetGameExe(SS2, val.Trim());
                 }
                 // @GENGAMES (Config reader - Exes): End
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.GameOrganization) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("GameOrganization="))
                 {
-                    var field = typeof(GameOrganization).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "ByTab")
                     {
-                        config.GameOrganization = (GameOrganization)field.GetValue(null);
+                        config.GameOrganization = GameOrganization.ByTab;
+                    }
+                    else if (val == "OneList")
+                    {
+                        config.GameOrganization = GameOrganization.OneList;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.UseShortGameTabNames) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("UseShortGameTabNames="))
                 {
                     config.UseShortGameTabNames = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.GameTab) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("GameTab="))
                 {
-                    config.GameTab = val switch
+                    if (val == "Thief1")
                     {
-                        nameof(Thief2) => Thief2,
-                        nameof(Thief3) => Thief3,
-                        nameof(SS2) => SS2,
-                        _ => Thief1
-                    };
+                        config.GameTab = Thief1;
+                    }
+                    else if (val == "Thief2")
+                    {
+                        config.GameTab = Thief2;
+                    }
+                    else if (val == "Thief3")
+                    {
+                        config.GameTab = Thief3;
+                    }
+                    else if (val == "SS2")
+                    {
+                        config.GameTab = SS2;
+                    }
                 }
                 // @GENGAMES (Config reader - Selected FM pos infos): Begin
                 else if (lineTS.StartsWithFast_NoNullChecks("T1SelFMInstDir="))
@@ -560,70 +693,79 @@ namespace AngelLoader
                     }
                 }
                 // @GENGAMES (Config reader - Selected FM pos infos): End
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateFormat) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateFormat="))
                 {
-                    var field = typeof(DateFormat).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "CurrentCultureLong")
                     {
-                        config.DateFormat = (DateFormat)field.GetValue(null);
+                        config.DateFormat = DateFormat.CurrentCultureLong;
+                    }
+                    else if (val == "CurrentCultureShort")
+                    {
+                        config.DateFormat = DateFormat.CurrentCultureShort;
+                    }
+                    else if (val == "Custom")
+                    {
+                        config.DateFormat = DateFormat.Custom;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat1) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateCustomFormat1="))
                 {
                     config.DateCustomFormat1 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateCustomSeparator1) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateCustomSeparator1="))
                 {
                     config.DateCustomSeparator1 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat2) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateCustomFormat2="))
                 {
                     config.DateCustomFormat2 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateCustomSeparator2) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateCustomSeparator2="))
                 {
                     config.DateCustomSeparator2 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat3) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateCustomFormat3="))
                 {
                     config.DateCustomFormat3 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateCustomSeparator3) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateCustomSeparator3="))
                 {
                     config.DateCustomSeparator3 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DateCustomFormat4) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DateCustomFormat4="))
                 {
                     config.DateCustomFormat4 = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.DaysRecent) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("DaysRecent="))
                 {
-                    if (uint.TryParse(val, out uint result)) config.DaysRecent = result;
+                    if (uint.TryParse(val, out uint result))
+                    {
+                        config.DaysRecent = result;
+                    }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.ReadmeZoomFactor) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("ReadmeZoomFactor="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
                     {
                         config.ReadmeZoomFactor = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.ReadmeUseFixedWidthFont) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("ReadmeUseFixedWidthFont="))
                 {
                     config.ReadmeUseFixedWidthFont = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.MainWindowState) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("MainWindowState="))
                 {
-                    var field = typeof(FormWindowState).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "Maximized")
                     {
-                        var windowState = (FormWindowState)field.GetValue(null);
-                        if (windowState != FormWindowState.Minimized)
-                        {
-                            config.MainWindowState = windowState;
-                        }
+                        config.MainWindowState = FormWindowState.Maximized;
+                    }
+                    else if (val == "Normal")
+                    {
+                        config.MainWindowState = FormWindowState.Normal;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.MainWindowSize) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("MainWindowSize="))
                 {
                     if (!val.Contains(',')) continue;
 
@@ -636,7 +778,7 @@ namespace AngelLoader
                         config.MainWindowSize = new Size(width, height);
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.MainWindowLocation) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("MainWindowLocation="))
                 {
                     if (!val.Contains(',')) continue;
 
@@ -649,65 +791,68 @@ namespace AngelLoader
                         config.MainWindowLocation = new Point(x, y);
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.MainSplitterPercent) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("MainSplitterPercent="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
                     {
                         config.MainSplitterPercent = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.TopSplitterPercent) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("TopSplitterPercent="))
                 {
                     if (float.TryParse(val, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out float result))
                     {
                         config.TopSplitterPercent = result;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.TopRightPanelCollapsed) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("TopRightPanelCollapsed="))
                 {
                     config.TopRightPanelCollapsed = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.ConvertWAVsTo16BitOnInstall) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("ConvertWAVsTo16BitOnInstall="))
                 {
                     config.ConvertWAVsTo16BitOnInstall = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.ConvertOGGsToWAVsOnInstall) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("ConvertOGGsToWAVsOnInstall="))
                 {
                     config.ConvertOGGsToWAVsOnInstall = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.HideUninstallButton) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("HideUninstallButton="))
                 {
                     config.HideUninstallButton = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.HideFMListZoomButtons) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("HideFMListZoomButtons="))
                 {
                     config.HideFMListZoomButtons = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.ConfirmUninstall) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("ConfirmUninstall="))
                 {
                     config.ConfirmUninstall = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.BackupFMData) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("BackupFMData="))
                 {
-                    var field = typeof(BackupFMData).GetField(val, BFlagsEnum);
-                    if (field != null)
+                    if (val == "AllChangedFiles")
                     {
-                        config.BackupFMData = (BackupFMData)field.GetValue(null);
+                        config.BackupFMData = BackupFMData.AllChangedFiles;
+                    }
+                    else if (val == "SavesAndScreensOnly")
+                    {
+                        config.BackupFMData = BackupFMData.SavesAndScreensOnly;
                     }
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.BackupAlwaysAsk) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("BackupAlwaysAsk="))
                 {
                     config.BackupAlwaysAsk = val.EqualsTrue();
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.Language) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("Language="))
                 {
                     config.Language = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.WebSearchUrl) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("WebSearchUrl="))
                 {
                     config.WebSearchUrl = val;
                 }
-                else if (lineTS.StartsWithFast_NoNullChecks(nameof(config.ConfirmPlayOnDCOrEnter) + "="))
+                else if (lineTS.StartsWithFast_NoNullChecks("ConfirmPlayOnDCOrEnter="))
                 {
                     config.ConfirmPlayOnDCOrEnter = val.EqualsTrue();
                 }
@@ -758,36 +903,8 @@ namespace AngelLoader
                 }
             }
 
-            // Vital, don't remove
-            config.TopRightTabsData.EnsureValidity();
-
-            string sep1 = config.DateCustomSeparator1.EscapeAllChars();
-            string sep2 = config.DateCustomSeparator2.EscapeAllChars();
-            string sep3 = config.DateCustomSeparator3.EscapeAllChars();
-
-            string formatString = config.DateCustomFormat1 +
-                               sep1 +
-                               config.DateCustomFormat2 +
-                               sep2 +
-                               config.DateCustomFormat3 +
-                               sep3 +
-                               config.DateCustomFormat4;
-
-            try
-            {
-                // PERF: Passing an explicit DateTimeFormatInfo avoids a 5ms(!) hit that you take otherwise.
-                // Man, DateTime and culture stuff is SLOW.
-                _ = new DateTime(2000, 1, 1).ToString(formatString, DateTimeFormatInfo.InvariantInfo);
-                config.DateCustomFormatString = formatString;
-            }
-            catch (FormatException)
-            {
-                config.DateFormat = DateFormat.CurrentCultureShort;
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                config.DateFormat = DateFormat.CurrentCultureShort;
-            }
+            // Vital, don't remove!
+            FinalizeConfig(config);
         }
 
         // This is faster with reflection removed.
@@ -801,13 +918,13 @@ namespace AngelLoader
 
             #region Settings window state
 
-            sb.AppendLine(nameof(config.SettingsTab) + "=" + config.SettingsTab);
-            sb.AppendLine(nameof(config.SettingsWindowSize) + "=" + config.SettingsWindowSize.Width + "," + config.SettingsWindowSize.Height);
-            sb.AppendLine(nameof(config.SettingsWindowSplitterDistance) + "=" + config.SettingsWindowSplitterDistance);
+            sb.AppendLine("SettingsTab=" + config.SettingsTab);
+            sb.AppendLine("SettingsWindowSize=" + config.SettingsWindowSize.Width + "," + config.SettingsWindowSize.Height);
+            sb.AppendLine("SettingsWindowSplitterDistance=" + config.SettingsWindowSplitterDistance);
 
-            sb.AppendLine(nameof(config.SettingsPathsVScrollPos) + "=" + config.SettingsPathsVScrollPos);
-            sb.AppendLine(nameof(config.SettingsFMDisplayVScrollPos) + "=" + config.SettingsFMDisplayVScrollPos);
-            sb.AppendLine(nameof(config.SettingsOtherVScrollPos) + "=" + config.SettingsOtherVScrollPos);
+            sb.AppendLine("SettingsPathsVScrollPos=" + config.SettingsPathsVScrollPos);
+            sb.AppendLine("SettingsFMDisplayVScrollPos=" + config.SettingsFMDisplayVScrollPos);
+            sb.AppendLine("SettingsOtherVScrollPos=" + config.SettingsOtherVScrollPos);
 
             #endregion
 
@@ -825,7 +942,7 @@ namespace AngelLoader
 
             #region Steam
 
-            sb.AppendLine(nameof(config.LaunchGamesWithSteam) + "=" + config.LaunchGamesWithSteam);
+            sb.AppendLine("LaunchGamesWithSteam=" + config.LaunchGamesWithSteam);
 
             // @GENGAMES (Config writer - Steam): Begin
             // So far all games are on Steam. If we have one that isn't, we can just add an internal per-game
@@ -837,47 +954,47 @@ namespace AngelLoader
             }
             // @GENGAMES (Config writer - Steam): End
 
-            sb.AppendLine(nameof(config.SteamExe) + "=" + config.SteamExe);
+            sb.AppendLine("SteamExe=" + config.SteamExe);
 
             #endregion
 
-            sb.AppendLine(nameof(config.FMsBackupPath) + "=" + config.FMsBackupPath.Trim());
+            sb.AppendLine("FMsBackupPath=" + config.FMsBackupPath.Trim());
             foreach (string path in config.FMArchivePaths) sb.AppendLine("FMArchivePath=" + path.Trim());
-            sb.AppendLine(nameof(config.FMArchivePathsIncludeSubfolders) + "=" + config.FMArchivePathsIncludeSubfolders);
+            sb.AppendLine("FMArchivePathsIncludeSubfolders=" + config.FMArchivePathsIncludeSubfolders);
 
             #endregion
 
-            sb.AppendLine(nameof(config.GameOrganization) + "=" + config.GameOrganization);
-            sb.AppendLine(nameof(config.UseShortGameTabNames) + "=" + config.UseShortGameTabNames);
+            sb.AppendLine("GameOrganization=" + config.GameOrganization);
+            sb.AppendLine("UseShortGameTabNames=" + config.UseShortGameTabNames);
 
-            sb.AppendLine(nameof(config.EnableArticles) + "=" + config.EnableArticles);
-            sb.AppendLine(nameof(config.Articles) + "=" + CommaCombine(config.Articles));
-            sb.AppendLine(nameof(config.MoveArticlesToEnd) + "=" + config.MoveArticlesToEnd);
+            sb.AppendLine("EnableArticles=" + config.EnableArticles);
+            sb.AppendLine("Articles=" + CommaCombine(config.Articles));
+            sb.AppendLine("MoveArticlesToEnd=" + config.MoveArticlesToEnd);
 
-            sb.AppendLine(nameof(config.RatingDisplayStyle) + "=" + config.RatingDisplayStyle);
-            sb.AppendLine(nameof(config.RatingUseStars) + "=" + config.RatingUseStars);
+            sb.AppendLine("RatingDisplayStyle=" + config.RatingDisplayStyle);
+            sb.AppendLine("RatingUseStars=" + config.RatingUseStars);
 
-            sb.AppendLine(nameof(config.DateFormat) + "=" + config.DateFormat);
-            sb.AppendLine(nameof(config.DateCustomFormat1) + "=" + config.DateCustomFormat1);
-            sb.AppendLine(nameof(config.DateCustomSeparator1) + "=" + config.DateCustomSeparator1);
-            sb.AppendLine(nameof(config.DateCustomFormat2) + "=" + config.DateCustomFormat2);
-            sb.AppendLine(nameof(config.DateCustomSeparator2) + "=" + config.DateCustomSeparator2);
-            sb.AppendLine(nameof(config.DateCustomFormat3) + "=" + config.DateCustomFormat3);
-            sb.AppendLine(nameof(config.DateCustomSeparator3) + "=" + config.DateCustomSeparator3);
-            sb.AppendLine(nameof(config.DateCustomFormat4) + "=" + config.DateCustomFormat4);
+            sb.AppendLine("DateFormat=" + config.DateFormat);
+            sb.AppendLine("DateCustomFormat1=" + config.DateCustomFormat1);
+            sb.AppendLine("DateCustomSeparator1=" + config.DateCustomSeparator1);
+            sb.AppendLine("DateCustomFormat2=" + config.DateCustomFormat2);
+            sb.AppendLine("DateCustomSeparator2=" + config.DateCustomSeparator2);
+            sb.AppendLine("DateCustomFormat3=" + config.DateCustomFormat3);
+            sb.AppendLine("DateCustomSeparator3=" + config.DateCustomSeparator3);
+            sb.AppendLine("DateCustomFormat4=" + config.DateCustomFormat4);
 
-            sb.AppendLine(nameof(config.DaysRecent) + "=" + config.DaysRecent);
+            sb.AppendLine("DaysRecent=" + config.DaysRecent);
 
-            sb.AppendLine(nameof(config.ConvertWAVsTo16BitOnInstall) + "=" + config.ConvertWAVsTo16BitOnInstall);
-            sb.AppendLine(nameof(config.ConvertOGGsToWAVsOnInstall) + "=" + config.ConvertOGGsToWAVsOnInstall);
-            sb.AppendLine(nameof(config.HideUninstallButton) + "=" + config.HideUninstallButton);
-            sb.AppendLine(nameof(config.HideFMListZoomButtons) + "=" + config.HideFMListZoomButtons);
-            sb.AppendLine(nameof(config.ConfirmUninstall) + "=" + config.ConfirmUninstall);
-            sb.AppendLine(nameof(config.BackupFMData) + "=" + config.BackupFMData);
-            sb.AppendLine(nameof(config.BackupAlwaysAsk) + "=" + config.BackupAlwaysAsk);
-            sb.AppendLine(nameof(config.Language) + "=" + config.Language);
-            sb.AppendLine(nameof(config.WebSearchUrl) + "=" + config.WebSearchUrl);
-            sb.AppendLine(nameof(config.ConfirmPlayOnDCOrEnter) + "=" + config.ConfirmPlayOnDCOrEnter);
+            sb.AppendLine("ConvertWAVsTo16BitOnInstall=" + config.ConvertWAVsTo16BitOnInstall);
+            sb.AppendLine("ConvertOGGsToWAVsOnInstall=" + config.ConvertOGGsToWAVsOnInstall);
+            sb.AppendLine("HideUninstallButton=" + config.HideUninstallButton);
+            sb.AppendLine("HideFMListZoomButtons=" + config.HideFMListZoomButtons);
+            sb.AppendLine("ConfirmUninstall=" + config.ConfirmUninstall);
+            sb.AppendLine("BackupFMData=" + config.BackupFMData);
+            sb.AppendLine("BackupAlwaysAsk=" + config.BackupAlwaysAsk);
+            sb.AppendLine("Language=" + config.Language);
+            sb.AppendLine("WebSearchUrl=" + config.WebSearchUrl);
+            sb.AppendLine("ConfirmPlayOnDCOrEnter=" + config.ConfirmPlayOnDCOrEnter);
 
             #endregion
 
@@ -915,10 +1032,10 @@ namespace AngelLoader
 
             #region Columns
 
-            sb.AppendLine(nameof(config.SortedColumn) + "=" + config.SortedColumn);
-            sb.AppendLine(nameof(config.SortDirection) + "=" + config.SortDirection);
-            sb.AppendLine(nameof(config.ShowRecentAtTop) + "=" + config.ShowRecentAtTop);
-            sb.AppendLine(nameof(config.FMsListFontSizeInPoints) + "=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
+            sb.AppendLine("SortedColumn=" + config.SortedColumn);
+            sb.AppendLine("SortDirection=" + config.SortDirection);
+            sb.AppendLine("ShowRecentAtTop=" + config.ShowRecentAtTop);
+            sb.AppendLine("FMsListFontSizeInPoints=" + config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
             foreach (ColumnData col in config.Columns)
             {
@@ -942,19 +1059,16 @@ namespace AngelLoader
 
             #region Main window state
 
-            sb.AppendLine(nameof(config.MainWindowState) + "=" +
-                         (config.MainWindowState == FormWindowState.Minimized
-                             ? FormWindowState.Maximized
-                             : config.MainWindowState));
+            sb.AppendLine("MainWindowState=" + config.MainWindowState);
 
-            sb.AppendLine(nameof(config.MainWindowSize) + "=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
-            sb.AppendLine(nameof(config.MainWindowLocation) + "=" + config.MainWindowLocation.X + "," + config.MainWindowLocation.Y);
+            sb.AppendLine("MainWindowSize=" + config.MainWindowSize.Width + "," + config.MainWindowSize.Height);
+            sb.AppendLine("MainWindowLocation=" + config.MainWindowLocation.X + "," + config.MainWindowLocation.Y);
 
-            sb.AppendLine(nameof(config.MainSplitterPercent) + "=" + config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-            sb.AppendLine(nameof(config.TopSplitterPercent) + "=" + config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-            sb.AppendLine(nameof(config.TopRightPanelCollapsed) + "=" + config.TopRightPanelCollapsed);
+            sb.AppendLine("MainSplitterPercent=" + config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+            sb.AppendLine("TopSplitterPercent=" + config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+            sb.AppendLine("TopRightPanelCollapsed=" + config.TopRightPanelCollapsed);
 
-            sb.AppendLine(nameof(config.GameTab) + "=" + config.GameTab);
+            sb.AppendLine("GameTab=" + config.GameTab);
             sb.AppendLine("TopRightTab=" + config.TopRightTabsData.SelectedTab);
 
             sb.AppendLine("StatsTabPosition=" + config.TopRightTabsData.StatsTab.Position);
@@ -969,8 +1083,8 @@ namespace AngelLoader
             sb.AppendLine("TagsTabVisible=" + config.TopRightTabsData.TagsTab.Visible);
             sb.AppendLine("PatchTabVisible=" + config.TopRightTabsData.PatchTab.Visible);
 
-            sb.AppendLine(nameof(config.ReadmeZoomFactor) + "=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
-            sb.AppendLine(nameof(config.ReadmeUseFixedWidthFont) + "=" + config.ReadmeUseFixedWidthFont);
+            sb.AppendLine("ReadmeZoomFactor=" + config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
+            sb.AppendLine("ReadmeUseFixedWidthFont=" + config.ReadmeUseFixedWidthFont);
 
             #endregion
 

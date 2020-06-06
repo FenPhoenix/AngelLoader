@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -295,19 +296,8 @@ namespace AngelLoader
             return ret;
         }
 
-        private static void ReadTags(string line, Filter filter)
+        private static void ReadTags(CatAndTagsList tagsList, string val)
         {
-            // TODO: This line-passing-and-reading business is still a little janky
-            CatAndTagsList? tagsList =
-                line.StartsWithFast_NoNullChecks("And=") ? filter.Tags.AndTags :
-                line.StartsWithFast_NoNullChecks("Or=") ? filter.Tags.OrTags :
-                line.StartsWithFast_NoNullChecks("Not=") ? filter.Tags.NotTags :
-                null;
-
-            if (tagsList == null) return;
-
-            string val = line.Substring(line.IndexOf('=') + 1);
-
             if (val.IsWhiteSpace()) return;
 
             string[] tagsArray = val.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
@@ -351,7 +341,7 @@ namespace AngelLoader
             }
         }
 
-        private static void ReadFinishedStates(string val, Filter filter)
+        private static void ReadFinishedStates(Filter filter, string val)
         {
             var list = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -469,6 +459,43 @@ namespace AngelLoader
             }
 
             return filterTagsString;
+        }
+
+        /// <summary>
+        /// Sets some values that need everything in place first, and ensures validity of values that need it.
+        /// </summary>
+        /// <param name="config"></param>
+        private static void FinalizeConfig(ConfigData config)
+        {
+            config.TopRightTabsData.EnsureValidity();
+
+            string sep1 = config.DateCustomSeparator1.EscapeAllChars();
+            string sep2 = config.DateCustomSeparator2.EscapeAllChars();
+            string sep3 = config.DateCustomSeparator3.EscapeAllChars();
+
+            string formatString = config.DateCustomFormat1 +
+                                  sep1 +
+                                  config.DateCustomFormat2 +
+                                  sep2 +
+                                  config.DateCustomFormat3 +
+                                  sep3 +
+                                  config.DateCustomFormat4;
+
+            try
+            {
+                // PERF: Passing an explicit DateTimeFormatInfo avoids a 5ms(!) hit that you take otherwise.
+                // Man, DateTime and culture stuff is SLOW.
+                _ = new DateTime(2000, 1, 1).ToString(formatString, DateTimeFormatInfo.InvariantInfo);
+                config.DateCustomFormatString = formatString;
+            }
+            catch (FormatException)
+            {
+                config.DateFormat = DateFormat.CurrentCultureShort;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                config.DateFormat = DateFormat.CurrentCultureShort;
+            }
         }
 
         #endregion

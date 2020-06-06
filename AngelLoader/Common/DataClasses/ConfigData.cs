@@ -246,7 +246,8 @@ namespace AngelLoader.DataClasses
 
         #region Main window state
 
-        internal FormWindowState MainWindowState = FormWindowState.Maximized;
+        private FormWindowState _mainWindowState = FormWindowState.Maximized;
+        internal FormWindowState MainWindowState { get => _mainWindowState; set => _mainWindowState = value == FormWindowState.Minimized ? FormWindowState.Maximized : value; }
         internal Size MainWindowSize = new Size(Defaults.MainWindowWidth, Defaults.MainWindowHeight);
         internal Point MainWindowLocation = new Point(Defaults.MainWindowX, Defaults.MainWindowY);
 
