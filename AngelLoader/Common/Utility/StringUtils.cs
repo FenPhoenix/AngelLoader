@@ -44,6 +44,8 @@ namespace AngelLoader
 
         #endregion
 
+        #region CountChars
+
         /// <summary>
         /// Returns the number of times a character appears in a string. Avoids whatever silly overhead junk Count(predicate) is doing.
         /// </summary>
@@ -95,6 +97,8 @@ namespace AngelLoader
 
             return false;
         }
+
+        #endregion
 
         #region Contains
 
@@ -202,6 +206,18 @@ namespace AngelLoader
         #endregion
 
         #region StartsWith and EndsWith
+
+        internal static bool StartsWithFast_NoNullChecks(this string str, string value)
+        {
+            if (str.Length < value.Length) return false;
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (str[i] != value[i]) return false;
+            }
+
+            return true;
+        }
 
         private enum StartOrEnd { Start, End }
 

@@ -14,18 +14,6 @@ namespace AngelLoader
 {
     internal static partial class Ini
     {
-        internal static bool StartsWithFast_NoNullChecks(this string str, string value)
-        {
-            if (str.Length < value.Length) return false;
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (str[i] != value[i]) return false;
-            }
-
-            return true;
-        }
-
         #region BindingFlags
 
         private const BindingFlags BFlagsEnum = BindingFlags.Instance |
