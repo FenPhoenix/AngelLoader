@@ -249,28 +249,27 @@ namespace FenGen
             string[] files = Directory.GetFiles(ALProjectPath, "*.cs", SearchOption.AllDirectories);
             foreach (string f in files)
             {
-                using (var sr = new StreamReader(f))
+                using var sr = new StreamReader(f);
+
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
+                    if (line.IsWhiteSpace()) continue;
+                    string lts = line.TrimStart();
+
+                    if (lts.Length > 0 && lts[0] != '#') break;
+
+                    if (lts.StartsWith("#define") && lts.Length > 7 && char.IsWhiteSpace(lts[7]))
                     {
-                        if (line.IsWhiteSpace()) continue;
-                        string lts = line.TrimStart();
+                        string tag = lts.Substring(7).Trim();
 
-                        if (lts.Length > 0 && lts[0] != '#') break;
-
-                        if (lts.StartsWith("#define") && lts.Length > 7 && char.IsWhiteSpace(lts[7]))
+                        for (var index = 0; index < genFileTags.Count; index++)
                         {
-                            string tag = lts.Substring(7).Trim();
-
-                            for (var index = 0; index < genFileTags.Count; index++)
+                            string genFileTag = genFileTags[index];
+                            if (tag == genFileTag)
                             {
-                                string genFileTag = genFileTags[index];
-                                if (tag == genFileTag)
-                                {
-                                    taggedFiles[index].Add(f);
-                                    break;
-                                }
+                                taggedFiles[index].Add(f);
+                                break;
                             }
                         }
                     }

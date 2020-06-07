@@ -107,7 +107,8 @@ namespace FenGen
                     {
                         if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenComment))
                         {
-                            var exp = (LiteralExpressionSyntax)attr.ArgumentList.Arguments[0].Expression;
+                            // FenGenComment has a non-optional argument, so this won't be null
+                            var exp = (LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression;
                             fValue = exp.Token.ValueText;
                             isComment = true;
                         }
@@ -120,20 +121,35 @@ namespace FenGen
                             }
                             else if (args.Arguments.Count == 1)
                             {
-                                blankLinesToAdd = (int)((LiteralExpressionSyntax)args.Arguments[0].Expression).Token.Value;
+                                blankLinesToAdd = (int)((LiteralExpressionSyntax)args.Arguments[0].Expression).Token.Value!;
                             }
                         }
                     }
                     else if (f is VariableDeclarationSyntax vds)
                     {
                         var v = vds.Variables[0];
+
+                        var initializer = v.Initializer;
+                        if (initializer == null)
+                        {
+                            ThrowErrorAndTerminate(nameof(LanguageGen) + ":\r\n" +
+                                                   "Found a variable without an initializer in " + file);
+                        }
+
                         fName = v.Identifier.ToString();
-                        fValue = ((LiteralExpressionSyntax)v.Initializer.Value).Token.ValueText;
+                        fValue = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText;
                     }
                     else if (f is PropertyDeclarationSyntax pds)
                     {
+                        var initializer = pds.Initializer;
+                        if (initializer == null)
+                        {
+                            ThrowErrorAndTerminate(nameof(LanguageGen) + ":\r\n" +
+                                                   "Found a property without an initializer in " + file);
+                        }
+
                         fName = pds.Identifier.ToString();
-                        fValue = ((LiteralExpressionSyntax)pds.Initializer.Value).Token.ValueText;
+                        fValue = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText;
                     }
 
                     if (blankLinesToAdd > 0)
@@ -203,9 +219,9 @@ namespace FenGen
             string iniClassString = iniClass.ToString();
             string classDeclLine = iniClassString.Substring(0, iniClassString.IndexOf('{'));
 
-            string codeBlock =
-                code.Substring(0, iniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
-                    .TrimEnd() + "\r\n";
+            string codeBlock = code
+                .Substring(0, iniClass.GetLocation().SourceSpan.Start + classDeclLine.Length)
+                .TrimEnd() + "\r\n";
 
             #endregion
 
@@ -246,8 +262,7 @@ namespace FenGen
                         if (item.Key.IsEmpty()) continue;
                         swl(6, (keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
                         swl(6, "{");
-                        swl(7, langClassName + "." + dict.Name + "." + item.Key +
-                               " = lt.Substring(" + (item.Key + "=").Length + ");");
+                        swl(7, langClassName + "." + dict.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
                         swl(6, "}");
                         if (!keysElseIf) keysElseIf = true;
                     }
