@@ -126,6 +126,8 @@ namespace AngelLoader
             internal const string FMDisplaySettings = "#settings_fm_display_section";
             internal const string OtherSettings = "#settings_other_section";
 
+            internal const string FMBackupPath = "#fm_backup_path";
+
             internal const string MainWindow = "#main_window";
             internal const string MissionList = "#mission_list";
             internal const string ColumnHeaderContextMenu = "#column_header_context_menu";

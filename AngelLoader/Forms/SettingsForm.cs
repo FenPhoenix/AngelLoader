@@ -476,6 +476,7 @@ namespace AngelLoader.Forms
 
             PathsPage.SteamExeBrowseButton.Click += ExePathBrowseButtons_Click;
 
+            PathsPage.BackupPathHelpButton.Click += BackupPathHelpButton_Click;
             PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
             PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
 
@@ -1056,6 +1057,8 @@ namespace AngelLoader.Forms
 
             ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
         }
+
+        private void BackupPathHelpButton_Click(object sender, EventArgs e) => Core.OpenHelpFile(HelpSections.FMBackupPath);
 
         private void BackupPathTextBox_Leave(object sender, EventArgs e)
         {
