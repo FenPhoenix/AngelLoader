@@ -583,6 +583,8 @@ namespace AngelLoader.Forms
                 PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
+                PathsPage.BackupPathHelpButton.Left = PathsPage.BackupPathLabel.Left + PathsPage.BackupPathLabel.Width + 4;
+
                 PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
 

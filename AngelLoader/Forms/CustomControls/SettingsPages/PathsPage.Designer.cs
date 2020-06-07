@@ -61,6 +61,8 @@
             this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
             this.FMArchivePathsListBox = new System.Windows.Forms.ListBox();
             this.OtherGroupBox = new System.Windows.Forms.GroupBox();
+            this.BackupPathPanel = new System.Windows.Forms.Panel();
+            this.BackupPathHelpButton = new System.Windows.Forms.Button();
             this.BackupPathLabel = new System.Windows.Forms.Label();
             this.BackupPathBrowseButton = new System.Windows.Forms.Button();
             this.BackupPathTextBox = new System.Windows.Forms.TextBox();
@@ -73,6 +75,7 @@
             this.GameRequirementsPanel.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
+            this.BackupPathPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -140,7 +143,7 @@
             this.LaunchTheseGamesThroughSteamCheckBox.Text = "If Steam exists, use it to launch these games:";
             this.LaunchTheseGamesThroughSteamCheckBox.UseVisualStyleBackColor = true;
             // 
-            // T1UseSteamCheckBox
+            // Thief1UseSteamCheckBox
             // 
             this.Thief1UseSteamCheckBox.AutoSize = true;
             this.Thief1UseSteamCheckBox.Checked = true;
@@ -164,7 +167,7 @@
             this.SS2UseSteamCheckBox.Text = "System Shock 2";
             this.SS2UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
-            // T3UseSteamCheckBox
+            // Thief3UseSteamCheckBox
             // 
             this.Thief3UseSteamCheckBox.AutoSize = true;
             this.Thief3UseSteamCheckBox.Checked = true;
@@ -176,7 +179,7 @@
             this.Thief3UseSteamCheckBox.Text = "Thief 3";
             this.Thief3UseSteamCheckBox.UseVisualStyleBackColor = true;
             // 
-            // T2UseSteamCheckBox
+            // Thief2UseSteamCheckBox
             // 
             this.Thief2UseSteamCheckBox.AutoSize = true;
             this.Thief2UseSteamCheckBox.Checked = true;
@@ -446,9 +449,7 @@
             // 
             this.OtherGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.OtherGroupBox.Controls.Add(this.BackupPathLabel);
-            this.OtherGroupBox.Controls.Add(this.BackupPathBrowseButton);
-            this.OtherGroupBox.Controls.Add(this.BackupPathTextBox);
+            this.OtherGroupBox.Controls.Add(this.BackupPathPanel);
             this.OtherGroupBox.Location = new System.Drawing.Point(8, 432);
             this.OtherGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.OtherGroupBox.Name = "OtherGroupBox";
@@ -457,20 +458,46 @@
             this.OtherGroupBox.TabStop = false;
             this.OtherGroupBox.Text = "Other";
             // 
+            // BackupPathPanel
+            // 
+            this.BackupPathPanel.AutoScroll = true;
+            this.BackupPathPanel.Controls.Add(this.BackupPathHelpButton);
+            this.BackupPathPanel.Controls.Add(this.BackupPathLabel);
+            this.BackupPathPanel.Controls.Add(this.BackupPathTextBox);
+            this.BackupPathPanel.Controls.Add(this.BackupPathBrowseButton);
+            this.BackupPathPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BackupPathPanel.Location = new System.Drawing.Point(3, 16);
+            this.BackupPathPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.BackupPathPanel.Name = "BackupPathPanel";
+            this.BackupPathPanel.Size = new System.Drawing.Size(418, 53);
+            this.BackupPathPanel.TabIndex = 4;
+            // 
+            // BackupPathHelpButton
+            // 
+            this.BackupPathHelpButton.BackgroundImage = global::AngelLoader.Properties.Resources.Help_16;
+            this.BackupPathHelpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.BackupPathHelpButton.FlatAppearance.BorderSize = 0;
+            this.BackupPathHelpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BackupPathHelpButton.Location = new System.Drawing.Point(189, 6);
+            this.BackupPathHelpButton.Name = "BackupPathHelpButton";
+            this.BackupPathHelpButton.Size = new System.Drawing.Size(16, 16);
+            this.BackupPathHelpButton.TabIndex = 5;
+            this.BackupPathHelpButton.UseVisualStyleBackColor = true;
+            // 
             // BackupPathLabel
             // 
             this.BackupPathLabel.AutoSize = true;
-            this.BackupPathLabel.Location = new System.Drawing.Point(16, 24);
+            this.BackupPathLabel.Location = new System.Drawing.Point(13, 8);
             this.BackupPathLabel.Name = "BackupPathLabel";
-            this.BackupPathLabel.Size = new System.Drawing.Size(88, 13);
+            this.BackupPathLabel.Size = new System.Drawing.Size(174, 13);
             this.BackupPathLabel.TabIndex = 0;
-            this.BackupPathLabel.Text = "FM backup path:";
+            this.BackupPathLabel.Text = "Path to place new FM backup files:";
             // 
             // BackupPathBrowseButton
             // 
             this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BackupPathBrowseButton.AutoSize = true;
-            this.BackupPathBrowseButton.Location = new System.Drawing.Point(336, 39);
+            this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
             this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
             this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
@@ -482,7 +509,7 @@
             // 
             this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.BackupPathTextBox.Location = new System.Drawing.Point(16, 40);
+            this.BackupPathTextBox.Location = new System.Drawing.Point(13, 24);
             this.BackupPathTextBox.Name = "BackupPathTextBox";
             this.BackupPathTextBox.Size = new System.Drawing.Size(320, 20);
             this.BackupPathTextBox.TabIndex = 1;
@@ -514,7 +541,8 @@
             this.FMArchivePathsGroupBox.ResumeLayout(false);
             this.FMArchivePathsGroupBox.PerformLayout();
             this.OtherGroupBox.ResumeLayout(false);
-            this.OtherGroupBox.PerformLayout();
+            this.BackupPathPanel.ResumeLayout(false);
+            this.BackupPathPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -558,5 +586,7 @@
         internal System.Windows.Forms.Button SS2ExePathBrowseButton;
         internal System.Windows.Forms.TextBox SS2ExePathTextBox;
         internal System.Windows.Forms.CheckBox SS2UseSteamCheckBox;
+        internal System.Windows.Forms.Panel BackupPathPanel;
+        internal System.Windows.Forms.Button BackupPathHelpButton;
     }
 }
