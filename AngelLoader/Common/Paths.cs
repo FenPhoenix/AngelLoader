@@ -192,7 +192,9 @@ namespace AngelLoader
 
         private static string PathCombineFast_NoChecks(string path1, string path2)
         {
-            char c = path1[path1.Length - 1];
+            int path1Length = path1.Length;
+            if (path1Length == 0) return path2;
+            char c = path1[path1Length - 1];
             return c == Path.DirectorySeparatorChar ||
                    c == Path.AltDirectorySeparatorChar ||
                    c == Path.VolumeSeparatorChar
