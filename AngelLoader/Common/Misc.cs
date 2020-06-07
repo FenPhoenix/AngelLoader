@@ -130,7 +130,7 @@ namespace AngelLoader
             internal const string MissionList = "#mission_list";
             internal const string ColumnHeaderContextMenu = "#column_header_context_menu";
             internal const string FMContextMenu = "#fm_context_menu";
-            
+
             internal const string StatsTab = "#stats_tab";
             internal const string EditFMTab = "#edit_fm_tab";
             internal const string CommentTab = "#comment_tab";
@@ -157,6 +157,8 @@ namespace AngelLoader
         internal static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
         #endregion
+
+        internal static readonly string[] ValidDateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
 
         internal static class Defaults
         {
@@ -185,6 +187,14 @@ namespace AngelLoader
             internal const int SettingsWindowSplitterDistance = 155;
 
             #endregion
+
+            internal const string DateCustomFormat1 = "dd";
+            internal const string DateCustomSeparator1 = "/";
+            internal const string DateCustomFormat2 = "MM";
+            internal const string DateCustomSeparator2 = "/";
+            internal const string DateCustomFormat3 = "yyyy";
+            internal const string DateCustomSeparator3 = "";
+            internal const string DateCustomFormat4 = "";
 
             internal const string WebSearchUrl = "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com";
 

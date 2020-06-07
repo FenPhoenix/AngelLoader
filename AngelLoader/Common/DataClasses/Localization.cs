@@ -442,9 +442,6 @@ Example: English should be English, French should be Français, etc.")]
             internal static string FMDisplay_CurrentCultureLong = "System locale, long";
             internal static string FMDisplay_Custom = "Custom:";
             [FenGenBlankLine]
-            internal static string FMDisplay_ErrorInvalidDateFormat = "Invalid date format.";
-            internal static string FMDisplay_ErrorDateOutOfRange = "The date and time is outside the range of dates supported by the calendar used by the system locale.";
-            [FenGenBlankLine]
             internal static string FMDisplay_RecentFMs = "Recent FMs";
             internal static string FMDisplay_RecentFMs_MaxDays = "Maximum number of days to consider an FM \"recent\":";
             [FenGenBlankLine]

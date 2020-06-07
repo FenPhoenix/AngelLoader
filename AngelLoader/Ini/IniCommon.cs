@@ -450,17 +450,39 @@ namespace AngelLoader
         {
             config.TopRightTabsData.EnsureValidity();
 
-            string sep1 = config.DateCustomSeparator1.EscapeAllChars();
-            string sep2 = config.DateCustomSeparator2.EscapeAllChars();
-            string sep3 = config.DateCustomSeparator3.EscapeAllChars();
+            #region Date format
 
-            string formatString = config.DateCustomFormat1 +
-                                  sep1 +
-                                  config.DateCustomFormat2 +
-                                  sep2 +
-                                  config.DateCustomFormat3 +
-                                  sep3 +
-                                  config.DateCustomFormat4;
+            static string GetFormattedDateString(ConfigData config) =>
+                config.DateCustomFormat1 +
+                config.DateCustomSeparator1.EscapeAllChars() +
+                config.DateCustomFormat2 +
+                config.DateCustomSeparator2.EscapeAllChars() +
+                config.DateCustomFormat3 +
+                config.DateCustomSeparator3.EscapeAllChars() +
+                config.DateCustomFormat4;
+
+            static void ResetCustomDate(ConfigData config)
+            {
+                config.DateCustomFormat1 = Defaults.DateCustomFormat1;
+                config.DateCustomSeparator1 = Defaults.DateCustomSeparator1;
+                config.DateCustomFormat2 = Defaults.DateCustomFormat2;
+                config.DateCustomSeparator2 = Defaults.DateCustomSeparator2;
+                config.DateCustomFormat3 = Defaults.DateCustomFormat3;
+                config.DateCustomSeparator3 = Defaults.DateCustomSeparator3;
+                config.DateCustomFormat4 = Defaults.DateCustomFormat4;
+                config.DateCustomFormatString = GetFormattedDateString(config);
+            }
+
+            if (!ValidDateFormatList.Contains(config.DateCustomFormat1) ||
+                !ValidDateFormatList.Contains(config.DateCustomFormat2) ||
+                !ValidDateFormatList.Contains(config.DateCustomFormat3) ||
+                !ValidDateFormatList.Contains(config.DateCustomFormat4))
+            {
+                ResetCustomDate(config);
+            }
+
+            string formatString = GetFormattedDateString(config);
+
             try
             {
                 // PERF: Passing an explicit DateTimeFormatInfo avoids a 5ms(!) hit that you take otherwise.
@@ -470,12 +492,14 @@ namespace AngelLoader
             }
             catch (FormatException)
             {
-                config.DateFormat = DateFormat.CurrentCultureShort;
+                ResetCustomDate(config);
             }
             catch (ArgumentOutOfRangeException)
             {
-                config.DateFormat = DateFormat.CurrentCultureShort;
+                ResetCustomDate(config);
             }
+
+            #endregion
         }
 
         /// <summary>

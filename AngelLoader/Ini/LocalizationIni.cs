@@ -1242,14 +1242,6 @@ namespace AngelLoader
                         {
                             LText.SettingsWindow.FMDisplay_Custom = lt.Substring(17);
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_ErrorInvalidDateFormat="))
-                        {
-                            LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat = lt.Substring(33);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_ErrorDateOutOfRange="))
-                        {
-                            LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange = lt.Substring(30);
-                        }
                         else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RecentFMs="))
                         {
                             LText.SettingsWindow.FMDisplay_RecentFMs = lt.Substring(20);

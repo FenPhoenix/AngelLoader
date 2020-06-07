@@ -339,7 +339,7 @@ namespace AngelLoader.Forms
 
                 #region Date format
 
-                object[] dateFormatList = { "", "d", "dd", "ddd", "dddd", "M", "MM", "MMM", "MMMM", "yy", "yyyy" };
+                object[] dateFormatList = ValidDateFormatList.Cast<object>().ToArray();
                 FMDisplayPage.Date1ComboBox.Items.AddRange(dateFormatList);
                 FMDisplayPage.Date2ComboBox.Items.AddRange(dateFormatList);
                 FMDisplayPage.Date3ComboBox.Items.AddRange(dateFormatList);
@@ -353,13 +353,13 @@ namespace AngelLoader.Forms
                 string s3 = config.DateCustomSeparator3;
                 string d4 = config.DateCustomFormat4;
 
-                FMDisplayPage.Date1ComboBox.SelectedItem = !d1.IsEmpty() && FMDisplayPage.Date1ComboBox.Items.Contains(d1) ? d1 : "dd";
-                FMDisplayPage.DateSeparator1TextBox.Text = !s1.IsEmpty() ? s1 : "/";
-                FMDisplayPage.Date2ComboBox.SelectedItem = !d2.IsEmpty() && FMDisplayPage.Date2ComboBox.Items.Contains(d2) ? d2 : "MM";
-                FMDisplayPage.DateSeparator2TextBox.Text = !s2.IsEmpty() ? s2 : "/";
-                FMDisplayPage.Date3ComboBox.SelectedItem = !d3.IsEmpty() && FMDisplayPage.Date3ComboBox.Items.Contains(d3) ? d3 : "yyyy";
-                FMDisplayPage.DateSeparator3TextBox.Text = !s3.IsEmpty() ? s3 : "";
-                FMDisplayPage.Date4ComboBox.SelectedItem = !d4.IsEmpty() && FMDisplayPage.Date4ComboBox.Items.Contains(d4) ? d4 : "";
+                FMDisplayPage.Date1ComboBox.SelectedItem = !d1.IsEmpty() && FMDisplayPage.Date1ComboBox.Items.Contains(d1) ? d1 : Defaults.DateCustomFormat1;
+                FMDisplayPage.DateSeparator1TextBox.Text = !s1.IsEmpty() ? s1 : Defaults.DateCustomSeparator1;
+                FMDisplayPage.Date2ComboBox.SelectedItem = !d2.IsEmpty() && FMDisplayPage.Date2ComboBox.Items.Contains(d2) ? d2 : Defaults.DateCustomFormat2;
+                FMDisplayPage.DateSeparator2TextBox.Text = !s2.IsEmpty() ? s2 : Defaults.DateCustomSeparator2;
+                FMDisplayPage.Date3ComboBox.SelectedItem = !d3.IsEmpty() && FMDisplayPage.Date3ComboBox.Items.Contains(d3) ? d3 : Defaults.DateCustomFormat3;
+                FMDisplayPage.DateSeparator3TextBox.Text = !s3.IsEmpty() ? s3 : Defaults.DateCustomSeparator3;
+                FMDisplayPage.Date4ComboBox.SelectedItem = !d4.IsEmpty() && FMDisplayPage.Date4ComboBox.Items.Contains(d4) ? d4 : Defaults.DateCustomFormat4;
 
                 // This comes last so that all the custom data is in place for the preview date to use
                 switch (config.DateFormat)
@@ -870,14 +870,6 @@ namespace AngelLoader.Forms
                     FMDisplayPage.DateCurrentCultureLongRadioButton.Checked ? DateFormat.CurrentCultureLong :
                     DateFormat.Custom;
 
-                OutConfig.DateCustomFormat1 = FMDisplayPage.Date1ComboBox.SelectedItem.ToString();
-                OutConfig.DateCustomSeparator1 = FMDisplayPage.DateSeparator1TextBox.Text;
-                OutConfig.DateCustomFormat2 = FMDisplayPage.Date2ComboBox.SelectedItem.ToString();
-                OutConfig.DateCustomSeparator2 = FMDisplayPage.DateSeparator2TextBox.Text;
-                OutConfig.DateCustomFormat3 = FMDisplayPage.Date3ComboBox.SelectedItem.ToString();
-                OutConfig.DateCustomSeparator3 = FMDisplayPage.DateSeparator3TextBox.Text;
-                OutConfig.DateCustomFormat4 = FMDisplayPage.Date4ComboBox.SelectedItem.ToString();
-
                 bool customDateSuccess = FormatAndTestDate(out string customDateString, out _);
                 if (customDateSuccess)
                 {
@@ -885,9 +877,17 @@ namespace AngelLoader.Forms
                 }
                 else
                 {
-                    e.Cancel = true;
-                    return;
+                    SetCustomDateFormatFieldsToDefault();
+                    OutConfig.DateCustomFormatString = GetFormattedCustomDateString();
                 }
+
+                OutConfig.DateCustomFormat1 = FMDisplayPage.Date1ComboBox.SelectedItem.ToString();
+                OutConfig.DateCustomSeparator1 = FMDisplayPage.DateSeparator1TextBox.Text;
+                OutConfig.DateCustomFormat2 = FMDisplayPage.Date2ComboBox.SelectedItem.ToString();
+                OutConfig.DateCustomSeparator2 = FMDisplayPage.DateSeparator2TextBox.Text;
+                OutConfig.DateCustomFormat3 = FMDisplayPage.Date3ComboBox.SelectedItem.ToString();
+                OutConfig.DateCustomSeparator3 = FMDisplayPage.DateSeparator3TextBox.Text;
+                OutConfig.DateCustomFormat4 = FMDisplayPage.Date4ComboBox.SelectedItem.ToString();
 
                 #endregion
 
@@ -1197,15 +1197,33 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private void SetCustomDateFormatFieldsToDefault()
+        {
+            using (new DisableEvents(this))
+            {
+                FMDisplayPage.Date1ComboBox.SelectedItem = Defaults.DateCustomFormat1;
+                FMDisplayPage.DateSeparator1TextBox.Text = Defaults.DateCustomSeparator1;
+                FMDisplayPage.Date2ComboBox.SelectedItem = Defaults.DateCustomFormat2;
+                FMDisplayPage.DateSeparator2TextBox.Text = Defaults.DateCustomSeparator2;
+                FMDisplayPage.Date3ComboBox.SelectedItem = Defaults.DateCustomFormat3;
+                FMDisplayPage.DateSeparator3TextBox.Text = Defaults.DateCustomSeparator3;
+                FMDisplayPage.Date4ComboBox.SelectedItem = Defaults.DateCustomFormat4;
+            }
+            UpdateCustomExampleDate();
+        }
+
+        private string GetFormattedCustomDateString() =>
+            FMDisplayPage.Date1ComboBox.SelectedItem +
+            FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
+            FMDisplayPage.Date2ComboBox.SelectedItem +
+            FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
+            FMDisplayPage.Date3ComboBox.SelectedItem +
+            FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
+            FMDisplayPage.Date4ComboBox.SelectedItem;
+
         private bool FormatAndTestDate(out string formatString, out string exampleDateString)
         {
-            formatString = FMDisplayPage.Date1ComboBox.SelectedItem +
-                           FMDisplayPage.DateSeparator1TextBox.Text.EscapeAllChars() +
-                           FMDisplayPage.Date2ComboBox.SelectedItem +
-                           FMDisplayPage.DateSeparator2TextBox.Text.EscapeAllChars() +
-                           FMDisplayPage.Date3ComboBox.SelectedItem +
-                           FMDisplayPage.DateSeparator3TextBox.Text.EscapeAllChars() +
-                           FMDisplayPage.Date4ComboBox.SelectedItem;
+            formatString = GetFormattedCustomDateString();
 
             // TODO: Date error checking:
             // It's impossible to get an ArgumentOutOfRangeException as long as our readonly example date is valid.
@@ -1218,16 +1236,12 @@ namespace AngelLoader.Forms
             }
             catch (FormatException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorInvalidDateFormat, LText.AlertMessages.Error,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 formatString = "";
                 exampleDateString = "";
                 return false;
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show(LText.SettingsWindow.FMDisplay_ErrorDateOutOfRange, LText.AlertMessages.Error,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 formatString = "";
                 exampleDateString = "";
                 return false;
@@ -1239,7 +1253,14 @@ namespace AngelLoader.Forms
         private void UpdateCustomExampleDate()
         {
             bool success = FormatAndTestDate(out _, out string formattedExampleDate);
-            if (success) FMDisplayPage.PreviewDateLabel.Text = formattedExampleDate;
+            if (success)
+            {
+                FMDisplayPage.PreviewDateLabel.Text = formattedExampleDate;
+            }
+            else
+            {
+                SetCustomDateFormatFieldsToDefault();
+            }
         }
 
         private void DateShortAndLongRadioButtons_CheckedChanged(object sender, EventArgs e)
