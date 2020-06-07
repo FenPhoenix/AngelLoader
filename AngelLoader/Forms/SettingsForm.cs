@@ -353,13 +353,13 @@ namespace AngelLoader.Forms
                 string s3 = config.DateCustomSeparator3;
                 string d4 = config.DateCustomFormat4;
 
-                FMDisplayPage.Date1ComboBox.SelectedItem = !d1.IsEmpty() && FMDisplayPage.Date1ComboBox.Items.Contains(d1) ? d1 : Defaults.DateCustomFormat1;
-                FMDisplayPage.DateSeparator1TextBox.Text = !s1.IsEmpty() ? s1 : Defaults.DateCustomSeparator1;
-                FMDisplayPage.Date2ComboBox.SelectedItem = !d2.IsEmpty() && FMDisplayPage.Date2ComboBox.Items.Contains(d2) ? d2 : Defaults.DateCustomFormat2;
-                FMDisplayPage.DateSeparator2TextBox.Text = !s2.IsEmpty() ? s2 : Defaults.DateCustomSeparator2;
-                FMDisplayPage.Date3ComboBox.SelectedItem = !d3.IsEmpty() && FMDisplayPage.Date3ComboBox.Items.Contains(d3) ? d3 : Defaults.DateCustomFormat3;
-                FMDisplayPage.DateSeparator3TextBox.Text = !s3.IsEmpty() ? s3 : Defaults.DateCustomSeparator3;
-                FMDisplayPage.Date4ComboBox.SelectedItem = !d4.IsEmpty() && FMDisplayPage.Date4ComboBox.Items.Contains(d4) ? d4 : Defaults.DateCustomFormat4;
+                FMDisplayPage.Date1ComboBox.SelectedItem = FMDisplayPage.Date1ComboBox.Items.Contains(d1) ? d1 : Defaults.DateCustomFormat1;
+                FMDisplayPage.DateSeparator1TextBox.Text = s1;
+                FMDisplayPage.Date2ComboBox.SelectedItem = FMDisplayPage.Date2ComboBox.Items.Contains(d2) ? d2 : Defaults.DateCustomFormat2;
+                FMDisplayPage.DateSeparator2TextBox.Text = s2;
+                FMDisplayPage.Date3ComboBox.SelectedItem = FMDisplayPage.Date3ComboBox.Items.Contains(d3) ? d3 : Defaults.DateCustomFormat3;
+                FMDisplayPage.DateSeparator3TextBox.Text = s3;
+                FMDisplayPage.Date4ComboBox.SelectedItem = FMDisplayPage.Date4ComboBox.Items.Contains(d4) ? d4 : Defaults.DateCustomFormat4;
 
                 // This comes last so that all the custom data is in place for the preview date to use
                 switch (config.DateFormat)
