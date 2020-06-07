@@ -45,40 +45,8 @@ namespace FenGen
             string code = File.ReadAllText(file);
             var tree = ParseTextFast(code);
 
-            var attrMarkedClasses = new List<ClassDeclarationSyntax>();
-
-            var nodes = tree.GetCompilationUnitRoot().DescendantNodesAndSelf();
-            foreach (SyntaxNode n in nodes)
-            {
-                if (!n.IsKind(SyntaxKind.ClassDeclaration)) continue;
-
-                var classItem = (ClassDeclarationSyntax)n;
-
-                if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
-                {
-                    foreach (var attr in classItem.AttributeLists[0].Attributes)
-                    {
-                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenLocalizationClass))
-                        {
-                            attrMarkedClasses.Add(classItem);
-                        }
-                    }
-                }
-            }
-
-            if (attrMarkedClasses.Count > 1)
-            {
-                const string multipleUsesError = "Multiple uses of attribute '" + GenAttributes.FenGenLocalizationClass + "'.";
-                ThrowErrorAndTerminate(multipleUsesError);
-            }
-            else if (attrMarkedClasses.Count == 0)
-            {
-                const string noneFoundError = "No uses of attribute '" + GenAttributes.FenGenLocalizationClass +
-                    "' (No marked localization class found)";
-                ThrowErrorAndTerminate(noneFoundError);
-            }
-
-            var LTextClass = attrMarkedClasses[0];
+            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationClass);
+            var LTextClass = (ClassDeclarationSyntax)member;
 
             foreach (SyntaxNode item in LTextClass.DescendantNodes())
             {
@@ -179,42 +147,8 @@ namespace FenGen
             string code = File.ReadAllText(destFile);
             var tree = ParseTextFast(code);
 
-            var attrMarkedClasses = new List<ClassDeclarationSyntax>();
-
-            foreach (SyntaxNode item in tree.GetCompilationUnitRoot().DescendantNodes())
-            {
-                if (!item.IsKind(SyntaxKind.ClassDeclaration)) continue;
-
-                var classItem = (ClassDeclarationSyntax)item;
-
-                if (classItem.AttributeLists.Count > 0 && classItem.AttributeLists[0].Attributes.Count > 0)
-                {
-                    foreach (var attr in classItem.AttributeLists[0].Attributes)
-                    {
-                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenLocalizationReadWriteClass))
-                        {
-                            attrMarkedClasses.Add(classItem);
-                        }
-                    }
-                }
-            }
-
-            if (attrMarkedClasses.Count > 1)
-            {
-                const string multipleUsesError = "Multiple uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass + "'.";
-                ThrowErrorAndTerminate(multipleUsesError);
-            }
-            else if (attrMarkedClasses.Count == 0)
-            {
-                const string noneFoundError = "No uses of attribute '" + GenAttributes.FenGenLocalizationReadWriteClass +
-                                              "' (No marked localization class found)";
-                ThrowErrorAndTerminate(noneFoundError);
-            }
-
-            var iniClass = attrMarkedClasses[0];
-
-            // Make the whole thing fail so I can get a fail message in AngelLoader on build
-            if (iniClass == null) throw new ArgumentNullException();
+            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationReadWriteClass);
+            var iniClass = (ClassDeclarationSyntax)member;
 
             string iniClassString = iniClass.ToString();
             string classDeclLine = iniClassString.Substring(0, iniClassString.IndexOf('{'));
