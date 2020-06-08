@@ -168,52 +168,53 @@ namespace FenGen
             // work. Roslyn? Forget it. Zero documentation and you have to build the Burj Khalifa just to get it
             // to do anything. And you bang your head against a wall for five hours every time you need to write
             // the next statement. Forget. It.
-            using (var sw = new StreamWriter(destFile))
+            var sb = new StringBuilder();
+
+            var w = new Generators.IndentingWriter(sb, startingIndent: 1);
+
+            sb.Append(codeBlock);
+            w.WL("{");
+            w.WL(GenMessages.Method);
+            w.WL("internal static void ReadLocalizationIni(string file)");
+            w.WL("{");
+            w.WL("string[] lines = File.ReadAllLines(file, Encoding.UTF8);");
+            w.WL("for (int i = 0; i < lines.Length; i++)");
+            w.WL("{");
+            w.WL("string lineT = lines[i].Trim();");
+            bool sectElseIf = false;
+            foreach (var dict in dictList)
             {
-                void swl(int indent, string str) => sw.WriteLine(Indent(indent) + str);
+                w.WL((sectElseIf ? "else " : "") + "if (lineT == \"[" + dict.Name + "]\")");
+                w.WL("{");
+                w.WL("while (i < lines.Length - 1)");
+                w.WL("{");
+                w.WL("string lt = lines[i + 1].TrimStart();");
 
-                sw.Write(codeBlock);
-                swl(1, "{");
-                swl(2, GenMessages.Method);
-                swl(2, "internal static void ReadLocalizationIni(string file)");
-                swl(2, "{");
-                swl(3, "string[] lines = File.ReadAllLines(file, Encoding.UTF8);");
-                swl(3, "for (int i = 0; i < lines.Length; i++)");
-                swl(3, "{");
-                swl(4, "string lineT = lines[i].Trim();");
-                bool sectElseIf = false;
-                foreach (var dict in dictList)
+                bool keysElseIf = false;
+                foreach (IniItem item in dict)
                 {
-                    swl(4, (sectElseIf ? "else " : "") + "if (lineT == \"[" + dict.Name + "]\")");
-                    swl(4, "{");
-                    swl(5, "while (i < lines.Length - 1)");
-                    swl(5, "{");
-                    swl(6, "string lt = lines[i + 1].TrimStart();");
-
-                    bool keysElseIf = false;
-                    foreach (IniItem item in dict)
-                    {
-                        if (item.Key.IsEmpty()) continue;
-                        swl(6, (keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
-                        swl(6, "{");
-                        swl(7, langClassName + "." + dict.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
-                        swl(6, "}");
-                        if (!keysElseIf) keysElseIf = true;
-                    }
-                    swl(6, "else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')");
-                    swl(6, "{");
-                    swl(7, "break;");
-                    swl(6, "}");
-                    swl(6, "i++;");
-                    swl(5, "}");
-                    swl(4, "}");
-                    if (!sectElseIf) sectElseIf = true;
+                    if (item.Key.IsEmpty()) continue;
+                    w.WL((keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
+                    w.WL("{");
+                    w.WL(langClassName + "." + dict.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
+                    w.WL("}");
+                    if (!keysElseIf) keysElseIf = true;
                 }
-                swl(3, "}");
-                swl(2, "}");
-                swl(1, "}");
-                swl(0, "}");
+                w.WL("else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')");
+                w.WL("{");
+                w.WL("break;");
+                w.WL("}");
+                w.WL("i++;");
+                w.WL("}");
+                w.WL("}");
+                if (!sectElseIf) sectElseIf = true;
             }
+            w.WL("}");
+            w.WL("}");
+            w.WL("}");
+            w.WL("}");
+
+            File.WriteAllText(destFile, sb.ToString());
 
             #endregion
 
@@ -223,19 +224,19 @@ namespace FenGen
 
         private static void WriteIniFile(string langIniFile, List<NamedDictionary> dictList, bool test = false)
         {
-            using var sw = new StreamWriter(langIniFile, append: false, Encoding.UTF8);
+            var sb = new StringBuilder();
 
             string testPrefix = test ? "█" : "";
 
-            sw.WriteLine("; This is an AngelLoader language file.");
-            sw.WriteLine("; This file MUST be saved with UTF8 encoding in order to guarantee correct display of strings.");
-            sw.WriteLine();
+            sb.AppendLine("; This is an AngelLoader language file.");
+            sb.AppendLine("; This file MUST be saved with UTF8 encoding in order to guarantee correct display of strings.");
+            sb.AppendLine();
 
             for (int i = 0; i < dictList.Count; i++)
             {
                 var dict = dictList[i];
 
-                sw.WriteLine("[" + dict.Name + "]");
+                sb.AppendLine("[" + dict.Name + "]");
                 foreach (IniItem item in dict)
                 {
                     if (item.IsComment)
@@ -243,27 +244,30 @@ namespace FenGen
                         if (!item.Value.IsEmpty())
                         {
                             string[] comments = item.Value.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                            foreach (string c in comments) sw.WriteLine("; " + c);
+                            foreach (string c in comments) sb.AppendLine("; " + c);
                         }
                     }
                     else if (item.Key.IsEmpty() && item.Value.IsEmpty())
                     {
-                        sw.WriteLine();
+                        sb.AppendLine();
                     }
                     else
                     {
                         if (test && item.Key == "TranslatedLanguageName")
                         {
-                            sw.WriteLine(item.Key + "=" + "TéstLang");
+                            sb.AppendLine(item.Key + "=" + "TéstLang");
                         }
                         else
                         {
-                            sw.WriteLine(item.Key + "=" + testPrefix + item.Value);
+                            sb.AppendLine(item.Key + "=" + testPrefix + item.Value);
                         }
                     }
                 }
-                if (i < dictList.Count - 1) sw.WriteLine();
+                if (i < dictList.Count - 1) sb.AppendLine();
             }
+
+            using var sw = new StreamWriter(langIniFile, append: false, Encoding.UTF8);
+            sw.Write(sb.ToString());
         }
     }
 }

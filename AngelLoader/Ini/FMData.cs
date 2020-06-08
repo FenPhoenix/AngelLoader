@@ -411,16 +411,16 @@ namespace AngelLoader
 #if write_old_resources_style
                 if (fm.ResourcesScanned)
                 {
-                sb.AppendLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
-                sb.AppendLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
-                sb.AppendLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
-                sb.AppendLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
-                sb.AppendLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
-                sb.AppendLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
-                sb.AppendLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
-                sb.AppendLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
-                sb.AppendLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
-                sb.AppendLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
+                    sb.AppendLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
+                    sb.AppendLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
+                    sb.AppendLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
+                    sb.AppendLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
+                    sb.AppendLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
+                    sb.AppendLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
+                    sb.AppendLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
+                    sb.AppendLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
+                    sb.AppendLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
+                    sb.AppendLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
                 }
 #else
                 sb.Append("HasResources=");
