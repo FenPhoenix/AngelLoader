@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using static FenGen.Misc;
 
@@ -16,13 +16,25 @@ namespace FenGen
             internal string ListItemPrefix = "";
             internal ListType ListType = ListType.MultipleLines;
             internal ListDistinctType ListDistinctType = ListDistinctType.None;
-            internal Dictionary<string, string> EnumMap = new Dictionary<string, string>();
-            internal List<string> EnumValues = new List<string>();
             internal long? NumericEmpty;
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
             internal string Comment = "";
             internal CustomCodeBlockNames CodeBlockToInsertAfter = CustomCodeBlockNames.None;
+
+            internal Field Copy()
+            {
+                Field dest = new Field();
+
+                // Meh... convenience wins
+                const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                foreach (FieldInfo f in GetType().GetFields(flags))
+                {
+                    dest.GetType().GetField(f.Name, flags)!.SetValue(dest, f.GetValue(this));
+                }
+
+                return dest;
+            }
         }
 
         private sealed class FieldList : List<Field>
@@ -205,96 +217,27 @@ namespace FenGen
             ""
         };
 
-        private static List<string> ReaderKeepLines { get; } = new List<string>();
-        private static List<string> WriterKeepLines { get; } = new List<string>();
-
         internal static void Generate(string sourceFile, string destFile)
         {
-#if DEBUG
-            //GenType = GenType.FMData;
-            //GenType = GenType.Language;
-#endif
-
             //string className = GenType == GenType.FMData ? "FanMission" : "ConfigData";
             const string className = "FanMission";
             ReadSourceFields(className, sourceFile);
 
-            // Always do an atomic read operation, because we may want to open the same file
-            // for other purposes in the middle of it (we had an access exception before)
+            // Always do an atomic read operation, because we may want to open the same file for other purposes
+            // in the middle of it (we had an access exception before)
             var lines = File.ReadAllLines(destFile);
 
             int openBraces = 0;
-            bool inClass = false;
-            bool inReaderKeepBlock = false;
-            bool inWriterKeepBlock = false;
             foreach (string line in lines)
             {
                 string lineT = line.Trim();
 
-                if (!inClass)
+                if (lineT.StartsWith("{")) openBraces++;
+                DestTopLines.Add(line);
+                if (openBraces == 2)
                 {
-                    if (lineT.StartsWith("{")) openBraces++;
-                    DestTopLines.Add(line);
-                    if (openBraces == 2) inClass = true;
-                    continue;
-                }
-
-                if (inReaderKeepBlock || inWriterKeepBlock)
-                {
-                    if (lineT.StartsWith("//"))
-                    {
-                        string attr = lineT.Substring(2).Trim();
-                        switch (attr)
-                        {
-                            case "[FenGen:EndReaderKeepBlock]":
-                                ReaderKeepLines.Add(line);
-                                inReaderKeepBlock = false;
-                                break;
-                            case "[FenGen:EndWriterKeepBlock]":
-                                WriterKeepLines.Add(line);
-                                inWriterKeepBlock = false;
-                                break;
-                            default:
-                                if (inReaderKeepBlock)
-                                {
-                                    ReaderKeepLines.Add(line);
-                                }
-                                else if (inWriterKeepBlock)
-                                {
-                                    WriterKeepLines.Add(line);
-                                }
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        if (inReaderKeepBlock)
-                        {
-                            ReaderKeepLines.Add(line);
-                        }
-                        else
-                        {
-                            WriterKeepLines.Add(line);
-                        }
-                    }
-
-                    continue;
-                }
-
-                if (lineT.StartsWith("//"))
-                {
-                    string attr = lineT.Substring(2).Trim();
-                    switch (attr)
-                    {
-                        case "[FenGen:BeginReaderKeepBlock]":
-                            ReaderKeepLines.Add(line);
-                            inReaderKeepBlock = true;
-                            continue;
-                        case "[FenGen:BeginWriterKeepBlock]":
-                            WriterKeepLines.Add(line);
-                            inWriterKeepBlock = true;
-                            continue;
-                    }
+                    //inClass = true;
+                    break;
                 }
             }
 
@@ -539,8 +482,6 @@ namespace FenGen
 
             w.WL("if (resourcesFound) fm.ResourcesScanned = true;");
 
-            foreach (string line in ReaderKeepLines) sb.AppendLine(line);
-
             // for
             w.WL("}");
 
@@ -776,8 +717,6 @@ namespace FenGen
                 }
             }
 
-            foreach (string line in WriterKeepLines) sb.AppendLine(line);
-
             // for
             w.WL("}");
 
@@ -796,17 +735,8 @@ namespace FenGen
             bool inClass = false;
 
             bool doNotSerializeNextLine = false;
-            string iniNameForThisField = "";
-            string listItemPrefixForThisField = "";
-            var listTypeForThisField = ListType.MultipleLines;
-            var listDistinctTypeForThisField = ListDistinctType.None;
-            var enumMapForThisField = new Dictionary<string, string>();
-            var enumValuesForThisField = new List<string>();
-            long? numericEmptyForThisField = null;
-            bool doNotTrimValueForThisField = false;
-            bool doNotConvertDateTimeToLocalForThisField = false;
-            string commentForThisField = "";
-            var codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
+
+            var tempField = new Field();
 
             static string GetAttrParam(string value)
             {
@@ -872,17 +802,14 @@ namespace FenGen
                     if (GetAttributeName(attr, GenAttributes.FenGenIgnore))
                     {
                         doNotSerializeNextLine = true;
-                        continue;
                     }
                     else if (GetAttributeName(attr, GenAttributes.FenGenDoNotConvertDateTimeToLocal))
                     {
-                        doNotConvertDateTimeToLocalForThisField = true;
-                        continue;
+                        tempField.DoNotConvertDateTimeToLocal = true;
                     }
                     else if (GetAttributeName(attr, GenAttributes.FenGenDoNotTrimValue))
                     {
-                        doNotTrimValueForThisField = true;
-                        continue;
+                        tempField.DoNotTrimValue = true;
                     }
                     else if (indexOfParen > -1)
                     {
@@ -892,103 +819,37 @@ namespace FenGen
                         {
                             if (long.TryParse(attrParam, out long result))
                             {
-                                numericEmptyForThisField = result;
+                                tempField.NumericEmpty = result;
                             }
-                            continue;
                         }
                         else if (GetAttributeName(attrNamePart, GenAttributes.FenGenListType))
                         {
-                            listTypeForThisField = attrParam == nameof(ListType.CommaSeparated)
+                            tempField.ListType = attrParam == nameof(ListType.CommaSeparated)
                                 ? ListType.CommaSeparated
                                 : ListType.MultipleLines;
-                            continue;
+                        }
+                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenListDistinctType))
+                        {
+                            tempField.ListDistinctType = attrParam switch
+                            {
+                                nameof(ListDistinctType.Exact) => ListDistinctType.Exact,
+                                nameof(ListDistinctType.CaseInsensitive) => ListDistinctType.CaseInsensitive,
+                                _ => ListDistinctType.None
+                            };
                         }
                         else if (GetAttributeName(attrNamePart, GenAttributes.FenGenIniName))
                         {
-                            iniNameForThisField = attrParam;
-                            continue;
+                            tempField.IniName = attrParam;
                         }
                         else if (GetAttributeName(attrNamePart, GenAttributes.FenGenInsertAfter))
                         {
-                            codeBlockToInsertAfterThisField =
+                            tempField.CodeBlockToInsertAfter =
                                 attrParam == nameof(CustomCodeBlockNames.LegacyCustomResources)
                                     ? CustomCodeBlockNames.LegacyCustomResources
                                     : CustomCodeBlockNames.None;
                         }
                     }
-                }
 
-                // TODO: Aim is to remove this "comment attribute" section and have all of them be real attributes
-                if (lineT.StartsWith("//"))
-                {
-                    string attr = lineT.Substring(2).Trim();
-                    if (attr.StartsWith("[FenGen:"))
-                    {
-                        if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("Comment="))
-                        {
-                            string val = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
-                            commentForThisField = !val.IsWhiteSpace() ? val : "";
-                        }
-
-                        if (attr.Substring(attr.IndexOf(':') + 1).StartsWith("EnumValues="))
-                        {
-                            string valString = attr.Substring(attr.IndexOf('=') + 1).TrimEnd(']');
-                            string[] valArray = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                            for (int li = 0; li < valArray.Length; li++)
-                            {
-                                string item = valArray[i];
-                                item = item.Trim();
-                                if (!enumValuesForThisField.Contains(item))
-                                {
-                                    enumValuesForThisField.Add(item);
-                                }
-                            }
-
-                            continue;
-                        }
-
-                        int ind;
-                        if (attr.Substring(ind = attr.IndexOf(':') + 1).StartsWith("EnumMap:"))
-                        {
-                            string kvpString = attr.Substring(attr.IndexOf(':', ind) + 1).TrimEnd(']');
-                            string[] kvpArray = kvpString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                            for (int li = 0; li < kvpArray.Length; li++)
-                            {
-                                string item = kvpArray[li];
-                                item = item.Trim();
-                                if (item.Contains('='))
-                                {
-                                    string key = item.Substring(0, item.IndexOf('=')).Trim();
-                                    string val = item.Substring(item.IndexOf('=') + 1).Trim();
-                                    enumMapForThisField[key] = val;
-                                }
-                            }
-
-                            continue;
-                        }
-
-                        string kvp = attr.Substring(ind = attr.IndexOf(':') + 1, attr.Length - ind - 1);
-                        if (kvp.Contains("="))
-                        {
-                            string key = kvp.Substring(0, kvp.IndexOf('=')).Trim();
-                            string val = kvp.Substring(kvp.IndexOf('=') + 1).Trim();
-
-                            switch (key)
-                            {
-                                case "ListItemPrefix":
-                                    listItemPrefixForThisField = val;
-                                    break;
-                                case "ListDistinctType":
-                                    listDistinctTypeForThisField =
-                                        val == "None" ? ListDistinctType.None :
-                                        val == "Exact" ? ListDistinctType.Exact :
-                                        val == "CaseInsensitive" ? ListDistinctType.CaseInsensitive :
-                                        ListDistinctType.None;
-                                    break;
-                            }
-                        }
-
-                    }
                     continue;
                 }
 
@@ -1002,59 +863,16 @@ namespace FenGen
                 index = line2.LastIndexOf(' ');
                 if (index == -1) continue;
 
-                Fields.Add(new Field());
-                var last = Fields[Fields.Count - 1];
-
-                if (!iniNameForThisField.IsEmpty())
-                {
-                    last.IniName = iniNameForThisField;
-                    iniNameForThisField = "";
-                }
-                if (!listItemPrefixForThisField.IsEmpty())
-                {
-                    last.ListItemPrefix = listItemPrefixForThisField;
-                    listItemPrefixForThisField = "";
-                }
-                if (enumMapForThisField.Count > 0)
-                {
-                    last.EnumMap = enumMapForThisField;
-                    enumMapForThisField.Clear();
-                }
-                if (enumValuesForThisField.Count > 0)
-                {
-                    last.EnumValues = enumValuesForThisField;
-                    enumValuesForThisField.Clear();
-                }
-                if (numericEmptyForThisField != null)
-                {
-                    last.NumericEmpty = numericEmptyForThisField;
-                    numericEmptyForThisField = null;
-                }
-                if (!commentForThisField.IsEmpty())
-                {
-                    last.Comment = commentForThisField;
-                    commentForThisField = "";
-                }
-                if (codeBlockToInsertAfterThisField != CustomCodeBlockNames.None)
-                {
-                    last.CodeBlockToInsertAfter = codeBlockToInsertAfterThisField;
-                    codeBlockToInsertAfterThisField = CustomCodeBlockNames.None;
-                }
-
-                last.DoNotTrimValue = doNotTrimValueForThisField;
-                doNotTrimValueForThisField = false;
-                last.DoNotConvertDateTimeToLocal = doNotConvertDateTimeToLocalForThisField;
-                doNotConvertDateTimeToLocalForThisField = false;
-                last.ListType = listTypeForThisField;
-                listTypeForThisField = ListType.MultipleLines;
-                last.ListDistinctType = listDistinctTypeForThisField;
-                listDistinctTypeForThisField = ListDistinctType.None;
-
+                Field last = tempField.Copy();
+                
                 last.Name = line2.Substring(index + 1).Trim();
-
                 string temp = StripPrefixes(line2);
-
                 last.Type = temp.Substring(0, temp.LastIndexOf(' '));
+                
+                Fields.Add(last);
+                
+                // Clear all temp fields in one shot
+                tempField = new Field();
             }
         }
     }

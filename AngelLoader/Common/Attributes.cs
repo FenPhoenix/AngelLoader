@@ -47,6 +47,16 @@ namespace AngelLoader
         }
 
         /// <summary>
+        /// List type can be "None", "Exact", or "CaseInsensitive".
+        /// </summary>
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+        internal class FenGenListDistinctTypeAttribute : Attribute
+        {
+            public FenGenListDistinctTypeAttribute([UsedImplicitly] string value) { }
+        }
+
+        /// <summary>
         /// List type can be "MultipleLines" or "CommaSeparated".
         /// </summary>
         [Conditional("compile_FenGen_attributes")]

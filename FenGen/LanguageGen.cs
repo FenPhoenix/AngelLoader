@@ -266,8 +266,7 @@ namespace FenGen
                 if (i < dictList.Count - 1) sb.AppendLine();
             }
 
-            using var sw = new StreamWriter(langIniFile, append: false, Encoding.UTF8);
-            sw.Write(sb.ToString());
+            File.WriteAllText(langIniFile, sb.ToString(), Encoding.UTF8);
         }
     }
 }

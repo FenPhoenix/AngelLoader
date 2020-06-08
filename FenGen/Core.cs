@@ -69,6 +69,7 @@ namespace FenGen
         internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
         internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
         internal const string FenGenListType = nameof(FenGenListType);
+        internal const string FenGenListDistinctType = nameof(FenGenListDistinctType);
         internal const string FenGenIniName = nameof(FenGenIniName);
         internal const string FenGenInsertAfter = nameof(FenGenInsertAfter);
         internal const string FenGenIgnore = nameof(FenGenIgnore);
