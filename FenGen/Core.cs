@@ -131,6 +131,18 @@ namespace FenGen
         [PublicAPI]
         internal static void ReadArgsAndDoTasks()
         {
+            try
+            {
+                ReadArgsAndDoTasksInternal();
+            }
+            catch (Exception ex)
+            {
+                ThrowErrorAndTerminate(ex);
+            }
+        }
+
+        private static void ReadArgsAndDoTasksInternal()
+        {
 #if DEBUG
             //return;
 #endif

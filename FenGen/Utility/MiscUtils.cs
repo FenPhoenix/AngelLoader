@@ -125,6 +125,15 @@ namespace FenGen
             Environment.Exit(-999);
         }
 
+        [ContractAnnotation("=> halt")]
+        internal static void ThrowErrorAndTerminate(Exception ex)
+        {
+            Trace.WriteLine("FenGen: " + ex + "\r\nTerminating FenGen.");
+            using var f = new ExceptionBox(ex.ToString());
+            f.ShowDialog();
+            Environment.Exit(-999);
+        }
+
         #region Clamping
 
         /// <summary>
