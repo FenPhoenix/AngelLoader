@@ -93,12 +93,12 @@ namespace AngelLoader
             }
         }
 
-        internal static void WriteFullConfigIni()
+        internal static void WriteConfigIni()
         {
             try
             {
                 ConfigIniRWLock.EnterWriteLock();
-                WriteConfigIni(Config, Paths.ConfigIni);
+                WriteConfigIniInternal(Config, Paths.ConfigIni);
             }
             catch (Exception ex)
             {
@@ -112,7 +112,7 @@ namespace AngelLoader
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(ConfigIniRWLock) + " in " + nameof(WriteFullConfigIni), ex);
+                    Log("Exception exiting " + nameof(ConfigIniRWLock) + " in " + nameof(WriteConfigIni), ex);
                 }
             }
         }

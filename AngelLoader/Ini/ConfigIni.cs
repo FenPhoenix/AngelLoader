@@ -679,7 +679,7 @@ namespace AngelLoader
         }
 
         // This is faster with reflection removed.
-        internal static void WriteConfigIni(ConfigData config, string fileName)
+        private static void WriteConfigIniInternal(ConfigData config, string fileName)
         {
             // 2020-06-03: My config file is ~4000 bytes (OneList, Thief2 filter only). 6000 gives reasonable
             // headroom for avoiding reallocations.

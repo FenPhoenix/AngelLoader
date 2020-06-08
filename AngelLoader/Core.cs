@@ -328,7 +328,7 @@ namespace AngelLoader
 
                 // We don't need to set the paths again, because we've already done so above
 
-                Ini.WriteConfigIni(Config, Paths.ConfigIni);
+                Ini.WriteConfigIni();
 
                 // We have to do this here because we won't have before
                 using (Task findFMsTask = Task.Run(() => FindFMs.Find(startup: true)))
@@ -1648,15 +1648,7 @@ namespace AngelLoader
 
         internal static void Shutdown()
         {
-            try
-            {
-                Ini.WriteConfigIni(Config, Paths.ConfigIni);
-            }
-            catch (Exception ex)
-            {
-                Log("Exception writing config ini", ex);
-            }
-
+            Ini.WriteConfigIni();
             Ini.WriteFullFMDataIni();
 
             DoShutdownTasks();
