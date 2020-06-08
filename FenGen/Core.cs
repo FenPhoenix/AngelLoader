@@ -267,10 +267,10 @@ namespace FenGen
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    if (line.IsWhiteSpace()) continue;
                     string lts = line.TrimStart();
+                    if (lts.IsWhiteSpace() || lts.StartsWith("//")) continue;
 
-                    if (lts.Length > 0 && lts[0] != '#') break;
+                    if (lts[0] != '#') break;
 
                     if (lts.StartsWith("#define") && lts.Length > 7 && char.IsWhiteSpace(lts[7]))
                     {
