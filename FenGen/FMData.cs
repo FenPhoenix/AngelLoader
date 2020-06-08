@@ -150,23 +150,7 @@ namespace FenGen
             };
         }
 
-        private static string[] TopCodeLines { get; } =
-        {
-            //"        private static bool StartsWithFast_NoNullChecks(this string str, string value)",
-            //"        {",
-            //"            if (str.Length < value.Length) return false;",
-            //"",
-            //"            for (int i = 0; i < value.Length; i++)",
-            //"            {",
-            //"                if (str[i] != value[i]) return false;",
-            //"            }",
-            //"",
-            //"            return true;",
-            //"        }",
-            //""
-        };
-
-        private static string[] ReadFMDataIniTopLines { get; } =
+        private static readonly string[] ReadFMDataIniTopLines =
         {
             "        internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)",
             "        {",
@@ -203,7 +187,7 @@ namespace FenGen
             ""
         };
 
-        private static string[] WriteFMDataIniTopLines { get; } =
+        private static readonly string[] WriteFMDataIniTopLines =
         {
             "        private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
             "        {",
@@ -240,12 +224,10 @@ namespace FenGen
                 }
             }
 
-            //var writeLines = new List<string>();
             var sb = new StringBuilder();
 
             foreach (string l in destTopLines) sb.AppendLine(l);
 
-            //string obj = GenType == GenType.FMData ? "fm" : "config";
             const string obj = "fm";
 
             WriteReader(sb, obj, fields);
@@ -263,19 +245,152 @@ namespace FenGen
             File.WriteAllText(destFile, sb.ToString());
         }
 
-        private static void WriteReader(StringBuilder sb, string obj, FieldList fields)
+        [MustUseReturnValue]
+        private static FieldList ReadSourceFields(string sourceFile)
         {
-            if (TopCodeLines.Length > 0)
+            #region Local functions
+
+            static void CheckParamCount(AttributeSyntax attr, int count)
             {
-                sb.AppendLine(Indent(2) + GenMessages.SupportingCode);
-                foreach (string l in TopCodeLines) sb.AppendLine(l);
+                if (attr.ArgumentList == null ||
+                    attr.ArgumentList.Arguments.Count != count)
+                {
+                    ThrowErrorAndTerminate(attr.Name + " has wrong number of parameters.");
+                }
             }
 
-            sb.AppendLine(Indent(2) + GenMessages.Method);
+            static void FillFieldFromAttributes(MemberDeclarationSyntax member, Field field, out bool ignore)
+            {
+                ignore = false;
 
-            //var topLines = (GenType == GenType.FMData
-            //    ? ReadFMDataIniTopLines
-            //    : ReadConfigIniTopLines).ToList();
+                foreach (AttributeListSyntax attrList in member.AttributeLists)
+                {
+                    foreach (AttributeSyntax attr in attrList.Attributes)
+                    {
+                        string name = attr.Name.ToString();
+                        if (name == GenAttributes.FenGenIgnore)
+                        {
+                            ignore = true;
+                            return;
+                        }
+                        else if (name == GenAttributes.FenGenDoNotConvertDateTimeToLocal)
+                        {
+                            field.DoNotConvertDateTimeToLocal = true;
+                        }
+                        else if (name == GenAttributes.FenGenDoNotTrimValue)
+                        {
+                            field.DoNotTrimValue = true;
+                        }
+                        else if (name == GenAttributes.FenGenNumericEmpty)
+                        {
+                            CheckParamCount(attr, 1);
+
+                            // Have to do this ridiculous method of getting the value, because if the value is
+                            // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
+                            // number. But ToString() gives us the string version of the entire number. Argh...
+                            string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
+                            long.TryParse(val, out long result);
+                            field.NumericEmpty = result;
+                        }
+                        else if (name == GenAttributes.FenGenListType)
+                        {
+                            CheckParamCount(attr, 1);
+
+                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                .Token
+                                .Value!.ToString();
+
+                            field.ListType = val == nameof(ListType.CommaSeparated)
+                                ? ListType.CommaSeparated
+                                : ListType.MultipleLines;
+                        }
+                        else if (name == GenAttributes.FenGenListDistinctType)
+                        {
+                            CheckParamCount(attr, 1);
+
+                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                .Token
+                                .Value!.ToString();
+
+                            field.ListDistinctType = val switch
+                            {
+                                nameof(ListDistinctType.Exact) => ListDistinctType.Exact,
+                                nameof(ListDistinctType.CaseInsensitive) => ListDistinctType.CaseInsensitive,
+                                _ => ListDistinctType.None
+                            };
+                        }
+                        else if (name == GenAttributes.FenGenIniName)
+                        {
+                            CheckParamCount(attr, 1);
+
+                            field.IniName =
+                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                    .Token
+                                    .Value!)!;
+                        }
+                        else if (name == GenAttributes.FenGenInsertAfter)
+                        {
+                            CheckParamCount(attr, 1);
+
+                            string val =
+                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                    .Token
+                                    .Value!)!;
+
+                            field.CodeBlockToInsertAfter =
+                                val == nameof(CustomCodeBlockNames.LegacyCustomResources)
+                                    ? CustomCodeBlockNames.LegacyCustomResources
+                                    : CustomCodeBlockNames.None;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            var code = File.ReadAllText(sourceFile);
+            var tree = ParseTextFast(code);
+
+            var (member, classAttr) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenFMDataSourceClass);
+            var fmDataClass = (ClassDeclarationSyntax)member;
+
+            CheckParamCount(classAttr, 1);
+
+            var fields = new FieldList
+            {
+                WriteEmptyValues =
+                    (bool)((LiteralExpressionSyntax)classAttr.ArgumentList!.Arguments[0].Expression)
+                    .Token
+                    .Value!
+            };
+
+            foreach (SyntaxNode item in fmDataClass.ChildNodes())
+            {
+                var tempField = new Field();
+                if (item.IsKind(SyntaxKind.FieldDeclaration) || item.IsKind(SyntaxKind.PropertyDeclaration))
+                {
+                    FillFieldFromAttributes((MemberDeclarationSyntax)item, tempField, out bool ignore);
+                    if (ignore) continue;
+
+                    Field last = tempField.Copy();
+
+                    last.Name = (item.IsKind(SyntaxKind.FieldDeclaration)
+                            ? ((FieldDeclarationSyntax)item).Declaration.Variables[0].Identifier
+                            : ((PropertyDeclarationSyntax)item).Identifier).Value!.ToString();
+                    last.Type = (item.IsKind(SyntaxKind.FieldDeclaration)
+                            ? ((FieldDeclarationSyntax)item).Declaration.Type
+                            : ((PropertyDeclarationSyntax)item).Type).ToString();
+
+                    fields.Add(last);
+                }
+            }
+
+            return fields;
+        }
+
+        private static void WriteReader(StringBuilder sb, string obj, FieldList fields)
+        {
+            sb.AppendLine(Indent(2) + GenMessages.Method);
 
             string[] topLines = ReadFMDataIniTopLines;
 
@@ -724,152 +839,6 @@ namespace FenGen
 
             // method WriteFMDataIni
             w.WL("}");
-        }
-
-        [MustUseReturnValue]
-        private static FieldList ReadSourceFields(string sourceFile)
-        {
-            var code = File.ReadAllText(sourceFile);
-            var tree = ParseTextFast(code);
-
-            var (member, attr) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenFMDataSourceClass);
-            var fmDataClass = (ClassDeclarationSyntax)member;
-            var fields = new FieldList();
-            CheckParamCount(attr, attr.Name.ToString(), 1);
-            fields.WriteEmptyValues = (bool)((LiteralExpressionSyntax)attr.ArgumentList.Arguments[0].Expression)
-                .Token
-                .Value!;
-
-            static void CheckParamCount(AttributeSyntax attr, string name, int count)
-            {
-                if (attr.ArgumentList == null ||
-                    attr.ArgumentList.Arguments.Count != count)
-                {
-                    ThrowErrorAndTerminate(name + " has wrong number of parameters.");
-                }
-            }
-
-            static void FillFieldFromAttributes(MemberDeclarationSyntax member, Field field, out bool ignore)
-            {
-                ignore = false;
-
-                foreach (AttributeListSyntax attrList in member.AttributeLists)
-                {
-                    foreach (AttributeSyntax attr in attrList.Attributes)
-                    {
-                        string name = attr.Name.ToString();
-                        if (name == GenAttributes.FenGenIgnore)
-                        {
-                            ignore = true;
-                            return;
-                        }
-                        else if (name == GenAttributes.FenGenDoNotConvertDateTimeToLocal)
-                        {
-                            field.DoNotConvertDateTimeToLocal = true;
-                        }
-                        else if (name == GenAttributes.FenGenDoNotTrimValue)
-                        {
-                            field.DoNotTrimValue = true;
-                        }
-                        else if (name == GenAttributes.FenGenNumericEmpty)
-                        {
-                            CheckParamCount(attr, name, 1);
-
-                            // Have to do this ridiculous method of getting the value, because if the value is
-                            // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
-                            // number. But ToString() gives us the string version of the entire number. Argh...
-                            string val = (attr.ArgumentList!.Arguments[0].Expression).ToString();
-                            long.TryParse(val, out long result);
-                            field.NumericEmpty = result;
-                        }
-                        else if (name == GenAttributes.FenGenListType)
-                        {
-                            CheckParamCount(attr, name, 1);
-
-                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                .Token
-                                .Value!.ToString();
-
-                            field.ListType = val == nameof(ListType.CommaSeparated)
-                                ? ListType.CommaSeparated
-                                : ListType.MultipleLines;
-                        }
-                        else if (name == GenAttributes.FenGenListDistinctType)
-                        {
-                            CheckParamCount(attr, name, 1);
-
-                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                .Token
-                                .Value!.ToString();
-
-                            field.ListDistinctType = val switch
-                            {
-                                nameof(ListDistinctType.Exact) => ListDistinctType.Exact,
-                                nameof(ListDistinctType.CaseInsensitive) => ListDistinctType.CaseInsensitive,
-                                _ => ListDistinctType.None
-                            };
-                        }
-                        else if (name == GenAttributes.FenGenIniName)
-                        {
-                            CheckParamCount(attr, name, 1);
-
-                            field.IniName =
-                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                    .Token
-                                    .Value!)!;
-                        }
-                        else if (name == GenAttributes.FenGenInsertAfter)
-                        {
-                            CheckParamCount(attr, name, 1);
-
-                            string val =
-                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                    .Token
-                                    .Value!)!;
-
-                            field.CodeBlockToInsertAfter =
-                                val == nameof(CustomCodeBlockNames.LegacyCustomResources)
-                                    ? CustomCodeBlockNames.LegacyCustomResources
-                                    : CustomCodeBlockNames.None;
-                        }
-                    }
-                }
-            }
-
-            foreach (SyntaxNode item in fmDataClass.ChildNodes())
-            {
-                var tempField = new Field();
-                if (item.IsKind(SyntaxKind.FieldDeclaration))
-                {
-                    var itemMember = (MemberDeclarationSyntax)item;
-
-                    FillFieldFromAttributes(itemMember, tempField, out bool ignore);
-                    if (ignore) continue;
-
-                    var itemField = (FieldDeclarationSyntax)itemMember;
-                    Field last = tempField.Copy();
-                    last.Name = itemField.Declaration.Variables[0].Identifier.Value!.ToString();
-                    last.Type = itemField.Declaration.Type.ToString();
-
-                    fields.Add(last);
-                }
-                else if (item.IsKind(SyntaxKind.PropertyDeclaration))
-                {
-                    var itemMember = (MemberDeclarationSyntax)item;
-
-                    FillFieldFromAttributes(itemMember, tempField, out bool ignore);
-                    if (ignore) continue;
-
-                    var itemProp = (PropertyDeclarationSyntax)itemMember;
-                    Field last = tempField.Copy();
-                    last.Name = itemProp.Identifier.Value!.ToString();
-                    last.Type = itemProp.Type.ToString();
-
-                    fields.Add(last);
-                }
-            }
-
-            return fields;
         }
     }
 }
