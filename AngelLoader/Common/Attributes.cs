@@ -27,6 +27,23 @@ namespace AngelLoader
         internal class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
 
         /// <summary>
+        /// 
+        /// </summary>
+        [Conditional("compile_FenGen_attributes")]
+        [AttributeUsage(AttributeTargets.Class)]
+        internal class FenGenFMDataSourceClassAttribute : Attribute
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="writeEmptyValues">
+            /// Specifies whether empty values will be written to the ini.
+            /// What constitutes "empty" will vary depending on type.
+            /// </param>
+            internal FenGenFMDataSourceClassAttribute(bool writeEmptyValues) { }
+        }
+
+        /// <summary>
         /// Specifies that the value of this field or property (assumed to be a string) will not have whitespace
         /// trimmed from the end of it on read.
         /// </summary>
@@ -81,17 +98,6 @@ namespace AngelLoader
         internal class FenGenInsertAfterAttribute : Attribute
         {
             public FenGenInsertAfterAttribute([UsedImplicitly] string value) { }
-        }
-
-        /// <summary>
-        /// Specifies whether empty values will be written to the ini.
-        /// What constitutes "empty" will vary depending on type.
-        /// </summary>
-        [Conditional("compile_FenGen_attributes")]
-        [AttributeUsage(AttributeTargets.Class)]
-        internal class FenGenWriteEmptyValuesAttribute : Attribute
-        {
-            internal FenGenWriteEmptyValuesAttribute(bool value) { }
         }
 
         /// <summary>

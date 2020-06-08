@@ -17,7 +17,7 @@ namespace AngelLoader.DataClasses
         -Attributes must be on the preceding line, same-line attributes are not supported
     */
 
-    [FenGenWriteEmptyValues(false)]
+    [FenGenFMDataSourceClass(writeEmptyValues: false)]
     internal sealed class FanMission
     {
         // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the

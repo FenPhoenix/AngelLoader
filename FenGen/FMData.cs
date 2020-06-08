@@ -2,6 +2,10 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
+using JetBrains.Annotations;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
 namespace FenGen
@@ -146,10 +150,6 @@ namespace FenGen
             };
         }
 
-        private static FieldList Fields { get; } = new FieldList();
-
-        private static List<string> DestTopLines { get; } = new List<string>();
-
         private static string[] TopCodeLines { get; } =
         {
             //"        private static bool StartsWithFast_NoNullChecks(this string str, string value)",
@@ -219,13 +219,13 @@ namespace FenGen
 
         internal static void Generate(string sourceFile, string destFile)
         {
-            //string className = GenType == GenType.FMData ? "FanMission" : "ConfigData";
-            const string className = "FanMission";
-            ReadSourceFields(className, sourceFile);
+            var fields = ReadSourceFields(sourceFile);
 
             // Always do an atomic read operation, because we may want to open the same file for other purposes
             // in the middle of it (we had an access exception before)
             var lines = File.ReadAllLines(destFile);
+
+            var destTopLines = new List<string>();
 
             int openBraces = 0;
             foreach (string line in lines)
@@ -233,10 +233,9 @@ namespace FenGen
                 string lineT = line.Trim();
 
                 if (lineT.StartsWith("{")) openBraces++;
-                DestTopLines.Add(line);
+                destTopLines.Add(line);
                 if (openBraces == 2)
                 {
-                    //inClass = true;
                     break;
                 }
             }
@@ -244,16 +243,16 @@ namespace FenGen
             //var writeLines = new List<string>();
             var sb = new StringBuilder();
 
-            foreach (string l in DestTopLines) sb.AppendLine(l);
+            foreach (string l in destTopLines) sb.AppendLine(l);
 
             //string obj = GenType == GenType.FMData ? "fm" : "config";
             const string obj = "fm";
 
-            WriteReader(sb, obj);
+            WriteReader(sb, obj, fields);
 
             sb.AppendLine("");
 
-            WriteWriter(sb, obj);
+            WriteWriter(sb, obj, fields);
 
             // class
             sb.AppendLine(Indent(1) + "}");
@@ -264,7 +263,7 @@ namespace FenGen
             File.WriteAllText(destFile, sb.ToString());
         }
 
-        private static void WriteReader(StringBuilder sb, string obj)
+        private static void WriteReader(StringBuilder sb, string obj, FieldList fields)
         {
             if (TopCodeLines.Length > 0)
             {
@@ -296,7 +295,7 @@ namespace FenGen
 
             var w = new Generators.IndentingWriter(sb, startingIndent: 4);
 
-            for (int i = 0; i < Fields.Count; i++)
+            for (int i = 0; i < fields.Count; i++)
             {
                 if (customCodeBlockToInsertAfterField != CustomCodeBlockNames.None)
                 {
@@ -311,7 +310,7 @@ namespace FenGen
                     }
                 }
 
-                var field = Fields[i];
+                var field = fields[i];
                 string objDotField = obj + "." + field.Name;
 
                 string optElse = i > 0 ? "else " : "";
@@ -437,7 +436,7 @@ namespace FenGen
                     w.WL(objDotField + " = null;");
                     w.WL("}");
                 }
-                else if (field.Type == "Game")
+                else if (field.Type == Cache.GamesEnum.Name)
                 {
                     w.WL("val = val.Trim();");
 
@@ -489,7 +488,7 @@ namespace FenGen
             w.WL("}");
         }
 
-        private static void WriteWriter(StringBuilder sb, string obj)
+        private static void WriteWriter(StringBuilder sb, string obj, FieldList fields)
         {
             sb.AppendLine(Indent(2) + GenMessages.Method);
 
@@ -510,7 +509,7 @@ namespace FenGen
 
             var w = new Generators.IndentingWriter(sb, startingIndent: 4);
 
-            foreach (var field in Fields)
+            foreach (var field in fields)
             {
                 string objDotField = obj + "." + field.Name;
                 string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
@@ -546,7 +545,7 @@ namespace FenGen
                         {
                             w.WL("if (!string.IsNullOrEmpty(s))");
                             w.WL("{");
-                            w.WL("sw.WriteLine(\"" + fieldIniName + "=\" + s);");
+                            w.WL("sb.AppendLine(\"" + fieldIniName + "=\" + s);");
                             w.WL("}");
                         }
 #endif
@@ -556,9 +555,8 @@ namespace FenGen
                 }
                 else if (field.Type == "string")
                 {
-                    if (Fields.WriteEmptyValues)
+                    if (fields.WriteEmptyValues)
                     {
-                        w.WL("sw.WriteLine(\"" + fieldIniName + "=\" + " + objDotField + ");");
                         swlSBAppend(fieldIniName, objDotField);
                     }
                     else
@@ -571,7 +569,7 @@ namespace FenGen
                 }
                 else if (field.Type == "bool")
                 {
-                    if (Fields.WriteEmptyValues)
+                    if (fields.WriteEmptyValues)
                     {
                         swlSBAppend(fieldIniName, objDotField, toString);
                     }
@@ -585,7 +583,7 @@ namespace FenGen
                 }
                 else if (field.Type == "bool?")
                 {
-                    if (Fields.WriteEmptyValues)
+                    if (fields.WriteEmptyValues)
                     {
                         swlSBAppend(fieldIniName, objDotField, toString);
                     }
@@ -600,7 +598,7 @@ namespace FenGen
                 else if (NumericTypes.Contains(field.Type))
                 {
                     string floatArgs = GetFloatArgsWrite(field.Type);
-                    if (!Fields.WriteEmptyValues && field.NumericEmpty != null)
+                    if (!fields.WriteEmptyValues && field.NumericEmpty != null)
                     {
                         w.WL("if (" + objDotField + " != " + field.NumericEmpty + ")");
                         w.WL("{");
@@ -616,7 +614,7 @@ namespace FenGen
                          NumericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
                     string floatArgs = GetFloatArgsWrite(field.Type);
-                    if (Fields.WriteEmptyValues)
+                    if (fields.WriteEmptyValues)
                     {
                         swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
                     }
@@ -642,10 +640,10 @@ namespace FenGen
                         w.WL("break;");
                     }
                     string gameDotGameTypeZero = gamesEnum.Name + "." + gamesEnum.GameEnumNames[0];
-                    if (Fields.WriteEmptyValues)
+                    if (fields.WriteEmptyValues)
                     {
                         w.WL("case " + gameDotGameTypeZero + ":");
-                        w.WL("w.WL(\"" + gameDotGameTypeZero + "\");");
+                        w.WL("sb.AppendLine(\"" + gamesEnum.Name + "=" + gameDotGameTypeZero + "\");");
                         w.WL("break;");
                     }
                     else
@@ -656,7 +654,7 @@ namespace FenGen
                 }
                 else if (field.Type == "ExpandableDate")
                 {
-                    if (Fields.WriteEmptyValues)
+                    if (fields.WriteEmptyValues)
                     {
                         swlSBAppend(fieldIniName, objDotField, unixDateString);
                     }
@@ -675,7 +673,7 @@ namespace FenGen
                         ? "new DateTimeOffset((DateTime)" + objDotField + ").ToUnixTimeSeconds().ToString(\"X\")" :
                         "new DateTimeOffset(((DateTime)" + objDotField + ").ToLocalTime()).ToUnixTimeSeconds().ToString(\"X\")";
 
-                    if (Fields.WriteEmptyValues)
+                    if (fields.WriteEmptyValues)
                     {
                         swlSBAppend(fieldIniName, val);
                     }
@@ -728,152 +726,150 @@ namespace FenGen
             w.WL("}");
         }
 
-        private static void ReadSourceFields(string className, string sourceFile)
+        [MustUseReturnValue]
+        private static FieldList ReadSourceFields(string sourceFile)
         {
-            string[] sourceLines = File.ReadAllLines(sourceFile);
+            var code = File.ReadAllText(sourceFile);
+            var tree = ParseTextFast(code);
 
-            bool inClass = false;
+            var (member, attr) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenFMDataSourceClass);
+            var fmDataClass = (ClassDeclarationSyntax)member;
+            var fields = new FieldList();
+            CheckParamCount(attr, attr.Name.ToString(), 1);
+            fields.WriteEmptyValues = (bool)((LiteralExpressionSyntax)attr.ArgumentList.Arguments[0].Expression)
+                .Token
+                .Value!;
 
-            bool doNotSerializeNextLine = false;
-
-            var tempField = new Field();
-
-            static string GetAttrParam(string value)
+            static void CheckParamCount(AttributeSyntax attr, string name, int count)
             {
-                int index1;
-                int indexOfParen = value.IndexOf('(');
-                string ret = value
-                    .Substring(index1 = indexOfParen + 1, value.LastIndexOf(')') - index1)
-                    .Trim();
-
-                int retLength = ret.Length;
-                if (retLength >= 2 && ret[0] == '\"' && ret[retLength - 1] == '\"')
+                if (attr.ArgumentList == null ||
+                    attr.ArgumentList.Arguments.Count != count)
                 {
-                    ret = ret == "\"\"" ? "" : ret.Substring(1, ret.Length - 2);
+                    ThrowErrorAndTerminate(name + " has wrong number of parameters.");
                 }
-                return ret;
             }
 
-            for (int i = 0; i < sourceLines.Length; i++)
+            static void FillFieldFromAttributes(MemberDeclarationSyntax member, Field field, out bool ignore)
             {
-                string lineT = sourceLines[i].Trim();
+                ignore = false;
 
-                if (!inClass)
+                foreach (AttributeListSyntax attrList in member.AttributeLists)
                 {
-                    bool lineIsClassDef = lineT.EndsWith("class " + className);
-
-                    if (i > 0 && lineIsClassDef)
+                    foreach (AttributeSyntax attr in attrList.Attributes)
                     {
-                        string prevLineT = sourceLines[i - 1].Trim();
-
-                        if (prevLineT.StartsWith("[") && prevLineT.EndsWith("]"))
+                        string name = attr.Name.ToString();
+                        if (name == GenAttributes.FenGenIgnore)
                         {
-                            var indexOfParen = prevLineT.IndexOf('(');
-                            if (indexOfParen > -1)
-                            {
-                                string attr = prevLineT.Trim('[', ']');
-                                string attrNamePart = attr.Substring(0, indexOfParen);
-                                if (GetAttributeName(attrNamePart, GenAttributes.FenGenWriteEmptyValues))
-                                {
-                                    string attrParam = GetAttrParam(attr);
-                                    Fields.WriteEmptyValues = attrParam.EqualsTrue();
-                                }
-                            }
+                            ignore = true;
+                            return;
                         }
-                    }
-
-                    if (lineIsClassDef) inClass = true;
-                    continue;
-                }
-
-                if (doNotSerializeNextLine)
-                {
-                    if (!string.IsNullOrWhiteSpace(lineT)) doNotSerializeNextLine = false;
-                    continue;
-                }
-
-                if (lineT == "}") break;
-
-                if (lineT.StartsWith("[") && lineT.EndsWith("]"))
-                {
-                    string attr = lineT.Trim('[', ']');
-                    int indexOfParen = attr.IndexOf('(');
-
-                    if (GetAttributeName(attr, GenAttributes.FenGenIgnore))
-                    {
-                        doNotSerializeNextLine = true;
-                    }
-                    else if (GetAttributeName(attr, GenAttributes.FenGenDoNotConvertDateTimeToLocal))
-                    {
-                        tempField.DoNotConvertDateTimeToLocal = true;
-                    }
-                    else if (GetAttributeName(attr, GenAttributes.FenGenDoNotTrimValue))
-                    {
-                        tempField.DoNotTrimValue = true;
-                    }
-                    else if (indexOfParen > -1)
-                    {
-                        string attrNamePart = attr.Substring(0, indexOfParen);
-                        string attrParam = GetAttrParam(attr);
-                        if (GetAttributeName(attrNamePart, GenAttributes.FenGenNumericEmpty))
+                        else if (name == GenAttributes.FenGenDoNotConvertDateTimeToLocal)
                         {
-                            if (long.TryParse(attrParam, out long result))
-                            {
-                                tempField.NumericEmpty = result;
-                            }
+                            field.DoNotConvertDateTimeToLocal = true;
                         }
-                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenListType))
+                        else if (name == GenAttributes.FenGenDoNotTrimValue)
                         {
-                            tempField.ListType = attrParam == nameof(ListType.CommaSeparated)
+                            field.DoNotTrimValue = true;
+                        }
+                        else if (name == GenAttributes.FenGenNumericEmpty)
+                        {
+                            CheckParamCount(attr, name, 1);
+
+                            // Have to do this ridiculous method of getting the value, because if the value is
+                            // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
+                            // number. But ToString() gives us the string version of the entire number. Argh...
+                            string val = (attr.ArgumentList!.Arguments[0].Expression).ToString();
+                            long.TryParse(val, out long result);
+                            field.NumericEmpty = result;
+                        }
+                        else if (name == GenAttributes.FenGenListType)
+                        {
+                            CheckParamCount(attr, name, 1);
+
+                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                .Token
+                                .Value!.ToString();
+
+                            field.ListType = val == nameof(ListType.CommaSeparated)
                                 ? ListType.CommaSeparated
                                 : ListType.MultipleLines;
                         }
-                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenListDistinctType))
+                        else if (name == GenAttributes.FenGenListDistinctType)
                         {
-                            tempField.ListDistinctType = attrParam switch
+                            CheckParamCount(attr, name, 1);
+
+                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                .Token
+                                .Value!.ToString();
+
+                            field.ListDistinctType = val switch
                             {
                                 nameof(ListDistinctType.Exact) => ListDistinctType.Exact,
                                 nameof(ListDistinctType.CaseInsensitive) => ListDistinctType.CaseInsensitive,
                                 _ => ListDistinctType.None
                             };
                         }
-                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenIniName))
+                        else if (name == GenAttributes.FenGenIniName)
                         {
-                            tempField.IniName = attrParam;
+                            CheckParamCount(attr, name, 1);
+
+                            field.IniName =
+                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                    .Token
+                                    .Value!)!;
                         }
-                        else if (GetAttributeName(attrNamePart, GenAttributes.FenGenInsertAfter))
+                        else if (name == GenAttributes.FenGenInsertAfter)
                         {
-                            tempField.CodeBlockToInsertAfter =
-                                attrParam == nameof(CustomCodeBlockNames.LegacyCustomResources)
+                            CheckParamCount(attr, name, 1);
+
+                            string val =
+                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                                    .Token
+                                    .Value!)!;
+
+                            field.CodeBlockToInsertAfter =
+                                val == nameof(CustomCodeBlockNames.LegacyCustomResources)
                                     ? CustomCodeBlockNames.LegacyCustomResources
                                     : CustomCodeBlockNames.None;
                         }
                     }
-
-                    continue;
                 }
-
-                int index = lineT.IndexOf('{');
-                if (index == -1) index = lineT.IndexOf('=');
-                if (index == -1) index = lineT.IndexOf(';');
-                if (index == -1) continue;
-
-                string line2 = lineT.Substring(0, index).Trim();
-
-                index = line2.LastIndexOf(' ');
-                if (index == -1) continue;
-
-                Field last = tempField.Copy();
-                
-                last.Name = line2.Substring(index + 1).Trim();
-                string temp = StripPrefixes(line2);
-                last.Type = temp.Substring(0, temp.LastIndexOf(' '));
-                
-                Fields.Add(last);
-                
-                // Clear all temp fields in one shot
-                tempField = new Field();
             }
+
+            foreach (SyntaxNode item in fmDataClass.ChildNodes())
+            {
+                var tempField = new Field();
+                if (item.IsKind(SyntaxKind.FieldDeclaration))
+                {
+                    var itemMember = (MemberDeclarationSyntax)item;
+
+                    FillFieldFromAttributes(itemMember, tempField, out bool ignore);
+                    if (ignore) continue;
+
+                    var itemField = (FieldDeclarationSyntax)itemMember;
+                    Field last = tempField.Copy();
+                    last.Name = itemField.Declaration.Variables[0].Identifier.Value!.ToString();
+                    last.Type = itemField.Declaration.Type.ToString();
+
+                    fields.Add(last);
+                }
+                else if (item.IsKind(SyntaxKind.PropertyDeclaration))
+                {
+                    var itemMember = (MemberDeclarationSyntax)item;
+
+                    FillFieldFromAttributes(itemMember, tempField, out bool ignore);
+                    if (ignore) continue;
+
+                    var itemProp = (PropertyDeclarationSyntax)itemMember;
+                    Field last = tempField.Copy();
+                    last.Name = itemProp.Identifier.Value!.ToString();
+                    last.Type = itemProp.Type.ToString();
+
+                    fields.Add(last);
+                }
+            }
+
+            return fields;
         }
     }
 }

@@ -36,12 +36,19 @@ namespace FenGen
         internal readonly List<string> GamePrefixes = new List<string>();
     }
 
+    // TODO: Nasty global state that's really just here to avoid over-parameterization.
     internal static class Cache
     {
         private static string _gameSupportFile = "";
         internal static void SetGameSupportFile(string file) => _gameSupportFile = file;
         private static GameSourceEnum? _gamesEnum;
         internal static GameSourceEnum GamesEnum => _gamesEnum ??= Games.FillGamesEnum(_gameSupportFile);
+
+        internal static void Clear()
+        {
+            _gameSupportFile = "";
+            _gamesEnum = null;
+        }
     }
 
     internal static class GenFileTags
@@ -64,7 +71,7 @@ namespace FenGen
 
     internal static class GenAttributes
     {
-        internal const string FenGenWriteEmptyValues = nameof(FenGenWriteEmptyValues);
+        internal const string FenGenFMDataSourceClass = nameof(FenGenFMDataSourceClass);
         internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
         internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
         internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
@@ -85,21 +92,7 @@ namespace FenGen
 
     internal static class Core
     {
-        private static readonly int GenTaskCount = Enum.GetValues(typeof(GenType)).Length;
-
-        private static readonly bool[] _genTasksActive = new bool[GenTaskCount];
-
-        private static void SetGenTaskActive(GenType genType) => _genTasksActive[(int)genType] = true;
-        private static bool GenTaskActive(GenType genType) => _genTasksActive[(int)genType];
-
-        private static bool AnyGenTasksActive()
-        {
-            for (int i = 0; i < _genTasksActive.Length; i++)
-            {
-                if (_genTasksActive[i]) return true;
-            }
-            return false;
-        }
+        private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
 
 #if DEBUG
         private static MainForm View;
@@ -140,6 +133,10 @@ namespace FenGen
             {
                 ThrowErrorAndTerminate(ex);
             }
+            finally
+            {
+                Cache.Clear();
+            }
         }
 
         private static void ReadArgsAndDoTasksInternal()
@@ -165,6 +162,25 @@ namespace FenGen
             if (args.Length < 2) ExitIfRelease();
 
             bool generateLangTestFile = false;
+
+            bool[] _genTasksActive = new bool[_genTaskCount];
+
+            #region Local functions
+
+            void SetGenTaskActive(GenType genType) => _genTasksActive[(int)genType] = true;
+
+            bool GenTaskActive(GenType genType) => _genTasksActive[(int)genType];
+
+            bool AnyGenTasksActive()
+            {
+                for (int i = 0; i < _genTasksActive.Length; i++)
+                {
+                    if (_genTasksActive[i]) return true;
+                }
+                return false;
+            }
+
+            #endregion
 
             for (int i = 1; i < args.Length; i++)
             {
