@@ -43,23 +43,36 @@ namespace FenGen
 
     internal static class GenAttributes
     {
+        #region Serialization
+
         internal const string FenGenFMDataSourceClass = nameof(FenGenFMDataSourceClass);
-        internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
-        internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
+        internal const string FenGenIgnore = nameof(FenGenIgnore);
+        internal const string FenGenIniName = nameof(FenGenIniName);
         internal const string FenGenNumericEmpty = nameof(FenGenNumericEmpty);
         internal const string FenGenListType = nameof(FenGenListType);
         internal const string FenGenListDistinctType = nameof(FenGenListDistinctType);
-        internal const string FenGenIniName = nameof(FenGenIniName);
+        internal const string FenGenDoNotTrimValue = nameof(FenGenDoNotTrimValue);
+        internal const string FenGenDoNotConvertDateTimeToLocal = nameof(FenGenDoNotConvertDateTimeToLocal);
         internal const string FenGenInsertAfter = nameof(FenGenInsertAfter);
-        internal const string FenGenIgnore = nameof(FenGenIgnore);
-        internal const string FenGenLocalizationClass = nameof(FenGenLocalizationClass);
-        internal const string FenGenLocalizationReadWriteClass = nameof(FenGenLocalizationReadWriteClass);
+
+        #endregion
+
+        #region Localizable text
+
+        internal const string FenGenLocalizationSourceClass = nameof(FenGenLocalizationSourceClass);
+        internal const string FenGenLocalizationDestClass = nameof(FenGenLocalizationDestClass);
         internal const string FenGenComment = nameof(FenGenComment);
         internal const string FenGenBlankLine = nameof(FenGenBlankLine);
+
+        #endregion
+
+        #region Game support
 
         internal const string FenGenGameEnum = nameof(FenGenGameEnum);
         internal const string FenGenNotAGameType = nameof(FenGenNotAGameType);
         internal const string FenGenGamePrefixes = nameof(FenGenGamePrefixes);
+
+        #endregion
     }
 
     internal static class Core
@@ -249,7 +262,7 @@ namespace FenGen
                 string testLangIni = generateLangTestFile
                     ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
                     : "";
-                LanguageGen.Generate(
+                Language.Generate(
                     taggedFilesDict![GenFileTags.LocalizationSource],
                     taggedFilesDict![GenFileTags.LocalizationDest],
                     englishIni,

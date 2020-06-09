@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
 
-namespace FenGen
+namespace FenGen.Forms
 {
     internal partial class MainForm : Form
     {

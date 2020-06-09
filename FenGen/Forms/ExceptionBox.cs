@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace FenGen
+namespace FenGen.Forms
 {
     public partial class ExceptionBox : Form
     {

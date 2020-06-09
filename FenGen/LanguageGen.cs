@@ -13,7 +13,7 @@ namespace FenGen
     // PERF_TODO: Roslyn is still the big fat slug, with ParseText() taking hundreds of ms.
     // Revert to parsing everything manually for speed. This is ludicrously untenable, who would even accept a
     // multi-second tack-on to build time for code generation this simple?!
-    internal static class LanguageGen
+    internal static class Language
     {
         private class IniItem
         {
@@ -45,7 +45,7 @@ namespace FenGen
             string code = File.ReadAllText(file);
             var tree = ParseTextFast(code);
 
-            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationClass);
+            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationSourceClass);
             var LTextClass = (ClassDeclarationSyntax)member;
 
             foreach (SyntaxNode item in LTextClass.DescendantNodes())
@@ -106,7 +106,7 @@ namespace FenGen
                         var initializer = v.Initializer;
                         if (initializer == null)
                         {
-                            ThrowErrorAndTerminate(nameof(LanguageGen) + ":\r\n" +
+                            ThrowErrorAndTerminate(nameof(Language) + ":\r\n" +
                                                    "Found a variable without an initializer in " + file);
                         }
 
@@ -118,7 +118,7 @@ namespace FenGen
                         var initializer = pds.Initializer;
                         if (initializer == null)
                         {
-                            ThrowErrorAndTerminate(nameof(LanguageGen) + ":\r\n" +
+                            ThrowErrorAndTerminate(nameof(Language) + ":\r\n" +
                                                    "Found a property without an initializer in " + file);
                         }
 
@@ -153,7 +153,7 @@ namespace FenGen
             string code = File.ReadAllText(destFile);
             var tree = ParseTextFast(code);
 
-            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationReadWriteClass);
+            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationDestClass);
             var iniClass = (ClassDeclarationSyntax)member;
 
             string iniClassString = iniClass.ToString();

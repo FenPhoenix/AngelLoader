@@ -45,7 +45,7 @@ namespace AngelLoader.DataClasses
     generate that from this and not even have to touch anything here.
     */
 
-    [FenGenLocalizationClass]
+    [FenGenLocalizationSourceClass]
     internal static class LText
     {
         // Notes:

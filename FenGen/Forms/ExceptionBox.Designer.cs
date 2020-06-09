@@ -1,4 +1,4 @@
-﻿namespace FenGen
+﻿namespace FenGen.Forms
 {
     partial class ExceptionBox
     {
