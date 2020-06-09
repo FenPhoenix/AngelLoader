@@ -161,6 +161,22 @@ namespace AngelLoader
                         i++;
                     }
                 }
+                else if (lineT == "[HelpMessages]")
+                {
+                    while (i < lines.Length - 1)
+                    {
+                        string lt = lines[i + 1].TrimStart();
+                        if (lt.StartsWithFast_NoNullChecks("Settings_FMBackupPath_Help="))
+                        {
+                            LText.HelpMessages.Settings_FMBackupPath_Help = lt.Substring(27);
+                        }
+                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        {
+                            break;
+                        }
+                        i++;
+                    }
+                }
                 else if (lineT == "[BrowseDialogs]")
                 {
                     while (i < lines.Length - 1)

@@ -115,7 +115,7 @@ Here you can choose the executable files for the supported games you have instal
 If you own one or more supported games on Steam, you can specify the location of <code>steam.exe</code> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.
 
 <h4><a name="fm_backup_path" />FM backup path</h4>
-This is a required field. This is the folder that will be used for backing up saves, screenshots, and/or full differential backups when you uninstall a fan mission. This must be a different folder from any FM archive paths. Although some other loaders store their backup files in their archive folders, AngelLoader requires a separate folder to store its backups.
+This is a required field. This is the directory that will be used for backing up saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths. AngelLoader will still be able to use your existing backup files from other loaders, but will place any new backup files in this directory.
 
 <h4>FM archive paths</h4>
 Here you can set the directory or directories where your fan mission archives (.zip or .7z files) are located. If you enable "Include subfolders", then all subfolders inside all directories you specify will also be searched for FM archives (this matches NewDarkLoader's behavior). Otherwise, only the exact directories you specify will be searched.

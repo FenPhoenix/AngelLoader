@@ -585,6 +585,7 @@ namespace AngelLoader.Forms
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
                 PathsPage.BackupPathHelpButton.Left = PathsPage.BackupPathLabel.Left + PathsPage.BackupPathLabel.Width + 4;
+                //MainToolTip.SetToolTip(PathsPage.BackupPathHelpButton, LText.HelpMessages.Settings_FMBackupPath_Help);
 
                 PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
@@ -1058,7 +1059,11 @@ namespace AngelLoader.Forms
             ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
         }
 
-        private void BackupPathHelpButton_Click(object sender, EventArgs e) => Core.OpenHelpFile(HelpSections.FMBackupPath);
+        private void BackupPathHelpButton_Click(object sender, EventArgs e)
+        {
+            //MainToolTip.Show(LText.HelpMessages.Settings_FMBackupPath_Help, PathsPage.BackupPathHelpButton);
+            Core.OpenHelpFile(HelpSections.FMBackupPath);
+        }
 
         private void BackupPathTextBox_Leave(object sender, EventArgs e)
         {

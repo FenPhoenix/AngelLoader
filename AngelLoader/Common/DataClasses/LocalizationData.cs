@@ -103,6 +103,11 @@ namespace AngelLoader.DataClasses
             // @GENGAMES (Localization - Global): End
         }
 
+        internal static class HelpMessages
+        {
+            internal static string Settings_FMBackupPath_Help = "The directory that will be used for backing up saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths.";
+        }
+
         internal static class BrowseDialogs
         {
             internal static string AllFiles = "All files (*.*)";
