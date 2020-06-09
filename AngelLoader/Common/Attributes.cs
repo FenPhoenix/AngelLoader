@@ -128,7 +128,7 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenCommentAttribute : Attribute
         {
-            internal FenGenCommentAttribute([UsedImplicitly] string comment) { }
+            internal FenGenCommentAttribute([UsedImplicitly] params string[] comments) { }
         }
 
         // Yes, Roslyn is so bonkers-idiotic that I have to make an entire attribute just for this. Amazing.

@@ -292,12 +292,12 @@ namespace FenGen
                     {
                         string tag = lts.Substring(7).Trim();
 
-                        for (var index = 0; index < genFileTags.Count; index++)
+                        for (int i = 0; i < genFileTags.Count; i++)
                         {
-                            string genFileTag = genFileTags[index];
+                            string genFileTag = genFileTags[i];
                             if (tag == genFileTag)
                             {
-                                taggedFiles[index].Add(f);
+                                taggedFiles[i].Add(f);
                                 break;
                             }
                         }

@@ -75,10 +75,16 @@ namespace FenGen
                     {
                         if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenComment))
                         {
-                            // FenGenComment has a non-optional argument, so this won't be null
-                            var exp = (LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression;
-                            fValue = exp.Token.ValueText;
-                            isComment = true;
+                            var argList = attr.ArgumentList;
+                            if (argList != null)
+                            {
+                                for (int i = 0; i < argList.Arguments.Count; i++)
+                                {
+                                    if (i > 0) fValue += "\r\n";
+                                    fValue += ((LiteralExpressionSyntax)argList.Arguments[i].Expression).Token.ValueText;
+                                }
+                                isComment = true;
+                            }
                         }
                         else if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenBlankLine))
                         {
