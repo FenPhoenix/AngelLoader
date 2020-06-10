@@ -107,22 +107,6 @@
     FenGen quirk: keep comments outside this block or else the generated lines will be placed after them. Meh.
   -->
   <ItemGroup>
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_FMSel_NDL_ImportControls.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\User_DL_ImportControls.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromMultipleInisForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\Import\ImportFromDarkLoaderForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\PathsPage.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\OtherPage.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\SettingsPages\FMDisplayPage.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\CustomControls\ProgressPanel.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\SettingsForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\ScanAllFMsForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MessageBoxCustomForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\MainForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterTagsForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterRatingForm.resx" />
-    <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="Forms\FilterDateForm.resx" />
-
     <!--
       The only resx file that's actually required is the main one here. It contains all the images and icons.
       If it were up to me we wouldn't use this either, as it's accessed through horrendous reflection that takes

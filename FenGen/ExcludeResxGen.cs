@@ -3,15 +3,47 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace FenGen
 {
     internal static class ExcludeResx
     {
-        internal static void Generate()
+        const string ItemGroupName = "ItemGroup";
+
+        internal static void GenerateRestore()
         {
+            var xml = new XmlDocument { PreserveWhitespace = true };
+            xml.Load(Core.ALProjectFile);
+
+            XmlNodeList itemGroups = xml.GetElementsByTagName(ItemGroupName);
+
+            for (var i = 0; i < itemGroups.Count; i++)
+            {
+                XmlNode itemGroup = itemGroups[i];
+                foreach (XmlNode cn in itemGroup)
+                {
+                    if (cn is XmlComment commentNode)
+                    {
+                        if (commentNode.InnerText.Trim() == GenAttributes.FenGenExcludeResx)
+                        {
+                            commentNode.ParentNode!.ParentNode!.RemoveChild(itemGroup);
+                            i--;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            WriteXml(xml);
+        }
+
+        internal static void GenerateExclude()
+        {
+            // In case our temp ItemGroup got left there due to the build process not fully completing or whatever
+            // else have you, just remove it again so we know we're clean.
+            GenerateRestore();
+
             var resxFilesToExclude = Directory.GetFiles(Core.ALProjectPath, "*.resx", SearchOption.AllDirectories)
                 .Where(x => !Path.GetFileName(x).EqualsI("Resources.resx")).ToArray();
 
@@ -26,103 +58,50 @@ namespace FenGen
             var itemGroups = xml.GetElementsByTagName(embeddedResourceName);
             if (itemGroups.Count <= 0) return;
 
-            var excludeResxNodes = new List<XmlNode>();
-            bool found = false;
+            var newNodes = new List<XmlNode>();
 
-            /*
-             TODO(FenGen:ExcludeResx.Generate()): This logic works for our specific case, but is not quite correct.
-             For instance, it's finding the group by seeing if there's an <EmbeddedResource> element in it. In
-             our case, we're finding it either by this:
+            XmlNode projNode = xml.GetElementsByTagName("Project")[0];
 
-             <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="[filename]" />
-
-             or this, which in our case is in the same group:
-
-             <EmbeddedResource Update="Properties\Resources.resx">
-               <Generator>ResXFileCodeGenerator</Generator>
-               <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-             </EmbeddedResource>
-
-             If that last one wasn't in the same group as the rest are supposed to be, AND if the rest had ALL
-             been removed, it would find nothing and return without generating. Vanishingly unlikely in our case,
-             but we should handle that situation!
-            */
-            foreach (XmlNode node in itemGroups)
+            XmlElement tempItemGroup = xml.CreateElement(ItemGroupName);
+            foreach (string exclude in resxFilesToExclude)
             {
-                XmlNode? itemGroup = node.ParentNode;
-                if (itemGroup == null) continue;
+                XmlElement excludeElem = xml.CreateElement(embeddedResourceName);
+                var condAttr = xml.CreateAttribute(conditionName);
+                condAttr.Value = conditionString;
+                var removeAttr = xml.CreateAttribute(removeName);
+                removeAttr.Value = exclude.Substring(Core.ALProjectPath.Length).TrimStart('/', '\\');
+                excludeElem.SetAttributeNode(condAttr);
+                excludeElem.SetAttributeNode(removeAttr);
 
-                for (int i = 0; i < itemGroup.ChildNodes.Count; i++)
-                {
-                    XmlNode childNode = itemGroup.ChildNodes[i];
-
-                    if (!(childNode.Attributes?.Count > 0)) continue;
-
-                    bool conditionFound = false;
-                    bool removeResxFound = false;
-                    foreach (XmlAttribute attr in childNode.Attributes)
-                    {
-                        if (!attr.Specified) continue;
-
-                        if (attr.LocalName == conditionName &&
-                            Regex.Match(attr.Value, @"'\$\(Configuration\)'\s*!=").Success)
-                        {
-                            conditionFound = true;
-                        }
-                        else if (attr.LocalName == removeName &&
-                                 attr.Value.EndsWithI(".resx"))
-                        {
-                            removeResxFound = true;
-                        }
-
-                        if (conditionFound && removeResxFound)
-                        {
-                            excludeResxNodes.Add(childNode);
-                            break;
-                        }
-                    }
-                }
-
-                var newNodes = new List<XmlNode>();
-
-                foreach (XmlNode en in excludeResxNodes)
-                {
-                    itemGroup.RemoveChild(en);
-                }
-
-                foreach (string f in resxFilesToExclude)
-                {
-                    XmlElement elem = xml.CreateElement(embeddedResourceName);
-
-                    XmlAttribute conditionAttr = xml.CreateAttribute(conditionName);
-                    conditionAttr.Value = conditionString;
-                    XmlAttribute removeAttr = xml.CreateAttribute(removeName);
-                    removeAttr.Value = f.Substring(Core.ALProjectPath.Length).TrimStart('/', '\\');
-
-                    elem.SetAttributeNode(conditionAttr);
-                    elem.SetAttributeNode(removeAttr);
-
-                    newNodes.Add(elem);
-                }
-
-                for (int i = 0; i < newNodes.Count; i++)
-                {
-                    XmlNode n = newNodes[i];
-                    itemGroup.PrependChild(n);
-                    // We have to manually add linebreaks and indents
-                    itemGroup.InsertBefore(xml.CreateWhitespace("    "), n);
-                    itemGroup.InsertAfter(xml.CreateWhitespace("\r\n"), n);
-                }
-                // Add initial linebreak (prepending so we do it at the end)
-                itemGroup.PrependChild(xml.CreateWhitespace("\r\n"));
-
-                found = true;
-
-                break;
+                newNodes.Add(excludeElem);
             }
 
-            if (!found) return;
+            for (int i = 0; i < newNodes.Count; i++)
+            {
+                XmlNode n = newNodes[i];
+                tempItemGroup.PrependChild(n);
+                // We have to manually add linebreaks and indents
+                tempItemGroup.InsertBefore(xml.CreateWhitespace("    "), n);
+                tempItemGroup.InsertAfter(xml.CreateWhitespace("\r\n"), n);
+            }
+            // Prepend in reverse order
+            tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n"));
+            tempItemGroup.PrependChild(xml.CreateComment("\r\n" +
+                "        This is a temporary ItemGroup generated by FenGen to exclude .resx files on compile.\r\n" +
+                "        If you can see this, something probably went wrong and you should delete this item group\r\n" +
+                "        to prevent crashes and chaotic behavior when editing forms.\r\n    "));
+            tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n    "));
+            tempItemGroup.PrependChild(xml.CreateComment(GenAttributes.FenGenExcludeResx));
+            tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n    "));
 
+            projNode.AppendChild(tempItemGroup);
+            projNode.AppendChild(xml.CreateWhitespace("\r\n"));
+
+            WriteXml(xml);
+        }
+
+        private static void WriteXml(XmlDocument xml)
+        {
             List<string> lines;
             using (var strW = new StringWriter())
             {

@@ -7,6 +7,14 @@ set TargetDir=%~2
 set ProjectDir=%~3
 set SolutionDir=%~4
 
+rem Autogenerate code
+rem ---
+set FenGen="%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
+set fenGenArgs=-restore_resx
+
+%FenGen% %fenGenArgs%
+rem ---
+
 if %ConfigurationName% == Release_Beta (
 set destDir="C:\AngelLoader_Beta_Package\"
 ) else if %ConfigurationName% == Release_Public (

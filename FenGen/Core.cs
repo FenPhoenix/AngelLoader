@@ -73,6 +73,8 @@ namespace FenGen
         internal const string FenGenGamePrefixes = nameof(FenGenGamePrefixes);
 
         #endregion
+
+        internal const string FenGenExcludeResx = nameof(FenGenExcludeResx);
     }
 
     internal static class Core
@@ -84,7 +86,8 @@ namespace FenGen
             Language,
             GameSupport,
             VisLoc,
-            ExcludeResx
+            ExcludeResx,
+            RestoreResx
         }
 
         private static class GenTaskArgs
@@ -94,6 +97,7 @@ namespace FenGen
             internal const string LanguageAndTest = "-language_t";
             internal const string GameSupport = "-game_support";
             internal const string ExcludeResx = "-exclude_resx";
+            internal const string RestoreResx = "-restore_resx";
         }
 
         private static class GenFileTags
@@ -108,7 +112,7 @@ namespace FenGen
         private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
 
 #if DEBUG
-        private static MainForm View;
+        private static FenGen.Forms.MainForm View;
 #endif
 
         internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
@@ -213,6 +217,9 @@ namespace FenGen
                     case GenTaskArgs.ExcludeResx:
                         SetGenTaskActive(GenType.ExcludeResx);
                         break;
+                    case GenTaskArgs.RestoreResx:
+                        SetGenTaskActive(GenType.RestoreResx);
+                        break;
                 }
 
                 if (!AnyGenTasksActive())
@@ -274,7 +281,11 @@ namespace FenGen
             }
             if (GenTaskActive(GenType.ExcludeResx))
             {
-                ExcludeResx.Generate();
+                ExcludeResx.GenerateExclude();
+            }
+            if (GenTaskActive(GenType.RestoreResx))
+            {
+                ExcludeResx.GenerateRestore();
             }
         }
 
