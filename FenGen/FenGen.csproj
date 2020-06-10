@@ -34,4 +34,12 @@
     <Reference Include="Microsoft.VisualBasic" />
   </ItemGroup>
 
+  <!--
+    Run the resx exclude BEFORE AngelLoader even gets to its build. That way we should end up with a proper
+    project file and no "sometimes works, sometimes doesn't" mess.
+  -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+
 </Project>
