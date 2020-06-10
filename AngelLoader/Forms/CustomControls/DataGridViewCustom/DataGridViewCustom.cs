@@ -19,7 +19,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Sort
 
-        internal int CurrentSortedColumn = -1;
+        internal Column CurrentSortedColumn;
         internal SortOrder CurrentSortDirection = SortOrder.None;
 
         #endregion

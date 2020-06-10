@@ -94,7 +94,7 @@ namespace AngelLoader.Forms
         public object InvokeAsync(Delegate method) => BeginInvoke(method);
         public object InvokeAsync(Delegate method, params object[] args) => BeginInvoke(method, args);
 
-        public int CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
+        public Column CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
         public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
         public bool ShowRecentAtTop => FilterShowRecentAtTopButton.Checked;
 
@@ -1911,7 +1911,7 @@ namespace AngelLoader.Forms
 
             if (gameTabSwitch) forceDisplayFM = true;
 
-            SortFMsDGV((Column)FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
+            SortFMsDGV(FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
             Core.SetFilter();
             if (RefreshFMsList(selectedFM, keepSelection: keepSel))
@@ -2157,7 +2157,7 @@ namespace AngelLoader.Forms
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetSelectedFMPosInfo() : null;
 
             var newSortDirection =
-                e.ColumnIndex == FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
+                e.ColumnIndex == (int)FMsDGV.CurrentSortedColumn && FMsDGV.CurrentSortDirection == SortOrder.Ascending
                     ? SortOrder.Descending
                     : SortOrder.Ascending;
 
@@ -2449,7 +2449,7 @@ namespace AngelLoader.Forms
                         CellValueNeededDisabled = false;
                     }
                 }
-                if (FMsDGV.CurrentSortedColumn == (int)Column.Rating)
+                if (FMsDGV.CurrentSortedColumn == Column.Rating)
                 {
                     FMsDGV.Columns[(int)Column.Rating].HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
                 }
@@ -2632,7 +2632,7 @@ namespace AngelLoader.Forms
 
         private void SortFMsDGV(Column column, SortOrder sortDirection)
         {
-            FMsDGV.CurrentSortedColumn = (int)column;
+            FMsDGV.CurrentSortedColumn = column;
             FMsDGV.CurrentSortDirection = sortDirection;
 
             Core.SortFMsViewList(column, sortDirection);

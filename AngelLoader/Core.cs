@@ -403,7 +403,7 @@ namespace AngelLoader
             #endregion
 
             // These ones MUST NOT be set on startup, because the source values won't be valid
-            Config.SortedColumn = (Column)View.CurrentSortedColumnIndex;
+            Config.SortedColumn = View.CurrentSortedColumnIndex;
             Config.SortDirection = View.CurrentSortDirection;
 
             #endregion
@@ -1558,7 +1558,7 @@ namespace AngelLoader
             float mainSplitterPercent,
             float topSplitterPercent,
             List<ColumnData> columns,
-            int sortedColumn,
+            Column sortedColumn,
             SortOrder sortDirection,
             float fmsListFontSizeInPoints,
             Filter filter,

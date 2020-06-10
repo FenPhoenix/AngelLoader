@@ -23,7 +23,7 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        int CurrentSortedColumnIndex { get; }
+        Column CurrentSortedColumnIndex { get; }
         SortOrder CurrentSortDirection { get; }
         bool ShowRecentAtTop { get; }
         void ShowFMsListZoomButtons(bool visible);
