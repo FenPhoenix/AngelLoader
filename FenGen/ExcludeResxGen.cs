@@ -23,14 +23,15 @@ namespace FenGen
                 XmlNode itemGroup = itemGroups[i];
                 foreach (XmlNode cn in itemGroup)
                 {
-                    if (cn is XmlComment commentNode)
+                    if (cn is XmlComment commentNode &&
+                        commentNode.InnerText.Trim() == GenAttributes.FenGenExcludeResx)
                     {
-                        if (commentNode.InnerText.Trim() == GenAttributes.FenGenExcludeResx)
-                        {
-                            commentNode.ParentNode!.ParentNode!.RemoveChild(itemGroup);
-                            i--;
-                            break;
-                        }
+                        // We're guaranteed to be at least three levels deep - Project/ItemGroup/Comment. If we're
+                        // not, then our project file is fubar and we have bigger problems than a couple of null
+                        // references.
+                        commentNode.ParentNode!.ParentNode!.RemoveChild(itemGroup);
+                        i--;
+                        break;
                     }
                 }
             }
@@ -54,9 +55,6 @@ namespace FenGen
 
             var xml = new XmlDocument { PreserveWhitespace = true };
             xml.Load(Core.ALProjectFile);
-
-            var itemGroups = xml.GetElementsByTagName(embeddedResourceName);
-            if (itemGroups.Count <= 0) return;
 
             var newNodes = new List<XmlNode>();
 
