@@ -134,7 +134,7 @@ namespace AngelLoader
                     {
                         try
                         {
-                            Ini.ReadLocalizationIni(f);
+                            LText = Ini.ReadLocalizationIni(f);
                             selFound = true;
                         }
                         catch (Exception ex)

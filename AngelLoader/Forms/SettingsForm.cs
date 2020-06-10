@@ -1371,7 +1371,7 @@ namespace AngelLoader.Forms
             if (EventsDisabled) return;
             try
             {
-                Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, LangComboBox.SelectedBackingItem() + ".ini"));
+                LText = Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, LangComboBox.SelectedBackingItem() + ".ini"));
                 Localize();
                 if (!_startup) LocalizeOwnerForm();
             }

@@ -146,7 +146,6 @@ namespace FenGen
             }
 
             string lTextClassId = LTextClass.Identifier.ToString();
-            lTextClassId = lTextClassId.Substring(0, lTextClassId.IndexOf("_Class", StringComparison.InvariantCulture));
             return (lTextClassId, retDict);
         }
 
@@ -186,9 +185,10 @@ namespace FenGen
             sb.Append(codeBlock);
             w.WL("{");
             w.WL(GenMessages.Method);
-            w.WL("internal static void ReadLocalizationIni(string file)");
+            w.WL("[MustUseReturnValue]");
+            w.WL("internal static " + langClassName + " ReadLocalizationIni(string file)");
             w.WL("{");
-            w.WL("LText = new LText_Class();");
+            w.WL("var ret = new " + langClassName + "();");
             w.WL("string[] lines = File.ReadAllLines(file, Encoding.UTF8);");
             w.WL("for (int i = 0; i < lines.Length; i++)");
             w.WL("{");
@@ -208,7 +208,7 @@ namespace FenGen
                     if (item.Key.IsEmpty()) continue;
                     w.WL((keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
                     w.WL("{");
-                    w.WL(langClassName + "." + dict.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
+                    w.WL("ret." + dict.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
                     w.WL("}");
                     if (!keysElseIf) keysElseIf = true;
                 }
@@ -222,6 +222,8 @@ namespace FenGen
                 if (!sectElseIf) sectElseIf = true;
             }
             w.WL("}");
+            w.WL();
+            w.WL("return ret;");
             w.WL("}");
             w.WL("}");
             w.WL("}");
