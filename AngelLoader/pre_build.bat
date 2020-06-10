@@ -14,7 +14,7 @@ rem ---
 set FenGen="%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
 
 set fenGenArgs=-fmdata -language_t -exclude_resx
-rem set fenGenArgs=-language_t
+rem set fenGenArgs=-fmdata -language_t
 
 %FenGen% %fenGenArgs%
 rem ---

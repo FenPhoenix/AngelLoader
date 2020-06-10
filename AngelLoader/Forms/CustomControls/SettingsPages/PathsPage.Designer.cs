@@ -33,8 +33,8 @@
             this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.OtherGroupBox = new System.Windows.Forms.GroupBox();
             this.BackupPathPanel = new System.Windows.Forms.Panel();
+            this.BackupHelpPictureBox = new System.Windows.Forms.PictureBox();
             this.BackupPathHelpLabel = new System.Windows.Forms.Label();
-            this.BackupPathHelpButton = new System.Windows.Forms.Button();
             this.BackupPathLabel = new System.Windows.Forms.Label();
             this.BackupPathTextBox = new System.Windows.Forms.TextBox();
             this.BackupPathBrowseButton = new System.Windows.Forms.Button();
@@ -69,18 +69,17 @@
             this.Thief2ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
-            this.BackupHelpPictureBox = new System.Windows.Forms.PictureBox();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
             this.FlowLayoutPanel1.SuspendLayout();
             this.OtherGroupBox.SuspendLayout();
             this.BackupPathPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).BeginInit();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.SteamOptionsGroupBox.SuspendLayout();
             this.LaunchTheseGamesThroughSteamPanel.SuspendLayout();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.GameRequirementsPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -91,7 +90,7 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 894);
+            this.PagePanel.Size = new System.Drawing.Size(440, 838);
             this.PagePanel.TabIndex = 3;
             // 
             // ActualPathsPanel
@@ -121,6 +120,7 @@
             this.FlowLayoutPanel1.Size = new System.Drawing.Size(440, 376);
             this.FlowLayoutPanel1.TabIndex = 4;
             this.FlowLayoutPanel1.WrapContents = false;
+            this.FlowLayoutPanel1.Layout += new System.Windows.Forms.LayoutEventHandler(this.FlowLayoutPanel1_Layout);
             // 
             // OtherGroupBox
             // 
@@ -138,7 +138,6 @@
             this.BackupPathPanel.AutoScroll = true;
             this.BackupPathPanel.Controls.Add(this.BackupHelpPictureBox);
             this.BackupPathPanel.Controls.Add(this.BackupPathHelpLabel);
-            this.BackupPathPanel.Controls.Add(this.BackupPathHelpButton);
             this.BackupPathPanel.Controls.Add(this.BackupPathLabel);
             this.BackupPathPanel.Controls.Add(this.BackupPathTextBox);
             this.BackupPathPanel.Controls.Add(this.BackupPathBrowseButton);
@@ -149,6 +148,16 @@
             this.BackupPathPanel.Size = new System.Drawing.Size(418, 98);
             this.BackupPathPanel.TabIndex = 4;
             // 
+            // BackupHelpPictureBox
+            // 
+            this.BackupHelpPictureBox.Image = global::AngelLoader.Properties.Resources.Help_16;
+            this.BackupHelpPictureBox.Location = new System.Drawing.Point(13, 56);
+            this.BackupHelpPictureBox.Name = "BackupHelpPictureBox";
+            this.BackupHelpPictureBox.Size = new System.Drawing.Size(16, 16);
+            this.BackupHelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.BackupHelpPictureBox.TabIndex = 7;
+            this.BackupHelpPictureBox.TabStop = false;
+            // 
             // BackupPathHelpLabel
             // 
             this.BackupPathHelpLabel.AutoSize = true;
@@ -158,18 +167,6 @@
             this.BackupPathHelpLabel.Size = new System.Drawing.Size(121, 13);
             this.BackupPathHelpLabel.TabIndex = 6;
             this.BackupPathHelpLabel.Text = "[multi line help message]";
-            // 
-            // BackupPathHelpButton
-            // 
-            this.BackupPathHelpButton.BackgroundImage = global::AngelLoader.Properties.Resources.Help_16;
-            this.BackupPathHelpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.BackupPathHelpButton.FlatAppearance.BorderSize = 0;
-            this.BackupPathHelpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BackupPathHelpButton.Location = new System.Drawing.Point(189, 6);
-            this.BackupPathHelpButton.Name = "BackupPathHelpButton";
-            this.BackupPathHelpButton.Size = new System.Drawing.Size(16, 16);
-            this.BackupPathHelpButton.TabIndex = 5;
-            this.BackupPathHelpButton.UseVisualStyleBackColor = true;
             // 
             // BackupPathLabel
             // 
@@ -548,29 +545,20 @@
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
             this.DummyAutoScrollPanel.TabIndex = 13;
             // 
-            // BackupHelpPictureBox
-            // 
-            this.BackupHelpPictureBox.Image = global::AngelLoader.Properties.Resources.Help_16;
-            this.BackupHelpPictureBox.Location = new System.Drawing.Point(13, 56);
-            this.BackupHelpPictureBox.Name = "BackupHelpPictureBox";
-            this.BackupHelpPictureBox.Size = new System.Drawing.Size(16, 16);
-            this.BackupHelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.BackupHelpPictureBox.TabIndex = 7;
-            this.BackupHelpPictureBox.TabStop = false;
-            // 
             // PathsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "PathsPage";
-            this.Size = new System.Drawing.Size(440, 894);
+            this.Size = new System.Drawing.Size(440, 838);
             this.PagePanel.ResumeLayout(false);
             this.ActualPathsPanel.ResumeLayout(false);
             this.FlowLayoutPanel1.ResumeLayout(false);
             this.OtherGroupBox.ResumeLayout(false);
             this.BackupPathPanel.ResumeLayout(false);
             this.BackupPathPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).EndInit();
             this.FMArchivePathsGroupBox.ResumeLayout(false);
             this.FMArchivePathsGroupBox.PerformLayout();
             this.SteamOptionsGroupBox.ResumeLayout(false);
@@ -581,7 +569,6 @@
             this.PathsToGameExesGroupBox.PerformLayout();
             this.GameRequirementsPanel.ResumeLayout(false);
             this.GameRequirementsPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -626,7 +613,6 @@
         internal System.Windows.Forms.TextBox SS2ExePathTextBox;
         internal System.Windows.Forms.CheckBox SS2UseSteamCheckBox;
         internal System.Windows.Forms.Panel BackupPathPanel;
-        internal System.Windows.Forms.Button BackupPathHelpButton;
         internal System.Windows.Forms.FlowLayoutPanel FlowLayoutPanel1;
         internal System.Windows.Forms.Label BackupPathHelpLabel;
         private System.Windows.Forms.PictureBox BackupHelpPictureBox;

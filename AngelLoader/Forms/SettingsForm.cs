@@ -478,13 +478,8 @@ namespace AngelLoader.Forms
 
             PathsPage.SteamExeBrowseButton.Click += ExePathBrowseButtons_Click;
 
-            PathsPage.BackupPathHelpButton.Click += BackupPathHelpButton_Click;
             PathsPage.BackupPathTextBox.Leave += BackupPathTextBox_Leave;
             PathsPage.BackupPathBrowseButton.Click += BackupPathBrowseButton_Click;
-            PathsPage.BackupPathHelpButton.MouseHover += BackupPathHelpButton_MouseHover;
-            PathsPage.BackupPathHelpButton.MouseCaptureChanged += BackupPathHelpButton_MouseCaptureChanged;
-
-            PathsPage.FlowLayoutPanel1.Layout += PathsPage_FlowLayoutPanel1_Layout;
 
             PathsPage.AddFMArchivePathButton.Click += AddFMArchivePathButton_Click;
             PathsPage.RemoveFMArchivePathButton.Click += RemoveFMArchivePathButton_Click;
@@ -590,8 +585,6 @@ namespace AngelLoader.Forms
                 PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
-                PathsPage.BackupPathHelpButton.Left = PathsPage.BackupPathLabel.Left + PathsPage.BackupPathLabel.Width + 4;
-                //MainToolTip.SetToolTip(PathsPage.BackupPathHelpButton, LText.HelpMessages.Settings_FMBackupPath_Help);
                 PathsPage.BackupPathHelpLabel.Text = LText.HelpMessages.Settings_FMBackupPath_Help;
                 // To make sure heights are set correctly
                 PathsPage.FlowLayoutPanel1.PerformLayout();
@@ -1066,75 +1059,6 @@ namespace AngelLoader.Forms
             if (result == DialogResult.OK) tb.Text = fileName ?? "";
 
             ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
-        }
-
-        private void BackupPathHelpButton_Click(object sender, EventArgs e)
-        {
-            //MainToolTip.Show(LText.HelpMessages.Settings_FMBackupPath_Help, PathsPage.BackupPathHelpButton);
-            //Core.OpenHelpFile(HelpSections.FMBackupPath);
-        }
-
-        private void BackupPathHelpButton_MouseHover(object sender, EventArgs e)
-        {
-            MainToolTip.Show(LText.HelpMessages.Settings_FMBackupPath_Help, PathsPage.BackupPathHelpButton);
-            //MessageBox.Show("test");
-        }
-
-        private void BackupPathHelpButton_MouseCaptureChanged(object sender, EventArgs e)
-        {
-            //MainToolTip.SetToolTip(PathsPage.BackupPathHelpButton, "");
-        }
-
-        private void PathsPage_FlowLayoutPanel1_Layout(object sender, LayoutEventArgs e)
-        {
-            // Manual crap. Yes, it's necessary. All automatic methods are "almost what we need but not quite".
-            int flpC = PathsPage.FlowLayoutPanel1.Controls.Count;
-            for (int i = 0; i < flpC; i++)
-            {
-                PathsPage.FlowLayoutPanel1.Controls[i].Width = PathsPage.FlowLayoutPanel1.ClientSize.Width - 16;
-            }
-
-            PathsPage.BackupPathHelpLabel.MaximumSize = new Size(
-                PathsPage.OtherGroupBox.Width - (PathsPage.BackupPathHelpLabel.Left * 2),
-                PathsPage.BackupPathHelpLabel.MaximumSize.Height);
-            PathsPage.OtherGroupBox.Height = PathsPage.OtherGroupBox.Padding.Vertical +
-                                             PathsPage.BackupPathPanel.Top +
-                                             PathsPage.BackupPathPanel.Padding.Vertical +
-                                             PathsPage.BackupPathHelpLabel.Top +
-                                             PathsPage.BackupPathHelpLabel.Padding.Vertical +
-                                             PathsPage.BackupPathHelpLabel.Height +
-                                             6;
-
-            // Have to do this separately after, because our heights will have changed above
-            int flpHeight = PathsPage.FlowLayoutPanel1.Padding.Vertical;
-            for (int i = 0; i < flpC; i++)
-            {
-                Control c = PathsPage.FlowLayoutPanel1.Controls[i];
-                flpHeight += c.Margin.Vertical +
-                             c.Padding.Vertical +
-                             c.Height;
-            }
-
-            PathsPage.FlowLayoutPanel1.Height = flpHeight;
-
-            int greatestTop = 0;
-            Control? bottomMostControl = null;
-            int appC = PathsPage.ActualPathsPanel.Controls.Count;
-            for (int i = 0; i < appC; i++)
-            {
-                Control c = PathsPage.ActualPathsPanel.Controls[i];
-                if (c.Top > greatestTop)
-                {
-                    greatestTop = c.Top;
-                    bottomMostControl = c;
-                }
-            }
-
-            AssertR(bottomMostControl != null, nameof(bottomMostControl) + " was null");
-
-            PathsPage.ActualPathsPanel.Height = (bottomMostControl!.Top +
-                                                 bottomMostControl!.Height) -
-                                                PathsPage.ActualPathsPanel.Padding.Vertical;
         }
 
         private void BackupPathTextBox_Leave(object sender, EventArgs e)
