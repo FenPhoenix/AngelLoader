@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
+using static AngelLoader.Misc;
 #pragma warning disable 8509 // Switch expression doesn't handle all possible inputs
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using AngelLoader.Importing;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.Import
 {

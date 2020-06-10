@@ -16,6 +16,7 @@ namespace AngelLoader
         #region Global state
 
         internal static readonly ConfigData Config = new ConfigData();
+        internal static LText_Class LText = new LText_Class();
 
         #region Categories and tags
 

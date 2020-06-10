@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {

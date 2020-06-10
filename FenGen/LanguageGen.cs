@@ -62,7 +62,10 @@ namespace FenGen
 
                 if (fields.Length == 0) continue;
 
-                var dict = new NamedDictionary(subClass.Identifier.ToString());
+                // TODO: Un-hardcode this "remove _Class suffix" stuff
+                string _name = subClass.Identifier.ToString();
+                _name = _name.Substring(0, _name.IndexOf("_Class", StringComparison.InvariantCulture));
+                var dict = new NamedDictionary(_name);
                 foreach (SyntaxNode f in fields)
                 {
                     string fName = "";
@@ -142,7 +145,9 @@ namespace FenGen
                 retDict.Add(dict);
             }
 
-            return (LTextClass.Identifier.ToString(), retDict);
+            string lTextClassId = LTextClass.Identifier.ToString();
+            lTextClassId = lTextClassId.Substring(0, lTextClassId.IndexOf("_Class", StringComparison.InvariantCulture));
+            return (lTextClassId, retDict);
         }
 
         private static void WriteDest(string langClassName, List<NamedDictionary> dictList, string destFile,
@@ -183,6 +188,7 @@ namespace FenGen
             w.WL(GenMessages.Method);
             w.WL("internal static void ReadLocalizationIni(string file)");
             w.WL("{");
+            w.WL("LText = new LText_Class();");
             w.WL("string[] lines = File.ReadAllLines(file, Encoding.UTF8);");
             w.WL("for (int i = 0; i < lines.Length; i++)");
             w.WL("{");

@@ -4,6 +4,7 @@ using System;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Attributes;
+using static AngelLoader.Misc;
 
 namespace AngelLoader
 {

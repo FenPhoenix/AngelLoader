@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.Import
 {
