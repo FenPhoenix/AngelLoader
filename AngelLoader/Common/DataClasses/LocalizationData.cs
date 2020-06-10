@@ -13,38 +13,6 @@ namespace AngelLoader.DataClasses
     // -Hitches with localizability:
     //  -Date and rating forms are not set up for easy resizability of controls
 
-    /*
-    For generating instantiable localization string class, convert:
-
-    internal static class LText_Static
-    {
-        internal static class Foo
-        {
-            internal static string TitleText = "Foo-matic 2000";
-        }
-    }
-
-    to:
-
-    internal sealed class LText_Instantiable
-    {
-        internal readonly Foo_Section Foo = new Foo_Section();
-
-        internal sealed class Foo_Section
-        {
-            internal string TitleText = "Foo-matic 2000";
-        }
-    }
-
-    Reader method must be passed (or must instantiate and return) a localized string class instance.
-    Instead of reading into LText.Whatever.Whatever, it will read into lTextParam.Whatever.Whatever etc.
-
-    AngelLoader does not desperately need this; the only thing it would really buy us is a quicker previous-lang
-    reset in the Settings window if you click Cancel after having selected a different language.
-    However, the hypothetical visual localizer tool would probably want instantiable language objects. We can
-    generate that from this and not even have to touch anything here.
-    */
-
     [FenGenLocalizationSourceClass]
     internal sealed class LText_Class
     {
