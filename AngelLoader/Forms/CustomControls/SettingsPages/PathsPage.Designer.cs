@@ -167,6 +167,7 @@
             this.BackupPathHelpLabel.Size = new System.Drawing.Size(121, 13);
             this.BackupPathHelpLabel.TabIndex = 6;
             this.BackupPathHelpLabel.Text = "[multi line help message]";
+            this.BackupPathHelpLabel.TextChanged += new System.EventHandler(this.BackupPathHelpLabel_TextChanged);
             // 
             // BackupPathLabel
             // 

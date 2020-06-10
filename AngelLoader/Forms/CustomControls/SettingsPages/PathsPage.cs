@@ -75,5 +75,12 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
                                        bottomMostControl!.Height) -
                                       ActualPathsPanel.Padding.Vertical;
         }
+
+        private void BackupPathHelpLabel_TextChanged(object sender, System.EventArgs e)
+        {
+            // The text changing might also require the box to change height, but the flow layout panel may not
+            // have fired its layout event in that case, so do it manually here.
+            FlowLayoutPanel1.PerformLayout();
+        }
     }
 }

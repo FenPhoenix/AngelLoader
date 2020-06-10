@@ -103,11 +103,6 @@ namespace AngelLoader.DataClasses
             // @GENGAMES (Localization - Global): End
         }
 
-        internal static class HelpMessages
-        {
-            internal static string Settings_FMBackupPath_Help = "The directory that will be used for backing up saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths.";
-        }
-
         internal static class BrowseDialogs
         {
             internal static string AllFiles = "All files (*.*)";
@@ -188,6 +183,8 @@ namespace AngelLoader.DataClasses
             [FenGenBlankLine]
             internal static string Help_HelpFileNotFound = "Help file not found.";
             internal static string Help_UnableToOpenHelpFile = "Unable to open help file.";
+            //[FenGenBlankLine]
+            //internal static string Settings_Paths_BackupPathIsAnArchivePath = "Backup path is the same as one of the archive paths. Please set it to something different.";
         }
 
         internal static class FMDeletion
@@ -419,6 +416,7 @@ namespace AngelLoader.DataClasses
             internal static string Paths_BackupPath = "Backup path (required):";
             internal static string Paths_FMArchivePaths = "FM archive paths";
             internal static string Paths_IncludeSubfolders = "Include subfolders";
+            internal static string Paths_BackupPath_Info = "This is the directory that will be used for new backups of saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths.";
             [FenGenBlankLine]
             internal static string Paths_AddArchivePathToolTip = "Add archive path...";
             internal static string Paths_RemoveArchivePathToolTip = "Remove selected archive path";

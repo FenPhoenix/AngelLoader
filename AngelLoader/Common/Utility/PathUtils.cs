@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using static System.StringComparison;
 
 namespace AngelLoader
@@ -56,6 +57,18 @@ namespace AngelLoader
         private static string CanonicalizePath(string value) => value.Replace('/', '\\');
 
         #region Contains / count / find
+
+        internal static bool PathContainsI_Dir(this List<string> value, string substring)
+        {
+            for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
+            return false;
+        }
+
+        internal static bool PathContainsI_Dir(this string[] value, string substring)
+        {
+            for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
+            return false;
+        }
 
         internal static bool PathContainsI(this List<string> value, string substring)
         {
@@ -129,6 +142,15 @@ namespace AngelLoader
 
         #region Equality / StartsWith / EndsWith
 
+        internal static bool PathSequenceEqualI_Dir(this IList<string> first, IList<string> second)
+        {
+            int firstCount;
+            if ((firstCount = first.Count) != second.Count) return false;
+
+            for (int i = 0; i < firstCount; i++) if (!first[i].PathEqualsI_Dir(second[i])) return false;
+            return true;
+        }
+
         internal static bool PathSequenceEqualI(this IList<string> first, IList<string> second)
         {
             int firstCount;
@@ -142,6 +164,16 @@ namespace AngelLoader
         private static bool PathCharsConsideredEqual_Win(char char1, char char2) =>
             char1.EqualsIAscii(char2) ||
             (char1.IsDirSep() && char2.IsDirSep());
+
+        /// <summary>
+        /// Path equality check ignoring case and directory separator differences. Directory version: Ignores
+        /// trailing path separators.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        [PublicAPI]
+        internal static bool PathEqualsI_Dir(this string first, string second) => first.TrimEnd(CA_BS_FS).PathEqualsI(second.TrimEnd(CA_BS_FS));
 
         /// <summary>
         /// Path equality check ignoring case and directory separator differences.

@@ -232,7 +232,7 @@ namespace AngelLoader
 
             bool archivePathsChanged =
                 !startup &&
-                (!Config.FMArchivePaths.PathSequenceEqualI(sf.OutConfig.FMArchivePaths) ||
+                (!Config.FMArchivePaths.PathSequenceEqualI_Dir(sf.OutConfig.FMArchivePaths) ||
                  Config.FMArchivePathsIncludeSubfolders != sf.OutConfig.FMArchivePathsIncludeSubfolders);
 
             bool gamePathsChanged =

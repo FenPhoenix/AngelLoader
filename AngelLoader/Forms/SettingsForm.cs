@@ -585,9 +585,7 @@ namespace AngelLoader.Forms
                 PathsPage.OtherGroupBox.Text = LText.SettingsWindow.Paths_Other;
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
-                PathsPage.BackupPathHelpLabel.Text = LText.HelpMessages.Settings_FMBackupPath_Help;
-                // To make sure heights are set correctly
-                PathsPage.FlowLayoutPanel1.PerformLayout();
+                PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info;
 
                 PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
@@ -688,6 +686,7 @@ namespace AngelLoader.Forms
         private bool CheckForErrors()
         {
             bool error = false;
+            //bool backupPathIsArchivePathError = false;
 
             // TODO: Check for cam_mod.ini etc. to be thorough
 
@@ -706,6 +705,17 @@ namespace AngelLoader.Forms
                 ShowPathError(PathsPage.BackupPathTextBox, true);
             }
 
+            // Disabled for now... as it's a restriction tightening thing...
+            //foreach (string item in PathsPage.FMArchivePathsListBox.Items)
+            //{
+            //    if (PathsPage.BackupPathTextBox.Text.PathEqualsI_Dir(item))
+            //    {
+            //        error = true;
+            //        backupPathIsArchivePathError = true;
+            //        ShowPathError(PathsPage.BackupPathTextBox, true);
+            //    }
+            //}
+
             if (error)
             {
                 // Currently, all errors happen on the Paths page, so go to that page automatically.
@@ -722,6 +732,16 @@ namespace AngelLoader.Forms
                         break;
                     }
                 }
+
+                // See above
+                //if (backupPathIsArchivePathError)
+                //{
+                //    MessageBox.Show(
+                //        LText.AlertMessages.Settings_Paths_BackupPathIsAnArchivePath,
+                //        LText.AlertMessages.Alert,
+                //        MessageBoxButtons.OK,
+                //        MessageBoxIcon.Error);
+                //}
 
                 return true;
             }
