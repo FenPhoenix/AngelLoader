@@ -184,14 +184,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BackupPathTextBox.Location = new System.Drawing.Point(13, 24);
             this.BackupPathTextBox.Name = "BackupPathTextBox";
-            this.BackupPathTextBox.Size = new System.Drawing.Size(316, 20);
+            this.BackupPathTextBox.Size = new System.Drawing.Size(321, 20);
             this.BackupPathTextBox.TabIndex = 1;
             // 
             // BackupPathBrowseButton
             // 
             this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BackupPathBrowseButton.AutoSize = true;
-            this.BackupPathBrowseButton.Location = new System.Drawing.Point(328, 23);
+            this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
             this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
             this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);

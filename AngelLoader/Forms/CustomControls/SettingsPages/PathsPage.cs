@@ -9,6 +9,11 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
     {
         public bool IsVisible { get => Visible; set => Visible = value; }
 
+        /// <summary>
+        /// Horrible hack, just set it to true when you want it to start doing the layout crap
+        /// </summary>
+        public bool DoLayout;
+
         public PathsPage() => InitializeComponent();
 
         public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
@@ -25,6 +30,8 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
 
         private void FlowLayoutPanel1_Layout(object sender, LayoutEventArgs e)
         {
+            // Horrible hack to get everything to look right on first show
+            if (!DoLayout) return;
             try
             {
                 FlowLayoutPanel1.SuspendLayout();

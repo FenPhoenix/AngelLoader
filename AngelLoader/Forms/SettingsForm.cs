@@ -536,12 +536,13 @@ namespace AngelLoader.Forms
             // prior to then.
             if (_startup && !_cleanStart) CheckForErrors();
         }
-        
+
         private void SettingsForm_Shown(object sender, EventArgs e)
         {
             // We have to do this here, in _Shown, otherwise it doesn't do its initial layout and might miss if
             // there's supposed to be scroll bars or whatever else... this makes it visually correct. Don't ask
             // questions.
+            PathsPage.DoLayout = true;
             PathsPage.FlowLayoutPanel1.PerformLayout();
         }
 
@@ -592,6 +593,8 @@ namespace AngelLoader.Forms
                 PathsPage.BackupPathLabel.Text = LText.SettingsWindow.Paths_BackupPath;
 
                 PathsPage.BackupPathHelpLabel.Text = LText.SettingsWindow.Paths_BackupPath_Info;
+                // Required for the startup version where the lang box is on the same page as paths!
+                PathsPage.FlowLayoutPanel1.PerformLayout();
 
                 PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
                 PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
