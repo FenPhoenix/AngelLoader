@@ -416,7 +416,7 @@ namespace AngelLoader.DataClasses
             internal static string Paths_LaunchTheseGamesThroughSteam = "If Steam exists, use it to launch these games:";
             [FenGenBlankLine]
             internal static string Paths_Other = "Other";
-            internal static string Paths_BackupPath = "Path to place new FM backup files (required):";
+            internal static string Paths_BackupPath = "Backup path (required):";
             internal static string Paths_FMArchivePaths = "FM archive paths";
             internal static string Paths_IncludeSubfolders = "Include subfolders";
             [FenGenBlankLine]
