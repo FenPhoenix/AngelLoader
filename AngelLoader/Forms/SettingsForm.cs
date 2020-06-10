@@ -536,6 +536,14 @@ namespace AngelLoader.Forms
             // prior to then.
             if (_startup && !_cleanStart) CheckForErrors();
         }
+        
+        private void SettingsForm_Shown(object sender, EventArgs e)
+        {
+            // We have to do this here, in _Shown, otherwise it doesn't do its initial layout and might miss if
+            // there's supposed to be scroll bars or whatever else... this makes it visually correct. Don't ask
+            // questions.
+            PathsPage.FlowLayoutPanel1.PerformLayout();
+        }
 
         private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
         {
