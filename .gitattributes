@@ -61,6 +61,3 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
-
-DllExport.bat linguist-vendored
-DllExport_Configure.bat linguist-vendored
