@@ -93,25 +93,7 @@
     </Compile>
   </ItemGroup>
 
-  <!--
-    None of the form .resx files are required or contain anything of use. All they do is bloat up the executable
-    for no reason. We hate bloat so out they go.
-    We keep them for the Debug profile to keep the designer happy (Debug is the only profile where we use the
-    generated designer code, otherwise we use the manual fast-init version with no redundant cruft, which is
-    not designable).
-  
-    Note! Whenever you edit a form that's associated with one of these, the relevant line here gets automatically
-    removed. Annoying. So FenGen re-adds all the lines on compile, so even if a removed line sneaks into a commit,
-    at least the compiled executable is guaranteed to still have them removed.
-    
-    FenGen quirk: keep comments outside this block or else the generated lines will be placed after them. Meh.
-  -->
   <ItemGroup>
-    <!--
-      The only resx file that's actually required is the main one here. It contains all the images and icons.
-      If it were up to me we wouldn't use this either, as it's accessed through horrendous reflection that takes
-      all day about getting images (that's why we cache them), but whatcha gonna do.
-    -->
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
