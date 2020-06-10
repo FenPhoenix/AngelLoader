@@ -42,6 +42,7 @@ namespace AngelLoader.Forms
         #region Copies of passed-in data
 
         private readonly string _inLanguage;
+        private readonly LText_Class _inLText;
 
         private readonly int _inPathsVScrollPos;
         private readonly int _inFMDisplayVScrollPos;
@@ -95,6 +96,10 @@ namespace AngelLoader.Forms
             #region Init copies of passed-in data
 
             _inLanguage = config.Language;
+            // Even though this looks like it should be a reference and therefore not work for being a separate
+            // object, it somehow does, because I guess we new up LText on read and break the reference and then
+            // this copy becomes its own copy...? I don't like that I didn't know that...
+            _inLText = LText;
 
             _inPathsVScrollPos = config.SettingsPathsVScrollPos;
             _inFMDisplayVScrollPos = config.SettingsFMDisplayVScrollPos;
@@ -801,7 +806,8 @@ namespace AngelLoader.Forms
                 {
                     try
                     {
-                        Ini.ReadLocalizationIni(Path.Combine(Paths.Languages, _inLanguage + ".ini"));
+                        // It's actually totally fine that this one is a reference.
+                        LText = _inLText;
                         LocalizeOwnerForm();
                     }
                     catch (Exception ex)
