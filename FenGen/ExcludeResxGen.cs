@@ -9,7 +9,7 @@ namespace FenGen
 {
     internal static class ExcludeResx
     {
-        const string ItemGroupName = "ItemGroup";
+        private const string ItemGroupName = "ItemGroup";
 
         internal static void GenerateRestore()
         {
