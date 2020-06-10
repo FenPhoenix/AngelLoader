@@ -30,6 +30,19 @@
         {
             this.PagePanel = new System.Windows.Forms.Panel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
+            this.FlowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.OtherGroupBox = new System.Windows.Forms.GroupBox();
+            this.BackupPathPanel = new System.Windows.Forms.Panel();
+            this.BackupPathHelpLabel = new System.Windows.Forms.Label();
+            this.BackupPathHelpButton = new System.Windows.Forms.Button();
+            this.BackupPathLabel = new System.Windows.Forms.Label();
+            this.BackupPathTextBox = new System.Windows.Forms.TextBox();
+            this.BackupPathBrowseButton = new System.Windows.Forms.Button();
+            this.FMArchivePathsGroupBox = new System.Windows.Forms.GroupBox();
+            this.IncludeSubfoldersCheckBox = new System.Windows.Forms.CheckBox();
+            this.AddFMArchivePathButton = new System.Windows.Forms.Button();
+            this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
+            this.FMArchivePathsListBox = new System.Windows.Forms.ListBox();
             this.SteamOptionsGroupBox = new System.Windows.Forms.GroupBox();
             this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
             this.LaunchTheseGamesThroughSteamCheckBox = new System.Windows.Forms.CheckBox();
@@ -55,27 +68,19 @@
             this.Thief3ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief2ExePathTextBox = new System.Windows.Forms.TextBox();
             this.Thief1ExePathTextBox = new System.Windows.Forms.TextBox();
-            this.FMArchivePathsGroupBox = new System.Windows.Forms.GroupBox();
-            this.IncludeSubfoldersCheckBox = new System.Windows.Forms.CheckBox();
-            this.AddFMArchivePathButton = new System.Windows.Forms.Button();
-            this.RemoveFMArchivePathButton = new System.Windows.Forms.Button();
-            this.FMArchivePathsListBox = new System.Windows.Forms.ListBox();
-            this.OtherGroupBox = new System.Windows.Forms.GroupBox();
-            this.BackupPathPanel = new System.Windows.Forms.Panel();
-            this.BackupPathHelpButton = new System.Windows.Forms.Button();
-            this.BackupPathLabel = new System.Windows.Forms.Label();
-            this.BackupPathBrowseButton = new System.Windows.Forms.Button();
-            this.BackupPathTextBox = new System.Windows.Forms.TextBox();
             this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
+            this.BackupHelpPictureBox = new System.Windows.Forms.PictureBox();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
+            this.FlowLayoutPanel1.SuspendLayout();
+            this.OtherGroupBox.SuspendLayout();
+            this.BackupPathPanel.SuspendLayout();
+            this.FMArchivePathsGroupBox.SuspendLayout();
             this.SteamOptionsGroupBox.SuspendLayout();
             this.LaunchTheseGamesThroughSteamPanel.SuspendLayout();
             this.PathsToGameExesGroupBox.SuspendLayout();
             this.GameRequirementsPanel.SuspendLayout();
-            this.FMArchivePathsGroupBox.SuspendLayout();
-            this.OtherGroupBox.SuspendLayout();
-            this.BackupPathPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -86,22 +91,170 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 803);
+            this.PagePanel.Size = new System.Drawing.Size(440, 894);
             this.PagePanel.TabIndex = 3;
             // 
             // ActualPathsPanel
             // 
             this.ActualPathsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ActualPathsPanel.Controls.Add(this.FlowLayoutPanel1);
             this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
             this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
-            this.ActualPathsPanel.Controls.Add(this.FMArchivePathsGroupBox);
-            this.ActualPathsPanel.Controls.Add(this.OtherGroupBox);
             this.ActualPathsPanel.Location = new System.Drawing.Point(0, 0);
             this.ActualPathsPanel.MinimumSize = new System.Drawing.Size(440, 0);
             this.ActualPathsPanel.Name = "ActualPathsPanel";
-            this.ActualPathsPanel.Size = new System.Drawing.Size(440, 784);
+            this.ActualPathsPanel.Size = new System.Drawing.Size(440, 808);
             this.ActualPathsPanel.TabIndex = 4;
+            // 
+            // FlowLayoutPanel1
+            // 
+            this.FlowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FlowLayoutPanel1.Controls.Add(this.OtherGroupBox);
+            this.FlowLayoutPanel1.Controls.Add(this.FMArchivePathsGroupBox);
+            this.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.FlowLayoutPanel1.Location = new System.Drawing.Point(0, 432);
+            this.FlowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.FlowLayoutPanel1.Name = "FlowLayoutPanel1";
+            this.FlowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            this.FlowLayoutPanel1.Size = new System.Drawing.Size(440, 376);
+            this.FlowLayoutPanel1.TabIndex = 4;
+            this.FlowLayoutPanel1.WrapContents = false;
+            // 
+            // OtherGroupBox
+            // 
+            this.OtherGroupBox.Controls.Add(this.BackupPathPanel);
+            this.OtherGroupBox.Location = new System.Drawing.Point(8, 3);
+            this.OtherGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+            this.OtherGroupBox.Name = "OtherGroupBox";
+            this.OtherGroupBox.Size = new System.Drawing.Size(424, 117);
+            this.OtherGroupBox.TabIndex = 2;
+            this.OtherGroupBox.TabStop = false;
+            this.OtherGroupBox.Text = "Other";
+            // 
+            // BackupPathPanel
+            // 
+            this.BackupPathPanel.AutoScroll = true;
+            this.BackupPathPanel.Controls.Add(this.BackupHelpPictureBox);
+            this.BackupPathPanel.Controls.Add(this.BackupPathHelpLabel);
+            this.BackupPathPanel.Controls.Add(this.BackupPathHelpButton);
+            this.BackupPathPanel.Controls.Add(this.BackupPathLabel);
+            this.BackupPathPanel.Controls.Add(this.BackupPathTextBox);
+            this.BackupPathPanel.Controls.Add(this.BackupPathBrowseButton);
+            this.BackupPathPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BackupPathPanel.Location = new System.Drawing.Point(3, 16);
+            this.BackupPathPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.BackupPathPanel.Name = "BackupPathPanel";
+            this.BackupPathPanel.Size = new System.Drawing.Size(418, 98);
+            this.BackupPathPanel.TabIndex = 4;
+            // 
+            // BackupPathHelpLabel
+            // 
+            this.BackupPathHelpLabel.AutoSize = true;
+            this.BackupPathHelpLabel.Location = new System.Drawing.Point(32, 56);
+            this.BackupPathHelpLabel.MaximumSize = new System.Drawing.Size(380, 0);
+            this.BackupPathHelpLabel.Name = "BackupPathHelpLabel";
+            this.BackupPathHelpLabel.Size = new System.Drawing.Size(121, 13);
+            this.BackupPathHelpLabel.TabIndex = 6;
+            this.BackupPathHelpLabel.Text = "[multi line help message]";
+            // 
+            // BackupPathHelpButton
+            // 
+            this.BackupPathHelpButton.BackgroundImage = global::AngelLoader.Properties.Resources.Help_16;
+            this.BackupPathHelpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.BackupPathHelpButton.FlatAppearance.BorderSize = 0;
+            this.BackupPathHelpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BackupPathHelpButton.Location = new System.Drawing.Point(189, 6);
+            this.BackupPathHelpButton.Name = "BackupPathHelpButton";
+            this.BackupPathHelpButton.Size = new System.Drawing.Size(16, 16);
+            this.BackupPathHelpButton.TabIndex = 5;
+            this.BackupPathHelpButton.UseVisualStyleBackColor = true;
+            // 
+            // BackupPathLabel
+            // 
+            this.BackupPathLabel.AutoSize = true;
+            this.BackupPathLabel.Location = new System.Drawing.Point(13, 8);
+            this.BackupPathLabel.Name = "BackupPathLabel";
+            this.BackupPathLabel.Size = new System.Drawing.Size(174, 13);
+            this.BackupPathLabel.TabIndex = 0;
+            this.BackupPathLabel.Text = "Path to place new FM backup files:";
+            // 
+            // BackupPathTextBox
+            // 
+            this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BackupPathTextBox.Location = new System.Drawing.Point(13, 24);
+            this.BackupPathTextBox.Name = "BackupPathTextBox";
+            this.BackupPathTextBox.Size = new System.Drawing.Size(316, 20);
+            this.BackupPathTextBox.TabIndex = 1;
+            // 
+            // BackupPathBrowseButton
+            // 
+            this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BackupPathBrowseButton.AutoSize = true;
+            this.BackupPathBrowseButton.Location = new System.Drawing.Point(328, 23);
+            this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
+            this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.BackupPathBrowseButton.TabIndex = 2;
+            this.BackupPathBrowseButton.Text = "Browse...";
+            this.BackupPathBrowseButton.UseVisualStyleBackColor = true;
+            // 
+            // FMArchivePathsGroupBox
+            // 
+            this.FMArchivePathsGroupBox.Controls.Add(this.IncludeSubfoldersCheckBox);
+            this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
+            this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
+            this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
+            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 126);
+            this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+            this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
+            this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 242);
+            this.FMArchivePathsGroupBox.TabIndex = 3;
+            this.FMArchivePathsGroupBox.TabStop = false;
+            this.FMArchivePathsGroupBox.Text = "FM archive paths";
+            // 
+            // IncludeSubfoldersCheckBox
+            // 
+            this.IncludeSubfoldersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.IncludeSubfoldersCheckBox.AutoSize = true;
+            this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 451);
+            this.IncludeSubfoldersCheckBox.Name = "IncludeSubfoldersCheckBox";
+            this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
+            this.IncludeSubfoldersCheckBox.TabIndex = 1;
+            this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
+            this.IncludeSubfoldersCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // AddFMArchivePathButton
+            // 
+            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 447);
+            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
+            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.AddFMArchivePathButton.TabIndex = 3;
+            this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
+            this.AddFMArchivePathButton.Paint += new System.Windows.Forms.PaintEventHandler(this.AddFMArchivePathButton_Paint);
+            // 
+            // RemoveFMArchivePathButton
+            // 
+            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 447);
+            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
+            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.RemoveFMArchivePathButton.TabIndex = 2;
+            this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
+            this.RemoveFMArchivePathButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveFMArchivePathButton_Paint);
+            // 
+            // FMArchivePathsListBox
+            // 
+            this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FMArchivePathsListBox.FormattingEnabled = true;
+            this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
+            this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
+            this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
+            this.FMArchivePathsListBox.TabIndex = 0;
             // 
             // SteamOptionsGroupBox
             // 
@@ -388,132 +541,6 @@
             this.Thief1ExePathTextBox.Size = new System.Drawing.Size(320, 20);
             this.Thief1ExePathTextBox.TabIndex = 1;
             // 
-            // FMArchivePathsGroupBox
-            // 
-            this.FMArchivePathsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FMArchivePathsGroupBox.Controls.Add(this.IncludeSubfoldersCheckBox);
-            this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
-            this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
-            this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
-            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 520);
-            this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-            this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
-            this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 256);
-            this.FMArchivePathsGroupBox.TabIndex = 3;
-            this.FMArchivePathsGroupBox.TabStop = false;
-            this.FMArchivePathsGroupBox.Text = "FM archive paths";
-            // 
-            // IncludeSubfoldersCheckBox
-            // 
-            this.IncludeSubfoldersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.IncludeSubfoldersCheckBox.AutoSize = true;
-            this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 228);
-            this.IncludeSubfoldersCheckBox.Name = "IncludeSubfoldersCheckBox";
-            this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
-            this.IncludeSubfoldersCheckBox.TabIndex = 1;
-            this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
-            this.IncludeSubfoldersCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // AddFMArchivePathButton
-            // 
-            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
-            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
-            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.AddFMArchivePathButton.TabIndex = 3;
-            this.AddFMArchivePathButton.UseVisualStyleBackColor = true;
-            this.AddFMArchivePathButton.Paint += new System.Windows.Forms.PaintEventHandler(this.AddFMArchivePathButton_Paint);
-            // 
-            // RemoveFMArchivePathButton
-            // 
-            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
-            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
-            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveFMArchivePathButton.TabIndex = 2;
-            this.RemoveFMArchivePathButton.UseVisualStyleBackColor = true;
-            this.RemoveFMArchivePathButton.Paint += new System.Windows.Forms.PaintEventHandler(this.RemoveFMArchivePathButton_Paint);
-            // 
-            // FMArchivePathsListBox
-            // 
-            this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FMArchivePathsListBox.FormattingEnabled = true;
-            this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
-            this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
-            this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
-            this.FMArchivePathsListBox.TabIndex = 0;
-            // 
-            // OtherGroupBox
-            // 
-            this.OtherGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.OtherGroupBox.Controls.Add(this.BackupPathPanel);
-            this.OtherGroupBox.Location = new System.Drawing.Point(8, 432);
-            this.OtherGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-            this.OtherGroupBox.Name = "OtherGroupBox";
-            this.OtherGroupBox.Size = new System.Drawing.Size(424, 72);
-            this.OtherGroupBox.TabIndex = 2;
-            this.OtherGroupBox.TabStop = false;
-            this.OtherGroupBox.Text = "Other";
-            // 
-            // BackupPathPanel
-            // 
-            this.BackupPathPanel.AutoScroll = true;
-            this.BackupPathPanel.Controls.Add(this.BackupPathHelpButton);
-            this.BackupPathPanel.Controls.Add(this.BackupPathLabel);
-            this.BackupPathPanel.Controls.Add(this.BackupPathTextBox);
-            this.BackupPathPanel.Controls.Add(this.BackupPathBrowseButton);
-            this.BackupPathPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BackupPathPanel.Location = new System.Drawing.Point(3, 16);
-            this.BackupPathPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.BackupPathPanel.Name = "BackupPathPanel";
-            this.BackupPathPanel.Size = new System.Drawing.Size(418, 53);
-            this.BackupPathPanel.TabIndex = 4;
-            // 
-            // BackupPathHelpButton
-            // 
-            this.BackupPathHelpButton.BackgroundImage = global::AngelLoader.Properties.Resources.Help_16;
-            this.BackupPathHelpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.BackupPathHelpButton.FlatAppearance.BorderSize = 0;
-            this.BackupPathHelpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BackupPathHelpButton.Location = new System.Drawing.Point(189, 6);
-            this.BackupPathHelpButton.Name = "BackupPathHelpButton";
-            this.BackupPathHelpButton.Size = new System.Drawing.Size(16, 16);
-            this.BackupPathHelpButton.TabIndex = 5;
-            this.BackupPathHelpButton.UseVisualStyleBackColor = true;
-            // 
-            // BackupPathLabel
-            // 
-            this.BackupPathLabel.AutoSize = true;
-            this.BackupPathLabel.Location = new System.Drawing.Point(13, 8);
-            this.BackupPathLabel.Name = "BackupPathLabel";
-            this.BackupPathLabel.Size = new System.Drawing.Size(174, 13);
-            this.BackupPathLabel.TabIndex = 0;
-            this.BackupPathLabel.Text = "Path to place new FM backup files:";
-            // 
-            // BackupPathBrowseButton
-            // 
-            this.BackupPathBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BackupPathBrowseButton.AutoSize = true;
-            this.BackupPathBrowseButton.Location = new System.Drawing.Point(333, 23);
-            this.BackupPathBrowseButton.Name = "BackupPathBrowseButton";
-            this.BackupPathBrowseButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.BackupPathBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.BackupPathBrowseButton.TabIndex = 2;
-            this.BackupPathBrowseButton.Text = "Browse...";
-            this.BackupPathBrowseButton.UseVisualStyleBackColor = true;
-            // 
-            // BackupPathTextBox
-            // 
-            this.BackupPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.BackupPathTextBox.Location = new System.Drawing.Point(13, 24);
-            this.BackupPathTextBox.Name = "BackupPathTextBox";
-            this.BackupPathTextBox.Size = new System.Drawing.Size(320, 20);
-            this.BackupPathTextBox.TabIndex = 1;
-            // 
             // DummyAutoScrollPanel
             // 
             this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 200);
@@ -521,15 +548,31 @@
             this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
             this.DummyAutoScrollPanel.TabIndex = 13;
             // 
+            // BackupHelpPictureBox
+            // 
+            this.BackupHelpPictureBox.Image = global::AngelLoader.Properties.Resources.Help_16;
+            this.BackupHelpPictureBox.Location = new System.Drawing.Point(13, 56);
+            this.BackupHelpPictureBox.Name = "BackupHelpPictureBox";
+            this.BackupHelpPictureBox.Size = new System.Drawing.Size(16, 16);
+            this.BackupHelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.BackupHelpPictureBox.TabIndex = 7;
+            this.BackupHelpPictureBox.TabStop = false;
+            // 
             // PathsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "PathsPage";
-            this.Size = new System.Drawing.Size(440, 803);
+            this.Size = new System.Drawing.Size(440, 894);
             this.PagePanel.ResumeLayout(false);
             this.ActualPathsPanel.ResumeLayout(false);
+            this.FlowLayoutPanel1.ResumeLayout(false);
+            this.OtherGroupBox.ResumeLayout(false);
+            this.BackupPathPanel.ResumeLayout(false);
+            this.BackupPathPanel.PerformLayout();
+            this.FMArchivePathsGroupBox.ResumeLayout(false);
+            this.FMArchivePathsGroupBox.PerformLayout();
             this.SteamOptionsGroupBox.ResumeLayout(false);
             this.SteamOptionsGroupBox.PerformLayout();
             this.LaunchTheseGamesThroughSteamPanel.ResumeLayout(false);
@@ -538,11 +581,7 @@
             this.PathsToGameExesGroupBox.PerformLayout();
             this.GameRequirementsPanel.ResumeLayout(false);
             this.GameRequirementsPanel.PerformLayout();
-            this.FMArchivePathsGroupBox.ResumeLayout(false);
-            this.FMArchivePathsGroupBox.PerformLayout();
-            this.OtherGroupBox.ResumeLayout(false);
-            this.BackupPathPanel.ResumeLayout(false);
-            this.BackupPathPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -588,5 +627,8 @@
         internal System.Windows.Forms.CheckBox SS2UseSteamCheckBox;
         internal System.Windows.Forms.Panel BackupPathPanel;
         internal System.Windows.Forms.Button BackupPathHelpButton;
+        internal System.Windows.Forms.FlowLayoutPanel FlowLayoutPanel1;
+        internal System.Windows.Forms.Label BackupPathHelpLabel;
+        private System.Windows.Forms.PictureBox BackupHelpPictureBox;
     }
 }
