@@ -94,8 +94,8 @@ namespace FenGen
             tempItemGroup.PrependChild(xml.CreateComment(GenAttributes.FenGenExcludeResx));
             tempItemGroup.PrependChild(xml.CreateWhitespace("\r\n    "));
 
-            projNode.AppendChild(tempItemGroup);
-            projNode.AppendChild(xml.CreateWhitespace("\r\n"));
+            projNode.PrependChild(xml.CreateWhitespace("\r\n"));
+            projNode.PrependChild(tempItemGroup);
 
             WriteXml(xml);
         }
