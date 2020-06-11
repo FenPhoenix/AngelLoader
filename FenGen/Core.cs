@@ -84,21 +84,23 @@ namespace FenGen
             FMData,
             Config,
             Language,
+            LanguageAndAlsoCreateTestIni,
             GameSupport,
             VisLoc,
             ExcludeResx,
             RestoreResx
         }
 
-        private static class GenTaskArgs
+        private static readonly Dictionary<string, GenType>
+        ArgToTaskMap = new Dictionary<string, GenType>
         {
-            internal const string FMData = "-fmdata";
-            internal const string Language = "-language";
-            internal const string LanguageAndTest = "-language_t";
-            internal const string GameSupport = "-game_support";
-            internal const string ExcludeResx = "-exclude_resx";
-            internal const string RestoreResx = "-restore_resx";
-        }
+            { "-fmdata", GenType.FMData },
+            { "-language", GenType.Language },
+            { "-language_t", GenType.LanguageAndAlsoCreateTestIni },
+            { "-game_support", GenType.GameSupport },
+            { "-exclude_resx", GenType.ExcludeResx },
+            { "-restore_resx", GenType.RestoreResx }
+        };
 
         private static class GenFileTags
         {
@@ -175,8 +177,6 @@ namespace FenGen
 
             if (args.Length < 2) ExitIfRelease();
 
-            bool generateLangTestFile = false;
-
             bool[] _genTasksActive = new bool[_genTaskCount];
 
             #region Local functions
@@ -184,6 +184,9 @@ namespace FenGen
             void SetGenTaskActive(GenType genType) => _genTasksActive[(int)genType] = true;
 
             bool GenTaskActive(GenType genType) => _genTasksActive[(int)genType];
+
+            bool LangTaskActive() => GenTaskActive(GenType.Language) ||
+                                     GenTaskActive(GenType.LanguageAndAlsoCreateTestIni);
 
             bool AnyGenTasksActive()
             {
@@ -198,32 +201,13 @@ namespace FenGen
 
             for (int i = 1; i < args.Length; i++)
             {
-                switch (args[i])
-                {
-                    case GenTaskArgs.FMData:
-                        SetGenTaskActive(GenType.FMData);
-                        break;
-                    case GenTaskArgs.Language:
-                    case GenTaskArgs.LanguageAndTest:
-                        SetGenTaskActive(GenType.Language);
-                        generateLangTestFile = args[i] == GenTaskArgs.LanguageAndTest;
-                        break;
-                    case GenTaskArgs.GameSupport:
-                        SetGenTaskActive(GenType.GameSupport);
-                        break;
-                    case GenTaskArgs.ExcludeResx:
-                        SetGenTaskActive(GenType.ExcludeResx);
-                        break;
-                    case GenTaskArgs.RestoreResx:
-                        SetGenTaskActive(GenType.RestoreResx);
-                        break;
-                }
+                if (ArgToTaskMap.TryGetValue(args[i], out GenType genType)) SetGenTaskActive(genType);
+            }
 
-                if (!AnyGenTasksActive())
-                {
-                    ExitIfRelease();
-                    return;
-                }
+            if (!AnyGenTasksActive())
+            {
+                ExitIfRelease();
+                return;
             }
 
             var genFileTags = new List<string>();
@@ -237,7 +221,7 @@ namespace FenGen
                 genFileTags.Add(GenFileTags.FMDataSource);
                 genFileTags.Add(GenFileTags.FMDataDest);
             }
-            if (GenTaskActive(GenType.Language))
+            if (LangTaskActive())
             {
                 genFileTags.Add(GenFileTags.LocalizationSource);
                 genFileTags.Add(GenFileTags.LocalizationDest);
@@ -260,10 +244,10 @@ namespace FenGen
                     taggedFilesDict![GenFileTags.FMDataSource],
                     taggedFilesDict![GenFileTags.FMDataDest]);
             }
-            if (GenTaskActive(GenType.Language))
+            if (LangTaskActive())
             {
                 string englishIni = Path.Combine(ALProjectPath, @"Languages\English.ini");
-                string testLangIni = generateLangTestFile
+                string testLangIni = GenTaskActive(GenType.LanguageAndAlsoCreateTestIni)
                     ? @"C:\AngelLoader\Data\Languages\TestLang.ini"
                     : "";
                 Language.Generate(
