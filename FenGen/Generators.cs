@@ -68,18 +68,9 @@ namespace FenGen
                     }
                 }
 
-                string indent = strT.IsWhiteSpace() || strT.StartsWith("#") ? "" : Indent(curIndent);
+                bool noIndent = strT.IsWhiteSpace() || (strT.StartsWith("#") && !strT.StartsWith("#region ") && strT != "#region");
+                string indent = noIndent ? "" : Indent(curIndent);
                 _sb.AppendLine(indent + strT);
-            }
-        }
-
-        internal sealed class SectionedIniFile
-        {
-            private int _indent = 0;
-
-            internal SectionedIniFile(StringBuilder sb, int startingIndent)
-            {
-                _indent = startingIndent;
             }
         }
     }

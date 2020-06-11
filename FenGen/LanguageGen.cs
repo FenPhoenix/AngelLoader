@@ -40,28 +40,25 @@ namespace FenGen
         private static (string LangClassName, List<NamedDictionary> Dict)
         ReadSource(string file)
         {
-            var retDict = new List<NamedDictionary>();
-
-            var classInstanceDict = new Dictionary<string, string>();
-
             string code = File.ReadAllText(file);
             var tree = ParseTextFast(code);
 
             var (markedMember, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationSourceClass);
-            var LTextClass = (ClassDeclarationSyntax)markedMember;
+            var lTextClass = (ClassDeclarationSyntax)markedMember;
 
-            var childNodes = LTextClass.ChildNodes().ToArray();
+            var childNodes = lTextClass.ChildNodes().ToArray();
 
+            var classInstanceDict = new Dictionary<string, string>();
             // Once through first to get the instance types and names
             for (int i = 0; i < childNodes.Length; i++)
             {
                 if (childNodes[i] is FieldDeclarationSyntax field)
                 {
-                    classInstanceDict.Add(field.Declaration.Type.ToString(),
-                        field.Declaration.Variables[0].Identifier.Text);
+                    classInstanceDict.Add(field.Declaration.Type.ToString(), field.Declaration.Variables[0].Identifier.Text);
                 }
             }
 
+            var retDict = new List<NamedDictionary>();
             // Now through again to get the language string names from the nested classes
             foreach (SyntaxNode cn in childNodes)
             {
@@ -85,8 +82,6 @@ namespace FenGen
                     }
 
                     var member = (MemberDeclarationSyntax)m;
-
-                    string fName, fValue = "";
                     foreach (AttributeListSyntax attrList in member.AttributeLists)
                     {
                         foreach (AttributeSyntax attr in attrList.Attributes)
@@ -98,6 +93,7 @@ namespace FenGen
                                     var argList = attr.ArgumentList;
                                     if (argList != null)
                                     {
+                                        string fValue = "";
                                         var args = argList.Arguments;
                                         for (int i = 0; i < args.Count; i++)
                                         {
@@ -126,6 +122,7 @@ namespace FenGen
                         }
                     }
 
+                    string fName;
                     EqualsValueClauseSyntax? initializer;
                     if (m.IsKind(SyntaxKind.FieldDeclaration))
                     {
@@ -143,18 +140,16 @@ namespace FenGen
                     if (initializer == null)
                     {
                         string type = m.IsKind(SyntaxKind.FieldDeclaration) ? "field" : "property";
-                        ThrowErrorAndTerminate(nameof(Language) + ":\r\n" +
-                                               "Found a " + type + " without an initializer in " + file);
+                        ThrowErrorAndTerminate(nameof(Language) + ":\r\n" + "Found a " + type + " without an initializer in " + file);
                     }
 
-                    fValue = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText;
-                    dict.Add(new IniItem { Key = fName, Value = fValue });
+                    dict.Add(new IniItem { Key = fName, Value = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText });
                 }
 
                 retDict.Add(dict);
             }
 
-            string lTextClassId = LTextClass.Identifier.ToString();
+            string lTextClassId = lTextClass.Identifier.ToString();
             return (lTextClassId, retDict);
         }
 
@@ -248,13 +243,11 @@ namespace FenGen
         private static void WriteIniFile(string langIniFile, List<NamedDictionary> dictList, bool test = false)
         {
             var sb = new StringBuilder();
-
-            string testPrefix = test ? "█" : "";
-
             sb.AppendLine("; This is an AngelLoader language file.");
             sb.AppendLine("; This file MUST be saved with UTF8 encoding in order to guarantee correct display of strings.");
             sb.AppendLine();
 
+            string testPrefix = test ? "█" : "";
             for (int i = 0; i < dictList.Count; i++)
             {
                 var dict = dictList[i];
@@ -262,28 +255,19 @@ namespace FenGen
                 sb.AppendLine("[" + dict.Name + "]");
                 foreach (IniItem item in dict)
                 {
-                    if (item.IsComment)
-                    {
-                        if (!item.Value.IsEmpty())
-                        {
-                            string[] comments = item.Value.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                            foreach (string c in comments) sb.AppendLine("; " + c);
-                        }
-                    }
-                    else if (item.Key.IsEmpty() && item.Value.IsEmpty())
+                    if (item.Key.IsEmpty() && item.Value.IsEmpty())
                     {
                         sb.AppendLine();
                     }
+                    else if (item.IsComment && !item.Value.IsEmpty())
+                    {
+                        string[] comments = item.Value.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                        foreach (string c in comments) sb.AppendLine("; " + c);
+                    }
                     else
                     {
-                        if (test && item.Key == "TranslatedLanguageName")
-                        {
-                            sb.AppendLine(item.Key + "=" + "TéstLang");
-                        }
-                        else
-                        {
-                            sb.AppendLine(item.Key + "=" + testPrefix + item.Value);
-                        }
+                        string val = test && item.Key == "TranslatedLanguageName" ? "TéstLang" : testPrefix + item.Value;
+                        sb.AppendLine(item.Key + "=" + val);
                     }
                 }
                 if (i < dictList.Count - 1) sb.AppendLine();
