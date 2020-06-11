@@ -17,10 +17,8 @@ namespace AngelLoader.DataClasses
     internal sealed class LText_Class
     {
         // Notes:
-        // -Attributes only work when applied to fields, not properties. I think I know why, but whatever, this
-        //  is good enough for now.
         // -Comments don't support concatenation (try to fix later)
-        // -Strings must be inside sub-classes or they won't be picked up (that's the nature of ini files)
+        // -Strings must be inside the nested classes or they won't be picked up (that's the nature of ini files)
 
         internal readonly Meta_Class Meta = new Meta_Class();
         internal readonly Global_Class Global = new Global_Class();
@@ -31,7 +29,6 @@ namespace AngelLoader.DataClasses
         internal readonly FilterBar_Class FilterBar = new FilterBar_Class();
         internal readonly FMsList_Class FMsList = new FMsList_Class();
         internal readonly StatisticsTab_Class StatisticsTab = new StatisticsTab_Class();
-
         internal readonly EditFMTab_Class EditFMTab = new EditFMTab_Class();
         internal readonly CommentTab_Class CommentTab = new CommentTab_Class();
         internal readonly TagsTab_Class TagsTab = new TagsTab_Class();

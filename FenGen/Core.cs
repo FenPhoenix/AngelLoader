@@ -112,7 +112,7 @@ namespace FenGen
         private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
 
 #if DEBUG
-        private static FenGen.Forms.MainForm View;
+        private static Forms.MainForm View;
 #endif
 
         internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
@@ -132,7 +132,7 @@ namespace FenGen
 
             Environment.Exit(0);
 #else
-            View = new MainForm();
+            View = new Forms.MainForm();
             View.Show();
 #endif
         }
@@ -158,10 +158,6 @@ namespace FenGen
 
         private static void ReadArgsAndDoTasksInternal()
         {
-#if DEBUG
-            //return;
-#endif
-
             // args[0] is always the application filename
 
 #if PROFILING
@@ -170,7 +166,8 @@ namespace FenGen
                 Environment.GetCommandLineArgs()[0],
                 GenTaskArgs.FMData,
                 GenTaskArgs.LanguageAndTest,
-                GenTaskArgs.ExcludeResx
+                GenTaskArgs.ExcludeResx,
+                GenTaskArgs.RestoreResx
             };
 #else
             string[] args = Environment.GetCommandLineArgs();

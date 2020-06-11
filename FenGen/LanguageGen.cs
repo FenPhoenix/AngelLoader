@@ -42,104 +42,113 @@ namespace FenGen
         {
             var retDict = new List<NamedDictionary>();
 
+            var classInstanceDict = new Dictionary<string, string>();
+
             string code = File.ReadAllText(file);
             var tree = ParseTextFast(code);
 
-            var (member, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationSourceClass);
-            var LTextClass = (ClassDeclarationSyntax)member;
+            var (markedMember, _) = GetAttrMarkedItem(tree, SyntaxKind.ClassDeclaration, GenAttributes.FenGenLocalizationSourceClass);
+            var LTextClass = (ClassDeclarationSyntax)markedMember;
 
-            foreach (SyntaxNode item in LTextClass.DescendantNodes())
+            var childNodes = LTextClass.ChildNodes().ToArray();
+
+            // Once through first to get the instance types and names
+            for (int i = 0; i < childNodes.Length; i++)
             {
-                if (!item.IsKind(SyntaxKind.ClassDeclaration)) continue;
+                if (childNodes[i] is FieldDeclarationSyntax field)
+                {
+                    classInstanceDict.Add(field.Declaration.Type.ToString(),
+                        field.Declaration.Variables[0].Identifier.Text);
+                }
+            }
 
-                var subClass = (ClassDeclarationSyntax)item;
+            // Now through again to get the language string names from the nested classes
+            foreach (SyntaxNode cn in childNodes)
+            {
+                if (!(cn is ClassDeclarationSyntax childClass)) continue;
 
-                var fields = subClass.DescendantNodes()
-                    .Where(x => x.IsKind(SyntaxKind.VariableDeclaration) ||
-                                x.IsKind(SyntaxKind.PropertyDeclaration) ||
-                                x.IsKind(SyntaxKind.Attribute))
+                SyntaxNode[] members = childClass.ChildNodes()
+                    .Where(x => x.IsKind(SyntaxKind.FieldDeclaration) ||
+                                x.IsKind(SyntaxKind.PropertyDeclaration))
                     .ToArray();
 
-                if (fields.Length == 0) continue;
+                if (members.Length == 0) continue;
 
-                // TODO: Un-hardcode this "remove _Class suffix" stuff
-                string _name = subClass.Identifier.ToString();
-                _name = _name.Substring(0, _name.IndexOf("_Class", StringComparison.InvariantCulture));
-                var dict = new NamedDictionary(_name);
-                foreach (SyntaxNode f in fields)
+                string sectionInstanceName = classInstanceDict[childClass.Identifier.ToString()];
+                var dict = new NamedDictionary(sectionInstanceName);
+
+                foreach (SyntaxNode m in members)
                 {
-                    string fName = "";
-                    string fValue = "";
-                    bool isComment = false;
-
-                    int blankLinesToAdd = 0;
-
-                    if (f is AttributeSyntax attr)
+                    if (!m.IsKind(SyntaxKind.FieldDeclaration) && !m.IsKind(SyntaxKind.PropertyDeclaration))
                     {
-                        if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenComment))
+                        continue;
+                    }
+
+                    var member = (MemberDeclarationSyntax)m;
+
+                    string fName, fValue = "";
+                    foreach (AttributeListSyntax attrList in member.AttributeLists)
+                    {
+                        foreach (AttributeSyntax attr in attrList.Attributes)
                         {
-                            var argList = attr.ArgumentList;
-                            if (argList != null)
+                            switch (attr.Name.ToString())
                             {
-                                for (int i = 0; i < argList.Arguments.Count; i++)
+                                case GenAttributes.FenGenComment:
                                 {
-                                    if (i > 0) fValue += "\r\n";
-                                    fValue += ((LiteralExpressionSyntax)argList.Arguments[i].Expression).Token.ValueText;
+                                    var argList = attr.ArgumentList;
+                                    if (argList != null)
+                                    {
+                                        var args = argList.Arguments;
+                                        for (int i = 0; i < args.Count; i++)
+                                        {
+                                            if (i > 0) fValue += "\r\n";
+                                            fValue += ((LiteralExpressionSyntax)args[i].Expression).Token.ValueText;
+                                        }
+
+                                        dict.Add(new IniItem { Value = fValue, IsComment = true });
+                                    }
+                                    break;
                                 }
-                                isComment = true;
-                            }
-                        }
-                        else if (GetAttributeName(attr.Name.ToString(), GenAttributes.FenGenBlankLine))
-                        {
-                            var args = attr.ArgumentList;
-                            if (args == null || args.Arguments.Count == 0)
-                            {
-                                blankLinesToAdd = 1;
-                            }
-                            else if (args.Arguments.Count == 1)
-                            {
-                                blankLinesToAdd = (int)((LiteralExpressionSyntax)args.Arguments[0].Expression).Token.Value!;
+                                case GenAttributes.FenGenBlankLine:
+                                {
+                                    var argList = attr.ArgumentList;
+                                    int blankLinesToAdd = argList?.Arguments.Count > 0
+                                        ? (int)((LiteralExpressionSyntax)argList.Arguments[0].Expression).Token.Value!
+                                        : 1;
+
+                                    for (int i = 0; i < blankLinesToAdd; i++)
+                                    {
+                                        dict.Add(new IniItem());
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }
-                    else if (f is VariableDeclarationSyntax vds)
+
+                    EqualsValueClauseSyntax? initializer;
+                    if (m.IsKind(SyntaxKind.FieldDeclaration))
                     {
-                        var v = vds.Variables[0];
-
-                        var initializer = v.Initializer;
-                        if (initializer == null)
-                        {
-                            ThrowErrorAndTerminate(nameof(Language) + ":\r\n" +
-                                                   "Found a variable without an initializer in " + file);
-                        }
-
-                        fName = v.Identifier.ToString();
-                        fValue = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText;
-                    }
-                    else if (f is PropertyDeclarationSyntax pds)
-                    {
-                        var initializer = pds.Initializer;
-                        if (initializer == null)
-                        {
-                            ThrowErrorAndTerminate(nameof(Language) + ":\r\n" +
-                                                   "Found a property without an initializer in " + file);
-                        }
-
-                        fName = pds.Identifier.ToString();
-                        fValue = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText;
-                    }
-
-                    if (blankLinesToAdd > 0)
-                    {
-                        for (int i = 0; i < blankLinesToAdd; i++)
-                        {
-                            dict.Add(new IniItem());
-                        }
+                        var vds = ((FieldDeclarationSyntax)m).Declaration.Variables[0];
+                        fName = vds.Identifier.ToString();
+                        initializer = vds.Initializer;
                     }
                     else
                     {
-                        dict.Add(new IniItem { Key = fName, Value = fValue, IsComment = isComment });
+                        var pds = (PropertyDeclarationSyntax)m;
+                        fName = pds.Identifier.ToString();
+                        initializer = pds.Initializer;
                     }
+
+                    if (initializer == null)
+                    {
+                        string type = m.IsKind(SyntaxKind.FieldDeclaration) ? "field" : "property";
+                        ThrowErrorAndTerminate(nameof(Language) + ":\r\n" +
+                                               "Found a " + type + " without an initializer in " + file);
+                    }
+
+                    fValue = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText;
+                    dict.Add(new IniItem { Key = fName, Value = fValue });
                 }
 
                 retDict.Add(dict);

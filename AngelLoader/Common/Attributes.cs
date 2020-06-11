@@ -67,6 +67,7 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenListTypeAttribute : Attribute
         {
+            /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
             internal FenGenListTypeAttribute([UsedImplicitly] string value) { }
         }
 
@@ -77,6 +78,7 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenListDistinctTypeAttribute : Attribute
         {
+            /// <param name="value">Can be "None", "Exact", or "CaseInsensitive".</param>
             internal FenGenListDistinctTypeAttribute([UsedImplicitly] string value) { }
         }
 
@@ -119,10 +121,14 @@ namespace AngelLoader
         [AttributeUsage(AttributeTargets.Class)]
         internal class FenGenLocalizationDestClassAttribute : Attribute { }
 
+        /// <summary>
+        /// Places a comment before the attached field or property.
+        /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
         internal class FenGenCommentAttribute : Attribute
         {
+            /// <param name="comments">Each comment will be placed on a separate line.</param>
             internal FenGenCommentAttribute([UsedImplicitly] params string[] comments) { }
         }
 
