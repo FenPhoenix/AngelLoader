@@ -19,6 +19,149 @@ Thanks for checking it out!
 
 ## List of new strings by version
 
+### v1.4.3:
+
+#### English.ini:
+
+```diff
+[AlertMessages]
+...
++ Help_HelpFileNotFound=Help file not found.
++ Help_UnableToOpenHelpFile=Unable to open help file.
+```
+
+```diff
+[SettingsWindow]
+...
+Paths_Other=Other
+- Paths_BackupPath=FM backup path:
++ Paths_BackupPath=Backup path (required):
+Paths_FMArchivePaths=FM archive paths
+Paths_IncludeSubfolders=Include subfolders
++ Paths_BackupPath_Info=This is the directory that will be used for new backups of saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths.
+...
+FMDisplay_DateFormat=Date format
+- FMDisplay_CurrentCultureShort=Current culture short
++ FMDisplay_CurrentCultureShort=System locale, short
+- FMDisplay_CurrentCultureLong=Current culture long
++ FMDisplay_CurrentCultureLong=System locale, long
+FMDisplay_Custom=Custom:
+-
+- FMDisplay_ErrorInvalidDateFormat=Invalid date format.
+- FMDisplay_ErrorDateOutOfRange=The date and time is outside the range of dates supported by the calendar used by the current culture.
+```
+#### Documentation:
+
+#### AngelLoader documentation.html:
+
+```diff
+<h3><a name="initial_setup" />Initial setup</h3>
+
+<p>When you start AngelLoader for the first time, you'll see the initial setup window:</p>
+
+<p><img src="images/initial_setup.png" /></p>
+
+<h4>Language</h4>
+If other languages are available, you can choose them here. Changes will take effect immediately.
+
+<h4><a name="paths_to_game_exes" />Paths to game executables</h4>
+Here you can choose the executable files for the supported games you have installed. These fields are optional - you can set some, all, or none. You will still be able to see and manage all of your fan missions even if you haven't set their corresponding executable, but of course you won't be able to install or play any of them unless their executable is set.
+<p><b>Thief 1</b>, <b>Thief 2</b> and <b>System Shock 2</b> must be patched with NewDark in order for AngelLoader to be able to use them. <b>Thief 3</b> must be patched with the Sneaky Upgrade. Version 1.1.9.1 or above is recommended; while versions as far back as 1.1.3 may work, they haven't been tested and are not officially supported.</p>
+
+<h4>Steam options</h4>
+If you own one or more supported games on Steam, you can specify the location of <code>steam.exe</code> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.
+
+- <h4>FM backup path</h4>
++ <h4><a name="fm_backup_path" />FM backup path</h4>
+- This is a required field. This is the folder that will be used for backing up saves, screenshots, and/or full differential backups when you uninstall a fan mission.
++ This is a required field. This is the directory that will be used for backing up saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths. AngelLoader will still be able to use your existing backup files from other loaders, but will place any new backup files in this directory.
+```
+
+```diff
+<h2><a name="main_window" />Main window</h2>
+
+<p><img src="images/main_window_full_960.png" /></p>
+
+<h4>Startup scan</h4>
+Whenever new FMs are detected, they will be automatically scanned. If you cancel the scan, then they will be scanned when manually selected, similar to DarkLoader. It's recommended that you let the scan finish, especially if you're using game tabs, as it will result in FMs being categorized properly.
+
+<h4>Filter bar</h4>
+Here you can choose to filter your FM list by game, title, author, release date, last played date, tags, finished status, and rating. If you've chosen to organize your games by tab, then these tabs will take the place of the game filter buttons.
+
+- <h4><a name="show_junk" />Show FMs marked as "unsupported game or non-FM archive"</h4>
++ <h4><a name="show_unsupported" />Show FMs marked as "unsupported game or non-FM archive"</h4>
+```
+
+```diff
+- <h4>Readme area</h4>
++ <h4><a name="readme_area" />Readme area</h4>
+Here is where the selected FM's readme is displayed. If there are multiple readmes, AngelLoader will attempt to detect one that doesn't contain spoilers (lootlists, walkthroughs, etc.).
+If it finds one, it will choose that readme automatically. If a non-spoiler readme is unable to be detected with certainty, you will be given a choice of which readme to view.
+In this case, this list of readmes will be the only thing displayed in the readme section. Once you've selected a readme, you will thereafter
+have the option to select another from a drop-down list that appears in the upper-right corner (see <a href="#readme_controls">Readme controls</a>).
+```
+
+```diff
+<h3><a name="mission_list" />Mission list</h3>
+
+<p><img src="images/fms_list_960.png" /></p>
+
+This is the main area where fan missions are displayed, sorted, and filtered. You can change the columns' size, <a href="#column_header_context_menu">visibility</a>, and order.
+Drag a column left or right to change its order. Clicking on a column header will sort by that column. Click once to sort by ascending, and click again to sort by descending.
+Double-click the size grip to the right of a column to auto-size that column to fit its content.
+<p>Right-click on any column header or any blank space in the list to bring up the <a href="#column_header_context_menu">column header context menu</a>.</p>
+<p>Right-click on an FM to bring up the <a href="#fm_context_menu">FM context menu</a>.</p>
+<p>Double-click on a mission or press Enter when a mission is selected to play that mission. By default you will be asked for confirmation in this case; see <a href="#settings_play_on_dc_or_enter_ask">Play FM on double-click / Enter</a>.</p>
+
+Press the Delete key while an FM is selected to delete that FM's archive from disk. You will be asked for confirmation first.
+
+<p>You can zoom the FMs list either with the zoom buttons on the top bar, or with <code>Ctrl++</code>,<code>Ctrl+-</code>, and <code>Ctrl+0</code>, or with Ctrl+mousewheel.
+
+<h4>Columns</h4>
+
+<h4>Game</h4>
+Displays an icon based on which game the mission is for. If unknown, it will be blank. The icons are:
+<p>
+<img src="images/Thief1_21.png" /> - Thief<br>
+<img src="images/Thief2_21.png" /> - Thief II<br>
+<img src="images/Thief3_21.png" /> - Thief: Deadly Shadows<br>
+<img src="images/Shock2_21.png" /> - System Shock 2<br>
+- <img src="images/red_circle_question_mark_21.png" /> - Unsupported mission or non-mission archive (these only appear when the <a href="#show_junk">Show Unsupported</a> filter is enabled).</p>
++ <img src="images/red_circle_question_mark_21.png" /> - Unsupported mission or non-mission archive (these only appear when the <a href="#show_unsupported">Show Unsupported</a> filter is enabled).</p>
+```
+
+```diff
+- <h4>Statistics tab</h4>
++ <h4><a name="stats_tab" />Statistics tab</h4>
+
+<p><img src="images/stats_tab.png" /></p>
+
+Here you can see information on what kind of custom resources a fan mission has. If the FM has not been scanned for custom resources, none will be shown. If the FM is for Thief: Deadly Shadows, none will be shown in any case, as the custom resource scan is not supported for that game.
+```
+
+```diff
+- <h4>Comment tab</h4>
++ <h4><a name="comment_tab" />Comment tab</h4>
+
+<p><img src="images/comment_tab.png" /></p>
+
+Here you can enter a comment for the FM. This comment will also be displayed in the Comments column (up to the first 100 characters or the first linebreak, whichever comes first), and will update as you type.
+
+- <h4>Tags tab</h4>
++ <h4><a name="tags_tab" />Tags tab</h4>
+
+<p><img src="images/tags_tab.png" /></p>
+
+Here you can manage the FM's tags. You can click the <b>Add from list...</b> button to choose a tag from the global list (which includes standard presets as well as any other tags that have been found for any other FMs), or you can start typing in the textbox to see a real-time list of tags and categories that match what you've typed. If no matching tag or category is found, a new one is created. The format for creating a new tag is <code>category: tag</code>. If you don't specify a category when creating a new tag, that tag will be placed in the <code>misc</code> category.
+
+- <h4>Patch &amp; Customize tab</h4>
++ <h4><a name="patch_tab" />Patch &amp; Customize tab</h4>
+
+<p><img src="images/patch_tab.png" /></p>
+
+Here you can apply patches and customizations to an FM.
+```
+
 ### v1.4.2:
 
 #### English.ini:  
