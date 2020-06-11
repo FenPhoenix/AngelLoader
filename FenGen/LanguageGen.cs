@@ -10,14 +10,10 @@ using static FenGen.Misc;
 
 namespace FenGen
 {
-    // PERF_TODO: Roslyn is still the big fat slug, with ParseText() taking hundreds of ms.
-    // Revert to parsing everything manually for speed. This is ludicrously untenable, who would even accept a
-    // multi-second tack-on to build time for code generation this simple?!
     internal static class Language
     {
         private class IniItem
         {
-            // Keep these "" so they can be non-null defaults that don't have to be set
             internal string Key = "";
             internal string Value = "";
             internal bool IsComment;
@@ -25,16 +21,16 @@ namespace FenGen
 
         private class NamedDictionary : List<IniItem>
         {
-            public NamedDictionary(string name) => Name = name;
+            internal NamedDictionary(string name) => Name = name;
             internal readonly string Name;
         }
 
         internal static void
         Generate(string sourceFile, string destFile, string langIniFile, string testLangIniFile = "")
         {
-            var (langClassName, dictList) = ReadSource(sourceFile);
+            var (langClassName, sections) = ReadSource(sourceFile);
 
-            WriteDest(langClassName, dictList, destFile, langIniFile, testLangIniFile: testLangIniFile);
+            WriteDest(langClassName, sections, destFile, langIniFile, testLangIniFile);
         }
 
         private static (string LangClassName, List<NamedDictionary> Dict)
@@ -47,8 +43,8 @@ namespace FenGen
             var lTextClass = (ClassDeclarationSyntax)markedMember;
 
             var childNodes = lTextClass.ChildNodes().ToArray();
-
             var classInstanceDict = new Dictionary<string, string>();
+
             // Once through first to get the instance types and names
             for (int i = 0; i < childNodes.Length; i++)
             {
@@ -59,14 +55,14 @@ namespace FenGen
             }
 
             var retDict = new List<NamedDictionary>();
+
             // Now through again to get the language string names from the nested classes
             foreach (SyntaxNode cn in childNodes)
             {
                 if (!(cn is ClassDeclarationSyntax childClass)) continue;
 
                 SyntaxNode[] members = childClass.ChildNodes()
-                    .Where(x => x.IsKind(SyntaxKind.FieldDeclaration) ||
-                                x.IsKind(SyntaxKind.PropertyDeclaration))
+                    .Where(x => x.IsKind(SyntaxKind.FieldDeclaration) || x.IsKind(SyntaxKind.PropertyDeclaration))
                     .ToArray();
 
                 if (members.Length == 0) continue;
@@ -153,8 +149,8 @@ namespace FenGen
             return (lTextClassId, retDict);
         }
 
-        private static void WriteDest(string langClassName, List<NamedDictionary> dictList, string destFile,
-                                      string langIniFile, string testLangIniFile = "")
+        private static void WriteDest(string langClassName, List<NamedDictionary> sections, string destFile,
+                                      string langIniFile, string testLangIniFile)
         {
             #region Find the class we're going to write to
 
@@ -198,21 +194,21 @@ namespace FenGen
             w.WL("{");
             w.WL("string lineT = lines[i].Trim();");
             bool sectElseIf = false;
-            foreach (var dict in dictList)
+            foreach (var section in sections)
             {
-                w.WL((sectElseIf ? "else " : "") + "if (lineT == \"[" + dict.Name + "]\")");
+                w.WL((sectElseIf ? "else " : "") + "if (lineT == \"[" + section.Name + "]\")");
                 w.WL("{");
                 w.WL("while (i < lines.Length - 1)");
                 w.WL("{");
                 w.WL("string lt = lines[i + 1].TrimStart();");
 
                 bool keysElseIf = false;
-                foreach (IniItem item in dict)
+                foreach (IniItem item in section)
                 {
                     if (item.Key.IsEmpty()) continue;
                     w.WL((keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
                     w.WL("{");
-                    w.WL("ret." + dict.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
+                    w.WL("ret." + section.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
                     w.WL("}");
                     if (!keysElseIf) keysElseIf = true;
                 }
@@ -236,11 +232,11 @@ namespace FenGen
 
             #endregion
 
-            WriteIniFile(langIniFile, dictList);
-            if (!testLangIniFile.IsEmpty()) WriteIniFile(testLangIniFile, dictList, test: true);
+            WriteIniFile(langIniFile, sections);
+            if (!testLangIniFile.IsEmpty()) WriteIniFile(testLangIniFile, sections, test: true);
         }
 
-        private static void WriteIniFile(string langIniFile, List<NamedDictionary> dictList, bool test = false)
+        private static void WriteIniFile(string langIniFile, List<NamedDictionary> sections, bool test = false)
         {
             var sb = new StringBuilder();
             sb.AppendLine("; This is an AngelLoader language file.");
@@ -248,12 +244,12 @@ namespace FenGen
             sb.AppendLine();
 
             string testPrefix = test ? "█" : "";
-            for (int i = 0; i < dictList.Count; i++)
+            for (int i = 0; i < sections.Count; i++)
             {
-                var dict = dictList[i];
+                var section = sections[i];
 
-                sb.AppendLine("[" + dict.Name + "]");
-                foreach (IniItem item in dict)
+                sb.AppendLine("[" + section.Name + "]");
+                foreach (IniItem item in section)
                 {
                     if (item.Key.IsEmpty() && item.Value.IsEmpty())
                     {
@@ -270,7 +266,7 @@ namespace FenGen
                         sb.AppendLine(item.Key + "=" + val);
                     }
                 }
-                if (i < dictList.Count - 1) sb.AppendLine();
+                if (i < sections.Count - 1) sb.AppendLine();
             }
 
             File.WriteAllText(langIniFile, sb.ToString(), Encoding.UTF8);
