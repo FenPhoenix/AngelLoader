@@ -90,7 +90,7 @@
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 838);
+            this.PagePanel.Size = new System.Drawing.Size(440, 910);
             this.PagePanel.TabIndex = 3;
             // 
             // ActualPathsPanel
@@ -103,7 +103,7 @@
             this.ActualPathsPanel.Location = new System.Drawing.Point(0, 0);
             this.ActualPathsPanel.MinimumSize = new System.Drawing.Size(440, 0);
             this.ActualPathsPanel.Name = "ActualPathsPanel";
-            this.ActualPathsPanel.Size = new System.Drawing.Size(440, 808);
+            this.ActualPathsPanel.Size = new System.Drawing.Size(440, 824);
             this.ActualPathsPanel.TabIndex = 4;
             // 
             // FlowLayoutPanel1
@@ -117,7 +117,7 @@
             this.FlowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.FlowLayoutPanel1.Name = "FlowLayoutPanel1";
             this.FlowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this.FlowLayoutPanel1.Size = new System.Drawing.Size(440, 376);
+            this.FlowLayoutPanel1.Size = new System.Drawing.Size(440, 392);
             this.FlowLayoutPanel1.TabIndex = 4;
             this.FlowLayoutPanel1.WrapContents = false;
             this.FlowLayoutPanel1.Layout += new System.Windows.Forms.LayoutEventHandler(this.FlowLayoutPanel1_Layout);
@@ -208,7 +208,7 @@
             this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 126);
             this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
-            this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 242);
+            this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 258);
             this.FMArchivePathsGroupBox.TabIndex = 3;
             this.FMArchivePathsGroupBox.TabStop = false;
             this.FMArchivePathsGroupBox.Text = "FM archive paths";
@@ -217,7 +217,7 @@
             // 
             this.IncludeSubfoldersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IncludeSubfoldersCheckBox.AutoSize = true;
-            this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 451);
+            this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 224);
             this.IncludeSubfoldersCheckBox.Name = "IncludeSubfoldersCheckBox";
             this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
             this.IncludeSubfoldersCheckBox.TabIndex = 1;
@@ -227,7 +227,7 @@
             // AddFMArchivePathButton
             // 
             this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 447);
+            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
             this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
             this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
             this.AddFMArchivePathButton.TabIndex = 3;
@@ -237,7 +237,7 @@
             // RemoveFMArchivePathButton
             // 
             this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 447);
+            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
             this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
             this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
             this.RemoveFMArchivePathButton.TabIndex = 2;
@@ -552,7 +552,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "PathsPage";
-            this.Size = new System.Drawing.Size(440, 838);
+            this.Size = new System.Drawing.Size(440, 910);
             this.PagePanel.ResumeLayout(false);
             this.ActualPathsPanel.ResumeLayout(false);
             this.FlowLayoutPanel1.ResumeLayout(false);
