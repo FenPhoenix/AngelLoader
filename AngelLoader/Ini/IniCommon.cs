@@ -117,6 +117,20 @@ namespace AngelLoader
             }
         }
 
+        #region Helpers
+
+        private static string CommaCombine<T>(List<T> list) where T : notnull
+        {
+            string ret = "";
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i > 0) ret += ",";
+                ret += list[i].ToString();
+            }
+
+            return ret;
+        }
+
         #region FM custom resource work
 
         private static void FillFMHasXFields(FanMission fm, string fieldsString)
@@ -360,18 +374,6 @@ namespace AngelLoader
             }
         }
 
-        private static string CommaCombine<T>(List<T> list) where T : notnull
-        {
-            string ret = "";
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (i > 0) ret += ",";
-                ret += list[i].ToString();
-            }
-
-            return ret;
-        }
-
         private static string CommaCombineGameFlags(Game games)
         {
             string ret = "";
@@ -530,6 +532,8 @@ namespace AngelLoader
             gameIndex = 0;
             return false;
         }
+
+        #endregion
 
         #endregion
     }

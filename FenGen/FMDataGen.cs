@@ -40,18 +40,21 @@ namespace FenGen
             }
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private sealed class FieldList : List<Field>
         {
             internal bool WriteEmptyValues;
             //internal string Version;
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private enum ListType
         {
             MultipleLines,
             CommaSeparated
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private enum ListDistinctType
         {
             None,
@@ -59,6 +62,7 @@ namespace FenGen
             CaseInsensitive
         }
 
+        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private enum CustomCodeBlockNames
         {
             None,
@@ -652,6 +656,11 @@ namespace FenGen
 #endif
 
                         w.WL("}");
+                    }
+                    else
+                    {
+                        // WriteEmptyValues check disabled here as well to match the above
+                        swlSBAppend(fieldIniName, "CommaCombine(" + objDotField + ")");
                     }
                 }
                 else if (field.Type == "string")
