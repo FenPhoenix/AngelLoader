@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows.Forms;
 using FenGen.Forms;
 using JetBrains.Annotations;
@@ -90,6 +89,7 @@ namespace FenGen
         /// <param name="name"></param>
         /// <param name="match"></param>
         /// <returns></returns>
+        [PublicAPI]
         internal static bool GetAttributeName(string name, string match)
         {
             // We have to handle this quirk where you can leave off the "Attribute" suffix - Roslyn won't handle
@@ -100,22 +100,6 @@ namespace FenGen
             if (name.EndsWith(attr)) name = name.Substring(0, name.LastIndexOf(attr, StringComparison.Ordinal));
 
             return name == match;
-        }
-
-        internal static string StripPrefixes(string line)
-        {
-            string[] prefixes = { "private", "internal", "protected", "public", "static", "readonly", "dynamic" };
-            while (prefixes.Any(x => line.StartsWithI(x + ' ')))
-            {
-                foreach (string pre in prefixes)
-                {
-                    if (line.StartsWithI(pre + ' '))
-                    {
-                        line = line.Substring(pre.Length + 1).TrimStart();
-                    }
-                }
-            }
-            return line;
         }
 
         [ContractAnnotation("=> halt")]
@@ -130,8 +114,10 @@ namespace FenGen
         internal static void ThrowErrorAndTerminate(Exception ex)
         {
             Trace.WriteLine("FenGen: " + ex + "\r\nTerminating FenGen.");
-            using var f = new ExceptionBox(ex.ToString());
-            f.ShowDialog();
+            using (var f = new ExceptionBox(ex.ToString()))
+            {
+                f.ShowDialog();
+            }
             Environment.Exit(-999);
         }
 
