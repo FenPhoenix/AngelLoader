@@ -12,18 +12,18 @@ namespace FenGen
 {
     internal static class FMData
     {
+        private const BindingFlags BFlagsEnum = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
         private sealed class Field
         {
             internal string Type = "";
             internal string Name = "";
             internal string IniName = "";
-            internal string ListItemPrefix = "";
             internal ListType ListType = ListType.MultipleLines;
             internal ListDistinctType ListDistinctType = ListDistinctType.None;
             internal long? NumericEmpty;
             internal bool DoNotTrimValue;
             internal bool DoNotConvertDateTimeToLocal;
-            internal string Comment = "";
             internal CustomCodeBlockNames CodeBlockToInsertAfter = CustomCodeBlockNames.None;
 
             internal Field Copy()
@@ -31,10 +31,9 @@ namespace FenGen
                 Field dest = new Field();
 
                 // Meh... convenience wins
-                const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-                foreach (FieldInfo f in GetType().GetFields(flags))
+                foreach (FieldInfo f in GetType().GetFields(BFlagsEnum))
                 {
-                    dest.GetType().GetField(f.Name, flags)!.SetValue(dest, f.GetValue(this));
+                    dest.GetType().GetField(f.Name, BFlagsEnum)!.SetValue(dest, f.GetValue(this));
                 }
 
                 return dest;
@@ -252,8 +251,7 @@ namespace FenGen
 
             static void CheckParamCount(AttributeSyntax attr, int count)
             {
-                if (attr.ArgumentList == null ||
-                    attr.ArgumentList.Arguments.Count != count)
+                if (attr.ArgumentList == null || attr.ArgumentList.Arguments.Count != count)
                 {
                     ThrowErrorAndTerminate(attr.Name + " has wrong number of parameters.");
                 }
@@ -261,6 +259,11 @@ namespace FenGen
 
             static void FillFieldFromAttributes(MemberDeclarationSyntax member, Field field, out bool ignore)
             {
+                static string GetStringValue(AttributeSyntax attr) =>
+                    ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                    .Token
+                    .Value!.ToString();
+
                 ignore = false;
 
                 foreach (AttributeListSyntax attrList in member.AttributeLists)
@@ -296,51 +299,34 @@ namespace FenGen
                         {
                             CheckParamCount(attr, 1);
 
-                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                .Token
-                                .Value!.ToString();
+                            string val = GetStringValue(attr);
 
-                            field.ListType = val == nameof(ListType.CommaSeparated)
-                                ? ListType.CommaSeparated
-                                : ListType.MultipleLines;
+                            FieldInfo enumField = typeof(ListType).GetField(val, BFlagsEnum);
+                            if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
                         }
                         else if (name == GenAttributes.FenGenListDistinctType)
                         {
                             CheckParamCount(attr, 1);
 
-                            string val = ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                .Token
-                                .Value!.ToString();
+                            string val = GetStringValue(attr);
 
-                            field.ListDistinctType = val switch
-                            {
-                                nameof(ListDistinctType.Exact) => ListDistinctType.Exact,
-                                nameof(ListDistinctType.CaseInsensitive) => ListDistinctType.CaseInsensitive,
-                                _ => ListDistinctType.None
-                            };
+                            FieldInfo enumField = typeof(ListDistinctType).GetField(val, BFlagsEnum);
+                            if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
                         }
                         else if (name == GenAttributes.FenGenIniName)
                         {
                             CheckParamCount(attr, 1);
 
-                            field.IniName =
-                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                    .Token
-                                    .Value!)!;
+                            field.IniName = GetStringValue(attr);
                         }
                         else if (name == GenAttributes.FenGenInsertAfter)
                         {
                             CheckParamCount(attr, 1);
 
-                            string val =
-                                ((string)((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                                    .Token
-                                    .Value!)!;
+                            string val = GetStringValue(attr);
 
-                            field.CodeBlockToInsertAfter =
-                                val == nameof(CustomCodeBlockNames.LegacyCustomResources)
-                                    ? CustomCodeBlockNames.LegacyCustomResources
-                                    : CustomCodeBlockNames.None;
+                            FieldInfo enumField = typeof(CustomCodeBlockNames).GetField(val, BFlagsEnum);
+                            if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
                         }
                     }
                 }

@@ -72,11 +72,6 @@ namespace FenGen
 
                 foreach (SyntaxNode m in members)
                 {
-                    if (!m.IsKind(SyntaxKind.FieldDeclaration) && !m.IsKind(SyntaxKind.PropertyDeclaration))
-                    {
-                        continue;
-                    }
-
                     var member = (MemberDeclarationSyntax)m;
                     foreach (AttributeListSyntax attrList in member.AttributeLists)
                     {
@@ -94,7 +89,17 @@ namespace FenGen
                                         for (int i = 0; i < args.Count; i++)
                                         {
                                             if (i > 0) fValue += "\r\n";
-                                            fValue += ((LiteralExpressionSyntax)args[i].Expression).Token.ValueText;
+                                            if (args[i].Expression is LiteralExpressionSyntax literal)
+                                            {
+                                                fValue += literal.Token.ValueText;
+                                            }
+                                            else
+                                            {
+                                                ThrowErrorAndTerminate(
+                                                    nameof(Language) + "." + nameof(ReadSource) +
+                                                    ":\r\n" + GenAttributes.FenGenComment +
+                                                    " arguments contained something other than an un-concatenated string literal.");
+                                            }
                                         }
 
                                         dict.Add(new IniItem { Value = fValue, IsComment = true });
