@@ -1,6 +1,8 @@
 ﻿// FenGen - Fen's code generator for AngelLoader
 // Not perfect by any means, and still with lots of hardcoded stuff that shouldn't be, but it gets the job done.
 
+//#define PROFILING
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -100,7 +102,7 @@ namespace FenGen
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
-#if DEBUG
+#if DEBUG || PROFILING
         private static string GetArg(GenType genType)
         {
             foreach (var item in ArgToTaskMap)
@@ -172,7 +174,7 @@ namespace FenGen
         {
             // args[0] is always the application filename
 
-#if DEBUG
+#if DEBUG || PROFILING
             string[] args =
             {
                 Environment.GetCommandLineArgs()[0],
