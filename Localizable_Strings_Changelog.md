@@ -19,6 +19,10 @@ Thanks for checking it out!
 
 ## List of new strings by version
 
+### v1.4.4:
+
+No localizable text changes.
+
 ### v1.4.3:
 
 #### English.ini:
