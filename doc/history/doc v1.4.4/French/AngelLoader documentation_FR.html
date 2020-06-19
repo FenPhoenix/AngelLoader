@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AngelLoader Documentation</title>
+</head>
+
+<style>
+.content {
+    max-width: 960px;
+    margin: auto;
+}
+code {
+    padding: 2px 5px;
+    background: #fff;
+    border: solid 1px #e1e4e5;
+    color: #333;
+    font-family: monospace,serif;
+    font-size: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+div.a {
+  text-indent: 2em;
+}
+.vertical-center {
+      vertical-align: middle;
+}
+div.headerElements:before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+</style>
+
+<body style="font-family:Sans;align:center">
+
+<div class="content">
+
+
+<h1><img src="images_fr/AngelLoader_Icon_48.png" style="vertical-align:middle" /> AngelLoader</h1>
+<h4>Une appli pour jouer aux fan missions sur Dark Project/Thief Gold, Dark Project : L'âge de Métal et Thief : Deadly Shadows, et System Shock 2</h4>
+
+<h4>Document officiel</h4>
+
+<hr>
+
+<h2>Table des matières</h2>
+<ul>
+  <li>
+    <a href="#getting_started">Pour commencer</a>
+    <ul>
+      <li><a href="#system_requirements">Configuration requise</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#initial_setup">Paramétrage initial</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="#main_window">Fenêtre principale</a>
+    <ul>
+      <li><a href="#mission_list">Liste des missions</a></li>
+      <li><a href="#column_header_context_menu">Menu contextuel des entêtes de colonne</a></li>
+      <li><a href="#fm_context_menu">Menu contextuel des FM</a></li>
+      <li><a href="#top_right_tabs">Onglets en haut, à droite</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="#settings_window">Paramètres</a>
+    <ul>
+      <li><a href="#settings_paths_section">Chemins d'accès</a></li>
+      <li><a href="#settings_fm_display_section">Affichage</a></li>
+      <li><a href="#settings_other_section">Autre</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="#appendix">Appendices</a>
+    <ul>
+      <li><a href="#localization">Langues</a></li>
+      <li><a href="#supported_formats">Formats pris en charge</a></li>
+      <li><a href="#7z_note">Remarque pour les auteurs à propos des fichiers 7-Zip (Ne pas les utiliser)</a></li>
+      <li><a href="#thanks">Remerciements et crédits</a></li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<h2><a name="getting_started" />Pour commencer</h2>
+
+<h3><a name="system_requirements" />Configuration requise</h3>
+<ul>
+<li>Windows 7 SP1, Windows 8.1 ou Windows 10 Anniversary Update, ou supérieur</li>
+<li>.NET Framework 4.7.2 ou supérieur (inclus dans les versions Windows nommées précédemment)</li>
+</ul>
+
+<h3><a name="installation" />Installation</h3>
+AngelLoader est seulement en version portable, il doit être placé dans un dossier non protégé (Ne le mettez pas dans <code>Program Files</code> ou <code>Program Files (x86)</code>).
+<p>Quelques exemples de bons emplacements : <code>C:\AngelLoader</code>, <code>C:\Games\AngelLoader</code>, etc...</p>
+
+<h3><a name="initial_setup" />Paramétrage initial</h3>
+
+<p>Lorsque vous exécutez AngelLoader pour la première fois, vous verrez la fenêtre de paramétrage initial : </p>
+
+<p><img src="images_fr/initial_setup.png" /></p>
+
+<h4>Langues</h4>
+Si d'autres langues sont disponibles, on peut les choisir à ce moment-là. Les modifications sont immédiates.
+
+<h4><a name="paths_to_game_exes" />Chemins vers les exécutables des jeux</h4>
+Ici on peut indiquer les fichiers exécutables pour les jeux pris en charge qui sont installés. Ces champs sont optionnels, vous pouvez en remplir quelques-uns ou tous, ou rien. Vous serez tout de même en mesure de voir, gérer toutes vos FM même si vous n'avez pas paramétrer les exécutables correspondants. Mais vous ne pourrez pas les installer ou y jouer sauf si vous paramétrez leurs exécutables. 
+<p><b>Dark Project 1/Thief Gold</b>, <b>Dark Project 2</b> et <b>System Shock 2</b> doivent être patchés avec NewDark pour qu'AngelLoader puisse fonctionner. <b>Thief 3</b> doit être patché avec le Sneaky Upgrade. Version 1.1.9.1 ou supérieur est recommandé. D'autres versions anciennes jusque la 1.1.3 peuvent fonctionner, elles n'ont pas été testées et ne sont pas officiellement pris en charge.</p>
+
+<h4>Options Steam</h4>
+Si vous possédez un ou plusieurs jeux pris en charge sur Steam, indiquez où se trouve l'exécutable <code>steam.exe</code> et choisissez quel(s) jeu(x) devra être lancé par son biais. En lançant le jeu de cette façon, les options Steam (Overlay Steam, temps de jeu, etc...) sont prises en compte.
+    
+<h4><a name="fm_backup_path" />Chemin d'accès pour sauvegardes de FM</h4>
+C'est un champ obligatoire. C'est le dossier qui servira à conserver vos sauvegardes, captures d'écran, etc... lorsque vous désinstallez une fan mission. Le dossier doit être différent du dossier des archives de FM. AngelLoader sera toujours en mesure de récupérer vos autres sauvegardes venant d'autres applications de FM et placera les nouveaux fichiers de sauvegardes dans ce dossier.
+
+<h4>Chemins d'accès des archives de FM</h4>
+Ici vous paramétrez le ou les répertoires où se trouvents vos archives de FM (Des fichiers .zip ou .7z). Si vous cochez "Inclure les sous-dossiers", tous les sous-dossiers se trouvant dans les répertoires spécifiés seront analysés pour trouver des archives de FM (NewDarkLoader le faisait aussi). Sinon, seuls les répertoires exacts que vous avez choisis seront analysés. 
+Remarque à propos des répertoires d'archives des fan missions : étant donné que les répertoires multiples sont autorisés, il peut y avoir des fichiers en double. Dans ce cas, AngelLoader va retenir le premier fichier trouvé et va ignorer les fichiers suivants ayant le même nom. Il n'est pas conseillé de mettre les fichiers en double dans vos répertoires d'archives. Mais si vous le faites, tant que ce sont des copies exactes (c-à-d pas de fichiers différents avec le même nom) alors ça va fonctionner. Il est aussi conseillé que vos dossiers d'archives devraient <b>seulement</b> contenir des fichiers de FM et/ou des fichiers de sauvegardes FMSel/NewDarkLoader. AngelLoader est capable de rejeter les archives qui ne sont pas des FM lors de l'analyse mais c'est mieux de ne pas mettre des fichiers qui n'ont rien à voir avec les FM. 
+
+<hr>
+
+<h2><a name="main_window" />Fenêtre principale</h2>
+
+<p><img src="images_fr/main_window_full_960.png" /></p>
+
+<h4>Analyse au démarrage</h4>
+Lorsque de nouvelles FM sont détectées, elles sont analysées automatiquement. Si vous annulez l'analyse, le type de jeu sera indiqué quand vous cliquerez sur la FM, comme dans Darkloader. Il est conseillé de laisser l'analyse se terminer et tout particulièrement si vous utilisez les onglets de jeu. Ainsi les FM seront dans les bonnes catégories.
+
+<h4>Barre de filtres</h4>
+On peut choisir de filtrer sa liste de FM par jeu, titre, auteur, date de sortie, joué le..., mots-clés, fini en (Normal/Difficile/Expert...) et par notes. Si vous avez choisi d'organiser vos jeux par onglets alors ces onglets remplaceront les boutons de filtres de jeu.
+
+<h4><a name="show_unsupported" />Fichiers incompatibles ou archives non-FM</h4>
+Ceci indique les archives inconnues (<img src="images_fr/red_circle_question_mark_21.png" />) (Les archives rejetées et considérées comme non-FM), elles sont affichées dans la liste. S'il y a une prise en charge de nouveaux jeux dans le futur, vous pourrez utiliser ceci pour voir les archives non-FM et les réanalyser une par une.
+    
+<h4><a name="show_recent_at_top" />FMs récemment ajoutées en haut de la liste</h4>
+Les FMs récemment ajoutées seront en surbrillance et affichées en haut de la liste. Il sera ainsi plus facile de retrouver les FMs récemment téléchargées, par exemple. Le nombre de jours maximum pour qu'une FM soit considérée comme récente peut être défini dans les paramètres <a href="#settings_days_recent">FMs récentes</a>. Par défaut, c'est 15 jours.
+
+<h4>Rafraîchir du disque</h4>
+Recharge la liste des FM du disque. Cela se fait lors du lancement du programme mais cette fonction est utile si vous avez ajouté des nouvelles FM alors qu'AngelLoader est lancé.
+<br>La liste peut être réactualisée du disque en appuyant sur <code>Maj-F5</code> quand la <a href="#mission_list">liste des missions</a> est active.
+
+<h4>Rafraîchir la liste</h4>
+Quand vous éditez les données d'une mission, la liste des missions n'est pas réactualisée. C'est pour empêcher qu'une mission qui ne correspond plus aux filtres de disparaître des critères de filtres en plein milieu de son édition. Si vous avez édité une FM et que vous voulez refiltrer la liste, cliquez sur ce bouton. 
+<br>La liste peut être réactualisée en appuyant sur <code>F5</code> quand la <a href="#mission_list">liste des missions</a> est active.
+
+<h4>Supprimer les filtres</h4>
+Supprime les filtres.
+
+<h4>Rafraîchir l'affichage</h4>
+Réactualise la fenêtre principale à ses dimensions par défaut.
+
+<h4>Séparateurs modifiables de fenêtres</h4>
+Vous pouvez faire glisser les séparateurs à l'horizontale ou verticale pour redimensionner les sections de la fenêtre. Si vous faites glisser votre souris dans le coin entre deux séparateurs, vous pouvez redimensionner les trois sections principales à la fois. 
+
+<h4><a name="readme_area" />Zone Lisez-moi</h4>
+C'est la zone où est affiché le Lisez-moi de la FM. S'il y a plusieurs Lisez-moi, AngelLoader va tenter d'afficher celui qui ne contient pas de spoilers (Liste du butin, solutions, etc...). 
+S'il en trouve un, il chosit ce Lisez-moi automatiquement. S'il n'y a pas la possibilité de trouver un Lisez-moi sans spoiler avec certitude, vous aurez le choix du Lisez-moi à voir. 
+Dans ce cas, il y aura une liste de Lisez-moi en affichage. Une fois le Lisez-moi sélectionné, vous aurez l'option par la suite de choisir un autre Lisez-moi d'une liste déroulante qui va apparaître dans le coin en haut à droite (Voir <a href="#readme_controls">Paramètres du Lisez-moi</a>).
+
+<h4><a name="readme_controls" />Paramètres du Lisez-moi</h4>
+Dans le coin en haut à droite de la zone du Lisez-moi se trouve un panel d'outils pour choisir un lisez-moi, zoom avant, zoom arrière, affichage normal et plein écran. Lorsque l'on clique sur Plein écran, la zone du lisez-moi remplit la fenêtre entière. Cliquez encore une fois sur ce bouton pour reprendre la taille normale. Ces contrôles apparaissent quand la souris survole la zone du lisez-moi et ils disparaissent quand la souris n'est plus dans cette zone. 
+De plus, on peut zoomer le lisez-moi en appuyant sur <code>Ctrl+-</code>, <code>Ctrl++</code> et <code>Ctrl-0</code>, ou en laissant appuyer <code>Ctrl</code> avec la roulette de la souris quand le pointeur est au-dessus du lisez-moi.
+
+<h4>Jouer FM</h4>
+Cliquez sur ce bouton pour jouer la FM sélectionnée. Si la FM n'est pas installée, elle le sera automatiquement en premier.
+
+<h4>Jouer jeu original</h4>
+Cliquez sur ce bouton et vous aurez la liste des jeux pris en charge. Seuls les jeux dont vous avez <a href="#paths_to_game_exes">indiqués un chemin</a> seront activés. Les autres seront grisés. En cliquant sur un des jeux, vous le lancez sans charger de FM.<br>
+Si vous avez NewDark 1.27 ou supérieur et que vous avez installé l'option Multijoueur (Il y a Thief2MP.exe dans votre dossier de Dark Project 2) alors en plus, vous aurez Thief 2 (Dark Project 2) en mode multijoueur. 
+
+<h4>Installer/Désinstaller FM</h4>
+Si la FM sélectionnée n'est pas installée, cette fonction l'installe. Sinon cette fonction la désinstalle.
+
+<h4><a name="scan_all_fms_button" />Analyser toutes les FMs</h4>
+Cela permet d'analyser toutes les FM de la liste. En cliquant dessus, on verra apparaître une fenêtre et on peut choisir ce que l'on veut analyser.
+
+<p><img src="images_fr/ScanAllFMs_window.png" /></p>
+
+Seuls les champs choisis seront analysés et remplacés. Les cases qui ne sont pas cochées, ne seront pas modifiées. L'exception de la réécriture concerne les mots-clés : les mots-clés seront toujours les mêmes ou il y aura des ajouts mais ne sont pas remplacés. 
+
+<h4>Recherche Web</h4>
+Ceci permet de chercher sur le web quelque chose sur la mission sélectionnée. Vous pouvez paramétrer l'URL de recherche dans les <a href="#settings_web_search">Paramètres</a>.
+
+<h4>Importer de...</h4>
+En cliquant sur ce bouton, on a une liste des autres applis de FM à partir desquelles on peut importer des données. Les applis prises en charge sont <b>DarkLoader</b>, <b>NewDarkLoader</b> et <b>FMSel</b>. Si vous avez beaucoup de données de FM d'une de ces applis (Commentaires, notes, statut de difficulté, etc...), vous pouvez les importer dans AngelLoader, ce qui remplacera les infos existantes (Alors soyez prudent). 
+
+<h4>Paramètres</h4>
+Affiche les <a href="#settings_window">paramètres</a>.
+
+<h3><a name="mission_list" />Liste des Missions</h3>
+
+<p><img src="images_fr/fms_list_960.png" /></p>
+
+C'est la fenêtre principale où les FM sont affichées, triées, filtrées. On peut changer la taille des colonnes, <a href="#column_header_context_menu">la visibilité</a> et l'ordre.
+Faites glisser une colonne à gauche ou à droite pour changer son ordre. En cliquant sur l'entête d'une colonne, on la trie. En cliquant une première fois, l'ordre est ascendant et une deuxième fois, l'ordre est descendant.
+En double-cliquant sur la séparation droite de la colonne, on ajuste automatiquement la largeur selon le contenu. 
+<p>Un clic droit sur n'importe quel entête de colonne ou un espace blanc dans la liste amène le <a href="#column_header_context_menu">menu contextuel des entêtes de colonnes</a>.</p>
+<p>Un clic droit sur une FM amène <a href="#fm_context_menu">le menu contextuel de la FM</a>.</p>
+<p>Quand une mission est sélectionnée, un double-clic ou l'appui sur Entrée permet de jouer à la FM. Par défaut, on vous demande une confirmation dans ce cas. Voir <a href="#settings_play_on_dc_or_enter_ask">Jouer une FM en double-cliquant/Entrée</a>.</p>
+
+Appuyez sur la touche Suppr quand une FM est en surbrillance pour supprimer l'archive de la FM du disque. Une confirmation sera demandée avant la suppression.
+    
+<p>On peut zoomer la liste des FMs avec les boutons de zoom se trouvant sur la barre supérieure ou avec <code>Ctrl++</code>,<code>Ctrl+-</code> et <code>Ctrl+0</code>, ou avec Ctrl+roulette de la souris.
+
+<h4>Colonnes</h4>
+
+<h4>Jeu</h4>
+Affiche l'icône du jeu de la mission. Si c'est inconnu, elle sera vide. Les icônes sont :
+<p>
+<img src="images_fr/Thief1_21.png" /> - Dark Project 1/Thief Gold<br>
+<img src="images_fr/Thief2_21.png" /> - Dark Project 2<br>
+<img src="images_fr/Thief3_21.png" /> - Thief 3<br>
+<img src="images_fr/Shock2_21.png" /> - System Shock 2<br>
+<img src="images_fr/red_circle_question_mark_21.png" /> - Une mission non prise en charge ou une archive qui n'est pas une FM (Ceci apparaît seulement si le filtre <a href="#show_unsupported">Incompatibles ou non-FM</a> est activé).</p>
+
+<h4>Installé</h4>
+Affiche cette icône <img src="images_fr/green_check_21.png" /> si une FM est installée. Dans le cas contraire, c'est vide.
+
+<h4>Titre</h4>
+Affiche le titre de la FM, prenant en compte le paramètre <a href="#settings_fm_display_section">Tri</a>. Si aucun titre n'a été analysé ou le titre est introuvable, le nom de l'archive de la FM sera affiché sans l'extension. Si le nom de l'archive n'a pas pu être déterminé, c'est le nom du dossier dans lequel est la FM qui sera affiché.
+
+<h4>Archive</h4>
+Affiche le nom de l'archive de la FM avec l'extension.
+
+<h4>Auteur</h4>
+Affiche le nom de l'auteur de la FM, s'il a été trouvé.
+
+<h4>Taille</h4>
+Affiche la taille compressée (de l'archive) de la FM, quand c'est possible. Si l'archive est introuvable, cela affiche la taille décompressée (installée) de la FM. 
+
+<h4>Note</h4>
+Affiche la note de la FM selon <a href="#settings_rating_display_style">le style d'affichage de la note</a>.
+
+<h4>Fini</h4>
+Affiche une icône représentant le ou les niveaux de difficulté avec lequel vous avez fini la FM.
+<p>
+<img src="images_fr/Finished_Normal.png" /> - <b>Normal</b> (<b>Facile</b> pour Thief : Deadly Shadows)<br>
+<img src="images_fr/Finished_Hard.png" /> - <b>Difficile</b> (<b>Normal</b> pour Thief : Deadly Shadows)<br>
+<img src="images_fr/Finished_Expert.png" /> - <b>Expert</b> (<b>Difficile</b> pour Thief : Deadly Shadows)<br>
+<img src="images_fr/Finished_Extreme.png" /> - <b>Extrême</b> (<b>Expert</b> pour Thief : Deadly Shadows)<br>
+<img src="images_fr/Finished_Unknown.png" /> - <b>Inconnu</b>
+</p>
+Voir <a href="#finished_on">le sous-menu Fini en</a> pour plus d'informations au sujet des niveaux de difficulté.
+
+<h4>Date de sortie</h4>
+Affiche la date de sortie de la FM dans le <a href="#settings_fm_display_section">format choisi</a>.
+
+<h4>Joué le</h4>
+Affiche la dernière date de jeu dans le <a href="#settings_fm_display_section">format choisi</a>.
+    
+<h4>Date d'ajout</h4>
+Affiche la date d'ajout de la FM à la liste.
+
+<h4>Mods désactivés</h4>
+Affiche les mods désactivés, s'il y en a, pour la FM. Si tous les mods sont désactivés pour la FM, cela affichera "* [Tous]".
+
+<h4>Commentaires</h4>
+Affiche les commentaires de la FM, s'il y en a, jusqu'aux 100 premiers caractères ou la première ligne, quelle qu'elle soit.
+
+<h3><a name="column_header_context_menu" />Menu contextuel des entêtes de colonne</h3>
+
+<p><img src="images_fr/column_context_menu.png" /></p>
+
+En cliquant-droit sur un entête de colonne ou un endroit vide de la liste principale fera apparaître ce menu. Ici on peut choisir de rendre visible ou pas les colonnes, de remettre par défaut leur visibilité, largeur et position. 
+
+<h3><a name="fm_context_menu" />Menu contextuel des FM</h3>
+
+<p><img src="images_fr/fm_right_click_menu.png" /></p>
+
+Un clic droit sur une FM fera apparaître ce menu.
+
+<h4>Jouer FM</h4>
+Joue la FM sélectionnée. Si la FM n'est pas installée, elle sera d'abord automatiquement installée.
+
+<h4>Jouer FM (multijoueur)</h4>
+Ce choix apparaît seulement si Thief2MP.exe a été trouvé dans le dossier de Dark Project 2. En cliquant dessus, on peut jouer à la FM en mode multijoueur (NewDark 1.27 ou supérieur obligatoire). Si la FM n'est pas installée, elle sera d'abord automatiquement installée.
+
+<h4>Installer / Désinstaller FM</h4>
+Si la FM sélectionnée n'est pas installée, cela l'installera. Sinon elle sera désinstallée.
+    
+<h4>Supprimer l'archive de la FM</h4>
+Vous pouvez supprimer l'archive de la FM du disque. Vous pouvez aussi supprimer en appuyant sur la touche Suppr. Dans les deux cas, une confirmation sera demandée.
+
+<h4>Ouvrir FM dans DromEd</h4>
+Ce choix apparaîtra seulement si DromEd.exe se trouve dans le dossier du jeu. En cliquant dessus, la FM sélectionnée sera chargée dans DromEd, en l'installant, si nécessaire.<br>
+<b>Cette option n'est pas disponible pour Thief : Deadly Shadows.</b>
+
+<h4>Analyser FM</h4>
+Cela analysera la FM sélectionnée. Si vous ne voulez analyser que certains champs, voir l'onglet <a href="#edit_fm_tab">Editer FM</a>.
+
+<h4>Sous-menu Convertir audio</h4>
+Ce menu contient les mêmes options de conversions audio que dans les <a href="#settings_audio_conversion">Paramètres</a>, mais on peut les déclencher quand on veut à partir de là.
+<br>Cette option est seulement disponible pour les FMs installées.
+
+<h4>Sous-menu des notes</h4>
+Ici on peut donner une note à la FM sélectionnée. Les notes apparaissent selon la forme choisie dans les <a href="#settings_rating_display_style">Paramètres</a> : soit de 0-10 ou 0-5.
+
+<h4><a name="finished_on" />Sous-menu 'Fini en'</h4>
+On peut déterminer le ou les niveaux de difficulté avec lequel vous avez fini la FM sélectionnée.<br>
+<b>Inconnu</b> - C'est principalement pour la compatibilité des données importées de FMSel qui ne marque pas les difficultés dans sa valeur.<br>
+Pour Dark Project 1/Thief Gold et Dark Project 2, les autres difficultés sont <b>Normal</b>, <b>Difficile</b>, <b>Expert</b> et <b>Extrême</b>.<br>
+Pour Thief : Deadly Shadows, ce sont <b>Facile</b>, <b>Normal</b>, <b>Difficile</b> et <b>Expert</b>.<br>
+"<b>Extrême</b>" n'est pas une difficulté officielle de Dark Project/Thief mais c'est indiqué pour la compatibilité des données importées de DarkLoader ou alors si vous voyez que ça correspond à une difficulté inhabituelle (Ghost, etc...).
+
+<h4>Recherche sur le web</h4>
+Cliquez pour rechercher des infos sur le web pour la mission sélectionnée. Vous pouvez choisir l'adresse URL pour la recherche dans les <a href="#settings_web_search">Paramètres</a>.
+
+<h3><a name="top_right_tabs" />Onglets en haut, à droite</h3>
+
+Grâce à ces onglets, on peut éditer les données de la FM et voir plus de détails à son sujet. On peut faire glisser ces onglets pour changer l'ordre comme on veut. On peut aussi les activer/désactiver avec le bouton de menu en haut à droite (Trois barres horizontales).
+
+<h4>Bouton Visible/Caché (Triangle noir)</h4>
+Cliquez sur le petit triangle pour cacher les onglets en haut, à droite. Cliquez à nouveau dessus pour les rendre visibles.
+
+<h4><a name="stats_tab" />Statistiques</h4>
+
+<p><img src="images_fr/stats_tab.png" /></p>
+
+On peut voir quelles sont les ressources personnalisées dans la FM. Si la FM n'a pas été analysée pour les ressources personnalisées, aucune n'apparaîtra. Si c'est une FM pour Thief 3, rien n'apparaîtra, l'analyse des ressources persos pour ce jeu n'est pas prise en charge.
+
+<h4><a name="edit_fm_tab" />Editer FM</h4>
+
+<p><img src="images_fr/edit_fm_tab.png" /></p>
+
+Vous pouvez éditer les informations d'une FM. Si vous voulez réanalyser un champ particulier, cliquez sur l'icône <img src="images_fr/scan_14.png" /> à côté de ce champ.
+
+<h4>Titres différents</h4>
+Parfois de multiples titres différents peuvent être trouvés. Si le titre par défaut apparaît mal, cliquez sur le petit triangle noir pour voir un autre titre disponible. En cliquant sur un titre alternatif, on change le titre de la FM en celui que vous avez sélectionné.
+
+<h4>Date de sortie et Joué Le...</h4>
+Si une date n'a pu être trouvée ou détectée, la case à cocher correspondante sera vide et il n'y aura pas de date.
+
+<h4>Mods désactivés</h4>
+Vous pouvez désactiver certains mods par mission ici. Pour voir les mods que vous avez installés, regardez dans <code>cam_mod.ini</code> dans le dossier de Dark Project 1/Thief Gold ou Dark Project 2. La ligne doit être dans cette syntaxe <code>modname1+modname2+modname3</code> etc... Pour désactiver le Enhancement Pack 2, on devrait avoir :
+
+<p><code>ep2</code></p>
+
+<p>Pour désactiver le Enhancement Pack 2 et le HD mod, ce serait :</p>
+
+<p><code>ep2+hdmod</code></p>
+
+<p>Pour désactiver tous les mods pour la fan mission courante, cochez la case <b>Désactiver tous les mods</b>.</p>
+
+<h4>Sélection de la langue</h4>
+Vous pouvez choisir de jouer à une FM dans une langue en particulier. Seules seront disponibles les langues que la FM propose.
+    
+<h4><a name="comment_tab" />Commentaires</h4>
+
+<p><img src="images_fr/comment_tab.png" /></p>
+
+Entrez un commentaire pour la FM. Ce commentaire sera aussi affiché dans la colonne des Commentaires (jusqu'aux 100 premiers caractères ou la première ligne, quelle que soit son ordre). Il sera actualisé dès que vous écrirez.
+
+<h4><a name="tags_tab" />Mots-Clés</h4>
+
+<p><img src="images_fr/tags_tab.png" /></p>
+
+Vous gérez les mots-clés. On peut cliquer sur <b>Ajouter de la liste...</b> pour choisir un mot-clé de la liste globale (cela inclut des règles prédéfinies aussi bien que d'autres mots-clés qui ont été trouvés dans d'autres FM). Ou vous pouvez taper dans le champ texte et vous verrez une liste de mots-clés apparaître au fur et à mesure. S'il n'y a pas de correspondance de mot-clé ou de catégorie, une nouvelle sera créée. La syntaxe pour créer un nouveau mot-clé est <code>category: tag</code>. Si vous n'indiquez pas de catégorie pour le mot-clé, il sera placé dans la catégorie <code>misc</code>.
+
+<h4><a name="patch_tab" />Patcher &amp; Personnaliser</h4>
+
+<p><img src="images_fr/patch_tab.png" /></p>
+
+On peut appliquer des patches et des personnalisations pour la FM.
+
+<h4><a name="dml_patches" />Patches .dml</h4>
+Certaines anciennes Fan Missions ne fonctionnent pas comme prévu avec le NewDark. Il y a pas mal de patches pour ça. Si vous avez des fichiers patches .dml, ici, vous pouvez les ajouter ou les enlever dans le dossier d'installation de la FM. Si vous avez choisi le <a href="#settings_backup">paramètre de sauvegarde "Tous les fichiers modifiés/ajoutés/supprimés"</a>, alors les patches seront sauvegardés et restaurés lors de la réinstallation suivante de la FM.
+<br><b>Les patches .dml ne sont pas pris en charge par Thief : Deadly Shadows.</b>
+<h4>Ouvrir dossier FM</h4>
+Si vous voulez modifier manuellement le dossier d'installation de la FM, vous pouvez le faire ici.<br>
+<a style="color:red;"><b>REMARQUE !</b></a> Il y a un fichier spécial dans les dossiers de FM, <code>fmsel.inf</code>, qui <a style="color:red;"><b>ne doit pas être éffacé</b></a>. Ce fichier contient des métadonnées, et est, de par sa nature, exclu des sauvegardes différentielles. AngelLoader pourra parfois le regénérer ou fonctionnera sans, mais en l'effaçant, c'est s'exposer à des ennuis. Ne le faites pas.
+
+<hr>
+
+<h2><a name="settings_window" />Paramètres</h2>
+
+<h3><a name="settings_paths_section" />Chemins</h3>
+
+<p><img src="images_fr/setup_paths_tab.png" /></p>
+
+Les paramètres sont les mêmes que dans le <a href="#initial_setup">Paramètrage initial</a>, à l'exception des langues qui est dans <a href="#settings_other_section">Autre</a>. Voir <a href="#initial_setup">Paramètrage initial</a> pour les explications de ces paramètres.
+
+<h3><a name="settings_fm_display_section" />Affichage</h3>
+
+<p><img src="images_fr/setup_fm_display_tab.png" /></p>
+
+<h4>Organisation des jeux</h4>
+On peut choisir si on veut voir les jeux dans leur propre onglet ou une liste de FM pour tous les jeux, on peut filtrer en cliquant sur les icônes de jeux correspondantes. Quand "chaque jeu a un onglet", chaque jeu aura sa FM sélectionnée et ses filtres correspondants. L'organisation des jeux par onglet peut être plus claire mais si vous voulez trier sans distinction de jeu (Comme, par exemple, trouver toutes les missions d'un auteur qui a créé des FM pour plusieurs jeux) alors ce sera peut-être mieux de n'avoir qu'une grande liste.
+
+<p>
+Si vous avez coché la case <b>Noms courts dans les onglets de jeux</b>, les onglets de jeux auront des noms en abrégé afin d'économiser de la place sur l'écran.
+</p>
+
+<h4><a name="settings_sorting" />Tri</h4>
+On peut choisir d'omettre les articles de début de titre lors du tri des FM. Par exemple, la FM "The Seven Sisters" commence par un "S". Si on choisit de déplacer les articles à la fin des noms lors de leur affichage, alors "The Seven Sisters" deviendra "Seven Sisters, The". Les articles par défaut sont "a, an, the", mais on peut en rajouter (pour la prise en charge dans d'autres langues). Ces articles ne font pas partie de la fonctionnalité normale de localisation car ce sont des noms de Fan Missions, qui peuvent être dans n'importe quelle langue. C'est pour cela que le paramètre de langue général ne s'applique pas à elles.
+
+<h4><a name="settings_rating_display_style" />Style d'affichage des notes</h4>
+On peut choisir le style d'affichage des notes pour une FM (0-10, 0-5, ou 0-5 avec des étoiles).
+
+<h4><a name="settings_date_format" />Format de date</h4>
+C'est l'affichage de la date : court ou long, selon le PC, ou personnalisé.
+
+<h4><a name="settings_days_recent" />FMs récentes</h4>
+Quand on clique sur <a href="#show_recent_at_top">FMs récemment ajoutées en haut de la liste</a>, seules les FMs ajoutées durant le nombre maximum de jours seront incluses.    
+    
+<h3><a name="settings_other_section" />Autre</h3>
+
+<p><img src="images_fr/setup_other_tab.png" /></p>
+
+<h4>Langue</h4>
+On peut choisir une autre langue si elle est disponible. Le changement est immédiat.
+
+<h4><a name="settings_audio_conversion" />Convertir wav en 16 bit pendant l'installation</h4>
+Tout dépend de votre système, les fichiers wav supérieurs à 16 bit peuvent être la cause de problèmes audio lorqu'on joue à Dark Project 1 ou 2 comme un bruit statique intermittent ou constant. En convertissant tous les fichiers wav en 16 bit, ce problème sera résolu, la perte de fidélité ne sera pas perceptible. Cette option est activée par défaut.<br>
+<b>Cette option n'a aucun effet pour Thief : Deadly Shadows.</b>
+
+<h4>Convertir ogg en wav pendant l'installation</h4>
+D'après le manuel de FMSel :<br>
+<i>Le jeu est capable de prendre en charge les fichiers OGG mais dans certaines circonstances, on peut avoir de courtes saccades et sur des PC moins puissants, des problèmes de performance sur de grandes missions ou avec de grands fichiers OGG. Dans ces cas-là, le problème peut être résolu en convertissant les OGG en WAV pendant l'installation</i>.<br>
+<b>Cette option n'a aucun effet pour Thief : Deadly Shadows.</b>
+
+<h4>Confirmer avant la désinstallation</h4>
+Lorsque c'est activé, on vous demandera une confirmation avant la désinstallation d'une FM.
+
+<h4><a name="settings_backup" />Sauvegarder les fichiers pendant la désinstallation</h4>
+Souvent en désinstallant une FM, vous voulez conserver vos sauvegardes et vos captures d'écran pour les récupérer à la prochaine réinstallation. On peut aussi choisir de sauvegarder tous les fichiers modifiés. Dans ce cas, la sauvegarde incluera aussi tous les fichiers se trouvant dans le dossier d'installation de la FM qui ont été ajoutés, supprimés ou modifiés par comparaison aux fichiers se trouvant dans l'archive.  C'est très utile si vous avez ajouté des <a href="#dml_patches">patches .dml</a> à la FM, ou fait d'autres modifications comme la création/modification d'un fichier fm.cfg, ou réparer des fichiers STR, etc... AngelLoader est compatible avec les patches, l'option est activée par défaut. On peut aussi choisir une confirmation à chaque sauvegarde de données lors de la désinstallation d'une FM.
+
+<h4><a name="settings_web_search" />Recherche sur le Web</h4>
+On peut éditer l'adresse web (URL) de recherche des FM sur le net. La ligne <code>$TITLE$</code> qui est placée dans l'URL, est l'endroit où le titre de la fan mission apparaît. Par exemple, si l'URL est :
+
+<p><code>https://www.google.com/search?q="$TITLE$" site:ttlg.com</code></p>
+
+<p>Et que le titre de la FM sélectionnée est "Broken Triad", alors l'adresse web lancée dans votre navigateur sera :</p>
+
+<p><code>https://www.google.com/search?q="Broken Triad" site:ttlg.com</code></p>
+
+<h4><a name="settings_play_on_dc_or_enter_ask" />Jouer la FM en double-cliquant ou touche Entrée</h4>
+Quand vous double-cliquez sur une FM de la liste ou que vous appuyez sur la touche Entrée du clavier alors qu'une FM est sélectionnée, elle se déclenchera. Cochez la case "Demander pour confirmation" afin de prévenir un double-clic ou un appui de touche accidentel.
+
+<h4>Cacher le bouton "Installation / Désinstallation de FM"</h4>
+Cochez cette case pour prévenir un clic inopiné. Toujours possibilité d'installer/désinstaller les FM par le <a href="#fm_context_menu">menu contextuel des FM</a>.
+
+<h4>Cacher les boutons de zoom de la liste des FMs</h4>
+On peut zoomer la liste des FM avec le clavier ou Ctrl+roulette de la souris. Vous pouvez cacher ces fonctions pour gagner de la place.
+
+<h4>Police d'écriture de largeur fixe pour du texte brut</h4>
+La lecture de certains Lisez-moi peut être plus facile avec une police d'écriture de largeur fixe. Cette option est valable seulement pour les lisez-moi avec du texte brut (simple). Les autres fichiers textes auront leur propre police d'écriture. C'est similaire au DarkLoader.
+
+<hr>
+
+<h2><a name="appendix" />Appendices</h2>
+
+<h3><a name="localization" />Langues</h3>
+
+AngelLoader prend en charge la langue de l'utilisateur dans l'interface. Les nouvelles langues sont à définir dans les fichiers de langue qui doivent être placés dans le dossier <code>Data\Languages</code>. Un fichier <code>English.ini</code> est inclus dans ce dossier comme exemple, les autres fichiers de langue sont disponibles en téléchargement séparé. Les fichiers de langue utilisent un format simple <code>ini</code> et doivent être sauvegardés avec l'encodage UTF8 pour garantir un affichage correct du texte.
+
+<p>La plupart des éléments de l'interface seront automatiquement ajustés à la longueur des lignes traduites mais quelques-uns ne le seront pas, en particulier les filtres de dates et de notes, et des boutons de filtres de mots-clés. C'est au traducteur de s'assurer que tout s'affiche correctement.</p>
+
+<h3><a name="supported_formats" />Formats pris en charge</h3>
+
+<h4>Fichiers d'archives</h4>
+Les fichiers Zip (.zip) et 7-Zip (.7z) sont pris en charge. Mais voir <a href="#7z_note">ici</a> pour une remarque au sujet des fichiers 7-Zip.
+
+<h4>Fichiers audio</h4>
+Les fichiers MP3 (.mp3), Ogg Vorbis (.ogg) et Wave (.wav) sont pris en charge dans les fan missions. Les fichiers  MP3 seront automatiquement convertis en fichiers WAV pendant l'installation, NewDark ne pouvant pas les jouer directement.
+
+<h4>Fichiers Lisez-moi</h4>
+Les fichiers texte brut (.txt), Rich text (.rtf), HTML (.htm, .html) et les GarrettLoader Markup Language (.glml) sont pris en charge. Les fichiers HTML sont plus élaborés que les autres formats mais on peut les voir seulement avec un navigateur web. On ne peut pas les voir dans AngelLoader en lui-même, il y a une fonction qui permet de voir le fichier avec le navigateur web de l'utilisateur.
+
+<h3><a name="7z_note" />Remarque pour les auteurs à propos des fichiers 7-Zip (Ne pas les utiliser)</h3>
+
+FMSel, l'appli de fan mission officielle de NewDark, a toujours pris en charge les fichiers 7-Zip (.7z), d'autres applis de FM (NewDark) ont suivi le pas. AngelLoader prend en charge aussi ces fichiers pour leur compatibilité pratique. Cependant, je pense que le format 7-Zip n'est pas adapté pour un format d'archive de Fan Mission, pour les raisons suivantes : 
+<p>
+<ul>
+<li>Les fichiers 7z files sont, par défaut, <a href="https://fr.wikipedia.org/wiki/Compression_compacte">des archives compactes</a>. Ce qui veut dire qu'il <i>n'est pas possible</i> de décompresser individuellement les fichiers dans l'archive de façon aléatoire : l'archive doit être décompressée du début à la fin jusqu'à ce que le fichier désiré soit trouvé. C'est bien pour une simple installation, l'archive doit être extraite en entier mais pour <i>l'analyse</i> d'une FM, c'est <i>beaucoup trop</i> lent. En fait, lorsque l'analyse d'AngelLoader rencontre un fichier 7z, il extrait tout le fichier dans un dossier temporaire sur le disque dur car c'est plus <i>rapide</i> en moyenne que de chercher et lire ce qu'il faut partout dans une archive compacte compressée.</li>
+<li>Les fichiers 7z sont plus longs à extraire en entier.</li>
+</ul>
+</p>
+Les fichiers 7z donnent une meilleure compression que les fichiers zip mais c'est juste un peu mieux. C'est selon l'avis de l'auteur, ce petit gain de place est-il nécessaire par rapport à l'inconvénient apporté par la lenteur de décompression/extraction d'une archive de FM en 7z, la lenteur de l'analyse ? Pour ma part, je dirais, à moins d'avoir une excellente raison, de ne pas utiliser les fichiers 7z pour les FM. Le format vénérable Zip est encore le meilleur compromis entre la taille et la rapidité pour les besoins d'une FM.
+
+<hr>
+
+<h2><a name="thanks" />Remerciements et crédits</h2>
+
+J'aimerais remercier les personnes suivantes, dans le désordre : 
+<p><b>Dahenjo</b> pour son aide à la détection de bugs et la suggestion d'idées.</p>
+<p><b>Xanfre</b> pour sa contribution à d'excellentes améliorations pour le fonctionnement du RichTextBox.</p>
+<p><b>EnYB0La</b> pour avoir lancé l'écriture de ce qui est devenu le FMScanner, le module d'analyse d'AngelLoader. Sans ça, je n'aurais jamais essayé de créer un programme autonome de FM prenant en charge le NewDark !</p>
+<p><b>Björn Henke</b> et <b>Telliamed</b> pour la création du DarkLoader, qui fut, de facto, l'appli standard pour les FM de Dark Project pendant des années et l'inspiration première pour l'interface d'AngelLoader et sa nature autonome.</p>
+<p><b>R Soul</b> pour la création du NewDarkLoader, une appli moderne avec l'interface classique du DarkLoader, et aussi une source d'inspiration pour quelques aspects d'AngelLoader.</p>
+<p><b>potterr</b> pour la création du GarrettLoader, le premier programme (tout autant que je sache) à prendre en charge les trois jeux de la série Dark Project, la toute première appli que j'ai utilisée et la source des fichiers au format GLML.</p>
+<p><b>Le Corbeau</b>, le groupe mystérieux derrière NewDark et le programme FMSel, la première appli NewDark officielle pour fan missions.</p>
+<p>Tous ces programmes ont été d'une aide formidable pour le développement d'AngelLoader, merci à tous !</p>
+
+<p>J'aimerais aussi remercier <b>Looking Glass Studios</b> pour la création de Dark Project/Thief, la <a href="https://www.ttlg.com/forums">communauté TTLG</a> qui perpétue la vie du jeu et mes spectateurs qui me regardent sur Youtube faire l'andouille depuis des années.</p>
+    
+<p><b>Stefan Key</b> pour la traduction du document officiel en français.</p> 
+
+<p><b>AngelLoader utilise les librairies suivantes : </b></p>
+<a href="https://www.7-zip.org/">7z.dll</a><br>
+<a href="https://github.com/squid-box/SevenZipSharp">SquidBox.SevenZipSharp</a><br>
+<a href="https://ffmpeg.org/">ffmpeg</a><br>
+<a href="https://github.com/cmxl/FFmpeg.NET">FFmpeg.NET</a><br>
+<a href="https://github.com/khalidsalomao/SimpleHelpers.Net/">SimpleHelpers.Net</a><br>
+<a href="https://github.com/yinyue200/ude">UDE.NetStandard</a><br>
+<p><b>Et des portions de codes pour les suivants :</b></p>
+<a href="https://github.com/caioproiete/ookii-dialogs-winforms">Ookii Dialogs</a><br>
+<a href="https://github.com/dotnet/corefx">Portions modifiés de code de .NET Core's System.IO.Compression</a> (Adapté pour la performance de l'analyse)<br>
+
+<hr>
+
+<p><i>AngelLoader est open-source sous licence MIT. Vous pouvez voir la source à <a href="https://github.com/FenPhoenix/AngelLoader">AngelLoader's GitHub repository</a>.</i></p>
+</div>
+</body>
+</html>
