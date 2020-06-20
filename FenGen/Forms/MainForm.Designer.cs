@@ -1,6 +1,6 @@
 ﻿namespace FenGen.Forms
 {
-    internal partial class MainForm
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -59,4 +59,3 @@
         private System.Windows.Forms.Button GenerateButton;
     }
 }
-

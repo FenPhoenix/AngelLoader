@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace FenGen.Forms
 {
-    internal partial class MainForm : Form
+    public partial class MainForm : Form
     {
-        internal MainForm()
+        public MainForm()
         {
             InitializeComponent();
         }
