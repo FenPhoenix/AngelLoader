@@ -423,15 +423,16 @@ namespace FenGen
                         ? "val"
                         : "result";
 
-                    string objListSet = ldt switch
+                    string ignoreCaseString = ldt == ListDistinctType.CaseInsensitive && listType == "string"
+                        ? ", StringComparer.OrdinalIgnoreCase"
+                        : "";
+
+                    string objListSet = "";
+                    if (ldt == ListDistinctType.Exact || ldt == ListDistinctType.CaseInsensitive)
                     {
-                        ListDistinctType.None => (objDotField + ".Add(" + varToAdd + ");"),
-                        ListDistinctType.Exact => ("if (!" + objDotField + ".Contains(" + varToAdd + ")) " + objDotField + ".Add(" + varToAdd + ");"),
-                        ListDistinctType.CaseInsensitive => (listType == "string"
-                            ? "if (!" + objDotField + ".Contains(" + varToAdd + ", StringComparer.OrdinalIgnoreCase)) " + objDotField + ".Add(" + varToAdd + ");"
-                            : "if (!" + objDotField + ".Contains(" + varToAdd + ")) " + objDotField + ".Add(" + varToAdd + ");"),
-                        _ => (objDotField + ".Add(" + varToAdd + ");")
-                    };
+                        objListSet = "if (!" + objDotField + ".Contains(" + varToAdd + ignoreCaseString + ")) ";
+                    }
+                    objListSet += objDotField + ".Add(" + varToAdd + ");";
 
                     if (listType == "string")
                     {
