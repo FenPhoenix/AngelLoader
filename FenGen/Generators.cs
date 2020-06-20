@@ -62,9 +62,19 @@ namespace FenGen
                     }
                 }
 
-                bool noIndent = strT.IsWhiteSpace() || (strT.StartsWith("#") && !strT.StartsWith("#region ") && strT != "#region");
+                bool noIndent = strT.IsWhiteSpace() ||
+                                (strT.StartsWith("#") &&
+                                 !strT.StartsWith("#region ") &&
+                                 strT != "#region" &&
+                                 !strT.StartsWith("#endregion ") &&
+                                 strT != "#endregion");
                 string indent = noIndent ? "" : Indent(curIndent);
                 _sb.AppendLine(indent + strT);
+            }
+
+            internal void WLs(string[] lines)
+            {
+                for (int i = 0; i < lines.Length; i++) WL(lines[i]);
             }
         }
     }

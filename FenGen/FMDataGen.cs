@@ -386,8 +386,6 @@ namespace FenGen
 
             foreach (string l in topLines) sb.AppendLine(l);
 
-            CustomCodeBlockNames customCodeBlockToInsertAfterField = CustomCodeBlockNames.None;
-
             static string GetFloatArgsRead(string fieldType) =>
                 fieldType == "float" ||
                 fieldType == "float?" ||
@@ -402,19 +400,6 @@ namespace FenGen
 
             for (int i = 0; i < fields.Count; i++)
             {
-                if (customCodeBlockToInsertAfterField != CustomCodeBlockNames.None)
-                {
-                    switch (customCodeBlockToInsertAfterField)
-                    {
-                        case CustomCodeBlockNames.LegacyCustomResources:
-                            foreach (string line in CustomCodeBlocks.LegacyCustomResourceReads)
-                            {
-                                sb.AppendLine(line);
-                            }
-                            break;
-                    }
-                }
-
                 var field = fields[i];
                 string objDotField = obj + "." + field.Name;
 
@@ -581,7 +566,15 @@ namespace FenGen
                 // if
                 w.WL("}");
 
-                customCodeBlockToInsertAfterField = field.CodeBlockToInsertAfter;
+                if (field.CodeBlockToInsertAfter != CustomCodeBlockNames.None)
+                {
+                    switch (field.CodeBlockToInsertAfter)
+                    {
+                        case CustomCodeBlockNames.LegacyCustomResources:
+                            w.WLs(CustomCodeBlocks.LegacyCustomResourceReads);
+                            break;
+                    }
+                }
             }
 
             w.WL("if (resourcesFound) fm.ResourcesScanned = true;");
