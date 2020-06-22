@@ -19,9 +19,13 @@ namespace AngelLoader.DataClasses
             GamePaths = new string[SupportedGameCount];
             FMInstallPaths = new string[SupportedGameCount];
 
+            // Leave all false
             GameEditorDetected = new bool[SupportedGameCount];
+
             UseSteamSwitches = new bool[SupportedGameCount];
             StartupFMSelectorLines = new List<string>[SupportedGameCount];
+
+            // Leave all false
             StartupAlwaysStartSelector = new bool[SupportedGameCount];
 
             // We want them empty strings, not null, for safety

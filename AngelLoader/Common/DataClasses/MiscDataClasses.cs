@@ -124,15 +124,11 @@ namespace AngelLoader.DataClasses
 
     internal sealed class TopRightTabsData
     {
-        internal readonly TopRightTabData[] Tabs = new TopRightTabData[TopRightTabsCount];
+        internal readonly TopRightTabData[] Tabs = InitializedArray<TopRightTabData>(TopRightTabsCount);
 
         internal TopRightTab SelectedTab = TopRightTab.Statistics;
 
-        internal TopRightTabsData()
-        {
-            for (int i = 0; i < TopRightTabsCount; i++) Tabs[i] = new TopRightTabData();
-            ResetAllPositions();
-        }
+        internal TopRightTabsData() => ResetAllPositions();
 
         internal TopRightTabData StatsTab => Tabs[(int)TopRightTab.Statistics];
         internal TopRightTabData EditFMTab => Tabs[(int)TopRightTab.EditFM];
@@ -391,16 +387,7 @@ namespace AngelLoader.DataClasses
 
     internal sealed class GameTabsState
     {
-        internal GameTabsState()
-        {
-            SelectedFMs = new SelectedFM[SupportedGameCount];
-            Filters = new Filter[SupportedGameCount];
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                SelectedFMs[i] = new SelectedFM();
-                Filters[i] = new Filter();
-            }
-        }
+        internal GameTabsState() => InitializeArrays(SupportedGameCount, out SelectedFMs, out Filters);
 
         #region Selected FMs
 
