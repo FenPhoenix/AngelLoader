@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FenGen
 {
+    [PublicAPI]
     internal static partial class Misc
     {
         private static readonly CSharpParseOptions _parseOptions = new CSharpParseOptions(
@@ -89,7 +90,6 @@ namespace FenGen
         /// <param name="name"></param>
         /// <param name="match"></param>
         /// <returns></returns>
-        [PublicAPI]
         internal static bool GetAttributeName(string name, string match)
         {
             // We have to handle this quirk where you can leave off the "Attribute" suffix - Roslyn won't handle
@@ -114,11 +114,22 @@ namespace FenGen
         internal static void ThrowErrorAndTerminate(Exception ex)
         {
             Trace.WriteLine("FenGen: " + ex + "\r\nTerminating FenGen.");
-            using (var f = new ExceptionBox(ex.ToString()))
-            {
-                f.ShowDialog();
-            }
+            using (var f = new ExceptionBox(ex.ToString())) f.ShowDialog();
             Environment.Exit(-999);
+        }
+
+        /// <summary>
+        /// Returns an array of type <typeparamref name="T"/> with all elements initialized to non-null.
+        /// Because even with the whole nullable reference types ballyhoo,
+        /// you still get nulls-by-default in arrays with nary a warning whatsoever.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="length"></param>
+        internal static T[] InitializedArray<T>(int length) where T : new()
+        {
+            T[] ret = new T[length];
+            for (int i = 0; i < length; i++) ret[i] = new T();
+            return ret;
         }
 
         #region Clamping

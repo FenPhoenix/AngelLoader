@@ -4,6 +4,7 @@
 //#define PROFILING
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -286,11 +287,7 @@ namespace FenGen
         private static Dictionary<string, string>
         FindRequiredCodeFiles(List<string> genFileTags)
         {
-            var taggedFiles = new List<string>[genFileTags.Count];
-            for (int i = 0; i < taggedFiles.Length; i++)
-            {
-                taggedFiles[i] = new List<string>();
-            }
+            var taggedFiles = InitializedArray<List<string>>(genFileTags.Count);
 
             string[] files = Directory.GetFiles(ALProjectPath, "*.cs", SearchOption.AllDirectories);
             foreach (string f in files)
@@ -311,8 +308,7 @@ namespace FenGen
 
                         for (int i = 0; i < genFileTags.Count; i++)
                         {
-                            string genFileTag = genFileTags[i];
-                            if (tag == genFileTag)
+                            if (tag == genFileTags[i])
                             {
                                 taggedFiles[i].Add(f);
                                 break;
@@ -324,12 +320,7 @@ namespace FenGen
 
             #region Error reporting
 
-            static string AddError(string msg, string add)
-            {
-                if (msg.IsEmpty()) msg = "ERRORS:";
-                msg += "\r\n" + add;
-                return msg;
-            }
+            static string AddError(string msg, string add) => msg + (msg.IsEmpty() ? "" : "\r\n") + add;
 
             string error = "";
             for (int i = 0; i < taggedFiles.Length; i++)
@@ -347,7 +338,7 @@ namespace FenGen
 
             #endregion
 
-            var ret = new Dictionary<string, string>();
+            var ret = new Dictionary<string, string>(genFileTags.Count);
             for (int i = 0; i < genFileTags.Count; i++)
             {
                 ret.Add(genFileTags[i], taggedFiles[i][0]);
