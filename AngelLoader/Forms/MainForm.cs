@@ -2762,14 +2762,13 @@ namespace AngelLoader.Forms
         // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
         private async Task DisplaySelectedFM(bool refreshReadme, bool refreshCache = false)
         {
-            var fm = FMsDGV.GetSelectedFM();
+            FanMission fm = FMsDGV.GetSelectedFM();
 
             if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm.Game) && !fm.MarkedScanned))
             {
                 using (new DisableKeyPresses(this))
                 {
-                    bool success = await FMScan.ScanFM(fm, GetDefaultScanOptions());
-                    if (success) RefreshSelectedFMRowOnly();
+                    if (await FMScan.ScanFM(fm)) RefreshSelectedFMRowOnly();
                 }
             }
 
@@ -3025,10 +3024,7 @@ namespace AngelLoader.Forms
 
                 bool doScan = !fm.LangsScanned || forceScan;
 
-                if (doScan)
-                {
-                    FMLanguages.FillFMSupportedLangs(fm, removeEnglish: false);
-                }
+                if (doScan) FMLanguages.FillFMSupportedLangs(fm);
 
                 var langs = fm.Langs.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries).ToList();
                 var sortedLangs = doScan ? langs : FMLanguages.SortLangsToSpec(langs);

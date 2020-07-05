@@ -13,21 +13,48 @@ namespace AngelLoader
 {
     internal static class FMScan
     {
-        private static CancellationTokenSource ScanCts = new CancellationTokenSource();
+        private static CancellationTokenSource _scanCts = new CancellationTokenSource();
 
         internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions? scanOptions = null)
         {
-            // NULL_TODO: We could avoid a nullable by having a different way to do the default thing
-            scanOptions ??= GetDefaultScanOptions();
-            bool success = await ScanFM(fm, scanOptions);
-            if (success) await Core.View.RefreshSelectedFM(refreshReadme: false);
+            if (await ScanFM(fm, scanOptions)) await Core.View.RefreshSelectedFM(refreshReadme: false);
         }
 
-        internal static async Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions scanOptions) => await ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true);
+        internal static async Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions? scanOptions = null) =>
+            await ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true);
 
-        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions scanOptions,
-            bool scanFullIfNew = false, bool hideBoxIfZip = false)
+        /// <summary>
+        /// Scans a list of FMs using the specified scan options. Pass null for default scan options.
+        /// </summary>
+        /// <param name="fmsToScan"></param>
+        /// <param name="scanOptions">Pass null for default scan options.</param>
+        /// <param name="scanFullIfNew"></param>
+        /// <param name="hideBoxIfZip"></param>
+        /// <returns></returns>
+        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions? scanOptions,
+                                                 bool scanFullIfNew = false, bool hideBoxIfZip = false)
         {
+            #region Local functions
+
+            static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
+                scanTitle: true,
+                scanAuthor: true,
+                scanGameType: true,
+                scanCustomResources: true,
+                scanSize: true,
+                scanReleaseDate: true,
+                scanTags: true);
+
+            static void ReportProgress(FMScanner.ProgressReport pr) => Core.View.ReportScanProgress(
+                pr.FMNumber,
+                pr.FMsTotal,
+                pr.Percent,
+                pr.FMName.ExtIsArchive() ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast());
+
+            #endregion
+
+            scanOptions ??= GetDefaultScanOptions();
+
             // NULL_TODO: Do we need this FM null check...?
             if (fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
             {
@@ -65,15 +92,9 @@ namespace AngelLoader
 
                 #endregion
 
-                static void ReportProgress(FMScanner.ProgressReport pr)
-                {
-                    string name = pr.FMName.ExtIsArchive() ? pr.FMName.GetFileNameFast() : pr.FMName.GetDirNameFast();
-                    Core.View.ReportScanProgress(pr.FMNumber, pr.FMsTotal, pr.Percent, name);
-                }
-
                 #region Init
 
-                ScanCts = new CancellationTokenSource();
+                _scanCts = new CancellationTokenSource();
 
                 var fms = new List<FMScanner.FMToScan>();
 
@@ -116,7 +137,7 @@ namespace AngelLoader
                         }
                     }
 
-                    if (ScanCts.IsCancellationRequested) return false;
+                    if (_scanCts.IsCancellationRequested) return false;
                 }
 
                 if (fmsToScanFiltered.Count == 0) return false;
@@ -138,7 +159,7 @@ namespace AngelLoader
                         LogFile = Paths.ScannerLogFile,
                         ZipEntryNameEncoding = Encoding.UTF8
                     };
-                    fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, ScanCts.Token);
+                    fmDataList = await scanner.ScanAsync(fms, Paths.FMScannerTemp, scanOptions, progress, _scanCts.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -288,7 +309,7 @@ namespace AngelLoader
             }
             finally
             {
-                ScanCts?.Dispose();
+                _scanCts?.Dispose();
                 Core.View.Block(false);
                 Core.View.HideProgressBox();
             }
@@ -296,7 +317,7 @@ namespace AngelLoader
             return true;
         }
 
-        internal static void CancelScan() => ScanCts.CancelIfNotDisposed();
+        internal static void CancelScan() => _scanCts.CancelIfNotDisposed();
 
         internal static async Task ScanNewFMs()
         {

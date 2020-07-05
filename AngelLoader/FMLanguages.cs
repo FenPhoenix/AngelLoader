@@ -159,7 +159,7 @@ namespace AngelLoader
             return (sLanguage, bForceLanguage);
         }
 
-        internal static void FillFMSupportedLangs(FanMission fm, bool removeEnglish = true)
+        internal static void FillFMSupportedLangs(FanMission fm)
         {
             string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
             List<string> langs = new List<string>();
@@ -193,7 +193,6 @@ namespace AngelLoader
             {
                 langs = SortLangsToSpec(langs);
 
-                if (removeEnglish && langs[0].EqualsI("english")) langs.RemoveAt(0);
                 for (int i = 0; i < langs.Count; i++)
                 {
                     if (i > 0) fm.Langs += ",";

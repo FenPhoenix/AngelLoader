@@ -482,38 +482,24 @@ namespace AngelLoader
             return null;
         }
 
-        internal static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
-            scanTitle: true,
-            scanAuthor: true,
-            scanGameType: true,
-            scanCustomResources: true,
-            scanSize: true,
-            scanReleaseDate: true,
-            scanTags: true);
-
         internal static bool FMIsReallyInstalled(FanMission fm)
         {
-            if (!GameIsKnownAndSupported(fm.Game)) return false;
+            if (!GameIsKnownAndSupported(fm.Game) || !fm.Installed) return false;
 
-            if (fm.Installed)
+            string instPath = Config.GetFMInstallPathUnsafe(fm.Game);
+            if (instPath.IsEmpty()) return false;
+
+            string path;
+            try
             {
-                string instPath = Config.GetFMInstallPathUnsafe(fm.Game);
-                if (instPath.IsEmpty()) return false;
-
-                string path;
-                try
-                {
-                    path = Path.Combine(instPath, fm.InstalledDir);
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-
-                return Directory.Exists(path);
+                path = Path.Combine(instPath, fm.InstalledDir);
+            }
+            catch (Exception)
+            {
+                return false;
             }
 
-            return false;
+            return Directory.Exists(path);
         }
 
         internal static bool GameIsRunning(string gameExe, bool checkAllGames = false)
@@ -529,27 +515,27 @@ namespace AngelLoader
                 return t2MPExe = t2Path.IsEmpty() ? "" : Path.Combine(t2Path, Paths.T2MPExe);
             }
 
-            static bool AnyGameRunning(string fnb)
+            static bool AnyGameRunning(string path)
             {
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
                     string exe = Config.GetGameExe((GameIndex)i);
-                    if (!exe.IsEmpty() && fnb.PathEqualsI(exe)) return true;
+                    if (!exe.IsEmpty() && path.PathEqualsI(exe)) return true;
                 }
 
                 return false;
             }
 
-            static string GetProcessPath(int procId, StringBuilder _buffer)
+            static string GetProcessPath(int procId, StringBuilder buffer)
             {
                 // Recycle the buffer - avoids GC house party
-                _buffer.Clear();
+                buffer.Clear();
 
                 using var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId);
                 if (!hProc.IsInvalid)
                 {
-                    int size = _buffer.Capacity;
-                    if (QueryFullProcessImageName(hProc, 0, _buffer, ref size)) return _buffer.ToString();
+                    int size = buffer.Capacity;
+                    if (QueryFullProcessImageName(hProc, 0, buffer, ref size)) return buffer.ToString();
                 }
                 return "";
             }
@@ -565,21 +551,18 @@ namespace AngelLoader
                 try
                 {
                     string fn = GetProcessPath(proc.Id, buffer);
-                    //Log.Info("Process filename: " + fn);
-                    if (!fn.IsEmpty())
+                    if (!fn.IsEmpty() &&
+                        ((checkAllGames &&
+                          (AnyGameRunning(fn) ||
+                           (!T2MPExe().IsEmpty() && fn.PathEqualsI(T2MPExe())))) ||
+                         (!checkAllGames &&
+                          (!gameExe.IsEmpty() && fn.PathEqualsI(gameExe)))))
                     {
-                        if ((checkAllGames &&
-                             (AnyGameRunning(fn) ||
-                              (!T2MPExe().IsEmpty() && fn.PathEqualsI(T2MPExe())))) ||
-                            (!checkAllGames &&
-                             (!gameExe.IsEmpty() && fn.PathEqualsI(gameExe))))
-                        {
-                            string logExe = checkAllGames ? "a game exe" : gameExe;
+                        string logExe = checkAllGames ? "a game exe" : gameExe;
 
-                            Log("Found " + logExe + " running: " + fn +
-                                "\r\nReturning true, game should be blocked from starting");
-                            return true;
-                        }
+                        Log("Found " + logExe + " running: " + fn +
+                            "\r\nReturning true, game should be blocked from starting");
+                        return true;
                     }
                 }
                 catch (Exception ex)
