@@ -9,14 +9,14 @@ namespace FenGen
 {
     internal static class ExcludeResx
     {
-        private const string ItemGroupName = "ItemGroup";
+        private const string _itemGroupName = "ItemGroup";
 
         internal static void GenerateRestore()
         {
             var xml = new XmlDocument { PreserveWhitespace = true };
             xml.Load(Core.ALProjectFile);
 
-            XmlNodeList itemGroups = xml.GetElementsByTagName(ItemGroupName);
+            XmlNodeList itemGroups = xml.GetElementsByTagName(_itemGroupName);
 
             for (var i = 0; i < itemGroups.Count; i++)
             {
@@ -60,7 +60,7 @@ namespace FenGen
 
             XmlNode projNode = xml.GetElementsByTagName("Project")[0];
 
-            XmlElement tempItemGroup = xml.CreateElement(ItemGroupName);
+            XmlElement tempItemGroup = xml.CreateElement(_itemGroupName);
             foreach (string exclude in resxFilesToExclude)
             {
                 XmlElement excludeElem = xml.CreateElement(embeddedResourceName);

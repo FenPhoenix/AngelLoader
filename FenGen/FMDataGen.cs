@@ -12,7 +12,7 @@ namespace FenGen
 {
     internal static class FMData
     {
-        private const BindingFlags BFlagsEnum = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        private const BindingFlags _bFlagsEnum = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
         private sealed class Field
         {
@@ -31,9 +31,9 @@ namespace FenGen
                 Field dest = new Field();
 
                 // Meh... convenience wins
-                foreach (FieldInfo f in GetType().GetFields(BFlagsEnum))
+                foreach (FieldInfo f in GetType().GetFields(_bFlagsEnum))
                 {
-                    dest.GetType().GetField(f.Name, BFlagsEnum)!.SetValue(dest, f.GetValue(this));
+                    dest.GetType().GetField(f.Name, _bFlagsEnum)!.SetValue(dest, f.GetValue(this));
                 }
 
                 return dest;
@@ -69,7 +69,7 @@ namespace FenGen
             LegacyCustomResources
         }
 
-        private static readonly string[] NumericTypes =
+        private static readonly string[] _numericTypes =
         {
             "byte",
             "sbyte",
@@ -153,7 +153,7 @@ namespace FenGen
             };
         }
 
-        private static readonly string[] ReadFMDataIniTopLines =
+        private static readonly string[] _readFMDataIniTopLines =
         {
             "        internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList)",
             "        {",
@@ -190,7 +190,7 @@ namespace FenGen
             ""
         };
 
-        private static readonly string[] WriteFMDataIniTopLines =
+        private static readonly string[] _writeFMDataIniTopLines =
         {
             "        private static void WriteFMDataIni(List<FanMission> fmDataList, string fileName)",
             "        {",
@@ -305,7 +305,7 @@ namespace FenGen
 
                             string val = GetStringValue(attr);
 
-                            FieldInfo enumField = typeof(ListType).GetField(val, BFlagsEnum);
+                            FieldInfo enumField = typeof(ListType).GetField(val, _bFlagsEnum);
                             if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
                         }
                         else if (name == GenAttributes.FenGenListDistinctType)
@@ -314,7 +314,7 @@ namespace FenGen
 
                             string val = GetStringValue(attr);
 
-                            FieldInfo enumField = typeof(ListDistinctType).GetField(val, BFlagsEnum);
+                            FieldInfo enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
                             if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
                         }
                         else if (name == GenAttributes.FenGenIniName)
@@ -329,7 +329,7 @@ namespace FenGen
 
                             string val = GetStringValue(attr);
 
-                            FieldInfo enumField = typeof(CustomCodeBlockNames).GetField(val, BFlagsEnum);
+                            FieldInfo enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
                             if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
                         }
                     }
@@ -382,7 +382,7 @@ namespace FenGen
         {
             sb.AppendLine(Indent(2) + GenMessages.Method);
 
-            string[] topLines = ReadFMDataIniTopLines;
+            string[] topLines = _readFMDataIniTopLines;
 
             foreach (string l in topLines) sb.AppendLine(l);
 
@@ -454,7 +454,7 @@ namespace FenGen
                             w.WL("}");
                         }
                     }
-                    else if (NumericTypes.Contains(listType))
+                    else if (_numericTypes.Contains(listType))
                     {
                         string floatArgs = GetFloatArgsRead(listType);
                         if (field.ListType == ListType.MultipleLines)
@@ -498,7 +498,7 @@ namespace FenGen
                     w.WL(objDotField + " =");
                     w.WL("!string.IsNullOrEmpty(val) ? val.EqualsTrue() : (bool?)null;");
                 }
-                else if (NumericTypes.Contains(field.Type))
+                else if (_numericTypes.Contains(field.Type))
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     if (field.NumericEmpty != null && field.NumericEmpty != 0)
@@ -513,7 +513,7 @@ namespace FenGen
                     }
                 }
                 else if (field.Type[field.Type.Length - 1] == '?' &&
-                        NumericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
+                        _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
                     string floatArgs = GetFloatArgsRead(field.Type);
                     string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
@@ -591,7 +591,7 @@ namespace FenGen
         {
             sb.AppendLine(Indent(2) + GenMessages.Method);
 
-            foreach (string l in WriteFMDataIniTopLines) sb.AppendLine(l);
+            foreach (string l in _writeFMDataIniTopLines) sb.AppendLine(l);
 
             const string toString = "ToString()";
             const string unixDateString = "UnixDateString";
@@ -699,7 +699,7 @@ namespace FenGen
                         w.WL("}");
                     }
                 }
-                else if (NumericTypes.Contains(field.Type))
+                else if (_numericTypes.Contains(field.Type))
                 {
                     string floatArgs = GetFloatArgsWrite(field.Type);
                     if (!fields.WriteEmptyValues && field.NumericEmpty != null)
@@ -715,7 +715,7 @@ namespace FenGen
                     }
                 }
                 else if (field.Type[field.Type.Length - 1] == '?' &&
-                         NumericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
+                         _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
                 {
                     string floatArgs = GetFloatArgsWrite(field.Type);
                     if (fields.WriteEmptyValues)

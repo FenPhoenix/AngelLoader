@@ -54,7 +54,7 @@ namespace AngelLoader
         // IMPORTANT: These are used in Config.ini, so they must remain the same for compatibility. Don't change
         // the existing values, only add new ones!
         private static readonly string[]
-        GamePrefixes =
+        _gamePrefixes =
         {
             "T1",
             "T2",
@@ -63,7 +63,7 @@ namespace AngelLoader
         };
 
         private static readonly string[]
-        SteamAppIds =
+        _steamAppIds =
         {
             "211600", // Thief Gold
             "211740", // Thief 2
@@ -73,9 +73,9 @@ namespace AngelLoader
 
         #endregion
 
-        internal static string GetGamePrefix(GameIndex index) => GamePrefixes[(int)index];
+        internal static string GetGamePrefix(GameIndex index) => _gamePrefixes[(int)index];
 
-        internal static string GetGameSteamId(GameIndex index) => SteamAppIds[(int)index];
+        internal static string GetGameSteamId(GameIndex index) => _steamAppIds[(int)index];
 
         #region Conversion
 

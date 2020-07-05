@@ -495,7 +495,7 @@ namespace FMScanner
                 RegexOptions.ExplicitCapture)
         };
 
-        private const string CopyrightSecondPart =
+        private const string _copyrightSecondPart =
             //language=regexp
             @"(?<Months>( (Jan|Febr)uary| Ma(rch|y)| A(pril|ugust)| Ju(ne|ly)| (((Sept|Nov|Dec)em)|Octo)ber))?" +
             //language=regexp
@@ -507,19 +507,19 @@ namespace FMScanner
         {
             new Regex(
                 //language=regexp
-                @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + CopyrightSecondPart,
+                @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + _copyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
                 RegexOptions.ExplicitCapture),
             new Regex(
                 //language=regexp
                 @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" +
-                CopyrightSecondPart,
+                _copyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
                 RegexOptions.ExplicitCapture),
             new Regex(
                 //language=regexp
                 @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" +
-                CopyrightSecondPart,
+                _copyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
                 RegexOptions.ExplicitCapture)
         };
@@ -530,13 +530,13 @@ namespace FMScanner
         internal static readonly Regex AuthorGeneralCopyrightIncludeAtSymbolRegex =
             new Regex(
                 //language=regexp
-                @"^(Copyright )?(\(c\)|\u00A9|@) ?" + CopyrightSecondPart,
+                @"^(Copyright )?(\(c\)|\u00A9|@) ?" + _copyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         internal static readonly Regex AuthorGeneralCopyrightRegex =
             new Regex(
                 //language=regexp
-                @"^(Copyright )?(\(c\)|\u00A9) ?" + CopyrightSecondPart,
+                @"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         internal static readonly Regex CopyrightAuthorYearRegex = new Regex(@" \d+.*$", RegexOptions.Compiled);

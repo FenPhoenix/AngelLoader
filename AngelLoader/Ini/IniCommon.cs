@@ -17,7 +17,7 @@ namespace AngelLoader
     {
         #region BindingFlags
 
-        private const BindingFlags BFlagsEnum = BindingFlags.Instance |
+        private const BindingFlags _bFlagsEnum = BindingFlags.Instance |
                                                 BindingFlags.Static |
                                                 BindingFlags.Public |
                                                 BindingFlags.NonPublic;
@@ -66,14 +66,14 @@ namespace AngelLoader
             }
         }
 
-        private static readonly ReaderWriterLockSlim FMDataIniRWLock = new ReaderWriterLockSlim();
-        private static readonly ReaderWriterLockSlim ConfigIniRWLock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim _fmDataIniRWLock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim _configIniRWLock = new ReaderWriterLockSlim();
 
         internal static void WriteFullFMDataIni()
         {
             try
             {
-                FMDataIniRWLock.EnterWriteLock();
+                _fmDataIniRWLock.EnterWriteLock();
                 WriteFMDataIni(FMDataIniList, Paths.FMDataIni);
             }
             catch (Exception ex)
@@ -84,11 +84,11 @@ namespace AngelLoader
             {
                 try
                 {
-                    FMDataIniRWLock.ExitWriteLock();
+                    _fmDataIniRWLock.ExitWriteLock();
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(FMDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
+                    Log("Exception exiting " + nameof(_fmDataIniRWLock) + " in " + nameof(WriteFullFMDataIni), ex);
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace AngelLoader
         {
             try
             {
-                ConfigIniRWLock.EnterWriteLock();
+                _configIniRWLock.EnterWriteLock();
                 WriteConfigIniInternal(Config, Paths.ConfigIni);
             }
             catch (Exception ex)
@@ -108,11 +108,11 @@ namespace AngelLoader
             {
                 try
                 {
-                    ConfigIniRWLock.ExitWriteLock();
+                    _configIniRWLock.ExitWriteLock();
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception exiting " + nameof(ConfigIniRWLock) + " in " + nameof(WriteConfigIni), ex);
+                    Log("Exception exiting " + nameof(_configIniRWLock) + " in " + nameof(WriteConfigIni), ex);
                 }
             }
         }

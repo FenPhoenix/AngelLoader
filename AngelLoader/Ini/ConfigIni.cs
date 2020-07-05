@@ -49,7 +49,7 @@ namespace AngelLoader
                 {
                     string colName = lineTS.Substring(6, indexOfEq - 6);
 
-                    var field = typeof(Column).GetField(colName, BFlagsEnum);
+                    var field = typeof(Column).GetField(colName, _bFlagsEnum);
                     if (field == null) continue;
 
                     ColumnData? col = ConvertStringToColumnData(val);
@@ -62,7 +62,7 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("GameOrganization="))
                 {
-                    var field = typeof(GameOrganization).GetField(val, BFlagsEnum);
+                    var field = typeof(GameOrganization).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         config.GameOrganization = (GameOrganization)field.GetValue(null);
@@ -250,7 +250,7 @@ namespace AngelLoader
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("SortedColumn="))
                 {
-                    var field = typeof(Column).GetField(val, BFlagsEnum);
+                    var field = typeof(Column).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         config.SortedColumn = (Column)field.GetValue(null);
@@ -263,7 +263,7 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("RatingDisplayStyle="))
                 {
-                    var field = typeof(RatingDisplayStyle).GetField(val, BFlagsEnum);
+                    var field = typeof(RatingDisplayStyle).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null);
@@ -280,7 +280,7 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("SettingsTab="))
                 {
-                    var field = typeof(SettingsTab).GetField(val, BFlagsEnum);
+                    var field = typeof(SettingsTab).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         config.SettingsTab = (SettingsTab)field.GetValue(null);
@@ -423,7 +423,7 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("DateFormat="))
                 {
-                    var field = typeof(DateFormat).GetField(val, BFlagsEnum);
+                    var field = typeof(DateFormat).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         config.DateFormat = (DateFormat)field.GetValue(null);
@@ -480,7 +480,7 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("MainWindowState="))
                 {
-                    var field = typeof(FormWindowState).GetField(val, BFlagsEnum);
+                    var field = typeof(FormWindowState).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         var windowState = (FormWindowState)field.GetValue(null);
@@ -541,7 +541,7 @@ namespace AngelLoader
 
                 else if (lineTS.StartsWithFast_NoNullChecks("TopRightTab="))
                 {
-                    var field = typeof(TopRightTab).GetField(val, BFlagsEnum);
+                    var field = typeof(TopRightTab).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
@@ -629,7 +629,7 @@ namespace AngelLoader
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("BackupFMData="))
                 {
-                    var field = typeof(BackupFMData).GetField(val, BFlagsEnum);
+                    var field = typeof(BackupFMData).GetField(val, _bFlagsEnum);
                     if (field != null)
                     {
                         config.BackupFMData = (BackupFMData)field.GetValue(null);

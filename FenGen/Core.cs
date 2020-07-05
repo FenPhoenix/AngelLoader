@@ -92,7 +92,7 @@ namespace FenGen
         }
 
         private static readonly Dictionary<string, GenType>
-        ArgToTaskMap = new Dictionary<string, GenType>
+        _argToTaskMap = new Dictionary<string, GenType>
         {
             { "-fmdata", GenType.FMData },
             { "-language", GenType.Language },
@@ -214,7 +214,7 @@ namespace FenGen
 
             for (int i = 1; i < args.Length; i++)
             {
-                if (ArgToTaskMap.TryGetValue(args[i], out GenType genType)) SetGenTaskActive(genType);
+                if (_argToTaskMap.TryGetValue(args[i], out GenType genType)) SetGenTaskActive(genType);
             }
 
             if (!AnyGenTasksActive())

@@ -417,8 +417,8 @@ namespace AngelLoader.Forms
 
         // Set these beforehand and don't set autosize on any column! Or else it explodes everything because
         // FMsDGV tries to refresh when it shouldn't and all kinds of crap. Phew.
-        private const int RatingImageColumnWidth = 73;
-        private const int FinishedColumnWidth = 91;
+        private const int _ratingImageColumnWidth = 73;
+        private const int _finishedColumnWidth = 91;
 
         #region Bitmaps
 
@@ -905,7 +905,7 @@ namespace AngelLoader.Forms
 
             #region Columns
 
-            FinishedColumn.Width = FinishedColumnWidth;
+            FinishedColumn.Width = _finishedColumnWidth;
 
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
@@ -913,7 +913,7 @@ namespace AngelLoader.Forms
                 HeaderText = LText.FMsList.RatingColumn,
                 ImageLayout = DataGridViewImageCellLayout.Zoom,
                 ReadOnly = true,
-                Width = RatingImageColumnWidth,
+                Width = _ratingImageColumnWidth,
                 Resizable = DataGridViewTriState.False,
                 SortMode = DataGridViewColumnSortMode.Programmatic
             };
@@ -1844,11 +1844,11 @@ namespace AngelLoader.Forms
                     {
                         if (reset && c == RatingImageColumn)
                         {
-                            c.Width = RatingImageColumnWidth;
+                            c.Width = _ratingImageColumnWidth;
                         }
                         else if (reset && c == FinishedColumn)
                         {
-                            c.Width = FinishedColumnWidth;
+                            c.Width = _finishedColumnWidth;
                         }
                         else
                         {
@@ -2428,8 +2428,8 @@ namespace AngelLoader.Forms
                     ? oldRatingColumn.Width
                     // To set the ratio back to exact on zoom reset
                     : FMsDGV.RowTemplate.Height == 22
-                        ? RatingImageColumnWidth
-                        : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (RatingImageColumnWidth / 22);
+                        ? _ratingImageColumnWidth
+                        : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (_ratingImageColumnWidth / 22);
                 newRatingColumn.Visible = oldRatingColumn.Visible;
                 newRatingColumn.DisplayIndex = oldRatingColumn.DisplayIndex;
             }

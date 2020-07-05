@@ -24,23 +24,23 @@ namespace AngelLoader.WinAPI.Taskbar
         private class TaskbarInstance { }
 
         [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
-        private static readonly ITaskbarList3 Instance = (ITaskbarList3)new TaskbarInstance();
+        private static readonly ITaskbarList3 _instance = (ITaskbarList3)new TaskbarInstance();
 
         // Windows 7 (version 6.1) is the minimum required version for this
-        private static readonly bool TaskbarSupported =
+        private static readonly bool _taskbarSupported =
             Environment.OSVersion.Platform == PlatformID.Win32NT &&
             Environment.OSVersion.Version >= new Version(6, 1);
 
         internal static void SetState(IntPtr windowHandle, TaskbarStates taskbarState)
         {
-            if (!TaskbarSupported || windowHandle == IntPtr.Zero) return;
-            Instance.SetProgressState(windowHandle, taskbarState);
+            if (!_taskbarSupported || windowHandle == IntPtr.Zero) return;
+            _instance.SetProgressState(windowHandle, taskbarState);
         }
 
         internal static void SetValue(IntPtr windowHandle, int progressValue, int progressMax)
         {
-            if (!TaskbarSupported || windowHandle == IntPtr.Zero) return;
-            Instance.SetProgressValue(windowHandle, (ulong)progressValue, (ulong)progressMax);
+            if (!_taskbarSupported || windowHandle == IntPtr.Zero) return;
+            _instance.SetProgressValue(windowHandle, (ulong)progressValue, (ulong)progressMax);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace AngelLoader.Importing
     {
         #region Private fields
 
-        private static readonly string[] NonFMHeaders =
+        private static readonly string[] _nonFMHeaders =
         {
             "[options]",
             "[window]",
@@ -37,7 +37,7 @@ namespace AngelLoader.Importing
         //    darkGameSS2 = 4
         //}
 
-        private static readonly Regex DarkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
+        private static readonly Regex _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
 
         #endregion
 
@@ -161,9 +161,9 @@ namespace AngelLoader.Importing
 
                             // MUST CHECK missionDirsRead OR IT ADDS EVERY FM TWICE!
                             if (missionDirsRead &&
-                                !NonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
+                                !_nonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
                                 lineTB[lineTB.Length - 1] == ']' && lineTB.Contains('.') &&
-                                DarkLoaderFMRegex.Match(lineTB).Success)
+                                _darkLoaderFMRegex.Match(lineTB).Success)
                             {
                                 int lastIndexDot = lineTB.LastIndexOf('.');
                                 string archive = lineTB.Substring(1, lastIndexDot - 1);

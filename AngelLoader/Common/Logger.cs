@@ -11,7 +11,7 @@ namespace AngelLoader
 {
     internal static class Logger
     {
-        private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         #region Interop
 
@@ -68,7 +68,7 @@ namespace AngelLoader
 
             try
             {
-                Lock.EnterWriteLock();
+                _lock.EnterWriteLock();
                 File.Delete(logFile);
             }
             catch (Exception ex)
@@ -79,7 +79,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    Lock.ExitWriteLock();
+                    _lock.ExitWriteLock();
                 }
                 catch (Exception ex)
                 {
@@ -111,7 +111,7 @@ namespace AngelLoader
         {
             try
             {
-                Lock.EnterReadLock();
+                _lock.EnterReadLock();
                 if (File.Exists(Paths.LogFile) && new FileInfo(Paths.LogFile).Length > ByteSize.MB * 50) ClearLogFile();
             }
             catch (Exception ex1)
@@ -122,7 +122,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    Lock.ExitReadLock();
+                    _lock.ExitReadLock();
                 }
                 catch (Exception logEx)
                 {
@@ -132,7 +132,7 @@ namespace AngelLoader
 
             try
             {
-                Lock.EnterWriteLock();
+                _lock.EnterWriteLock();
 
                 using var sw = new StreamWriter(Paths.LogFile, append: true);
 
@@ -150,7 +150,7 @@ namespace AngelLoader
             {
                 try
                 {
-                    Lock.ExitWriteLock();
+                    _lock.ExitWriteLock();
                 }
                 catch (Exception logEx)
                 {

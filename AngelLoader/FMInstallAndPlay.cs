@@ -19,7 +19,7 @@ namespace AngelLoader
 {
     internal static class FMInstallAndPlay
     {
-        private static CancellationTokenSource ExtractCts = new CancellationTokenSource();
+        private static CancellationTokenSource _extractCts = new CancellationTokenSource();
 
         internal static async Task InstallOrUninstall(FanMission fm) => await (fm.Installed ? UninstallFM(fm) : InstallFM(fm));
 
@@ -365,8 +365,6 @@ namespace AngelLoader
             }
         }
 
-        #endregion
-
         private static void GenerateMissFlagFileIfRequired(FanMission fm)
         {
             // Only T1 and T2 have/require missflag.str
@@ -440,6 +438,8 @@ namespace AngelLoader
             }
         }
 
+        #endregion
+
         #region Install
 
         internal static async Task<bool> InstallFM(FanMission fm)
@@ -498,7 +498,7 @@ namespace AngelLoader
 
             string fmInstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
 
-            ExtractCts = new CancellationTokenSource();
+            _extractCts = new CancellationTokenSource();
 
             Core.View.ShowProgressBox(ProgressTasks.InstallFM);
 
@@ -617,7 +617,7 @@ namespace AngelLoader
 
                         Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
 
-                        if (ExtractCts.Token.IsCancellationRequested)
+                        if (_extractCts.Token.IsCancellationRequested)
                         {
                             canceled = true;
                             return;
@@ -650,7 +650,7 @@ namespace AngelLoader
 
                     extractor.Extracting += (sender, e) =>
                     {
-                        if (!canceled && ExtractCts.Token.IsCancellationRequested)
+                        if (!canceled && _extractCts.Token.IsCancellationRequested)
                         {
                             canceled = true;
                         }
@@ -673,7 +673,7 @@ namespace AngelLoader
                             SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
                         }
 
-                        if (ExtractCts.Token.IsCancellationRequested)
+                        if (_extractCts.Token.IsCancellationRequested)
                         {
                             Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
                             canceled = true;
@@ -703,7 +703,7 @@ namespace AngelLoader
             return !canceled;
         }
 
-        internal static void CancelInstallFM() => ExtractCts.CancelIfNotDisposed();
+        internal static void CancelInstallFM() => _extractCts.CancelIfNotDisposed();
 
         #endregion
 

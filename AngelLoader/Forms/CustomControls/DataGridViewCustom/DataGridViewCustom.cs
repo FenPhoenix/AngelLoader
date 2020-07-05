@@ -84,8 +84,8 @@ namespace AngelLoader.Forms.CustomControls
         {
             DoubleBuffered = true;
 
-            AssertR(Enum.GetValues(typeof(Column)).Length == ColumnHeaderLLMenu.ColumnCheckedStates.Length,
-                nameof(Column) + ".Length != " + nameof(ColumnHeaderLLMenu.ColumnCheckedStates) + ".Length");
+            AssertR(Enum.GetValues(typeof(Column)).Length == ColumnHeaderLLMenu._columnCheckedStates.Length,
+                nameof(Column) + ".Length != " + nameof(ColumnHeaderLLMenu._columnCheckedStates) + ".Length");
         }
 #pragma warning restore 8618
 

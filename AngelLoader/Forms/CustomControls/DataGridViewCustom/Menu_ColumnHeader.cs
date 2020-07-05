@@ -13,17 +13,17 @@ namespace AngelLoader.Forms.CustomControls
 
             private static bool _constructed;
             // Internal only because of an assert for length and I don't wanna make a method just for that
-            internal static readonly bool[] ColumnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true, true };
+            internal static readonly bool[] _columnCheckedStates = { true, true, true, true, true, true, true, true, true, true, true, true, true };
 
             #endregion
 
 #pragma warning disable 8618
-            private static DataGridViewCustom Owner;
+            private static DataGridViewCustom _owner;
 #pragma warning restore 8618
 
             private enum ColumnProperties { Visible, DisplayIndex, Width }
 
-            private static IDisposable[]? ColumnHeaderMenuDisposables;
+            private static IDisposable[]? _columnHeaderMenuDisposables;
 
             #region Column header context menu fields
 
@@ -56,9 +56,9 @@ namespace AngelLoader.Forms.CustomControls
 
             private static void ResetPropertyOnAllColumns(ColumnProperties property)
             {
-                for (int i = 0; i < Owner.Columns.Count; i++)
+                for (int i = 0; i < _owner.Columns.Count; i++)
                 {
-                    DataGridViewColumn c = Owner.Columns[i];
+                    DataGridViewColumn c = _owner.Columns[i];
                     switch (property)
                     {
                         case ColumnProperties.Visible:
@@ -72,7 +72,7 @@ namespace AngelLoader.Forms.CustomControls
                             break;
                     }
 
-                    Owner.SelectProperly();
+                    _owner.SelectProperly();
 
                     SetColumnChecked(c.Index, c.Visible);
                 }
@@ -91,8 +91,8 @@ namespace AngelLoader.Forms.CustomControls
             private static void CheckBoxMenuItem_Click(object sender, EventArgs e)
             {
                 var s = (ToolStripMenuItem)sender;
-                MakeColumnVisible(Owner.Columns[(int)s.Tag], s.Checked);
-                Owner.SelectProperly();
+                MakeColumnVisible(_owner.Columns[(int)s.Tag], s.Checked);
+                _owner.SelectProperly();
             }
 
             #endregion
@@ -107,11 +107,11 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (_constructed) return;
 
-                Owner = owner;
+                _owner = owner;
 
                 #region Instantiation
 
-                ColumnHeaderMenuDisposables = new IDisposable[]
+                _columnHeaderMenuDisposables = new IDisposable[]
                 {
                     ColumnHeaderContextMenu = new ContextMenuStripCustom { Name = nameof(ColumnHeaderContextMenu) },
                     ResetColumnVisibilityMenuItem = new ToolStripMenuItem { Name = nameof(ResetColumnVisibilityMenuItem) },
@@ -221,7 +221,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 for (int i = 0; i < ColumnHeaderCheckBoxMenuItems.Length; i++)
                 {
-                    ColumnHeaderCheckBoxMenuItems[i].Checked = ColumnCheckedStates[i];
+                    ColumnHeaderCheckBoxMenuItems[i].Checked = _columnCheckedStates[i];
                 }
 
                 #endregion
@@ -311,15 +311,15 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 else
                 {
-                    ColumnCheckedStates[index] = enabled;
+                    _columnCheckedStates[index] = enabled;
                 }
             }
 
             internal static void Dispose()
             {
-                for (int i = 0; i < ColumnHeaderMenuDisposables?.Length; i++)
+                for (int i = 0; i < _columnHeaderMenuDisposables?.Length; i++)
                 {
-                    ColumnHeaderMenuDisposables?[i]?.Dispose();
+                    _columnHeaderMenuDisposables?[i]?.Dispose();
                 }
             }
 

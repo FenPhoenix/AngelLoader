@@ -290,7 +290,7 @@ namespace AngelLoader
         /// <returns></returns>
         internal static string ToInstDirNameFMSel(this string archiveName, bool truncate = true) => ToInstDirName(archiveName, "+;:.,<>?*~| ", truncate);
 
-        private static readonly StringBuilder ToInstDirNameSB = new StringBuilder(30);
+        private static readonly StringBuilder _toInstDirNameSB = new StringBuilder(30);
         private static string ToInstDirName(string archiveName, string illegalChars, bool truncate)
         {
             int count = archiveName.LastIndexOf('.');
@@ -303,11 +303,11 @@ namespace AngelLoader
                 if (count == -1) count = archiveName.Length;
             }
 
-            ToInstDirNameSB.Clear();
-            ToInstDirNameSB.Append(archiveName);
-            for (int i = 0; i < illegalChars.Length; i++) ToInstDirNameSB.Replace(illegalChars[i], '_', 0, count);
+            _toInstDirNameSB.Clear();
+            _toInstDirNameSB.Append(archiveName);
+            for (int i = 0; i < illegalChars.Length; i++) _toInstDirNameSB.Replace(illegalChars[i], '_', 0, count);
 
-            return ToInstDirNameSB.ToString(0, count);
+            return _toInstDirNameSB.ToString(0, count);
         }
 
         #endregion
