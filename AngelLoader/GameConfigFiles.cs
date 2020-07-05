@@ -47,6 +47,17 @@ namespace AngelLoader
             string fm_language = "";
             bool fm_language_forced = false;
 
+            const string key_fm_selector = "fm_selector";
+            //const int key_fm_selector_len = 11; // unused currently
+            const string key_fm = "fm";
+            //const int key_fm_len = 2; // unused currently
+            const string key_fm_path = "fm_path";
+            const int key_fm_path_len = 7;
+            const string key_fm_language = "fm_language";
+            const int key_fm_language_len = 11;
+            const string key_fm_language_forced = "fm_language_forced";
+            const int key_fm_language_forced_len = 18;
+
             using (var sr = new StreamReader(camModIni))
             {
                 /*
@@ -66,28 +77,28 @@ namespace AngelLoader
                     line = line.TrimStart();
 
                     // Quick check; these lines will be checked more thoroughly when we go to use them
-                    if (!langOnly && line.ContainsI("fm_selector")) fmSelectorLines.Add(line);
-                    if (!langOnly && line.Trim().EqualsI("fm")) alwaysShowLoader = true;
+                    if (!langOnly && line.ContainsI(key_fm_selector)) fmSelectorLines.Add(line);
+                    if (!langOnly && line.Trim().EqualsI(key_fm)) alwaysShowLoader = true;
 
                     if (line.IsEmpty() || line[0] == ';') continue;
 
-                    if (!langOnly && line.StartsWithI(@"fm_path") && line.Length > 7 && char.IsWhiteSpace(line[7]))
+                    if (!langOnly && line.StartsWithIPlusWhiteSpace(key_fm_path))
                     {
-                        path = line.Substring(7).Trim();
+                        path = line.Substring(key_fm_path_len).Trim();
                     }
-                    else if (line.StartsWithI(@"fm_language") && line.Length > 11 && char.IsWhiteSpace(line[11]))
+                    else if (line.StartsWithIPlusWhiteSpace(key_fm_language))
                     {
-                        fm_language = line.Substring(11).Trim();
+                        fm_language = line.Substring(key_fm_language_len).Trim();
                     }
-                    else if (line.StartsWithI(@"fm_language_forced"))
+                    else if (line.StartsWithI(key_fm_language_forced))
                     {
-                        if (line.Trim().Length == 18)
+                        if (line.Trim().Length == key_fm_language_forced_len)
                         {
                             fm_language_forced = true;
                         }
-                        else if (char.IsWhiteSpace(line[18]))
+                        else if (char.IsWhiteSpace(line[key_fm_language_forced_len]))
                         {
-                            fm_language_forced = line.Substring(18).Trim() != "0";
+                            fm_language_forced = line.Substring(key_fm_language_forced_len).Trim() != "0";
                         }
                     }
                 }
@@ -356,8 +367,7 @@ namespace AngelLoader
                     // In .NET Core, we could use Path.Join() to avoid throwing
                     try
                     {
-                        return line.StartsWithI(fmSelectorKey) && line.Length > fmSelectorKey.Length &&
-                               char.IsWhiteSpace(line[fmSelectorKey.Length]) &&
+                        return line.StartsWithIPlusWhiteSpace(fmSelectorKey) &&
                                (selectorFileName = line.Substring(fmSelectorKey.Length + 1)).EndsWithI(".dll") &&
                                !selectorFileName.PathEqualsI(stubPath) &&
                                !GetFullPath(gamePath, selectorFileName).IsEmpty() &&
@@ -436,8 +446,7 @@ namespace AngelLoader
                     string lt = lines[i].Trim();
 
                     string selectorFileName;
-                    if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
-                        char.IsWhiteSpace(lt[fmSelectorKey.Length]) &&
+                    if (lt.StartsWithIPlusWhiteSpace(fmSelectorKey) &&
                         (selectorFileName = lt.Substring(fmSelectorKey.Length + 1)).EndsWithI(".dll"))
                     {
                         if (!tempSelectorsList.PathContainsI(selectorFileName)) tempSelectorsList.Add(selectorFileName);
@@ -483,7 +492,7 @@ namespace AngelLoader
 
                 // Steam robustness: get rid of any fan mission specifiers in here
                 // line is "fm BrokenTriad_1_0" for example
-                if (lt.StartsWithI("fm") && lt.Length > 2 && char.IsWhiteSpace(lt[2]) &&
+                if (lt.StartsWithIPlusWhiteSpace("fm") &&
                     lt.Substring(2).Trim().Length > 0)
                 {
                     if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
@@ -512,10 +521,8 @@ namespace AngelLoader
                 }
                 if (!resetSelector || changeLoaderIfResetting)
                 {
-                    if (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
-                        char.IsWhiteSpace(lt[fmSelectorKey.Length]) && lt
-                            .Substring(fmSelectorKey.Length + 1).TrimStart()
-                            .PathEqualsI(selectorPath))
+                    if (lt.StartsWithIPlusWhiteSpace(fmSelectorKey) &&
+                        lt.Substring(fmSelectorKey.Length + 1).TrimStart().PathEqualsI(selectorPath))
                     {
                         if (loaderIsAlreadyUs)
                         {
@@ -531,9 +538,7 @@ namespace AngelLoader
                         continue;
                     }
 
-                    if (lt.EqualsI(fmSelectorKey) ||
-                        (lt.StartsWithI(fmSelectorKey) && lt.Length > fmSelectorKey.Length &&
-                        char.IsWhiteSpace(lt[fmSelectorKey.Length])))
+                    if (lt.EqualsI(fmSelectorKey) || lt.StartsWithIPlusWhiteSpace(fmSelectorKey))
                     {
                         if (lines[i].TrimStart()[0] != ';') lines[i] = ";" + lines[i];
                         lastSelKeyIndex = i;

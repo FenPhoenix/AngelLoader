@@ -110,28 +110,26 @@ namespace AngelLoader
             if (xTitle.IsEmpty()) return -1;
             if (yTitle.IsEmpty()) return 1;
 
-            int xTitleLen = xTitle.Length;
-            int yTitleLen = yTitle.Length;
-
-            if (articles == null || articles.Count == 0) return TitleOrFallback(xTitle, yTitle, x, y);
-
-            bool xArticleSet = false;
-            bool yArticleSet = false;
-
-            foreach (string a in articles)
+            if (articles?.Count > 0)
             {
-                int aLen = a.Length;
+                bool xArticleSet = false;
+                bool yArticleSet = false;
 
-                // Avoid concats for perf
-                if (!xArticleSet && xTitle.StartsWithI(a) && xTitleLen > aLen && char.IsWhiteSpace(xTitle[aLen]))
+                foreach (string a in articles)
                 {
-                    xTitle = xTitle.Substring(aLen + 1);
-                    xArticleSet = true;
-                }
-                if (!yArticleSet && yTitle.StartsWithI(a) && yTitleLen > aLen && char.IsWhiteSpace(yTitle[aLen]))
-                {
-                    yTitle = yTitle.Substring(aLen + 1);
-                    yArticleSet = true;
+                    int aLen = a.Length;
+
+                    // Avoid concats for perf
+                    if (!xArticleSet && xTitle.StartsWithIPlusWhiteSpace(a, aLen))
+                    {
+                        xTitle = xTitle.Substring(aLen + 1);
+                        xArticleSet = true;
+                    }
+                    if (!yArticleSet && yTitle.StartsWithIPlusWhiteSpace(a, aLen))
+                    {
+                        yTitle = yTitle.Substring(aLen + 1);
+                        yArticleSet = true;
+                    }
                 }
             }
 

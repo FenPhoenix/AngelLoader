@@ -40,12 +40,12 @@ namespace FenGen
                         _nextIndent--;
                     }
                 }
-                else if (strT.StartsWith("switch "))
+                else if (strT.StartsWithPlusWhiteSpace("switch"))
                 {
                     _inSwitchStatement = true;
                     _inFirstCaseStatement = true;
                 }
-                else if (strT.StartsWith("case "))
+                else if (strT.StartsWithPlusWhiteSpace("case"))
                 {
                     _nextIndent++;
                     if (_inSwitchStatement)
@@ -64,9 +64,9 @@ namespace FenGen
 
                 bool noIndent = strT.IsWhiteSpace() ||
                                 (strT.StartsWith("#") &&
-                                 !strT.StartsWith("#region ") &&
+                                 !strT.StartsWithPlusWhiteSpace("#region") &&
                                  strT != "#region" &&
-                                 !strT.StartsWith("#endregion ") &&
+                                 !strT.StartsWithPlusWhiteSpace("#endregion") &&
                                  strT != "#endregion");
                 string indent = noIndent ? "" : Indent(curIndent);
                 _sb.AppendLine(indent + strT);

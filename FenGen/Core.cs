@@ -302,7 +302,7 @@ namespace FenGen
 
                     if (lts[0] != '#') break;
 
-                    if (lts.StartsWith("#define") && lts.Length > 7 && char.IsWhiteSpace(lts[7]))
+                    if (lts.StartsWithPlusWhiteSpace("#define"))
                     {
                         string tag = lts.Substring(7).Trim();
 

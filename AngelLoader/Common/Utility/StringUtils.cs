@@ -270,6 +270,36 @@ namespace AngelLoader
             return true;
         }
 
+        #region Starts with plus whitespace
+
+        internal static bool StartsWithPlusWhiteSpace(this string str, string value)
+        {
+            int valLen;
+            return str.StartsWith(value) &&
+                   str.Length > (valLen = value.Length) &&
+                   char.IsWhiteSpace(str[valLen]);
+        }
+
+        internal static bool StartsWithPlusWhiteSpace(this string str, string value, int valueLength) =>
+            str.StartsWith(value) &&
+            str.Length > valueLength &&
+            char.IsWhiteSpace(str[valueLength]);
+
+        internal static bool StartsWithIPlusWhiteSpace(this string str, string value)
+        {
+            int valLen;
+            return str.StartsWithI(value) &&
+                   str.Length > (valLen = value.Length) &&
+                   char.IsWhiteSpace(str[valLen]);
+        }
+
+        internal static bool StartsWithIPlusWhiteSpace(this string str, string value, int valueLength) =>
+            str.StartsWithI(value) &&
+            str.Length > valueLength &&
+            char.IsWhiteSpace(str[valueLength]);
+
+        #endregion
+
         #endregion
 
         #region FM installed name conversion

@@ -219,12 +219,9 @@ namespace FenGen
             {
                 string lineT = line.Trim();
 
-                if (lineT.StartsWith("{")) openBraces++;
+                if (lineT.Length > 0 && lineT[0] == '{') openBraces++;
                 destTopLines.Add(line);
-                if (openBraces == 2)
-                {
-                    break;
-                }
+                if (openBraces == 2) break;
             }
 
             var sb = new StringBuilder();

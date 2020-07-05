@@ -257,6 +257,14 @@ namespace FenGen
             return true;
         }
 
+        internal static bool StartsWithPlusWhiteSpace(this string str, string value)
+        {
+            int valLen;
+            return str.StartsWith(value) &&
+                   str.Length > (valLen = value.Length) &&
+                   char.IsWhiteSpace(str[valLen]);
+        }
+
         #endregion
     }
 }
