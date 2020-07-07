@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using AngelLoader.Importing;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;

@@ -640,7 +640,7 @@ namespace AngelLoader.Forms.CustomControls
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
                     GetSelectedFM().Rating = i - 1;
-                    Owner.RefreshSelectedFM(refreshReadme: false);
+                    _owner.RefreshSelectedFM(refreshReadme: false);
                     Ini.WriteFullFMDataIni();
                     break;
                 }
@@ -688,7 +688,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
 
-            Owner.RefreshSelectedFMRowOnly();
+            _owner.RefreshSelectedFMRowOnly();
             Ini.WriteFullFMDataIni();
         }
 

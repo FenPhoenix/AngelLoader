@@ -618,7 +618,8 @@ namespace AngelLoader
         {
             if (fmArchive.IsEmpty()) return "";
 
-            foreach (string path in (archivePaths != null && archivePaths.Count > 0 ? archivePaths : GetFMArchivePaths()))
+            var paths = archivePaths?.Count > 0 ? archivePaths : GetFMArchivePaths();
+            foreach (string path in paths)
             {
                 if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
                 {

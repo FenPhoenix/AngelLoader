@@ -18,7 +18,7 @@ namespace FenGen
 
             XmlNodeList itemGroups = xml.GetElementsByTagName(_itemGroupName);
 
-            for (var i = 0; i < itemGroups.Count; i++)
+            for (int i = 0; i < itemGroups.Count; i++)
             {
                 XmlNode itemGroup = itemGroups[i];
                 foreach (XmlNode cn in itemGroup)

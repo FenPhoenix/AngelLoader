@@ -12,6 +12,7 @@ namespace FMScanner
     {
         private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim();
 
+        [Conditional("logEnabled")]
         private static void ClearLogFile(string logFile)
         {
             Lock.EnterWriteLock();
@@ -36,11 +37,11 @@ namespace FMScanner
             }
         }
 
+        [Conditional("logEnabled")]
         internal static void Log(string logFile,
             string message, Exception ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
-#if logEnabled
             if (logFile.IsEmpty()) return;
 
             try
@@ -87,7 +88,6 @@ namespace FMScanner
                     Debug.WriteLine(logEx);
                 }
             }
-#endif
         }
     }
 }

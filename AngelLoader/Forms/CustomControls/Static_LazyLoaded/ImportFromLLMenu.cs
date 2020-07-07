@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
-using AngelLoader.DataClasses; // for LText in disabled multi loaders menu item
+//using AngelLoader.DataClasses; // for LText in disabled multi loaders menu item
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 {

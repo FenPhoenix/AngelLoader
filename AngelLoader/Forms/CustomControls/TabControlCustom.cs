@@ -9,8 +9,9 @@ namespace AngelLoader.Forms.CustomControls
     {
         internal class BackingTab
         {
-            internal TabPage? Tab;
+            internal TabPage Tab;
             internal bool Visible = true;
+            internal BackingTab(TabPage tabPage) => Tab = tabPage;
         }
 
         private TabPage? DragTab;
@@ -28,11 +29,11 @@ namespace AngelLoader.Forms.CustomControls
             foreach (TabPage tabPage in tabPages)
             {
                 TabPages.Add(tabPage);
-                BackingTabList.Add(new BackingTab { Tab = tabPage });
+                BackingTabList.Add(new BackingTab(tabPage));
             }
         }
 
-        internal (int index, BackingTab? backingTab)
+        internal (int index, BackingTab backingTab)
         FindBackingTab(TabPage tab, bool indexVisibleOnly = false)
         {
             for (int i = 0, vi = 0; i < BackingTabList.Count; i++)
@@ -51,7 +52,7 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             // To keep design mode tab selection happy
-            return (-1, null);
+            return (-1, null)!;
         }
 
         internal void ShowTab(TabPage tab, bool show)
@@ -106,7 +107,7 @@ namespace AngelLoader.Forms.CustomControls
             TabPages[newTabIndex] = DragTab;
 
             BackingTabList[bDragTabIndex].Tab = newTab;
-            BackingTabList[bNewTabIndex].Tab = DragTab;
+            BackingTabList[bNewTabIndex].Tab = DragTab!;
 
             SelectedTab = DragTab;
 

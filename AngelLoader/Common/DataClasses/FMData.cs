@@ -11,10 +11,7 @@ namespace AngelLoader.DataClasses
     // TODO: Version-header ini files right from the start, in case I have to change the format after release
     /*
      Notes to self:
-        -Keep properties to one line, cause FenGen doesn't handle multiline ones
         -Keep names shortish for more performance when reading
-        -Only one attribute per set of []s is supported
-        -Attributes must be on the preceding line, same-line attributes are not supported
     */
 
     [FenGenFMDataSourceClass(writeEmptyValues: false)]

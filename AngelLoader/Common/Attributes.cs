@@ -28,7 +28,7 @@ namespace AngelLoader
             /// Specifies whether empty values will be written to the ini.
             /// What constitutes "empty" will vary depending on type.
             /// </param>
-            internal FenGenFMDataSourceClassAttribute(bool writeEmptyValues) { }
+            internal FenGenFMDataSourceClassAttribute([UsedImplicitly] bool writeEmptyValues) { }
         }
 
         /// <summary>

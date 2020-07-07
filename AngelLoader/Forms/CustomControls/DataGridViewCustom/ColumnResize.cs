@@ -35,10 +35,10 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Resize data fields
 
-        private bool ColumnResizeInProgress;
-        private int ColumnToResize;
-        private int ColumnToResizeOriginalMouseX;
-        private int ColumnToResizeOriginalWidth;
+        private bool _columnResizeInProgress;
+        private int _columnToResize;
+        private int _columnToResizeOriginalMouseX;
+        private int _columnToResizeOriginalWidth;
 
         #endregion
 
@@ -46,13 +46,13 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void CancelColumnResize()
         {
-            if (!ColumnResizeInProgress) return;
+            if (!_columnResizeInProgress) return;
 
-            ColumnResizeInProgress = false;
+            _columnResizeInProgress = false;
             // Prevents the context menu from popping up if the user right-clicked to cancel. The menu will be
             // set back to what it should be when the user right-clicks while a resize is not progress.
             SetContextMenuToNone();
-            Columns[ColumnToResize].Width = ColumnToResizeOriginalWidth;
+            Columns[_columnToResize].Width = _columnToResizeOriginalWidth;
         }
 
         #region Private methods
@@ -64,7 +64,7 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         private bool StartColumnResize(MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right && ColumnResizeInProgress)
+            if (e.Button == MouseButtons.Right && _columnResizeInProgress)
             {
                 CancelColumnResize();
                 return false;
@@ -85,7 +85,7 @@ namespace AngelLoader.Forms.CustomControls
 
                 if (typeInternal == null)
                 {
-                    ColumnResizeInProgress = false;
+                    _columnResizeInProgress = false;
                     return true;
                 }
 
@@ -96,7 +96,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
                 catch
                 {
-                    ColumnResizeInProgress = false;
+                    _columnResizeInProgress = false;
                     return true;
                 }
 
@@ -121,14 +121,14 @@ namespace AngelLoader.Forms.CustomControls
                 // NOTE: I think ColumnResizeLeft means the resizable divider on the left side of the current
                 //       column. But if we're thinking of the divider itself, we're on the right side of it.
                 //       Just so I don't get confused again if I look at this in a few months.
-                ColumnToResize = hitTestType == DataGridViewHitTestTypeInternal.ColumnResizeLeft
+                _columnToResize = hitTestType == DataGridViewHitTestTypeInternal.ColumnResizeLeft
                     ? FindColumnIndexByDisplayIndex(Columns[ht.ColumnIndex].DisplayIndex - 1)
                     : ht.ColumnIndex;
 
-                ColumnToResizeOriginalMouseX = e.X;
-                ColumnToResizeOriginalWidth = Columns[ColumnToResize].Width;
+                _columnToResizeOriginalMouseX = e.X;
+                _columnToResizeOriginalWidth = Columns[_columnToResize].Width;
 
-                ColumnResizeInProgress = true;
+                _columnResizeInProgress = true;
 
                 #endregion
 
@@ -145,10 +145,10 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         private bool EndColumnResize(MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && ColumnResizeInProgress)
+            if (e.Button == MouseButtons.Left && _columnResizeInProgress)
             {
                 // The move is complete
-                ColumnResizeInProgress = false;
+                _columnResizeInProgress = false;
                 return false;
             }
 
@@ -162,11 +162,11 @@ namespace AngelLoader.Forms.CustomControls
         /// <returns></returns>
         private bool DoColumnResize(MouseEventArgs e)
         {
-            if (ColumnResizeInProgress)
+            if (_columnResizeInProgress)
             {
-                Columns[ColumnToResize].Width = e.X > ColumnToResizeOriginalMouseX
-                    ? ColumnToResizeOriginalWidth + (e.X - ColumnToResizeOriginalMouseX)
-                    : ColumnToResizeOriginalWidth - (ColumnToResizeOriginalMouseX - e.X);
+                Columns[_columnToResize].Width = e.X > _columnToResizeOriginalMouseX
+                    ? _columnToResizeOriginalWidth + (e.X - _columnToResizeOriginalMouseX)
+                    : _columnToResizeOriginalWidth - (_columnToResizeOriginalMouseX - e.X);
                 return false;
             }
 

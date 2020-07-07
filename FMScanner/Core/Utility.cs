@@ -238,10 +238,10 @@ namespace FMScanner
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool AsciiPathCharsConsideredEqual_Win(char char1, char char2)
         {
-            return (char1 == char2 ||
-                    (char1.IsDirSep() && char2.IsDirSep()) ||
-                    ((char1 >= 65 && char1 <= 90 && char2 >= 97 && char2 <= 122 && char1 == char2 - 32) ||
-                     (char1 >= 97 && char1 <= 122 && char2 >= 65 && char2 <= 90 && char1 == char2 + 32)));
+            return char1 == char2 ||
+                   (char1.IsDirSep() && char2.IsDirSep()) ||
+                   (char1 >= 65 && char1 <= 90 && char2 >= 97 && char2 <= 122 && char1 == char2 - 32) ||
+                   (char1 >= 97 && char1 <= 122 && char2 >= 65 && char2 <= 90 && char1 == char2 + 32);
         }
 
         /// <summary>

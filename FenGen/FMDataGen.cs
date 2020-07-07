@@ -272,62 +272,64 @@ namespace FenGen
                     foreach (AttributeSyntax attr in attrList.Attributes)
                     {
                         string name = attr.Name.ToString();
-                        if (name == GenAttributes.FenGenIgnore)
+                        switch (name)
                         {
-                            ignore = true;
-                            return;
-                        }
-                        else if (name == GenAttributes.FenGenDoNotConvertDateTimeToLocal)
-                        {
-                            field.DoNotConvertDateTimeToLocal = true;
-                        }
-                        else if (name == GenAttributes.FenGenDoNotTrimValue)
-                        {
-                            field.DoNotTrimValue = true;
-                        }
-                        else if (name == GenAttributes.FenGenNumericEmpty)
-                        {
-                            CheckParamCount(attr, 1);
+                            case GenAttributes.FenGenIgnore:
+                                ignore = true;
+                                return;
+                            case GenAttributes.FenGenDoNotConvertDateTimeToLocal:
+                                field.DoNotConvertDateTimeToLocal = true;
+                                break;
+                            case GenAttributes.FenGenDoNotTrimValue:
+                                field.DoNotTrimValue = true;
+                                break;
+                            case GenAttributes.FenGenNumericEmpty:
+                            {
+                                CheckParamCount(attr, 1);
 
-                            // Have to do this ridiculous method of getting the value, because if the value is
-                            // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
-                            // number. But ToString() gives us the string version of the entire number. Argh...
-                            string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                            long.TryParse(val, out long result);
-                            field.NumericEmpty = result;
-                        }
-                        else if (name == GenAttributes.FenGenListType)
-                        {
-                            CheckParamCount(attr, 1);
+                                // Have to do this ridiculous method of getting the value, because if the value is
+                                // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
+                                // number. But ToString() gives us the string version of the entire number. Argh...
+                                string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
+                                long.TryParse(val, out long result);
+                                field.NumericEmpty = result;
+                                break;
+                            }
+                            case GenAttributes.FenGenListType:
+                            {
+                                CheckParamCount(attr, 1);
 
-                            string val = GetStringValue(attr);
+                                string val = GetStringValue(attr);
 
-                            FieldInfo enumField = typeof(ListType).GetField(val, _bFlagsEnum);
-                            if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
-                        }
-                        else if (name == GenAttributes.FenGenListDistinctType)
-                        {
-                            CheckParamCount(attr, 1);
+                                FieldInfo enumField = typeof(ListType).GetField(val, _bFlagsEnum);
+                                if (enumField != null) field.ListType = (ListType)enumField.GetValue(null);
+                                break;
+                            }
+                            case GenAttributes.FenGenListDistinctType:
+                            {
+                                CheckParamCount(attr, 1);
 
-                            string val = GetStringValue(attr);
+                                string val = GetStringValue(attr);
 
-                            FieldInfo enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
-                            if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
-                        }
-                        else if (name == GenAttributes.FenGenIniName)
-                        {
-                            CheckParamCount(attr, 1);
+                                FieldInfo enumField = typeof(ListDistinctType).GetField(val, _bFlagsEnum);
+                                if (enumField != null) field.ListDistinctType = (ListDistinctType)enumField.GetValue(null);
+                                break;
+                            }
+                            case GenAttributes.FenGenIniName:
+                                CheckParamCount(attr, 1);
 
-                            field.IniName = GetStringValue(attr);
-                        }
-                        else if (name == GenAttributes.FenGenInsertAfter)
-                        {
-                            CheckParamCount(attr, 1);
+                                field.IniName = GetStringValue(attr);
+                                break;
+                            case GenAttributes.FenGenInsertAfter:
+                            {
+                                CheckParamCount(attr, 1);
 
-                            string val = GetStringValue(attr);
+                                string val = GetStringValue(attr);
 
-                            FieldInfo enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
-                            if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
+                                FieldInfo enumField = typeof(CustomCodeBlockNames).GetField(val, _bFlagsEnum);
+                                if (enumField != null) field.CodeBlockToInsertAfter = (CustomCodeBlockNames)enumField.GetValue(null);
+                                break;
+                            }
                         }
                     }
                 }

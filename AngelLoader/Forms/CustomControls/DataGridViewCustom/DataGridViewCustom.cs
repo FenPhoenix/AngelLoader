@@ -11,7 +11,7 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        private IView Owner;
+        private IView _owner;
 
         #endregion
 
@@ -80,6 +80,7 @@ namespace AngelLoader.Forms.CustomControls
 
         // @R#_FALSE_POSITIVE: This should surround Owner declaration line, not the ctor
 #pragma warning disable 8618
+        // ReSharper disable once NotNullMemberIsNotInitialized
         public DataGridViewCustom()
         {
             DoubleBuffered = true;
@@ -89,7 +90,7 @@ namespace AngelLoader.Forms.CustomControls
         }
 #pragma warning restore 8618
 
-        internal void InjectOwner(IView owner) => Owner = owner;
+        internal void InjectOwner(IView owner) => _owner = owner;
 
         internal void Localize()
         {
@@ -101,6 +102,8 @@ namespace AngelLoader.Forms.CustomControls
 
         internal bool FMContextMenuVisible => FMContextMenu?.Visible == true;
 
+        // We keep this non-static so we can call it with an instance syntax like everything else for consistency.
+        // ReSharper disable once MemberCanBeMadeStatic.Global
         internal bool ColumnHeaderMenuVisible => ColumnHeaderLLMenu.Visible;
 
         #region Get FM / FM data

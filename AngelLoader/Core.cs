@@ -1583,7 +1583,7 @@ namespace AngelLoader
 
             Config.Columns.ClearAndAdd(columns);
 
-            Config.SortedColumn = (Column)sortedColumn;
+            Config.SortedColumn = sortedColumn;
             Config.SortDirection = sortDirection;
 
             Config.ShowRecentAtTop = View.ShowRecentAtTop;
