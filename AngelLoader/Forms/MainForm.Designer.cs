@@ -392,7 +392,6 @@
             this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.MainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.MainSplitContainer.MouseOverCrossSection = false;
             this.MainSplitContainer.Name = "MainSplitContainer";
             this.MainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -422,7 +421,6 @@
             this.TopSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.TopSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TopSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.TopSplitContainer.MouseOverCrossSection = false;
             this.TopSplitContainer.Name = "TopSplitContainer";
             // 
             // TopSplitContainer.Panel1

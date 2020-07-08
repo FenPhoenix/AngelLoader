@@ -1266,7 +1266,6 @@ namespace AngelLoader.Forms
         {
             formatString = GetFormattedCustomDateString();
 
-            // TODO: Date error checking:
             // It's impossible to get an ArgumentOutOfRangeException as long as our readonly example date is valid.
             // It's probably impossible to get a FormatException too (because we handle invalid formats in the
             // config reader and reset to default if they aren't valid) but not 100% certain.

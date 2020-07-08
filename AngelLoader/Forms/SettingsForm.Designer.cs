@@ -101,7 +101,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.MainSplitContainer.BackColor = System.Drawing.SystemColors.ControlDark;
             this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.MainSplitContainer.MouseOverCrossSection = false;
             this.MainSplitContainer.Name = "MainSplitContainer";
             // 
             // MainSplitContainer.Panel1

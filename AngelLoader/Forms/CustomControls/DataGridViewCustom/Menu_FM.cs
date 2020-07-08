@@ -34,7 +34,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        private IDisposable[]? FMContextMenuDisposables;
+        private IDisposable[]? _fmContextMenuDisposables;
 
         #region FM context menu fields
 
@@ -105,7 +105,7 @@ namespace AngelLoader.Forms.CustomControls
 
             #region Instantiation
 
-            FMContextMenuDisposables = new IDisposable[]
+            _fmContextMenuDisposables = new IDisposable[]
             {
                 FMContextMenu = new ContextMenuStrip { Name = nameof(FMContextMenu) },
                 PlayFMMenuItem = new ToolStripMenuItem { Name = nameof(PlayFMMenuItem) },
@@ -261,6 +261,8 @@ namespace AngelLoader.Forms.CustomControls
             OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
             ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
 
+            #endregion
+
             #region Set Finished On checked values
 
             FinishedOnNormalMenuItem.Checked = _finishedOnNormalChecked;
@@ -268,8 +270,6 @@ namespace AngelLoader.Forms.CustomControls
             FinishedOnExpertMenuItem.Checked = _finishedOnExpertChecked;
             FinishedOnExtremeMenuItem.Checked = _finishedOnExtremeChecked;
             FinishedOnUnknownMenuItem.Checked = _finishedOnUnknownChecked;
-
-            #endregion
 
             #endregion
 
@@ -703,9 +703,9 @@ namespace AngelLoader.Forms.CustomControls
 
         private void DisposeFMContextMenu()
         {
-            for (int i = 0; i < FMContextMenuDisposables?.Length; i++)
+            for (int i = 0; i < _fmContextMenuDisposables?.Length; i++)
             {
-                FMContextMenuDisposables?[i]?.Dispose();
+                _fmContextMenuDisposables?[i]?.Dispose();
             }
         }
     }

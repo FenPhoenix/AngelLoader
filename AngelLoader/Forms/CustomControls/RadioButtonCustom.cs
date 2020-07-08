@@ -8,6 +8,7 @@ namespace AngelLoader.Forms.CustomControls
     public class RadioButtonCustom : Button
     {
         private bool _checked;
+        private readonly Pen _blackRectPen = new Pen(Color.Black, 1.0f);
 
         // @R#_FALSE_POSITIVE?: It doesn't make sense to call event handlers "nullable" does it?
         public event EventHandler? CheckedChanged;
@@ -36,7 +37,7 @@ namespace AngelLoader.Forms.CustomControls
         {
             base.OnPaint(e);
             var rect = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
-            e.Graphics.DrawRectangle(new Pen(Color.Black, 1.0f), rect);
+            e.Graphics.DrawRectangle(_blackRectPen, rect);
         }
     }
 }

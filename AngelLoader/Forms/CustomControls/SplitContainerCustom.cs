@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using static AngelLoader.Misc;
@@ -13,32 +14,38 @@ namespace AngelLoader.Forms.CustomControls
         // itself is horizontal, but that's not exactly a compelling argument for calling it "horizontal".
         // Oh well.
 
+        #region Private fields
+
         private int _storedCollapsiblePanelMinSize;
         private float _storedSplitterPercent;
-        internal bool FullScreen { get; private set; }
-        internal int CollapsedSize = 0;
-
-        private bool IsMain() => Orientation == Orientation.Horizontal;
-
-        internal float SplitterPercentReal => FullScreen ? _storedSplitterPercent : SplitterPercent;
-
-        internal void ToggleFullScreen() => SetFullScreen(!FullScreen);
-
         private float SplitterPercent
         {
             get => SplitterDistance / (float)(IsMain() ? Height : Width);
             set => SplitterDistance = (int)Math.Round(value * (IsMain() ? Height : Width));
         }
 
-        // This realtime-draw resize stuff still flickers a bit, but it's better than no redraw at all.
-        private int OriginalDistance;
+        // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
+        // control both its own SplitterDistance and that of its orthogonally-oriented sibling at the same time.
+        private SplitContainerCustom? _sibling;
 
+        // This realtime-draw resize stuff still flickers a bit, but it's better than no redraw at all.
+        private int _originalDistance;
         private bool _mouseOverCrossSection;
-        public bool MouseOverCrossSection
-        {
-            get => Sibling != null && _mouseOverCrossSection;
-            set => _mouseOverCrossSection = value;
-        }
+        [Browsable(false)]
+        private bool MouseOverCrossSection => _sibling != null && _mouseOverCrossSection;
+
+        #endregion
+
+        #region API fields
+
+        internal float SplitterPercentReal => FullScreen ? _storedSplitterPercent : SplitterPercent;
+
+        internal bool FullScreen { get; private set; }
+        internal int CollapsedSize = 0;
+
+        #endregion
+
+        private bool IsMain() => Orientation == Orientation.Horizontal;
 
         public SplitContainerCustom()
         {
@@ -47,10 +54,11 @@ namespace AngelLoader.Forms.CustomControls
             _storedCollapsiblePanelMinSize = IsMain() ? Panel1MinSize : Panel2MinSize;
         }
 
-        // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
-        // control both its own SplitterDistance and that of its orthogonally-oriented sibling at the same time.
-        private SplitContainerCustom? Sibling;
-        public void InjectSibling(SplitContainerCustom sibling) => Sibling = sibling;
+        #region API methods
+
+        internal void InjectSibling(SplitContainerCustom sibling) => _sibling = sibling;
+
+        internal void ToggleFullScreen() => SetFullScreen(!FullScreen);
 
         internal void SetFullScreen(bool enabled, bool suspendResume = true)
         {
@@ -63,7 +71,7 @@ namespace AngelLoader.Forms.CustomControls
                     _storedCollapsiblePanelMinSize = Panel1MinSize;
                     _storedSplitterPercent = SplitterPercent;
                     Panel1MinSize = CollapsedSize;
-                    Sibling!.Hide();
+                    _sibling!.Hide();
                     SplitterDistance = CollapsedSize;
                     FullScreen = true;
                     if (suspendResume) this.ResumeDrawing();
@@ -73,7 +81,7 @@ namespace AngelLoader.Forms.CustomControls
                     if (suspendResume) this.SuspendDrawing();
                     SplitterPercent = _storedSplitterPercent;
                     Panel1MinSize = _storedCollapsiblePanelMinSize;
-                    Sibling!.Show();
+                    _sibling!.Show();
                     FullScreen = false;
                     IsSplitterFixed = false;
                     if (suspendResume) this.ResumeDrawing();
@@ -140,15 +148,19 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        public void CancelResize()
+        internal void CancelResize()
         {
             if (!IsSplitterFixed || FullScreen) return;
 
             IsSplitterFixed = false;
-            SplitterDistance = OriginalDistance;
-            if (MouseOverCrossSection) Sibling!.SplitterDistance = Sibling.OriginalDistance;
+            SplitterDistance = _originalDistance;
+            if (MouseOverCrossSection) _sibling!.SplitterDistance = _sibling._originalDistance;
             _mouseOverCrossSection = false;
         }
+
+        #endregion
+
+        #region Event overrides
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
@@ -159,8 +171,8 @@ namespace AngelLoader.Forms.CustomControls
                  (IsMain() && Cursor.Current == Cursors.HSplit) ||
                  (!IsMain() && Cursor.Current == Cursors.VSplit)))
             {
-                OriginalDistance = SplitterDistance;
-                if (MouseOverCrossSection) Sibling!.OriginalDistance = Sibling.SplitterDistance;
+                _originalDistance = SplitterDistance;
+                if (MouseOverCrossSection) _sibling!._originalDistance = _sibling.SplitterDistance;
                 IsSplitterFixed = true;
             }
             else
@@ -185,20 +197,20 @@ namespace AngelLoader.Forms.CustomControls
         {
             if (FullScreen) return;
 
-            if (!IsSplitterFixed && Sibling != null)
+            if (!IsSplitterFixed && _sibling != null)
             {
                 int sibCursorPos = IsMain()
-                    ? Sibling.Panel1.PointToClient(new Point(Cursor.Position.X, 0)).X
-                    : Sibling.Panel1.PointToClient(new Point(0, Cursor.Position.Y)).Y;
+                    ? _sibling.Panel1.PointToClient(new Point(Cursor.Position.X, 0)).X
+                    : _sibling.Panel1.PointToClient(new Point(0, Cursor.Position.Y)).Y;
 
                 int sibSplitterPos = IsMain()
-                    ? Sibling.Panel1.Width
-                    : Sibling.Panel1.Height;
+                    ? _sibling.Panel1.Width
+                    : _sibling.Panel1.Height;
 
                 // Don't do the both-directional-drag if the top-right panel is collapsed
-                if (!Sibling.FullScreen &&
+                if (!_sibling.FullScreen &&
                     sibCursorPos >= sibSplitterPos - 7 &&
-                    sibCursorPos <= sibSplitterPos + Sibling.SplitterWidth + 6)
+                    sibCursorPos <= sibSplitterPos + _sibling.SplitterWidth + 6)
                 {
                     Cursor.Current = Cursors.SizeAll;
                     _mouseOverCrossSection = true;
@@ -224,16 +236,16 @@ namespace AngelLoader.Forms.CustomControls
                     {
                         if (IsMain())
                         {
-                            Sibling!.SuspendDrawing();
+                            _sibling!.SuspendDrawing();
                             this.SuspendDrawing();
                         }
                         else
                         {
                             this.SuspendDrawing();
-                            Sibling!.SuspendDrawing();
+                            _sibling!.SuspendDrawing();
                         }
 
-                        Sibling!.SplitterDistance = (axis == e.X ? e.Y : e.X).ClampToZero();
+                        _sibling!.SplitterDistance = (axis == e.X ? e.Y : e.X).ClampToZero();
                     }
                     else
                     {
@@ -246,13 +258,13 @@ namespace AngelLoader.Forms.CustomControls
                     {
                         if (IsMain())
                         {
-                            Sibling!.ResumeDrawing();
+                            _sibling!.ResumeDrawing();
                             this.ResumeDrawing();
                         }
                         else
                         {
                             this.ResumeDrawing();
-                            Sibling!.ResumeDrawing();
+                            _sibling!.ResumeDrawing();
                         }
                     }
                     else
@@ -268,5 +280,7 @@ namespace AngelLoader.Forms.CustomControls
 
             base.OnMouseMove(e);
         }
+
+        #endregion
     }
 }

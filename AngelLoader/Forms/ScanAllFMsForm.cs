@@ -7,7 +7,7 @@ namespace AngelLoader.Forms
 {
     public partial class ScanAllFMsForm : Form
     {
-        private readonly CheckBox[] CheckBoxes;
+        private readonly CheckBox[] _checkBoxes;
 
         internal readonly ScanOptions ScanOptions = ScanOptions.FalseDefault();
         internal bool NoneSelected;
@@ -16,7 +16,7 @@ namespace AngelLoader.Forms
         {
             InitializeComponent();
 
-            CheckBoxes = new[]
+            _checkBoxes = new[]
             {
                 TitleCheckBox,
                 AuthorCheckBox,
@@ -56,7 +56,7 @@ namespace AngelLoader.Forms
 
         private void SetCheckBoxValues(bool enabled)
         {
-            foreach (CheckBox cb in CheckBoxes) cb.Checked = enabled;
+            foreach (CheckBox cb in _checkBoxes) cb.Checked = enabled;
         }
 
         private void ScanAllFMs_FormClosing(object sender, FormClosingEventArgs e)
@@ -64,9 +64,9 @@ namespace AngelLoader.Forms
             if (DialogResult != DialogResult.OK) return;
 
             bool noneChecked = true;
-            for (int i = 0; i < CheckBoxes.Length; i++)
+            for (int i = 0; i < _checkBoxes.Length; i++)
             {
-                if (CheckBoxes[i].Checked)
+                if (_checkBoxes[i].Checked)
                 {
                     noneChecked = false;
                     break;

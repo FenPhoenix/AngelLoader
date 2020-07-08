@@ -11,7 +11,7 @@ namespace AngelLoader.Forms.CustomControls
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo
 
-            const string RtfHeader =
+            const string rtfHeader =
                 // RTF identifier
                 @"{\rtf1" +
                 // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
@@ -24,8 +24,15 @@ namespace AngelLoader.Forms.CustomControls
                 @"\viewkind4\uc1\f0 ";
 
             // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
-            // and scale the width out
-            const string HorizontalLineImagePart =
+            // and scale the width out.
+            // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
+            // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
+            // and the double-screen-width method doesn't give a consistent width anymore.
+            // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc. (at 96 dpi)
+            // picscalex is in percent
+            // max value for anything is 32767
+            const string horizontalLine =
+                @"{\pict\wmetafile8\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 " +
                 @"0100090000039000000000006700000000000400000003010800050000000b0200000000050000" +
                 @"000c0213000200030000001e000400000007010400040000000701040067000000410b2000cc00" +
                 @"130002000000000013000200000000002800000002000000130000000100040000000000000000" +
@@ -35,23 +42,13 @@ namespace AngelLoader.Forms.CustomControls
                 @"2202000011010000110100001101000011010000110100001101803f1101803f1101803f1101c0" +
                 @"42040000002701ffff030000000000}\line ";
 
-            // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
-            // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
-            // and the double-screen-width method doesn't give a consistent width anymore.
-            // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc. (at 96 dpi)
-            // picscalex is in percent
-            // max value for anything is 32767
-            const string HorizontalLine =
-                @"{\pict\wmetafile8\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 " +
-                HorizontalLineImagePart;
-
             // ReSharper restore CommentTypo
             // ReSharper restore StringLiteralTypo
 
             var sb = new StringBuilder();
             var subSB = new StringBuilder();
 
-            sb.Append(RtfHeader);
+            sb.Append(rtfHeader);
 
             #region Parse and copy
 
@@ -119,7 +116,7 @@ namespace AngelLoader.Forms.CustomControls
                                 else if (tag == "LINE")
                                 {
                                     if (!lastTagWasLineBreak) sb.Append(@"\line ");
-                                    sb.Append(HorizontalLine);
+                                    sb.Append(horizontalLine);
                                 }
                                 else if (!tag.IsAsciiAlphaUpper())
                                 {

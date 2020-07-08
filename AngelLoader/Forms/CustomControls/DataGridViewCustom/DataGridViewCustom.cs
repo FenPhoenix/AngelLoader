@@ -78,7 +78,7 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Init
 
-        // @R#_FALSE_POSITIVE: This should surround Owner declaration line, not the ctor
+        // @R#_FALSE_POSITIVE: This should surround _owner declaration line, not the ctor
 #pragma warning disable 8618
         // ReSharper disable once NotNullMemberIsNotInitialized
         public DataGridViewCustom()

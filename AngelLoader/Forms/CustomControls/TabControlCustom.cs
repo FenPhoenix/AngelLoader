@@ -9,13 +9,13 @@ namespace AngelLoader.Forms.CustomControls
     {
         internal class BackingTab
         {
-            internal TabPage Tab;
+            internal TabPage TabPage;
             internal bool Visible = true;
-            internal BackingTab(TabPage tabPage) => Tab = tabPage;
+            internal BackingTab(TabPage tabPage) => TabPage = tabPage;
         }
 
-        private TabPage? DragTab;
-        private readonly List<BackingTab> BackingTabList = new List<BackingTab>(Misc.TopRightTabsCount);
+        private TabPage? _dragTab;
+        private readonly List<BackingTab> _backingTabList = new List<BackingTab>(Misc.TopRightTabsCount);
 
         public TabControlCustom()
         {
@@ -24,30 +24,30 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void AddTabsFull(List<TabPage> tabPages)
         {
-            BackingTabList.Clear();
+            _backingTabList.Clear();
 
             foreach (TabPage tabPage in tabPages)
             {
                 TabPages.Add(tabPage);
-                BackingTabList.Add(new BackingTab(tabPage));
+                _backingTabList.Add(new BackingTab(tabPage));
             }
         }
 
-        internal (int index, BackingTab backingTab)
-        FindBackingTab(TabPage tab, bool indexVisibleOnly = false)
+        internal (int Index, BackingTab BackingTab)
+        FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
         {
-            for (int i = 0, vi = 0; i < BackingTabList.Count; i++)
+            for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
             {
-                BackingTab bt = BackingTabList[i];
-                if (indexVisibleOnly && bt.Visible) vi++;
-                if (bt.Tab == tab) return (indexVisibleOnly ? vi : i, bt);
+                BackingTab backingTab = _backingTabList[i];
+                if (indexVisibleOnly && backingTab.Visible) vi++;
+                if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
             }
 
             if (!DesignMode)
             {
                 throw new Exception(nameof(FindBackingTab) + " couldn't find the specified tab page '" +
                                     // DOTNAME
-                                    tab.Name +
+                                    tabPage.Name +
                                     "'. That's not supposed to happen. All tab pages should always exist in the backing list.");
             }
 
@@ -55,20 +55,20 @@ namespace AngelLoader.Forms.CustomControls
             return (-1, null)!;
         }
 
-        internal void ShowTab(TabPage tab, bool show)
+        internal void ShowTab(TabPage tabPage, bool show)
         {
-            var (index, bt) = FindBackingTab(tab, indexVisibleOnly: true);
+            var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
             if (index < 0 || bt == null) return;
 
             if (show)
             {
                 bt.Visible = true;
-                if (!TabPages.Contains(bt.Tab)) TabPages.Insert(Math.Min(index, TabCount), bt.Tab);
+                if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
             }
             else
             {
                 bt.Visible = false;
-                if (TabPages.Contains(bt.Tab)) TabPages.Remove(bt.Tab);
+                if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
             }
         }
 
@@ -76,18 +76,18 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            (_, DragTab) = GetTabAtPoint(e.Location);
+            (_, _dragTab) = GetTabAtPoint(e.Location);
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left || DragTab == null || TabCount <= 1) return;
+            if (e.Button != MouseButtons.Left || _dragTab == null || TabCount <= 1) return;
 
-            int dragTabIndex = TabPages.IndexOf(DragTab);
-            var (bDragTabIndex, _) = FindBackingTab(DragTab);
+            int dragTabIndex = TabPages.IndexOf(_dragTab);
+            var (bDragTabIndex, _) = FindBackingTab(_dragTab);
 
-            var dragTabRect = GetTabRect(dragTabIndex);
+            Rectangle dragTabRect = GetTabRect(dragTabIndex);
 
             // Special-case for if there's 2 tabs. This is not the most readable thing, but hey... it works.
             bool rightNotYet = dragTabIndex < TabCount - 1 &&
@@ -100,31 +100,31 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location);
-            if (bNewTabIndex == -1 || newTab == null || newTab == DragTab) return;
+            if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
 
             int newTabIndex = TabPages.IndexOf(newTab);
             TabPages[dragTabIndex] = newTab;
-            TabPages[newTabIndex] = DragTab;
+            TabPages[newTabIndex] = _dragTab;
 
-            BackingTabList[bDragTabIndex].Tab = newTab;
-            BackingTabList[bNewTabIndex].Tab = DragTab!;
+            _backingTabList[bDragTabIndex].TabPage = newTab;
+            _backingTabList[bNewTabIndex].TabPage = _dragTab!;
 
-            SelectedTab = DragTab;
+            SelectedTab = _dragTab;
 
             base.OnMouseMove(e);
         }
 
-        private (int backingTabIndex, TabPage? tab)
+        private (int BackingTabIndex, TabPage? TabPage)
         GetTabAtPoint(Point position)
         {
             for (int i = 0; i < TabCount; i++)
             {
                 if (GetTabRect(i).Contains(position))
                 {
-                    var tabPage = TabPages[i];
-                    var (index, bTab) = FindBackingTab(tabPage);
+                    TabPage tabPage = TabPages[i];
+                    var (index, backingTab) = FindBackingTab(tabPage);
 
-                    if (index == -1 || bTab == null) return (-1, null);
+                    if (index == -1 || backingTab == null) return (-1, null);
 
                     return (index, tabPage);
                 }

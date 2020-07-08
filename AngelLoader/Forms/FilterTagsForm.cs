@@ -13,14 +13,15 @@ namespace AngelLoader.Forms
     {
         private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
 
-        private readonly GlobalCatAndTagsList SourceTags;
+        private readonly GlobalCatAndTagsList _sourceTags;
+
         internal readonly TagsFilter TagsFilter = new TagsFilter();
 
         internal FilterTagsForm(GlobalCatAndTagsList sourceTags, TagsFilter tagsFilter)
         {
             InitializeComponent();
 
-            SourceTags = new GlobalCatAndTagsList(sourceTags.Count);
+            _sourceTags = new GlobalCatAndTagsList(sourceTags.Count);
 
             #region Arrow buttons setup
 
@@ -43,7 +44,7 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            sourceTags.DeepCopyTo(SourceTags);
+            sourceTags.DeepCopyTo(_sourceTags);
             tagsFilter.DeepCopyTo(TagsFilter);
 
             Localize();
@@ -92,9 +93,9 @@ namespace AngelLoader.Forms
         {
             var tv = OriginTreeView;
 
-            SourceTags.SortAndMoveMiscToEnd();
+            _sourceTags.SortAndMoveMiscToEnd();
 
-            foreach (GlobalCatAndTags catAndTags in SourceTags)
+            foreach (GlobalCatAndTags catAndTags in _sourceTags)
             {
                 tv.Nodes.Add(catAndTags.Category.Name);
                 var last = tv.Nodes[tv.Nodes.Count - 1];

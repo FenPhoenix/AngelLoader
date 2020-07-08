@@ -50,7 +50,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _columnResizeInProgress = false;
             // Prevents the context menu from popping up if the user right-clicked to cancel. The menu will be
-            // set back to what it should be when the user right-clicks while a resize is not progress.
+            // set back to what it should be when the user right-clicks while a resize is not in progress.
             SetContextMenuToNone();
             Columns[_columnToResize].Width = _columnToResizeOriginalWidth;
         }

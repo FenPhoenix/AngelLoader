@@ -11,22 +11,22 @@ namespace AngelLoader.Forms.CustomControls
 
         #region Fields etc.
 
-        private MainForm? Owner;
-        private ProgressTasks ProgressTask;
+        private MainForm? _owner;
+        private ProgressTasks _progressTask;
 
         #endregion
 
         public ProgressPanel() => InitializeComponent();
 
-        internal void Inject(MainForm owner) => Owner = owner;
+        internal void Inject(MainForm owner) => _owner = owner;
 
         #region Open/close
 
         internal void ShowProgressWindow(ProgressTasks progressTask, bool suppressShow = false)
         {
-            ProgressTask = progressTask;
+            _progressTask = progressTask;
 
-            this.CenterHV(Owner!, clientSize: true);
+            this.CenterHV(_owner!, clientSize: true);
 
             ProgressMessageLabel.Text = progressTask switch
             {
@@ -56,7 +56,7 @@ namespace AngelLoader.Forms.CustomControls
                 progressTask == ProgressTasks.DeleteFMArchive)
             {
                 ProgressBar.Style = ProgressBarStyle.Marquee;
-                if (Owner?.IsHandleCreated == true) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.Indeterminate);
+                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
                 ProgressCancelButton.Hide();
             }
             else
@@ -71,7 +71,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void ShowThis()
         {
-            Owner!.EnableEverything(false);
+            _owner!.EnableEverything(false);
             Enabled = true;
 
             BringToFront();
@@ -80,7 +80,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void HideThis()
         {
-            if (Owner?.IsHandleCreated == true) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
+            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
 
             Hide();
 
@@ -93,7 +93,7 @@ namespace AngelLoader.Forms.CustomControls
             ProgressCancelButton.Show();
 
             Enabled = false;
-            Owner!.EnableEverything(true);
+            _owner!.EnableEverything(true);
         }
 
         #endregion
@@ -110,7 +110,7 @@ namespace AngelLoader.Forms.CustomControls
             CurrentThingLabel.Text = fmName;
             ProgressPercentLabel.Text = percent + @"%";
 
-            if (Owner?.IsHandleCreated == true) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
 
         internal void ReportFMExtractProgress(int percent)
@@ -119,7 +119,7 @@ namespace AngelLoader.Forms.CustomControls
             ProgressMessageLabel.Text = LText.ProgressBox.InstallingFM;
             ProgressPercentLabel.Text = percent + @"%";
 
-            if (Owner?.IsHandleCreated == true) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+            if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
         }
 
         internal void ReportCachingProgress(int percent)
@@ -129,11 +129,11 @@ namespace AngelLoader.Forms.CustomControls
 
             if (Visible)
             {
-                if (Owner?.IsHandleCreated == true) TaskBarProgress.SetValue(Owner.Handle, percent, 100);
+                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetValue(_owner.Handle, percent, 100);
             }
             else
             {
-                if (Owner?.IsHandleCreated == true) TaskBarProgress.SetState(Owner.Handle, TaskbarStates.NoProgress);
+                if (_owner?.IsHandleCreated == true) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
             }
         }
 
@@ -158,7 +158,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private void Cancel()
         {
-            switch (ProgressTask)
+            switch (_progressTask)
             {
                 case ProgressTasks.ScanAllFMs:
                     FMScan.CancelScan();
