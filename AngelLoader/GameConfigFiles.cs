@@ -13,6 +13,7 @@ namespace AngelLoader
     {
         #region Read
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static (string FMsPath, string FMLanguage, bool FMLanguageForced,
                          List<string> FMSelectorLines, bool AlwaysShowLoader)
         GetInfoFromCamModIni(string gamePath, out Error error, bool langOnly = false)
@@ -127,6 +128,7 @@ namespace AngelLoader
                 fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
         }
 
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static (Error Error, bool UseCentralSaves, string FMInstallPath,
                         string PrevFMSelectorValue, bool AlwaysShowLoader)
         GetInfoFromSneakyOptionsIni()
@@ -279,6 +281,7 @@ namespace AngelLoader
         }
 
         // TODO: Pop up actual dialogs here if we fail, because we do NOT want scraps of the wrong language left
+        // @CAN_RUN_BEFORE_VIEW_INIT
         internal static void SetCamCfgLanguage(string gamePath, string lang)
         {
             const string fmLanguage = "fm_language";
