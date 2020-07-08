@@ -119,6 +119,10 @@ namespace AngelLoader
                     try
                     {
                         var fmSndPaths = GetFMSoundPathsByGame(fm);
+
+                        var engine = new Engine(Paths.FFmpegExe);
+                        var options = new ConversionOptions { AudioBitRate = 16 };
+
                         foreach (string fmSndPath in fmSndPaths)
                         {
                             if (!Directory.Exists(fmSndPath)) return;
@@ -140,8 +144,6 @@ namespace AngelLoader
 
                                 string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
 
-                                var engine = new Engine(Paths.FFmpegExe);
-                                var options = new ConversionOptions { AudioBitRate = 16 };
                                 var inFile = new MediaFile(f);
                                 var outFile = new MediaFile(tempFile);
                                 await engine.ConvertAsync(inFile, outFile, options);
