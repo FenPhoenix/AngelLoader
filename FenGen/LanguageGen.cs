@@ -248,12 +248,16 @@ namespace FenGen
             sb.AppendLine("; This file MUST be saved with UTF8 encoding in order to guarantee correct display of strings.");
             sb.AppendLine();
 
+            string[] linebreaks = { "\r\n", "\r", "\n" };
+
             string testPrefix = test ? "█" : "";
             for (int i = 0; i < sections.Count; i++)
             {
-                var section = sections[i];
+                IniSection section = sections[i];
 
-                sb.AppendLine("[" + section.Name + "]");
+                sb.Append('[');
+                sb.Append(section.Name);
+                sb.AppendLine("]");
                 foreach (IniItem item in section)
                 {
                     if (item.Key.IsEmpty() && item.Value.IsEmpty())
@@ -262,13 +266,19 @@ namespace FenGen
                     }
                     else if (item.IsComment && !item.Value.IsEmpty())
                     {
-                        string[] comments = item.Value.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                        foreach (string c in comments) sb.AppendLine("; " + c);
+                        string[] comments = item.Value.Split(linebreaks, StringSplitOptions.None);
+                        foreach (string c in comments)
+                        {
+                            sb.Append("; ");
+                            sb.AppendLine(c);
+                        }
                     }
                     else
                     {
                         string val = test && item.Key == "TranslatedLanguageName" ? "TéstLang" : testPrefix + item.Value;
-                        sb.AppendLine(item.Key + "=" + val);
+                        sb.Append(item.Key);
+                        sb.Append('=');
+                        sb.AppendLine(val);
                     }
                 }
                 if (i < sections.Count - 1) sb.AppendLine();
