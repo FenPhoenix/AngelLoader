@@ -138,14 +138,16 @@ namespace AngelLoader
                                 if (bits == 0) bits = GetBitDepthSlow(f);
                                 if (bits >= 1 && bits <= 16) continue;
 
+                                string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
+
                                 var engine = new Engine(Paths.FFmpegExe);
                                 var options = new ConversionOptions { AudioBitRate = 16 };
                                 var inFile = new MediaFile(f);
-                                var outFile = new MediaFile(f.RemoveExtension() + ".al_16bit_.wav");
+                                var outFile = new MediaFile(tempFile);
                                 await engine.ConvertAsync(inFile, outFile, options);
 
                                 File.Delete(f);
-                                File.Move(f.RemoveExtension() + ".al_16bit_.wav", f);
+                                File.Move(tempFile, f);
                             }
                         }
                     }
