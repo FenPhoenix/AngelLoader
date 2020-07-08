@@ -19,9 +19,9 @@ namespace FenGen
             internal bool IsComment;
         }
 
-        private class NamedDictionary : List<IniItem>
+        private class IniSection : List<IniItem>
         {
-            internal NamedDictionary(string name) => Name = name;
+            internal IniSection(string name) => Name = name;
             internal readonly string Name;
         }
 
@@ -33,7 +33,7 @@ namespace FenGen
             WriteDest(langClassName, sections, destFile, langIniFile, testLangIniFile);
         }
 
-        private static (string LangClassName, List<NamedDictionary> Dict)
+        private static (string LangClassName, List<IniSection> Sections)
         ReadSource(string file)
         {
             string code = File.ReadAllText(file);
@@ -54,7 +54,7 @@ namespace FenGen
                 }
             }
 
-            var retDict = new List<NamedDictionary>();
+            var sections = new List<IniSection>();
 
             // Now through again to get the language string names from the nested classes
             foreach (SyntaxNode cn in childNodes)
@@ -68,7 +68,7 @@ namespace FenGen
                 if (members.Length == 0) continue;
 
                 string sectionInstanceName = classInstanceDict[childClass.Identifier.ToString()];
-                var dict = new NamedDictionary(sectionInstanceName);
+                var section = new IniSection(sectionInstanceName);
 
                 foreach (SyntaxNode m in members)
                 {
@@ -102,7 +102,7 @@ namespace FenGen
                                             }
                                         }
 
-                                        dict.Add(new IniItem { Value = fValue, IsComment = true });
+                                        section.Add(new IniItem { Value = fValue, IsComment = true });
                                     }
                                     break;
                                 }
@@ -115,7 +115,7 @@ namespace FenGen
 
                                     for (int i = 0; i < blankLinesToAdd; i++)
                                     {
-                                        dict.Add(new IniItem());
+                                        section.Add(new IniItem());
                                     }
                                     break;
                                 }
@@ -144,17 +144,17 @@ namespace FenGen
                         ThrowErrorAndTerminate(nameof(Language) + ":\r\n" + "Found a " + type + " without an initializer in " + file);
                     }
 
-                    dict.Add(new IniItem { Key = fName, Value = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText });
+                    section.Add(new IniItem { Key = fName, Value = ((LiteralExpressionSyntax)initializer!.Value).Token.ValueText });
                 }
 
-                retDict.Add(dict);
+                sections.Add(section);
             }
 
             string lTextClassId = lTextClass.Identifier.ToString();
-            return (lTextClassId, retDict);
+            return (lTextClassId, sections);
         }
 
-        private static void WriteDest(string langClassName, List<NamedDictionary> sections, string destFile,
+        private static void WriteDest(string langClassName, List<IniSection> sections, string destFile,
                                       string langIniFile, string testLangIniFile)
         {
             #region Find the class we're going to write to
@@ -241,7 +241,7 @@ namespace FenGen
             if (!testLangIniFile.IsEmpty()) WriteIniFile(testLangIniFile, sections, test: true);
         }
 
-        private static void WriteIniFile(string langIniFile, List<NamedDictionary> sections, bool test = false)
+        private static void WriteIniFile(string langIniFile, List<IniSection> sections, bool test = false)
         {
             var sb = new StringBuilder();
             sb.AppendLine("; This is an AngelLoader language file.");
