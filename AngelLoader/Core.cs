@@ -1226,16 +1226,12 @@ namespace AngelLoader
             }
             else
             {
-                // PERF_TODO: Switch to TryGetValue
-                // Because there's no built-in way to tell it to find a key case-insensitively, we just convert
-                // to lowercase cause whatever. Perf doesn't really matter here.
-                string langLower = Config.Language.ToLowerInvariant();
                 // Because we allow arbitrary languages, it's theoretically possible to get one that doesn't have
                 // a language code.
-                bool langCodeExists = FMLanguages.LangCodes.ContainsKey(langLower);
-                string langCode = langCodeExists ? FMLanguages.LangCodes[langLower] : "";
-                bool altLangCodeExists = FMLanguages.AltLangCodes.ContainsKey(langCode);
-                string altLangCode = altLangCodeExists ? FMLanguages.AltLangCodes[langCode] : "";
+                bool langCodeExists = FMLanguages.LangCodes.TryGetValue(Config.Language, out string langCode);
+                langCode ??= "";
+                bool altLangCodeExists = FMLanguages.AltLangCodes.TryGetValue(langCode, out string altLangCode);
+                altLangCode ??= "";
 
                 var safeReadmes = new List<string>();
                 foreach (string rf in readmeFiles)
