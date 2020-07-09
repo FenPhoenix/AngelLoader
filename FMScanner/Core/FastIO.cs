@@ -75,37 +75,19 @@ namespace FMScanner
             AllDirectoriesSkipTop
         }
 
-        internal static bool FilesExistSearchTop(string path, params string[] searchPatterns) =>
-            FirstFileExists(
-                FastIOSearchOption.TopDirectoryOnly,
-                path,
-                checkPathExistence: false,
-                out _,
-                searchPatterns);
+        internal static bool FilesExistSearchTop(string path, params string[] searchPatterns)
+        {
+            return FirstFileExists(FastIOSearchOption.TopDirectoryOnly, path, searchPatterns);
+        }
+        internal static bool FilesExistSearchAll(string path, params string[] searchPatterns)
+        {
+            return FirstFileExists(FastIOSearchOption.AllDirectories, path, searchPatterns);
+        }
 
-        internal static bool FilesExistSearchAll(string path, params string[] searchPatterns) =>
-            FirstFileExists(
-                FastIOSearchOption.AllDirectories,
-                path,
-                checkPathExistence: false,
-                out _,
-                searchPatterns);
-
-        internal static bool FilesExistSearchAll_PE(string path, out bool pathExists, params string[] searchPatterns) =>
-            FirstFileExists(
-                FastIOSearchOption.AllDirectories,
-                path,
-                checkPathExistence: true,
-                out pathExists,
-                searchPatterns);
-
-        internal static bool FilesExistSearchAllSkipTop(string path, params string[] searchPatterns) =>
-            FirstFileExists(
-                FastIOSearchOption.AllDirectoriesSkipTop,
-                path,
-                checkPathExistence: false,
-                out _,
-                searchPatterns);
+        internal static bool FilesExistSearchAllSkipTop(string path, params string[] searchPatterns)
+        {
+            return FirstFileExists(FastIOSearchOption.AllDirectoriesSkipTop, path, searchPatterns);
+        }
 
         private static void ThrowException(string[] searchPatterns, int err, string path, string pattern, int loop)
         {
@@ -129,20 +111,8 @@ namespace FMScanner
         }
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
-        private static bool FirstFileExists(FastIOSearchOption searchOption,
-                                            string path,
-                                            bool checkPathExistence,
-                                            out bool pathExists,
-                                            params string[] searchPatterns)
+        private static bool FirstFileExists(FastIOSearchOption searchOption, string path, params string[] searchPatterns)
         {
-            if (checkPathExistence && !Directory.Exists(path))
-            {
-                pathExists = false;
-                return false;
-            }
-
-            pathExists = true;
-
             // Vital, path must not have a trailing separator
             // We also normalize manually to all backslashes because we use \\?\ which skips normalization
             path = path.Replace('/', '\\').TrimEnd(FMConstants.CA_Backslash);
@@ -234,11 +204,7 @@ namespace FMScanner
                 {
                     if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
                         findData.cFileName != "." && findData.cFileName != ".." &&
-                        FirstFileExists(
-                            FastIOSearchOption.AllDirectories,
-                            Path.Combine(path, findData.cFileName),
-                            checkPathExistence: false,
-                            out _,
+                        FirstFileExists(FastIOSearchOption.AllDirectories, Path.Combine(path, findData.cFileName),
                             searchPatterns))
                     {
                         return true;

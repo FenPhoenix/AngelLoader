@@ -104,8 +104,6 @@ namespace FMScanner
 
         private bool _ss2Fingerprinted;
 
-        private bool SS2FingerprintRequiredAndNotDone() => (_scanOptions.ScanNewDarkRequired || _scanOptions.ScanGameType) && !_ss2Fingerprinted;
-
         #endregion
 
         #region Private classes
@@ -1011,7 +1009,7 @@ namespace FMScanner
                     else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
-                        if (SS2FingerprintRequiredAndNotDone() &&
+                        if (!_ss2Fingerprinted &&
                             (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
                             fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
                             fn.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
@@ -1031,7 +1029,7 @@ namespace FMScanner
                         booksDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         continue;
                     }
-                    else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
+                    else if (!t3Found && !_ss2Fingerprinted &&
                              (fn.PathStartsWithI(FMDirs.CutscenesS) ||
                               fn.PathStartsWithI(FMDirs.Snd2S)))
                     {
@@ -1162,11 +1160,11 @@ namespace FMScanner
                     foreach (string f in EnumFiles(FMDirs.Strings, "*", SearchOption.AllDirectories))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
-                        if (SS2FingerprintRequiredAndNotDone() &&
+                        if (!_ss2Fingerprinted &&
                             (f.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
-                             f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
-                             f.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
-                             f.PathEndsWithI(FMFiles.SS2Fingerprint4)))
+                            f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
+                            f.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
+                            f.PathEndsWithI(FMFiles.SS2Fingerprint4)))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -1183,8 +1181,16 @@ namespace FMScanner
                     }
 
                     // TODO: Maybe extract this again, but then I have to extract MapFileExists() too
-                    if (SS2FingerprintRequiredAndNotDone() || _scanOptions.ScanCustomResources)
+                    if (!_ss2Fingerprinted || _scanOptions.ScanCustomResources)
                     {
+                        // PERF_TODO: I'm getting all folders but only need to check if specific ones exist.
+                        // Does FastIO code Just Work and return false if the path itself doesn't exist?
+                        var baseDirFolders = new List<string>();
+                        foreach (string f in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
+                        {
+                            baseDirFolders.Add(f.Substring(f.LastIndexOfDirSep() + 1));
+                        }
+
                         if (_scanOptions.ScanCustomResources)
                         {
                             foreach (NameAndIndex f in intrfaceDirFiles)
@@ -1206,93 +1212,53 @@ namespace FMScanner
                             fmd.HasMap ??= false;
                             fmd.HasAutomap ??= false;
 
-                            // We check path existence for every one of these, but we were already hitting the
-                            // disk for every directory in the FM's base dir before, but now we only check the
-                            // ones we care about. So we're the same or faster.
-
-                            // We reuse these two path-existence bools to do a fast SS2 fingerprint check below.
-                            bool cutscenesDirExists = false;
-                            bool snd2DirExists = false;
-
                             fmd.HasCustomMotions =
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Motions),
-                                    out _,
-                                    MotionFilePatterns);
+                                baseDirFolders.ContainsI(FMDirs.Motions) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Motions), MotionFilePatterns);
 
                             fmd.HasMovies =
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Movies),
-                                    out _,
-                                    SA_AllFiles) ||
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Cutscenes),
-                                    out cutscenesDirExists,
-                                    SA_AllFiles);
+                                (baseDirFolders.ContainsI(FMDirs.Movies) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Movies), SA_AllFiles)) ||
+                                (baseDirFolders.ContainsI(FMDirs.Cutscenes) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Cutscenes), SA_AllFiles));
 
                             fmd.HasCustomTextures =
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Fam),
-                                    out _,
-                                    ImageFilePatterns);
+                                baseDirFolders.ContainsI(FMDirs.Fam) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Fam), ImageFilePatterns);
 
                             fmd.HasCustomObjects =
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Obj),
-                                    out _,
-                                    SA_AllBinFiles);
+                                baseDirFolders.ContainsI(FMDirs.Obj) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Obj), SA_AllBinFiles);
 
                             fmd.HasCustomCreatures =
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Mesh),
-                                    out _,
-                                    SA_AllBinFiles);
+                                baseDirFolders.ContainsI(FMDirs.Mesh) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), SA_AllBinFiles);
 
                             fmd.HasCustomScripts =
                                 baseDirFiles.Any(x => ScriptFileExtensions.ContainsI(Path.GetExtension(x.Name))) ||
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Scripts),
-                                    out _,
-                                    SA_AllFiles);
+                                (baseDirFolders.ContainsI(FMDirs.Scripts) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), SA_AllFiles));
 
                             fmd.HasCustomSounds =
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Snd),
-                                    out _,
-                                    SA_AllFiles) ||
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Snd2),
-                                    out snd2DirExists,
-                                    SA_AllFiles);
+                                (baseDirFolders.ContainsI(FMDirs.Snd) &&
+                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd), SA_AllFiles)) ||
+                                 (baseDirFolders.ContainsI(FMDirs.Snd2) &&
+                                  FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd2), SA_AllFiles));
 
                             fmd.HasCustomSubtitles =
-                                FastIO.FilesExistSearchAll_PE(
-                                    Path.Combine(_fmWorkingPath, FMDirs.Subtitles),
-                                    out _,
-                                    SA_AllSubFiles);
-
-                            if (SS2FingerprintRequiredAndNotDone() && (cutscenesDirExists || snd2DirExists))
-                            {
-                                _ss2Fingerprinted = true;
-                            }
+                                baseDirFolders.ContainsI(FMDirs.Subtitles) &&
+                                FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
                         }
-                        else
+
+                        if (!_ss2Fingerprinted &&
+                            (baseDirFolders.ContainsI(FMDirs.Cutscenes) ||
+                            baseDirFolders.ContainsI(FMDirs.Snd2)))
                         {
-                            // If we didn't do the resource check, then we're hitting the disk two extra times
-                            // here, but it's the same or less than the GetDirectories call we had before.
-                            if (SS2FingerprintRequiredAndNotDone() &&
-                                (Directory.Exists(Path.Combine(_fmWorkingPath, FMDirs.Cutscenes)) ||
-                                 Directory.Exists(Path.Combine(_fmWorkingPath, FMDirs.Snd2))))
-                            {
-                                _ss2Fingerprinted = true;
-                            }
+                            _ss2Fingerprinted = true;
                         }
                     }
                 }
             }
-
-            Trace.WriteLine(_fmWorkingPath + "\r\n" +
-                nameof(ReadAndCacheFMData) + ": " + nameof(_ss2Fingerprinted) + " = " + _ss2Fingerprinted);
 
             // Cut it right here for Thief 3: we don't need anything else
             if (t3Found) return true;
@@ -3209,7 +3175,6 @@ namespace FMScanner
                 return false;
             }
 
-            // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
             if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles)))
             {
                 Stream stream = _fmIsZip
