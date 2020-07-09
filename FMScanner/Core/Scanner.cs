@@ -104,6 +104,8 @@ namespace FMScanner
 
         private bool _ss2Fingerprinted;
 
+        private bool SS2FingerprintRequiredAndNotDone() => (_scanOptions.ScanNewDarkRequired || _scanOptions.ScanGameType) && !_ss2Fingerprinted;
+
         #endregion
 
         #region Private classes
@@ -1009,11 +1011,11 @@ namespace FMScanner
                     else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
-                        if (!_ss2Fingerprinted &&
+                        if (SS2FingerprintRequiredAndNotDone() &&
                             (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
-                            fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
-                            fn.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
-                            fn.PathEndsWithI(FMFiles.SS2Fingerprint4)))
+                             fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
+                             fn.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
+                             fn.PathEndsWithI(FMFiles.SS2Fingerprint4)))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -1029,7 +1031,7 @@ namespace FMScanner
                         booksDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
                         continue;
                     }
-                    else if (!t3Found && !_ss2Fingerprinted &&
+                    else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
                              (fn.PathStartsWithI(FMDirs.CutscenesS) ||
                               fn.PathStartsWithI(FMDirs.Snd2S)))
                     {
@@ -1160,11 +1162,11 @@ namespace FMScanner
                     foreach (string f in EnumFiles(FMDirs.Strings, "*", SearchOption.AllDirectories))
                     {
                         stringsDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
-                        if (!_ss2Fingerprinted &&
+                        if (SS2FingerprintRequiredAndNotDone() &&
                             (f.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
-                            f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
-                            f.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
-                            f.PathEndsWithI(FMFiles.SS2Fingerprint4)))
+                             f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
+                             f.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
+                             f.PathEndsWithI(FMFiles.SS2Fingerprint4)))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -1181,10 +1183,11 @@ namespace FMScanner
                     }
 
                     // TODO: Maybe extract this again, but then I have to extract MapFileExists() too
-                    if (!_ss2Fingerprinted || _scanOptions.ScanCustomResources)
+                    if (SS2FingerprintRequiredAndNotDone() || _scanOptions.ScanCustomResources)
                     {
-                        // PERF_TODO: I'm getting all folders but only need to check if specific ones exist.
-                        // Does FastIO code Just Work and return false if the path itself doesn't exist?
+                        // PERF_TODO: Scanner: Dir: GetDirectories(fm base dir, "*", TopDirectoryOnly)
+                        // I tried getting rid of this GetDirectories call, but it made things more complicated
+                        // for SS2 fingerprinting and didn't result in a clear perf win. At least not warm. Meh.
                         var baseDirFolders = new List<string>();
                         foreach (string f in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
                         {
@@ -1250,9 +1253,9 @@ namespace FMScanner
                                 FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
                         }
 
-                        if (!_ss2Fingerprinted &&
+                        if (SS2FingerprintRequiredAndNotDone() &&
                             (baseDirFolders.ContainsI(FMDirs.Cutscenes) ||
-                            baseDirFolders.ContainsI(FMDirs.Snd2)))
+                             baseDirFolders.ContainsI(FMDirs.Snd2)))
                         {
                             _ss2Fingerprinted = true;
                         }
@@ -3175,6 +3178,7 @@ namespace FMScanner
                 return false;
             }
 
+            // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
             if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles)))
             {
                 Stream stream = _fmIsZip
