@@ -1,13 +1,13 @@
-﻿// PERF_TODO: Removing ALL asyncs and awaits saves 13ms on startup and 48k off the exe.
-// If it comes down to it, I can probably figure out how to do the old way of async programming that doesn't add
-// state machines a bazillion levels down, so as to only have the overhead right where it's actually used. But
-// the time savings isn't as much as I thought it might be, so meh.
+﻿/* TODO: MainForm notes:
+ PERF_TODO: Removing ALL asyncs and awaits saves 13ms on startup and 48k off the exe.
+ If it comes down to it, I can probably figure out how to do the old way of async programming that doesn't add
+ state machines a bazillion levels down, so as to only have the overhead right where it's actually used. But
+ the time savings isn't as much as I thought it might be, so meh.
 
-// NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
-// in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
+ NOTE: Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
+ in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then.
 
-/*
- TODO: Images to switch to drawing:
+ Images to switch to drawing:
  -Zoom images
  -Install / uninstall
  -Green CheckCircle
@@ -19,12 +19,12 @@
  -Calendars (can we get detailed enough? The play arrow icon cutting the lines at a diagonal might be an obstacle)
  -Anything else not listed in "definitely won't draw" is at least a possibility
 
- TODO: Images we definitely won't draw (iow that really need to be rasters):
+ Images we definitely won't draw (iow that really need to be rasters):
  -Thief logos
  -Zip logo (Show_Unsupported)
  -Rating examples (two of them have text)
 
- TODO: Things to lazy load:
+ Things to lazy load:
  -Top-right section in its entirety, and then individual tab pages (in case some are hidden), and then individual
   controls on each tab page (in case the tabs are visible but not selected on startup)
  -Game buttons and game tabs (one or the other will be invisible on startup)
@@ -1965,7 +1965,7 @@ namespace AngelLoader.Forms
             //  are, being loaded in advance, because then the scrolling is guaranteed not to have any hiccups.
 
             // Lazy-load these in an attempt to save some kind of startup time
-            // TODO: Try lazy-loading these at a more granular level
+            // @LAZYLOAD: Try lazy-loading these at a more granular level
             // The arrays are obstacles to lazy-loading, but see if we still get good scrolling perf when we look
             // them up and load the individual images as needed, rather than all at once here
 

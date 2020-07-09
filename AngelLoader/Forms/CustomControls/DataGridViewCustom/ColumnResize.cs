@@ -71,8 +71,8 @@ namespace AngelLoader.Forms.CustomControls
             }
 
             // Manual implementation of real-time column width resizing (the column changes size as you drag)
-            // TODO: If you mousedown while a context menu is up, the cursor isn't a size cursor. Fix it for
-            // TODO: "the dev thought of everything" points.
+            // TODO: If you mousedown while a context menu is up, the cursor isn't a size cursor.
+            // Fix it for "the dev thought of everything" points.
             if (e.Button == MouseButtons.Left && Cursor.Current == Cursors.SizeWE)
             {
                 var ht = HitTest(e.X, e.Y);

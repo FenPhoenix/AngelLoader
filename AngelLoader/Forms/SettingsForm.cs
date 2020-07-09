@@ -1001,7 +1001,6 @@ namespace AngelLoader.Forms
 
         private void SetPageScrollPos(ISettingsPage page)
         {
-            // TODO: This is the only place these globals are used other than the ctor and I think they can be removed
             int? pos =
                 page == PathsPage ? _inPathsVScrollPos :
                 page == FMDisplayPage ? _inFMDisplayVScrollPos :

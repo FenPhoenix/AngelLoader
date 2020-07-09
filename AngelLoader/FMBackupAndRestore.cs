@@ -16,20 +16,6 @@ using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace AngelLoader
 {
-    // TODO: Allow import of NDL's .dml fixes
-    /* Process:
-    -Find dml backups (easy)
-    -If FM is installed, put it into the installed folder (always do this)
-    -then:
-     -if our bak file exists, put it into there, making sure to also remove it from the fmsel.inf remove list if
-      it's there
-     -else if our bak file doesn't exist:
-      -If NDL's bak file exists, create a new bak file in our folder and put everything in NDL's bak file, plus
-       our found .dml, into there, making sure to also remove it from the fmsel.inf remove list if it's there
-      -else if no bak files exist:
-       -Just create a new bak file in our folder, and put the dml in
-    */
-
     // NOTE: Zip quirk: LastWriteTime (and presumably any other metadata) must be set BEFORE opening the entry
     //       for writing. Even if you put it after the using block, it throws. So always set this before writing!
 

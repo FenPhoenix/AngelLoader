@@ -9,8 +9,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     internal static class TopRightLLMenu
     {
         private static bool _constructed;
-        // TODO: @Robustness: Is there a way to automatically make this the right length?
-        private static readonly bool[] _checkedStates = { true, true, true, true, true };
+        private static readonly bool[] _checkedStates = InitializedArray(TopRightTabsCount, true);
 
         private static ContextMenuStripCustom? _menu;
         internal static ContextMenuStripCustom Menu
@@ -31,36 +30,31 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             #region Instantiation
 
-            Menu = new ContextMenuStripCustom(components) { Name = nameof(Menu) };
+            Menu = new ContextMenuStripCustom(components);
             Menu.Items.AddRange(new ToolStripItem[]
             {
                 StatsMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(StatsMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Statistics],
                     CheckOnClick = true
                 },
                 EditFMMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(EditFMMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.EditFM],
                     CheckOnClick = true
                 },
                 CommentMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(CommentMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Comment],
                     CheckOnClick = true
                 },
                 TagsMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(TagsMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Tags],
                     CheckOnClick = true
                 },
                 PatchMenuItem = new ToolStripMenuItem
                 {
-                    Name = nameof(PatchMenuItem),
                     Checked = _checkedStates[(int)TopRightTab.Patch],
                     CheckOnClick = true
                 }
@@ -98,9 +92,6 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void Localize()
         {
-            AssertR(_checkedStates.Length == TopRightTabsCount,
-                nameof(_checkedStates) + ".Length != " + nameof(TopRightTabsCount) + ".Length");
-
             if (!_constructed) return;
 
             StatsMenuItem!.Text = LText.StatisticsTab.TabText.EscapeAmpersands();

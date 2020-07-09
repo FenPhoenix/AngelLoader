@@ -146,7 +146,6 @@ namespace FMScanner
             WIN32_FIND_DATAW findData;
 
             // Search the base directory first, and only then search subdirectories.
-            // TODO: Fix goofy duplicate code
 
             string pathC = @"\\?\" + path + "\\";
 

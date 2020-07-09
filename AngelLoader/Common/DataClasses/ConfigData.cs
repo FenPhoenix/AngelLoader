@@ -329,7 +329,7 @@ namespace AngelLoader.DataClasses
         //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
 
 #if !ReleaseBeta && !ReleasePublic
-        // TODO: Quick-n-dirty session-only var for now
+        // Quick-n-dirty session-only var for now
         internal bool ForceWindowed = false;
         internal bool CheckForUpdatesOnStartup = true;
 #endif

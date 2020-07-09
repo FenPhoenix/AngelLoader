@@ -705,7 +705,6 @@ namespace FMScanner
                         titles.AddRange(altTitles);
                     }
 
-                    // TODO: Do I want to check altTitles for StartsWithI("By ") as well?
                     string author = GetValueFromReadme(SpecialLogic.Author, titles, SA_AuthorDetect);
 
                     fmData.Author = CleanupValue(author);
@@ -1184,8 +1183,8 @@ namespace FMScanner
                     // TODO: Maybe extract this again, but then I have to extract MapFileExists() too
                     if (!_ss2Fingerprinted || _scanOptions.ScanCustomResources)
                     {
-                        // TODO: I already have baseDirFiles; see if this GetDirectories can be removed
-                        // Even a janky scan through baseDirFiles would probably be faster than hitting the disk
+                        // PERF_TODO: I'm getting all folders but only need to check if specific ones exist.
+                        // Does FastIO code Just Work and return false if the path itself doesn't exist?
                         var baseDirFolders = new List<string>();
                         foreach (string f in Directory.GetDirectories(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
                         {

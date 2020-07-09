@@ -34,6 +34,19 @@ namespace AngelLoader
         }
 
         /// <summary>
+        /// Returns an array of type <typeparamref name="T"/> with all elements initialized to <paramref name="value"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="length"></param>
+        /// <param name="value">The value to initialize all elements with.</param>
+        internal static T[] InitializedArray<T>(int length, T value) where T : new()
+        {
+            T[] ret = new T[length];
+            for (int i = 0; i < length; i++) ret[i] = value;
+            return ret;
+        }
+
+        /// <summary>
         /// Returns two arrays of type <typeparamref name="T1"/> and <typeparamref name="T2"/> respectively,
         /// with all elements initialized to non-null. Uses a single assignment loop for performance.
         /// </summary>

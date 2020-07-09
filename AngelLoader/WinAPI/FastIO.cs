@@ -280,7 +280,6 @@ namespace AngelLoader.WinAPI
             WIN32_FIND_DATA findData;
 
             // Search the base directory first, and only then search subdirectories.
-            // TODO: Fix goofy duplicate code
 
             string pathC = @"\\?\" + path + "\\*";
 

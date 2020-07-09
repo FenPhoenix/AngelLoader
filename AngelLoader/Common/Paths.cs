@@ -60,8 +60,8 @@ namespace AngelLoader
         {
             try
             {
-                // Tested on Win7 Ultimate 64: Admin and non-Admin accounts can both read this key
-                // TODO: Test on Win10
+                // Tested on Win7 Ultimate 64 and Win10 Pro 64:
+                // Admin and non-Admin accounts can both read this key
 
                 // We're not x64 currently, but this check lets us be compatible for an easy switch if we decide
                 // to do so in the future.
@@ -161,8 +161,8 @@ namespace AngelLoader
 
         internal static readonly string Data = PathCombineFast_NoChecks(Startup, "Data");
 
-        private static string? _doc;
-        internal static string Doc => _doc ??= PathCombineFast_NoChecks(Startup, "doc");
+        private static string? _docFile;
+        internal static string DocFile => _docFile ??= PathCombineFast_NoChecks(Startup, "doc", "AngelLoader documentation.html");
 
         internal static readonly string Languages = PathCombineFast_NoChecks(Data, "Languages");
 

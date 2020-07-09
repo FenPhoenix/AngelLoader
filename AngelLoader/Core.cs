@@ -1,17 +1,16 @@
-﻿// TODO: Idea: We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
-// But note we may have to handle no_unload_fmsel option - make sure we don't have stale values on SelectFM call?
-// TODO: @IO_SAFETY: Make a system where files get temp-copied and then if writes fail, we copy the old file back (FMSel does this)
-// For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
-// if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
-// every time we write
-// TODO: @Robustness: Move away from the "hide errors, fail silently, I'm scared to know" and towards failing clearly and fast with dialogs
-// This will need a lot of extra localization strings. So also put more comments in the lang files. To do this,
-// finish implementing the custom FenGen code that can read actual comments to make it easier for me to comment
-// the fields.
-// TODO: Maybe delete the stub comm file on exit, but:
-// Don't do it for Steam because Steam could start without running a game and/or give the user time to maybe exit
-// AngelLoader and then the FM wouldn't load. Also it may be too aggressive in general, but it's an idea.
-
+﻿/* TODO: Core ideas:
+ -We could have the stub be called back on game exit and use that to track game lifetime, for temp config var changes
+  But note we may have to handle no_unload_fmsel option - make sure we don't have stale values on SelectFM call?
+ -@IO_SAFETY: Make a system where files get temp-copied and then if writes fail, we copy the old file back (FMSel does this)
+  For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
+  if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
+  every time we write
+ -@Robustness: Move away from the "hide errors, fail silently, I'm scared to know" and towards failing clearly and fast with dialogs
+  This will need a lot of extra localization strings. So also put more comments in the lang files.
+  -Maybe delete the stub comm file on exit, but:
+  Don't do it for Steam because Steam could start without running a game and/or give the user time to maybe exit
+  AngelLoader and then the FM wouldn't load. Also it may be too aggressive in general, but it's an idea.
+*/
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1425,16 +1424,13 @@ namespace AngelLoader
 
             Paths.CreateOrClearTempPath(Paths.HelpTemp);
 
-            // TODO: Un-hardcode this
-            string helpFileBase = Path.Combine(Paths.Doc, "AngelLoader documentation.html");
-
-            if (!File.Exists(helpFileBase))
+            if (!File.Exists(Paths.DocFile))
             {
                 View.ShowAlert(LText.AlertMessages.Help_HelpFileNotFound, LText.AlertMessages.Alert);
                 return;
             }
 
-            string helpFileUri = "file://" + helpFileBase;
+            string helpFileUri = "file://" + Paths.DocFile;
             string finalUri;
             try
             {

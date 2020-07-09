@@ -504,7 +504,6 @@ namespace AngelLoader
         {
             if (!GameIsKnownAndSupported(fm.Game)) return null;
 
-            // TODO: If SU's FMSel mangles install names in a different way, I need to account for it here
             string fmInstPath = Config.GetFMInstallPathUnsafe(fm.Game);
 
             return fmInstPath.IsEmpty() ? null : Path.Combine(fmInstPath, fm.InstalledDir, Paths.FMSelInf);

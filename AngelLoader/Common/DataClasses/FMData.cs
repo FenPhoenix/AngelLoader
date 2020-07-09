@@ -8,10 +8,10 @@ using static AngelLoader.GameSupport;
 namespace AngelLoader.DataClasses
 {
     // FenGen reads this and outputs fast ini read and write methods.
-    // TODO: Version-header ini files right from the start, in case I have to change the format after release
     /*
      Notes to self:
         -Keep names shortish for more performance when reading
+        -I told myself to version-header ini files right from the start, but I didn't. Meh.
     */
 
     [FenGenFMDataSourceClass(writeEmptyValues: false)]

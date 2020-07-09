@@ -73,7 +73,6 @@ namespace AngelLoader.Forms.Import
 
             if (!fileNameIsDLIni)
             {
-                // TODO: do something nicer here
                 MessageBox.Show(LText.Importing.DarkLoader_SelectedFileIsNotDarkLoaderIni);
                 e.Cancel = true;
                 return;

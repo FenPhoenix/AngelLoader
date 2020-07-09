@@ -27,7 +27,6 @@ namespace AngelLoader.Forms.CustomControls
         internal readonly SelectedFM CurrentSelFM = new SelectedFM();
 
         // Only used if game tabs are enabled. It's used to save and restore per-tab selected FM, filters etc.
-        // TODO: @Cleanup: Do I really need to have the Config one and this one and deep copy between them?
         internal readonly GameTabsState GameTabsState = new GameTabsState();
 
         #region Filter

@@ -10,7 +10,6 @@ namespace AngelLoader.Forms.CustomControls
         private bool _checked;
         private readonly Pen _blackRectPen = new Pen(Color.Black, 1.0f);
 
-        // @R#_FALSE_POSITIVE?: It doesn't make sense to call event handlers "nullable" does it?
         public event EventHandler? CheckedChanged;
 
         [Browsable(true)]

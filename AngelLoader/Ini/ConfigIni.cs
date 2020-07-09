@@ -14,7 +14,8 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
-    // TODO: Maybe make this file have sections, cause it's getting pretty giant-blob-like
+    // NOTE: This file should have had sections from the start, but now that it got released without, we can't
+    // really change it without breaking compatibility. Oh well.
 
     // A note about floats:
     // When storing and reading floats, it's imperative that we specify InvariantInfo. Otherwise the decimal

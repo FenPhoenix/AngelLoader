@@ -368,10 +368,11 @@ namespace AngelLoader
             if (fms.Count == 0) return;
 
             await ScanFMs(fms, scanOptions);
-            // TODO: Why am I doing a find after a scan?!?!?! WTF use is this?
-            // NOTE: I might be doing it to get rid of any duplicates or bad data that may have been imported?
-            // NOTE 2020-02-14: I'm also doing this to properly update the tags. Without this the imported tags
-            // wouldn't work because they're only in TagsString and blah blah blah.
+            // Doing a find after a scan. I forgot exactly why. Reasons I thought of:
+            // -I might be doing it to get rid of any duplicates or bad data that may have been imported?
+            // -2020-02-14: I'm also doing this to properly update the tags. Without this the imported tags
+            //  wouldn't work because they're only in TagsString and blah blah blah.
+            //  -But couldn't I just call the tag list updater?
             FindFMs.Find();
         }
     }
