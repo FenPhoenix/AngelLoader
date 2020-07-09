@@ -15,6 +15,8 @@ namespace AngelLoader
 {
     internal static class FMCache
     {
+        #region Private fields
+
         private const string _t3ReadmeDir1 = "Fan Mission Extras";
         private const string _t3ReadmeDir1S = _t3ReadmeDir1 + "/";
         private const string _t3ReadmeDir2 = "FanMissionExtras";
@@ -40,6 +42,8 @@ namespace AngelLoader
             internal string Name = "";
             internal int Index = -1;
         }
+
+        #endregion
 
         // We might want to add other things (thumbnails etc.) later, so it's a class
         internal class CacheData
@@ -94,16 +98,40 @@ namespace AngelLoader
             }
         }
 
-        private static void RemoveEmptyFiles(List<string> files)
+        /// <summary>
+        /// Does not check <paramref name="basePath"/> for existence, so check it first before calling.
+        /// </summary>
+        /// <param name="basePath"></param>
+        /// <returns></returns>
+        private static List<string> GetValidReadmes(string basePath)
         {
-            for (int i = 0; i < files.Count; i++)
+            string[] readmePaths =
             {
-                if (new FileInfo(files[i]).Length == 0)
+                basePath,
+                Path.Combine(basePath, _t3ReadmeDir1),
+                Path.Combine(basePath, _t3ReadmeDir2)
+            };
+
+            var readmes = new List<string>();
+
+            for (int i = 0; i < readmePaths.Length; i++)
+            {
+                string readmePath = readmePaths[i];
+
+                // We assume the first dir exists (to prevent an expensive duplicate check), so only check for others
+                if (i == 0 || Directory.Exists(readmePath))
                 {
-                    files.RemoveAt(i);
-                    i--;
+                    foreach (string fn in FastIO.GetFilesTopOnly(readmePath, "*"))
+                    {
+                        if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
+                        {
+                            readmes.Add(fn.Substring(basePath.Length + 1));
+                        }
+                    }
                 }
             }
+
+            return readmes;
         }
 
         #endregion
@@ -114,73 +142,33 @@ namespace AngelLoader
         {
             AssertR(fm.Installed, "fm.Installed is false when it should be true");
 
-            string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
+            string fmReadmesBasePath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
 
-            string path = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
-            var files = FastIO.GetFilesTopOnly(path, "*");
-            string t3ReadmePath1 = Path.Combine(path, _t3ReadmeDir1);
-            string t3ReadmePath2 = Path.Combine(path, _t3ReadmeDir2);
-            if (Directory.Exists(t3ReadmePath1)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath1, "*"));
-            if (Directory.Exists(t3ReadmePath2)) files.AddRange(FastIO.GetFilesTopOnly(t3ReadmePath2, "*"));
-
-            RemoveEmptyFiles(files);
-
-            var readmes = new List<string>(files.Count);
-
-            foreach (string f in files)
-            {
-                if (f.IsValidReadme())
-                {
-                    readmes.Add(f.Substring(path.Length + 1));
-                }
-            }
-
-            return new CacheData(readmes);
+            return new CacheData(GetValidReadmes(fmReadmesBasePath));
         }
 
         private static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, bool refreshCache)
         {
-            var readmes = new List<string>();
-
             AssertR(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
+
+            var readmes = new List<string>();
 
             string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
 
-            if (Directory.Exists(fmCachePath))
+            if (!refreshCache)
             {
-                foreach (string fn in FastIO.GetFilesTopOnly(fmCachePath, "*"))
+                if (Directory.Exists(fmCachePath))
                 {
-                    if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
-                    {
-                        readmes.Add(fn.Substring(fmCachePath.Length + 1));
-                    }
+                    readmes = GetValidReadmes(fmCachePath);
+                    if (readmes.Count > 0) return new CacheData(readmes);
                 }
 
-                for (int i = 0; i < 2; i++)
-                {
-                    string t3ReadmePath = Path.Combine(fmCachePath, i == 0 ? _t3ReadmeDir1 : _t3ReadmeDir2);
-
-                    if (Directory.Exists(t3ReadmePath))
-                    {
-                        foreach (string fn in FastIO.GetFilesTopOnly(t3ReadmePath, "*"))
-                        {
-                            if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
-                            {
-                                readmes.Add(fn.Substring(fmCachePath.Length + 1));
-                            }
-                        }
-                    }
-                }
-
-                bool checkArchive = refreshCache || (readmes.Count == 0 && !fm.NoReadmes);
-
-                if (!checkArchive) return new CacheData(readmes);
+                if (fm.NoReadmes) return new CacheData();
             }
 
-            // If cache dir DOESN'T exist, the above checkArchive decision won't be run, so run it here (prevents
-            // FMs with no readmes from being reloaded from their archive all the time, which is the whole purpose
-            // of NoReadmes in the first place).
-            if (!refreshCache && fm.NoReadmes) return new CacheData();
+            #region Refresh cache from archive
+
+            // This is in the same method in order to avoid unnecessary async/await machinery
 
             readmes.Clear();
             ClearCacheDir(fm);
@@ -228,6 +216,8 @@ namespace AngelLoader
             }
 
             fm.NoReadmes = readmes.Count == 0;
+
+            #endregion
 
             return new CacheData(readmes);
         }
@@ -338,7 +328,8 @@ namespace AngelLoader
                     if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
                     string? t3ReadmeDir = null;
-                    if (fn.CountDirSeps() == 1)
+                    int dirSeps = fn.CountDirSeps();
+                    if (dirSeps == 1)
                     {
                         if (fn.PathStartsWithI(_t3ReadmeDir1S))
                         {
@@ -353,7 +344,7 @@ namespace AngelLoader
                             continue;
                         }
                     }
-                    else if (fn.ContainsDirSep())
+                    else if (dirSeps > 1)
                     {
                         continue;
                     }
@@ -396,11 +387,12 @@ namespace AngelLoader
                     {
                         var entry = extractor.ArchiveFileData[i];
                         string fn = entry.FileName;
+                        int dirSeps;
                         if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                            ((fn.CountDirSeps() == 1 &&
+                            (((dirSeps = fn.CountDirSeps()) == 1 &&
                               (fn.PathStartsWithI(_t3ReadmeDir1S) ||
                                fn.PathStartsWithI(_t3ReadmeDir2S))) ||
-                             !fn.ContainsDirSep()))
+                             dirSeps == 0))
                         {
                             indexesList.Add(i);
                             readmes.Add(entry.FileName);
