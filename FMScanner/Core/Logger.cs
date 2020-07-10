@@ -39,7 +39,7 @@ namespace FMScanner
 
         [Conditional("logEnabled")]
         internal static void Log(string logFile,
-            string message, Exception ex = null, bool stackTrace = false, bool methodName = true,
+            string message, Exception? ex = null, bool stackTrace = false, bool methodName = true,
             [CallerMemberName] string callerMemberName = "")
         {
             if (logFile.IsEmpty()) return;
@@ -61,17 +61,15 @@ namespace FMScanner
             try
             {
                 Lock.EnterWriteLock();
-                using (var sw = new StreamWriter(logFile, append: true))
-                {
-                    var st = new StackTrace(1);
-                    string methodNameStr = methodName ? callerMemberName + "\r\n" : "";
-                    sw.WriteLine(
-                        DateTime.Now.ToString(CultureInfo.InvariantCulture) + " " +
-                        methodNameStr + message);
-                    if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + st);
-                    if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
-                    sw.WriteLine();
-                }
+                using var sw = new StreamWriter(logFile, append: true);
+                var st = new StackTrace(1);
+                string methodNameStr = methodName ? callerMemberName + "\r\n" : "";
+                sw.WriteLine(
+                    DateTime.Now.ToString(CultureInfo.InvariantCulture) + " " +
+                    methodNameStr + message);
+                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + st);
+                if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
+                sw.WriteLine();
             }
             catch (Exception logEx)
             {

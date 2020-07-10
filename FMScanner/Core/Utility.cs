@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -283,7 +284,7 @@ namespace FMScanner
         /// <returns></returns>
         internal static bool PathStartsWithI(this string first, string second)
         {
-            if (first == null || first.Length < second.Length) return false;
+            if (first.Length < second.Length) return false;
 
             for (int i = 0; i < second.Length; i++)
             {
@@ -311,7 +312,7 @@ namespace FMScanner
         /// <returns></returns>
         internal static bool PathEndsWithI(this string first, string second)
         {
-            if (first == null || first.Length < second.Length) return false;
+            if (first.Length < second.Length) return false;
 
             for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
             {
@@ -363,8 +364,6 @@ namespace FMScanner
         // TODO: These may actually be slower... just so I remember in case I wanna change them back
         private static bool ExtIsTxt(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -375,8 +374,6 @@ namespace FMScanner
 
         private static bool ExtIsRtf(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -387,8 +384,6 @@ namespace FMScanner
 
         private static bool ExtIsWri(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -399,8 +394,6 @@ namespace FMScanner
 
         internal static bool ExtIsHtml(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return (len > 4 &&
                     value[len - 4] == '.' &&
@@ -417,8 +410,6 @@ namespace FMScanner
 
         internal static bool ExtIsGlml(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 5 &&
                    value[len - 5] == '.' &&
@@ -430,8 +421,6 @@ namespace FMScanner
 
         internal static bool ExtIsZip(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -442,8 +431,6 @@ namespace FMScanner
 
         internal static bool ExtIs7z(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 3 &&
                    value[len - 3] == '.' &&
@@ -453,8 +440,6 @@ namespace FMScanner
 
         internal static bool ExtIsRar(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -465,8 +450,6 @@ namespace FMScanner
 
         internal static bool ExtIsIbt(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -477,8 +460,6 @@ namespace FMScanner
 
         internal static bool ExtIsCbt(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -489,8 +470,6 @@ namespace FMScanner
 
         internal static bool ExtIsGmp(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -501,8 +480,6 @@ namespace FMScanner
 
         internal static bool ExtIsNed(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -513,8 +490,6 @@ namespace FMScanner
 
         internal static bool ExtIsUnr(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -525,8 +500,6 @@ namespace FMScanner
 
         internal static bool ExtIsBin(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -537,8 +510,6 @@ namespace FMScanner
 
         internal static bool ExtIsSub(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -549,8 +520,6 @@ namespace FMScanner
 
         internal static bool ExtIsMis(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -561,8 +530,6 @@ namespace FMScanner
 
         internal static bool ExtIsGam(this string value)
         {
-            if (value == null) return false;
-
             int len = value.Length;
             return len > 4 &&
                    value[len - 4] == '.' &&
@@ -707,7 +674,7 @@ namespace FMScanner
         /// <param name="value"></param>
         /// <returns></returns>
         [ContractAnnotation("null => true")]
-        internal static bool IsEmpty(this string value) => string.IsNullOrEmpty(value);
+        internal static bool IsEmpty([NotNullWhen(false)] this string? value) => string.IsNullOrEmpty(value);
 
         /// <summary>
         /// Returns true if <paramref name="value"/> is null, empty, or whitespace.
@@ -715,7 +682,7 @@ namespace FMScanner
         /// <param name="value"></param>
         /// <returns></returns>
         [ContractAnnotation("null => true")]
-        internal static bool IsWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
+        internal static bool IsWhiteSpace([NotNullWhen(false)] this string? value) => string.IsNullOrWhiteSpace(value);
 
         #endregion
 
@@ -786,7 +753,6 @@ namespace FMScanner
         /// <returns></returns>
         internal static string RemoveExtension(this string fileName)
         {
-            if (fileName == null) return null;
             int i = fileName.LastIndexOf('.');
             return i > -1 && i > fileName.LastIndexOf('\\') && i > fileName.LastIndexOf('/')
                 ? fileName.Substring(0, i)
@@ -794,6 +760,28 @@ namespace FMScanner
         }
 
         #endregion
+
+        #endregion
+
+        #region Clear and add
+
+        internal static void ClearAndAdd<T>(this List<T> list, T item)
+        {
+            list.Clear();
+            list.Add(item);
+        }
+
+        internal static void ClearAndAdd<T>(this List<T> list, List<T> items)
+        {
+            list.Clear();
+            list.AddRange(items);
+        }
+
+        internal static void ClearAndAdd<T>(this List<T> list, T[] items)
+        {
+            list.Clear();
+            list.AddRange(items);
+        }
 
         #endregion
 

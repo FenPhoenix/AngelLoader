@@ -49,7 +49,7 @@ namespace FMScanner.SimpleHelpers
         private readonly Dictionary<string, int> encodingFrequency = new Dictionary<string, int>(StringComparer.Ordinal);
         private readonly Ude.CharsetDetector _ude = new Ude.CharsetDetector();
         private readonly Ude.CharsetDetector _singleUde = new Ude.CharsetDetector();
-        private string _encodingName;
+        private string? _encodingName;
         // Stupid micro-optimization to reduce GC time
         private readonly byte[] _buffer = new byte[16 * 1024];
 
@@ -59,7 +59,7 @@ namespace FMScanner.SimpleHelpers
         /// <param name="inputFilename">The input filename.</param>
         /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
         /// <returns></returns>
-        public Encoding DetectFileEncoding(string inputFilename, Encoding defaultIfNotDetected = null)
+        public Encoding? DetectFileEncoding(string inputFilename, Encoding? defaultIfNotDetected = null)
         {
             using var stream = new FileStream(inputFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, DEFAULT_BUFFER_SIZE);
             return DetectFileEncoding(stream) ?? defaultIfNotDetected;
@@ -71,53 +71,12 @@ namespace FMScanner.SimpleHelpers
         /// <param name="inputStream">The input stream.</param>
         /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
         /// <returns></returns>
-        public Encoding DetectFileEncoding(Stream inputStream, Encoding defaultIfNotDetected = null)
+        public Encoding? DetectFileEncoding(Stream inputStream, Encoding? defaultIfNotDetected = null)
         {
             Detect(inputStream);
-            Encoding ret = Complete() ?? defaultIfNotDetected;
+            Encoding? ret = Complete() ?? defaultIfNotDetected;
             Reset();
             return ret;
-        }
-
-        /// <summary>
-        /// Tries to detect the file encoding.
-        /// </summary>
-        /// <param name="inputData">The input data.</param>
-        /// <param name="start">The start.</param>
-        /// <param name="count">The count.</param>
-        /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
-        /// <returns></returns>
-        public Encoding DetectFileEncoding(byte[] inputData, int start, int count, Encoding defaultIfNotDetected = null)
-        {
-            Detect(inputData, start, count);
-            Encoding ret = Complete() ?? defaultIfNotDetected;
-            Reset();
-            return ret;
-        }
-
-        /// <summary>
-        /// Tries to load file content with the correct encoding.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <param name="defaultValue">The default value if unable to load file content.</param>
-        /// <returns>File content</returns>
-        public string TryLoadFile(string filename, string defaultValue = "")
-        {
-            try
-            {
-                if (File.Exists(filename))
-                {
-                    // enable file encoding detection
-                    Encoding encoding = DetectFileEncoding(filename);
-                    // Load data based on parameters
-                    return File.ReadAllText(filename, encoding);
-                }
-            }
-            catch
-            {
-                // ignore
-            }
-            return defaultValue;
         }
 
         /// <summary>
@@ -157,7 +116,7 @@ namespace FMScanner.SimpleHelpers
             }
 
             // is text if there is no null byte sequences or less than 10% of the buffer has control characters
-            return nullSequences == 0 && (controlSequences <= (rawData.Length / 10));
+            return nullSequences == 0 && controlSequences <= rawData.Length / 10;
         }
 
         /// <summary>
@@ -213,7 +172,7 @@ namespace FMScanner.SimpleHelpers
         /// <param name="bufferSize">Size of the buffer for the stream read.</param>
         /// <returns>Detected encoding name</returns>
         /// <exception cref="ArgumentOutOfRangeException">bufferSize parameter cannot be 0 or less.</exception>
-        private string Detect(Stream inputData, int maxSize = 20 * 1024 * 1024, int bufferSize = 16 * 1024)
+        private string? Detect(Stream inputData, int maxSize = 20 * 1024 * 1024, int bufferSize = 16 * 1024)
         {
             if (bufferSize <= 0) throw new ArgumentOutOfRangeException(nameof(bufferSize), "Buffer size cannot be 0 or less.");
             int maxIterations = maxSize <= 0 ? int.MaxValue : maxSize / bufferSize;
@@ -238,7 +197,7 @@ namespace FMScanner.SimpleHelpers
         /// <param name="start">The start.</param>
         /// <param name="count">The count.</param>
         /// <returns>Detected encoding name</returns>
-        private string Detect(byte[] inputData, int start, int count)
+        private string? Detect(byte[] inputData, int start, int count)
         {
             if (_done) return _encodingName;
 
@@ -287,7 +246,7 @@ namespace FMScanner.SimpleHelpers
         /// Finalize detection phase and gets detected encoding name.
         /// </summary>
         /// <returns></returns>
-        private Encoding Complete()
+        private Encoding? Complete()
         {
             _done = true;
             _ude.DataEnd();
@@ -307,7 +266,7 @@ namespace FMScanner.SimpleHelpers
             encodingFrequency[charset] = ++currentCount;
         }
 
-        private string GetCurrentEncoding()
+        private string? GetCurrentEncoding()
         {
             if (encodingFrequency.Count == 0) return null;
             // ASCII should be the last option, since other encodings often has ASCII included...

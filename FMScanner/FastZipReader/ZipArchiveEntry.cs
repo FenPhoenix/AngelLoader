@@ -100,12 +100,12 @@ namespace FMScanner.FastZipReader
         public string FullName { get; }
 
         private readonly ZipVersionMadeByPlatform _versionMadeByCompatibility;
-        private string _Name;
+        private string _name;
         /// <summary>
         /// The filename of the entry. This is equivalent to the substring of <see cref="FullName"/> that follows
         /// the final directory separator character.
         /// </summary>
-        public string Name => _Name ??= ParseFileName(FullName, _versionMadeByCompatibility);
+        public string Name => _name ??= ParseFileName(FullName, _versionMadeByCompatibility);
 
         #endregion
 

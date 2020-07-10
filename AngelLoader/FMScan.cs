@@ -208,10 +208,13 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanTitle)
                     {
+                        string scannedFMTitle = scannedFM.Title ?? "";
+                        string scannedFMArchiveName = scannedFM.ArchiveName ?? "";
+
                         sel.Title =
-                            !scannedFM.Title.IsEmpty() ? scannedFM.Title
-                            : scannedFM.ArchiveName.ExtIsArchive() ? scannedFM.ArchiveName.RemoveExtension()
-                            : scannedFM.ArchiveName;
+                            !scannedFMTitle.IsEmpty() ? scannedFMTitle
+                            : scannedFMArchiveName.ExtIsArchive() ? scannedFMArchiveName.RemoveExtension()
+                            : scannedFMArchiveName;
 
                         if (gameSup)
                         {
@@ -259,7 +262,7 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanAuthor)
                     {
-                        sel.Author = gameSup ? scannedFM.Author : "";
+                        sel.Author = gameSup ? scannedFM.Author ?? "" : "";
                     }
 
                     if (fms[i].ForceFullScan || scanOptions.ScanGameType)
@@ -278,7 +281,7 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanTags)
                     {
-                        string tagsString = gameSup ? scannedFM.TagsString : "";
+                        string tagsString = gameSup ? scannedFM.TagsString ?? "" : "";
 
                         // Don't clear the tags, because the user could have added a bunch and we should only
                         // add to those, not overwrite them
