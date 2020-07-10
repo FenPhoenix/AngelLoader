@@ -267,15 +267,6 @@ namespace AngelLoader
                         sel.Game = ScannerGameToGame(scannedFM.Game);
                     }
 
-                    // TODO: Uncomment if you start using this
-                    //if (fms[i].ForceFullScan || scanOptions.ScanLanguages)
-                    //{
-                    //    //sel.Languages = gameSup ? scannedFM.Languages : new string[0];
-                    //    sel.LanguagesString = gameSup
-                    //        ? scannedFM.Languages.Length > 0 ? string.Join(", ", scannedFM.Languages) : ""
-                    //        : "";
-                    //}
-
                     if (fms[i].ForceFullScan || scanOptions.ScanTags)
                     {
                         string tagsString = gameSup ? scannedFM.TagsString : "";
