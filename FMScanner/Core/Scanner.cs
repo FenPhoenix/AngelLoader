@@ -943,26 +943,32 @@ namespace FMScanner
 
             bool t3Found = false;
 
-            // This is split out because of weird semantics with if(this && that) vs nested ifs (required in
-            // order to have a var in the middle to avoid multiple LastIndexOf calls).
             static bool MapFileExists(string path)
             {
-                if (path.PathStartsWithI(FMDirs.IntrfaceS) && path.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen))
-                {
-                    int lsi = path.LastIndexOfDirSep();
-                    if (path.Length > lsi + 5 &&
-                        (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
-                        (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
-                        (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
-                        (path[lsi + 4] == 'e' || path[lsi + 4] == 'E') &&
-                        (path[lsi + 5] == '0') &&
-                        path.LastIndexOf('.') > lsi)
-                    {
-                        return true;
-                    }
-                }
+                int lsi;
+                return path.PathStartsWithI(FMDirs.IntrfaceS) &&
+                       path.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                       path.Length > (lsi = path.LastIndexOfDirSep()) + 5 &&
+                       (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
+                       (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
+                       (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
+                       (path[lsi + 4] == 'e' || path[lsi + 4] == 'E') &&
+                       (path[lsi + 5] == '0') &&
+                       path.LastIndexOf('.') > lsi;
+            }
 
-                return false;
+            static bool AutomapFileExists(string path)
+            {
+                int len;
+                return path.PathStartsWithI(FMDirs.IntrfaceS) &&
+                       path.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                       (len = path.Length) > 6 &&
+                       (path[len - 6] == 'r' || path[len - 6] == 'R') &&
+                       (path[len - 5] == 'a' || path[len - 5] == 'A') &&
+                       path[len - 4] == '.' &&
+                       (path[len - 3] == 'b' || path[len - 3] == 'B') &&
+                       (path[len - 2] == 'i' || path[len - 2] == 'I') &&
+                       (path[len - 1] == 'n' || path[len - 1] == 'N');
             }
 
             if (_fmIsZip || _scanOptions.ScanSize)
@@ -1042,14 +1048,9 @@ namespace FMScanner
                     // Inlined for performance. We cut the time roughly in half by doing this.
                     if (!t3Found && _scanOptions.ScanCustomResources)
                     {
-                        if (fmd.HasAutomap == null &&
-                            fn.PathStartsWithI(FMDirs.IntrfaceS) &&
-                            fn.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
-                            fn.EndsWithRaDotBin())
+                        if (fmd.HasAutomap == null && AutomapFileExists(fn))
                         {
                             fmd.HasAutomap = true;
-                            // Definitely a clever deduction, definitely not a sneaky hack for GatB-T2
-                            fmd.HasMap = true;
                         }
                         else if (fmd.HasMap == null && MapFileExists(fn))
                         {
@@ -1198,14 +1199,9 @@ namespace FMScanner
                         {
                             foreach (NameAndIndex f in intrfaceDirFiles)
                             {
-                                if (fmd.HasAutomap == null &&
-                                    f.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
-                                    f.Name.DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
-                                    f.Name.EndsWithRaDotBin())
+                                if (fmd.HasAutomap == null && AutomapFileExists(f.Name))
                                 {
                                     fmd.HasAutomap = true;
-                                    // Definitely a clever deduction, definitely not a sneaky hack for GatB-T2
-                                    fmd.HasMap = true;
                                     break;
                                 }
 

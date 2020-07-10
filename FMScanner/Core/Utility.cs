@@ -523,20 +523,6 @@ namespace FMScanner
                    (value[len - 1] == 'R' || value[len - 1] == 'r');
         }
 
-        internal static bool EndsWithRaDotBin(this string value)
-        {
-            if (value == null) return false;
-
-            int len = value.Length;
-            return len > 6 &&
-                   (value[len - 6] == 'R' || value[len - 6] == 'r') &&
-                   (value[len - 5] == 'A' || value[len - 5] == 'a') &&
-                   value[len - 4] == '.' &&
-                   (value[len - 3] == 'B' || value[len - 3] == 'b') &&
-                   (value[len - 2] == 'I' || value[len - 2] == 'i') &&
-                   (value[len - 1] == 'N' || value[len - 1] == 'n');
-        }
-
         internal static bool ExtIsBin(this string value)
         {
             if (value == null) return false;
