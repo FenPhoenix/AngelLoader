@@ -55,11 +55,9 @@ namespace AngelLoader.DataClasses
         // @DIRSEP: Always backslashes for backward compatibility and prevention of find misses in readme chooser box
         internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
-        [FenGenIgnore]
-        private ulong _sizeBytes = 0;
         [FenGenNumericEmpty(0)]
-        internal ulong SizeBytes { get => _sizeBytes; set => _sizeBytes = value.Clamp(ulong.MinValue, ulong.MaxValue); }
-
+        internal ulong SizeBytes = 0;
+        
         [FenGenIgnore]
         private int _rating = -1;
         [FenGenNumericEmpty(-1)]

@@ -136,8 +136,20 @@ namespace FMScanner
         /// </summary>
         private sealed class NameAndIndex
         {
-            internal string Name = "";
-            internal int Index = -1;
+            internal readonly string Name;
+            internal readonly int Index;
+
+            internal NameAndIndex(string name, int index)
+            {
+                Name = name;
+                Index = index;
+            }
+
+            internal NameAndIndex(string name)
+            {
+                Name = name;
+                Index = -1;
+            }
         }
 
         #endregion
@@ -386,7 +398,7 @@ namespace FMScanner
 
             static ScannedFMData? UnsupportedDir() => null;
 
-            long? sevenZipSize = null;
+            ulong? sevenZipSize = null;
 
             #region Setup
 
@@ -401,7 +413,7 @@ namespace FMScanner
                 try
                 {
                     using var sze = new SevenZipExtractor(_archivePath) { PreserveDirectoryStructure = true };
-                    sevenZipSize = sze.PackedSize;
+                    sevenZipSize = (ulong)sze.PackedSize;
                     sze.ExtractArchive(_fmWorkingPath);
                 }
                 catch (Exception)
@@ -470,7 +482,7 @@ namespace FMScanner
             {
                 if (_fmIsZip)
                 {
-                    fmData.Size = _archive.ArchiveStream.Length;
+                    fmData.Size = (ulong)_archive.ArchiveStream.Length;
                 }
                 else
                 {
@@ -489,7 +501,7 @@ namespace FMScanner
                     {
                         long size = 0;
                         foreach (FileInfo fi in _fmDirFileInfos) size += fi.Length;
-                        fmData.Size = size;
+                        fmData.Size = (ulong)size;
                     }
                 }
             }
@@ -523,7 +535,7 @@ namespace FMScanner
 
             var altTitles = new List<string>();
 
-            void SetOrAddTitle(string? value)
+            void SetOrAddTitle(string value)
             {
                 value = CleanupTitle(value);
 
@@ -714,7 +726,7 @@ namespace FMScanner
                         titles.AddRange(altTitles);
                     }
 
-                    string? author = GetValueFromReadme(SpecialLogic.Author, titles, SA_AuthorDetect);
+                    string author = GetValueFromReadme(SpecialLogic.Author, titles, SA_AuthorDetect);
 
                     fmData.Author = CleanupValue(author);
                 }
@@ -748,7 +760,7 @@ namespace FMScanner
                     var getLangs = GetLanguages(baseDirFiles, booksDirFiles, intrfaceDirFiles, stringsDirFiles);
                     fmData.Languages = getLangs.Langs.ToArray();
                     if (getLangs.Langs.Count > 0) SetLangTags(fmData, getLangs.EnglishIsUncertain);
-                    if (!_scanOptions.ScanLanguages) fmData.Languages = null;
+                    if (!_scanOptions.ScanLanguages) fmData.Languages = Array.Empty<string>();
                 }
 
                 #endregion
@@ -771,7 +783,7 @@ namespace FMScanner
                     }
                 }
 
-                if (!_scanOptions.ScanAuthor) fmData.Author = null;
+                if (!_scanOptions.ScanAuthor) fmData.Author = "";
             }
 
             // Due to the Thief 3 detection being done in the same place as the custom resources check, it's
@@ -806,7 +818,7 @@ namespace FMScanner
             DateTime? ret = null;
 
             // Look in the readme
-            string? ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
+            string ds = GetValueFromReadme(SpecialLogic.None, null, SA_ReleaseDateDetect);
             if (!ds.IsEmpty() && StringToDate(ds, out DateTime dt))
             {
                 ret = dt;
@@ -870,7 +882,7 @@ namespace FMScanner
 
         private static void SetLangTags(ScannedFMData fmData, bool englishIsUncertain)
         {
-            if (fmData.Languages == null) return;
+            if (fmData.Languages.Length == 0) return;
 
             if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
             for (int i = 0; i < fmData.Languages.Length; i++)
@@ -895,9 +907,6 @@ namespace FMScanner
                 if (fmData.TagsString != "") fmData.TagsString += ", ";
                 fmData.TagsString += "language:" + LanguagesC[lang];
             }
-
-            // Compatibility with old behavior for painless diffing
-            if (fmData.TagsString.IsEmpty()) fmData.TagsString = null;
         }
 
         private static void SetMiscTag(ScannedFMData fmData, string tag)
@@ -1016,17 +1025,17 @@ namespace FMScanner
                     else if (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
                              fn.PathStartsWithI(FMDirs.T3FMExtras2S))
                     {
-                        t3FMExtrasDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
+                        t3FMExtrasDirFiles.Add(new NameAndIndex(fn, index));
                         continue;
                     }
                     else if (!fn.ContainsDirSep() && fn.Contains('.'))
                     {
-                        baseDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
+                        baseDirFiles.Add(new NameAndIndex(fn, index));
                         // Fallthrough so ScanCustomResources can use it
                     }
                     else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
                     {
-                        stringsDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
+                        stringsDirFiles.Add(new NameAndIndex(fn, index));
                         if (SS2FingerprintRequiredAndNotDone() &&
                             (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
                              fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
@@ -1039,12 +1048,12 @@ namespace FMScanner
                     }
                     else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
                     {
-                        intrfaceDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
+                        intrfaceDirFiles.Add(new NameAndIndex(fn, index));
                         // Fallthrough so ScanCustomResources can use it
                     }
                     else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
                     {
-                        booksDirFiles.Add(new NameAndIndex { Name = fn, Index = index });
+                        booksDirFiles.Add(new NameAndIndex(fn, index));
                         continue;
                     }
                     else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
@@ -1151,19 +1160,19 @@ namespace FMScanner
 
                 foreach (string f in EnumFiles("*", SearchOption.TopDirectoryOnly))
                 {
-                    baseDirFiles.Add(new NameAndIndex { Name = Path.GetFileName(f) });
+                    baseDirFiles.Add(new NameAndIndex(Path.GetFileName(f)));
                 }
 
                 if (t3Found)
                 {
                     foreach (string f in EnumFiles(FMDirs.T3FMExtras1, "*", SearchOption.TopDirectoryOnly))
                     {
-                        t3FMExtrasDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
+                        t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
                     foreach (string f in EnumFiles(FMDirs.T3FMExtras2, "*", SearchOption.TopDirectoryOnly))
                     {
-                        t3FMExtrasDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
+                        t3FMExtrasDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
                 }
                 else
@@ -1172,7 +1181,7 @@ namespace FMScanner
 
                     foreach (string f in EnumFiles(FMDirs.Strings, "*", SearchOption.AllDirectories))
                     {
-                        stringsDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
+                        stringsDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                         if (SS2FingerprintRequiredAndNotDone() &&
                             (f.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
                              f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
@@ -1185,12 +1194,12 @@ namespace FMScanner
 
                     foreach (string f in EnumFiles(FMDirs.Intrface, "*", SearchOption.AllDirectories))
                     {
-                        intrfaceDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
+                        intrfaceDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
                     foreach (string f in EnumFiles(FMDirs.Books, "*", SearchOption.AllDirectories))
                     {
-                        booksDirFiles.Add(new NameAndIndex { Name = f.Substring(_fmWorkingPath.Length) });
+                        booksDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     }
 
                     // TODO: Maybe extract this again, but then I have to extract MapFileExists() too
@@ -1281,7 +1290,7 @@ namespace FMScanner
                 NameAndIndex f = baseDirFiles[i];
                 if (f.Name.ExtIsMis())
                 {
-                    misFiles.Add(new NameAndIndex { Name = Path.GetFileName(f.Name), Index = f.Index });
+                    misFiles.Add(new NameAndIndex(Path.GetFileName(f.Name), f.Index));
                 }
             }
 
@@ -1292,7 +1301,6 @@ namespace FMScanner
             #region Cache list of used .mis files
 
             NameAndIndex? missFlag = null;
-
             if (stringsDirFiles.Count > 0)
             {
                 // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
@@ -1377,12 +1385,12 @@ namespace FMScanner
 
         #region Read FM info files
 
-        private (string? Title, string? Author, string? Version, DateTime? ReleaseDate)
+        private (string Title, string Author, string Version, DateTime? ReleaseDate)
         ReadFMInfoXml(NameAndIndex file)
         {
-            string? title = null;
-            string? author = null;
-            string? version = null;
+            string title = "";
+            string author = "";
+            string version = "";
             DateTime? releaseDate = null;
 
             var fmInfoXml = new XmlDocument();
@@ -1433,15 +1441,15 @@ namespace FMScanner
             return (title, author, version, releaseDate);
         }
 
-        private (string? Title, string? Author, string? Description, DateTime? LastUpdateDate, string? Tags)
+        private (string Title, string Author, string Description, DateTime? LastUpdateDate, string Tags)
         ReadFMIni(NameAndIndex file)
         {
             var ret = (
-                Title: (string?)null,
-                Author: (string?)null,
-                Description: (string?)null,
+                Title: "",
+                Author: "",
+                Description: "",
                 LastUpdateDate: (DateTime?)null,
-                Tags: (string?)null
+                Tags: ""
             );
 
             #region Load INI
@@ -1459,9 +1467,9 @@ namespace FMScanner
                 iniLines = ReadAllLinesE(Path.Combine(_fmWorkingPath, file.Name));
             }
 
-            if (iniLines.Count == 0) return (null, null, null, null, null);
+            if (iniLines.Count == 0) return ("", "", "", null, "");
 
-            (string? NiceName, string? ReleaseDate, string? Tags, string? Descr) fmIni = (null, null, null, null);
+            (string NiceName, string ReleaseDate, string Tags, string Descr) fmIni = ("", "", "", "");
 
             #region Deserialize ini
 
@@ -1537,37 +1545,34 @@ namespace FMScanner
                 // Normalize to just LF for now. Otherwise it just doesn't work right for reasons confusing and
                 // senseless. It can easily be converted later.
                 fmIni.Descr = fmIni.Descr.Replace("\r\n", "\n");
-                if (fmIni.Descr.IsWhiteSpace()) fmIni.Descr = null;
+                if (fmIni.Descr.IsWhiteSpace()) fmIni.Descr = "";
             }
 
             #endregion
 
             #region Get author from tags
 
-            if (_scanOptions.ScanAuthor)
+            if (_scanOptions.ScanAuthor && !fmIni.Tags.IsEmpty())
             {
-                if (fmIni.Tags != null)
+                string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+
+                // LINQ avoidance
+                var authors = new List<string>();
+                for (int i = 0; i < tagsArray.Length; i++)
                 {
-                    string[] tagsArray = fmIni.Tags.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-
-                    // LINQ avoidance
-                    var authors = new List<string>();
-                    for (int i = 0; i < tagsArray.Length; i++)
-                    {
-                        string tag = tagsArray[i];
-                        if (tag.StartsWithI("author:")) authors.Add(tag);
-                    }
-
-                    string authorString = "";
-                    for (int i = 0; i < authors.Count; i++)
-                    {
-                        string a = authors[i];
-                        if (i > 0 && !authorString.EndsWith(", ")) authorString += ", ";
-                        authorString += a.Substring(a.IndexOf(':') + 1).Trim();
-                    }
-
-                    ret.Author = authorString;
+                    string tag = tagsArray[i];
+                    if (tag.StartsWithI("author:")) authors.Add(tag);
                 }
+
+                string authorString = "";
+                for (int i = 0; i < authors.Count; i++)
+                {
+                    string a = authors[i];
+                    if (i > 0 && !authorString.EndsWith(", ")) authorString += ", ";
+                    authorString += a.Substring(a.IndexOf(':') + 1).Trim();
+                }
+
+                ret.Author = authorString;
             }
 
             #endregion
@@ -1579,7 +1584,7 @@ namespace FMScanner
 
             if (_scanOptions.ScanReleaseDate)
             {
-                string? rd = fmIni.ReleaseDate;
+                string rd = fmIni.ReleaseDate;
 
                 // The fm.ini Unix timestamp looks 32-bit, but FMSel's source code pegs it as int64. It must just
                 // be writing only as many digits as it needs. That's good, because 32-bit will run out in 2038.
@@ -1615,10 +1620,10 @@ namespace FMScanner
             return ret;
         }
 
-        private (string? Title, string? Author)
+        private (string Title, string Author)
         ReadModIni(NameAndIndex file)
         {
-            var ret = (Title: (string?)null, Author: (string?)null);
+            var ret = (Title: "", Author: "");
 
             List<string> lines;
 
@@ -1762,7 +1767,6 @@ namespace FMScanner
                 if (_fmIsZip) readmeEntry = _archive.Entries[readmeFile.Index];
 
                 string? fullReadmeFileName = null;
-
                 FileInfo? readmeFI = null;
                 if (_fmDirFileInfos.Count > 0)
                 {
@@ -1907,9 +1911,9 @@ namespace FMScanner
             }
         }
 
-        private string? GetValueFromReadme(SpecialLogic specialLogic, List<string>? titles = null, params string[] keys)
+        private string GetValueFromReadme(SpecialLogic specialLogic, List<string>? titles = null, params string[] keys)
         {
-            string? ret = null;
+            string ret = "";
 
             foreach (ReadmeInternal file in _readmeFiles)
             {
@@ -1917,7 +1921,7 @@ namespace FMScanner
 
                 if (specialLogic == SpecialLogic.NewDarkMinimumVersion)
                 {
-                    string? ndv = GetNewDarkVersionFromText(file.Text);
+                    string ndv = GetNewDarkVersionFromText(file.Text);
                     if (!ndv.IsEmpty()) return ndv;
                 }
                 else
@@ -1970,7 +1974,7 @@ namespace FMScanner
                 // Finds eg.
                 // Author:
                 //      GORT (Shaun M.D. Morin)
-                static string? GetAuthorNextLine(List<string> lines)
+                static string GetAuthorNextLine(List<string> lines)
                 {
                     for (int i = 0; i < lines.Count; i++)
                     {
@@ -1989,7 +1993,7 @@ namespace FMScanner
                         }
                     }
 
-                    return null;
+                    return "";
                 }
 
                 foreach (ReadmeInternal file in _readmeFiles)
@@ -2013,7 +2017,7 @@ namespace FMScanner
             return ret;
         }
 
-        private static string? GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
+        private static string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
         {
             for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
             {
@@ -2102,10 +2106,10 @@ namespace FMScanner
                 }
             }
 
-            return null;
+            return "";
         }
 
-        private static string? CleanupValue(string? value)
+        private static string CleanupValue(string value)
         {
             if (value.IsEmpty()) return value;
 
@@ -2204,7 +2208,7 @@ namespace FMScanner
                         // more than a title
                         if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
                         {
-                            ret.Add(CleanupTitle(titleConcat) ?? "");
+                            ret.Add(CleanupTitle(titleConcat));
                         }
 
                         break;
@@ -2215,24 +2219,20 @@ namespace FMScanner
             return ret;
         }
 
-        private string? GetTitleFromNewGameStrFile(List<NameAndIndex> intrfaceDirFiles)
+        private string GetTitleFromNewGameStrFile(List<NameAndIndex> intrfaceDirFiles)
         {
-            if (intrfaceDirFiles.Count == 0) return null;
-            var newGameStrFile = new NameAndIndex();
+            if (intrfaceDirFiles.Count == 0) return "";
 
-            if (intrfaceDirFiles.Count > 0)
-            {
-                newGameStrFile =
-                    intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStrS))
-                    ?? intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStrS))
-                    ?? intrfaceDirFiles.FirstOrDefault(x =>
-                        x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
-                        x.Name.PathEndsWithI(FMFiles.DscNewGameStrS));
-            }
+            NameAndIndex newGameStrFile =
+                intrfaceDirFiles.FirstOrDefault(x =>
+                    x.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStrS))
+                ?? intrfaceDirFiles.FirstOrDefault(x =>
+                    x.Name.PathEqualsI(FMFiles.IntrfaceNewGameStrS))
+                ?? intrfaceDirFiles.FirstOrDefault(x =>
+                    x.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
+                    x.Name.PathEndsWithI(FMFiles.DscNewGameStrS));
 
-            if (newGameStrFile == null) return null;
+            if (newGameStrFile == null) return "";
 
             List<string> lines;
 
@@ -2276,18 +2276,18 @@ namespace FMScanner
                 }
             }
 
-            return null;
+            return "";
         }
 
-        private (string? TitleFrom0, string? TitleFromN, List<string>? CampaignMissionNames)
+        private (string TitleFrom0, string TitleFromN, List<string>? CampaignMissionNames)
         GetMissionNames(List<NameAndIndex> stringsDirFiles, List<NameAndIndex> misFiles, List<NameAndIndex> usedMisFiles)
         {
             var titlesStrLines = GetTitlesStrLines(stringsDirFiles);
-            if (titlesStrLines == null || titlesStrLines.Count == 0) return (null, null, null);
+            if (titlesStrLines == null || titlesStrLines.Count == 0) return ("", "", null);
 
             var ret =
-                (TitleFrom0: (string?)null,
-                TitleFromN: (string?)null,
+                (TitleFrom0: "",
+                TitleFromN: "",
                 CampaignMissionNames: (List<string>?)null);
 
             static string ExtractFromQuotedSection(string line)
@@ -2308,8 +2308,8 @@ namespace FMScanner
             var titles = new List<string>(titlesStrLines.Count);
             for (int lineIndex = 0; lineIndex < titlesStrLines.Count; lineIndex++)
             {
-                string? titleNum = null;
-                string? title = null;
+                string titleNum = "";
+                string title = "";
                 for (int umfIndex = 0; umfIndex < usedMisFiles.Count; umfIndex++)
                 {
                     string line = titlesStrLines[lineIndex];
@@ -2369,7 +2369,7 @@ namespace FMScanner
             {
                 NameAndIndex titlesFile = _fmIsZip
                     ? stringsDirFiles.FirstOrDefault(x => x.Name.PathEqualsI(titlesFileLocation))
-                    : new NameAndIndex { Name = Path.Combine(_fmWorkingPath, titlesFileLocation) };
+                    : new NameAndIndex(Path.Combine(_fmWorkingPath, titlesFileLocation));
 
                 if (titlesFile == null || !_fmIsZip && !File.Exists(titlesFile.Name)) continue;
 
@@ -2419,7 +2419,7 @@ namespace FMScanner
             return tfLinesD;
         }
 
-        private static string? CleanupTitle(string? value)
+        private static string CleanupTitle(string value)
         {
             if (value.IsEmpty()) return value;
 
@@ -2454,9 +2454,9 @@ namespace FMScanner
 
         #region Author
 
-        private static string? GetAuthorFromTopOfReadme(List<string> lines, List<string>? titles)
+        private static string GetAuthorFromTopOfReadme(List<string> lines, List<string>? titles)
         {
-            if (lines.Count == 0) return null;
+            if (lines.Count == 0) return "";
 
             bool titleStartsWithBy = false;
             bool titleContainsBy = false;
@@ -2482,7 +2482,7 @@ namespace FMScanner
                 if (topLines.Count == maxTopLines) break;
             }
 
-            if (topLines.Count < 2) return null;
+            if (topLines.Count < 2) return "";
 
             for (int i = 0; i < topLines.Count; i++)
             {
@@ -2512,29 +2512,23 @@ namespace FMScanner
                 }
             }
 
-            return null;
+            return "";
         }
 
-        private static string? GetAuthorFromText(string text)
+        private static string GetAuthorFromText(string text)
         {
-            string? author = null;
-
             for (int i = 0; i < AuthorRegexes.Length; i++)
             {
                 Match match = AuthorRegexes[i].Match(text);
-                if (match.Success)
-                {
-                    author = match.Groups["Author"].Value;
-                    break;
-                }
+                if (match.Success) return match.Groups["Author"].Value;
             }
 
-            return !author.IsEmpty() ? author : null;
+            return "";
         }
 
-        private string? GetAuthorFromTitleByAuthorLine(List<string>? titles)
+        private string GetAuthorFromTitleByAuthorLine(List<string>? titles)
         {
-            if (titles == null || titles.Count == 0) return null;
+            if (titles == null || titles.Count == 0) return "";
 
             // With the new fuzzy match method, it might be possible for me to remove the need for this guard
             for (int i = 0; i < titles.Count; i++)
@@ -2546,7 +2540,7 @@ namespace FMScanner
                 }
             }
 
-            if (titles.Count == 0) return null;
+            if (titles.Count == 0) return "";
 
             // We DON'T just check the first five lines, because there might be another language section first
             // and this kind of author string might well be buried down in the file.
@@ -2580,22 +2574,22 @@ namespace FMScanner
                 }
             }
 
-            return null;
+            return "";
         }
 
-        private string? GetAuthorFromCopyrightMessage()
+        private string GetAuthorFromCopyrightMessage()
         {
-            static string? AuthorCopyrightRegexesMatch(string line)
+            static string AuthorCopyrightRegexesMatch(string line)
             {
                 for (int i = 0; i < AuthorMissionCopyrightRegexes.Length; i++)
                 {
                     Match match = AuthorMissionCopyrightRegexes[i].Match(line);
                     if (match.Success) return match.Groups["Author"].Value;
                 }
-                return null;
+                return "";
             }
 
-            string? author = null;
+            string author = "";
 
             bool foundAuthor = false;
 
@@ -2644,7 +2638,7 @@ namespace FMScanner
                 if (foundAuthor) break;
             }
 
-            if (author.IsWhiteSpace()) return null;
+            if (author.IsWhiteSpace()) return "";
 
             author = CleanupCopyrightAuthor(author);
 
@@ -2687,11 +2681,11 @@ namespace FMScanner
 
         #endregion
 
-        private string? GetVersion()
+        private string GetVersion()
         {
-            string? version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
+            string version = GetValueFromReadme(SpecialLogic.Version, null, SA_VersionDetect);
 
-            if (version.IsEmpty()) return null;
+            if (version.IsEmpty()) return "";
 
             Debug.WriteLine(@"GetVersion() top:");
             Debug.WriteLine(version);
@@ -2884,7 +2878,7 @@ namespace FMScanner
                     }
 
                     var gamToUse = gamSizeList.OrderBy(x => x.Size).First();
-                    smallestGamFile = new NameAndIndex { Name = gamToUse.Name, Index = gamToUse.Index };
+                    smallestGamFile = new NameAndIndex(gamToUse.Name, gamToUse.Index);
                 }
             }
 
@@ -2918,7 +2912,7 @@ namespace FMScanner
                 }
 
                 var misToUse = misSizeList.OrderBy(x => x.Size).First();
-                smallestUsedMisFile = new NameAndIndex { Name = misToUse.Name, Index = misToUse.Index };
+                smallestUsedMisFile = new NameAndIndex(misToUse.Name, misToUse.Index);
             }
             else
             {
@@ -3205,9 +3199,9 @@ namespace FMScanner
             return ret;
         }
 
-        private static string? GetNewDarkVersionFromText(string text)
+        private static string GetNewDarkVersionFromText(string text)
         {
-            string? version = null;
+            string version = "";
 
             for (int i = 0; i < NewDarkVersionRegexes.Length; i++)
             {
@@ -3219,7 +3213,7 @@ namespace FMScanner
                 }
             }
 
-            if (version.IsEmpty()) return null;
+            if (version.IsEmpty()) return "";
 
             string ndv = version.Trim(CA_Period);
             int index = ndv.IndexOf('.');
@@ -3231,7 +3225,7 @@ namespace FMScanner
             // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-travelling
             // Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
             float ndvF = float.Parse(ndv);
-            return ndvF >= 1.19 && ndvF < 2.0 ? ndv : null;
+            return ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
         }
 
         private static void DeleteFMWorkingPath(string fmWorkingPath)
@@ -3356,8 +3350,8 @@ namespace FMScanner
 
             var lines = new List<string>();
             using StreamReader streamReader = new StreamReader(file, enc ?? Encoding.GetEncoding(1252));
-            string str;
-            while ((str = streamReader.ReadLine()) != null) lines.Add(str);
+            string line;
+            while ((line = streamReader.ReadLine()) != null) lines.Add(line);
             return lines;
         }
 

@@ -208,13 +208,10 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanTitle)
                     {
-                        string scannedFMTitle = scannedFM.Title ?? "";
-                        string scannedFMArchiveName = scannedFM.ArchiveName ?? "";
-
                         sel.Title =
-                            !scannedFMTitle.IsEmpty() ? scannedFMTitle
-                            : scannedFMArchiveName.ExtIsArchive() ? scannedFMArchiveName.RemoveExtension()
-                            : scannedFMArchiveName;
+                            !scannedFM.Title.IsEmpty() ? scannedFM.Title
+                            : scannedFM.ArchiveName.ExtIsArchive() ? scannedFM.ArchiveName.RemoveExtension()
+                            : scannedFM.ArchiveName;
 
                         if (gameSup)
                         {
@@ -229,7 +226,7 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanSize)
                     {
-                        sel.SizeBytes = (ulong)(gameSup ? scannedFM.Size ?? 0 : 0);
+                        sel.SizeBytes = gameSup ? scannedFM.Size ?? 0 : 0;
                     }
                     if (fms[i].ForceFullScan || scanOptions.ScanReleaseDate)
                     {
@@ -262,7 +259,7 @@ namespace AngelLoader
 
                     if (fms[i].ForceFullScan || scanOptions.ScanAuthor)
                     {
-                        sel.Author = gameSup ? scannedFM.Author ?? "" : "";
+                        sel.Author = gameSup ? scannedFM.Author : "";
                     }
 
                     if (fms[i].ForceFullScan || scanOptions.ScanGameType)
@@ -275,13 +272,13 @@ namespace AngelLoader
                     //{
                     //    //sel.Languages = gameSup ? scannedFM.Languages : new string[0];
                     //    sel.LanguagesString = gameSup
-                    //        ? scannedFM.Languages != null ? string.Join(", ", scannedFM.Languages) : ""
+                    //        ? scannedFM.Languages.Length > 0 ? string.Join(", ", scannedFM.Languages) : ""
                     //        : "";
                     //}
 
                     if (fms[i].ForceFullScan || scanOptions.ScanTags)
                     {
-                        string tagsString = gameSup ? scannedFM.TagsString ?? "" : "";
+                        string tagsString = gameSup ? scannedFM.TagsString : "";
 
                         // Don't clear the tags, because the user could have added a bunch and we should only
                         // add to those, not overwrite them

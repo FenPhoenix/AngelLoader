@@ -165,18 +165,18 @@ namespace FMScanner
     [PublicAPI]
     public sealed class ScannedFMData
     {
-        public string? ArchiveName { get; internal set; }
-        public long? Size { get; internal set; }
-        public string? Title { get; internal set; }
-        public string[]? AlternateTitles { get; internal set; }
-        public string? Author { get; internal set; }
+        public string ArchiveName { get; internal set; } = "";
+        public ulong? Size { get; internal set; }
+        public string Title { get; internal set; } = "";
+        public string[] AlternateTitles { get; internal set; } = Array.Empty<string>();
+        public string Author { get; internal set; } = "";
         public FMType Type { get; internal set; }
-        public string[]? IncludedMissions { get; internal set; }
+        public string[] IncludedMissions { get; internal set; } = Array.Empty<string>();
         public Game Game { get; internal set; }
-        public string[]? Languages { get; internal set; }
-        public string? Version { get; internal set; }
+        public string[] Languages { get; internal set; } = Array.Empty<string>();
+        public string Version { get; internal set; } = "";
         public bool? NewDarkRequired { get; internal set; }
-        public string? NewDarkMinRequiredVersion { get; internal set; }
+        public string NewDarkMinRequiredVersion { get; internal set; } = "";
         /// <summary>
         /// Deprecated and will always be blank. Use <see cref="LastUpdateDate"/> instead.
         /// </summary>
@@ -190,12 +190,10 @@ namespace FMScanner
             internal set => _lastUpdateDate = value != null && ((DateTime)value).Year > DateTime.Now.Year ? null : value;
         }
 
-        public bool? HasCustomScripts { get; internal set; }
-        public bool? HasCustomTextures { get; internal set; }
-        public bool? HasCustomSounds { get; internal set; }
-        public bool? HasCustomObjects { get; internal set; }
-        public bool? HasCustomCreatures { get; internal set; }
-        public bool? HasCustomMotions { get; internal set; }
+        public string Description { get; internal set; } = "";
+        public string TagsString { get; internal set; } = "";
+
+        public bool? HasMap { get; internal set; }
 
         private bool? _hasAutomap;
         public bool? HasAutomap
@@ -219,10 +217,13 @@ namespace FMScanner
             }
         }
 
+        public bool? HasCustomCreatures { get; internal set; }
+        public bool? HasCustomMotions { get; internal set; }
         public bool? HasMovies { get; internal set; }
-        public bool? HasMap { get; internal set; }
+        public bool? HasCustomObjects { get; internal set; }
+        public bool? HasCustomScripts { get; internal set; }
+        public bool? HasCustomSounds { get; internal set; }
         public bool? HasCustomSubtitles { get; internal set; }
-        public string? Description { get; internal set; }
-        public string? TagsString { get; internal set; }
+        public bool? HasCustomTextures { get; internal set; }
     }
 }
