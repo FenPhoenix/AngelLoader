@@ -1,10 +1,9 @@
-﻿// NULL_TODO - Scanner
-// It's null city in here, for two reasons:
-// -Avoiding allocations, because we want high performance
-// -Keeping compatibility with diff data so we're not flooded with false differences that really just amount to
-//  "was null, now empty". This isn't really a particularly great reason and I should just update the diff data.
-// We need to keep nulls for heavy objects to avoid unnecessary allocation, but we should probably at least make
-// strings non-null wherever possible.
+﻿// NULL_TODO (Scanner - Main)
+// -Lists are nullable because we want to avoid allocating new Lists all over the place.
+// -Arrays are non-nullable because assigning them Array.Empty<T> is basically free.
+// -Strings are non-nullable because assigning them the empty string "" is basically free.
+// -A few temporary function-level strings are nullable for easier empty-check semantics etc., but returned strings
+//  are non-nullable.
 
 //#define ScanSynchronous
 //#define DEBUG_RANDOMIZE_DIR_SEPS
@@ -213,7 +212,7 @@ namespace FMScanner
 
         [PublicAPI]
         public async Task<List<ScannedFMData?>>
-        ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport>? progress,
+        ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
                   CancellationToken cancellationToken)
         {
             return await Task.Run(() => ScanMany(missions, tempPath, _scanOptions, progress, cancellationToken));
@@ -222,7 +221,7 @@ namespace FMScanner
         [PublicAPI]
         public async Task<List<ScannedFMData?>>
         ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-                  IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
+                  IProgress<ProgressReport> progress, CancellationToken cancellationToken)
         {
             return await Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken));
         }
@@ -706,7 +705,7 @@ namespace FMScanner
                 var topOfReadmeTitles = GetTitlesFromTopOfReadmes(_readmeFiles);
                 if (topOfReadmeTitles != null && topOfReadmeTitles.Count > 0)
                 {
-                    foreach (string title in topOfReadmeTitles) SetOrAddTitle(title);
+                    for (int i = 0; i < topOfReadmeTitles.Count; i++) SetOrAddTitle(topOfReadmeTitles[i]);
                 }
 
                 fmData.AlternateTitles = altTitles.ToArray();
@@ -2159,9 +2158,9 @@ namespace FMScanner
         // end up as alternate titles, I can afford that.
         private List<string>? GetTitlesFromTopOfReadmes(List<ReadmeInternal> readmes)
         {
-            var ret = new List<string>();
+            if (_readmeFiles.Count == 0) return null;
 
-            if (_readmeFiles.Count == 0) return ret;
+            List<string>? ret = null;
 
             const int maxTopLines = 5;
 
@@ -2208,6 +2207,7 @@ namespace FMScanner
                         // more than a title
                         if (!titleConcat.IsWhiteSpace() && titleConcat.Length <= 50)
                         {
+                            ret ??= new List<string>();
                             ret.Add(CleanupTitle(titleConcat));
                         }
 

@@ -130,7 +130,7 @@ namespace FMScanner
     [PublicAPI]
     public sealed class ProgressReport
     {
-        public string FMName = ""; // non-null for safety
+        public string FMName = "";
         public int FMNumber;
         public int FMsTotal;
         public int Percent;
@@ -140,14 +140,23 @@ namespace FMScanner
     [PublicAPI]
     public enum Game
     {
+        /// <summary>Not scanned.</summary>
         Null,
+        /// <summary>Thief: The Dark Project or Thief Gold.</summary>
         Thief1,
+        /// <summary>Thief II: The Metal Age.</summary>
         Thief2,
+        /// <summary>Thief: Deadly Shadows.</summary>
         Thief3,
+        /// <summary>System Shock 2.</summary>
         SS2,
+        /// <summary>Invalid or corrupt mission, not a mission, or mission for an unsupported game.</summary>
         Unsupported
     }
 
+    /// <summary>
+    /// Whether the FM is a single mission or a campaign.
+    /// </summary>
     [PublicAPI]
     public enum FMType
     {
@@ -161,6 +170,10 @@ namespace FMScanner
         public string Path = "";
         public bool ForceFullScan;
     }
+
+    // NULL_TODO (Scanner - FMData)
+    // Fields with types that don't have a simple "unknown" state are nullable to represent "not scanned" or "unknown".
+    // Numeric types, bools, DateTime etc.
 
     [PublicAPI]
     public sealed class ScannedFMData

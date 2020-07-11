@@ -146,7 +146,7 @@ namespace AngelLoader
 
                 #region Run scanner
 
-                List<FMScanner.ScannedFMData> fmDataList;
+                List<FMScanner.ScannedFMData?> fmDataList;
                 try
                 {
                     var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
@@ -172,7 +172,7 @@ namespace AngelLoader
 
                 for (int i = 0; i < fmsToScanFiltered.Count; i++)
                 {
-                    FMScanner.ScannedFMData scannedFM = fmDataList[i];
+                    FMScanner.ScannedFMData? scannedFM = fmDataList[i];
 
                     #region Checks
 
