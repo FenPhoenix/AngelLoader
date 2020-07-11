@@ -29,6 +29,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Optimize>true</Optimize>
     <DefineConstants>TRACE;Release</DefineConstants>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
@@ -46,20 +47,20 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Beta|x86'">
+    <Optimize>true</Optimize>
     <OutputPath>bin\x86\Release_Beta\</OutputPath>
     <DefineConstants>TRACE;Release, ReleaseBeta</DefineConstants>
-    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Public|x86'">
+    <Optimize>true</Optimize>
     <DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
     <OutputPath>bin\x86\Release_Public\</OutputPath>
-    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_StartupOnly|x86'">
-    <DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
     <Optimize>true</Optimize>
+    <DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
 
