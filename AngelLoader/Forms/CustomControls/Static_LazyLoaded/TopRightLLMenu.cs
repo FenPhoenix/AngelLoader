@@ -9,7 +9,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     internal static class TopRightLLMenu
     {
         private static bool _constructed;
-        private static readonly bool[] _checkedStates = InitializedArray(TopRightTabsCount, true);
+        private static readonly bool[] _checkedStates = InitializedArray(TopRightTabsData.Count, true);
 
         private static ContextMenuStripCustom? _menu;
         internal static ContextMenuStripCustom Menu

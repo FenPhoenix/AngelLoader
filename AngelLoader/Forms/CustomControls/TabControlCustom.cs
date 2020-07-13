@@ -15,7 +15,7 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         private TabPage? _dragTab;
-        private readonly List<BackingTab> _backingTabList = new List<BackingTab>(Misc.TopRightTabsCount);
+        private readonly List<BackingTab> _backingTabList = new List<BackingTab>(DataClasses.TopRightTabsData.Count);
 
         public TabControlCustom()
         {

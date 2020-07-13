@@ -62,14 +62,20 @@ namespace AngelLoader.DataClasses
     internal sealed class TopRightTabData
     {
         private int _position;
-        internal int Position { get => _position; set => _position = value.Clamp(0, TopRightTabsCount - 1); }
+        internal int Position { get => _position; set => _position = value.Clamp(0, TopRightTabsData.Count - 1); }
 
         internal bool Visible = true;
     }
 
     internal sealed class TopRightTabsData
     {
-        internal readonly TopRightTabData[] Tabs = InitializedArray<TopRightTabData>(TopRightTabsCount);
+        // Perf: so we only have to get it once
+        /// <summary>
+        /// Returns the number of tabs that have been defined in the <see cref="TopRightTab"/> enum.
+        /// </summary>
+        internal static readonly int Count = Enum.GetValues(typeof(TopRightTab)).Length;
+
+        internal readonly TopRightTabData[] Tabs = InitializedArray<TopRightTabData>(Count);
 
         internal TopRightTab SelectedTab = TopRightTab.Statistics;
 
@@ -85,9 +91,7 @@ namespace AngelLoader.DataClasses
         {
             #region Fallback if multiple tabs have the same position
 
-            int[] set = { -1, -1, -1, -1, -1 };
-
-            AssertR(set.Length == TopRightTabsCount, nameof(set) + ".Length != " + nameof(TopRightTabsCount));
+            int[] set = InitializedArray(Count, -1);
 
             // PERF: Unmeasurable. LINQ Distinct().Count() was 6ms. Sheesh.
             for (int i = 0; i < Tabs.Length; i++)
@@ -114,7 +118,7 @@ namespace AngelLoader.DataClasses
             // Fallback if selected tab is not marked as visible
             if (!Tabs[(int)SelectedTab].Visible)
             {
-                for (int i = 0; i < TopRightTabsCount; i++)
+                for (int i = 0; i < Count; i++)
                 {
                     if (Tabs[i].Visible)
                     {
@@ -127,18 +131,18 @@ namespace AngelLoader.DataClasses
 
         private bool NoneVisible()
         {
-            for (int i = 0; i < TopRightTabsCount; i++) if (Tabs[i].Visible) return false;
+            for (int i = 0; i < Count; i++) if (Tabs[i].Visible) return false;
             return true;
         }
 
         private void SetAllVisible(bool visible)
         {
-            for (int i = 0; i < TopRightTabsCount; i++) Tabs[i].Visible = visible;
+            for (int i = 0; i < Count; i++) Tabs[i].Visible = visible;
         }
 
         private void ResetAllPositions()
         {
-            for (int i = 0; i < TopRightTabsCount; i++) Tabs[i].Position = i;
+            for (int i = 0; i < Count; i++) Tabs[i].Position = i;
         }
     }
 

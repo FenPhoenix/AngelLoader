@@ -10,9 +10,6 @@ namespace AngelLoader
     {
         internal const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
 
-        // Perf: so we only have to get it once
-        internal static readonly int TopRightTabsCount = Enum.GetValues(typeof(TopRightTab)).Length;
-
         #region Global state
 
         internal static readonly ConfigData Config = new ConfigData();

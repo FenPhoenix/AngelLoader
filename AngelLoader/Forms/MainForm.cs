@@ -866,7 +866,7 @@ namespace AngelLoader.Forms
             #region Top-right tabs
 
             var sortedTabPages = new SortedDictionary<int, TabPage>();
-            for (int i = 0; i < TopRightTabsCount; i++)
+            for (int i = 0; i < TopRightTabsData.Count; i++)
             {
                 sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, TopRightTabsInOrder[i]);
             }
@@ -881,7 +881,7 @@ namespace AngelLoader.Forms
 
             TopRightTabControl.AddTabsFull(tabs);
 
-            for (int i = 0; i < TopRightTabsCount; i++)
+            for (int i = 0; i < TopRightTabsData.Count; i++)
             {
                 TopRightTabControl.ShowTab(TopRightTabsInOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
                 TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
@@ -970,7 +970,7 @@ namespace AngelLoader.Forms
             WebSearchButton.Tag = new Size(116, 36);
 
             // EnsureValidity() guarantees selected tab will not be invisible
-            for (int i = 0; i < TopRightTabsCount; i++)
+            for (int i = 0; i < TopRightTabsData.Count; i++)
             {
                 if ((int)Config.TopRightTabsData.SelectedTab == i)
                 {
@@ -1675,7 +1675,7 @@ namespace AngelLoader.Forms
                 SelectedTab = (TopRightTab)Array.IndexOf(TopRightTabsInOrder, TopRightTabControl.SelectedTab)
             };
 
-            for (int i = 0; i < TopRightTabsCount; i++)
+            for (int i = 0; i < TopRightTabsData.Count; i++)
             {
                 (topRightTabs.Tabs[i].Position, _) = TopRightTabControl.FindBackingTab(TopRightTabsInOrder[i]);
                 topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(TopRightTabsInOrder[i]);
@@ -3709,7 +3709,7 @@ namespace AngelLoader.Forms
 
             // NULL_TODO: Null so I can assert
             TabPage? tab = null;
-            for (int i = 0; i < TopRightTabsCount; i++)
+            for (int i = 0; i < TopRightTabsData.Count; i++)
             {
                 if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])
                 {
