@@ -2378,13 +2378,6 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
-#if DEBUG
-        internal async void ImportFromMultipleLoadersMenuItem_Click(object sender, EventArgs e)
-        {
-            //await Core.ImportFromMultipleLoaders();
-        }
-#endif
-
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
@@ -4078,12 +4071,12 @@ namespace AngelLoader.Forms
 
         // Keep this one static because it calls out to the internal ButtonPainter rather than external Core, so
         // it's fine even if we modularize the view
-#if DEBUG
-        private void ScanIconButtons_Paint(object sender, PaintEventArgs e)
-#else
-        private static void ScanIconButtons_Paint(object sender, PaintEventArgs e)
+        // TODO: MainForm static event handler that calls out to ButtonPainter: Is this really fine?
+        private
+#if !DEBUG
+        static
 #endif
-            => ButtonPainter.PaintScanSmallButtons((Button)sender, e);
+        void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintScanSmallButtons((Button)sender, e);
 
         #endregion
     }
