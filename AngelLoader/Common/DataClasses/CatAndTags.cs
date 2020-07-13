@@ -15,7 +15,7 @@ namespace AngelLoader.DataClasses
         internal List<GlobalCatOrTag> Tags = new List<GlobalCatOrTag>();
     }
 
-    internal class CatAndTagsList : List<CatAndTags>
+    internal sealed class CatAndTagsList : List<CatAndTags>
     {
         internal void DeepCopyTo(CatAndTagsList dest)
         {
@@ -53,7 +53,50 @@ namespace AngelLoader.DataClasses
         }
     }
 
-    internal class GlobalCatAndTagsList : List<GlobalCatAndTags>
+    internal sealed class ImmutableGlobalCatAndTagsList
+    {
+        private readonly GlobalCatAndTags[] _items;
+
+        internal ImmutableGlobalCatAndTagsList(int capacity, params GlobalCatAndTags[] items)
+        {
+            _items = items;
+        }
+
+        internal void DeepCopyTo(GlobalCatAndTagsList dest)
+        {
+            dest.Clear();
+
+            int count = _items.Length;
+
+            if (count == 0) return;
+
+            for (int i = 0; i < count; i++)
+            {
+                var item = new GlobalCatAndTags
+                {
+                    Category = new GlobalCatOrTag
+                    {
+                        Name = _items[i].Category.Name,
+                        IsPreset = _items[i].Category.IsPreset,
+                        UsedCount = _items[i].Category.UsedCount
+                    }
+                };
+                for (int j = 0; j < _items[i].Tags.Count; j++)
+                {
+                    item.Tags.Add(new GlobalCatOrTag
+                    {
+                        Name = _items[i].Tags[j].Name,
+                        IsPreset = _items[i].Tags[j].IsPreset,
+                        UsedCount = _items[i].Tags[j].UsedCount
+                    });
+                }
+
+                dest.Add(item);
+            }
+        }
+    }
+
+    internal sealed class GlobalCatAndTagsList : List<GlobalCatAndTags>
     {
         public GlobalCatAndTagsList(int capacity) : base(capacity) { }
 
