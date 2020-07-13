@@ -327,5 +327,80 @@ namespace AngelLoader
         #endregion
 
         #endregion
+
+        #region Try combine path and check existence
+
+        internal static bool TryCombineFilePathAndCheckExistence(string pathPart1, string pathPart2,
+            out string combinedPath)
+        {
+            try
+            {
+                string ret = Path.Combine(pathPart1, pathPart2);
+                if (File.Exists(ret))
+                {
+                    combinedPath = ret;
+                    return true;
+                }
+                else
+                {
+                    combinedPath = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                combinedPath = "";
+                return false;
+            }
+        }
+
+        internal static bool TryCombineFilePathAndCheckExistence(string pathPart1, string pathPart2, string pathPart3,
+            out string combinedPath)
+        {
+            try
+            {
+                string ret = Path.Combine(pathPart1, pathPart2, pathPart3);
+                if (File.Exists(ret))
+                {
+                    combinedPath = ret;
+                    return true;
+                }
+                else
+                {
+                    combinedPath = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                combinedPath = "";
+                return false;
+            }
+        }
+
+        internal static bool TryCombineFilePathAndCheckExistence(string[] pathParts, out string combinedPath)
+        {
+            try
+            {
+                string ret = Path.Combine(pathParts);
+                if (File.Exists(ret))
+                {
+                    combinedPath = ret;
+                    return true;
+                }
+                else
+                {
+                    combinedPath = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                combinedPath = "";
+                return false;
+            }
+        }
+
+        #endregion
     }
 }
