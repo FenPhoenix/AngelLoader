@@ -9,6 +9,25 @@ namespace AngelLoader.DataClasses
         internal readonly List<string> Tags = new List<string>();
     }
 
+    internal sealed class GlobalCatOrTag
+    {
+        internal string Name = "";
+
+        /// <summary>
+        /// If true, the tag will never be removed from the global list even if no FMs are using it.
+        /// </summary>
+        internal bool IsPreset;
+
+        /// <summary>
+        /// Keeps track of the number of FMs that are using this tag. If a tag is removed from an FM and its
+        /// <see cref="UsedCount"/> in the global list is greater than 0, then its <see cref="UsedCount"/> will
+        /// be decremented by one and it will not be removed from the global list. This is for performance: it's
+        /// much faster to simply keep track of what needs removing than to rebuild the list every time a tag is
+        /// removed.
+        /// </summary>
+        internal int UsedCount;
+    }
+
     internal sealed class GlobalCatAndTags
     {
         internal GlobalCatOrTag Category = new GlobalCatOrTag();
@@ -57,10 +76,7 @@ namespace AngelLoader.DataClasses
     {
         private readonly GlobalCatAndTags[] _items;
 
-        internal ImmutableGlobalCatAndTagsList(int capacity, params GlobalCatAndTags[] items)
-        {
-            _items = items;
-        }
+        internal ImmutableGlobalCatAndTagsList(params GlobalCatAndTags[] items) => _items = items;
 
         internal void DeepCopyTo(GlobalCatAndTagsList dest)
         {
@@ -151,24 +167,5 @@ namespace AngelLoader.DataClasses
                 }
             }
         }
-    }
-
-    internal sealed class GlobalCatOrTag
-    {
-        internal string Name = "";
-
-        /// <summary>
-        /// If true, the tag will never be removed from the global list even if no FMs are using it.
-        /// </summary>
-        internal bool IsPreset;
-
-        /// <summary>
-        /// Keeps track of the number of FMs that are using this tag. If a tag is removed from an FM and its
-        /// <see cref="UsedCount"/> in the global list is greater than 0, then its <see cref="UsedCount"/> will
-        /// be decremented by one and it will not be removed from the global list. This is for performance: it's
-        /// much faster to simply keep track of what needs removing than to rebuild the list every time a tag is
-        /// removed.
-        /// </summary>
-        internal int UsedCount;
     }
 }

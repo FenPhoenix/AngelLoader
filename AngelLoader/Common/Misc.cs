@@ -19,7 +19,7 @@ namespace AngelLoader
 
         // These are the FMSel preset tags. Conforming to standards here.
         internal static readonly ImmutableGlobalCatAndTagsList
-        PresetTags = new ImmutableGlobalCatAndTagsList(6,
+        PresetTags = new ImmutableGlobalCatAndTagsList(
             new GlobalCatAndTags { Category = new GlobalCatOrTag { Name = "author", IsPreset = true } },
             new GlobalCatAndTags { Category = new GlobalCatOrTag { Name = "contest", IsPreset = true } },
             new GlobalCatAndTags
@@ -68,8 +68,7 @@ namespace AngelLoader
             }
         );
 
-        // Don't say this = PresetTags; that will make it a reference and we don't want that. It will be deep
-        // copied later.
+        // Preset tags will be deep copied to this list later
         internal static readonly GlobalCatAndTagsList GlobalTags = new GlobalCatAndTagsList(6);
 
         #endregion
