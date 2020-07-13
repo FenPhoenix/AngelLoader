@@ -127,12 +127,12 @@ namespace AngelLoader
                         {
                             if (!Directory.Exists(fmSndPath)) return;
 
-                            _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
+                            Dir_UnSetReadOnly(fmSndPath);
 
                             var wavFiles = Directory.EnumerateFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
                             foreach (string f in wavFiles)
                             {
-                                UnSetReadOnly(f);
+                                File_UnSetReadOnly(f);
 
                                 int bits = GetBitDepthFast(f);
 
@@ -248,7 +248,7 @@ namespace AngelLoader
 
                         try
                         {
-                            _ = new DirectoryInfo(fmSndPath) { Attributes = FileAttributes.Normal };
+                            Dir_UnSetReadOnly(fmSndPath);
                         }
                         catch (Exception ex)
                         {
@@ -268,7 +268,7 @@ namespace AngelLoader
 
                         foreach (string f in files)
                         {
-                            UnSetReadOnly(f);
+                            File_UnSetReadOnly(f);
 
                             try
                             {

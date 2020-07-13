@@ -611,7 +611,7 @@ namespace AngelLoader
                         string extractedName = Path.Combine(fmInstalledPath, fileName);
                         entry.ExtractToFile(extractedName, overwrite: true);
 
-                        UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
+                        File_UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
 
                         int percent = GetPercentFromValue(i + 1, filesCount);
 
@@ -863,7 +863,7 @@ namespace AngelLoader
 
                             foreach (string d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
                             {
-                                new DirectoryInfo(d).Attributes = FileAttributes.Normal;
+                                Dir_UnSetReadOnly(d);
                             }
 
                             triedReadOnlyRemove = true;
