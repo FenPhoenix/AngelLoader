@@ -203,11 +203,11 @@ namespace AngelLoader.Forms.CustomControls
                         using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                         {
                             var fe = new FMScanner.SimpleHelpers.FileEncoding();
-                            Encoding enc = fe.DetectFileEncoding(fs, Encoding.Default);
+                            Encoding? enc = fe.DetectFileEncoding(fs, Encoding.Default);
 
                             fs.Position = 0;
 
-                            using var sr = new StreamReader(fs, enc);
+                            using var sr = new StreamReader(fs, enc ?? Encoding.Default);
                             Text = sr.ReadToEnd();
                         }
                         break;

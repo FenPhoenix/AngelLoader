@@ -3258,12 +3258,9 @@ namespace FMScanner
         {
             string fullDir = Path.Combine(_fmWorkingPath, path);
 
-            if (!checkDirExists || Directory.Exists(fullDir))
-            {
-                return Directory.GetFiles(fullDir, searchPattern, searchOption);
-            }
-
-            return new string[0];
+            return !checkDirExists || Directory.Exists(fullDir)
+                ? Directory.GetFiles(fullDir, searchPattern, searchOption)
+                : Array.Empty<string>();
         }
 
         #endregion

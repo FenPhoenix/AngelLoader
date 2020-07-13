@@ -124,9 +124,7 @@ namespace AngelLoader.Forms.CustomControls
                     TabPage tabPage = TabPages[i];
                     var (index, backingTab) = FindBackingTab(tabPage);
 
-                    if (index == -1 || backingTab == null) return (-1, null);
-
-                    return (index, tabPage);
+                    return index == -1 || backingTab == null ? (-1, null) : (index, tabPage);
                 }
             }
 

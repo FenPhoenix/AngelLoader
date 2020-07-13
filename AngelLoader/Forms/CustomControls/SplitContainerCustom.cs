@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
@@ -45,6 +46,19 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
+        // @R#_FALSE_POSITIVE note (SplitContainerCustom):
+        // The Pure attribute is used so that calls to this method don't cause ReSharper to invalidate null checks
+        // and assume the checked-for members might have been set null again by this method.
+        // 2020-07-12:
+        // I think what's happening is that when fields are non-readonly because they have to be initialized
+        // somewhere other than the constructor (because of lazy-loading), then when R# sees that a method is
+        // called between their initialization and them being accessed, it can't know for sure that that method
+        // doesn't change the member back to null (halting problem?).
+        // But, the null warning goes away if you use a property rather than a method call, even though they're
+        // the same under the hood. R# might be scanning properties because it assumes they won't do anything
+        // heavy, but doesn't make that assumption about methods?
+        // (The field in question here is the nullable, non-readonly sibling SplitContainer)
+        [Pure]
         private bool IsMain() => Orientation == Orientation.Horizontal;
 
         public SplitContainerCustom()

@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -1078,6 +1079,7 @@ namespace AngelLoader.Forms
             Application.AddMessageFilter(this);
         }
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private void MainForm_Shown(object sender, EventArgs e)
         {
             // debug - end of startup - to make sure when we profile, we're measuring only startup time
@@ -1536,7 +1538,6 @@ namespace AngelLoader.Forms
                 WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, ((Size)WebSearchButton.Tag).Width, preserveHeight: true);
                 ScanAllFMsButton.SetTextAutoSize(LText.MainButtons.ScanAllFMs, preserveHeight: true);
                 ImportButton.SetTextAutoSize(LText.MainButtons.Import, preserveHeight: true);
-                ImportFromLLMenu.Localize();
                 SettingsButton.SetTextAutoSize(LText.MainButtons.Settings, preserveHeight: true);
 
                 #endregion
@@ -2045,16 +2046,14 @@ namespace AngelLoader.Forms
                 _ => throw new Exception("Config.DateFormat is not what it should be!")
             };
 
-            static string FormatSize(ulong size)
-            {
-                if (size == 0) return "";
-
-                return size < ByteSize.MB
-                    ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
-                    : size >= ByteSize.MB && size < ByteSize.GB
-                        ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
-                        : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
-            }
+            static string FormatSize(ulong size) =>
+                size == 0
+                ? ""
+                : size < ByteSize.MB
+                ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
+                : size >= ByteSize.MB && size < ByteSize.GB
+                ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
+                : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
 
             switch ((Column)e.ColumnIndex)
             {
@@ -2306,6 +2305,7 @@ namespace AngelLoader.Forms
             ShowMenu(PlayOriginalGameLLMenu.Menu, PlayOriginalGameButton, MenuPos.TopRight);
         }
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void PlayOriginalGameMenuItem_Click(object sender, EventArgs e)
         {
             var item = (ToolStripMenuItem)sender;
@@ -2369,10 +2369,13 @@ namespace AngelLoader.Forms
             ShowMenu(ImportFromLLMenu.ImportFromMenu, ImportButton, MenuPos.TopLeft);
         }
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromDarkLoader();
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromNDLOrFMSel(ImportType.FMSel);
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
 
 #if DEBUG
@@ -2382,6 +2385,7 @@ namespace AngelLoader.Forms
         }
 #endif
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
 
         #endregion
@@ -3632,6 +3636,7 @@ namespace AngelLoader.Forms
 
         // Just to keep things in a known state (clearing items also removes their event hookups, which is
         // convenient)
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal void AddTagMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             // This handler will only be hooked up after construction, so we don't need to call Construct()
@@ -3800,6 +3805,7 @@ namespace AngelLoader.Forms
             if (hWnd == IntPtr.Zero || Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
         }
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private void ReadmeRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e) => Core.OpenLink(e.LinkText);
 
         private void ReadmeZoomInButton_Click(object sender, EventArgs e) => ReadmeRichTextBox.ZoomIn();
@@ -4026,6 +4032,7 @@ namespace AngelLoader.Forms
 
         internal void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
 
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
         private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFMsListFromDisk();
 
         private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();

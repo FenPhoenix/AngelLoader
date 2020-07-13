@@ -16,8 +16,6 @@ namespace AngelLoader.Forms.CustomControls
 
         private bool _fmMenuConstructed;
         private bool _installUninstallMenuEnabled;
-        private bool _sayInstall;
-        private bool _sayShockEd;
         private bool _playFMMenuItemEnabled;
         private bool _scanFMMenuItemEnabled;
         private bool _openInDromEdSepVisible;
@@ -47,7 +45,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private ToolStripMenuItem? PlayFMMenuItem;
         private ToolStripMenuItem? PlayFMInMPMenuItem;
-        private ToolStripMenuItem? PlayFMAdvancedMenuItem;
+        //private ToolStripMenuItem? PlayFMAdvancedMenuItem;
         private ToolStripMenuItem? InstallUninstallMenuItem;
 
         private ToolStripSeparator? DeleteFMSep;
@@ -110,7 +108,7 @@ namespace AngelLoader.Forms.CustomControls
                 FMContextMenu = new ContextMenuStrip(),
                 PlayFMMenuItem = new ToolStripMenuItem(),
                 PlayFMInMPMenuItem = new ToolStripMenuItem(),
-                PlayFMAdvancedMenuItem = new ToolStripMenuItem(),
+                //PlayFMAdvancedMenuItem = new ToolStripMenuItem(),
 
                 InstallUninstallMenuItem = new ToolStripMenuItem(),
 
@@ -250,10 +248,6 @@ namespace AngelLoader.Forms.CustomControls
 
             InstallUninstallMenuItem.Enabled = _installUninstallMenuEnabled;
             DeleteFMMenuItem.Enabled = _deleteFMMenuItemEnabled;
-            SetConcreteInstallUninstallMenuItemText(_sayInstall);
-            SetConcreteDromEdMenuItemText(_sayShockEd);
-            // @R#_FALSE_POSITIVE: If you put any method calls at all before these lines, they trigger as possibly null.
-            // After and they don't. Even dummy calls to empty methods cause it. I don't even know wtf with this one.
             PlayFMMenuItem.Enabled = _playFMMenuItemEnabled;
             PlayFMInMPMenuItem.Visible = _playFMInMPMenuItemVisible;
             ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
@@ -275,6 +269,7 @@ namespace AngelLoader.Forms.CustomControls
 
             _fmMenuConstructed = true;
 
+            // These must come after the constructed bool gets set to true
             UpdateRatingList(Config.RatingDisplayStyle == RatingDisplayStyle.FMSel);
             SetRatingMenuItemChecked(_rating);
             SetFMMenuTextToLocalized();
@@ -323,11 +318,11 @@ namespace AngelLoader.Forms.CustomControls
 
             #endregion
 
-            SetConcreteInstallUninstallMenuItemText(sayInstall);
+            SetInstallUninstallMenuItemText(sayInstall);
 
             DeleteFMMenuItem!.Text = LText.FMsList.FMMenu_DeleteFM.EscapeAmpersands();
 
-            SetConcreteDromEdMenuItemText(sayShockEd);
+            SetOpenInDromEdMenuItemText(sayShockEd);
 
             ScanFMMenuItem!.Text = LText.FMsList.FMMenu_ScanFM.EscapeAmpersands();
 
@@ -480,14 +475,11 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void SetInstallUninstallMenuItemText(bool sayInstall)
         {
-            if (_fmMenuConstructed)
-            {
-                SetConcreteInstallUninstallMenuItemText(sayInstall);
-            }
-            else
-            {
-                _sayInstall = sayInstall;
-            }
+            if (!_fmMenuConstructed) return;
+
+            InstallUninstallMenuItem!.Text = (sayInstall
+                ? LText.FMsList.FMMenu_InstallFM
+                : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
         }
 
         internal void SetDeleteFMMenuItemEnabled(bool value)
@@ -518,14 +510,11 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void SetOpenInDromEdMenuItemText(bool sayShockEd)
         {
-            if (_fmMenuConstructed)
-            {
-                SetConcreteDromEdMenuItemText(sayShockEd);
-            }
-            else
-            {
-                _sayShockEd = sayShockEd;
-            }
+            if (!_fmMenuConstructed) return;
+
+            OpenInDromEdMenuItem!.Text = (sayShockEd
+                ? LText.FMsList.FMMenu_OpenInShockEd
+                : LText.FMsList.FMMenu_OpenInDromEd).EscapeAmpersands();
         }
 
         internal void SetScanFMMenuItemEnabled(bool value)

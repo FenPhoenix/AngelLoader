@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -57,20 +58,6 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void SetConcreteInstallUninstallMenuItemText(bool sayInstall)
-        {
-            InstallUninstallMenuItem!.Text = (sayInstall
-                ? LText.FMsList.FMMenu_InstallFM
-                : LText.FMsList.FMMenu_UninstallFM).EscapeAmpersands();
-        }
-
-        private void SetConcreteDromEdMenuItemText(bool sayShockEd)
-        {
-            OpenInDromEdMenuItem!.Text = (sayShockEd
-                ? LText.FMsList.FMMenu_OpenInShockEd
-                : LText.FMsList.FMMenu_OpenInDromEd).EscapeAmpersands();
-        }
-
         #endregion
 
         #region API methods
@@ -102,7 +89,7 @@ namespace AngelLoader.Forms.CustomControls
         internal bool FMContextMenuVisible => FMContextMenu?.Visible == true;
 
         // We keep this non-static so we can call it with an instance syntax like everything else for consistency.
-        // ReSharper disable once MemberCanBeMadeStatic.Global
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal bool ColumnHeaderMenuVisible => ColumnHeaderLLMenu.Visible;
 
         #region Get FM / FM data

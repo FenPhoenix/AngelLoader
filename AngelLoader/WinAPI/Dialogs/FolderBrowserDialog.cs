@@ -206,7 +206,7 @@ namespace AngelLoader.WinAPI.Dialogs
                 if (!Directory.Exists(InitialDirectory))
                 {
                     // C:\Folder\File.exe becomes C:\Folder
-                    InitialDirectory = Path.GetDirectoryName(InitialDirectory);
+                    InitialDirectory = Path.GetDirectoryName(InitialDirectory) ?? "";
                     if (!Directory.Exists(InitialDirectory)) return;
                 }
 
