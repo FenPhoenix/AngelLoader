@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class FilterTagsForm
+    sealed partial class FilterTagsForm
     {
         /// <summary>
         /// Required designer variable.

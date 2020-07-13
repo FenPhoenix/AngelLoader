@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public partial class ProgressPanel : UserControl
+    public sealed partial class ProgressPanel : UserControl
     {
         // TODO: The way this works is no longer really tenable - rework it to be cleaner
 

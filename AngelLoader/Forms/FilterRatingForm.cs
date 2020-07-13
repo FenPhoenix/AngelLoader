@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public partial class FilterRatingForm : Form, IEventDisabler
+    public sealed partial class FilterRatingForm : Form, IEventDisabler
     {
         internal int RatingFrom;
         internal int RatingTo;

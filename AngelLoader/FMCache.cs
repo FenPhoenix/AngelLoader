@@ -46,7 +46,7 @@ namespace AngelLoader
         #endregion
 
         // We might want to add other things (thumbnails etc.) later, so it's a class
-        internal class CacheData
+        internal sealed class CacheData
         {
             internal readonly List<string> Readmes;
             internal CacheData() => Readmes = new List<string>();

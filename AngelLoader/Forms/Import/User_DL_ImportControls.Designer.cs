@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.Import
 {
-    partial class User_DL_ImportControls
+    sealed partial class User_DL_ImportControls
     {
         /// <summary> 
         /// Required designer variable.

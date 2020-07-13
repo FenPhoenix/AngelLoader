@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class RadioButtonCustom : Button
+    public sealed class RadioButtonCustom : Button
     {
         private bool _checked;
         private readonly Pen _blackRectPen = new Pen(Color.Black, 1.0f);

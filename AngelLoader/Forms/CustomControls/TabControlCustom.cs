@@ -5,9 +5,9 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal class TabControlCustom : TabControl
+    internal sealed class TabControlCustom : TabControl
     {
-        internal class BackingTab
+        internal sealed class BackingTab
         {
             internal TabPage TabPage;
             internal bool Visible = true;

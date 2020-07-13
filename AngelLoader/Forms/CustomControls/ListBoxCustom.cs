@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    internal class ListBoxCustom : ListBox
+    internal sealed class ListBoxCustom : ListBox
     {
         #region Backing items
 

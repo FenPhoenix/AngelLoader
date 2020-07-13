@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.Import
 {
-    public partial class ImportFromDarkLoaderForm : Form
+    public sealed partial class ImportFromDarkLoaderForm : Form
     {
         internal string DarkLoaderIniFile = "";
         internal bool ImportFMData;

@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms
 {
-    partial class ScanAllFMsForm
+    sealed partial class ScanAllFMsForm
     {
         /// <summary>
         /// Required designer variable.

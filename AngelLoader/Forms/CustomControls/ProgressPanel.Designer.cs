@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls
 {
-    partial class ProgressPanel
+    sealed partial class ProgressPanel
     {
         /// <summary> 
         /// Required designer variable.

@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class ArrowButton : Button
+    public sealed class ArrowButton : Button
     {
         private Direction _arrowDirection;
         private readonly Point[] _arrowPolygon = new Point[3];

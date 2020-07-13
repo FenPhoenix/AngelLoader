@@ -7,7 +7,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.Import
 {
-    public partial class User_FMSel_NDL_ImportControls : UserControl
+    public sealed partial class User_FMSel_NDL_ImportControls : UserControl
     {
         private ImportType ImportType;
 

@@ -4,12 +4,11 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public partial class FilterTagsForm : Form
+    public sealed partial class FilterTagsForm : Form
     {
         private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
 

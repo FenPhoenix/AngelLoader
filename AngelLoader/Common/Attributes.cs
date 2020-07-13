@@ -19,7 +19,7 @@ namespace AngelLoader
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
-        internal class FenGenFMDataSourceClassAttribute : Attribute
+        internal sealed class FenGenFMDataSourceClassAttribute : Attribute
         {
             /// <summary>
             /// 
@@ -36,14 +36,14 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenIgnoreAttribute : Attribute { }
+        internal sealed class FenGenIgnoreAttribute : Attribute { }
 
         /// <summary>
         /// If this field or property should have a different name in the ini file, you can specify that name here.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenIniNameAttribute : Attribute
+        internal sealed class FenGenIniNameAttribute : Attribute
         {
             internal FenGenIniNameAttribute([UsedImplicitly] string value) { }
         }
@@ -55,7 +55,7 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenNumericEmptyAttribute : Attribute
+        internal sealed class FenGenNumericEmptyAttribute : Attribute
         {
             internal FenGenNumericEmptyAttribute([UsedImplicitly] long value) { }
         }
@@ -65,7 +65,7 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenListTypeAttribute : Attribute
+        internal sealed class FenGenListTypeAttribute : Attribute
         {
             /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
             internal FenGenListTypeAttribute([UsedImplicitly] string value) { }
@@ -76,7 +76,7 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenListDistinctTypeAttribute : Attribute
+        internal sealed class FenGenListDistinctTypeAttribute : Attribute
         {
             /// <param name="value">Can be "None", "Exact", or "CaseInsensitive".</param>
             internal FenGenListDistinctTypeAttribute([UsedImplicitly] string value) { }
@@ -88,15 +88,15 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenDoNotTrimValueAttribute : Attribute { }
+        internal sealed class FenGenDoNotTrimValueAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
+        internal sealed class FenGenDoNotConvertDateTimeToLocalAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenInsertAfterAttribute : Attribute
+        internal sealed class FenGenInsertAfterAttribute : Attribute
         {
             internal FenGenInsertAfterAttribute([UsedImplicitly] string value) { }
         }
@@ -111,7 +111,7 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
-        internal class FenGenLocalizationSourceClassAttribute : Attribute { }
+        internal sealed class FenGenLocalizationSourceClassAttribute : Attribute { }
 
         /// <summary>
         /// This attribute should be placed on the localization ini read/write class. Only one instance of this
@@ -119,14 +119,14 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Class)]
-        internal class FenGenLocalizationDestClassAttribute : Attribute { }
+        internal sealed class FenGenLocalizationDestClassAttribute : Attribute { }
 
         /// <summary>
         /// Places a comment before the attached field or property.
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenCommentAttribute : Attribute
+        internal sealed class FenGenCommentAttribute : Attribute
         {
             /// <param name="comments">Each comment will be placed on a separate line.</param>
             internal FenGenCommentAttribute([UsedImplicitly] params string[] comments) { }
@@ -138,7 +138,7 @@ namespace AngelLoader
         /// </summary>
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        internal class FenGenBlankLineAttribute : Attribute
+        internal sealed class FenGenBlankLineAttribute : Attribute
         {
             internal FenGenBlankLineAttribute() { }
             internal FenGenBlankLineAttribute([UsedImplicitly] int numberOfBlankLines) { }
@@ -150,11 +150,11 @@ namespace AngelLoader
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Enum)]
-        internal class FenGenGameEnumAttribute : Attribute { }
+        internal sealed class FenGenGameEnumAttribute : Attribute { }
 
         [Conditional("compile_FenGen_attributes")]
         [AttributeUsage(AttributeTargets.Field)]
-        internal class FenGenNotAGameTypeAttribute : Attribute { }
+        internal sealed class FenGenNotAGameTypeAttribute : Attribute { }
 
         #endregion
     }

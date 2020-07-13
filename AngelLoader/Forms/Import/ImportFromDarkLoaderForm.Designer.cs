@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.Import
 {
-    partial class ImportFromDarkLoaderForm
+    sealed partial class ImportFromDarkLoaderForm
     {
         /// <summary>
         /// Required designer variable.

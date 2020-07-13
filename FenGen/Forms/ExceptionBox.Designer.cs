@@ -1,6 +1,6 @@
 ﻿namespace FenGen.Forms
 {
-    partial class ExceptionBox
+    sealed partial class ExceptionBox
     {
         /// <summary>
         /// Required designer variable.

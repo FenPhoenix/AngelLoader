@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace FenGen.Forms
 {
-    public partial class ExceptionBox : Form
+    public sealed partial class ExceptionBox : Form
     {
         public ExceptionBox(string exContent)
         {

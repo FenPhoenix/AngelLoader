@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms
 {
-    public partial class MainForm
+    public sealed partial class MainForm
     {
         // Anything in MainForm doesn't need to be disposed because close = app exit
 #pragma warning disable IDE0069 // Disposable fields should be disposed

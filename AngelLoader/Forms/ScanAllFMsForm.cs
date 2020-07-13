@@ -5,7 +5,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    public partial class ScanAllFMsForm : Form
+    public sealed partial class ScanAllFMsForm : Form
     {
         private readonly CheckBox[] _checkBoxes;
 

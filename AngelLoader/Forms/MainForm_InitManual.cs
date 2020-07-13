@@ -7,7 +7,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
-    partial class MainForm
+    sealed partial class MainForm
     {
         /*
          Notes:

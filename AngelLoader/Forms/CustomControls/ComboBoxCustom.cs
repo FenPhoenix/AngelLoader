@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
-    public class ComboBoxCustom : ComboBox
+    public sealed class ComboBoxCustom : ComboBox
     {
         private const uint WM_CTLCOLORLISTBOX = 308;
         private const int SWP_NOSIZE = 1;

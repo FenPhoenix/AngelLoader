@@ -35,7 +35,7 @@ namespace FMScanner
 {
     [SuppressMessage("ReSharper", "ArrangeStaticMemberQualifier")]
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public class Scanner : IDisposable
+    public sealed class Scanner : IDisposable
     {
 #if DEBUG
         private readonly Stopwatch _overallTimer = new Stopwatch();
