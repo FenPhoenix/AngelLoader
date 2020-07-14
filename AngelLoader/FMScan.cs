@@ -101,7 +101,7 @@ namespace AngelLoader
                 // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                 // cause then it will hit the actual disk rather than just going through a list of paths in
                 // memory
-                var archivePaths = await Task.Run(GetFMArchivePaths);
+                var archivePaths = await Task.Run(FMArchives.GetFMArchivePaths);
 
                 #endregion
 
@@ -113,7 +113,7 @@ namespace AngelLoader
                 for (int i = 0; i < fmsToScan.Count; i++)
                 {
                     var fm = fmsToScan[i];
-                    string fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive, archivePaths));
+                    string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive, archivePaths));
                     if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                     {
                         fmsToScanFiltered.Add(fm);

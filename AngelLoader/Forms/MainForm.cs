@@ -1151,7 +1151,7 @@ namespace AngelLoader.Forms
             {
                 if (FMsDGV.Focused && FMsDGV.RowSelected())
                 {
-                    await Core.DeleteFMArchive(FMsDGV.GetSelectedFM());
+                    await FMArchives.Delete(FMsDGV.GetSelectedFM());
                 }
             }
             else if (e.KeyCode == Keys.Escape)

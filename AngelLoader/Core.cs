@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms;
 using AngelLoader.WinAPI;
-using Microsoft.VisualBasic.FileIO; // the import of shame
 using static AngelLoader.GameSupport;
 using static AngelLoader.GameSupport.GameIndex;
 using static AngelLoader.Logger;
@@ -33,15 +32,10 @@ namespace AngelLoader
 {
     internal static class Core
     {
-        // TODO: Remove these pragmas and get null notification on this so we don't accidentally access it when it's null.
-        // TODO: But if we check it from another thread there'll be a race condition. Use a locking construct of some kind.
-#pragma warning disable CS8618
-        internal static IView View;
-#pragma warning restore CS8618
-
-        // Stupid hack for perf and nice UX when deleting FMs (we filter out deleted ones until the next find from
-        // disk, when we remove them properly)
-        internal static bool OneOrMoreFMsAreMarkedDeleted;
+        // TODO: Core: View = null!; note
+        // Remove this null-handwave and get null notification on this so we don't accidentally access it when
+        // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
+        internal static IView View = null!;
 
         internal static void Init(Task configTask)
         {
@@ -1467,79 +1461,6 @@ namespace AngelLoader
         }
 
         #endregion
-
-        internal static async Task DeleteFMArchive(FanMission fm)
-        {
-            var archives = FindFMArchive_Multiple(fm.Archive);
-            if (archives.Count == 0)
-            {
-                View.ShowAlert(LText.FMDeletion.ArchiveNotFound, LText.AlertMessages.DeleteFMArchive);
-                return;
-            }
-
-            bool singleArchive = archives.Count == 1;
-
-            var finalArchives = new List<string>();
-
-            using (var f = new MessageBoxCustomForm(
-                messageTop: singleArchive
-                    ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + archives[0]
-                    : LText.FMDeletion.DuplicateArchivesFound,
-                messageBottom: "",
-                title: LText.AlertMessages.DeleteFMArchive,
-                icon: MessageBoxIcon.Warning,
-                okText: singleArchive ? LText.FMDeletion.DeleteFM : LText.FMDeletion.DeleteFMs,
-                cancelText: LText.Global.Cancel,
-                okIsDangerous: true,
-                choiceStrings: singleArchive ? null : archives.ToArray()))
-            {
-                if (f.ShowDialog() != DialogResult.OK) return;
-
-                finalArchives.AddRange(singleArchive ? archives : f.SelectedItems);
-            }
-
-            try
-            {
-                View.ShowProgressBox(ProgressTasks.DeleteFMArchive);
-                await Task.Run(() =>
-                {
-                    foreach (string archive in finalArchives)
-                    {
-                        try
-                        {
-                            FileSystem.DeleteFile(archive, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log(nameof(DeleteFMArchive) + ": Exception deleting file '" + archive + "'", ex);
-                            View.InvokeSync(new Action(() =>
-                            {
-                                View.ShowAlert(
-                                     LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" +
-                                     archive,
-                                     LText.AlertMessages.Error);
-                            }));
-                        }
-                    }
-                });
-            }
-            finally
-            {
-                var newArchives = await Task.Run(() => FindFMArchive_Multiple(fm.Archive));
-
-                View.HideProgressBox();
-
-                if (newArchives.Count == 0 && !fm.Installed)
-                {
-                    // Disgusting hack that results in a better user experience than the "proper" way of reloading
-                    // the list from disk immediately
-                    fm.MarkedDeleted = true;
-                    OneOrMoreFMsAreMarkedDeleted = true;
-
-                    await View.SortAndSetFilter(keepSelection: true);
-                }
-            }
-        }
 
         #region Shutdown
 

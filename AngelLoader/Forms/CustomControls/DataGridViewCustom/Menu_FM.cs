@@ -608,7 +608,7 @@ namespace AngelLoader.Forms.CustomControls
 
         private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(GetSelectedFM());
 
-        private async void DeleteFMMenuItem_Click(object sender, EventArgs e) => await Core.DeleteFMArchive(GetSelectedFM());
+        private async void DeleteFMMenuItem_Click(object sender, EventArgs e) => await FMArchives.Delete(GetSelectedFM());
 
         private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
         {

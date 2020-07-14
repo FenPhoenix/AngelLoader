@@ -173,7 +173,7 @@ namespace AngelLoader
             readmes.Clear();
             ClearCacheDir(fm);
 
-            string fmArchivePath = FindFMArchive(fm.Archive);
+            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
 
             // In weird situations this could be true, so just say none and at least don't crash
             if (fmArchivePath.IsEmpty()) return new CacheData();

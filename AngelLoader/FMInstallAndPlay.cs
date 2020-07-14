@@ -460,7 +460,7 @@ namespace AngelLoader
                 return false;
             }
 
-            string fmArchivePath = FindFMArchive(fm.Archive);
+            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
 
             if (fmArchivePath.IsEmpty())
             {
@@ -753,7 +753,7 @@ namespace AngelLoader
                     return;
                 }
 
-                string fmArchivePath = await Task.Run(() => FindFMArchive(fm.Archive));
+                string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive));
 
                 if (fmArchivePath!.IsEmpty())
                 {

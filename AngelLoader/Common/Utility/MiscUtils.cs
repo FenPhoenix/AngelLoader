@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -25,6 +24,8 @@ namespace AngelLoader
         [AssertionMethod]
         public static void AssertR([AssertionCondition(AssertionConditionType.IS_TRUE)] bool condition, string message, string detailedMessage = "")
             => Trace.Assert(condition, message, detailedMessage);
+
+        #region Numeric
 
         #region Percent
 
@@ -54,6 +55,8 @@ namespace AngelLoader
         /// <param name="value"></param>
         /// <returns></returns>
         internal static int ClampToZero(this int value) => Math.Max(value, 0);
+
+        #endregion
 
         #endregion
 
@@ -111,10 +114,8 @@ namespace AngelLoader
 
         internal static string GetEditorExe(GameIndex game)
         {
-            if (!GameIsDark(game)) return "";
-
-            string gamePath = Config.GetGamePath(game);
-            if (gamePath.IsEmpty()) return "";
+            string gamePath;
+            if (!GameIsDark(game) || (gamePath = Config.GetGamePath(game)).IsEmpty()) return "";
 
             string exe = game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe;
             return TryCombineFilePathAndCheckExistence(gamePath, exe, out string fullPathExe)
@@ -125,9 +126,9 @@ namespace AngelLoader
         internal static string GetT2MultiplayerExe()
         {
             string gamePath = Config.GetGamePath(Thief2);
-            if (gamePath.IsEmpty()) return "";
-
-            return TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
+            return gamePath.IsEmpty()
+                ? ""
+                : TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
                 ? fullPathExe
                 : "";
         }
@@ -145,6 +146,13 @@ namespace AngelLoader
 
         internal static bool FMNeedsScan(FanMission fm) => fm.Game == Game.Null || (fm.Game != Game.Unsupported && !fm.MarkedScanned);
 
+        /// <summary>
+        /// Returns true if <paramref name="fm"/> is actually installed on disk. Specifically, it checks only if
+        /// the FM's installed folder exists in the expected place, and not whether the folder contains a complete
+        /// and validly structured FM or even if it contains anything at all. Validity is assumed.
+        /// </summary>
+        /// <param name="fm"></param>
+        /// <returns></returns>
         internal static bool FMIsReallyInstalled(FanMission fm)
         {
             if (!GameIsKnownAndSupported(fm.Game) || !fm.Installed) return false;
@@ -164,79 +172,6 @@ namespace AngelLoader
 
             return Directory.Exists(path);
         }
-
-        #region FM archives
-
-        /// <summary>
-        /// Returns the list of FM archive paths, returning subfolders as well if that option is enabled.
-        /// </summary>
-        /// <returns></returns>
-        internal static List<string> GetFMArchivePaths()
-        {
-            var paths = new List<string>();
-            foreach (string path in Config.FMArchivePaths)
-            {
-                paths.Add(path);
-                if (Config.FMArchivePathsIncludeSubfolders)
-                {
-                    try
-                    {
-                        string[] dirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
-                        for (int di = 0; di < dirs.Length; di++)
-                        {
-                            string dir = dirs[di];
-                            if (!dir.GetDirNameFast().EqualsI(".fix") &&
-                                // @DIRSEP: '/' conversion due to string.ContainsI()
-                                !dir.ToForwardSlashes().ContainsI("/.fix/"))
-                            {
-                                paths.Add(dir);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(nameof(GetFMArchivePaths) + " : subfolders=true, Exception in GetDirectories", ex);
-                    }
-                }
-            }
-
-            return paths;
-        }
-
-        internal static string FindFMArchive(string fmArchive, List<string>? archivePaths = null)
-        {
-            if (fmArchive.IsEmpty()) return "";
-
-            var paths = archivePaths?.Count > 0 ? archivePaths : GetFMArchivePaths();
-            foreach (string path in paths)
-            {
-                if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
-                {
-                    return f;
-                }
-            }
-
-            return "";
-        }
-
-        internal static List<string> FindFMArchive_Multiple(string fmArchive)
-        {
-            if (fmArchive.IsEmpty()) return new List<string>();
-
-            var list = new List<string>();
-
-            foreach (string path in GetFMArchivePaths())
-            {
-                if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
-                {
-                    list.Add(f);
-                }
-            }
-
-            return list;
-        }
-
-        #endregion
 
         #endregion
 
@@ -343,7 +278,7 @@ namespace AngelLoader
 
             return false;
         }
-        
+
         internal static void CancelIfNotDisposed(this CancellationTokenSource value)
         {
             try { value.Cancel(); } catch (ObjectDisposedException) { }

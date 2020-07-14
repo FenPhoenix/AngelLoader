@@ -257,7 +257,7 @@ namespace AngelLoader
 
             (bool, List<string>) failed = (false, new List<string>());
 
-            string archivePath = FindFMArchive(archiveName);
+            string archivePath = FMArchives.FindFirstMatch(archiveName);
             if (archivePath.IsEmpty()) return failed;
 
             var ret = new List<string>();

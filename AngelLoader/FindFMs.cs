@@ -53,7 +53,7 @@ namespace AngelLoader
             // iterate the FMs list for deletion markers unless it's actually going to find something. Our FMs'
             // deletion markers will disappear here implicitly because the objects are destroyed and new ones
             // created, but we need to explicitly set our perf-hack bool to false too.
-            Core.OneOrMoreFMsAreMarkedDeleted = false;
+            OneOrMoreFMsAreMarkedDeleted = false;
 
             bool fmDataIniExists = File.Exists(Paths.FMDataIni);
 
@@ -128,7 +128,7 @@ namespace AngelLoader
             var fmArchives = new List<string>();
             var fmArchivesDates = new List<DateTime>();
 
-            var archivePaths = GetFMArchivePaths();
+            var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
             for (int ai = 0; ai < archivePaths.Count; ai++)
             {

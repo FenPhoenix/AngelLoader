@@ -259,7 +259,7 @@ namespace AngelLoader
                     // (for automatic use of FMSel/NDL saves)
                     if (fileToUse.Name.IsEmpty())
                     {
-                        foreach (string path in GetFMArchivePaths()) AddBakFilesFrom(path);
+                        foreach (string path in FMArchives.GetFMArchivePaths()) AddBakFilesFrom(path);
 
                         if (bakFiles.Count == 0) return;
 
