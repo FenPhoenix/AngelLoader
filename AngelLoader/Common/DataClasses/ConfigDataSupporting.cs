@@ -219,6 +219,8 @@ namespace AngelLoader.DataClasses
 
         #region Release date
 
+        // TODO(ReleaseDateFrom/To): Why am I setting these clamped to min/max? Surely they can't be beyond those anyway?!
+
         private DateTime? _releaseDateFrom;
         internal DateTime? ReleaseDateFrom
         {

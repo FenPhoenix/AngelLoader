@@ -13,7 +13,7 @@ namespace AngelLoader.DataClasses
         private bool _expanded;
         private DateTime? _dateTime;
 
-        internal string UnixDateString { get; set; } = "";
+        internal string UnixDateString = "";
 
         internal DateTime? DateTime
         {
