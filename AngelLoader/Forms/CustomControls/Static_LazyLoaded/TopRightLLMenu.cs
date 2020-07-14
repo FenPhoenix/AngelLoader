@@ -11,18 +11,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _constructed;
         private static readonly bool[] _checkedStates = InitializedArray(TopRightTabsData.Count, true);
 
-        private static ContextMenuStripCustom? _menu;
-        internal static ContextMenuStripCustom Menu
-        {
-            get => _menu!;
-            private set => _menu = value;
-        }
+        internal static ContextMenuStripCustom Menu = null!;
 
-        private static ToolStripMenuItem? StatsMenuItem;
-        private static ToolStripMenuItem? EditFMMenuItem;
-        private static ToolStripMenuItem? CommentMenuItem;
-        private static ToolStripMenuItem? TagsMenuItem;
-        private static ToolStripMenuItem? PatchMenuItem;
+        private static ToolStripMenuItem StatsMenuItem = null!;
+        private static ToolStripMenuItem EditFMMenuItem = null!;
+        private static ToolStripMenuItem CommentMenuItem = null!;
+        private static ToolStripMenuItem TagsMenuItem = null!;
+        private static ToolStripMenuItem PatchMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -94,11 +89,11 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            StatsMenuItem!.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
-            EditFMMenuItem!.Text = LText.EditFMTab.TabText.EscapeAmpersands();
-            CommentMenuItem!.Text = LText.CommentTab.TabText.EscapeAmpersands();
-            TagsMenuItem!.Text = LText.TagsTab.TabText.EscapeAmpersands();
-            PatchMenuItem!.Text = LText.PatchTab.TabText.EscapeAmpersands();
+            StatsMenuItem.Text = LText.StatisticsTab.TabText.EscapeAmpersands();
+            EditFMMenuItem.Text = LText.EditFMTab.TabText.EscapeAmpersands();
+            CommentMenuItem.Text = LText.CommentTab.TabText.EscapeAmpersands();
+            TagsMenuItem.Text = LText.TagsTab.TabText.EscapeAmpersands();
+            PatchMenuItem.Text = LText.PatchTab.TabText.EscapeAmpersands();
         }
 
         internal static bool Focused => _constructed && Menu.Focused;

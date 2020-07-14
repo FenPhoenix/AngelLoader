@@ -10,25 +10,13 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         private static bool _sayInstall;
         private static bool _enabled;
-        
-        private static Button? Button;
 
-        internal static void SetSayInstall(bool value)
-        {
-            if (Constructed) SetSayInstallState(value);
-            _sayInstall = value;
-        }
-
-        internal static void SetEnabled(bool value)
-        {
-            if (Constructed) Button!.Enabled = value;
-            _enabled = value;
-        }
+        private static Button Button = null!;
 
         internal static void Construct(MainForm owner)
         {
             if (Constructed) return;
-            
+
             var container = owner.BottomLeftButtonsFLP;
 
             Button = new Button { Visible = false };
@@ -60,10 +48,10 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             // Special-case this button to always be the width of the longer of the two localized strings for
             // "Install" and "Uninstall" so it doesn't resize when its text changes. (visual nicety)
-            Button!.SuspendDrawing();
+            Button.SuspendDrawing();
 
             // Have to call this to get its layout working
-            Button!.Show();
+            Button.Show();
 
             string instString = LText.MainButtons.InstallFM;
             string uninstString = LText.MainButtons.UninstallFM;
@@ -82,16 +70,28 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             #endregion
         }
 
-        internal static void Show() => Button!.Show();
+        internal static void SetSayInstall(bool value)
+        {
+            if (Constructed) SetSayInstallState(value);
+            _sayInstall = value;
+        }
+
+        internal static void SetEnabled(bool value)
+        {
+            if (Constructed) Button.Enabled = value;
+            _enabled = value;
+        }
+
+        internal static void Show() => Button.Show();
 
         internal static void Hide()
         {
-            if (Constructed) Button!.Hide();
+            if (Constructed) Button.Hide();
         }
 
         private static void SetSayInstallState(bool value)
         {
-            Button!.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
+            Button.Text = value ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
             Button.Image = value ? Images.Install_24 : Images.Uninstall_24;
         }
     }

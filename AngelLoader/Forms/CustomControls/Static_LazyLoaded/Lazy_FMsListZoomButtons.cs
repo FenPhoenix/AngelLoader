@@ -7,9 +7,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     internal static class Lazy_FMsListZoomButtons
     {
         private static bool _constructed;
-        private static ToolStripButtonCustom? ZoomInButton;
-        private static ToolStripButtonCustom? ZoomOutButton;
-        private static ToolStripButtonCustom? ResetZoomButton;
+        private static ToolStripButtonCustom ZoomInButton = null!;
+        private static ToolStripButtonCustom ZoomOutButton = null!;
+        private static ToolStripButtonCustom ResetZoomButton = null!;
 
         private static void Construct(MainForm owner)
         {
@@ -52,9 +52,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         {
             if (!_constructed) return;
 
-            ZoomInButton!.ToolTipText = LText.FMsList.ZoomInToolTip;
-            ZoomOutButton!.ToolTipText = LText.FMsList.ZoomOutToolTip;
-            ResetZoomButton!.ToolTipText = LText.FMsList.ResetZoomToolTip;
+            ZoomInButton.ToolTipText = LText.FMsList.ZoomInToolTip;
+            ZoomOutButton.ToolTipText = LText.FMsList.ZoomOutToolTip;
+            ResetZoomButton.ToolTipText = LText.FMsList.ResetZoomToolTip;
         }
 
         internal static void SetVisible(MainForm owner, bool value)
@@ -63,17 +63,17 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             {
                 Construct(owner);
 
-                ZoomInButton!.Visible = true;
-                ZoomOutButton!.Visible = true;
-                ResetZoomButton!.Visible = true;
+                ZoomInButton.Visible = true;
+                ZoomOutButton.Visible = true;
+                ResetZoomButton.Visible = true;
             }
             else
             {
                 if (!_constructed) return;
 
-                ZoomInButton!.Visible = false;
-                ZoomOutButton!.Visible = false;
-                ResetZoomButton!.Visible = false;
+                ZoomInButton.Visible = false;
+                ZoomOutButton.Visible = false;
+                ResetZoomButton.Visible = false;
             }
         }
     }

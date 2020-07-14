@@ -7,12 +7,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         private static bool _constructed;
 
-        private static ContextMenuStrip? _menu;
-        internal static ContextMenuStrip Menu
-        {
-            get => _menu!;
-            private set => _menu = value;
-        }
+        internal static ContextMenuStrip Menu = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {

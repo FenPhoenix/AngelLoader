@@ -60,8 +60,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 Localize(label);
             }
 
-            _labels[li]!.Text = text;
-            _labels[li]!.Visible = true;
+            _labels[li].Text = text;
+            _labels[li].Visible = true;
         }
 
         internal static void Localize(Lazy_ToolStripLabel label)
@@ -70,7 +70,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
             if (_constructed[li])
             {
-                _labels[li]!.ToolTipText = label switch
+                _labels[li].ToolTipText = label switch
                 {
                     Lazy_ToolStripLabel.FilterByReleaseDate => LText.FilterBar.ReleaseDateToolTip,
                     Lazy_ToolStripLabel.FilterByLastPlayed => LText.FilterBar.LastPlayedToolTip,
@@ -82,7 +82,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static void Hide(Lazy_ToolStripLabel label)
         {
             int li = (int)label;
-            if (_constructed[li]) _labels[li]!.Visible = false;
+            if (_constructed[li]) _labels[li].Visible = false;
         }
     }
 }

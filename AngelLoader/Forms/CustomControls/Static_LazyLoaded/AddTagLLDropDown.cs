@@ -9,12 +9,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     {
         internal static bool Constructed { get; private set; }
 
-        private static ListBox? _listBox;
-        internal static ListBox ListBox
-        {
-            get => _listBox!;
-            private set => _listBox = value;
-        }
+        internal static ListBox ListBox = null!;
 
         internal static void Construct(MainForm owner)
         {
@@ -36,7 +31,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         internal static void SetItemsAndShow(MainForm owner, List<string> list)
         {
             Construct(owner);
-            
+
             ListBox.Items.Clear();
             foreach (string item in list) ListBox.Items.Add(item);
 

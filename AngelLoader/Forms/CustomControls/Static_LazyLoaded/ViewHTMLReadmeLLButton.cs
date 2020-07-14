@@ -6,23 +6,23 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
     internal static class ViewHTMLReadmeLLButton
     {
         private static bool _constructed;
-        private static Button? Button;
+        private static Button Button = null!;
 
         internal static void Localize()
         {
-            if (_constructed) Button!.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
+            if (_constructed) Button.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
         }
 
         internal static void Center(Control parent)
         {
-            if (_constructed) Button!.CenterHV(parent);
+            if (_constructed) Button.CenterHV(parent);
         }
 
-        internal static bool Visible => _constructed && Button!.Visible;
+        internal static bool Visible => _constructed && Button.Visible;
 
         internal static void Hide()
         {
-            if (_constructed) Button!.Hide();
+            if (_constructed) Button.Hide();
         }
 
         internal static void Show(MainForm owner)
@@ -50,7 +50,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 Button.CenterHV(container);
             }
 
-            Button!.Show();
+            Button.Show();
         }
     }
 }
