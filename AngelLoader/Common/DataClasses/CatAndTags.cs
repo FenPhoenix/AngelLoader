@@ -72,6 +72,9 @@ namespace AngelLoader.DataClasses
         }
     }
 
+    // We lock the preset tags in a private array inside a static class whose only public method is a deep-copier.
+    // That way we have a strong guarantee of immutability of the original set. These things will not be messed
+    // with, ever.
     internal static class PresetTags
     {
         #region Preset tags array
