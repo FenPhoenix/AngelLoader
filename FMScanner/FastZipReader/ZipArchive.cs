@@ -10,29 +10,30 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace FMScanner.FastZipReader
 {
     public sealed class ZipArchiveFast : IDisposable
     {
-        private List<ZipArchiveEntry> _entries;
-        private ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
-        private Dictionary<string, ZipArchiveEntry> _entriesDictionary;
+        private readonly List<ZipArchiveEntry> _entries;
+        private readonly ReadOnlyCollection<ZipArchiveEntry> _entriesCollection;
+        private readonly Dictionary<string, ZipArchiveEntry> _entriesDictionary;
         private bool _readEntries;
-        private bool _leaveOpen;
+        private readonly bool _leaveOpen;
         private long _centralDirectoryStart; //only valid after ReadCentralDirectory
         private bool _isDisposed;
         private long _expectedNumberOfEntries;
-        private Stream _backingStream;
-        private Encoding _entryNameEncoding;
+        private readonly Stream? _backingStream;
+        private Encoding? _entryNameEncoding;
 
-        internal BinaryReader ArchiveReader { get; private set; }
+        internal BinaryReader ArchiveReader { get; }
 
-        internal Stream ArchiveStream { get; private set; }
+        internal Stream ArchiveStream { get; }
 
         internal uint NumberOfThisDisk { get; private set; }
 
-        internal Encoding EntryNameEncoding
+        internal Encoding? EntryNameEncoding
         {
             get { return _entryNameEncoding; }
 
@@ -122,24 +123,25 @@ namespace FMScanner.FastZipReader
         ///     otherwise an <see cref="ArgumentException"/> is thrown.</para>
         /// </param>
         /// <exception cref="ArgumentException">If a Unicode encoding other than UTF-8 is specified for the <code>entryNameEncoding</code>.</exception>
-        public ZipArchiveFast(Stream stream, bool leaveOpen, Encoding entryNameEncoding)
+        public ZipArchiveFast(Stream stream, bool leaveOpen, Encoding? entryNameEncoding)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
             EntryNameEncoding = entryNameEncoding;
-            Init(stream, leaveOpen);
-        }
 
-        private void Init(Stream stream, bool leaveOpen)
-        {
-            Stream extraTempStream = null;
+            // Fen's note: Inlined Init() for nullable detection purposes...
+            #region Init
+
+            Stream? extraTempStream = null;
 
             try
             {
                 _backingStream = null;
 
                 if (!stream.CanRead)
+                {
                     throw new ArgumentException(SR.ReadModeCapabilities);
+                }
                 if (!stream.CanSeek)
                 {
                     _backingStream = stream;
@@ -167,6 +169,8 @@ namespace FMScanner.FastZipReader
                 extraTempStream?.Dispose();
                 throw;
             }
+
+            #endregion
         }
 
         /// <summary>
@@ -175,7 +179,8 @@ namespace FMScanner.FastZipReader
         /// <exception cref="NotSupportedException">The ZipArchive does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
         /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
-        public ReadOnlyCollection<ZipArchiveEntry> Entries
+        [PublicAPI]
+        public ReadOnlyCollection<ZipArchiveEntry>? Entries
         {
             get
             {
@@ -196,14 +201,13 @@ namespace FMScanner.FastZipReader
         /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
         /// <param name="entryName">A path relative to the root of the archive, identifying the desired entry.</param>
         /// <returns>A wrapper for the file entry in the archive. If no entry in the archive exists with the specified name, null will be returned.</returns>
-        public ZipArchiveEntry GetEntry(string entryName)
+        [PublicAPI]
+        public ZipArchiveEntry? GetEntry(string entryName)
         {
-            if (entryName == null)
-                throw new ArgumentNullException(nameof(entryName));
+            if (entryName == null) throw new ArgumentNullException(nameof(entryName));
 
             EnsureCentralDirectoryRead();
-            ZipArchiveEntry result;
-            _entriesDictionary.TryGetValue(entryName, out result);
+            _entriesDictionary.TryGetValue(entryName, out ZipArchiveEntry result);
             return result;
         }
 
@@ -245,7 +249,9 @@ namespace FMScanner.FastZipReader
                 }
 
                 if (numberOfEntries != _expectedNumberOfEntries)
+                {
                     throw new InvalidDataException(SR.NumEntriesWrong);
+                }
             }
             catch (EndOfStreamException ex)
             {
@@ -264,22 +270,27 @@ namespace FMScanner.FastZipReader
                 // this seeks to the start of the end of central directory record
                 ArchiveStream.Seek(-ZipEndOfCentralDirectoryBlock.SizeOfBlockWithoutSignature, SeekOrigin.End);
                 if (!ZipHelper.SeekBackwardsToSignature(ArchiveStream, ZipEndOfCentralDirectoryBlock.SignatureConstant))
+                {
                     throw new InvalidDataException(SR.EOCDNotFound);
+                }
 
                 long eocdStart = ArchiveStream.Position;
 
                 // read the EOCD
-                ZipEndOfCentralDirectoryBlock eocd;
-                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(ArchiveReader, out eocd);
+                bool eocdProper = ZipEndOfCentralDirectoryBlock.TryReadBlock(ArchiveReader, out ZipEndOfCentralDirectoryBlock eocd);
                 Debug.Assert(eocdProper); // we just found this using the signature finder, so it should be okay
 
                 if (eocd.NumberOfThisDisk != eocd.NumberOfTheDiskWithTheStartOfTheCentralDirectory)
+                {
                     throw new InvalidDataException(SR.SplitSpanned);
+                }
 
                 NumberOfThisDisk = eocd.NumberOfThisDisk;
                 _centralDirectoryStart = eocd.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
                 if (eocd.NumberOfEntriesInTheCentralDirectory != eocd.NumberOfEntriesInTheCentralDirectoryOnThisDisk)
+                {
                     throw new InvalidDataException(SR.SplitSpanned);
+                }
                 _expectedNumberOfEntries = eocd.NumberOfEntriesInTheCentralDirectory;
 
                 // only bother looking for zip64 EOCD stuff if we suspect it is needed because some value is FFFFFFFFF
@@ -296,29 +307,37 @@ namespace FMScanner.FastZipReader
                     if (ZipHelper.SeekBackwardsToSignature(ArchiveStream, Zip64EndOfCentralDirectoryLocator.SignatureConstant))
                     {
                         // use locator to get to Zip64EOCD
-                        Zip64EndOfCentralDirectoryLocator locator;
-                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(ArchiveReader, out locator);
+                        bool zip64EOCDLocatorProper = Zip64EndOfCentralDirectoryLocator.TryReadBlock(ArchiveReader, out Zip64EndOfCentralDirectoryLocator locator);
                         Debug.Assert(zip64EOCDLocatorProper); // we just found this using the signature finder, so it should be okay
 
                         if (locator.OffsetOfZip64EOCD > long.MaxValue)
+                        {
                             throw new InvalidDataException(SR.FieldTooBigOffsetToZip64EOCD);
+                        }
                         long zip64EOCDOffset = (long)locator.OffsetOfZip64EOCD;
 
                         ArchiveStream.Seek(zip64EOCDOffset, SeekOrigin.Begin);
 
                         // read Zip64EOCD
-                        Zip64EndOfCentralDirectoryRecord record;
-                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(ArchiveReader, out record))
+                        if (!Zip64EndOfCentralDirectoryRecord.TryReadBlock(ArchiveReader, out Zip64EndOfCentralDirectoryRecord record))
+                        {
                             throw new InvalidDataException(SR.Zip64EOCDNotWhereExpected);
+                        }
 
                         NumberOfThisDisk = record.NumberOfThisDisk;
 
                         if (record.NumberOfEntriesTotal > long.MaxValue)
+                        {
                             throw new InvalidDataException(SR.FieldTooBigNumEntries);
+                        }
                         if (record.OffsetOfCentralDirectory > long.MaxValue)
+                        {
                             throw new InvalidDataException(SR.FieldTooBigOffsetToCD);
+                        }
                         if (record.NumberOfEntriesTotal != record.NumberOfEntriesOnThisDisk)
+                        {
                             throw new InvalidDataException(SR.SplitSpanned);
+                        }
 
                         _expectedNumberOfEntries = (long)record.NumberOfEntriesTotal;
                         _centralDirectoryStart = (long)record.OffsetOfCentralDirectory;

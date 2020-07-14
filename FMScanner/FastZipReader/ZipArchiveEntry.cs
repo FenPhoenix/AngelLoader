@@ -100,7 +100,7 @@ namespace FMScanner.FastZipReader
         public string FullName { get; }
 
         private readonly ZipVersionMadeByPlatform _versionMadeByCompatibility;
-        private string _name;
+        private string? _name;
         /// <summary>
         /// The filename of the entry. This is equivalent to the substring of <see cref="FullName"/> that follows
         /// the final directory separator character.
@@ -139,7 +139,7 @@ namespace FMScanner.FastZipReader
             _versionMadeByCompatibility = (ZipVersionMadeByPlatform)cd.VersionMadeByCompatibility;
         }
 
-        private string DecodeEntryName(byte[] entryNameBytes)
+        private string? DecodeEntryName(byte[] entryNameBytes)
         {
             Debug.Assert(entryNameBytes != null);
 
@@ -147,16 +147,18 @@ namespace FMScanner.FastZipReader
             if ((_generalPurposeBitFlag & BitFlagValues.UnicodeFileName) == 0)
             {
                 #region Original corefx
-                readEntryNameEncoding = Archive == null ?
-                    Encoding.UTF8 :
-                    Archive.EntryNameEncoding ?? Encoding.UTF8;
+
+                readEntryNameEncoding = Archive.EntryNameEncoding ?? Encoding.UTF8;
+
                 #endregion
 
                 #region .NET Framework 4.7.2
+
                 // This is what .NET Framework 4.7.2 seems to be doing (at least I get the same result with this)
                 //readEntryNameEncoding = Archive == null
                 //    ? Encoding.UTF8
                 //    : Archive.EntryNameEncoding ?? Encoding.Default;
+
                 #endregion
             }
             else
@@ -191,14 +193,16 @@ namespace FMScanner.FastZipReader
             Debug.Assert(_storedOffsetOfCompressedData != null, nameof(_storedOffsetOfCompressedData) + " != null");
 
             Stream compressedStream =
-                new SubReadStream(Archive.ArchiveStream, (long)_storedOffsetOfCompressedData, CompressedLength);
+                new SubReadStream(Archive.ArchiveStream,
+                    (long)_storedOffsetOfCompressedData!,
+                    CompressedLength);
 
             return GetDataDecompressor(compressedStream);
         }
 
         private bool IsOpenable(out string message)
         {
-            message = null;
+            message = "";
 
             if (_compressionMethod != CompressionMethodValues.Stored &&
                 _compressionMethod != CompressionMethodValues.Deflate &&
@@ -240,10 +244,7 @@ namespace FMScanner.FastZipReader
             // At this point, this is really just caching a FileStream.Position, which does have some logic in
             // its getter, but probably isn't slow enough to warrant being cached... but I guess ArchiveStream
             // could be any kind of stream, so better to guarantee performance than to hope for it, I guess.
-            if (_storedOffsetOfCompressedData == null)
-            {
-                _storedOffsetOfCompressedData = Archive.ArchiveStream.Position;
-            }
+            _storedOffsetOfCompressedData ??= Archive.ArchiveStream.Position;
 
             if (_storedOffsetOfCompressedData + CompressedLength > Archive.ArchiveStream.Length)
             {

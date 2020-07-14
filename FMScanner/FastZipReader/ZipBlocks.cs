@@ -141,40 +141,39 @@ namespace FMScanner.FastZipReader
             if (extraField.Tag != TagConstant) return false;
 
             // this pattern needed because nested using blocks trigger CA2202
-            MemoryStream ms = null;
+            MemoryStream? ms = null;
             try
             {
                 ms = new MemoryStream(extraField.Data);
-                using (var reader = new BinaryReader(ms))
-                {
-                    // Why did they do this and how does it still work?!
-                    ms = null;
+                using var reader = new BinaryReader(ms);
 
-                    zip64Block._size = extraField.Size;
+                // Why did they do this and how does it still work?!
+                ms = null;
 
-                    ushort expectedSize = 0;
+                zip64Block._size = extraField.Size;
 
-                    if (readUncompressedSize) expectedSize += 8;
-                    if (readCompressedSize) expectedSize += 8;
-                    if (readLocalHeaderOffset) expectedSize += 8;
-                    if (readStartDiskNumber) expectedSize += 4;
+                ushort expectedSize = 0;
 
-                    // if it is not the expected size, perhaps there is another extra field that matches
-                    if (expectedSize != zip64Block._size) return false;
+                if (readUncompressedSize) expectedSize += 8;
+                if (readCompressedSize) expectedSize += 8;
+                if (readLocalHeaderOffset) expectedSize += 8;
+                if (readStartDiskNumber) expectedSize += 4;
 
-                    if (readUncompressedSize) zip64Block._uncompressedSize = reader.ReadInt64();
-                    if (readCompressedSize) zip64Block._compressedSize = reader.ReadInt64();
-                    if (readLocalHeaderOffset) zip64Block._localHeaderOffset = reader.ReadInt64();
-                    if (readStartDiskNumber) zip64Block.StartDiskNumber = reader.ReadInt32();
+                // if it is not the expected size, perhaps there is another extra field that matches
+                if (expectedSize != zip64Block._size) return false;
 
-                    // original values are unsigned, so implies value is too big to fit in signed integer
-                    if (zip64Block._uncompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigUncompressedSize);
-                    if (zip64Block._compressedSize < 0) throw new InvalidDataException(SR.FieldTooBigCompressedSize);
-                    if (zip64Block._localHeaderOffset < 0) throw new InvalidDataException(SR.FieldTooBigLocalHeaderOffset);
-                    if (zip64Block.StartDiskNumber < 0) throw new InvalidDataException(SR.FieldTooBigStartDiskNumber);
+                if (readUncompressedSize) zip64Block._uncompressedSize = reader.ReadInt64();
+                if (readCompressedSize) zip64Block._compressedSize = reader.ReadInt64();
+                if (readLocalHeaderOffset) zip64Block._localHeaderOffset = reader.ReadInt64();
+                if (readStartDiskNumber) zip64Block.StartDiskNumber = reader.ReadInt32();
 
-                    return true;
-                }
+                // original values are unsigned, so implies value is too big to fit in signed integer
+                if (zip64Block._uncompressedSize < 0) throw new InvalidDataException(SR.FieldTooBigUncompressedSize);
+                if (zip64Block._compressedSize < 0) throw new InvalidDataException(SR.FieldTooBigCompressedSize);
+                if (zip64Block._localHeaderOffset < 0) throw new InvalidDataException(SR.FieldTooBigLocalHeaderOffset);
+                if (zip64Block.StartDiskNumber < 0) throw new InvalidDataException(SR.FieldTooBigStartDiskNumber);
+
+                return true;
             }
             finally
             {
@@ -196,8 +195,7 @@ namespace FMScanner.FastZipReader
         {
             zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator();
 
-            if (reader.ReadUInt32() != SignatureConstant)
-                return false;
+            if (reader.ReadUInt32() != SignatureConstant) return false;
 
             zip64EOCDLocator.NumberOfDiskWithZip64EOCD = reader.ReadUInt32();
             zip64EOCDLocator.OffsetOfZip64EOCD = reader.ReadUInt64();
@@ -290,8 +288,8 @@ namespace FMScanner.FastZipReader
         internal long RelativeOffsetOfLocalHeader;
 
         internal byte[] Filename;
-        internal byte[] FileComment;
-        internal List<ZipGenericExtraField> ExtraFields;
+        internal byte[]? FileComment;
+        internal List<ZipGenericExtraField>? ExtraFields;
 
         // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
         // in either case, the zip64 extra field info will be incorporated into other fields
