@@ -52,7 +52,7 @@ namespace AngelLoader
 
             if (!fm.Installed && !await InstallFM(fm)) return;
 
-            if (playMP && fm.Game == Game.Thief2 && GetT2MultiplayerExe().IsEmpty())
+            if (playMP && fm.Game == Game.Thief2 && Config.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
                 Core.View.ShowAlert(LText.AlertMessages.Thief2_Multiplayer_ExecutableNotFound, LText.AlertMessages.Alert);
                 return;
@@ -176,7 +176,7 @@ namespace AngelLoader
                 return false;
             }
 
-            string editorExe = GetEditorExe(game);
+            string editorExe = Config.GetEditorExe_FromDisk(game);
             if (editorExe.IsEmpty())
             {
                 Core.View.ShowAlert(fm.Game == Game.SS2

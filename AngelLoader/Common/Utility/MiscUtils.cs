@@ -110,31 +110,6 @@ namespace AngelLoader
 
         #endregion
 
-        #region Get exes
-
-        internal static string GetEditorExe(GameIndex game)
-        {
-            string gamePath;
-            if (!GameIsDark(game) || (gamePath = Config.GetGamePath(game)).IsEmpty()) return "";
-
-            string exe = game == SS2 ? Paths.ShockEdExe : Paths.DromEdExe;
-            return TryCombineFilePathAndCheckExistence(gamePath, exe, out string fullPathExe)
-                ? fullPathExe
-                : "";
-        }
-
-        internal static string GetT2MultiplayerExe()
-        {
-            string gamePath = Config.GetGamePath(Thief2);
-            return gamePath.IsEmpty()
-                ? ""
-                : TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
-                ? fullPathExe
-                : "";
-        }
-
-        #endregion
-
         #region FM utils
 
         internal static void SetFMResource(FanMission fm, CustomResources resource, bool value)

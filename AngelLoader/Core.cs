@@ -494,7 +494,7 @@ namespace AngelLoader
                         AlwaysShowLoader: false);
 
                 Config.SetFMInstallPath(gameIndex, data.FMsPath);
-                Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !GetEditorExe(gameIndex).IsEmpty());
+                Config.SetGameEditorDetected(gameIndex, gameExeSpecified && !Config.GetEditorExe_FromDisk(gameIndex).IsEmpty());
 #if false
                 Config.SetPerGameFMLanguage(game, data.FMLanguage);
                 Config.SetPerGameFMForcedLanguage(game, data.FMLanguageForced);
@@ -514,7 +514,7 @@ namespace AngelLoader
                     }
                 }
 
-                if (gameIndex == Thief2) Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe().IsEmpty();
+                if (gameIndex == Thief2) Config.T2MPDetected = gameExeSpecified && !Config.GetT2MultiplayerExe_FromDisk().IsEmpty();
             }
             else
             {

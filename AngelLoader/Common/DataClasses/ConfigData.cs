@@ -112,6 +112,58 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
+        #region Get special exes
+
+        /*
+         I'm not completely comfortable putting these in here... They're sort of in a no-man's land between
+         belonging here or belonging outside.
+         Arguments for being in here:
+         -They depend on the game paths which are in here
+         -They conceptually go with the other Get*Exe() methods
+         Arguments for being outside:
+         -The actual filenames at the end of their paths are constants from the static paths class
+         -They access the file system, which feels a bit weird for a config object to do. I feel like the methods
+          in here should all be "instant" and operate on memory only and not do weird things you don't expect.
+          (that's the main reason for my discomfort really)
+
+         I'm just going to append "_FromDisk" to their names, document them, and call it serviceable.
+        */
+
+        /// <summary>
+        /// Returns the full path of the editor for <paramref name="game"/> if and only if it exists on disk.
+        /// Otherwise, returns the empty string. It will also return the empty string if <paramref name="game"/>
+        /// is not Dark.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        internal string GetEditorExe_FromDisk(GameIndex game)
+        {
+            string gamePath;
+            if (!GameIsDark(game) || (gamePath = GetGamePath(game)).IsEmpty()) return "";
+
+            string exe = game == GameIndex.SS2 ? Paths.ShockEdExe : Paths.DromEdExe;
+            return TryCombineFilePathAndCheckExistence(gamePath, exe, out string fullPathExe)
+                ? fullPathExe
+                : "";
+        }
+
+        /// <summary>
+        /// Returns the full path of Thief2MP.exe if any only if it exists on disk in the same directory as the
+        /// specified Thief 2 executable. Otherwise, returns the empty string.
+        /// </summary>
+        /// <returns></returns>
+        internal string GetT2MultiplayerExe_FromDisk()
+        {
+            string gamePath = GetGamePath(GameIndex.Thief2);
+            return gamePath.IsEmpty()
+                ? ""
+                : TryCombineFilePathAndCheckExistence(gamePath, Paths.T2MPExe, out string fullPathExe)
+                    ? fullPathExe
+                    : "";
+        }
+
+        #endregion
+
         #region FM install paths
 
         private readonly string[] FMInstallPaths;
@@ -146,10 +198,12 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
+        #region Steam
+
         // If a Steam exe is specified, that is
         internal bool LaunchGamesWithSteam = true;
 
-        #region Use Steam switches
+        internal string SteamExe = "";
 
         private readonly bool[] UseSteamSwitches;
 
@@ -158,8 +212,6 @@ namespace AngelLoader.DataClasses
         internal void SetUseSteamSwitch(GameIndex index, bool value) => UseSteamSwitches[(uint)index] = value;
 
         #endregion
-
-        internal string SteamExe = "";
 
         // @GENGAMES (ConfigData - Miscellaneous game-specific stuff): Begin
 
@@ -227,10 +279,14 @@ namespace AngelLoader.DataClasses
 
         #endregion
 
+        #region Language
+
         internal string Language = "English";
 
         // Session-only; don't write out
         internal readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>();
+
+        #endregion
 
         #region Date format
 
@@ -322,9 +378,13 @@ namespace AngelLoader.DataClasses
 
         internal bool UseShortGameTabNames = false;
 
+        #region Recent FMs
+
         private uint _daysRecent = Defaults.DaysRecent;
         internal uint DaysRecent { get => _daysRecent; set => _daysRecent = value.Clamp((uint)0, Defaults.MaxDaysRecent); }
         internal bool ShowRecentAtTop = false;
+
+        #endregion
 
         //internal readonly List<ConfigVar> CustomConfigVars = new List<ConfigVar>();
 
