@@ -564,10 +564,10 @@ namespace AngelLoader.Forms.CustomControls
             else
             {
                 // I don't have to disable events because I'm only wired up to Click, not Checked
-                SetFinishedOnMenuItemChecked(Difficulty.Normal, (difficulty & Difficulty.Normal) == Difficulty.Normal);
-                SetFinishedOnMenuItemChecked(Difficulty.Hard, (difficulty & Difficulty.Hard) == Difficulty.Hard);
-                SetFinishedOnMenuItemChecked(Difficulty.Expert, (difficulty & Difficulty.Expert) == Difficulty.Expert);
-                SetFinishedOnMenuItemChecked(Difficulty.Extreme, (difficulty & Difficulty.Extreme) == Difficulty.Extreme);
+                SetFinishedOnMenuItemChecked(Difficulty.Normal, difficulty.HasFlagFast(Difficulty.Normal));
+                SetFinishedOnMenuItemChecked(Difficulty.Hard, difficulty.HasFlagFast(Difficulty.Hard));
+                SetFinishedOnMenuItemChecked(Difficulty.Expert, difficulty.HasFlagFast(Difficulty.Expert));
+                SetFinishedOnMenuItemChecked(Difficulty.Extreme, difficulty.HasFlagFast(Difficulty.Extreme));
                 SetFinishedOnUnknownMenuItemChecked(false);
             }
         }

@@ -745,7 +745,7 @@ namespace AngelLoader
                     var fm = FMsViewList[filterShownIndexList[i]];
                     if (GameIsKnownAndSupported(fm.Game) &&
                         (Config.GameOrganization == GameOrganization.ByTab || !fm.MarkedRecent) &&
-                        (viewFilter.Games & fm.Game) != fm.Game)
+                        !viewFilter.Games.HasFlagFast(fm.Game))
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;
@@ -985,8 +985,10 @@ namespace AngelLoader
                     bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
                     if (!fm.MarkedRecent &&
-                        (((fmFinished > 0 || fmFinishedOnUnknown) && (viewFilter.Finished & FinishedState.Finished) != FinishedState.Finished) ||
-                        (fmFinished == 0 && !fmFinishedOnUnknown && (viewFilter.Finished & FinishedState.Unfinished) != FinishedState.Unfinished)))
+                        (((fmFinished > 0 || fmFinishedOnUnknown) &&
+                          !viewFilter.Finished.HasFlagFast(FinishedState.Finished)) ||
+                         (fmFinished == 0 && !fmFinishedOnUnknown &&
+                         !viewFilter.Finished.HasFlagFast(FinishedState.Unfinished))))
                     {
                         filterShownIndexList.RemoveAt(i);
                         i--;

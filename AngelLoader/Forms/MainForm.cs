@@ -199,7 +199,7 @@ namespace AngelLoader.Forms
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 var game = GameIndexToGame((GameIndex)i);
-                FilterByGameButtonsInOrder[i].Checked = (Config.Filter.Games & game) == game;
+                FilterByGameButtonsInOrder[i].Checked = Config.Filter.Games.HasFlagFast(game);
             }
 
             if (!startup) ChangeFilterControlsForGameType();
@@ -1588,8 +1588,8 @@ namespace AngelLoader.Forms
 
                     FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
 
-                    FilterByFinishedButton.Checked = (filter.Finished & FinishedState.Finished) == FinishedState.Finished;
-                    FilterByUnfinishedButton.Checked = (filter.Finished & FinishedState.Unfinished) == FinishedState.Unfinished;
+                    FilterByFinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Finished);
+                    FilterByUnfinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Unfinished);
 
                     FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
                     UpdateRatingLabel(suspendResume: false);

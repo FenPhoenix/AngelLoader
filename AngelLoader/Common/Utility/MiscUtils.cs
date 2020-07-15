@@ -150,6 +150,16 @@ namespace AngelLoader
 
         #endregion
 
+        #region Enum HasFlagFast
+
+        internal static bool HasFlagFast(this FinishedState finishedState, FinishedState flag) => (finishedState & flag) == flag;
+
+        internal static bool HasFlagFast(this Game game, Game flag) => (game & flag) == flag;
+
+        internal static bool HasFlagFast(this Difficulty difficulty, Difficulty flag) => (difficulty & flag) == flag;
+
+        #endregion
+
         /// <summary>
         /// Converts a 32-bit or 64-bit Unix date string in hex format to a nullable DateTime object.
         /// </summary>

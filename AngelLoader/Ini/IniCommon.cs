@@ -369,7 +369,7 @@ namespace AngelLoader
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 Game game = GameIndexToGame((GameIndex)i);
-                if ((games & game) == game)
+                if (games.HasFlagFast(game))
                 {
                     if (notEmpty) sb.Append(',');
                     sb.Append(game.ToString());
@@ -384,12 +384,12 @@ namespace AngelLoader
         {
             bool notEmpty = false;
 
-            if ((finished & FinishedState.Finished) == FinishedState.Finished)
+            if (finished.HasFlagFast(FinishedState.Finished))
             {
                 sb.Append(nameof(FinishedState.Finished));
                 notEmpty = true;
             }
-            if ((finished & FinishedState.Unfinished) == FinishedState.Unfinished)
+            if (finished.HasFlagFast(FinishedState.Unfinished))
             {
                 if (notEmpty) sb.Append(',');
                 sb.Append(nameof(FinishedState.Unfinished));
