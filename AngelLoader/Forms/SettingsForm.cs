@@ -1225,12 +1225,7 @@ namespace AngelLoader.Forms
 
             string[] articlesArray = articles.Split(CA_CommaSpace).Distinct(StringComparer.InvariantCultureIgnoreCase).ToArray();
 
-            articles = "";
-            for (int i = 0; i < articlesArray.Length; i++)
-            {
-                if (i > 0) articles += ", ";
-                articles += articlesArray[i];
-            }
+            articles = string.Join(", ", articlesArray);
 
             FMDisplayPage.ArticlesTextBox.Text = articles;
         }

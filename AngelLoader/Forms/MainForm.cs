@@ -3019,7 +3019,7 @@ namespace AngelLoader.Forms
                     return;
                 }
 
-                bool doScan = !fm.LangsScanned || forceScan;
+                bool doScan = forceScan || !fm.LangsScanned;
 
                 if (doScan) FMLanguages.FillFMSupportedLangs(fm);
 

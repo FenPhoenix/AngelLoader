@@ -119,18 +119,6 @@ namespace AngelLoader
 
         #region Helpers
 
-        private static string CommaCombine<T>(List<T> list) where T : notnull
-        {
-            string ret = "";
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (i > 0) ret += ",";
-                ret += list[i].ToString();
-            }
-
-            return ret;
-        }
-
         #region FM custom resource work
 
         private static void FillFMHasXFields(FanMission fm, string fieldsString)
@@ -374,41 +362,40 @@ namespace AngelLoader
             }
         }
 
-        private static string CommaCombineGameFlags(Game games)
+        private static void CommaCombineGameFlags(StringBuilder sb, Game games)
         {
-            string ret = "";
+            bool notEmpty = false;
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 Game game = GameIndexToGame((GameIndex)i);
                 if ((games & game) == game)
                 {
-                    if (!ret.IsEmpty()) ret += ",";
-                    ret += game.ToString();
+                    if (notEmpty) sb.Append(',');
+                    sb.Append(game.ToString());
+                    notEmpty = true;
                 }
             }
 
-            return ret;
+            sb.AppendLine();
         }
 
-        private static string CommaCombineFinishedStates(FinishedState finished)
+        private static void CommaCombineFinishedStates(StringBuilder sb, FinishedState finished)
         {
-            string ret = "";
-
             bool notEmpty = false;
 
             if ((finished & FinishedState.Finished) == FinishedState.Finished)
             {
-                ret += nameof(FinishedState.Finished);
+                sb.Append(nameof(FinishedState.Finished));
                 notEmpty = true;
             }
             if ((finished & FinishedState.Unfinished) == FinishedState.Unfinished)
             {
-                if (notEmpty) ret += ",";
-                ret += nameof(FinishedState.Unfinished);
+                if (notEmpty) sb.Append(',');
+                sb.Append(nameof(FinishedState.Unfinished));
             }
 
-            return ret;
+            sb.AppendLine();
         }
 
         private static string FilterDate(DateTime? dt) => dt == null
@@ -434,14 +421,7 @@ namespace AngelLoader
                 }
             }
 
-            string filterTagsString = "";
-            for (int ti = 0; ti < intermediateTagsList.Count; ti++)
-            {
-                if (ti > 0) filterTagsString += ",";
-                filterTagsString += intermediateTagsList[ti];
-            }
-
-            return filterTagsString;
+            return string.Join(",", intermediateTagsList);
         }
 
         /// <summary>

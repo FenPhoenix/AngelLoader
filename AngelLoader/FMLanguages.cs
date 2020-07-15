@@ -163,6 +163,9 @@ namespace AngelLoader
 
         internal static void FillFMSupportedLangs(FanMission fm)
         {
+            // We should already have checked before getting here, but just for safety...
+            if (!GameIsDark(fm.Game)) return;
+
             string fmInstPath = Path.Combine(Config.GetFMInstallPath(GameToGameIndex(fm.Game)), fm.InstalledDir);
             List<string> langs = new List<string>();
             if (FMIsReallyInstalled(fm))
@@ -190,16 +193,10 @@ namespace AngelLoader
                 }
             }
 
-            fm.Langs = "";
             if (langs.Count > 0)
             {
                 langs = SortLangsToSpec(langs);
-
-                for (int i = 0; i < langs.Count; i++)
-                {
-                    if (i > 0) fm.Langs += ",";
-                    fm.Langs += langs[i];
-                }
+                fm.Langs = string.Join(",", langs);
             }
 
             fm.LangsScanned = true;

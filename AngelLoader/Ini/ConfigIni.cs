@@ -740,7 +740,7 @@ namespace AngelLoader
             sb.AppendLine("UseShortGameTabNames=" + config.UseShortGameTabNames);
 
             sb.AppendLine("EnableArticles=" + config.EnableArticles);
-            sb.AppendLine("Articles=" + CommaCombine(config.Articles));
+            sb.AppendLine("Articles=" + string.Join(",", config.Articles));
             sb.AppendLine("MoveArticlesToEnd=" + config.MoveArticlesToEnd);
 
             sb.AppendLine("RatingDisplayStyle=" + config.RatingDisplayStyle);
@@ -777,7 +777,11 @@ namespace AngelLoader
                 Filter filter = i == 0 ? config.Filter : config.GameTabsState.GetFilter((GameIndex)(i - 1));
                 string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
 
-                if (i == 0) sb.AppendLine("FilterGames=" + CommaCombineGameFlags(config.Filter.Games));
+                if (i == 0)
+                {
+                    sb.Append("FilterGames=");
+                    CommaCombineGameFlags(sb, config.Filter.Games);
+                }
 
                 sb.AppendLine(p + "FilterTitle=" + filter.Title);
                 sb.AppendLine(p + "FilterAuthor=" + filter.Author);
@@ -788,7 +792,8 @@ namespace AngelLoader
                 sb.AppendLine(p + "FilterLastPlayedFrom=" + FilterDate(filter.LastPlayedFrom));
                 sb.AppendLine(p + "FilterLastPlayedTo=" + FilterDate(filter.LastPlayedTo));
 
-                sb.AppendLine(p + "FilterFinishedStates=" + CommaCombineFinishedStates(filter.Finished));
+                sb.Append(p + "FilterFinishedStates=");
+                CommaCombineFinishedStates(sb, filter.Finished);
 
                 sb.AppendLine(p + "FilterRatingFrom=" + filter.RatingFrom);
                 sb.AppendLine(p + "FilterRatingTo=" + filter.RatingTo);
