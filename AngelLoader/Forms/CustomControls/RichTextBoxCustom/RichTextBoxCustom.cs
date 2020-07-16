@@ -180,10 +180,10 @@ namespace AngelLoader.Forms.CustomControls
                 switch (fileType)
                 {
                     case ReadmeType.GLML:
-                        string text = File.ReadAllText(path);
+                        string glml = File.ReadAllText(path);
                         // This resets the font if false, so don't do it after the load or it messes up the RTF.
                         ContentIsPlainText = false;
-                        Rtf = GLMLToRTF(text);
+                        Rtf = GLMLToRTF(glml);
                         break;
                     case ReadmeType.RichText:
                         // Use ReadAllBytes and byte[] search, because ReadAllText and string.Replace is ~30x slower

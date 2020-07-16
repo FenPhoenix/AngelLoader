@@ -8,7 +8,7 @@ namespace AngelLoader.Forms.CustomControls
 {
     internal sealed partial class RichTextBoxCustom
     {
-        private static string GLMLToRTF(string text)
+        private static string GLMLToRTF(string glml)
         {
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo
@@ -47,8 +47,16 @@ namespace AngelLoader.Forms.CustomControls
             // ReSharper restore CommentTypo
             // ReSharper restore StringLiteralTypo
 
-            var sb = new StringBuilder();
-            var subSB = new StringBuilder();
+            // In quick testing, smallest final rtf size was ~8K chars and largest was ~38K chars. Preallocating
+            // 16K chars reduces GC time substantially. 40K or something may be fine but this works for now.
+            // PERF_TODO: RichTextBoxCustom: GLMLToRTF()
+            // We could also get fancy and try to calculate a final size estimate based on the original file size,
+            // the fixed size cost of the rtf header plus however many horizontal lines there are etc.
+            var sb = new StringBuilder(Misc.ByteSize.KB * 16);
+
+            // 16 chars is the default starting capacity. The longest known tag name is "FMSTRUCTURE" at 11 chars,
+            // so that's more than enough. We're passing 16 explicitly just in case it ever changes under the hood.
+            var subSB = new StringBuilder(16);
 
             sb.Append(rtfHeader);
 
@@ -62,26 +70,26 @@ namespace AngelLoader.Forms.CustomControls
             // a simple pair of tags that just do what they're told.
             bool alignLeftOnNextLine = false;
             bool lastTagWasLineBreak = false;
-            for (int i = 0; i < text.Length; i++)
+            for (int i = 0; i < glml.Length; i++)
             {
-                char c = text[i];
+                char c = glml[i];
                 if (c == '[')
                 {
                     // In the unlikely event that a tag is escaped, just ignore it
-                    if ((i == 1 && text[i - 1] == '\\') ||
-                        (i > 1 && text[i - 1] == '\\' && text[i - 2] != '\\'))
+                    if ((i == 1 && glml[i - 1] == '\\') ||
+                        (i > 1 && glml[i - 1] == '\\' && glml[i - 2] != '\\'))
                     {
                         sb.Append('[');
                         continue;
                     }
 
                     // Opening tags
-                    if (i < text.Length - 5 && text[i + 1] == 'G' && text[i + 2] == 'L')
+                    if (i < glml.Length - 5 && glml[i + 1] == 'G' && glml[i + 2] == 'L')
                     {
                         subSB.Clear();
-                        for (int j = i + 3; j < Math.Min(i + 33, text.Length); j++)
+                        for (int j = i + 3; j < Math.Min(i + 33, glml.Length); j++)
                         {
-                            if (text[j] == ']')
+                            if (glml[j] == ']')
                             {
                                 string tag = subSB.ToString();
                                 if (tag == "TITLE")
@@ -134,18 +142,18 @@ namespace AngelLoader.Forms.CustomControls
                             }
                             else
                             {
-                                subSB.Append(text[j]);
+                                subSB.Append(glml[j]);
                             }
                         }
                     }
                     // Closing tags
-                    else if (i < text.Length - 6 &&
-                             text[i + 1] == '/' && text[i + 2] == 'G' && text[i + 3] == 'L')
+                    else if (i < glml.Length - 6 &&
+                             glml[i + 1] == '/' && glml[i + 2] == 'G' && glml[i + 3] == 'L')
                     {
                         subSB.Clear();
-                        for (int j = i + 4; j < Math.Min(i + 34, text.Length); j++)
+                        for (int j = i + 4; j < Math.Min(i + 34, glml.Length); j++)
                         {
-                            if (text[j] == ']')
+                            if (glml[j] == ']')
                             {
                                 string tag = subSB.ToString();
                                 if (tag == "TITLE")
@@ -179,7 +187,7 @@ namespace AngelLoader.Forms.CustomControls
                             }
                             else
                             {
-                                subSB.Append(text[j]);
+                                subSB.Append(glml[j]);
                             }
                         }
                     }
@@ -193,17 +201,17 @@ namespace AngelLoader.Forms.CustomControls
                     subSB.Clear();
 
                     // HTML Unicode numeric character references
-                    if (i < text.Length - 4 && text[i + 1] == '#')
+                    if (i < glml.Length - 4 && glml[i + 1] == '#')
                     {
-                        int end = Math.Min(i + 12, text.Length);
+                        int end = Math.Min(i + 12, glml.Length);
                         for (int j = i + 2; i < end; j++)
                         {
-                            if (j == i + 2 && text[j] == 'x')
+                            if (j == i + 2 && glml[j] == 'x')
                             {
-                                end = Math.Min(end + 1, text.Length);
-                                subSB.Append(text[j]);
+                                end = Math.Min(end + 1, glml.Length);
+                                subSB.Append(glml[j]);
                             }
-                            else if (text[j] == ';')
+                            else if (glml[j] == ';')
                             {
                                 string num = subSB.ToString();
 
@@ -228,16 +236,16 @@ namespace AngelLoader.Forms.CustomControls
                             }
                             else
                             {
-                                subSB.Append(text[j]);
+                                subSB.Append(glml[j]);
                             }
                         }
                     }
                     // HTML Unicode named character references
-                    else if (i < text.Length - 3 && text[i + 1].IsAsciiAlpha())
+                    else if (i < glml.Length - 3 && glml[i + 1].IsAsciiAlpha())
                     {
-                        for (int j = i + 1; i < text.Length; j++)
+                        for (int j = i + 1; i < glml.Length; j++)
                         {
-                            if (text[j] == ';')
+                            if (glml[j] == ';')
                             {
                                 string name = subSB.ToString();
 
@@ -257,17 +265,17 @@ namespace AngelLoader.Forms.CustomControls
                                 break;
                             }
                             // Support named references with numbers somewhere after their first char ("blk34" for instance)
-                            else if (!text[j].IsAsciiAlphanumeric())
+                            else if (!glml[j].IsAsciiAlphanumeric())
                             {
                                 sb.Append('&');
                                 sb.Append(subSB);
-                                sb.Append(text[j]);
+                                sb.Append(glml[j]);
                                 i = j;
                                 break;
                             }
                             else
                             {
-                                subSB.Append(text[j]);
+                                subSB.Append(glml[j]);
                             }
                         }
                     }
