@@ -180,7 +180,7 @@ namespace FMScanner.FastZipReader
         /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
         /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
         [PublicAPI]
-        public ReadOnlyCollection<ZipArchiveEntry>? Entries
+        public ReadOnlyCollection<ZipArchiveEntry> Entries
         {
             get
             {
