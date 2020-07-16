@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -10,6 +11,11 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : Form
     {
+        // Explicit default widths because AutoSize is true and we don't set text in InitComponentManual(), which
+        // would normally give them their default widths
+        private const int _bottomButtonsDefaultWidth = 75;
+        private const int _addButtonsDefaultWidth = 80;
+
         private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
 
         private readonly GlobalCatAndTagsList _sourceTags;
@@ -18,7 +24,11 @@ namespace AngelLoader.Forms
 
         internal FilterTagsForm(GlobalCatAndTagsList sourceTags, TagsFilter tagsFilter)
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
 
             _sourceTags = new GlobalCatAndTagsList(sourceTags.Count);
 
@@ -70,9 +80,9 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(cab, LText.TagsFilterBox.ClearAllToolTip);
             }
 
-            AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll, AndButton.Width);
-            OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny, OrButton.Width);
-            NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude, NotButton.Width);
+            AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll, _addButtonsDefaultWidth);
+            OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny, _addButtonsDefaultWidth);
+            NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude, _addButtonsDefaultWidth);
             int newWidthAll = Math.Max(Math.Max(AndButton.Width, OrButton.Width), NotButton.Width);
             for (int i = 0; i < 3; i++)
             {
@@ -82,9 +92,9 @@ namespace AngelLoader.Forms
                 button.CenterH(MoveButtonsPanel);
             }
 
-            ResetButton.SetTextAutoSize(LText.TagsFilterBox.Reset, ResetButton.Width);
-            OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
-            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
+            ResetButton.SetTextAutoSize(LText.TagsFilterBox.Reset, _bottomButtonsDefaultWidth);
+            OKButton.SetTextAutoSize(LText.Global.OK, _bottomButtonsDefaultWidth);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, _bottomButtonsDefaultWidth);
         }
 
         private void FilterTagsForm_Load(object sender, EventArgs e)
@@ -323,9 +333,25 @@ namespace AngelLoader.Forms
             NotButton.Enabled = !tagInAny;
         }
 
-        private void RemoveButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton((Button)sender, e);
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
+        private void RemoveButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton((Button)sender, e);
 
-        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintExButton((Button)sender, e);
+        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
+        private void RemoveAllButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintExButton((Button)sender, e);
+
+        private void BottomButtonsFLP_Paint(object sender, PaintEventArgs e)
+        {
+            Pen s1Pen = Application.RenderWithVisualStyles ? ControlPainter.Sep1Pen : ControlPainter.Sep1PenC;
+            const int y1 = 4;
+            const int y2 = 23;
+            {
+                int bx = OKButton.Location.X;
+                int sep1x = bx - 8;
+                int sep2x = bx - 7;
+                e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+            }
+        }
 
         /// <summary>
         /// Clean up any resources being used.

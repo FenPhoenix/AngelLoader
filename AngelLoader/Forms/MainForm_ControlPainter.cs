@@ -12,9 +12,6 @@ namespace AngelLoader.Forms
         // just to draw two one-pixel-wide lines. Especially when there's a ton of them on the UI. For startup
         // perf and lightness of weight, we just draw them ourselves.
 
-        private readonly Pen _sep1Pen = new Pen(Color.FromArgb(189, 189, 189));
-        private readonly Pen _sep1PenC = new Pen(Color.FromArgb(166, 166, 166));
-        private readonly Pen _sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
         // The reason these are in with the MainForm class is that they need to access a bunch of other controls'
         // sizes and locations in order to know where to paint. So we can't just put them in a static class and
@@ -28,7 +25,7 @@ namespace AngelLoader.Forms
             // behavior, which I'm sure must be algorithmic (ie, background color + something?) because its colors
             // are always slightly off from the closest framework-defined color. But close enough is close enough.
             // Most people probably wouldn't even test or care about classic mode in the first place, so hey.
-            Pen s1Pen = Application.RenderWithVisualStyles ? _sep1Pen : _sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? ControlPainter.Sep1Pen : ControlPainter.Sep1PenC;
             {
                 int bx = ScanAllFMsButton.Location.X;
                 int by = ScanAllFMsButton.Location.Y;
@@ -36,7 +33,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 8;
                 int sep2x = bx - 7;
                 e.Graphics.DrawLine(s1Pen, sep1x, by + 2, sep1x, by + 2 + h);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, by + 3, sep2x, by + 3 + h);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, by + 3, sep2x, by + 3 + h);
             }
 
             {
@@ -46,13 +43,13 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 8;
                 int sep2x = bx - 7;
                 e.Graphics.DrawLine(s1Pen, sep1x, by + 2, sep1x, by + 2 + h);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, by + 3, sep2x, by + 3 + h);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, by + 3, sep2x, by + 3 + h);
             }
         }
 
         private void PaintFilterBarFLP(PaintEventArgs e)
         {
-            Pen s1Pen = Application.RenderWithVisualStyles ? _sep1Pen : _sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? ControlPainter.Sep1Pen : ControlPainter.Sep1PenC;
             const int y1 = 5;
             const int y2 = 20;
             {
@@ -60,7 +57,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 6;
                 int sep2x = bx - 5;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             {
@@ -68,13 +65,13 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 6;
                 int sep2x = bx - 5;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
         }
 
         private void PaintFilterIconButtonsToolStrip(PaintEventArgs e)
         {
-            Pen s1Pen = Application.RenderWithVisualStyles ? _sep1Pen : _sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? ControlPainter.Sep1Pen : ControlPainter.Sep1PenC;
             const int y1 = 5;
             const int y2 = 20;
 
@@ -83,7 +80,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             {
@@ -91,7 +88,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             {
@@ -99,7 +96,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             {
@@ -107,7 +104,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             {
@@ -115,7 +112,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             {
@@ -123,7 +120,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             {
@@ -131,13 +128,13 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
         }
 
         private void PaintRefreshAreaToolStrip(PaintEventArgs e)
         {
-            Pen s1Pen = Application.RenderWithVisualStyles ? _sep1Pen : _sep1PenC;
+            Pen s1Pen = Application.RenderWithVisualStyles ? ControlPainter.Sep1Pen : ControlPainter.Sep1PenC;
             const int y1 = 5;
             const int y2 = 20;
 
@@ -146,7 +143,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx - 3;
                 int sep2x = bx - 2;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
 
             // Right side
@@ -156,7 +153,7 @@ namespace AngelLoader.Forms
                 int sep1x = bx + bw + 6;
                 int sep2x = bx + bw + 7;
                 e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(_sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                e.Graphics.DrawLine(ControlPainter.Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
             }
         }
     }

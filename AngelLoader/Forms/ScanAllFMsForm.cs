@@ -7,6 +7,10 @@ namespace AngelLoader.Forms
 {
     public sealed partial class ScanAllFMsForm : Form
     {
+        // Explicit default widths because AutoSize is true and we don't set text in InitComponentManual(), which
+        // would normally give them their default widths
+        private const int _buttonDefaultWidth = 75;
+
         private readonly CheckBox[] _checkBoxes;
 
         internal readonly ScanOptions ScanOptions = ScanOptions.FalseDefault();
@@ -49,8 +53,8 @@ namespace AngelLoader.Forms
             SelectAllButton.SetTextAutoSize(LText.Global.SelectAll);
             SelectNoneButton.SetTextAutoSize(LText.Global.SelectNone);
 
-            ScanButton.SetTextAutoSize(LText.ScanAllFMsBox.Scan, ScanButton.Width);
-            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
+            ScanButton.SetTextAutoSize(LText.ScanAllFMsBox.Scan, _buttonDefaultWidth);
+            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, _buttonDefaultWidth);
         }
 
         private void SelectAllButton_Click(object sender, EventArgs e) => SetCheckBoxValues(true);

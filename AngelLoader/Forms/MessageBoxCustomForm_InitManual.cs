@@ -28,7 +28,6 @@
             // MessageTopLabel
             // 
             MessageTopLabel.AutoSize = true;
-            MessageTopLabel.Location = new System.Drawing.Point(0, 18);
             MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 18, 3, 21);
             MessageTopLabel.TabIndex = 0;
             // 
@@ -75,7 +74,6 @@
             ChoiceListBox.FormattingEnabled = true;
             ChoiceListBox.HorizontalScrollbar = true;
             ChoiceListBox.IntegralHeight = false;
-            ChoiceListBox.Location = new System.Drawing.Point(0, 55);
             ChoiceListBox.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
             ChoiceListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             ChoiceListBox.TabIndex = 1;
@@ -85,7 +83,6 @@
             // 
             SelectButtonsFLP.Controls.Add(SelectAllButton);
             SelectButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            SelectButtonsFLP.Location = new System.Drawing.Point(0, 150);
             SelectButtonsFLP.Margin = new System.Windows.Forms.Padding(0);
             SelectButtonsFLP.Size = new System.Drawing.Size(493, 23);
             SelectButtonsFLP.TabIndex = 2;
@@ -93,10 +90,8 @@
             // SelectAllButton
             // 
             SelectAllButton.AutoSize = true;
-            SelectAllButton.Location = new System.Drawing.Point(418, 0);
             SelectAllButton.Margin = new System.Windows.Forms.Padding(0);
             SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            SelectAllButton.Width = 75;
             SelectAllButton.TabIndex = 0;
             SelectAllButton.UseVisualStyleBackColor = true;
             SelectAllButton.Click += SelectAllButton_Click;
@@ -104,7 +99,6 @@
             // MessageBottomLabel
             // 
             MessageBottomLabel.AutoSize = true;
-            MessageBottomLabel.Location = new System.Drawing.Point(0, 176);
             MessageBottomLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 21);
             MessageBottomLabel.TabIndex = 3;
             // 
@@ -140,11 +134,8 @@
             // 
             Cancel_Button.AutoSize = true;
             Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            Cancel_Button.Location = new System.Drawing.Point(480, 9);
             Cancel_Button.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
             Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            Cancel_Button.Width = 75;
-            Cancel_Button.Size = new System.Drawing.Size(75, 23);
             Cancel_Button.TabIndex = 1;
             Cancel_Button.UseVisualStyleBackColor = true;
             // 
@@ -152,11 +143,8 @@
             // 
             OKButton.AutoSize = true;
             OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            OKButton.Location = new System.Drawing.Point(395, 9);
             OKButton.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
             OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            OKButton.Width = 75;
-            OKButton.Size = new System.Drawing.Size(75, 23);
             OKButton.TabIndex = 0;
             OKButton.UseVisualStyleBackColor = true;
             // 

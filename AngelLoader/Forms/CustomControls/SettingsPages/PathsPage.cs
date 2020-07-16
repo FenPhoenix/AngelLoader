@@ -24,9 +24,9 @@ namespace AngelLoader.Forms.CustomControls.SettingsPages
 
         public void HidePage() => Hide();
 
-        private void AddFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintPlusButton(AddFMArchivePathButton, e);
+        private void AddFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlusButton(AddFMArchivePathButton, e);
 
-        private void RemoveFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ButtonPainter.PaintMinusButton(RemoveFMArchivePathButton, e);
+        private void RemoveFMArchivePathButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintMinusButton(RemoveFMArchivePathButton, e);
 
         private void FlowLayoutPanel1_Layout(object sender, LayoutEventArgs e)
         {

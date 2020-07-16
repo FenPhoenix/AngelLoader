@@ -7,6 +7,7 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+#if DEBUG
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -36,15 +37,12 @@
             this.OKButton = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.toolStripCustom1 = new AngelLoader.Forms.CustomControls.ToolStripCustom();
-            this.toolStripSeparatorCustom1 = new AngelLoader.Forms.CustomControls.ToolStripSeparatorCustom();
+            this.BottomButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.MoveButtonsPanel = new System.Windows.Forms.Panel();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.FindTagTextBox = new System.Windows.Forms.TextBox();
             this.FilterLabelsPanel.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
-            this.toolStripCustom1.SuspendLayout();
+            this.BottomButtonsFLP.SuspendLayout();
             this.MoveButtonsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -240,7 +238,7 @@
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OKButton.AutoSize = true;
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(881, 4);
+            this.OKButton.Location = new System.Drawing.Point(881, 3);
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -253,7 +251,7 @@
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_Button.Location = new System.Drawing.Point(962, 4);
+            this.Cancel_Button.Location = new System.Drawing.Point(962, 3);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
@@ -265,7 +263,8 @@
             // 
             this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ResetButton.AutoSize = true;
-            this.ResetButton.Location = new System.Drawing.Point(792, 4);
+            this.ResetButton.Location = new System.Drawing.Point(792, 3);
+            this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 11, 3);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ResetButton.Size = new System.Drawing.Size(75, 23);
@@ -274,38 +273,18 @@
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
-            // flowLayoutPanel1
+            // BottomButtonsFLP
             // 
-            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.flowLayoutPanel1.Controls.Add(this.Cancel_Button);
-            this.flowLayoutPanel1.Controls.Add(this.OKButton);
-            this.flowLayoutPanel1.Controls.Add(this.toolStripCustom1);
-            this.flowLayoutPanel1.Controls.Add(this.ResetButton);
-            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 660);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1040, 32);
-            this.flowLayoutPanel1.TabIndex = 6;
-            // 
-            // toolStripCustom1
-            // 
-            this.toolStripCustom1.GripMargin = new System.Windows.Forms.Padding(0);
-            this.toolStripCustom1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStripCustom1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                this.toolStripSeparatorCustom1});
-            this.toolStripCustom1.Location = new System.Drawing.Point(870, 0);
-            this.toolStripCustom1.Name = "toolStripCustom1";
-            this.toolStripCustom1.Padding = new System.Windows.Forms.Padding(0);
-            this.toolStripCustom1.PaddingDrawNudge = 0;
-            this.toolStripCustom1.Size = new System.Drawing.Size(8, 30);
-            this.toolStripCustom1.TabIndex = 7;
-            this.toolStripCustom1.Text = "toolStripCustom1";
-            // 
-            // toolStripSeparatorCustom1
-            // 
-            this.toolStripSeparatorCustom1.AutoSize = false;
-            this.toolStripSeparatorCustom1.Name = "toolStripSeparatorCustom1";
-            this.toolStripSeparatorCustom1.Size = new System.Drawing.Size(6, 30);
+            this.BottomButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BottomButtonsFLP.Controls.Add(this.Cancel_Button);
+            this.BottomButtonsFLP.Controls.Add(this.OKButton);
+            this.BottomButtonsFLP.Controls.Add(this.ResetButton);
+            this.BottomButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.BottomButtonsFLP.Location = new System.Drawing.Point(0, 660);
+            this.BottomButtonsFLP.Name = "BottomButtonsFLP";
+            this.BottomButtonsFLP.Size = new System.Drawing.Size(1040, 32);
+            this.BottomButtonsFLP.TabIndex = 6;
+            this.BottomButtonsFLP.Paint += new System.Windows.Forms.PaintEventHandler(this.BottomButtonsFLP_Paint);
             // 
             // MoveButtonsPanel
             // 
@@ -334,7 +313,7 @@
             this.ClientSize = new System.Drawing.Size(1040, 692);
             this.Controls.Add(this.FindTagTextBox);
             this.Controls.Add(this.MoveButtonsPanel);
-            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.BottomButtonsFLP);
             this.Controls.Add(this.FilterLabelsPanel);
             this.Controls.Add(this.NotTreeView);
             this.Controls.Add(this.OrTreeView);
@@ -353,10 +332,8 @@
             this.Load += new System.EventHandler(this.FilterTagsForm_Load);
             this.FilterLabelsPanel.ResumeLayout(false);
             this.FilterLabelsPanel.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
-            this.toolStripCustom1.ResumeLayout(false);
-            this.toolStripCustom1.PerformLayout();
+            this.BottomButtonsFLP.ResumeLayout(false);
+            this.BottomButtonsFLP.PerformLayout();
             this.MoveButtonsPanel.ResumeLayout(false);
             this.MoveButtonsPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -365,6 +342,7 @@
         }
 
         #endregion
+#endif
 
         private AngelLoader.Forms.CustomControls.TreeViewCustom OriginTreeView;
         private System.Windows.Forms.TreeView AndTreeView;
@@ -386,9 +364,7 @@
         private System.Windows.Forms.Button RemoveSelectedNotButton;
         private System.Windows.Forms.Button RemoveSelectedOrButton;
         private System.Windows.Forms.Button ResetButton;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private AngelLoader.Forms.CustomControls.ToolStripCustom toolStripCustom1;
-        private AngelLoader.Forms.CustomControls.ToolStripSeparatorCustom toolStripSeparatorCustom1;
+        private System.Windows.Forms.FlowLayoutPanel BottomButtonsFLP;
         private System.Windows.Forms.Panel MoveButtonsPanel;
         private System.Windows.Forms.ToolTip MainToolTip;
         private System.Windows.Forms.TextBox FindTagTextBox;

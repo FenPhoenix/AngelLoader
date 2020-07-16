@@ -6,8 +6,12 @@ namespace AngelLoader.Forms
 {
     // Normally you would use images pulled from Resources for this. But to avoid bloating up our executable and
     // bogging down startup time, we just draw images ourselves where it's reasonable to do so.
-    internal static class ButtonPainter
+    internal static class ControlPainter
     {
+        internal static readonly Pen Sep1Pen = new Pen(Color.FromArgb(189, 189, 189));
+        internal static readonly Pen Sep1PenC = new Pen(Color.FromArgb(166, 166, 166));
+        internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
+
         #region Global
 
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
