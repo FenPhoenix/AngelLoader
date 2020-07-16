@@ -204,18 +204,22 @@ namespace AngelLoader.Forms.CustomControls
 
         private void EnterReaderMode()
         {
-            // bounds to get the scrolling sensitivity
             _cursorScrollBounds.Location = Point.Subtract(PointToClient(MousePosition), new Size(_cursorScrollBounds.Width / 2, _cursorScrollBounds.Height / 2));
 
             SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
             _autoScrollTimer.Start();
             _endOnMouseUp = false;
 
-            IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(_cursorScrollBounds));
+            // bounds to get the scrolling sensitivity
+            // Fen's note: This new Rectangle's dimensions are different, so don't try to get rid of this one and
+            // replace it with the global one, or scroll will break.
+            var scrollBounds = new Rectangle(_cursorScrollBounds.Left, _cursorScrollBounds.Top, _cursorScrollBounds.Right, _cursorScrollBounds.Bottom);
+
+            IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
 
             try
             {
-                Marshal.StructureToPtr(_cursorScrollBounds, rectPtr, true);
+                Marshal.StructureToPtr(scrollBounds, rectPtr, true);
 
                 var readerInfo = new READERMODEINFO
                 {
