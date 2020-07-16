@@ -2,6 +2,7 @@
 {
     public sealed partial class ScanAllFMsForm
     {
+        // Button widths are kept defined because we pass them as minimum values to the text autosizer
         private void InitComponentManual()
         {
             TitleCheckBox = new System.Windows.Forms.CheckBox();
@@ -84,6 +85,7 @@
             SelectAllButton.Location = new System.Drawing.Point(0, 3);
             SelectAllButton.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
             SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            SelectAllButton.Width = 75;
             SelectAllButton.TabIndex = 0;
             SelectAllButton.UseVisualStyleBackColor = true;
             SelectAllButton.Click += SelectAllButton_Click;
@@ -93,6 +95,7 @@
             SelectNoneButton.AutoSize = true;
             SelectNoneButton.Location = new System.Drawing.Point(81, 3);
             SelectNoneButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            SelectNoneButton.Width = 88;
             SelectNoneButton.TabIndex = 1;
             SelectNoneButton.UseVisualStyleBackColor = true;
             SelectNoneButton.Click += SelectNoneButton_Click;
@@ -103,6 +106,7 @@
             ScanButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             ScanButton.Location = new System.Drawing.Point(257, 3);
             ScanButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            ScanButton.Width = 75;
             ScanButton.TabIndex = 1;
             ScanButton.UseVisualStyleBackColor = true;
             // 
@@ -112,6 +116,7 @@
             Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             Cancel_Button.Location = new System.Drawing.Point(338, 3);
             Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            Cancel_Button.Width = 75;
             Cancel_Button.TabIndex = 0;
             Cancel_Button.UseVisualStyleBackColor = true;
             // 

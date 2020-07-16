@@ -71,7 +71,11 @@ namespace AngelLoader.Forms
         public MessageBoxCustomForm(string messageTop, string messageBottom, string title, MessageBoxIcon icon,
             string okText, string cancelText, bool okIsDangerous, string[]? choiceStrings = null)
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
 
             _multiChoice = choiceStrings?.Length > 0;
 
@@ -118,18 +122,14 @@ namespace AngelLoader.Forms
             MessageTopLabel.MaximumSize = new Size(innerControlWidth, MessageTopLabel.MaximumSize.Height);
             MessageBottomLabel.MaximumSize = new Size(innerControlWidth, MessageBottomLabel.MaximumSize.Height);
 
-            // Set this second: the list is now sized based on its content
             if (_multiChoice)
             {
-                ChoiceListBox.Height =
+                // Set this second: the list is now sized based on its content
+                ChoiceListBox.Size = new Size(innerControlWidth,
                     (ChoiceListBox.ItemHeight * ChoiceListBox.Items.Count.Clamp(5, 20)) +
-                    ((SystemInformation.BorderSize.Height * 4) + 3);
-            }
+                    ((SystemInformation.BorderSize.Height * 4) + 3));
 
-            // Set these before window autosizing
-            if (_multiChoice)
-            {
-                ChoiceListBox.Width = innerControlWidth;
+                // Set this before window autosizing
                 SelectButtonsFLP.Width = innerControlWidth + 1;
             }
 

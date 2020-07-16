@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+#if DEBUG
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -83,7 +84,7 @@
             this.ContentTLP.RowCount = 1;
             this.ContentTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.ContentTLP.Size = new System.Drawing.Size(570, 294);
-            this.ContentTLP.TabIndex = 2;
+            this.ContentTLP.TabIndex = 0;
             // 
             // MainFLP
             // 
@@ -97,7 +98,7 @@
             this.MainFLP.Margin = new System.Windows.Forms.Padding(0);
             this.MainFLP.Name = "MainFLP";
             this.MainFLP.Size = new System.Drawing.Size(510, 294);
-            this.MainFLP.TabIndex = 2;
+            this.MainFLP.TabIndex = 0;
             // 
             // ChoiceListBox
             // 
@@ -109,7 +110,7 @@
             this.ChoiceListBox.Name = "ChoiceListBox";
             this.ChoiceListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.ChoiceListBox.Size = new System.Drawing.Size(493, 95);
-            this.ChoiceListBox.TabIndex = 0;
+            this.ChoiceListBox.TabIndex = 1;
             this.ChoiceListBox.SelectedIndexChanged += new System.EventHandler(this.ChoiceListBox_SelectedIndexChanged);
             // 
             // SelectButtonsFLP
@@ -173,7 +174,7 @@
             this.BottomFLP.Name = "BottomFLP";
             this.BottomFLP.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.BottomFLP.Size = new System.Drawing.Size(570, 42);
-            this.BottomFLP.TabIndex = 3;
+            this.BottomFLP.TabIndex = 1;
             // 
             // Cancel_Button
             // 
@@ -184,7 +185,7 @@
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
-            this.Cancel_Button.TabIndex = 0;
+            this.Cancel_Button.TabIndex = 1;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             // 
@@ -197,7 +198,7 @@
             this.OKButton.Name = "OKButton";
             this.OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 1;
+            this.OKButton.TabIndex = 0;
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             // 
@@ -232,6 +233,7 @@
         }
 
         #endregion
+#endif
 
         private System.Windows.Forms.Label MessageTopLabel;
         private System.Windows.Forms.PictureBox IconPictureBox;
