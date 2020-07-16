@@ -14,8 +14,11 @@ namespace AngelLoader.Forms
 
         public ScanAllFMsForm()
         {
+#if DEBUG
             InitializeComponent();
-
+#else
+            InitComponentManual();
+#endif
             _checkBoxes = new[]
             {
                 TitleCheckBox,

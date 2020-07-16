@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+#if DEBUG
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -243,6 +244,7 @@
         }
 
         #endregion
+#endif
 
         private System.Windows.Forms.CheckBox TitleCheckBox;
         private System.Windows.Forms.CheckBox AuthorCheckBox;
