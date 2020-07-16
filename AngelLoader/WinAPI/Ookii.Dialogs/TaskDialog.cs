@@ -1,6 +1,3 @@
-// NULL_TODO
-#nullable disable
-
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
@@ -41,7 +38,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// is created and before it is displayed.
         /// </remarks>
         [Category("Behavior"), Description("Event raised when the task dialog has been created.")]
-        public event EventHandler Created;
+        public event EventHandler? Created;
         /// <summary>
         /// Event raised when the task dialog has been destroyed.
         /// </summary>
@@ -49,7 +46,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// The task dialog window no longer exists when this event is raised.
         /// </remarks>
         [Category("Behavior"), Description("Event raised when the task dialog has been destroyed.")]
-        public event EventHandler Destroyed;
+        public event EventHandler? Destroyed;
         /// <summary>
         /// Event raised when the user clicks a button on the task dialog.
         /// </summary>
@@ -57,7 +54,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Set the <see cref="CancelEventArgs.Cancel"/> property to <see langword="true" /> to prevent the dialog from being closed.
         /// </remarks>
         [Category("Action"), Description("Event raised when the user clicks a button.")]
-        public event EventHandler<TaskDialogItemClickedEventArgs> ButtonClicked;
+        public event EventHandler<TaskDialogItemClickedEventArgs>? ButtonClicked;
         /// <summary>
         /// Event raised when the user clicks a radio button on the task dialog.
         /// </summary>
@@ -65,17 +62,17 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// The <see cref="CancelEventArgs.Cancel"/> property is ignored for this event.
         /// </remarks>
         [Category("Action"), Description("Event raised when the user clicks a button.")]
-        public event EventHandler<TaskDialogItemClickedEventArgs> RadioButtonClicked;
+        public event EventHandler<TaskDialogItemClickedEventArgs>? RadioButtonClicked;
         /// <summary>
         /// Event raised when the user clicks a hyperlink.
         /// </summary>
         [Category("Action"), Description("Event raised when the user clicks a hyperlink.")]
-        public event EventHandler<HyperlinkClickedEventArgs> HyperlinkClicked;
+        public event EventHandler<HyperlinkClickedEventArgs>? HyperlinkClicked;
         /// <summary>
         /// Event raised when the user clicks the verification check box.
         /// </summary>
         [Category("Action"), Description("Event raised when the user clicks the verification check box.")]
-        public event EventHandler VerificationClicked;
+        public event EventHandler? VerificationClicked;
         /// <summary>
         /// Event raised periodically while the dialog is displayed.
         /// </summary>
@@ -90,7 +87,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </para>
         /// </remarks>
         [Category("Behavior"), Description("Event raised periodically while the dialog is displayed.")]
-        public event EventHandler<TimerEventArgs> Timer;
+        public event EventHandler<TimerEventArgs>? Timer;
         /// <summary>
         /// Event raised when the user clicks the expand button on the task dialog.
         /// </summary>
@@ -99,26 +96,26 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// or not after the click.
         /// </remarks>
         [Category("Action"), Description("Event raised when the user clicks the expand button on the task dialog.")]
-        public event EventHandler<ExpandButtonClickedEventArgs> ExpandButtonClicked;
+        public event EventHandler<ExpandButtonClickedEventArgs>? ExpandButtonClicked;
         /// <summary>
         /// Event raised when the user presses F1 while the dialog has focus.
         /// </summary>
         [Category("Action"), Description("Event raised when the user presses F1 while the dialog has focus.")]
-        public event EventHandler HelpRequested;
+        public event EventHandler? HelpRequested;
 
         #endregion
 
         #region Fields
 
-        private TaskDialogItemCollection<TaskDialogButton> _buttons;
-        private TaskDialogItemCollection<TaskDialogRadioButton> _radioButtons;
+        private TaskDialogItemCollection<TaskDialogButton>? _buttons;
+        private TaskDialogItemCollection<TaskDialogRadioButton>? _radioButtons;
         private NativeMethods.TASKDIALOGCONFIG _config;
         private TaskDialogIcon _mainIcon;
-        private System.Drawing.Icon _customMainIcon;
-        private System.Drawing.Icon _customFooterIcon;
+        private System.Drawing.Icon? _customMainIcon;
+        private System.Drawing.Icon? _customFooterIcon;
         private TaskDialogIcon _footerIcon;
-        private Dictionary<int, TaskDialogButton> _buttonsById;
-        private Dictionary<int, TaskDialogRadioButton> _radioButtonsById;
+        private Dictionary<int, TaskDialogButton>? _buttonsById;
+        private Dictionary<int, TaskDialogRadioButton>? _radioButtonsById;
         private IntPtr _handle;
         private int _progressBarMarqueeAnimationSpeed = 100;
         private int _progressBarMinimum;
@@ -127,7 +124,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         private ProgressBarState _progressBarState = ProgressBarState.Normal;
         private int _inEventHandler;
         private bool _updatePending;
-        private System.Drawing.Icon _windowIcon;
+        private System.Drawing.Icon? _windowIcon;
 
         #endregion
 
@@ -148,7 +145,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Initializes a new instance of the <see cref="TaskDialog"/> class with the specified container.
         /// </summary>
         /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialog"/> to.</param>
-        public TaskDialog(IContainer container)
+        public TaskDialog(IContainer? container)
         {
             container?.Add(this);
 
@@ -181,7 +178,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// in the Windows-defined order, regardless of the order of the buttons in the collection.
         /// </remarks>
         [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogButton> Buttons => _buttons ?? (_buttons = new TaskDialogItemCollection<TaskDialogButton>(this));
+        public TaskDialogItemCollection<TaskDialogButton> Buttons => _buttons ??= new TaskDialogItemCollection<TaskDialogButton>(this);
 
         /// <summary>
         /// Gets a list of the radio buttons on the Task Dialog.
@@ -190,7 +187,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// A list of the radio buttons on the Task Dialog.
         /// </value>
         [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the radio buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogRadioButton> RadioButtons => _radioButtons ?? (_radioButtons = new TaskDialogItemCollection<TaskDialogRadioButton>(this));
+        public TaskDialogItemCollection<TaskDialogRadioButton> RadioButtons => _radioButtons ??= new TaskDialogItemCollection<TaskDialogRadioButton>(this);
 
         /// <summary>
         /// Gets or sets the window title of the task dialog.
@@ -258,7 +255,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// is modal, it will have no icon.
         /// </remarks>
         [Localizable(true), Category("Appearance"), Description("The icon to be used in the title bar of the dialog. Used only when the dialog is shown as a modeless dialog."), DefaultValue(null)]
-        public System.Drawing.Icon WindowIcon
+        public System.Drawing.Icon? WindowIcon
         {
             get
             {
@@ -309,7 +306,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// This property is ignored if the <see cref="MainIcon"/> property has a value other than <see cref="TaskDialogIcon.Custom"/>.
         /// </remarks>
         [Localizable(true), Category("Appearance"), Description("A custom icon to display in the dialog."), DefaultValue(null)]
-        public System.Drawing.Icon CustomMainIcon
+        public System.Drawing.Icon? CustomMainIcon
         {
             get => _customMainIcon;
             set
@@ -368,7 +365,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </para>
         /// </remarks>
         [Localizable(true), Category("Appearance"), Description("A custom icon to display in the footer area of the task dialog."), DefaultValue(null)]
-        public System.Drawing.Icon CustomFooterIcon
+        public System.Drawing.Icon? CustomFooterIcon
         {
             get => _customFooterIcon;
             set
@@ -431,7 +428,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             get => _config.pszVerificationText ?? string.Empty;
             set
             {
-                string realValue = string.IsNullOrEmpty(value) ? null : value;
+                string? realValue = string.IsNullOrEmpty(value) ? null : value;
                 if (_config.pszVerificationText != realValue)
                 {
                     _config.pszVerificationText = realValue;
@@ -523,7 +520,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             get => _config.pszExpandedControlText ?? string.Empty;
             set
             {
-                string realValue = string.IsNullOrEmpty(value) ? null : value;
+                string? realValue = string.IsNullOrEmpty(value) ? null : value;
                 if (_config.pszExpandedControlText != realValue)
                 {
                     _config.pszExpandedControlText = realValue;
@@ -555,7 +552,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             get => _config.pszCollapsedControlText ?? string.Empty;
             set
             {
-                string realValue = string.IsNullOrEmpty(value) ? null : value;
+                string? realValue = string.IsNullOrEmpty(value) ? null : value;
                 if (_config.pszCollapsedControlText != realValue)
                 {
                     _config.pszCollapsedControlText = string.IsNullOrEmpty(value) ? null : value;
@@ -961,7 +958,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Use this property to store arbitrary information about the dialog.
         /// </remarks>
         [Category("Data"), Description("User-defined data about the component."), DefaultValue(null)]
-        public object Tag { get; set; }
+        public object? Tag { get; set; }
 
         #endregion
 
@@ -989,7 +986,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </para>
         /// </exception>
         /// <exception cref="NotSupportedException">Task dialogs are not supported on the current operating system.</exception>
-        public TaskDialogButton Show() => ShowDialog(IntPtr.Zero);
+        public TaskDialogButton? Show() => ShowDialog(IntPtr.Zero);
 
         /// <summary>
         /// Shows the task dialog as a modal dialog.
@@ -1012,14 +1009,14 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </para>
         /// </exception>
         /// <exception cref="NotSupportedException">Task dialogs are not supported on the current operating system.</exception>
-        public TaskDialogButton ShowDialog() => ShowDialog(null);
+        public TaskDialogButton? ShowDialog() => ShowDialog(null);
 
         /// <summary>
         /// This method is for internal AngelLoader.WinAPI.Ookii.Dialogs use and should not be called from your code.
         /// </summary>
         /// <param name="owner"></param>
         /// <returns></returns>
-        public TaskDialogButton ShowDialog(IWin32Window owner)
+        public TaskDialogButton? ShowDialog(IWin32Window? owner)
         {
             IntPtr ownerHandle = owner?.Handle ?? NativeMethods.GetActiveWindow();
             return ShowDialog(ownerHandle);
@@ -1133,7 +1130,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         #region Private members
 
-        private TaskDialogButton ShowDialog(IntPtr owner)
+        private TaskDialogButton? ShowDialog(IntPtr owner)
         {
             if (!OSSupportsTaskDialogs)
             {
@@ -1145,7 +1142,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 throw new InvalidOperationException(OokiiResources.TaskDialogRunningError);
             }
 
-            if (_buttons.Count == 0)
+            if (_buttons == null || _buttons.Count == 0)
             {
                 throw new InvalidOperationException(OokiiResources.TaskDialogNoButtonsError);
             }
@@ -1172,12 +1169,12 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 }
                 IsVerificationChecked = verificationFlagChecked;
 
-                if (_radioButtonsById.TryGetValue(radioButton, out var selectedRadioButton))
+                if (_radioButtonsById!.TryGetValue(radioButton, out var selectedRadioButton))
                 {
                     selectedRadioButton.Checked = true;
                 }
 
-                return _buttonsById.TryGetValue(buttonId, out var selectedButton) ? selectedButton : null;
+                return _buttonsById!.TryGetValue(buttonId, out var selectedButton) ? selectedButton : null;
             }
             finally
             {
@@ -1252,7 +1249,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             SetupIcon(FooterIcon, CustomFooterIcon, NativeMethods.TaskDialogFlags.UseHIconFooter);
         }
 
-        private void SetupIcon(TaskDialogIcon icon, System.Drawing.Icon customIcon, NativeMethods.TaskDialogFlags flag)
+        private void SetupIcon(TaskDialogIcon icon, System.Drawing.Icon? customIcon, NativeMethods.TaskDialogFlags flag)
         {
             SetFlag(flag, false);
             if (icon == TaskDialogIcon.Custom)
@@ -1395,14 +1392,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         private void SetFlag(NativeMethods.TaskDialogFlags flag, bool value)
         {
-            if (value)
-            {
-                _config.dwFlags |= flag;
-            }
-            else
-            {
-                _config.dwFlags &= ~flag;
-            }
+            if (value) { _config.dwFlags |= flag; } else { _config.dwFlags &= ~flag; }
         }
 
         private bool GetFlag(NativeMethods.TaskDialogFlags flag) => (_config.dwFlags & flag) != 0;
@@ -1428,10 +1418,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                         break;
                     case NativeMethods.TaskDialogNotifications.HyperlinkClicked:
                         string url = Marshal.PtrToStringUni(lParam);
-                        OnHyperlinkClicked(new HyperlinkClickedEventArgs(url));
+                        OnHyperlinkClicked(new HyperlinkClickedEventArgs(url!));
                         break;
                     case NativeMethods.TaskDialogNotifications.ButtonClicked:
-                        if (_buttonsById.TryGetValue((int)wParam, out TaskDialogButton button))
+                        if (_buttonsById!.TryGetValue((int)wParam, out TaskDialogButton button))
                         {
                             var e = new TaskDialogItemClickedEventArgs(button);
                             OnButtonClicked(e);
@@ -1443,7 +1433,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                         OnVerificationClicked(EventArgs.Empty);
                         break;
                     case NativeMethods.TaskDialogNotifications.RadioButtonClicked:
-                        if (_radioButtonsById.TryGetValue((int)wParam, out TaskDialogRadioButton radioButton))
+                        if (_radioButtonsById!.TryGetValue((int)wParam, out TaskDialogRadioButton radioButton))
                         {
                             // there's no way to click a radio button without checking it, is there?
                             radioButton.Checked = true;

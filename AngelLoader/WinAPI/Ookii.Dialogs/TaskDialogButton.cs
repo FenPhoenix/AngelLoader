@@ -1,6 +1,3 @@
-// NULL_TODO
-#nullable disable
-
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
@@ -20,7 +17,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         private ButtonType _type;
         private bool _elevationRequired;
         private bool _default;
-        private string _commandLinkNote;
+        private string? _commandLinkNote;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskDialogButton"/> class.
@@ -177,35 +174,22 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             if (_type == ButtonType.Custom) base.AutoAssignId();
         }
 
-        internal override void CheckDuplicate(TaskDialogItem itemToExclude)
+        internal override void CheckDuplicate(TaskDialogItem? itemToExclude)
         {
             CheckDuplicateButton(_type, itemToExclude);
             base.CheckDuplicate(itemToExclude);
         }
 
-        internal NativeMethods.TaskDialogCommonButtonFlags ButtonFlag
+        internal NativeMethods.TaskDialogCommonButtonFlags ButtonFlag => _type switch
         {
-            get
-            {
-                switch (_type)
-                {
-                    case ButtonType.Ok:
-                        return NativeMethods.TaskDialogCommonButtonFlags.OkButton;
-                    case ButtonType.Yes:
-                        return NativeMethods.TaskDialogCommonButtonFlags.YesButton;
-                    case ButtonType.No:
-                        return NativeMethods.TaskDialogCommonButtonFlags.NoButton;
-                    case ButtonType.Cancel:
-                        return NativeMethods.TaskDialogCommonButtonFlags.CancelButton;
-                    case ButtonType.Retry:
-                        return NativeMethods.TaskDialogCommonButtonFlags.RetryButton;
-                    case ButtonType.Close:
-                        return NativeMethods.TaskDialogCommonButtonFlags.CloseButton;
-                    default:
-                        return 0;
-                }
-            }
-        }
+            ButtonType.Ok => NativeMethods.TaskDialogCommonButtonFlags.OkButton,
+            ButtonType.Yes => NativeMethods.TaskDialogCommonButtonFlags.YesButton,
+            ButtonType.No => NativeMethods.TaskDialogCommonButtonFlags.NoButton,
+            ButtonType.Cancel => NativeMethods.TaskDialogCommonButtonFlags.CancelButton,
+            ButtonType.Retry => NativeMethods.TaskDialogCommonButtonFlags.RetryButton,
+            ButtonType.Close => NativeMethods.TaskDialogCommonButtonFlags.CloseButton,
+            _ => 0
+        };
 
         /// <summary>
         /// Gets the collection that items of this type are part of.
@@ -214,9 +198,9 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// If the <see cref="TaskDialogButton"/> is currently associated with a <see cref="TaskDialog"/>, the
         /// <see cref="TaskDialog.Buttons"/> collection of that <see cref="TaskDialog"/>; otherwise, <see langword="null" />.
         /// </value>
-        protected override System.Collections.IEnumerable ItemCollection => Owner?.Buttons;
+        protected override System.Collections.IEnumerable? ItemCollection => Owner?.Buttons;
 
-        private void CheckDuplicateButton(ButtonType type, TaskDialogItem itemToExclude)
+        private void CheckDuplicateButton(ButtonType? type, TaskDialogItem? itemToExclude)
         {
             if (type == ButtonType.Custom || Owner == null) return;
 

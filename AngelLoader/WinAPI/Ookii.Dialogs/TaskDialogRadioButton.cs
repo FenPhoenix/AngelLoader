@@ -1,6 +1,3 @@
-// NULL_TODO
-#nullable disable
-
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System.ComponentModel;
@@ -63,6 +60,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// If the <see cref="TaskDialogButton"/> is currently associated with a <see cref="TaskDialog"/>, the
         /// <see cref="TaskDialog.Buttons"/> collection of that <see cref="TaskDialog"/>; otherwise, <see langword="null" />.
         /// </value>
-        protected override System.Collections.IEnumerable ItemCollection => Owner?.RadioButtons;
+        protected override System.Collections.IEnumerable? ItemCollection => Owner?.RadioButtons;
     }
 }

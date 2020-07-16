@@ -1,6 +1,3 @@
-// NULL_TODO
-#nullable disable
-
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System.ComponentModel;

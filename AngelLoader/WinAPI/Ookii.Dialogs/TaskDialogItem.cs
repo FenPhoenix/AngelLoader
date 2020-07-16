@@ -1,6 +1,3 @@
-// NULL_TODO
-#nullable disable
-
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
@@ -18,10 +15,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     [PublicAPI]
     public abstract partial class TaskDialogItem : Component
     {
-        private TaskDialog _owner;
+        private TaskDialog? _owner;
         private int _id;
         private bool _enabled = true;
-        private string _text;
+        private string? _text;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskDialogItem"/> class.
@@ -32,7 +29,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Initializes a new instance of the <see cref="TaskDialogItem"/> class with the specified container.
         /// </summary>
         /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialogItem"/> to.</param>
-        protected TaskDialogItem(IContainer container)
+        protected TaskDialogItem(IContainer? container)
         {
             container?.Add(this);
 
@@ -60,7 +57,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// collection of a <see cref="TaskDialog"/>.
         /// </remarks>
         [Browsable(false)]
-        public TaskDialog Owner
+        public TaskDialog? Owner
         {
             get => _owner;
             internal set
@@ -179,7 +176,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <remarks>
         /// The collection returned by this property is used to determine if there are any items with duplicate IDs.
         /// </remarks>
-        protected abstract IEnumerable ItemCollection
+        protected abstract IEnumerable? ItemCollection
         {
             get;
         }
@@ -199,7 +196,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </remarks>
         protected void UpdateOwner() => Owner?.UpdateDialog();
 
-        internal virtual void CheckDuplicate(TaskDialogItem itemToExclude) => CheckDuplicateId(itemToExclude, _id);
+        internal virtual void CheckDuplicate(TaskDialogItem? itemToExclude) => CheckDuplicateId(itemToExclude, _id);
 
         internal virtual void AutoAssignId()
         {
@@ -213,12 +210,12 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             Id = highestId + 1;
         }
 
-        private void CheckDuplicateId(TaskDialogItem itemToExclude, int id)
+        private void CheckDuplicateId(TaskDialogItem? itemToExclude, int id)
         {
             if (id == 0) return;
 
-            IEnumerable items = ItemCollection;
-            
+            IEnumerable? items = ItemCollection;
+
             if (items == null) return;
 
             foreach (TaskDialogItem item in items)

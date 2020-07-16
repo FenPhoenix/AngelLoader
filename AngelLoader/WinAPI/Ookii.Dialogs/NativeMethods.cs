@@ -1,7 +1,4 @@
-﻿// NULL_TODO
-#nullable disable
-
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
@@ -41,26 +38,26 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         {
             Created = 0,
             Navigated = 1,
-            ButtonClicked = 2,            // wParam = Button ID
-            HyperlinkClicked = 3,            // lParam = (LPCWSTR)pszHREF
-            Timer = 4,            // wParam = Milliseconds since dialog created or timer reset
+            ButtonClicked = 2,          // wParam = Button ID
+            HyperlinkClicked = 3,       // lParam = (LPCWSTR)pszHREF
+            Timer = 4,                  // wParam = Milliseconds since dialog created or timer reset
             Destroyed = 5,
-            RadioButtonClicked = 6,            // wParam = Radio Button ID
+            RadioButtonClicked = 6,     // wParam = Radio Button ID
             DialogConstructed = 7,
-            VerificationClicked = 8,             // wParam = 1 if checkbox checked, 0 if not, lParam is unused and always 0
+            VerificationClicked = 8,    // wParam = 1 if checkbox checked, 0 if not, lParam is unused and always 0
             Help = 9,
-            ExpandoButtonClicked = 10            // wParam = 0 (dialog is now collapsed), wParam != 0 (dialog is now expanded)
+            ExpandoButtonClicked = 10   // wParam = 0 (dialog is now collapsed), wParam != 0 (dialog is now expanded)
         }
 
         [Flags]
         public enum TaskDialogCommonButtonFlags
         {
-            OkButton = 0x0001, // selected control return value IDOK
-            YesButton = 0x0002, // selected control return value IDYES
-            NoButton = 0x0004, // selected control return value IDNO
-            CancelButton = 0x0008, // selected control return value IDCANCEL
-            RetryButton = 0x0010, // selected control return value IDRETRY
-            CloseButton = 0x0020  // selected control return value IDCLOSE
+            OkButton = 0x0001,      // selected control return value IDOK
+            YesButton = 0x0002,     // selected control return value IDYES
+            NoButton = 0x0004,      // selected control return value IDNO
+            CancelButton = 0x0008,  // selected control return value IDCANCEL
+            RetryButton = 0x0010,   // selected control return value IDRETRY
+            CloseButton = 0x0020    // selected control return value IDCLOSE
         }
 
         [Flags]
@@ -130,32 +127,34 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             internal TaskDialogFlags dwFlags;
             internal TaskDialogCommonButtonFlags dwCommonButtons;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszWindowTitle;
+            internal string? pszWindowTitle;
             internal IntPtr hMainIcon;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszMainInstruction;
+            internal string? pszMainInstruction;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszContent;
+            internal string? pszContent;
             internal uint cButtons;
+            // Fen's note: This was commented out in the original
             //[MarshalAs(UnmanagedType.LPArray)]
             [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
             internal IntPtr pButtons;
             internal int nDefaultButton;
             internal uint cRadioButtons;
+            // Fen's note: This was commented out in the original
             //[MarshalAs(UnmanagedType.LPArray)]
             internal IntPtr pRadioButtons;
             internal int nDefaultRadioButton;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszVerificationText;
+            internal string? pszVerificationText;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszExpandedInformation;
+            internal string? pszExpandedInformation;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszExpandedControlText;
+            internal string? pszExpandedControlText;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszCollapsedControlText;
+            internal string? pszCollapsedControlText;
             internal IntPtr hFooterIcon;
             [MarshalAs(UnmanagedType.LPWStr)]
-            internal string pszFooterText;
+            internal string? pszFooterText;
             [MarshalAs(UnmanagedType.FunctionPtr)]
             internal TaskDialogCallback pfCallback;
             internal IntPtr lpCallbackData;
