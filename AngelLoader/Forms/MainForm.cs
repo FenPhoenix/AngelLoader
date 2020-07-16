@@ -90,14 +90,18 @@ namespace AngelLoader.Forms
 
         #region IView implementations
 
+        #region Invoke
+
         public object InvokeSync(Delegate method) => Invoke(method);
         public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
         public object InvokeAsync(Delegate method) => BeginInvoke(method);
         public object InvokeAsync(Delegate method, params object[] args) => BeginInvoke(method, args);
 
-        public Column CurrentSortedColumnIndex => FMsDGV.CurrentSortedColumn;
-        public SortOrder CurrentSortDirection => FMsDGV.CurrentSortDirection;
-        public bool ShowRecentAtTop => FilterShowRecentAtTopButton.Checked;
+        #endregion
+
+        public Column GetCurrentSortedColumnIndex() => FMsDGV.CurrentSortedColumn;
+        public SortOrder GetCurrentSortDirection() => FMsDGV.CurrentSortDirection;
+        public bool GetShowRecentAtTop() => FilterShowRecentAtTopButton.Checked;
 
         public void Block(bool block)
         {
@@ -370,11 +374,11 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        public void ChangeGameTabNameShortness(bool refreshFilterBarPositionIfNeeded)
+        public void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded)
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                GameTabsInOrder[i].Text = Config.UseShortGameTabNames
+                GameTabsInOrder[i].Text = useShort
                     ? GetShortLocalizedGameName((GameIndex)i)
                     : GetLocalizedGameName((GameIndex)i);
             }
@@ -1330,7 +1334,7 @@ namespace AngelLoader.Forms
             {
                 #region Game tabs
 
-                ChangeGameTabNameShortness(false);
+                ChangeGameTabNameShortness(Config.UseShortGameTabNames, false);
 
                 #endregion
 

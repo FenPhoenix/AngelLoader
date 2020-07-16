@@ -396,8 +396,8 @@ namespace AngelLoader
             #endregion
 
             // These ones MUST NOT be set on startup, because the source values won't be valid
-            Config.SortedColumn = View.CurrentSortedColumnIndex;
-            Config.SortDirection = View.CurrentSortDirection;
+            Config.SortedColumn = View.GetCurrentSortedColumnIndex();
+            Config.SortDirection = View.GetCurrentSortDirection();
 
             #endregion
 
@@ -422,7 +422,7 @@ namespace AngelLoader
             }
             if (useShortGameTabNamesChanged)
             {
-                View.ChangeGameTabNameShortness(refreshFilterBarPositionIfNeeded: true);
+                View.ChangeGameTabNameShortness(Config.UseShortGameTabNames, refreshFilterBarPositionIfNeeded: true);
             }
             if (ratingDisplayStyleChanged)
             {
@@ -567,19 +567,19 @@ namespace AngelLoader
         {
             var comparer = column switch
             {
-                Column.Game => Comparers.FMGameComparer,
-                Column.Installed => Comparers.FMInstalledComparer,
-                Column.Title => Comparers.FMTitleComparer,
-                Column.Archive => Comparers.FMArchiveComparer,
-                Column.Author => Comparers.FMAuthorComparer,
-                Column.Size => Comparers.FMSizeComparer,
-                Column.Rating => Comparers.FMRatingComparer,
-                Column.Finished => Comparers.FMFinishedComparer,
-                Column.ReleaseDate => Comparers.FMReleaseDateComparer,
-                Column.LastPlayed => Comparers.FMLastPlayedComparer,
-                Column.DateAdded => Comparers.FMDateAddedComparer,
-                Column.DisabledMods => Comparers.FMDisabledModsComparer,
-                Column.Comment => Comparers.FMCommentComparer,
+                Column.Game => Comparers.FMGame,
+                Column.Installed => Comparers.FMInstalled,
+                Column.Title => Comparers.FMTitle,
+                Column.Archive => Comparers.FMArchive,
+                Column.Author => Comparers.FMAuthor,
+                Column.Size => Comparers.FMSize,
+                Column.Rating => Comparers.FMRating,
+                Column.Finished => Comparers.FMFinished,
+                Column.ReleaseDate => Comparers.FMReleaseDate,
+                Column.LastPlayed => Comparers.FMLastPlayed,
+                Column.DateAdded => Comparers.FMDateAdded,
+                Column.DisabledMods => Comparers.FMDisabledMods,
+                Column.Comment => Comparers.FMComment,
                 // NULL_TODO: Null only so I can run the assert below
                 // For if I ever need to add something here and forget... not likely
                 _ => null
@@ -591,7 +591,7 @@ namespace AngelLoader
 
             FMsViewList.Sort(comparer);
 
-            if (View.ShowRecentAtTop)
+            if (View.GetShowRecentAtTop())
             {
                 // Store it so it doesn't change
                 var dtNow = DateTime.Now;
@@ -611,8 +611,8 @@ namespace AngelLoader
                     }
                 }
 
-                Comparers.FMDateAddedComparer.SortOrder = SortOrder.Ascending;
-                tempFMs.Sort(Comparers.FMDateAddedComparer);
+                Comparers.FMDateAdded.SortOrder = SortOrder.Ascending;
+                tempFMs.Sort(Comparers.FMDateAdded);
 
                 for (int i = 0; i < tempFMs.Count; i++)
                 {
@@ -1261,7 +1261,7 @@ namespace AngelLoader
 
                 if (safeReadmes.Count > 0)
                 {
-                    safeReadmes.Sort(Comparers.FileNameNoExtComparer);
+                    safeReadmes.Sort(Comparers.FileNameNoExt);
 
                     foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                     {
@@ -1501,7 +1501,7 @@ namespace AngelLoader
             Config.SortedColumn = sortedColumn;
             Config.SortDirection = sortDirection;
 
-            Config.ShowRecentAtTop = View.ShowRecentAtTop;
+            Config.ShowRecentAtTop = View.GetShowRecentAtTop();
 
             Config.FMsListFontSizeInPoints = fmsListFontSizeInPoints;
 

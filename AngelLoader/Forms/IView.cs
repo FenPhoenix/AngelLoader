@@ -23,14 +23,16 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        Column CurrentSortedColumnIndex { get; }
-        SortOrder CurrentSortDirection { get; }
-        bool ShowRecentAtTop { get; }
-        void ShowFMsListZoomButtons(bool visible);
-        void ShowInstallUninstallButton(bool enabled);
-        void ClearUIAndCurrentInternalFilter();
-        void ChangeGameOrganization(bool startup = false);
-        void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
+        #region Get column sort state
+
+        Column GetCurrentSortedColumnIndex();
+
+        SortOrder GetCurrentSortDirection();
+
+        #endregion
+
+        #region Init and show
+
         /// <summary>
         /// This can be called while the FindFMs() thread is running; it doesn't interfere.
         /// </summary>
@@ -40,15 +42,49 @@ namespace AngelLoader.Forms
         /// </summary>
         /// <returns></returns>
         Task FinishInitAndShow();
-        SelectedFM? GetSelectedFMPosInfo();
+
+        void ShowOnly();
+
+        #endregion
+
+        #region Show or hide UI elements
+
+        void ShowFMsListZoomButtons(bool visible);
+
+        void ShowInstallUninstallButton(bool enabled);
+
+        #endregion
+
+        #region Filter
+
+        Task SortAndSetFilter(SelectedFM? selFM = null, bool forceDisplayFM = false, bool keepSelection = false,
+                              bool gameTabSwitch = false);
+
         Filter GetFilter();
+
         string GetTitleFilter();
+
         string GetAuthorFilter();
+
         bool[] GetGameFiltersEnabledStates();
+
         bool GetFinishedFilter();
+
         bool GetUnfinishedFilter();
+
         bool GetShowUnsupportedFilter();
+
         List<int> GetFilterShownIndexList();
+
+        bool GetShowRecentAtTop();
+
+        void ClearUIAndCurrentInternalFilter();
+
+        void ChangeGameOrganization(bool startup = false);
+
+        #endregion
+
+        #region Debug
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
         string GetDebug1Text();
@@ -57,21 +93,42 @@ namespace AngelLoader.Forms
         void SetDebug2Text(string value);
 #endif
 
+        #endregion
+
+        #region Row count
+
         int GetRowCount();
+
         void SetRowCount(int count);
-        void ShowOnly();
-        void ShowAlert(string message, string title);
+
+        #endregion
+
+        #region Invoke
+
         object InvokeSync(Delegate method);
+
         object InvokeSync(Delegate method, params object[] args);
+
         object InvokeAsync(Delegate method);
+
         object InvokeAsync(Delegate method, params object[] args);
-        void Block(bool block);
+
+        #endregion
+
+        #region Refresh
+
         Task RefreshSelectedFM(bool refreshReadme);
+
         void RefreshSelectedFMRowOnly();
+
         void RefreshFMsListKeepSelection();
 
-        Task SortAndSetFilter(SelectedFM? selFM = null, bool forceDisplayFM = false, bool keepSelection = false,
-                              bool gameTabSwitch = false);
+        #endregion
+
+        #region Dialogs
+
+        void ShowAlert(string message, string title);
+
         bool AskToContinue(string message, string title, bool noIcon = false);
 
         (bool Cancel, bool DontAskAgain)
@@ -82,8 +139,16 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
                                              string yes, string no, string cancel, ButtonType? defaultButton = null);
 
+        #endregion
+
+        void Block(bool block);
+
         void ChangeReadmeBoxFont(bool useFixed);
 
-        void ChangeGameTabNameShortness(bool refreshFilterBarPositionIfNeeded);
+        void ChangeGameTabNameShortness(bool useShort, bool refreshFilterBarPositionIfNeeded);
+
+        SelectedFM? GetSelectedFMPosInfo();
+
+        void UpdateRatingDisplayStyle(RatingDisplayStyle style, bool startup);
     }
 }
