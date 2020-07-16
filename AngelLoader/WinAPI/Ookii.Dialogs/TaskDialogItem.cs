@@ -53,8 +53,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </value>
         /// <remarks>
         /// This property is set automatically when the <see cref="TaskDialogItem"/> is added
-        /// to the <see cref="TaskDialog.Buttons"/> or <see cref="TaskDialog.RadioButtons"/>
-        /// collection of a <see cref="TaskDialog"/>.
+        /// to the <see cref="TaskDialog.Buttons"/> collection of a <see cref="TaskDialog"/>.
         /// </remarks>
         [Browsable(false)]
         public TaskDialog? Owner
@@ -125,8 +124,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </para>
         /// <para>
         ///   If this property is zero when the <see cref="TaskDialogItem"/> is added to the <see cref="TaskDialog.Buttons"/>
-        ///   or <see cref="TaskDialog.RadioButtons"/> collection of a task dialog, it will automatically be set
-        ///   to the next available id value.
+        ///   collection of a task dialog, it will automatically be set to the next available id value.
         /// </para>
         /// </remarks>
         [Category("Data"), Description("The id of the item."), DefaultValue(0)]
@@ -168,18 +166,13 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// part of.
         /// </summary>
         /// <value>
-        /// For <see cref="TaskDialogButton"/> items, the <see cref="TaskDialog.Buttons"/>
-        /// collection of the <see cref="TaskDialog"/> instance this item is part of. For <see cref="TaskDialogRadioButton"/> items, the <see cref="TaskDialog.RadioButtons"/>
-        /// collection of the <see cref="TaskDialog"/> instance this item is part of. If the <see cref="TaskDialogItem"/> is not
-        /// currently associated with a <see cref="TaskDialog"/>, <see langword="null" />.
+        /// The <see cref="TaskDialog.Buttons"/> collection of the <see cref="TaskDialog"/> instance this item is part of.
+        /// If the <see cref="TaskDialogItem"/> is not currently associated with a <see cref="TaskDialog"/>, <see langword="null" />.
         /// </value>
         /// <remarks>
         /// The collection returned by this property is used to determine if there are any items with duplicate IDs.
         /// </remarks>
-        protected abstract IEnumerable? ItemCollection
-        {
-            get;
-        }
+        protected abstract IEnumerable? ItemCollection { get; }
 
         /// <summary>
         /// Causes a full update of the owner dialog.

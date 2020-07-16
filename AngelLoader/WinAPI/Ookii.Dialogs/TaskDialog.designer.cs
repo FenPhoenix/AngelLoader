@@ -30,14 +30,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                         }
                         _buttons.Clear();
                     }
-                    if( _radioButtons != null )
-                    {
-                        foreach( TaskDialogRadioButton radioButton in _radioButtons )
-                        {
-                            radioButton.Dispose();
-                        }
-                        _radioButtons.Clear();
-                    }
                 }
             }
             finally

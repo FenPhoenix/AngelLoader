@@ -24,7 +24,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     /// </remarks>
     /// <threadsafety static="true" instance="false" />
     [PublicAPI]
-    [DefaultProperty("MainInstruction"), DefaultEvent("ButtonClicked"), Description("Displays a task dialog."), Designer(typeof(TaskDialogDesigner))]
+    [DefaultProperty("MainInstruction"), DefaultEvent("ButtonClicked"), Description("Displays a task dialog.")]
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
     public partial class TaskDialog : Component, IWin32Window
     {
@@ -56,47 +56,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         [Category("Action"), Description("Event raised when the user clicks a button.")]
         public event EventHandler<TaskDialogItemClickedEventArgs>? ButtonClicked;
         /// <summary>
-        /// Event raised when the user clicks a radio button on the task dialog.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="CancelEventArgs.Cancel"/> property is ignored for this event.
-        /// </remarks>
-        [Category("Action"), Description("Event raised when the user clicks a button.")]
-        public event EventHandler<TaskDialogItemClickedEventArgs>? RadioButtonClicked;
-        /// <summary>
-        /// Event raised when the user clicks a hyperlink.
-        /// </summary>
-        [Category("Action"), Description("Event raised when the user clicks a hyperlink.")]
-        public event EventHandler<HyperlinkClickedEventArgs>? HyperlinkClicked;
-        /// <summary>
         /// Event raised when the user clicks the verification check box.
         /// </summary>
         [Category("Action"), Description("Event raised when the user clicks the verification check box.")]
         public event EventHandler? VerificationClicked;
-        /// <summary>
-        /// Event raised periodically while the dialog is displayed.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        ///   This event is raised only when the <see cref="RaiseTimerEvent"/> property is set to <see langword="true" />. The event is
-        ///   raised approximately every 200 milliseconds.
-        /// </para>
-        /// <para>
-        ///   To reset the tick count, set the <see cref="TimerEventArgs.ResetTickCount" />
-        ///   property to <see langword="true" />.
-        /// </para>
-        /// </remarks>
-        [Category("Behavior"), Description("Event raised periodically while the dialog is displayed.")]
-        public event EventHandler<TimerEventArgs>? Timer;
-        /// <summary>
-        /// Event raised when the user clicks the expand button on the task dialog.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="ExpandButtonClickedEventArgs.Expanded"/> property indicates if the expanded information is visible
-        /// or not after the click.
-        /// </remarks>
-        [Category("Action"), Description("Event raised when the user clicks the expand button on the task dialog.")]
-        public event EventHandler<ExpandButtonClickedEventArgs>? ExpandButtonClicked;
         /// <summary>
         /// Event raised when the user presses F1 while the dialog has focus.
         /// </summary>
@@ -108,20 +71,11 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         #region Fields
 
         private TaskDialogItemCollection<TaskDialogButton>? _buttons;
-        private TaskDialogItemCollection<TaskDialogRadioButton>? _radioButtons;
         private NativeMethods.TASKDIALOGCONFIG _config;
         private TaskDialogIcon _mainIcon;
         private System.Drawing.Icon? _customMainIcon;
-        private System.Drawing.Icon? _customFooterIcon;
-        private TaskDialogIcon _footerIcon;
         private Dictionary<int, TaskDialogButton>? _buttonsById;
-        private Dictionary<int, TaskDialogRadioButton>? _radioButtonsById;
         private IntPtr _handle;
-        private int _progressBarMarqueeAnimationSpeed = 100;
-        private int _progressBarMinimum;
-        private int _progressBarMaximum = 100;
-        private int _progressBarValue;
-        private ProgressBarState _progressBarState = ProgressBarState.Normal;
         private int _inEventHandler;
         private bool _updatePending;
         private System.Drawing.Icon? _windowIcon;
@@ -179,15 +133,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </remarks>
         [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the buttons on the Task Dialog.")]
         public TaskDialogItemCollection<TaskDialogButton> Buttons => _buttons ??= new TaskDialogItemCollection<TaskDialogButton>(this);
-
-        /// <summary>
-        /// Gets a list of the radio buttons on the Task Dialog.
-        /// </summary>
-        /// <value>
-        /// A list of the radio buttons on the Task Dialog.
-        /// </value>
-        [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the radio buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogRadioButton> RadioButtons => _radioButtons ??= new TaskDialogItemCollection<TaskDialogRadioButton>(this);
 
         /// <summary>
         /// Gets or sets the window title of the task dialog.
@@ -320,66 +265,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets the icon to display in the footer area of the task dialog.
-        /// </summary>
-        /// <value>
-        /// A <see cref="TaskDialogIcon"/> that indicates the icon to display in the footer area of the task dialog.
-        /// The default is <see cref="TaskDialogIcon.Custom"/>.
-        /// </value>        
-        /// <remarks>
-        /// <para>
-        ///   When this property is set to <see cref="TaskDialogIcon.Custom"/>, use the <see cref="CustomFooterIcon"/> property to
-        ///   specify the icon to use.
-        /// </para>
-        /// <para>
-        ///   The footer icon is displayed only if the <see cref="Footer"/> property is not an empty string ("").
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The icon to display in the footer area of the task dialog."), DefaultValue(TaskDialogIcon.Custom)]
-        public TaskDialogIcon FooterIcon
-        {
-            get => _footerIcon;
-            set
-            {
-                if (_footerIcon != value)
-                {
-                    _footerIcon = value;
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a custom icon to display in the footer area of the task dialog.
-        /// </summary>
-        /// <value>
-        /// An <see cref="System.Drawing.Icon"/> that represents the icon to display in the footer area of the task dialog,
-        /// or <see langword="null" /> if no custom icon is used. The default value is <see langword="null"/>.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   This property is ignored if the <see cref="FooterIcon"/> property has a value other than <see cref="TaskDialogIcon.Custom"/>.
-        /// </para>
-        /// <para>
-        ///   The footer icon is displayed only if the <see cref="Footer"/> property is not an empty string ("").
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("A custom icon to display in the footer area of the task dialog."), DefaultValue(null)]
-        public System.Drawing.Icon? CustomFooterIcon
-        {
-            get => _customFooterIcon;
-            set
-            {
-                if (_customFooterIcon != value)
-                {
-                    _customFooterIcon = value;
-                    // TODO: This and customMainIcon don't need to use UpdateDialog, they can use TDM_UPDATE_ICON
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets or sets a value that indicates whether custom buttons should be displayed as normal buttons or command links.
         /// </summary>
         /// <value>
@@ -468,118 +353,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets additional information to be displayed on the dialog.
-        /// </summary>
-        /// <value>
-        /// Additional information to be displayed on the dialog. The default value is an empty string ("").
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   When this property is not an empty string (""), a control is shown on the task dialog that
-        ///   allows the user to expand and collapse the text specified in this property.
-        /// </para>
-        /// <para>
-        ///   The text is collapsed by default unless <see cref="ExpandedByDefault"/> is set to <see langword="true" />.
-        /// </para>
-        /// <para>
-        ///   The expanded text is shown in the main content area of the dialog, unless <see cref="ExpandFooterArea"/>
-        ///   is set to <see langword="true" />, in which case it is shown in the footer area.
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("Additional information to be displayed on the dialog."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
-        public string ExpandedInformation
-        {
-            get => _config.pszExpandedInformation ?? string.Empty;
-            set
-            {
-                _config.pszExpandedInformation = string.IsNullOrEmpty(value) ? null : value;
-                SetElementText(NativeMethods.TaskDialogElements.ExpandedInformation, ExpandedInformation);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the text to use for the control for collapsing the expandable information specified in <see cref="ExpandedInformation"/>.
-        /// </summary>
-        /// <value>
-        /// The text to use for the control for collapsing the expandable information, or an empty string ("") if the
-        /// operating system's default text is to be used. The default is an empty string ("")
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   If this text is not specified and <see cref="CollapsedControlText"/> is specified, the value of <see cref="CollapsedControlText"/>
-        ///   will be used for this property as well. If neither is specified, the operating system's default text is used.
-        /// </para>
-        /// <note>
-        ///   The control for collapsing or expanding the expandable information is displayed only if <see cref="ExpandedInformation"/> is not
-        ///   an empty string ("")
-        /// </note>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text to use for the control for collapsing the expandable information."), DefaultValue("")]
-        public string ExpandedControlText
-        {
-            get => _config.pszExpandedControlText ?? string.Empty;
-            set
-            {
-                string? realValue = string.IsNullOrEmpty(value) ? null : value;
-                if (_config.pszExpandedControlText != realValue)
-                {
-                    _config.pszExpandedControlText = realValue;
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the text to use for the control for expanding the expandable information specified in <see cref="ExpandedInformation"/>.
-        /// </summary>
-        /// <value>
-        /// The text to use for the control for expanding the expandable information, or an empty string ("") if the
-        /// operating system's default text is to be used. The default is an empty string ("")
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   If this text is not specified and <see cref="ExpandedControlText"/> is specified, the value of <see cref="ExpandedControlText"/>
-        ///   will be used for this property as well. If neither is specified, the operating system's default text is used.
-        /// </para>
-        /// <note>
-        ///   The control for collapsing or expanding the expandable information is displayed only if <see cref="ExpandedInformation"/> is not
-        ///   an empty string ("")
-        /// </note>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text to use for the control for expanding the expandable information."), DefaultValue("")]
-        public string CollapsedControlText
-        {
-            get => _config.pszCollapsedControlText ?? string.Empty;
-            set
-            {
-                string? realValue = string.IsNullOrEmpty(value) ? null : value;
-                if (_config.pszCollapsedControlText != realValue)
-                {
-                    _config.pszCollapsedControlText = string.IsNullOrEmpty(value) ? null : value;
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the text to be used in the footer area of the task dialog.
-        /// </summary>
-        /// <value>
-        /// The text to be used in the footer area of the task dialog, or an empty string ("")
-        /// if the footer area is not displayed. The default value is an empty string ("").
-        /// </value>
-        [Localizable(true), Category("Appearance"), Description("The text to be used in the footer area of the task dialog."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
-        public string Footer
-        {
-            get => _config.pszFooterText ?? string.Empty;
-            set
-            {
-                _config.pszFooterText = string.IsNullOrEmpty(value) ? null : value;
-                SetElementText(NativeMethods.TaskDialogElements.Footer, Footer);
-            }
-        }
-
-        /// <summary>
         /// Specifies the width of the task dialog's client area in DLUs.
         /// </summary>
         /// <value>
@@ -595,41 +368,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 if (_config.cxWidth != (uint)value)
                 {
                     _config.cxWidth = (uint)value;
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates whether hyperlinks are allowed for the <see cref="Content"/>, <see cref="ExpandedInformation"/>
-        /// and <see cref="Footer"/> properties.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> when hyperlinks are allowed for the <see cref="Content"/>, <see cref="ExpandedInformation"/>
-        /// and <see cref="Footer"/> properties; otherwise, <see langword="false" />. The default value is <see langword="false" />.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   When  this property is <see langword="true" />, the <see cref="Content"/>, <see cref="ExpandedInformation"/>
-        ///   and <see cref="Footer"/> properties can use hyperlinks in the following form: <c>&lt;A HREF="executablestring"&gt;Hyperlink Text&lt;/A&gt;</c>
-        /// </para>
-        /// <note>
-        ///   Enabling hyperlinks when using content from an unsafe source may cause security vulnerabilities.
-        /// </note>
-        /// <para>
-        ///   Task dialogs will not actually execute hyperlinks. To take action when the user presses a hyperlink, handle the
-        ///   <see cref="HyperlinkClicked"/> event.
-        /// </para>
-        /// </remarks>
-        [Category("Behavior"), Description("Indicates whether hyperlinks are allowed for the Content, ExpandedInformation and Footer properties."), DefaultValue(false)]
-        public bool EnableHyperlinks
-        {
-            get => GetFlag(NativeMethods.TaskDialogFlags.EnableHyperLinks);
-            set
-            {
-                if (EnableHyperlinks != value)
-                {
-                    SetFlag(NativeMethods.TaskDialogFlags.EnableHyperLinks, value);
                     UpdateDialog();
                 }
             }
@@ -653,77 +391,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 if (AllowDialogCancellation != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.AllowDialogCancellation, value);
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates that the string specified by the <see cref="ExpandedInformation" /> property
-        /// should be displayed at the bottom of the dialog's footer area instead of immediately after the dialog's content.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if the string specified by the <see cref="ExpandedInformation" /> property
-        /// should be displayed at the bottom of the dialog's footer area instead of immediately after the dialog's content;
-        /// otherwise, <see langword="false" />. The default value is <see langword="false" />.
-        /// </value>
-        [Category("Behavior"), Description("Indicates that the string specified by the ExpandedInformation property should be displayed at the bottom of the dialog's footer area instead of immediately after the dialog's content."), DefaultValue(false)]
-        public bool ExpandFooterArea
-        {
-            get => GetFlag(NativeMethods.TaskDialogFlags.ExpandFooterArea);
-            set
-            {
-                if (ExpandFooterArea != value)
-                {
-                    SetFlag(NativeMethods.TaskDialogFlags.ExpandFooterArea, value);
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates that the string specified by the <see cref="ExpandedInformation"/> property
-        /// should be displayed by default.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if the string specified by the <see cref="ExpandedInformation"/> property
-        /// should be displayed by default; <see langword="false" /> if it is hidden by default. The default value is
-        /// <see langword="false" />.
-        /// </value>
-        [Category("Behavior"), Description("Indicates that the string specified by the ExpandedInformation property should be displayed by default."), DefaultValue(false)]
-        public bool ExpandedByDefault
-        {
-            get => GetFlag(NativeMethods.TaskDialogFlags.ExpandedByDefault);
-            set
-            {
-                if (ExpandedByDefault != value)
-                {
-                    SetFlag(NativeMethods.TaskDialogFlags.ExpandedByDefault, value);
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates whether the <see cref="Timer"/> event is raised periodically while the dialog
-        /// is visible.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> when the <see cref="Timer"/> event is raised periodically while the dialog is visible; otherwise,
-        /// <see langword="false" />. The default value is <see langword="false" />.
-        /// </value>
-        /// <remarks>
-        /// The <see cref="Timer"/> event will be raised approximately every 200 milliseconds if this property is <see langword="true" />.
-        /// </remarks>
-        [Category("Behavior"), Description("Indicates whether the Timer event is raised periodically while the dialog is visible."), DefaultValue(false)]
-        public bool RaiseTimerEvent
-        {
-            get => GetFlag(NativeMethods.TaskDialogFlags.CallbackTimer);
-            set
-            {
-                if (RaiseTimerEvent != value)
-                {
-                    SetFlag(NativeMethods.TaskDialogFlags.CallbackTimer, value);
                     UpdateDialog();
                 }
             }
@@ -793,158 +460,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                     SetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized, value);
                     UpdateDialog();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the type of progress bar displayed on the dialog.
-        /// </summary>
-        /// <value>
-        /// A <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle"/> that indicates the type of progress bar shown on the task dialog.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   If this property is set to <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.MarqueeProgressBar"/>, the marquee will
-        ///   scroll as long as the dialog is visible.
-        /// </para>
-        /// <para>
-        ///   If this property is set to <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>, the value of the
-        ///   <see cref="ProgressBarValue" /> property must be updated to advance the progress bar. This can be done e.g. by
-        ///   an asynchronous operation or from the <see cref="Timer"/> event.
-        /// </para>
-        /// <note>
-        ///   Updating the value of the progress bar using the <see cref="ProgressBarValue"/> while the dialog is visible property may only be done from
-        ///   the thread on which the task dialog was created.
-        /// </note>
-        /// </remarks>
-        [Category("Behavior"), Description("The type of progress bar displayed on the dialog."), DefaultValue(ProgressBarStyle.None)]
-        public ProgressBarStyle ProgressBarStyle
-        {
-            get =>
-                GetFlag(NativeMethods.TaskDialogFlags.ShowMarqueeProgressBar) ? ProgressBarStyle.MarqueeProgressBar :
-                GetFlag(NativeMethods.TaskDialogFlags.ShowProgressBar) ? ProgressBarStyle.ProgressBar :
-                ProgressBarStyle.None;
-            set
-            {
-                SetFlag(NativeMethods.TaskDialogFlags.ShowMarqueeProgressBar, value == ProgressBarStyle.MarqueeProgressBar);
-                SetFlag(NativeMethods.TaskDialogFlags.ShowProgressBar, value == ProgressBarStyle.ProgressBar);
-                UpdateProgressBarStyle();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the marquee animation speed of the progress bar in milliseconds.
-        /// </summary>
-        /// <value>
-        /// The marquee animation speed of the progress bar in milliseconds. The default value is 100.
-        /// </value>
-        /// <remarks>
-        /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.MarqueeProgressBar"/>.
-        /// </remarks>
-        [Category("Behavior"), Description("The marquee animation speed of the progress bar in milliseconds."), DefaultValue(100)]
-        public int ProgressBarMarqueeAnimationSpeed
-        {
-            get => _progressBarMarqueeAnimationSpeed;
-            set
-            {
-                _progressBarMarqueeAnimationSpeed = value;
-                UpdateProgressBarMarqueeSpeed();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the lower bound of the range of the task dialog's progress bar.
-        /// </summary>
-        /// <value>
-        /// The lower bound of the range of the task dialog's progress bar. The default value is 0.
-        /// </value>
-        /// <remarks>
-        /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException">The new property value is not smaller than <see cref="ProgressBarMaximum"/>.</exception>
-        [Category("Behavior"), Description("The lower bound of the range of the task dialog's progress bar."), DefaultValue(0)]
-        public int ProgressBarMinimum
-        {
-            get => _progressBarMinimum;
-            set
-            {
-                if (_progressBarMaximum <= value) throw new ArgumentOutOfRangeException(nameof(value));
-                _progressBarMinimum = value;
-                UpdateProgressBarRange();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the upper bound of the range of the task dialog's progress bar.
-        /// </summary>
-        /// <value>
-        /// The upper bound of the range of the task dialog's progress bar. The default value is 100.
-        /// </value>
-        /// <remarks>
-        /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException">The new property value is not larger than <see cref="ProgressBarMinimum"/>.</exception>
-        [Category("Behavior"), Description("The upper bound of the range of the task dialog's progress bar."), DefaultValue(100)]
-        public int ProgressBarMaximum
-        {
-            get => _progressBarMaximum;
-            set
-            {
-                if (value <= _progressBarMinimum) throw new ArgumentOutOfRangeException(nameof(value));
-                _progressBarMaximum = value;
-                UpdateProgressBarRange();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the current value of the task dialog's progress bar.
-        /// </summary>
-        /// <value>
-        /// The current value of the task dialog's progress bar. The default value is 0.
-        /// </value>
-        /// <remarks>
-        /// This property is only used if the <see cref="ProgressBarStyle"/> property is 
-        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
-        /// <note>
-        ///   Updating the value of the progress bar while the dialog is visible  may only be done from
-        ///   the thread on which the task dialog was created.
-        /// </note>
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException">The new property value is smaller than <see cref="ProgressBarMinimum"/> or larger than <see cref="ProgressBarMaximum"/>.</exception>
-        [Category("Behavior"), Description("The current value of the task dialog's progress bar."), DefaultValue(0)]
-        public int ProgressBarValue
-        {
-            get => _progressBarValue;
-            set
-            {
-                if (value < ProgressBarMinimum || value > ProgressBarMaximum) throw new ArgumentOutOfRangeException(nameof(value));
-                _progressBarValue = value;
-                UpdateProgressBarValue();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the state of the task dialog's progress bar.
-        /// </summary>
-        /// <value>
-        /// A <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarState"/> indicating the state of the task dialog's progress bar.
-        /// The default value is <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarState.Normal"/>.
-        /// </value>
-        /// <remarks>
-        /// This property is only used if the <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle"/> property is 
-        /// <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ProgressBarStyle.ProgressBar"/>.
-        /// </remarks>
-        [Category("Behavior"), Description("The state of the task dialog's progress bar."), DefaultValue(ProgressBarState.Normal)]
-        public ProgressBarState ProgressBarState
-        {
-            get => _progressBarState;
-            set
-            {
-                _progressBarState = value;
-                UpdateProgressBarState();
             }
         }
 
@@ -1043,22 +558,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         #region Protected methods
 
         /// <summary>
-        /// Raises the <see cref="HyperlinkClicked"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="HyperlinkClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnHyperlinkClicked(HyperlinkClickedEventArgs e) => HyperlinkClicked?.Invoke(this, e);
-
-        /// <summary>
         /// Raises the <see cref="ButtonClicked"/> event.
         /// </summary>
         /// <param name="e">The <see cref="TaskDialogItemClickedEventArgs"/> containing the data for the event.</param>
         protected virtual void OnButtonClicked(TaskDialogItemClickedEventArgs e) => ButtonClicked?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="RadioButtonClicked"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="TaskDialogItemClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnRadioButtonClicked(TaskDialogItemClickedEventArgs e) => RadioButtonClicked?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="VerificationClicked"/> event.
@@ -1073,22 +576,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         protected virtual void OnCreated(EventArgs e) => Created?.Invoke(this, e);
 
         /// <summary>
-        /// Raises the <see cref="Timer"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="TimerEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnTimer(TimerEventArgs e) => Timer?.Invoke(this, e);
-
-        /// <summary>
         /// Raises the <see cref="Destroyed"/> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
         protected virtual void OnDestroyed(EventArgs e) => Destroyed?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="ExpandButtonClicked"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="ExpandButtonClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnExpandButtonClicked(ExpandButtonClickedEventArgs e) => ExpandButtonClicked?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="HelpRequested"/> event.
@@ -1152,27 +643,19 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             _config.pButtons = IntPtr.Zero;
             _config.cButtons = 0;
             List<NativeMethods.TASKDIALOG_BUTTON> buttons = SetupButtons();
-            List<NativeMethods.TASKDIALOG_BUTTON> radioButtons = SetupRadioButtons();
 
             SetupIcon();
 
             try
             {
                 MarshalButtons(buttons, out _config.pButtons, out _config.cButtons);
-                MarshalButtons(radioButtons, out _config.pRadioButtons, out _config.cRadioButtons);
                 int buttonId;
-                int radioButton;
                 bool verificationFlagChecked;
                 using (new ComCtlv6ActivationContext(true))
                 {
-                    NativeMethods.TaskDialogIndirect(ref _config, out buttonId, out radioButton, out verificationFlagChecked);
+                    NativeMethods.TaskDialogIndirect(ref _config, out buttonId, out _, out verificationFlagChecked);
                 }
                 IsVerificationChecked = verificationFlagChecked;
-
-                if (_radioButtonsById!.TryGetValue(radioButton, out var selectedRadioButton))
-                {
-                    selectedRadioButton.Checked = true;
-                }
 
                 return _buttonsById!.TryGetValue(buttonId, out var selectedButton) ? selectedButton : null;
             }
@@ -1203,12 +686,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 _config.dwCommonButtons = 0;
 
                 List<NativeMethods.TASKDIALOG_BUTTON> buttons = SetupButtons();
-                List<NativeMethods.TASKDIALOG_BUTTON> radioButtons = SetupRadioButtons();
 
                 SetupIcon();
 
                 MarshalButtons(buttons, out _config.pButtons, out _config.cButtons);
-                MarshalButtons(radioButtons, out _config.pRadioButtons, out _config.cRadioButtons);
 
                 int size = Marshal.SizeOf(_config);
                 IntPtr memory = Marshal.AllocHGlobal(size);
@@ -1246,7 +727,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         private void SetupIcon()
         {
             SetupIcon(MainIcon, CustomMainIcon, NativeMethods.TaskDialogFlags.UseHIconMain);
-            SetupIcon(FooterIcon, CustomFooterIcon, NativeMethods.TaskDialogFlags.UseHIconFooter);
         }
 
         private void SetupIcon(TaskDialogIcon icon, System.Drawing.Icon? customIcon, NativeMethods.TaskDialogFlags flag)
@@ -1356,40 +836,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             return buttons;
         }
 
-        private List<NativeMethods.TASKDIALOG_BUTTON> SetupRadioButtons()
-        {
-            _radioButtonsById = new Dictionary<int, TaskDialogRadioButton>();
-            var radioButtons = new List<NativeMethods.TASKDIALOG_BUTTON>();
-            _config.nDefaultRadioButton = 0;
-            foreach (TaskDialogRadioButton radioButton in RadioButtons)
-            {
-                if (string.IsNullOrEmpty(radioButton.Text))
-                {
-                    throw new InvalidOperationException(OokiiResources.TaskDialogEmptyButtonLabelError);
-                }
-
-                if (radioButton.Id < 1)
-                {
-                    throw new InvalidOperationException(OokiiResources.InvalidTaskDialogItemIdError);
-                }
-
-                _radioButtonsById.Add(radioButton.Id, radioButton);
-
-                if (radioButton.Checked) _config.nDefaultRadioButton = radioButton.Id;
-
-                var taskDialogButton = new NativeMethods.TASKDIALOG_BUTTON
-                {
-                    nButtonID = radioButton.Id,
-                    pszButtonText = radioButton.Text
-                };
-
-                radioButtons.Add(taskDialogButton);
-            }
-
-            SetFlag(NativeMethods.TaskDialogFlags.NoDefaultRadioButton, _config.nDefaultRadioButton == 0);
-            return radioButtons;
-        }
-
         private void SetFlag(NativeMethods.TaskDialogFlags flag, bool value)
         {
             if (value) { _config.dwFlags |= flag; } else { _config.dwFlags &= ~flag; }
@@ -1416,10 +862,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                     case NativeMethods.TaskDialogNotifications.Navigated:
                         DialogCreated();
                         break;
-                    case NativeMethods.TaskDialogNotifications.HyperlinkClicked:
-                        string url = Marshal.PtrToStringUni(lParam);
-                        OnHyperlinkClicked(new HyperlinkClickedEventArgs(url!));
-                        break;
                     case NativeMethods.TaskDialogNotifications.ButtonClicked:
                         if (_buttonsById!.TryGetValue((int)wParam, out TaskDialogButton button))
                         {
@@ -1431,22 +873,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                     case NativeMethods.TaskDialogNotifications.VerificationClicked:
                         IsVerificationChecked = (int)wParam == 1;
                         OnVerificationClicked(EventArgs.Empty);
-                        break;
-                    case NativeMethods.TaskDialogNotifications.RadioButtonClicked:
-                        if (_radioButtonsById!.TryGetValue((int)wParam, out TaskDialogRadioButton radioButton))
-                        {
-                            // there's no way to click a radio button without checking it, is there?
-                            radioButton.Checked = true;
-                            var e = new TaskDialogItemClickedEventArgs(radioButton);
-                            OnRadioButtonClicked(e);
-                        }
-                        break;
-                    case NativeMethods.TaskDialogNotifications.Timer:
-                        var timerEventArgs = new TimerEventArgs(wParam.ToInt32());
-                        OnTimer(timerEventArgs);
-                        return (uint)(timerEventArgs.ResetTickCount ? 1 : 0);
-                    case NativeMethods.TaskDialogNotifications.ExpandoButtonClicked:
-                        OnExpandButtonClicked(new ExpandButtonClickedEventArgs(wParam.ToInt32() != 0));
                         break;
                     case NativeMethods.TaskDialogNotifications.Help:
                         OnHelpRequested(EventArgs.Empty);
@@ -1472,55 +898,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             {
                 if (!button.Enabled) SetItemEnabled(button);
                 if (button.ElevationRequired) SetButtonElevationRequired(button);
-            }
-
-            UpdateProgressBarStyle();
-            UpdateProgressBarMarqueeSpeed();
-            UpdateProgressBarRange();
-            UpdateProgressBarValue();
-            UpdateProgressBarState();
-        }
-
-        private void UpdateProgressBarStyle()
-        {
-            if (IsDialogRunning)
-            {
-                NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetMarqueeProgressBar, new IntPtr(ProgressBarStyle == ProgressBarStyle.MarqueeProgressBar ? 1 : 0), IntPtr.Zero);
-            }
-        }
-
-        private void UpdateProgressBarMarqueeSpeed()
-        {
-            if (IsDialogRunning)
-            {
-                NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarMarquee, new IntPtr(ProgressBarMarqueeAnimationSpeed > 0 ? 1 : 0), new IntPtr(ProgressBarMarqueeAnimationSpeed));
-            }
-        }
-
-        private void UpdateProgressBarRange()
-        {
-            if (IsDialogRunning)
-            {
-                NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarRange, IntPtr.Zero, new IntPtr(ProgressBarMaximum << 16 | ProgressBarMinimum));
-            }
-
-            if (ProgressBarValue < ProgressBarMinimum) ProgressBarValue = ProgressBarMinimum;
-            if (ProgressBarValue > ProgressBarMaximum) ProgressBarValue = ProgressBarMaximum;
-        }
-
-        private void UpdateProgressBarValue()
-        {
-            if (IsDialogRunning)
-            {
-                NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarPos, new IntPtr(ProgressBarValue), IntPtr.Zero);
-            }
-        }
-
-        private void UpdateProgressBarState()
-        {
-            if (IsDialogRunning)
-            {
-                NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetProgressBarState, new IntPtr((int)ProgressBarState + 1), IntPtr.Zero);
             }
         }
 

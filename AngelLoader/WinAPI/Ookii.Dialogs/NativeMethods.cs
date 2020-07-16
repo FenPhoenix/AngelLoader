@@ -40,7 +40,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             Navigated = 1,
             ButtonClicked = 2,          // wParam = Button ID
             HyperlinkClicked = 3,       // lParam = (LPCWSTR)pszHREF
-            Timer = 4,                  // wParam = Milliseconds since dialog created or timer reset
+            //Timer = 4,                  // wParam = Milliseconds since dialog created or timer reset
             Destroyed = 5,
             RadioButtonClicked = 6,     // wParam = Radio Button ID
             DialogConstructed = 7,
@@ -49,7 +49,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             ExpandoButtonClicked = 10   // wParam = 0 (dialog is now collapsed), wParam != 0 (dialog is now expanded)
         }
 
-        [Flags]
+        [Flags, PublicAPI]
         public enum TaskDialogCommonButtonFlags
         {
             OkButton = 0x0001,      // selected control return value IDOK
@@ -60,7 +60,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             CloseButton = 0x0020    // selected control return value IDCLOSE
         }
 
-        [Flags]
+        [Flags, PublicAPI]
         public enum TaskDialogFlags
         {
             EnableHyperLinks = 0x0001,
@@ -101,6 +101,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             UpdateIcon = InteropMisc.WM_USER + 116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
         }
 
+        [PublicAPI]
         public enum TaskDialogElements
         {
             Content,
@@ -134,14 +135,12 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             [MarshalAs(UnmanagedType.LPWStr)]
             internal string? pszContent;
             internal uint cButtons;
-            // Fen's note: This was commented out in the original
-            //[MarshalAs(UnmanagedType.LPArray)]
+            //[MarshalAs(UnmanagedType.LPArray)] // Fen's note: This was commented out in the original
             [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
             internal IntPtr pButtons;
             internal int nDefaultButton;
             internal uint cRadioButtons;
-            // Fen's note: This was commented out in the original
-            //[MarshalAs(UnmanagedType.LPArray)]
+            //[MarshalAs(UnmanagedType.LPArray)] // Fen's note: This was commented out in the original
             internal IntPtr pRadioButtons;
             internal int nDefaultRadioButton;
             [MarshalAs(UnmanagedType.LPWStr)]
