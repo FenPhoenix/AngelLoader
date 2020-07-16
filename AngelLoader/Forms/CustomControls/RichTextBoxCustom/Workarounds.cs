@@ -185,14 +185,12 @@ namespace AngelLoader.Forms.CustomControls
         // Better reader mode
         private readonly Timer _autoScrollTimer = new Timer { Interval = 10 };
         private int _scrollIncrementY;
-        // No picture is used currently
-        private readonly PictureBox _pbGlyph = new PictureBox { Size = new Size(26, 26), Visible = false };
+        private Rectangle _cursorScrollBounds = new Rectangle(0, 0, 26, 26);
         private bool _endOnMouseUp;
 
         private void InitReaderMode()
         {
             _autoScrollTimer.Tick += AutoScrollTimer_Tick;
-            Controls.Add(_pbGlyph);
         }
 
         private void InterceptMiddleMouseButton(ref Message m)
@@ -206,19 +204,18 @@ namespace AngelLoader.Forms.CustomControls
 
         private void EnterReaderMode()
         {
-            _pbGlyph.Location = Point.Subtract(PointToClient(MousePosition), new Size(_pbGlyph.Width / 2, _pbGlyph.Height / 2));
+            // bounds to get the scrolling sensitivity
+            _cursorScrollBounds.Location = Point.Subtract(PointToClient(MousePosition), new Size(_cursorScrollBounds.Width / 2, _cursorScrollBounds.Height / 2));
 
             SetCursor(new HandleRef(Cursors.NoMoveVert, Cursors.NoMoveVert.Handle));
             _autoScrollTimer.Start();
             _endOnMouseUp = false;
 
-            // bounds to get the scrolling sensitivity			
-            var scrollBounds = new Rectangle(_pbGlyph.Left, _pbGlyph.Top, _pbGlyph.Right, _pbGlyph.Bottom);
-            IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
+            IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(_cursorScrollBounds));
 
             try
             {
-                Marshal.StructureToPtr(scrollBounds, rectPtr, true);
+                Marshal.StructureToPtr(_cursorScrollBounds, rectPtr, true);
 
                 var readerInfo = new READERMODEINFO
                 {
@@ -286,7 +283,7 @@ namespace AngelLoader.Forms.CustomControls
                 // seems to allow for a smoother acceleration curve (I feel like I notice some minor chunkiness
                 // if I use dy)
                 int cursY = Cursor.Position.Y;
-                int origY = PointToScreen(_pbGlyph.Location).Y + (_pbGlyph.Height / 2);
+                int origY = PointToScreen(_cursorScrollBounds.Location).Y + (_cursorScrollBounds.Height / 2);
                 int delta = cursY < origY ? origY - cursY : cursY - origY;
 
                 // Exponential scroll like most apps do - somewhat arbitrary values but has a decent feel.
@@ -484,7 +481,6 @@ namespace AngelLoader.Forms.CustomControls
         private void DisposeWorkarounds()
         {
             _autoScrollTimer?.Dispose();
-            _pbGlyph?.Dispose();
         }
     }
 }

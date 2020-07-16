@@ -7,7 +7,7 @@
   every time we write
  -@Robustness: Move away from the "hide errors, fail silently, I'm scared to know" and towards failing clearly and fast with dialogs
   This will need a lot of extra localization strings. So also put more comments in the lang files.
-  -Maybe delete the stub comm file on exit, but:
+ -Maybe delete the stub comm file on exit, but:
   Don't do it for Steam because Steam could start without running a game and/or give the user time to maybe exit
   AngelLoader and then the FM wouldn't load. Also it may be too aggressive in general, but it's an idea.
 */
