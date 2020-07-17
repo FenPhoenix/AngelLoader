@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.Properties;
-using JetBrains.Annotations;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms

@@ -14,7 +14,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <summary>
         /// A custom icon or no icon if no custom icon is specified.
         /// </summary>
-        Custom,
+        Custom = 0,
         /// <summary>
         /// System warning icon.
         /// </summary>
