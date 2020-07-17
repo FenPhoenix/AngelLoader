@@ -31,7 +31,7 @@ namespace AngelLoader.DataClasses
     internal sealed class GlobalCatAndTags
     {
         internal GlobalCatOrTag Category = new GlobalCatOrTag();
-        internal List<GlobalCatOrTag> Tags = new List<GlobalCatOrTag>();
+        internal readonly List<GlobalCatOrTag> Tags = new List<GlobalCatOrTag>();
     }
 
     internal sealed class CatAndTagsList : List<CatAndTags>
@@ -80,54 +80,43 @@ namespace AngelLoader.DataClasses
         #region Preset tags array
 
         // These are the FMSel preset tags. Conforming to standards here.
-        private static readonly GlobalCatAndTags[] _presetTags =
+        private static readonly KeyValuePair<string, string[]>[]
+        _presetTags =
         {
-            new GlobalCatAndTags { Category = new GlobalCatOrTag { Name = "author", IsPreset = true } },
-            new GlobalCatAndTags { Category = new GlobalCatOrTag { Name = "contest", IsPreset = true } },
-            new GlobalCatAndTags
+            new KeyValuePair<string, string[]>("author", new string[0]),
+            new KeyValuePair<string, string[]>("contest", new string[0]),
+            new KeyValuePair<string, string[]>("genre", new[]
             {
-                Category = new GlobalCatOrTag { Name = "genre", IsPreset = true },
-                Tags = new List<GlobalCatOrTag>(5)
-                {
-                    new GlobalCatOrTag { Name = "action", IsPreset = true },
-                    new GlobalCatOrTag { Name = "crime", IsPreset = true },
-                    new GlobalCatOrTag { Name = "horror", IsPreset = true },
-                    new GlobalCatOrTag { Name = "mystery", IsPreset = true },
-                    new GlobalCatOrTag { Name = "puzzle", IsPreset = true }
-                }
-            },
-            new GlobalCatAndTags
+                "action",
+                "crime",
+                "horror",
+                "mystery",
+                "puzzle"
+            }),
+            new KeyValuePair<string, string[]>("language", new[]
             {
-                Category = new GlobalCatOrTag { Name = "language", IsPreset = true },
-                Tags = new List<GlobalCatOrTag>(11)
-                {
-                    new GlobalCatOrTag { Name = "English", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Czech", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Dutch", IsPreset = true },
-                    new GlobalCatOrTag { Name = "French", IsPreset = true },
-                    new GlobalCatOrTag { Name = "German", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Hungarian", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Italian", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Japanese", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Polish", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Russian", IsPreset = true },
-                    new GlobalCatOrTag { Name = "Spanish", IsPreset = true }
-                }
-            },
-            new GlobalCatAndTags { Category = new GlobalCatOrTag { Name = "series", IsPreset = true } },
-            new GlobalCatAndTags
+                "English",
+                "Czech",
+                "Dutch",
+                "French",
+                "German",
+                "Hungarian",
+                "Italian",
+                "Japanese",
+                "Polish",
+                "Russian",
+                "Spanish"
+            }),
+            new KeyValuePair<string, string[]>("series", new string[0]),
+            new KeyValuePair<string, string[]>("misc", new[]
             {
-                Category = new GlobalCatOrTag { Name = "misc", IsPreset = true },
-                Tags = new List<GlobalCatOrTag>(6)
-                {
-                    new GlobalCatOrTag { Name = "campaign", IsPreset = true },
-                    new GlobalCatOrTag { Name = "demo", IsPreset = true },
-                    new GlobalCatOrTag { Name = "long", IsPreset = true },
-                    new GlobalCatOrTag { Name = "other protagonist", IsPreset = true },
-                    new GlobalCatOrTag { Name = "short", IsPreset = true },
-                    new GlobalCatOrTag { Name = "unknown author", IsPreset = true }
-                }
-            }
+                "campaign",
+                "demo",
+                "long",
+                "other protagonist",
+                "short",
+                "unknown author"
+            })
         };
 
         #endregion
@@ -148,18 +137,16 @@ namespace AngelLoader.DataClasses
                 {
                     Category = new GlobalCatOrTag
                     {
-                        Name = _presetTags[i].Category.Name,
-                        IsPreset = _presetTags[i].Category.IsPreset,
-                        UsedCount = _presetTags[i].Category.UsedCount
+                        Name = _presetTags[i].Key,
+                        IsPreset = true
                     }
                 };
-                for (int j = 0; j < _presetTags[i].Tags.Count; j++)
+                for (int j = 0; j < _presetTags[i].Value.Length; j++)
                 {
                     item.Tags.Add(new GlobalCatOrTag
                     {
-                        Name = _presetTags[i].Tags[j].Name,
-                        IsPreset = _presetTags[i].Tags[j].IsPreset,
-                        UsedCount = _presetTags[i].Tags[j].UsedCount
+                        Name = _presetTags[i].Value[j],
+                        IsPreset = true
                     });
                 }
 
