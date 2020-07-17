@@ -136,7 +136,7 @@
             Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             Cancel_Button.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
             Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            Cancel_Button.TabIndex = 1;
+            Cancel_Button.TabIndex = 0;
             Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // OKButton
@@ -145,7 +145,7 @@
             OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             OKButton.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
             OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            OKButton.TabIndex = 0;
+            OKButton.TabIndex = 1;
             OKButton.UseVisualStyleBackColor = true;
             // 
             // MessageBoxCustomForm
