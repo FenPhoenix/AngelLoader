@@ -260,40 +260,35 @@ namespace AngelLoader.Forms
 
         #region Messageboxes
 
-        public bool AskToContinue(string message, string title, bool noIcon = false)
-        {
-            var result = MessageBox.Show(message, title, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            return result == DialogResult.Yes;
-        }
+        public bool AskToContinue(string message, string title, bool noIcon = false) =>
+            MessageBox.Show(
+                message,
+                title,
+                MessageBoxButtons.YesNo,
+                noIcon ? MessageBoxIcon.None : MessageBoxIcon.Warning) == DialogResult.Yes;
 
         public (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
-            bool showDontAskAgain, string yes, string no, string cancel, ButtonType? defaultButton = null)
+        AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
+                                             string yes, string no, string cancel, ButtonType? defaultButton = null)
         {
             var yesButton = new TaskDialogButton(yes);
             var noButton = new TaskDialogButton(no);
             var cancelButton = new TaskDialogButton(cancel);
 
-            TaskDialogButton[] buttons =
-            {
-                yesButton,
-                noButton,
-                cancelButton
-            };
-
-            var defaultButtonFinal = defaultButton switch
-            {
-                ButtonType.No => noButton,
-                ButtonType.Cancel => cancelButton,
-                _ => yesButton
-            };
-
-            string? verificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
-
-            using var d = new TaskDialog(title, message, buttons, defaultButtonFinal, verificationText,
+            using var d = new TaskDialog(
+                title: title,
+                message: message,
+                buttons: new[] { yesButton, noButton, cancelButton },
+                defaultButton: defaultButton switch
+                {
+                    ButtonType.No => noButton,
+                    ButtonType.Cancel => cancelButton,
+                    _ => yesButton
+                },
+                verificationText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
                 mainIcon: icon);
 
-            var buttonClicked = d.ShowDialog();
+            TaskDialogButton? buttonClicked = d.ShowDialog();
             bool canceled = buttonClicked == null || buttonClicked == cancelButton;
             bool cont = buttonClicked == yesButton;
             bool dontAskAgain = d.IsVerificationChecked;
@@ -302,30 +297,20 @@ namespace AngelLoader.Forms
 
         public (bool Cancel, bool DontAskAgain)
         AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
-            string? yes, string? no, ButtonType? defaultButton = null)
+                                        string? yes, string? no, ButtonType? defaultButton = null)
         {
             var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
             var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
 
-            TaskDialogButton[] buttons =
-            {
-                yesButton,
-                noButton
-            };
-
-            var defaultButtonFinal = defaultButton switch
-            {
-                ButtonType.No => noButton,
-                _ => yesButton
-            };
-
-            string? verificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
-
-            using var d = new TaskDialog(title, message, buttons, defaultButtonFinal, verificationText,
+            using var d = new TaskDialog(
+                title: title,
+                message: message,
+                buttons: new[] { yesButton, noButton },
+                defaultButton: defaultButton == ButtonType.No ? noButton : yesButton,
+                verificationText: showDontAskAgain ? LText.AlertMessages.DontAskAgain : null,
                 mainIcon: icon);
 
-            var buttonClicked = d.ShowDialog();
-            bool cancel = buttonClicked != yesButton;
+            bool cancel = d.ShowDialog() != yesButton;
             bool dontAskAgain = d.IsVerificationChecked;
             return (cancel, dontAskAgain);
         }

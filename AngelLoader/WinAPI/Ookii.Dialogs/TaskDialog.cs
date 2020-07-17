@@ -48,10 +48,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="windowTitle">
+        /// <param name="title">
         /// The window title of the task dialog. The default is an empty string ("").
         /// </param>
-        /// <param name="content">
+        /// <param name="message">
         /// The dialog's primary content. The default is an empty string ("").
         /// </param>
         /// <param name="buttons"></param>
@@ -98,8 +98,8 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Sets whether the dialog should be centered in the parent window instead of the screen.
         /// </param>
         public TaskDialog(
-            string windowTitle,
-            string content,
+            string title,
+            string message,
             TaskDialogButton[] buttons,
             TaskDialogButton defaultButton,
             string? verificationText,
@@ -121,9 +121,9 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 throw new InvalidOperationException(OokiiResources.TaskDialogNoButtonsError);
             }
 
-            _config.pszWindowTitle = windowTitle;
+            _config.pszWindowTitle = title;
 
-            _config.pszContent = content;
+            _config.pszContent = message;
 
             #region Set button ids
 
