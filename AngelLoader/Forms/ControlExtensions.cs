@@ -51,11 +51,13 @@ namespace AngelLoader.Forms
             control.Location = new Point((parent.Width / 2) - (control.Width / 2), control.Location.Y);
         }
 
+        /*
         [PublicAPI]
         internal static void CenterV(this Control control, Control parent)
         {
             control.Location = new Point(control.Location.X, (parent.Height / 2) - (control.Height / 2));
         }
+        */
 
         [PublicAPI]
         internal static void CenterHV(this Control control, Control parent, bool clientSize = false)

@@ -46,6 +46,9 @@ namespace AngelLoader
 
         #region CountChars
 
+        #region Disabled until needed
+
+        /*
         /// <summary>
         /// Returns the number of times a character appears in a string. Avoids whatever silly overhead junk Count(predicate) is doing.
         /// </summary>
@@ -59,6 +62,9 @@ namespace AngelLoader
 
             return count;
         }
+        */
+
+        #endregion
 
         /// <summary>
         /// Returns the number of times a character appears in a string, earlying-out once it's counted <paramref name="maxToCount"/>
@@ -272,6 +278,9 @@ namespace AngelLoader
 
         #region Starts with plus whitespace
 
+        #region Disabled until needed
+
+        /*
         internal static bool StartsWithPlusWhiteSpace(this string str, string value)
         {
             int valLen;
@@ -284,6 +293,9 @@ namespace AngelLoader
             str.StartsWith(value) &&
             str.Length > valueLength &&
             char.IsWhiteSpace(str[valueLength]);
+         */
+
+        #endregion
 
         internal static bool StartsWithIPlusWhiteSpace(this string str, string value)
         {

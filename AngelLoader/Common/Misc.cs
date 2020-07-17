@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 
 namespace AngelLoader
 {
@@ -44,7 +43,6 @@ namespace AngelLoader
         #region Enums and enum-like
 
         // Class instead of enum so we don't have to keep casting its fields
-        [PublicAPI]
         internal static class ByteSize
         {
             internal const int KB = 1024;
@@ -182,7 +180,6 @@ namespace AngelLoader
          and has the added bonus of guaranteeing a reset of the value due to the using block.
         */
 
-        [PublicAPI]
         internal interface IEventDisabler
         {
             bool EventsDisabled { get; set; }
@@ -204,7 +201,6 @@ namespace AngelLoader
 
         #region DisableKeyPresses
 
-        [PublicAPI]
         internal interface IKeyPressDisabler
         {
             bool KeyPressesDisabled { get; set; }

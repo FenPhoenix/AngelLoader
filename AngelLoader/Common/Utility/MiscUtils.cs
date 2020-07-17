@@ -30,7 +30,8 @@ namespace AngelLoader
         #region Percent
 
         internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
-        internal static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
+        // Disabled until needed
+        //internal static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
 
         #endregion
 
@@ -43,10 +44,8 @@ namespace AngelLoader
         /// <param name="min"></param>
         /// <param name="max"></param>
         /// <returns></returns>
-        internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T>
-        {
-            return value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
-        }
+        internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> =>
+            value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
 
         /// <summary>
         /// If <paramref name="value"/> is less than zero, returns zero. Otherwise, returns <paramref name="value"/>

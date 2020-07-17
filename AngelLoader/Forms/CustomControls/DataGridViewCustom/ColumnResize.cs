@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Windows.Forms;
-using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -8,29 +7,32 @@ namespace AngelLoader.Forms.CustomControls
     {
         #region Private fields
 
-        [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private enum DataGridViewHitTestTypeInternal
         {
-            None,
-            Cell,
-            ColumnHeader,
-            RowHeader,
-            ColumnResizeLeft,
-            ColumnResizeRight,
-            RowResizeTop,
-            RowResizeBottom,
-            FirstColumnHeaderLeft,
-            TopLeftHeader,
-            TopLeftHeaderResizeLeft,
-            TopLeftHeaderResizeRight,
-            TopLeftHeaderResizeTop,
-            TopLeftHeaderResizeBottom,
-            ColumnHeadersResizeBottom,
-            ColumnHeadersResizeTop,
-            RowHeadersResizeRight,
-            RowHeadersResizeLeft,
-            ColumnHeaderLeft,
-            ColumnHeaderRight
+            /*
+            None = 0,
+            Cell = 1,
+            ColumnHeader = 2,
+            RowHeader = 3,
+            */
+            ColumnResizeLeft = 4,
+            /*
+            ColumnResizeRight = 5,
+            RowResizeTop = 6,
+            RowResizeBottom = 7,
+            FirstColumnHeaderLeft = 8,
+            TopLeftHeader = 9,
+            TopLeftHeaderResizeLeft = 10,
+            TopLeftHeaderResizeRight = 11,
+            TopLeftHeaderResizeTop = 12,
+            TopLeftHeaderResizeBottom = 13,
+            ColumnHeadersResizeBottom = 14,
+            ColumnHeadersResizeTop = 15,
+            RowHeadersResizeRight = 16,
+            RowHeadersResizeLeft = 17,
+            ColumnHeaderLeft = 18,
+            ColumnHeaderRight = 19
+            */
         }
 
         #region Resize data fields

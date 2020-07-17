@@ -2,14 +2,12 @@
 
 using System;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 using static AngelLoader.Attributes;
 using static AngelLoader.Misc;
 
 namespace AngelLoader
 {
     // @GENGAMES (GameSupport): Begin
-    [PublicAPI]
     internal static class GameSupport
     {
         internal static readonly int SupportedGameCount = Enum.GetValues(typeof(GameIndex)).Length;

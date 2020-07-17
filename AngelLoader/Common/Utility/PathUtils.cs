@@ -58,6 +58,9 @@ namespace AngelLoader
 
         #region Contains / count / find
 
+        #region Disabled until needed
+
+        /*
         internal static bool PathContainsI_Dir(this List<string> value, string substring)
         {
             for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
@@ -69,6 +72,9 @@ namespace AngelLoader
             for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
             return false;
         }
+        */
+
+        #endregion
 
         internal static bool PathContainsI(this List<string> value, string substring)
         {
@@ -106,6 +112,9 @@ namespace AngelLoader
             return count;
         }
 
+        #region Disabled until needed
+
+        /*
         /// <summary>
         /// Counts dir seps up to <paramref name="count"/> occurrences and then returns, skipping further counting.
         /// </summary>
@@ -124,6 +133,9 @@ namespace AngelLoader
 
             return false;
         }
+        */
+
+        #endregion
 
         /// <summary>
         /// Returns the last index of either directory separator character in <paramref name="value"/>.
@@ -270,8 +282,14 @@ namespace AngelLoader
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
 
+        #region Disabled until needed
+
+        /*
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EndsWithDirSep(this string value) => value.Length > 0 && value[value.Length - 1].IsDirSep();
+        */
+
+        #endregion
 
         #endregion
 
@@ -378,6 +396,9 @@ namespace AngelLoader
             }
         }
 
+        #region Disabled until needed
+
+        /*
         internal static bool TryCombineFilePathAndCheckExistence(string[] pathParts, out string combinedPath)
         {
             try
@@ -400,6 +421,10 @@ namespace AngelLoader
                 return false;
             }
         }
+
+        */
+
+        #endregion
 
         #endregion
     }

@@ -1,7 +1,6 @@
 ﻿#define FenGen_TypeSource
 
 using System;
-using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
@@ -50,7 +49,7 @@ namespace AngelLoader.DataClasses
 
     internal enum DateFormat { CurrentCultureShort, CurrentCultureLong, Custom }
 
-    [Flags, PublicAPI]
+    [Flags]
     internal enum FinishedState : uint { Null = 0, Finished = 1, Unfinished = 2 }
 
     internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }

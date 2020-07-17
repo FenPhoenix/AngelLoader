@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Taskbar
 {
-    [PublicAPI]
     internal enum TaskbarStates
     {
         NoProgress = 0,
         Indeterminate = 1,
-        Normal = 2,
-        Error = 4,
-        Paused = 8
+        //Normal = 2,
+        //Error = 4,
+        //Paused = 8
     }
 
-    [UsedImplicitly]
-    internal class TaskBarProgress
+    internal static class TaskBarProgress
     {
         [ComImport]
         [Guid("56fdf344-fd6d-11d0-958a-006097c9a090")]

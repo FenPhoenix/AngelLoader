@@ -58,8 +58,16 @@ namespace AngelLoader.DataClasses
         Subtitles = 512
     }
 
-    [Flags, PublicAPI]
-    internal enum Difficulty : uint { None = 0, Normal = 1, Hard = 2, Expert = 4, Extreme = 8 }
+    [Flags]
+    internal enum Difficulty : uint
+    {
+        [UsedImplicitly]
+        None = 0,
+        Normal = 1,
+        Hard = 2,
+        Expert = 4,
+        Extreme = 8
+    }
 
     #endregion
 }
