@@ -6,6 +6,27 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Ookii.Dialogs
 {
+    /*
+    Fen's note: Even though it says none of these methods are called, it's wrong, they are. They're called like:
+
+    using var d = new TaskDialog();
+    using var yesButton = new TaskDialogButton(yes);
+    d.Buttons.Add(yesButton);
+
+    (TaskDialogItemCollection inherits from Collection<T>, so Collection<T>.Add() is called)
+
+    class Collection<T>
+    {
+        public void Add(T item)
+        {
+            this.InsertItem(this.items.Count, item);
+        }
+    }
+
+    Inheritance is garbage. Even one level and your brain is done. Finished. You can't grok the logic. And
+    apparently, neither can the static analyzer. I'll hold the rant. For now.
+    */
+
     /// <summary>
     /// Represents a list of <see cref="TaskDialogItem"/> objects.
     /// </summary>

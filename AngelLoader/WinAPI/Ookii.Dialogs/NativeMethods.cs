@@ -9,10 +9,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     internal static class NativeMethods
     {
-        public static bool IsWindowsVistaOrLater => Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version >= new Version(6, 0, 6000);
-
-        public static bool IsWindowsXPOrLater => Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version >= new Version(5, 1, 2600);
-
         #region Task Dialogs
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
@@ -33,23 +29,23 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         public const int WM_SETICON = 0x0080;
         public const int ICON_SMALL = 0;
 
-        [PublicAPI]
         public enum TaskDialogNotifications
         {
             Created = 0,
             Navigated = 1,
             ButtonClicked = 2,          // wParam = Button ID
-            HyperlinkClicked = 3,       // lParam = (LPCWSTR)pszHREF
+            //HyperlinkClicked = 3,       // lParam = (LPCWSTR)pszHREF
             //Timer = 4,                  // wParam = Milliseconds since dialog created or timer reset
             Destroyed = 5,
-            RadioButtonClicked = 6,     // wParam = Radio Button ID
-            DialogConstructed = 7,
+            //RadioButtonClicked = 6,     // wParam = Radio Button ID
+            //DialogConstructed = 7,
             VerificationClicked = 8,    // wParam = 1 if checkbox checked, 0 if not, lParam is unused and always 0
             Help = 9,
-            ExpandoButtonClicked = 10   // wParam = 0 (dialog is now collapsed), wParam != 0 (dialog is now expanded)
+            //ExpandoButtonClicked = 10   // wParam = 0 (dialog is now collapsed), wParam != 0 (dialog is now expanded)
         }
 
-        [Flags, PublicAPI]
+        [Flags]
+        [PublicAPI]
         public enum TaskDialogCommonButtonFlags
         {
             OkButton = 0x0001,      // selected control return value IDOK
@@ -60,7 +56,8 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             CloseButton = 0x0020    // selected control return value IDCLOSE
         }
 
-        [Flags, PublicAPI]
+        [Flags]
+        //[PublicAPI]
         public enum TaskDialogFlags
         {
             EnableHyperLinks = 0x0001,
@@ -81,33 +78,36 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             CanBeMinimized = 0x8000
         }
 
-        [PublicAPI]
         public enum TaskDialogMessages
         {
             NavigatePage = InteropMisc.WM_USER + 101,
             ClickButton = InteropMisc.WM_USER + 102, // wParam = Button ID
+            /*
             SetMarqueeProgressBar = InteropMisc.WM_USER + 103, // wParam = 0 (nonMarque) wParam != 0 (Marquee)
             SetProgressBarState = InteropMisc.WM_USER + 104, // wParam = new progress state
             SetProgressBarRange = InteropMisc.WM_USER + 105, // lParam = MAKELPARAM(nMinRange, nMaxRange)
             SetProgressBarPos = InteropMisc.WM_USER + 106, // wParam = new position
             SetProgressBarMarquee = InteropMisc.WM_USER + 107, // wParam = 0 (stop marquee), wParam != 0 (start marquee), lparam = speed (milliseconds between repaints)
+            */
             SetElementText = InteropMisc.WM_USER + 108, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             ClickRadioButton = InteropMisc.WM_USER + 110, // wParam = Radio Button ID
             EnableButton = InteropMisc.WM_USER + 111, // lParam = 0 (disable), lParam != 0 (enable), wParam = Button ID
             EnableRadioButton = InteropMisc.WM_USER + 112, // lParam = 0 (disable), lParam != 0 (enable), wParam = Radio Button ID
             ClickVerification = InteropMisc.WM_USER + 113, // wParam = 0 (unchecked), 1 (checked), lParam = 1 (set key focus)
+            /*
             UpdateElementText = InteropMisc.WM_USER + 114, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
             SetButtonElevationRequiredState = InteropMisc.WM_USER + 115, // wParam = Button ID, lParam = 0 (elevation not required), lParam != 0 (elevation required)
             UpdateIcon = InteropMisc.WM_USER + 116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
+            */
         }
 
-        [PublicAPI]
+        // Must specify numbers explicitly, because this gets passed to a P/Invoke call that expects a specific value
         public enum TaskDialogElements
         {
-            Content,
-            ExpandedInformation,
-            Footer,
-            MainInstruction
+            Content = 0,
+            //ExpandedInformation = 1,
+            //Footer = 2,
+            MainInstruction = 3
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]

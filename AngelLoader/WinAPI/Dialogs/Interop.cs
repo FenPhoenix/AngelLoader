@@ -25,7 +25,6 @@ namespace AngelLoader.WinAPI.Dialogs
 
     #endregion
 
-    [PublicAPI]
     internal enum HResult
     {
         /// <summary>     
@@ -33,6 +32,7 @@ namespace AngelLoader.WinAPI.Dialogs
         /// </summary>
         Ok = 0x0000,
 
+        /*
         /// <summary>
         /// S_FALSE
         /// </summary> 
@@ -77,12 +77,14 @@ namespace AngelLoader.WinAPI.Dialogs
         /// Win32 Error code: ERROR_CANCELLED
         /// </summary>
         Win32ErrorCanceled = 1223,
+        */
 
         /// <summary>
         /// ERROR_CANCELLED
         /// </summary>
         Canceled = unchecked((int)0x800704C7),
 
+        /*
         /// <summary>
         /// The requested resource is in use
         /// </summary>
@@ -92,6 +94,7 @@ namespace AngelLoader.WinAPI.Dialogs
         /// The requested resources is read-only.
         /// </summary>
         AccessDenied = unchecked((int)0x80030005)
+        */
     }
 
     // These are specific guids that need to be exactly what they are here. Not just generated and assigned
@@ -99,7 +102,7 @@ namespace AngelLoader.WinAPI.Dialogs
     internal static class Guids
     {
         internal const string FileOpenDialog = "DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7";
-        internal const string IFileDialog = "42F85136-DB7E-439C-85F1-E4075D135FC8";
+        //internal const string IFileDialog = "42F85136-DB7E-439C-85F1-E4075D135FC8";
         internal const string IFileOpenDialog = "D57C7288-D4AD-4768-BE02-9D969532D960";
         internal const string IFileDialogEvents = "973510DB-7D7F-452B-8975-74A85828D354";
         internal const string IShellItem = "43826D1E-E718-42EE-BC55-A1E261C37BFE";
@@ -118,6 +121,9 @@ namespace AngelLoader.WinAPI.Dialogs
             internal string pszSpec;
         }
 
+        #region Commented-out enums
+
+        /*
         [PublicAPI]
         internal enum FDAP
         {
@@ -148,34 +154,39 @@ namespace AngelLoader.WinAPI.Dialogs
             SIATTRIBFLAGS_OR = 0x00000002,
             SIATTRIBFLAGS_APPCOMPAT = 0x00000003
         }
+        */
 
-        [PublicAPI]
+        #endregion
+
         internal enum SIGDN : uint
         {
-            SIGDN_NORMALDISPLAY = 0x00000000,
-            SIGDN_PARENTRELATIVEPARSING = 0x80018001,
+            //SIGDN_NORMALDISPLAY = 0x00000000,
+            //SIGDN_PARENTRELATIVEPARSING = 0x80018001,
             SIGDN_DESKTOPABSOLUTEPARSING = 0x80028000,
-            SIGDN_PARENTRELATIVEEDITING = 0x80031001,
-            SIGDN_DESKTOPABSOLUTEEDITING = 0x8004c000,
-            SIGDN_FILESYSPATH = 0x80058000,
-            SIGDN_URL = 0x80068000,
-            SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
-            SIGDN_PARENTRELATIVE = 0x80080001
+            //SIGDN_PARENTRELATIVEEDITING = 0x80031001,
+            //SIGDN_DESKTOPABSOLUTEEDITING = 0x8004c000,
+            //SIGDN_FILESYSPATH = 0x80058000,
+            //SIGDN_URL = 0x80068000,
+            //SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
+            //SIGDN_PARENTRELATIVE = 0x80080001
         }
 
-        [PublicAPI, Flags]
+        [Flags]
         internal enum FOS : uint
         {
+            /*
             FOS_OVERWRITEPROMPT = 0x00000002,
             FOS_STRICTFILETYPES = 0x00000004,
             FOS_NOCHANGEDIR = 0x00000008,
+            */
             FOS_PICKFOLDERS = 0x00000020,
             FOS_FORCEFILESYSTEM = 0x00000040,
-            FOS_ALLNONSTORAGEITEMS = 0x00000080,
+            //FOS_ALLNONSTORAGEITEMS = 0x00000080,
             FOS_NOVALIDATE = 0x00000100,
             FOS_ALLOWMULTISELECT = 0x00000200,
             FOS_PATHMUSTEXIST = 0x00000800,
             FOS_FILEMUSTEXIST = 0x00001000,
+            /*
             FOS_CREATEPROMPT = 0x00002000,
             FOS_SHAREAWARE = 0x00004000,
             FOS_NOREADONLYRETURN = 0x00008000,
@@ -186,6 +197,7 @@ namespace AngelLoader.WinAPI.Dialogs
             FOS_DONTADDTORECENT = 0x02000000,
             FOS_FORCESHOWHIDDEN = 0x10000000,
             FOS_DEFAULTNOMINIMODE = 0x20000000
+            */
         }
 
         [PublicAPI]
@@ -205,6 +217,9 @@ namespace AngelLoader.WinAPI.Dialogs
     // I could cut these down some if I wanted, but just for YAGNI violations and giggles, here is the whole mess
     // in all its glory and splendor.
 
+    #region IFileDialog (commented out
+
+    /*
     [ComImport, Guid(Guids.IFileDialog), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IFileDialog
     {
@@ -264,7 +279,7 @@ namespace AngelLoader.WinAPI.Dialogs
         void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void AddPlace([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, NativeMethods.FDAP fdap);
+        void AddPlace([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, uint fdap);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void SetDefaultExtension([In, MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
@@ -281,12 +296,15 @@ namespace AngelLoader.WinAPI.Dialogs
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void SetFilter([MarshalAs(UnmanagedType.Interface)] IntPtr pFilter);
     }
+    */
+
+    #endregion
 
     // Disable warning CS0108: 'x' hides inherited member 'y'. Use the new keyword if hiding was intended.
 #pragma warning disable CS0108
 
     [ComImport, Guid(Guids.IFileOpenDialog), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface IFileOpenDialog : IFileDialog
+    internal interface IFileOpenDialog //: IFileDialog // IFileDialog is commented-out due to not using it
     {
         [PreserveSig]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -344,7 +362,7 @@ namespace AngelLoader.WinAPI.Dialogs
         void GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void AddPlace([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, NativeMethods.FDAP fdap);
+        void AddPlace([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, uint fdap);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void SetDefaultExtension([In, MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
@@ -370,9 +388,11 @@ namespace AngelLoader.WinAPI.Dialogs
 
 #pragma warning restore CS0108
 
+    // Not using anything in here, so disabled for size. But still using the type itself.
     [ComImport, Guid(Guids.IFileDialogEvents), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IFileDialogEvents
     {
+        /*
         [PreserveSig]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         HResult OnFileOk([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
@@ -388,13 +408,14 @@ namespace AngelLoader.WinAPI.Dialogs
         void OnSelectionChange([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void OnShareViolation([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd, [In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, out NativeMethods.FDE_SHAREVIOLATION_RESPONSE pResponse);
+        void OnShareViolation([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd, [In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, out uint pResponse);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void OnTypeChange([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void OnOverwrite([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd, [In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, out NativeMethods.FDE_OVERWRITE_RESPONSE pResponse);
+        void OnOverwrite([In, MarshalAs(UnmanagedType.Interface)] IFileDialog pfd, [In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, out uint pResponse);
+        */
     }
 
     [ComImport, Guid(Guids.IShellItem), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -430,7 +451,7 @@ namespace AngelLoader.WinAPI.Dialogs
         void GetPropertyDescriptionList([In] ref NativeMethods.PROPERTYKEY keyType, [In] ref Guid riid, out IntPtr ppv);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetAttributes([In] NativeMethods.SIATTRIBFLAGS dwAttribFlags, [In] uint sfgaoMask, out uint psfgaoAttribs);
+        void GetAttributes([In] uint dwAttribFlags, [In] uint sfgaoMask, out uint psfgaoAttribs);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetCount(out uint pdwNumItems);

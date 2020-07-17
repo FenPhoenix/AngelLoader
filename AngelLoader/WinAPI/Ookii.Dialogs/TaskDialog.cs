@@ -2,8 +2,8 @@
 // BSD license; see LICENSE for details.
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -17,49 +17,14 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     /// </summary>
     /// <remarks>
     /// The task dialog contains an application-defined message text and title, icons, and any combination of predefined push buttons.
-    /// Task Dialogs are supported only on Windows Vista and above. No fallback is provided; if you wish to use task dialogs
-    /// and support operating systems older than Windows Vista, you must provide a fallback yourself. Check the <see cref="OSSupportsTaskDialogs"/>
-    /// property to see if task dialogs are supported. It is safe to instantiate the <see cref="TaskDialog"/> class on an older
-    /// OS, but calling <see cref="Show"/> or <see cref="ShowDialog()"/> will throw an exception.
     /// </remarks>
     /// <threadsafety static="true" instance="false" />
     [PublicAPI]
     [DefaultProperty("MainInstruction"), DefaultEvent("ButtonClicked"), Description("Displays a task dialog.")]
-    [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
-    public partial class TaskDialog : Component, IWin32Window
+    public sealed class TaskDialog : Component, IWin32Window
     {
         #region Events
 
-        /// <summary>
-        /// Event raised when the task dialog has been created.
-        /// </summary>
-        /// <remarks>
-        /// This event is raised once after calling <see cref="ShowDialog(IWin32Window)"/>, after the dialog
-        /// is created and before it is displayed.
-        /// </remarks>
-        [Category("Behavior"), Description("Event raised when the task dialog has been created.")]
-        public event EventHandler? Created;
-        /// <summary>
-        /// Event raised when the task dialog has been destroyed.
-        /// </summary>
-        /// <remarks>
-        /// The task dialog window no longer exists when this event is raised.
-        /// </remarks>
-        [Category("Behavior"), Description("Event raised when the task dialog has been destroyed.")]
-        public event EventHandler? Destroyed;
-        /// <summary>
-        /// Event raised when the user clicks a button on the task dialog.
-        /// </summary>
-        /// <remarks>
-        /// Set the <see cref="CancelEventArgs.Cancel"/> property to <see langword="true" /> to prevent the dialog from being closed.
-        /// </remarks>
-        [Category("Action"), Description("Event raised when the user clicks a button.")]
-        public event EventHandler<TaskDialogItemClickedEventArgs>? ButtonClicked;
-        /// <summary>
-        /// Event raised when the user clicks the verification check box.
-        /// </summary>
-        [Category("Action"), Description("Event raised when the user clicks the verification check box.")]
-        public event EventHandler? VerificationClicked;
         /// <summary>
         /// Event raised when the user presses F1 while the dialog has focus.
         /// </summary>
@@ -78,7 +43,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         private IntPtr _handle;
         private int _inEventHandler;
         private bool _updatePending;
-        private System.Drawing.Icon? _windowIcon;
 
         #endregion
 
@@ -89,8 +53,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// </summary>
         public TaskDialog()
         {
-            InitializeComponent();
-
             _config.cbSize = (uint)Marshal.SizeOf(_config);
             _config.pfCallback = TaskDialogCallback;
         }
@@ -103,8 +65,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         {
             container?.Add(this);
 
-            InitializeComponent();
-
             _config.cbSize = (uint)Marshal.SizeOf(_config);
             _config.pfCallback = TaskDialogCallback;
         }
@@ -112,14 +72,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        /// Gets a value that indicates whether the current operating system supports task dialogs.
-        /// </summary>
-        /// <value>
-        /// Returns <see langword="true" /> for Windows Vista or later; otherwise <see langword="false" />.
-        /// </value>
-        public static bool OSSupportsTaskDialogs => NativeMethods.IsWindowsVistaOrLater;
 
         /// <summary>
         /// Gets a list of the buttons on the Task Dialog.
@@ -152,27 +104,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets the dialog's main instruction.
-        /// </summary>
-        /// <value>
-        /// The dialog's main instruction. The default is an empty string ("").
-        /// </value>
-        /// <remarks>
-        /// The main instruction of a task dialog will be displayed in a larger font and a different color than
-        /// the other text of the task dialog.
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The dialog's main instruction."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
-        public string MainInstruction
-        {
-            get => _config.pszMainInstruction ?? string.Empty;
-            set
-            {
-                _config.pszMainInstruction = string.IsNullOrEmpty(value) ? null : value;
-                SetElementText(NativeMethods.TaskDialogElements.MainInstruction, MainInstruction);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the dialog's primary content.
         /// </summary>
         /// <value>
@@ -187,31 +118,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 _config.pszContent = string.IsNullOrEmpty(value) ? null : value;
                 SetElementText(NativeMethods.TaskDialogElements.Content, Content);
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the icon to be used in the title bar of the dialog.
-        /// </summary>
-        /// <value>
-        /// An <see cref="System.Drawing.Icon"/> that represents the icon of the task dialog's window.
-        /// </value>
-        /// <remarks>
-        /// This property is used only when the dialog is shown as a modeless dialog; if the dialog
-        /// is modal, it will have no icon.
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The icon to be used in the title bar of the dialog. Used only when the dialog is shown as a modeless dialog."), DefaultValue(null)]
-        public System.Drawing.Icon? WindowIcon
-        {
-            get
-            {
-                if (IsDialogRunning)
-                {
-                    IntPtr icon = NativeMethods.SendMessage(Handle, NativeMethods.WM_GETICON, new IntPtr(NativeMethods.ICON_SMALL), IntPtr.Zero);
-                    return System.Drawing.Icon.FromHandle(icon);
-                }
-                return _windowIcon;
-            }
-            set => _windowIcon = value;
         }
 
 
@@ -353,27 +259,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         }
 
         /// <summary>
-        /// Specifies the width of the task dialog's client area in DLUs.
-        /// </summary>
-        /// <value>
-        /// The width of the task dialog's client area in DLUs, or 0 to have the task dialog calculate the ideal width.
-        /// The default value is 0.
-        /// </value>
-        [Localizable(true), Category("Appearance"), Description("the width of the task dialog's client area in DLU's. If 0, task dialog will calculate the ideal width."), DefaultValue(0)]
-        public int Width
-        {
-            get => (int)_config.cxWidth;
-            set
-            {
-                if (_config.cxWidth != (uint)value)
-                {
-                    _config.cxWidth = (uint)value;
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets or sets a value that indicates that the dialog should be able to be closed using Alt-F4, Escape and the title
         /// bar's close button even if no cancel button is specified.
         /// </summary>
@@ -417,91 +302,9 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             }
         }
 
-        /// <summary>
-        /// Gets or sets a value that indicates whether text is displayed right to left.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> when the content of the dialog is displayed right to left; otherwise, <see langword="false" />.
-        /// The default value is <see langword="false" />.
-        /// </value>
-        [Localizable(true), Category("Appearance"), Description("Indicates whether text is displayed right to left."), DefaultValue(false)]
-        public bool RightToLeft
-        {
-            get => GetFlag(NativeMethods.TaskDialogFlags.RtlLayout);
-            set
-            {
-                if (RightToLeft != value)
-                {
-                    SetFlag(NativeMethods.TaskDialogFlags.RtlLayout, value);
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates whether the dialog has a minimize box on its caption bar.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if the dialog has a minimize box on its caption bar when modeless; otherwise,
-        /// <see langword="false" />. The default is <see langword="false" />.
-        /// </value>
-        /// <remarks>
-        /// A task dialog can only have a minimize box if it is displayed as a modeless dialog. The minimize box
-        /// will never appear when using the designer "Preview" option, since that displays the dialog modally.
-        /// </remarks>
-        [Category("Window Style"), Description("Indicates whether the dialog has a minimize box on its caption bar."), DefaultValue(false)]
-        public bool MinimizeBox
-        {
-            get => GetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized);
-            set
-            {
-                if (MinimizeBox != value)
-                {
-                    SetFlag(NativeMethods.TaskDialogFlags.CanBeMinimized, value);
-                    UpdateDialog();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets an object that contains data about the dialog.
-        /// </summary>
-        /// <value>
-        /// An object that contains data about the dialog. The default value is <see langword="null" />.
-        /// </value>
-        /// <remarks>
-        /// Use this property to store arbitrary information about the dialog.
-        /// </remarks>
-        [Category("Data"), Description("User-defined data about the component."), DefaultValue(null)]
-        public object? Tag { get; set; }
-
         #endregion
 
         #region Public methods
-
-        /// <summary>
-        /// Shows the task dialog as a modeless dialog.
-        /// </summary>
-        /// <returns>The button that the user clicked. Can be <see langword="null" /> if the user cancelled the dialog using the
-        /// title bar close button.</returns>
-        /// <remarks>
-        /// <note>
-        ///   Although the dialog is modeless, this method does not return until the task dialog is closed.
-        /// </note>
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">
-        /// <para>
-        ///   One of the properties or a combination of properties is not valid.
-        /// </para>
-        /// <para>
-        ///   -or-
-        /// </para>
-        /// <para>
-        ///   The dialog is already running.
-        /// </para>
-        /// </exception>
-        /// <exception cref="NotSupportedException">Task dialogs are not supported on the current operating system.</exception>
-        public TaskDialogButton? Show() => ShowDialog(IntPtr.Zero);
 
         /// <summary>
         /// Shows the task dialog as a modal dialog.
@@ -558,34 +361,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         #region Protected methods
 
         /// <summary>
-        /// Raises the <see cref="ButtonClicked"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="TaskDialogItemClickedEventArgs"/> containing the data for the event.</param>
-        protected virtual void OnButtonClicked(TaskDialogItemClickedEventArgs e) => ButtonClicked?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="VerificationClicked"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnVerificationClicked(EventArgs e) => VerificationClicked?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="Created"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnCreated(EventArgs e) => Created?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="Destroyed"/> event.
-        /// </summary>
-        /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnDestroyed(EventArgs e) => Destroyed?.Invoke(this, e);
-
-        /// <summary>
         /// Raises the <see cref="HelpRequested"/> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
-        protected virtual void OnHelpRequested(EventArgs e) => HelpRequested?.Invoke(this, e);
+        private void OnHelpRequested(EventArgs e) => HelpRequested?.Invoke(this, e);
 
         #endregion
 
@@ -596,14 +375,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             if (IsDialogRunning)
             {
                 NativeMethods.SendMessage(Handle, (int)(item is TaskDialogButton ? NativeMethods.TaskDialogMessages.EnableButton : NativeMethods.TaskDialogMessages.EnableRadioButton), new IntPtr(item.Id), new IntPtr(item.Enabled ? 1 : 0));
-            }
-        }
-
-        internal void SetButtonElevationRequired(TaskDialogButton button)
-        {
-            if (IsDialogRunning)
-            {
-                NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.SetButtonElevationRequiredState, new IntPtr(button.Id), new IntPtr(button.ElevationRequired ? 1 : 0));
             }
         }
 
@@ -623,11 +394,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         private TaskDialogButton? ShowDialog(IntPtr owner)
         {
-            if (!OSSupportsTaskDialogs)
-            {
-                throw new NotSupportedException(OokiiResources.TaskDialogsNotSupportedError);
-            }
-
             if (IsDialogRunning)
             {
                 throw new InvalidOperationException(OokiiResources.TaskDialogRunningError);
@@ -724,10 +490,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             }
         }
 
-        private void SetupIcon()
-        {
-            SetupIcon(MainIcon, CustomMainIcon, NativeMethods.TaskDialogFlags.UseHIconMain);
-        }
+        private void SetupIcon() => SetupIcon(MainIcon, CustomMainIcon, NativeMethods.TaskDialogFlags.UseHIconMain);
 
         private void SetupIcon(TaskDialogIcon icon, System.Drawing.Icon? customIcon, NativeMethods.TaskDialogFlags flag)
         {
@@ -853,11 +616,9 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                     case NativeMethods.TaskDialogNotifications.Created:
                         _handle = hwnd;
                         DialogCreated();
-                        OnCreated(EventArgs.Empty);
                         break;
                     case NativeMethods.TaskDialogNotifications.Destroyed:
                         _handle = IntPtr.Zero;
-                        OnDestroyed(EventArgs.Empty);
                         break;
                     case NativeMethods.TaskDialogNotifications.Navigated:
                         DialogCreated();
@@ -866,13 +627,11 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                         if (_buttonsById!.TryGetValue((int)wParam, out TaskDialogButton button))
                         {
                             var e = new TaskDialogItemClickedEventArgs(button);
-                            OnButtonClicked(e);
                             if (e.Cancel) return 1;
                         }
                         break;
                     case NativeMethods.TaskDialogNotifications.VerificationClicked:
                         IsVerificationChecked = (int)wParam == 1;
-                        OnVerificationClicked(EventArgs.Empty);
                         break;
                     case NativeMethods.TaskDialogNotifications.Help:
                         OnHelpRequested(EventArgs.Empty);
@@ -889,15 +648,9 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         private void DialogCreated()
         {
-            if (_config.hwndParent == IntPtr.Zero && _windowIcon != null)
-            {
-                NativeMethods.SendMessage(Handle, NativeMethods.WM_SETICON, new IntPtr(NativeMethods.ICON_SMALL), _windowIcon.Handle);
-            }
-
             foreach (TaskDialogButton button in Buttons)
             {
                 if (!button.Enabled) SetItemEnabled(button);
-                if (button.ElevationRequired) SetButtonElevationRequired(button);
             }
         }
 
@@ -937,5 +690,25 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         }
 
         #endregion
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing"><see langword="true" /> if managed resources should be disposed; otherwise, <see langword="false" />.</param>
+        protected override void Dispose(bool disposing)
+        {
+            try
+            {
+                if (disposing && _buttons != null)
+                {
+                    foreach (TaskDialogButton button in _buttons) button.Dispose();
+                    _buttons.Clear();
+                }
+            }
+            finally
+            {
+                base.Dispose(disposing);
+            }
+        }
     }
 }

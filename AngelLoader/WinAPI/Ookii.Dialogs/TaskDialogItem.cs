@@ -11,37 +11,26 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     /// Represents a button or radio button on a task dialog.
     /// </summary>
     /// <threadsafety instance="false" static="true" />
-    [ToolboxItem(false), DesignTimeVisible(false), DefaultProperty("Text"), DefaultEvent("Click")]
     [PublicAPI]
-    public abstract partial class TaskDialogItem : Component
+    public abstract class TaskDialogItem : Component
     {
         private TaskDialog? _owner;
         private int _id;
         private bool _enabled = true;
         private string? _text;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TaskDialogItem"/> class.
-        /// </summary>
-        protected TaskDialogItem() => InitializeComponent();
+        protected TaskDialogItem() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskDialogItem"/> class with the specified container.
         /// </summary>
         /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialogItem"/> to.</param>
-        protected TaskDialogItem(IContainer? container)
-        {
-            container?.Add(this);
+        protected TaskDialogItem(IContainer? container) => container?.Add(this);
 
-            InitializeComponent();
-        }
-
+        // The item cannot have an owner at this point, so it's not needed to check for duplicates,
+        // which is why we can safely use the field and not the property, avoiding the virtual method call.
         internal TaskDialogItem(int id)
         {
-            InitializeComponent();
-
-            // The item cannot have an owner at this point, so it's not needed to check for duplicates,
-            // which is why we can safely use the field and not the property, avoiding the virtual method call.
             _id = id;
         }
 
@@ -137,28 +126,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 _id = value;
                 UpdateOwner();
             }
-        }
-
-        /// <summary>
-        /// Simulates a click on the task dialog item.
-        /// </summary>
-        /// <remarks>
-        /// This method is available only while the task dialog is being displayed. You would typically call
-        /// it from one of the events fired by the <see cref="TaskDialog"/> class while the dialog is visible.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">
-        /// <para>The task dialog is not being displayed</para>
-        /// <para>-or-</para>
-        /// <para>The item has no associated task dialog.</para>
-        /// </exception>
-        public void Click()
-        {
-            if (Owner == null)
-            {
-                throw new InvalidOperationException(OokiiResources.NoAssociatedTaskDialogError);
-            }
-
-            Owner.ClickItem(this);
         }
 
         /// <summary>

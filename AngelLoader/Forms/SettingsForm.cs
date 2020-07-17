@@ -1105,7 +1105,7 @@ namespace AngelLoader.Forms
         {
             var tb = PathsPage.BackupPathTextBox;
 
-            using (var d = new AutoFolderBrowserDialog())
+            using (var d = new VistaFolderBrowserDialog())
             {
                 d.InitialDirectory = tb.Text;
                 d.MultiSelect = false;
@@ -1146,7 +1146,7 @@ namespace AngelLoader.Forms
 
         private void AddFMArchivePathButton_Click(object sender, EventArgs e)
         {
-            using var d = new AutoFolderBrowserDialog();
+            using var d = new VistaFolderBrowserDialog();
 
             var lb = PathsPage.FMArchivePathsListBox;
             string initDir =

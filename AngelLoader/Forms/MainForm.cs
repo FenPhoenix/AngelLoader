@@ -266,36 +266,6 @@ namespace AngelLoader.Forms
             return result == DialogResult.Yes;
         }
 
-        public (bool Cancel, bool Continue)
-        AskToContinueWithCancel(string message, string title)
-        {
-            var result = MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-            return result == DialogResult.Cancel ? (true, false) : (false, result == DialogResult.Yes);
-        }
-
-        public (bool Cancel, bool Continue, bool DontAskAgain)
-        AskToContinueWithCancel_TD(string message, string title)
-        {
-            using var d = new TaskDialog();
-            using var yesButton = new TaskDialogButton(ButtonType.Yes);
-            using var noButton = new TaskDialogButton(ButtonType.No);
-            using var cancelButton = new TaskDialogButton(ButtonType.Cancel);
-
-            d.AllowDialogCancellation = true;
-            d.ButtonStyle = TaskDialogButtonStyle.Standard;
-            d.WindowTitle = title;
-            d.Content = message;
-            d.VerificationText = LText.AlertMessages.DontAskAgain;
-            d.Buttons.Add(yesButton);
-            d.Buttons.Add(noButton);
-            d.Buttons.Add(cancelButton);
-            var buttonClicked = d.ShowDialog();
-            bool cancel = buttonClicked == null || buttonClicked == cancelButton;
-            bool cont = buttonClicked == yesButton;
-            bool dontAskAgain = d.IsVerificationChecked;
-            return (cancel, cont, dontAskAgain);
-        }
-
         public (bool Cancel, bool Continue, bool DontAskAgain)
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
             bool showDontAskAgain, string yes, string no, string cancel, ButtonType? defaultButton = null)

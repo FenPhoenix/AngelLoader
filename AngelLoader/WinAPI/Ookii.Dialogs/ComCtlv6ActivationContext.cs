@@ -17,7 +17,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         internal ComCtlv6ActivationContext(bool enable)
         {
-            if (enable && NativeMethods.IsWindowsXPOrLater)
+            if (enable)
             {
                 if (EnsureActivateContextCreated())
                 {

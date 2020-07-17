@@ -15,7 +15,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     public class TaskDialogButton : TaskDialogItem
     {
         private ButtonType _type;
-        private bool _elevationRequired;
         private bool _default;
         private string? _commandLinkNote;
 
@@ -127,30 +126,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 UpdateOwner();
             }
         }
-
-        /// <summary>
-        /// Gets or sets a value that indicates whether the Task Dialog button or command link should have a 
-        /// User Account Control (UAC) shield icon (in other words, whether the action invoked by the 
-        /// button requires elevation). 
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if the button contains a UAC shield icon; otherwise, <see langword="false" />.
-        /// </value>
-        /// <remarks>
-        /// Elevation is not performed by the task dialog; the code implementing the operation that results from
-        /// the button being clicked is responsible for performing elevation if required.
-        /// </remarks>
-        [Category("Behavior"), Description("Indicates whether the Task Dialog button or command link should have a User Account Control (UAC) shield icon (in other words, whether the action invoked by the button requires elevation)."), DefaultValue(false)]
-        public bool ElevationRequired
-        {
-            get => _elevationRequired;
-            set
-            {
-                _elevationRequired = value;
-                Owner?.SetButtonElevationRequired(this);
-            }
-        }
-
 
         internal override int Id
         {
