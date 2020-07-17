@@ -705,8 +705,8 @@ namespace AngelLoader.Forms
             // This path supports working with the designer.
             InitializeComponent();
 #else
-            // The fast path - a custom method where I generate the code by copying from the designer-generated
-            // method and tweaking as I see fit for speed and lazy-loading support.
+            // The fast path - a custom method with all or most cruft stripped out, copied by hand from the
+            // designer-generated method and tweaked as I see fit for speed and lazy-loading support.
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
             InitComponentManual();
 
