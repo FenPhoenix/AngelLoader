@@ -1,158 +1,136 @@
-// Copyright (c) Sven Groot (Ookii.org) 2009
-// BSD license; see LICENSE for details.
-using System;
-using System.Collections.ObjectModel;
-using JetBrains.Annotations;
+//// Copyright (c) Sven Groot (Ookii.org) 2009
+//// BSD license; see LICENSE for details.
+//using System;
+//using System.Collections.ObjectModel;
+//using JetBrains.Annotations;
 
-namespace AngelLoader.WinAPI.Ookii.Dialogs
-{
-    /*
-    Fen's note: Even though it says none of these methods are called, it's wrong, they are. They're called like:
+//namespace AngelLoader.WinAPI.Ookii.Dialogs
+//{
+//    /*
+//    Fen's note: Even though it says none of these methods are called, it's wrong, they are. They're called like:
 
-    using var d = new TaskDialog();
-    using var yesButton = new TaskDialogButton(yes);
-    d.Buttons.Add(yesButton);
+//    using var d = new TaskDialog();
+//    using var yesButton = new TaskDialogButton(yes);
+//    d.Buttons.Add(yesButton);
 
-    (TaskDialogItemCollection inherits from Collection<T>, so Collection<T>.Add() is called)
+//    (TaskDialogItemCollection inherits from Collection<T>, so Collection<T>.Add() is called)
 
-    class Collection<T>
-    {
-        public void Add(T item)
-        {
-            this.InsertItem(this.items.Count, item);
-        }
-    }
+//    class Collection<T>
+//    {
+//        public void Add(T item)
+//        {
+//            this.InsertItem(this.items.Count, item);
+//        }
+//    }
 
-    Inheritance is garbage. Even one level and your brain is done. Finished. You can't grok the logic. And
-    apparently, neither can the static analyzer. I'll hold the rant. For now.
-    */
+//    Inheritance is garbage. Even one level and your brain is done. Finished. You can't grok the logic. And
+//    apparently, neither can the static analyzer. I'll hold the rant. For now.
+//    */
 
-    /// <summary>
-    /// Represents a list of <see cref="TaskDialogItem"/> objects.
-    /// </summary>
-    /// <typeparam name="T">The type of the task dialog item.</typeparam>
-    /// <threadsafety instance="false" static="true" />
-    [PublicAPI]
-    public class TaskDialogItemCollection<T> : Collection<T> where T : TaskDialogItem
-    {
-        private readonly TaskDialog _owner;
+//    /// <summary>
+//    /// Represents a list of <see cref="TaskDialogItem"/> objects.
+//    /// </summary>
+//    /// <typeparam name="T">The type of the task dialog item.</typeparam>
+//    /// <threadsafety instance="false" static="true" />
+//    [PublicAPI]
+//    public class TaskDialogItemCollection<T> : Collection<T> where T : TaskDialogButton
+//    {
+//        private readonly TaskDialog _owner;
 
-        internal TaskDialogItemCollection(TaskDialog owner) => _owner = owner;
+//        internal TaskDialogItemCollection(TaskDialog owner) => _owner = owner;
 
-        /// <summary>
-        /// Overrides the <see cref="Collection{T}.ClearItems"/> method.
-        /// </summary>
-        protected override void ClearItems()
-        {
-            foreach (T item in this) item.Owner = null;
+//        /// <summary>
+//        /// Overrides the <see cref="Collection{T}.ClearItems"/> method.
+//        /// </summary>
+//        protected override void ClearItems()
+//        {
+//            foreach (T item in this) item.Owner = null;
 
-            base.ClearItems();
-            _owner.UpdateDialog();
-        }
+//            base.ClearItems();
+//        }
 
-        /// <summary>
-        /// Overrides the <see cref="Collection{T}.InsertItem"/> method.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-        /// <param name="item">The object to insert. May not be <see langword="null" />.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="item"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentException">The <see cref="TaskDialogItem"/> specified in <paramref name="item" /> is already associated with a different task dialog.</exception>
-        /// <exception cref="InvalidOperationException">The <see cref="TaskDialogItem"/> specified in <paramref name="item" /> has a duplicate id or button type.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <para>
-        ///   <paramref name="index"/> is less than zero.
-        /// </para>
-        /// <para>
-        ///   -or-
-        /// </para>
-        /// <para>
-        ///   <paramref name="index" /> is equal to or greater than <see cref="Collection{T}.Count"/>.
-        /// </para>
-        /// </exception>
-        protected override void InsertItem(int index, T item)
-        {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+//        /// <summary>
+//        /// Overrides the <see cref="Collection{T}.InsertItem"/> method.
+//        /// </summary>
+//        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+//        /// <param name="item">The object to insert. May not be <see langword="null" />.</param>
+//        /// <exception cref="ArgumentNullException"><paramref name="item"/> is <see langword="null" />.</exception>
+//        /// <exception cref="ArgumentException">The <see cref="TaskDialogButton"/> specified in <paramref name="item" /> is already associated with a different task dialog.</exception>
+//        /// <exception cref="InvalidOperationException">The <see cref="TaskDialogButton"/> specified in <paramref name="item" /> has a duplicate id or button type.</exception>
+//        /// <exception cref="ArgumentOutOfRangeException">
+//        /// <para>
+//        ///   <paramref name="index"/> is less than zero.
+//        /// </para>
+//        /// <para>
+//        ///   -or-
+//        /// </para>
+//        /// <para>
+//        ///   <paramref name="index" /> is equal to or greater than <see cref="Collection{T}.Count"/>.
+//        /// </para>
+//        /// </exception>
+//        protected override void InsertItem(int index, T item)
+//        {
+//            if (item == null) throw new ArgumentNullException(nameof(item));
 
-            if (item.Owner != null) throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
+//            if (item.Owner != null) throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
 
-            item.Owner = _owner;
-            try
-            {
-                item.CheckDuplicate(null);
-            }
-            catch (InvalidOperationException)
-            {
-                item.Owner = null;
-                throw;
-            }
+//            item.Owner = _owner;
 
-            base.InsertItem(index, item);
-            _owner.UpdateDialog();
-        }
+//            base.InsertItem(index, item);
+//        }
 
-        /// <summary>
-        /// Overrides the <see cref="Collection{T}.RemoveItem"/> method.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to remove.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <para>
-        ///   <paramref name="index"/> is less than zero.
-        /// </para>
-        /// <para>
-        ///   -or-
-        /// </para>
-        /// <para>
-        ///   <paramref name="index" /> is equal to or greater than <see cref="Collection{T}.Count"/>.
-        /// </para>
-        /// </exception>
-        protected override void RemoveItem(int index)
-        {
-            base[index].Owner = null;
-            base.RemoveItem(index);
-            _owner.UpdateDialog();
-        }
+//        /// <summary>
+//        /// Overrides the <see cref="Collection{T}.RemoveItem"/> method.
+//        /// </summary>
+//        /// <param name="index">The zero-based index of the element to remove.</param>
+//        /// <exception cref="ArgumentOutOfRangeException">
+//        /// <para>
+//        ///   <paramref name="index"/> is less than zero.
+//        /// </para>
+//        /// <para>
+//        ///   -or-
+//        /// </para>
+//        /// <para>
+//        ///   <paramref name="index" /> is equal to or greater than <see cref="Collection{T}.Count"/>.
+//        /// </para>
+//        /// </exception>
+//        protected override void RemoveItem(int index)
+//        {
+//            base[index].Owner = null;
+//            base.RemoveItem(index);
+//        }
 
-        /// <summary>
-        /// Overrides the <see cref="Collection{T}.SetItem"/> method.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to replace.</param>
-        /// <param name="item">The new value for the element at the specified index. May not be <see langword="null" />.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="item"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentException">The <see cref="TaskDialogItem"/> specified in <paramref name="item" /> is already associated with a different task dialog.</exception>
-        /// <exception cref="InvalidOperationException">The <see cref="TaskDialogItem"/> specified in <paramref name="item" /> has a duplicate id or button type.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <para>
-        ///   <paramref name="index"/> is less than zero.
-        /// </para>
-        /// <para>
-        ///   -or-
-        /// </para>
-        /// <para>
-        ///   <paramref name="index" /> is equal to or greater than <see cref="Collection{T}.Count"/>.
-        /// </para>
-        /// </exception>
-        protected override void SetItem(int index, T item)
-        {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+//        /// <summary>
+//        /// Overrides the <see cref="Collection{T}.SetItem"/> method.
+//        /// </summary>
+//        /// <param name="index">The zero-based index of the element to replace.</param>
+//        /// <param name="item">The new value for the element at the specified index. May not be <see langword="null" />.</param>
+//        /// <exception cref="ArgumentNullException"><paramref name="item"/> is <see langword="null" />.</exception>
+//        /// <exception cref="ArgumentException">The <see cref="TaskDialogButton"/> specified in <paramref name="item" /> is already associated with a different task dialog.</exception>
+//        /// <exception cref="InvalidOperationException">The <see cref="TaskDialogButton"/> specified in <paramref name="item" /> has a duplicate id or button type.</exception>
+//        /// <exception cref="ArgumentOutOfRangeException">
+//        /// <para>
+//        ///   <paramref name="index"/> is less than zero.
+//        /// </para>
+//        /// <para>
+//        ///   -or-
+//        /// </para>
+//        /// <para>
+//        ///   <paramref name="index" /> is equal to or greater than <see cref="Collection{T}.Count"/>.
+//        /// </para>
+//        /// </exception>
+//        protected override void SetItem(int index, T item)
+//        {
+//            if (item == null) throw new ArgumentNullException(nameof(item));
 
-            if (base[index] == item) return;
+//            if (base[index] == item) return;
 
-            if (item.Owner != null) throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
+//            if (item.Owner != null) throw new ArgumentException(OokiiResources.TaskDialogItemHasOwnerError);
 
-            item.Owner = _owner;
-            try
-            {
-                item.CheckDuplicate(base[index]);
-            }
-            catch (InvalidOperationException)
-            {
-                item.Owner = null;
-                throw;
-            }
+//            item.Owner = _owner;
 
-            base[index].Owner = null;
-            base.SetItem(index, item);
-            _owner.UpdateDialog();
-        }
-    }
-}
+//            base[index].Owner = null;
+//            base.SetItem(index, item);
+//        }
+//    }
+//}

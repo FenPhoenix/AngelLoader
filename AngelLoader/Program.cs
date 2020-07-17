@@ -46,13 +46,13 @@ namespace AngelLoader
 
             // Do this after the startup log so we don't try to log something at the same time as the non-lock-
             // protected startup log
-            AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
-            {
-                if (e.Exception.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
-                {
-                    Log("Exception thrown", e.Exception);
-                }
-            };
+            //AppDomain.CurrentDomain.FirstChanceException += (sender, e) =>
+            //{
+            //    if (e.Exception.TargetSite.DeclaringType?.Assembly == Assembly.GetExecutingAssembly())
+            //    {
+            //        Log("Exception thrown", e.Exception);
+            //    }
+            //};
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

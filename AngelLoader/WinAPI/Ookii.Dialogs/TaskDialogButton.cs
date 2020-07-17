@@ -1,8 +1,8 @@
 // Copyright (c) Sven Groot (Ookii.org) 2009
 // BSD license; see LICENSE for details.
 using System;
+using System.Collections;
 using System.ComponentModel;
-using System.Drawing.Design;
 using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Ookii.Dialogs
@@ -11,16 +11,15 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     /// A button on a <see cref="TaskDialog"/>.
     /// </summary>
     /// <threadsafety instance="false" static="true" />
-    [PublicAPI]
-    public class TaskDialogButton : TaskDialogItem
+    //[PublicAPI]
+    public class TaskDialogButton : Component//: TaskDialogItem
     {
         private ButtonType _type;
-        private bool _default;
-        private string? _commandLinkNote;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TaskDialogButton"/> class.
-        /// </summary>
+        private int _id;
+
+        //private TaskDialog? _owner;
+
         public TaskDialogButton()
         {
         }
@@ -29,14 +28,12 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Initializes a new instance of the <see cref="TaskDialogButton"/> class with the specified button type.
         /// </summary>
         /// <param name="type">The type of the button.</param>
-        public TaskDialogButton(ButtonType type) : base((int)type) => _type = type;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TaskDialogButton"/> class with the specified container.
-        /// </summary>
-        /// <param name="container">The <see cref="IContainer"/> to add the <see cref="TaskDialogButton"/> to.</param>
-        public TaskDialogButton(IContainer container) : base(container)
+        public TaskDialogButton(ButtonType type)
         {
+            // The item cannot have an owner at this point, so it's not needed to check for duplicates,
+            // which is why we can safely use the field and not the property, avoiding the virtual method call.
+            _id = (int)type;
+            _type = type;
         }
 
         /// <summary>
@@ -45,114 +42,63 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <param name="text">The text of the button.</param>
         public TaskDialogButton(string text) => Text = text;
 
-        /// <summary>
-        /// Gets or sets the type of the button.
-        /// </summary>
-        /// <value>
-        /// One of the <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ButtonType"/> values that indicates the type of the button. The default value
-        /// is <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ButtonType.Custom"/>.
-        /// </value>
-        [Category("Appearance"), Description("The type of the button."), DefaultValue(ButtonType.Custom)]
+
+        public string Text { get; set; } = "";
+
         public ButtonType ButtonType
         {
             get => _type;
             set
             {
-                if (value != ButtonType.Custom)
-                {
-                    CheckDuplicateButton(value, null);
-                    _type = value;
-                    base.Id = (int)value;
-                }
-                else
-                {
-                    _type = value;
-                    AutoAssignId();
-                    UpdateOwner();
-                }
+                _type = value;
+                //if (value != ButtonType.Custom)
+                //{
+                //    _type = value;
+                //    Id = (int)value;
+                //}
+                //else
+                //{
+                //    _type = value;
+                //    AutoAssignId();
+                //}
             }
         }
 
-        /// <summary>
-        /// Gets or sets the text of the note associated with a command link button.
-        /// </summary>
-        /// <value>
-        /// The text of the note associated with a command link button.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        ///   This property applies only to buttons where the <see cref="Type"/> property
-        ///   is <see cref="AngelLoader.WinAPI.Ookii.Dialogs.ButtonType.Custom"/>. For other button types, it is ignored.
-        /// </para>
-        /// <para>
-        ///   In addition, it is used only if the <see cref="TaskDialog.ButtonStyle"/> property is set to
-        ///   <see cref="TaskDialogButtonStyle.CommandLinks"/> or <see cref="TaskDialogButtonStyle.CommandLinksNoIcon"/>;
-        ///   otherwise, it is ignored.
-        /// </para>
-        /// </remarks>
-        [Localizable(true), Category("Appearance"), Description("The text of the note associated with a command link button."), DefaultValue(""), Editor(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(UITypeEditor))]
-        public string CommandLinkNote
+        public string CommandLinkNote { get; set; } = "";
+
+        public bool Default { get; set; }
+
+        internal int Id
         {
-            get => _commandLinkNote ?? string.Empty;
+            get => _id;
             set
             {
-                _commandLinkNote = value;
-                UpdateOwner();
+                _id = value;
+                //if (_id != value)
+                //{
+                //    if (_type != ButtonType.Custom)
+                //    {
+                //        throw new InvalidOperationException(OokiiResources.NonCustomTaskDialogButtonIdError);
+                //    }
+
+                //    _id = value;
+                //}
             }
         }
 
-        /// <summary>
-        /// Gets or sets a value that indicates if the button is the default button on the dialog.
-        /// </summary>
-        /// <value><see langword="true" /> if the button is the default button; otherwise, <see langword="false" />.
-        /// The default value is <see langword="false" />.</value>
-        /// <remarks>
-        /// If no button has this property set to <see langword="true" />, the first button on the dialog will be the default button.
-        /// </remarks>
-        [Category("Behavior"), Description("Indicates if the button is the default button on the dialog."), DefaultValue(false)]
-        public bool Default
+        private void AutoAssignId()
         {
-            get => _default;
-            set
-            {
-                _default = value;
-                if (value && Owner != null)
-                {
-                    foreach (TaskDialogButton button in Owner.Buttons)
-                    {
-                        if (button != this) button.Default = false;
-                    }
-                }
-                UpdateOwner();
-            }
-        }
+            //if (_type == ButtonType.Custom)
+            //{
+            //    if (ItemCollection == null) return;
 
-        internal override int Id
-        {
-            get => base.Id;
-            set
-            {
-                if (base.Id != value)
-                {
-                    if (_type != ButtonType.Custom)
-                    {
-                        throw new InvalidOperationException(OokiiResources.NonCustomTaskDialogButtonIdError);
-                    }
-
-                    base.Id = value;
-                }
-            }
-        }
-
-        internal override void AutoAssignId()
-        {
-            if (_type == ButtonType.Custom) base.AutoAssignId();
-        }
-
-        internal override void CheckDuplicate(TaskDialogItem? itemToExclude)
-        {
-            CheckDuplicateButton(_type, itemToExclude);
-            base.CheckDuplicate(itemToExclude);
+            //    int highestId = 9;
+            //    foreach (TaskDialogButton item in ItemCollection)
+            //    {
+            //        if (item.Id > highestId) highestId = item.Id;
+            //    }
+            //    Id = highestId + 1;
+            //}
         }
 
         internal NativeMethods.TaskDialogCommonButtonFlags ButtonFlag => _type switch
@@ -165,27 +111,5 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             ButtonType.Close => NativeMethods.TaskDialogCommonButtonFlags.CloseButton,
             _ => 0
         };
-
-        /// <summary>
-        /// Gets the collection that items of this type are part of.
-        /// </summary>
-        /// <value>
-        /// If the <see cref="TaskDialogButton"/> is currently associated with a <see cref="TaskDialog"/>, the
-        /// <see cref="TaskDialog.Buttons"/> collection of that <see cref="TaskDialog"/>; otherwise, <see langword="null" />.
-        /// </value>
-        protected override System.Collections.IEnumerable? ItemCollection => Owner?.Buttons;
-
-        private void CheckDuplicateButton(ButtonType? type, TaskDialogItem? itemToExclude)
-        {
-            if (type == ButtonType.Custom || Owner == null) return;
-
-            foreach (TaskDialogButton button in Owner.Buttons)
-            {
-                if (button != this && button != itemToExclude && button.ButtonType == type)
-                {
-                    throw new InvalidOperationException(OokiiResources.DuplicateButtonTypeError);
-                }
-            }
-        }
     }
 }

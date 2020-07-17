@@ -16,7 +16,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Initializes a new instance of the <see cref="TaskDialogItemClickedEventArgs"/> class with the specified item.
         /// </summary>
         /// <param name="item">The <see cref="TaskDialogItem"/> that was clicked.</param>
-        public TaskDialogItemClickedEventArgs(TaskDialogItem item) => Item = item;
+        public TaskDialogItemClickedEventArgs(TaskDialogButton item) => Item = item;
 
         /// <summary>
         /// Gets the item that was clicked.
@@ -24,6 +24,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <value>
         /// The <see cref="TaskDialogItem"/> that was clicked.
         /// </value>
-        public TaskDialogItem Item { get; }
+        public TaskDialogButton Item { get; }
     }
 }

@@ -270,20 +270,11 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
             bool showDontAskAgain, string yes, string no, string cancel, ButtonType? defaultButton = null)
         {
-            using var d = new TaskDialog();
+            //using var d = new TaskDialog();
             using var yesButton = new TaskDialogButton(yes);
             using var noButton = new TaskDialogButton(no);
             using var cancelButton = new TaskDialogButton(cancel);
 
-            d.AllowDialogCancellation = true;
-            if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
-            d.ButtonStyle = TaskDialogButtonStyle.Standard;
-            d.WindowTitle = title;
-            d.Content = message;
-            if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
-            d.Buttons.Add(yesButton);
-            d.Buttons.Add(noButton);
-            d.Buttons.Add(cancelButton);
             if (defaultButton != null)
             {
                 switch (defaultButton)
@@ -297,8 +288,37 @@ namespace AngelLoader.Forms
                     case ButtonType.Cancel:
                         cancelButton.Default = true;
                         break;
+                    default:
+                        yesButton.Default = true;
+                        break;
                 }
             }
+            else
+            {
+                yesButton.Default = true;
+            }
+            //d.Buttons.Add(yesButton);
+            //d.Buttons.Add(noButton);
+            //d.Buttons.Add(cancelButton);
+
+            //d.TraceWriteButtonIds();
+
+            var buttons = new List<WinAPI.Ookii.Dialogs.TaskDialogButton>
+            {
+                yesButton,
+                noButton,
+                cancelButton
+            };
+
+            using var d = new TaskDialog(buttons);
+
+            d.AllowDialogCancellation = true;
+            if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
+            d.ButtonStyle = TaskDialogButtonStyle.Standard;
+            d.WindowTitle = title;
+            d.Content = message;
+            if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
+
             var buttonClicked = d.ShowDialog();
             bool canceled = buttonClicked == null || buttonClicked == cancelButton;
             bool cont = buttonClicked == yesButton;

@@ -4,10 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing.Design;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls.Static_LazyLoaded;
 using JetBrains.Annotations;
 
 namespace AngelLoader.WinAPI.Ookii.Dialogs
@@ -35,7 +38,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         #region Fields
 
-        private TaskDialogItemCollection<TaskDialogButton>? _buttons;
+        private List<TaskDialogButton>? _buttons;
         private NativeMethods.TASKDIALOGCONFIG _config;
         private TaskDialogIcon _mainIcon;
         private System.Drawing.Icon? _customMainIcon;
@@ -47,6 +50,47 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         #endregion
 
         #region Constructors
+
+        public TaskDialog(IEnumerable<TaskDialogButton> buttons)
+        {
+            //int highestId = 10;
+            foreach (var button in buttons)
+            {
+                //button.Owner = this;
+                Buttons.Add(button);
+                //if (button.ButtonType == ButtonType.Custom)
+                //{
+                //    button.Id = highestId;
+                //    highestId++;
+                //}
+                //else
+                //{
+                //    button.Id = (int)button.ButtonType;
+                //}
+                if (button.ButtonType == ButtonType.Custom)
+                {
+                    //if (ItemCollection == null) return;
+
+                    int highestId = 9;
+                    foreach (TaskDialogButton item in Buttons)
+                    {
+                        if (item.Id > highestId) highestId = item.Id;
+                    }
+                    button.Id = highestId + 1;
+                }
+            }
+
+
+            TraceWriteButtonIds();
+        }
+
+        public void TraceWriteButtonIds()
+        {
+            foreach (var b in Buttons)
+            {
+                Trace.WriteLine("b.Id: " + b.Id);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskDialog"/> class.
@@ -83,8 +127,10 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// Custom buttons are displayed in the order they have in the collection. Standard buttons will always be displayed
         /// in the Windows-defined order, regardless of the order of the buttons in the collection.
         /// </remarks>
-        [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Category("Appearance"), Description("A list of the buttons on the Task Dialog.")]
-        public TaskDialogItemCollection<TaskDialogButton> Buttons => _buttons ??= new TaskDialogItemCollection<TaskDialogButton>(this);
+        [Localizable(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Content),
+         Category("Appearance"), Description("A list of the buttons on the Task Dialog.")]
+        //public TaskDialogItemCollection<TaskDialogButton> Buttons => _buttons ??= new TaskDialogItemCollection<TaskDialogButton>(this);
+        public List<TaskDialogButton> Buttons => _buttons ??= new List<TaskDialogButton>();
 
         /// <summary>
         /// Gets or sets the window title of the task dialog.
@@ -99,7 +145,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             set
             {
                 _config.pszWindowTitle = string.IsNullOrEmpty(value) ? null : value;
-                UpdateDialog();
+                //UpdateDialog();
             }
         }
 
@@ -141,7 +187,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 if (_mainIcon != value)
                 {
                     _mainIcon = value;
-                    UpdateDialog();
+                    //UpdateDialog();
                 }
             }
         }
@@ -165,7 +211,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 if (_customMainIcon != value)
                 {
                     _customMainIcon = value;
-                    UpdateDialog();
+                    //UpdateDialog();
                 }
             }
         }
@@ -199,7 +245,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             {
                 SetFlag(NativeMethods.TaskDialogFlags.UseCommandLinks, value == TaskDialogButtonStyle.CommandLinks);
                 SetFlag(NativeMethods.TaskDialogFlags.UseCommandLinksNoIcon, value == TaskDialogButtonStyle.CommandLinksNoIcon);
-                UpdateDialog();
+                //UpdateDialog();
             }
         }
 
@@ -223,7 +269,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 if (_config.pszVerificationText != realValue)
                 {
                     _config.pszVerificationText = realValue;
-                    UpdateDialog();
+                    //UpdateDialog();
                 }
             }
         }
@@ -276,7 +322,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 if (AllowDialogCancellation != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.AllowDialogCancellation, value);
-                    UpdateDialog();
+                    //UpdateDialog();
                 }
             }
         }
@@ -297,7 +343,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 if (CenterParent != value)
                 {
                     SetFlag(NativeMethods.TaskDialogFlags.PositionRelativeToWindow, value);
-                    UpdateDialog();
+                    //UpdateDialog();
                 }
             }
         }
@@ -336,6 +382,8 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <returns></returns>
         public TaskDialogButton? ShowDialog(IWin32Window? owner)
         {
+            //UpdateDialog();
+
             IntPtr ownerHandle = owner?.Handle ?? NativeMethods.GetActiveWindow();
             return ShowDialog(ownerHandle);
         }
@@ -370,24 +418,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         #region Internal Members
 
-        internal void SetItemEnabled(TaskDialogItem item)
-        {
-            if (IsDialogRunning)
-            {
-                NativeMethods.SendMessage(Handle, (int)(item is TaskDialogButton ? NativeMethods.TaskDialogMessages.EnableButton : NativeMethods.TaskDialogMessages.EnableRadioButton), new IntPtr(item.Id), new IntPtr(item.Enabled ? 1 : 0));
-            }
-        }
-
-        internal void ClickItem(TaskDialogItem item)
-        {
-            if (!IsDialogRunning)
-            {
-                throw new InvalidOperationException(OokiiResources.TaskDialogNotRunningError);
-            }
-
-            NativeMethods.SendMessage(Handle, (int)(item is TaskDialogButton ? NativeMethods.TaskDialogMessages.ClickButton : NativeMethods.TaskDialogMessages.ClickRadioButton), new IntPtr(item.Id), IntPtr.Zero);
-        }
-
         #endregion
 
         #region Private members
@@ -419,11 +449,52 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 bool verificationFlagChecked;
                 using (new ComCtlv6ActivationContext(true))
                 {
-                    NativeMethods.TaskDialogIndirect(ref _config, out buttonId, out _, out verificationFlagChecked);
+                    var tl = new List<string>
+                    {
+                        nameof(_config.cbSize) + " = " + _config.cbSize,
+                        nameof(_config.hwndParent) + " = " + _config.hwndParent,
+                        nameof(_config.hInstance) + " = " + _config.hInstance,
+                        nameof(_config.dwFlags) + " = " + _config.dwFlags,
+                        nameof(_config.dwCommonButtons) + " = " + _config.dwCommonButtons,
+                        nameof(_config.pszWindowTitle) + " = " + (_config.pszWindowTitle ?? ""),
+                        nameof(_config.hMainIcon) + " = " + _config.hMainIcon,
+                        nameof(_config.pszMainInstruction) + " = " + (_config.pszMainInstruction ?? ""),
+                        nameof(_config.pszContent) + " = " + (_config.pszContent ?? ""),
+                        nameof(_config.cButtons) + " = " + _config.cButtons,
+                        nameof(_config.pButtons) + " = " + _config.pButtons,
+                        nameof(_config.nDefaultButton) + " = " + _config.nDefaultButton,
+                        nameof(_config.cRadioButtons) + " = " + _config.cRadioButtons,
+                        nameof(_config.pRadioButtons) + " = " + _config.pRadioButtons,
+                        nameof(_config.nDefaultRadioButton) + " = " + _config.nDefaultRadioButton,
+                        nameof(_config.pszVerificationText) + " = " + (_config.pszVerificationText ?? ""),
+                        nameof(_config.pszExpandedInformation) + " = " + (_config.pszExpandedInformation ?? ""),
+                        nameof(_config.pszExpandedControlText) + " = " + (_config.pszExpandedControlText ?? ""),
+                        nameof(_config.pszCollapsedControlText) + " = " +
+                        (_config.pszCollapsedControlText ?? ""),
+                        nameof(_config.hFooterIcon) + " = " + _config.hFooterIcon,
+                        nameof(_config.pszFooterText) + " = " + (_config.pszFooterText ?? ""),
+                        nameof(_config.pfCallback) + " = " + _config.pfCallback,
+                        nameof(_config.lpCallbackData) + " = " + _config.lpCallbackData,
+                        nameof(_config.cxWidth) + " = " + _config.cxWidth
+                    };
+
+                    using (var sw = new StreamWriter(@"C:\TaskDialog_dump_1.txt"))
+                    {
+                        foreach (string item in tl) sw.WriteLine(item);
+                    }
+
+                    NativeMethods.TaskDialogIndirect(ref _config, out buttonId, out _,
+                        out verificationFlagChecked);
                 }
                 IsVerificationChecked = verificationFlagChecked;
 
                 return _buttonsById!.TryGetValue(buttonId, out var selectedButton) ? selectedButton : null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("TaskDialog: " + ex);
+                throw;
+                return null;
             }
             finally
             {
@@ -462,7 +533,12 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 try
                 {
                     Marshal.StructureToPtr(_config, memory, false);
-                    NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.NavigatePage, IntPtr.Zero, memory);
+                    NativeMethods.SendMessage(Handle, (int)NativeMethods.TaskDialogMessages.NavigatePage,
+                        IntPtr.Zero, memory);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("TaskDialog: ", ex);
                 }
                 finally
                 {
@@ -615,20 +691,9 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 {
                     case NativeMethods.TaskDialogNotifications.Created:
                         _handle = hwnd;
-                        DialogCreated();
                         break;
                     case NativeMethods.TaskDialogNotifications.Destroyed:
                         _handle = IntPtr.Zero;
-                        break;
-                    case NativeMethods.TaskDialogNotifications.Navigated:
-                        DialogCreated();
-                        break;
-                    case NativeMethods.TaskDialogNotifications.ButtonClicked:
-                        if (_buttonsById!.TryGetValue((int)wParam, out TaskDialogButton button))
-                        {
-                            var e = new TaskDialogItemClickedEventArgs(button);
-                            if (e.Cancel) return 1;
-                        }
                         break;
                     case NativeMethods.TaskDialogNotifications.VerificationClicked:
                         IsVerificationChecked = (int)wParam == 1;
@@ -643,14 +708,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             {
                 Interlocked.Decrement(ref _inEventHandler);
                 if (_updatePending) UpdateDialog();
-            }
-        }
-
-        private void DialogCreated()
-        {
-            foreach (TaskDialogButton button in Buttons)
-            {
-                if (!button.Enabled) SetItemEnabled(button);
             }
         }
 
