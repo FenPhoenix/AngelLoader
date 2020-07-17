@@ -219,7 +219,7 @@ namespace AngelLoader
                 // Recycle the buffer - avoids GC house party
                 buffer.Clear();
 
-                using var hProc = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, procId);
+                using var hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
                 if (!hProc.IsInvalid)
                 {
                     int size = buffer.Capacity;
