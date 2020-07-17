@@ -270,54 +270,28 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon,
             bool showDontAskAgain, string yes, string no, string cancel, ButtonType? defaultButton = null)
         {
-            //using var d = new TaskDialog();
-            using var yesButton = new TaskDialogButton(yes);
-            using var noButton = new TaskDialogButton(no);
-            using var cancelButton = new TaskDialogButton(cancel);
+            var yesButton = new TaskDialogButton(yes);
+            var noButton = new TaskDialogButton(no);
+            var cancelButton = new TaskDialogButton(cancel);
 
-            if (defaultButton != null)
-            {
-                switch (defaultButton)
-                {
-                    case ButtonType.Yes:
-                        yesButton.Default = true;
-                        break;
-                    case ButtonType.No:
-                        noButton.Default = true;
-                        break;
-                    case ButtonType.Cancel:
-                        cancelButton.Default = true;
-                        break;
-                    default:
-                        yesButton.Default = true;
-                        break;
-                }
-            }
-            else
-            {
-                yesButton.Default = true;
-            }
-            //d.Buttons.Add(yesButton);
-            //d.Buttons.Add(noButton);
-            //d.Buttons.Add(cancelButton);
-
-            //d.TraceWriteButtonIds();
-
-            var buttons = new List<WinAPI.Ookii.Dialogs.TaskDialogButton>
+            TaskDialogButton[] buttons =
             {
                 yesButton,
                 noButton,
                 cancelButton
             };
 
-            using var d = new TaskDialog(buttons);
+            var defaultButtonFinal = defaultButton switch
+            {
+                ButtonType.No => noButton,
+                ButtonType.Cancel => cancelButton,
+                _ => yesButton
+            };
 
-            d.AllowDialogCancellation = true;
-            if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
-            d.ButtonStyle = TaskDialogButtonStyle.Standard;
-            d.WindowTitle = title;
-            d.Content = message;
-            if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
+            string? verificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
+
+            using var d = new TaskDialog(title, message, buttons, defaultButtonFinal, verificationText,
+                mainIcon: icon);
 
             var buttonClicked = d.ShowDialog();
             bool canceled = buttonClicked == null || buttonClicked == cancelButton;
@@ -330,30 +304,26 @@ namespace AngelLoader.Forms
         AskToContinueYesNoCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
             string? yes, string? no, ButtonType? defaultButton = null)
         {
-            using var d = new TaskDialog();
-            using var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
-            using var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
+            var yesButton = yes != null ? new TaskDialogButton(yes) : new TaskDialogButton(ButtonType.Yes);
+            var noButton = no != null ? new TaskDialogButton(no) : new TaskDialogButton(ButtonType.No);
 
-            d.AllowDialogCancellation = true;
-            if (icon != null) d.MainIcon = (TaskDialogIcon)icon;
-            d.ButtonStyle = TaskDialogButtonStyle.Standard;
-            d.WindowTitle = title;
-            d.Content = message;
-            if (showDontAskAgain) d.VerificationText = LText.AlertMessages.DontAskAgain;
-            d.Buttons.Add(yesButton);
-            d.Buttons.Add(noButton);
-            if (defaultButton != null)
+            TaskDialogButton[] buttons =
             {
-                switch (defaultButton)
-                {
-                    case ButtonType.Yes:
-                        yesButton.Default = true;
-                        break;
-                    case ButtonType.No:
-                        noButton.Default = true;
-                        break;
-                }
-            }
+                yesButton,
+                noButton
+            };
+
+            var defaultButtonFinal = defaultButton switch
+            {
+                ButtonType.No => noButton,
+                _ => yesButton
+            };
+
+            string? verificationText = showDontAskAgain ? LText.AlertMessages.DontAskAgain : null;
+
+            using var d = new TaskDialog(title, message, buttons, defaultButtonFinal, verificationText,
+                mainIcon: icon);
+
             var buttonClicked = d.ShowDialog();
             bool cancel = buttonClicked != yesButton;
             bool dontAskAgain = d.IsVerificationChecked;

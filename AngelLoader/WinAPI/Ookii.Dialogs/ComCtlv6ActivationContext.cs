@@ -30,29 +30,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             }
         }
 
-        ~ComCtlv6ActivationContext()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (_cookie != IntPtr.Zero)
-            {
-                if (NativeMethods.DeactivateActCtx(0, _cookie))
-                {
-                    // deactivation succeeded...
-                    _cookie = IntPtr.Zero;
-                }
-            }
-        }
-
         private static bool EnsureActivateContextCreated()
         {
             lock (_contextCreationLock)
@@ -111,5 +88,27 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 return _contextCreationSucceeded;
             }
         }
+
+        #region Dispose
+
+        private void ReleaseUnmanagedResources()
+        {
+            if (_cookie != IntPtr.Zero && NativeMethods.DeactivateActCtx(0, _cookie))
+            {
+                // deactivation succeeded...
+                _cookie = IntPtr.Zero;
+            }
+        }
+
+        public void Dispose()
+        {
+            ReleaseUnmanagedResources();
+            GC.SuppressFinalize(this);
+        }
+
+        // Fen's note: So apparently a finalizer is the right thing to do here. Shrug.
+        ~ComCtlv6ActivationContext() => ReleaseUnmanagedResources();
+
+        #endregion
     }
 }

@@ -25,15 +25,11 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         public delegate uint TaskDialogCallback(IntPtr hwnd, uint uNotification, IntPtr wParam, IntPtr lParam, IntPtr dwRefData);
 
-        public const int WM_GETICON = 0x007F;
-        public const int WM_SETICON = 0x0080;
-        public const int ICON_SMALL = 0;
-
         public enum TaskDialogNotifications
         {
             Created = 0,
-            Navigated = 1,
-            ButtonClicked = 2,          // wParam = Button ID
+            //Navigated = 1,
+            //ButtonClicked = 2,          // wParam = Button ID
             //HyperlinkClicked = 3,       // lParam = (LPCWSTR)pszHREF
             //Timer = 4,                  // wParam = Milliseconds since dialog created or timer reset
             Destroyed = 5,
@@ -57,32 +53,37 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         }
 
         [Flags]
-        //[PublicAPI]
         public enum TaskDialogFlags
         {
-            EnableHyperLinks = 0x0001,
+            //EnableHyperLinks = 0x0001,
             UseHIconMain = 0x0002,
-            UseHIconFooter = 0x0004,
+            //UseHIconFooter = 0x0004,
             AllowDialogCancellation = 0x0008,
+            /*
             UseCommandLinks = 0x0010,
             UseCommandLinksNoIcon = 0x0020,
             ExpandFooterArea = 0x0040,
             ExpandedByDefault = 0x0080,
+            */
             VerificationFlagChecked = 0x0100,
+            /*
             ShowProgressBar = 0x0200,
             ShowMarqueeProgressBar = 0x0400,
             CallbackTimer = 0x0800,
+            */
             PositionRelativeToWindow = 0x1000,
+            /*
             RtlLayout = 0x2000,
             NoDefaultRadioButton = 0x4000,
             CanBeMinimized = 0x8000
+            */
         }
 
         public enum TaskDialogMessages
         {
+            /*
             NavigatePage = InteropMisc.WM_USER + 101,
             ClickButton = InteropMisc.WM_USER + 102, // wParam = Button ID
-            /*
             SetMarqueeProgressBar = InteropMisc.WM_USER + 103, // wParam = 0 (nonMarque) wParam != 0 (Marquee)
             SetProgressBarState = InteropMisc.WM_USER + 104, // wParam = new progress state
             SetProgressBarRange = InteropMisc.WM_USER + 105, // lParam = MAKELPARAM(nMinRange, nMaxRange)
@@ -90,9 +91,11 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             SetProgressBarMarquee = InteropMisc.WM_USER + 107, // wParam = 0 (stop marquee), wParam != 0 (start marquee), lparam = speed (milliseconds between repaints)
             */
             SetElementText = InteropMisc.WM_USER + 108, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
+            /*
             ClickRadioButton = InteropMisc.WM_USER + 110, // wParam = Radio Button ID
             EnableButton = InteropMisc.WM_USER + 111, // lParam = 0 (disable), lParam != 0 (enable), wParam = Button ID
             EnableRadioButton = InteropMisc.WM_USER + 112, // lParam = 0 (disable), lParam != 0 (enable), wParam = Radio Button ID
+            */
             ClickVerification = InteropMisc.WM_USER + 113, // wParam = 0 (unchecked), 1 (checked), lParam = 1 (set key focus)
             /*
             UpdateElementText = InteropMisc.WM_USER + 114, // wParam = element (TASKDIALOG_ELEMENTS), lParam = new element text (LPCWSTR)
@@ -105,9 +108,11 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         public enum TaskDialogElements
         {
             Content = 0,
-            //ExpandedInformation = 1,
-            //Footer = 2,
+            /*
+            ExpandedInformation = 1,
+            Footer = 2,
             MainInstruction = 3
+            */
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]

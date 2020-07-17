@@ -6,7 +6,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     /// <summary>
     /// Represents the type of a task dialog button.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
     public enum ButtonType
     {
         /// <summary>
