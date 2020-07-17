@@ -227,7 +227,7 @@ namespace AngelLoader.Forms
             // ScanAllFMsButton
             // 
             ScanAllFMsButton.AutoSize = true;
-            ScanAllFMsButton.Margin = new Padding(11, 3, 3, 3);
+            ScanAllFMsButton.Margin = new Padding(15, 3, 0, 3);
             ScanAllFMsButton.Padding = new Padding(33, 0, 6, 0);
             ScanAllFMsButton.Height = 36;
             ScanAllFMsButton.TabIndex = 59;
@@ -307,6 +307,7 @@ namespace AngelLoader.Forms
             PlayOriginalGameButton.AutoSize = true;
             PlayOriginalGameButton.Image = Resources.Play_Original_24;
             PlayOriginalGameButton.ImageAlign = ContentAlignment.MiddleLeft;
+            PlayOriginalGameButton.Margin = new Padding(3, 3, 0, 3);
             PlayOriginalGameButton.Padding = new Padding(6, 0, 6, 0);
             PlayOriginalGameButton.Height = 36;
             PlayOriginalGameButton.TabIndex = 57;
@@ -318,7 +319,7 @@ namespace AngelLoader.Forms
             // WebSearchButton
             // 
             WebSearchButton.AutoSize = true;
-            WebSearchButton.Margin = new Padding(11, 3, 3, 3);
+            WebSearchButton.Margin = new Padding(15, 3, 3, 3);
             WebSearchButton.Padding = new Padding(33, 0, 6, 0);
             WebSearchButton.Height = 36;
             WebSearchButton.TabIndex = 60;

@@ -226,7 +226,7 @@
             // 
             this.ScanAllFMsButton.AutoSize = true;
             this.ScanAllFMsButton.Location = new System.Drawing.Point(261, 3);
-            this.ScanAllFMsButton.Margin = new System.Windows.Forms.Padding(11, 3, 3, 3);
+            this.ScanAllFMsButton.Margin = new System.Windows.Forms.Padding(15, 3, 0, 3);
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
             this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
             this.ScanAllFMsButton.Size = new System.Drawing.Size(126, 36);
@@ -327,6 +327,7 @@
             this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
+            this.PlayOriginalGameButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
             this.PlayOriginalGameButton.TabIndex = 57;
@@ -339,7 +340,7 @@
             // 
             this.WebSearchButton.AutoSize = true;
             this.WebSearchButton.Location = new System.Drawing.Point(401, 3);
-            this.WebSearchButton.Margin = new System.Windows.Forms.Padding(11, 3, 3, 3);
+            this.WebSearchButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
             this.WebSearchButton.Name = "WebSearchButton";
             this.WebSearchButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
             this.WebSearchButton.Size = new System.Drawing.Size(116, 36);

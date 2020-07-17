@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
@@ -123,6 +124,8 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Buttons
+
         internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
@@ -246,5 +249,59 @@ namespace AngelLoader.Forms
             e.Graphics.DrawLine(hPen, 13, 13, 16.5f, 16.5f);
             e.Graphics.FillEllipse(pen.Brush, _scanSmallHandleRect);
         }
+
+        #endregion
+
+        #region Separators
+
+        internal static void PaintToolStripSeparators(PaintEventArgs e, int pixelsFromVerticalEdges,
+            params ToolStripItem[] items)
+        {
+            Pen s1Pen = Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
+
+            int pfe = pixelsFromVerticalEdges;
+
+            Rectangle sizeBounds = items[0].Bounds;
+
+            int y1 = sizeBounds.Top + pfe;
+            int y2 = sizeBounds.Bottom - pfe;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                int bx = items[i].Bounds.Location.X;
+                int l1s = (items[i].Margin.Left + (i > 0 ? items[i - 1].Margin.Right : 0)) / 2;
+                int l2s = l1s - 1;
+                int sep1x = bx - l1s;
+                int sep2x = bx - l2s;
+                e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
+                e.Graphics.DrawLine(Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+            }
+        }
+
+        internal static void PaintControlSeparators(PaintEventArgs e, int pixelsFromVerticalEdges,
+            params Control[] items)
+        {
+            Pen s1Pen = Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
+
+            int pfe = pixelsFromVerticalEdges;
+
+            Rectangle sizeBounds = items[0].Bounds;
+
+            int y1 = sizeBounds.Top + pfe;
+            int y2 = (sizeBounds.Bottom - pfe) - 1;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                int bx = items[i].Bounds.Location.X;
+                int l1s = (int)Math.Ceiling((double)items[i].Margin.Left / 2);
+                int l2s = l1s - 1;
+                int sep1x = bx - l1s;
+                int sep2x = bx - l2s;
+                e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
+                e.Graphics.DrawLine(Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+            }
+        }
+
+        #endregion
     }
 }

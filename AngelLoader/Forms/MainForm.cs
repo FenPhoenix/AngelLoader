@@ -116,7 +116,7 @@ namespace AngelLoader.Forms
             {
                 // Doesn't help the RichTextBox, it happily flickers like it always does. Oh well.
                 this.SuspendDrawing();
-                ViewBlocked = block;
+                _viewBlocked = block;
                 ViewBlockingPanel.Visible = block;
                 ViewBlockingPanel.BringToFront();
             }
@@ -138,7 +138,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                gamesChecked[i] = FilterByGameButtonsInOrder[i].Checked;
+                gamesChecked[i] = _filterByGameButtonsInOrder[i].Checked;
             }
 
             return gamesChecked;
@@ -203,7 +203,7 @@ namespace AngelLoader.Forms
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 var game = GameIndexToGame((GameIndex)i);
-                FilterByGameButtonsInOrder[i].Checked = Config.Filter.Games.HasFlagFast(game);
+                _filterByGameButtonsInOrder[i].Checked = Config.Filter.Games.HasFlagFast(game);
             }
 
             if (!startup) ChangeFilterControlsForGameType();
@@ -227,7 +227,7 @@ namespace AngelLoader.Forms
                     {
                         for (int i = 0; i < SupportedGameCount; i++)
                         {
-                            FilterByGameButtonsInOrder[i].Checked = false;
+                            _filterByGameButtonsInOrder[i].Checked = false;
                         }
                     }
                     FilterTitleTextBox.Text = "";
@@ -323,7 +323,7 @@ namespace AngelLoader.Forms
         {
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                GameTabsInOrder[i].Text = useShort
+                _gameTabsInOrder[i].Text = useShort
                     ? GetShortLocalizedGameName((GameIndex)i)
                     : GetLocalizedGameName((GameIndex)i);
             }
@@ -342,17 +342,20 @@ namespace AngelLoader.Forms
 
         #region Private fields
 
-        private FormWindowState NominalWindowState;
-        private Size NominalWindowSize;
-        private Point NominalWindowLocation;
+        private FormWindowState _nominalWindowState;
+        private Size _nominalWindowSize;
+        private Point _nominalWindowLocation;
 
-        private float FMsListDefaultFontSizeInPoints;
-        private int FMsListDefaultRowHeight;
+        private float _fMsListDefaultFontSizeInPoints;
+        private int _rMsListDefaultRowHeight;
 
         // To order them such that we can just look them up with an index
-        private readonly TabPage[] GameTabsInOrder;
-        private readonly ToolStripButtonCustom[] FilterByGameButtonsInOrder;
-        private readonly TabPage[] TopRightTabsInOrder;
+        private readonly TabPage[] _gameTabsInOrder;
+        private readonly ToolStripButtonCustom[] _filterByGameButtonsInOrder;
+        private readonly TabPage[] _topRightTabsInOrder;
+
+        private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
+        private readonly Control[] _bottomAreaSeparatedItems;
 
         private enum KeepSel { False, True, TrueNearest }
 
@@ -394,10 +397,10 @@ namespace AngelLoader.Forms
 
         // Needed for Rating column swap to prevent a possible exception when CellValueNeeded is called in the
         // middle of the operation
-        private bool CellValueNeededDisabled;
+        private bool _cellValueNeededDisabled;
 
         private TransparentPanel? ViewBlockingPanel;
-        private bool ViewBlocked;
+        private bool _viewBlocked;
 
         #endregion
 
@@ -492,7 +495,7 @@ namespace AngelLoader.Forms
             // This has to be in WndProc, not PreFilterMessage(). Shrug.
             if (m.Msg == InteropMisc.WM_SHOWFIRSTINSTANCE)
             {
-                if (WindowState == FormWindowState.Minimized) WindowState = NominalWindowState;
+                if (WindowState == FormWindowState.Minimized) WindowState = _nominalWindowState;
                 Activate();
             }
             base.WndProc(ref m);
@@ -523,7 +526,7 @@ namespace AngelLoader.Forms
                 // value, and that causes the min,max,close button flickering.
                 if (!TryGetHWndFromMousePos(m, out IntPtr hWnd)) return PassMessageOn;
 
-                if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
+                if (_viewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 int delta = wParam >> 16;
@@ -568,7 +571,7 @@ namespace AngelLoader.Forms
             {
                 if (!TryGetHWndFromMousePos(m, out _)) return PassMessageOn;
 
-                if (ViewBlocked) return BlockMessage;
+                if (_viewBlocked) return BlockMessage;
 
                 if (CanFocus && CursorOverControl(FMsDGV))
                 {
@@ -588,7 +591,7 @@ namespace AngelLoader.Forms
             {
                 if (!CanFocus) return PassMessageOn;
 
-                if (CursorOutsideAddTagsDropDownArea() || ViewBlocked) return BlockMessage;
+                if (CursorOutsideAddTagsDropDownArea() || _viewBlocked) return BlockMessage;
 
                 ShowReadmeControls(CursorOverReadmeArea());
             }
@@ -604,7 +607,7 @@ namespace AngelLoader.Forms
             {
                 if (!CanFocus) return PassMessageOn;
 
-                if (ViewBlocked)
+                if (_viewBlocked)
                 {
                     return BlockMessage;
                 }
@@ -633,7 +636,7 @@ namespace AngelLoader.Forms
             // Any other keys have to use this.
             else if (m.Msg == InteropMisc.WM_KEYDOWN)
             {
-                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
+                if (KeyPressesDisabled || _viewBlocked) return BlockMessage;
 
                 int wParam = (int)m.WParam;
                 if (wParam == (int)Keys.F1 && CanFocus)
@@ -684,7 +687,7 @@ namespace AngelLoader.Forms
             }
             else if (m.Msg == InteropMisc.WM_KEYUP)
             {
-                if (KeyPressesDisabled || ViewBlocked) return BlockMessage;
+                if (KeyPressesDisabled || _viewBlocked) return BlockMessage;
             }
             #endregion
 
@@ -763,14 +766,14 @@ namespace AngelLoader.Forms
 
             // -------- New games go here!
             // @GENGAMES (tabs and filter buttons): Begin
-            GameTabsInOrder = new[]
+            _gameTabsInOrder = new[]
             {
                 Thief1TabPage,
                 Thief2TabPage,
                 Thief3TabPage,
                 SS2TabPage
             };
-            FilterByGameButtonsInOrder = new[]
+            _filterByGameButtonsInOrder = new[]
             {
                 FilterByThief1Button,
                 FilterByThief2Button,
@@ -782,7 +785,7 @@ namespace AngelLoader.Forms
             // Putting these into a list whose order matches the enum allows us to just iterate the list without
             // naming any specific tab page. This greatly minimizes the number of places we'll need to add code
             // when we add new tab pages.
-            TopRightTabsInOrder = new[]
+            _topRightTabsInOrder = new[]
             {
                 StatisticsTabPage,
                 EditFMTabPage,
@@ -790,6 +793,27 @@ namespace AngelLoader.Forms
                 TagsTabPage,
                 PatchTabPage
             };
+
+            #region Separated items
+
+            _filtersToolStripSeparatedItems = new ToolStripItem[]
+            {
+                FilterByReleaseDateButton,
+                FilterByLastPlayedButton,
+                FilterByTagsButton,
+                FilterByFinishedButton,
+                FilterByRatingButton,
+                FilterShowUnsupportedButton,
+                FilterShowRecentAtTopButton
+            };
+
+            _bottomAreaSeparatedItems = new Control[]
+            {
+                ScanAllFMsButton,
+                WebSearchButton
+            };
+
+            #endregion
         }
 
         // In early development, I had some problems with putting init stuff in the constructor, where all manner
@@ -817,7 +841,7 @@ namespace AngelLoader.Forms
             var sortedTabPages = new SortedDictionary<int, TabPage>();
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, TopRightTabsInOrder[i]);
+                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, _topRightTabsInOrder[i]);
             }
 
 #if DEBUG
@@ -832,7 +856,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                TopRightTabControl.ShowTab(TopRightTabsInOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
+                TopRightTabControl.ShowTab(_topRightTabsInOrder[i], Config.TopRightTabsData.Tabs[i].Visible);
                 TopRightLLMenu.SetItemChecked(i, Config.TopRightTabsData.Tabs[i].Visible);
             }
 
@@ -850,8 +874,8 @@ namespace AngelLoader.Forms
 
             #region FMs DataGridView
 
-            FMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
-            FMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
+            _fMsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
+            _rMsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
             #region Columns
 
@@ -923,7 +947,7 @@ namespace AngelLoader.Forms
             {
                 if ((int)Config.TopRightTabsData.SelectedTab == i)
                 {
-                    TopRightTabControl.SelectedTab = TopRightTabsInOrder[i];
+                    TopRightTabControl.SelectedTab = _topRightTabsInOrder[i];
                     break;
                 }
             }
@@ -1004,9 +1028,9 @@ namespace AngelLoader.Forms
 
             Location = new Point(loc.X, loc.Y);
 
-            NominalWindowState = Config.MainWindowState;
-            NominalWindowSize = Config.MainWindowSize;
-            NominalWindowLocation = new Point(loc.X, loc.Y);
+            _nominalWindowState = Config.MainWindowState;
+            _nominalWindowSize = Config.MainWindowSize;
+            _nominalWindowLocation = new Point(loc.X, loc.Y);
         }
 
         public void ShowOnly()
@@ -1046,11 +1070,11 @@ namespace AngelLoader.Forms
             // TODO: Make it so window docking doesn't count as changing the normal window dimensions
             if (WindowState != FormWindowState.Minimized)
             {
-                NominalWindowState = WindowState;
+                _nominalWindowState = WindowState;
                 if (WindowState != FormWindowState.Maximized)
                 {
-                    NominalWindowSize = Size;
-                    NominalWindowLocation = new Point(Location.X, Location.Y);
+                    _nominalWindowSize = Size;
+                    _nominalWindowLocation = new Point(Location.X, Location.Y);
                 }
             }
 
@@ -1059,7 +1083,7 @@ namespace AngelLoader.Forms
 
         private void MainForm_LocationChanged(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Normal) NominalWindowLocation = new Point(Location.X, Location.Y);
+            if (WindowState == FormWindowState.Normal) _nominalWindowLocation = new Point(Location.X, Location.Y);
         }
 
         private void CancelResizables()
@@ -1227,7 +1251,7 @@ namespace AngelLoader.Forms
             // separate and detached thread to complete. Argh. Threading sucks.
             // TODO: I only block the view during zip extracts, which are pretty quick.
             // Do I really want to put up this dialog during that situation?
-            if (!EverythingPanel.Enabled || ViewBlocked)
+            if (!EverythingPanel.Enabled || _viewBlocked)
             {
                 MessageBox.Show(LText.AlertMessages.AppClosing_OperationInProgress, LText.AlertMessages.Alert,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1293,7 +1317,7 @@ namespace AngelLoader.Forms
 
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    FilterByGameButtonsInOrder[i].ToolTipText = GetLocalizedGameName((GameIndex)i);
+                    _filterByGameButtonsInOrder[i].ToolTipText = GetLocalizedGameName((GameIndex)i);
                 }
 
                 FilterTitleLabel.Text = LText.FilterBar.Title;
@@ -1609,7 +1633,7 @@ namespace AngelLoader.Forms
                 var selGameTab = GamesTabControl.SelectedTab;
                 for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    if (GameTabsInOrder[i] == selGameTab)
+                    if (_gameTabsInOrder[i] == selGameTab)
                     {
                         gameTab = (GameIndex)i;
                         break;
@@ -1621,18 +1645,18 @@ namespace AngelLoader.Forms
 
             var topRightTabs = new TopRightTabsData
             {
-                SelectedTab = (TopRightTab)Array.IndexOf(TopRightTabsInOrder, TopRightTabControl.SelectedTab)
+                SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabsInOrder, TopRightTabControl.SelectedTab)
             };
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                (topRightTabs.Tabs[i].Position, _) = TopRightTabControl.FindBackingTab(TopRightTabsInOrder[i]);
-                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(TopRightTabsInOrder[i]);
+                (topRightTabs.Tabs[i].Position, _) = TopRightTabControl.FindBackingTab(_topRightTabsInOrder[i]);
+                topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabsInOrder[i]);
             }
 
             #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
 
-            FormWindowState nominalState = NominalWindowState;
+            FormWindowState nominalState = _nominalWindowState;
 
             bool minimized = false;
             if (WindowState == FormWindowState.Minimized)
@@ -1649,9 +1673,9 @@ namespace AngelLoader.Forms
             #endregion
 
             Core.UpdateConfig(
-                NominalWindowState,
-                NominalWindowSize,
-                NominalWindowLocation,
+                _nominalWindowState,
+                _nominalWindowSize,
+                _nominalWindowLocation,
                 mainSplitterPercent,
                 topSplitterPercent,
                 FMsDGV.GetColumnData(),
@@ -1720,7 +1744,7 @@ namespace AngelLoader.Forms
                 type == ZoomFMsDGVType.ZoomOut ? f.SizeInPoints - 1.0f :
                 type == ZoomFMsDGVType.ZoomTo && zoomFontSize != null ? (float)zoomFontSize :
                 type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
-                FMsListDefaultFontSizeInPoints;
+                _fMsListDefaultFontSizeInPoints;
 
             // Clamp zoom level
             if (fontSize < Math.Round(1.00f, 2)) fontSize = 1.00f;
@@ -1731,7 +1755,7 @@ namespace AngelLoader.Forms
             Font newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
 
             // Set row height based on font plus some padding
-            int rowHeight = type == ZoomFMsDGVType.ResetZoom ? FMsListDefaultRowHeight : newF.Height + 9;
+            int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _rMsListDefaultRowHeight : newF.Height + 9;
 
             // If we're on startup, then the widths will already have been restored (to zoomed size) from the
             // config
@@ -1805,7 +1829,7 @@ namespace AngelLoader.Forms
                             // The ever-present rounding errors creep in here, but meh. I should figure out
                             // how to not have those - ensure scaling always happens in integral pixel counts
                             // somehow?
-                            c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - FMsListDefaultFontSizeInPoints) < 0.1
+                            c.Width = reset && Math.Abs(Config.FMsListFontSizeInPoints - _fMsListDefaultFontSizeInPoints) < 0.1
                                 ? Config.Columns[i].Width
                                 : (int)Math.Ceiling(c.HeaderCell.Size.Height * widthMul[i]);
                         }
@@ -1895,7 +1919,7 @@ namespace AngelLoader.Forms
         // default while-background cell color before it changes.
         private void FMsDGV_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
-            if (CellValueNeededDisabled) return;
+            if (_cellValueNeededDisabled) return;
 
             if (FMsDGV.FilterShownIndexList.Count == 0) return;
 
@@ -1906,7 +1930,7 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_CellValueNeeded_Initial(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (CellValueNeededDisabled) return;
+            if (_cellValueNeededDisabled) return;
 
             // @LAZYLOAD notes for DGV images:
             // -If we're going to lazy-load, we should go full-bore and draw the icons onto bitmaps as needed,
@@ -1979,7 +2003,7 @@ namespace AngelLoader.Forms
 
         private void FMsDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (CellValueNeededDisabled) return;
+            if (_cellValueNeededDisabled) return;
 
             if (FMsDGV.FilterShownIndexList.Count == 0) return;
 
@@ -2384,7 +2408,7 @@ namespace AngelLoader.Forms
             {
                 using (new DisableEvents(this))
                 {
-                    CellValueNeededDisabled = true;
+                    _cellValueNeededDisabled = true;
                     try
                     {
                         FMsDGV.Columns.RemoveAt((int)Column.Rating);
@@ -2392,7 +2416,7 @@ namespace AngelLoader.Forms
                     }
                     finally
                     {
-                        CellValueNeededDisabled = false;
+                        _cellValueNeededDisabled = false;
                     }
                 }
                 if (FMsDGV.CurrentSortedColumn == Column.Rating)
@@ -2487,7 +2511,7 @@ namespace AngelLoader.Forms
                     // thought I saw a suspend drawing command, and since drawing cells constitutes drawing, I
                     // just assumed you would understand that to suspend drawing means not to draw cells. I must
                     // be mistaken. No no, please.
-                    CellValueNeededDisabled = true;
+                    _cellValueNeededDisabled = true;
                 }
 
                 // Prevents:
@@ -2551,7 +2575,7 @@ namespace AngelLoader.Forms
                     // a significant delay, and that's annoying because it doesn't seem like it should happen.
                     if (!startup)
                     {
-                        CellValueNeededDisabled = false;
+                        _cellValueNeededDisabled = false;
                         FMsDGV.ResumeDrawing();
                     }
                 }
@@ -3133,7 +3157,7 @@ namespace AngelLoader.Forms
             Filter? gameFilter = null;
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                if (GameTabsInOrder[i] == tabPage)
+                if (_gameTabsInOrder[i] == tabPage)
                 {
                     gameSelFM = FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
                     gameFilter = FMsDGV.GameTabsState.GetFilter((GameIndex)i);
@@ -3169,7 +3193,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
-                FilterByGameButtonsInOrder[i].Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
+                _filterByGameButtonsInOrder[i].Checked = gameSelFM == FMsDGV.GameTabsState.GetSelectedFM((GameIndex)i);
             }
 
             gameSelFM.DeepCopyTo(FMsDGV.CurrentSelFM);
@@ -3662,7 +3686,7 @@ namespace AngelLoader.Forms
             {
                 if (s == (ToolStripMenuItem)TopRightLLMenu.Menu.Items[i])
                 {
-                    tab = TopRightTabsInOrder[i];
+                    tab = _topRightTabsInOrder[i];
                     break;
                 }
             }
@@ -3994,9 +4018,9 @@ namespace AngelLoader.Forms
         // Perf: Where feasible, it's way faster to simply draw images vector-style on-the-fly, rather than
         // pulling rasters from Resources, because Resources is a fat bloated hog with five headcrabs on it
 
-        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => PaintBottomLeftButtonsFLP(e);
+        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintControlSeparators(e, 2, _bottomAreaSeparatedItems);
 
-        private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => PaintFilterIconButtonsToolStrip(e);
+        private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
 
         private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e) => PaintRefreshAreaToolStrip(e);
 
@@ -4020,7 +4044,7 @@ namespace AngelLoader.Forms
 
         // Keep this one static because it calls out to the internal ButtonPainter rather than external Core, so
         // it's fine even if we modularize the view
-        // TODO: MainForm static event handler that calls out to ButtonPainter: Is this really fine?
+        // TODO: MainForm static event handler that calls out to the static control painter: Is this really fine?
         private
 #if !DEBUG
         static
