@@ -271,7 +271,7 @@ namespace AngelLoader
                 #endregion
 
                 var fileExcludes = new List<string>();
-                var dirExcludes = new List<string>();
+                //var dirExcludes = new List<string>();
 
                 string thisFMInstallsBasePath = Config.GetFMInstallPathUnsafe(fm.Game);
                 string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
@@ -364,10 +364,10 @@ namespace AngelLoader
                                         {
                                             fileExcludes.Add(val);
                                         }
-                                        else
-                                        {
-                                            dirExcludes.Add(val);
-                                        }
+                                        //else
+                                        //{
+                                        //    dirExcludes.Add(val);
+                                        //}
                                     }
                                 }
                             }

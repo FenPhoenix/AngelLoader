@@ -278,7 +278,8 @@ namespace FMScanner
             "/spanish/"
         };
 
-        internal static readonly string[] Languages_FS_Lang_Language_FS =
+        internal static readonly string[]
+        Languages_FS_Lang_Language_FS =
         {
             "/english Language/",
             "/czech Language/",

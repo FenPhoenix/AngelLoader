@@ -227,7 +227,7 @@ namespace AngelLoader
         internal static bool PathStartsWithI(this string first, string second)
         {
             int secondLength;
-            if (first == null || first.Length < (secondLength = second.Length)) return false;
+            if (first.Length < (secondLength = second.Length)) return false;
 
             for (int i = 0; i < secondLength; i++)
             {
@@ -256,7 +256,7 @@ namespace AngelLoader
         internal static bool PathEndsWithI(this string first, string second)
         {
             int firstLength, secondLength;
-            if (first == null || (firstLength = first.Length) < (secondLength = second.Length)) return false;
+            if ((firstLength = first.Length) < (secondLength = second.Length)) return false;
 
             for (int fi = firstLength - secondLength, si = 0; fi < firstLength; fi++, si++)
             {

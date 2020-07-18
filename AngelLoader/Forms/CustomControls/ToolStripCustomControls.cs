@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
@@ -10,7 +11,9 @@ namespace AngelLoader.Forms.CustomControls
         /// <summary>
         /// Fiddle this around to get the right-side garbage line to disappear again when Padding is set to something.
         /// </summary>
-        [Browsable(true)] public int PaddingDrawNudge { get; set; }
+        [Browsable(true)]
+        [PublicAPI]
+        public int PaddingDrawNudge { get; set; }
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -28,7 +31,6 @@ namespace AngelLoader.Forms.CustomControls
 
             e.Graphics.FillRectangle(SystemBrushes.Control, rect1);
             e.Graphics.FillRectangle(SystemBrushes.Control, rect2);
-
         }
     }
 
@@ -39,19 +41,6 @@ namespace AngelLoader.Forms.CustomControls
         {
             // Use the mouseover BackColor when it's checked, for a more visible checked experience
             if (Checked) e.Graphics.FillRectangle(Brushes.LightSkyBlue, 0, 0, Width, Height);
-            base.OnPaint(e);
-        }
-    }
-
-    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
-    public sealed class ToolStripSeparatorCustom : ToolStripSeparator
-    {
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            // These ToolStrip abominations just won't behave. They claim to have their color set to "Control",
-            // but what they really mean is "almost Control but not quite". Same with any other hue. Have to set
-            // it here just to get them to listen.
-            e.Graphics.FillRectangle(SystemBrushes.Control, 0, 0, Width, Height);
             base.OnPaint(e);
         }
     }

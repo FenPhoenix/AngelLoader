@@ -55,11 +55,7 @@ namespace AngelLoader
 
             scanOptions ??= GetDefaultScanOptions();
 
-            // NULL_TODO: Do we need this FM null check...?
-            if (fmsToScan.Count == 0 || (fmsToScan.Count == 1 && fmsToScan[0] == null))
-            {
-                return false;
-            }
+            if (fmsToScan.Count == 0) return false;
 
             bool scanningOne = fmsToScan.Count == 1;
 
@@ -192,13 +188,6 @@ namespace AngelLoader
                     }
 
                     FanMission sel = fmsToScanFiltered[i];
-                    // NULL_TODO: Yeah pretty sure we don't need this anymore
-                    if (sel == null)
-                    {
-                        // Same as above (this should never happen now, but hey)
-                        if (scanningOne) return false;
-                        continue;
-                    }
 
                     #endregion
 

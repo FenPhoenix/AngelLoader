@@ -75,7 +75,7 @@ namespace AngelLoader
             internal const string FMDisplaySettings = "#settings_fm_display_section";
             internal const string OtherSettings = "#settings_other_section";
 
-            internal const string FMBackupPath = "#fm_backup_path";
+            //internal const string FMBackupPath = "#fm_backup_path";
 
             internal const string MainWindow = "#main_window";
             internal const string MissionList = "#mission_list";
@@ -103,7 +103,7 @@ namespace AngelLoader
         internal static readonly char[] CA_CommaSemicolon = { ',', ';' };
         internal static readonly char[] CA_CommaSpace = { ',', ' ' };
         internal static readonly char[] CA_Backslash = { '\\' };
-        internal static readonly char[] CA_ForwardSlash = { '/' };
+        //internal static readonly char[] CA_ForwardSlash = { '/' };
         internal static readonly char[] CA_BS_FS = { '\\', '/' };
         internal static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
@@ -182,7 +182,7 @@ namespace AngelLoader
 
         internal interface IEventDisabler
         {
-            bool EventsDisabled { get; set; }
+            bool EventsDisabled { set; }
         }
 
         internal sealed class DisableEvents : IDisposable
@@ -203,7 +203,7 @@ namespace AngelLoader
 
         internal interface IKeyPressDisabler
         {
-            bool KeyPressesDisabled { get; set; }
+            bool KeyPressesDisabled { set; }
         }
 
         internal sealed class DisableKeyPresses : IDisposable

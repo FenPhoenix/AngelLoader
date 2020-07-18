@@ -1643,8 +1643,6 @@ namespace AngelLoader.Forms
 
         #region FMsDGV-related
 
-        public int GetRowCount() => FMsDGV.RowCount;
-
         public void SetRowCount(int count) => FMsDGV.RowCount = count;
 
         private void ZoomFMsDGV(ZoomFMsDGVType type, float? zoomFontSize = null)

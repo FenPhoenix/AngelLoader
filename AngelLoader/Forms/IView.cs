@@ -95,8 +95,6 @@ namespace AngelLoader.Forms
 
         #region Row count
 
-        int GetRowCount();
-
         void SetRowCount(int count);
 
         #endregion

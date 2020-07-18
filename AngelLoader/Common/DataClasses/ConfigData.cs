@@ -391,7 +391,7 @@ namespace AngelLoader.DataClasses
 #if !ReleaseBeta && !ReleasePublic
         // Quick-n-dirty session-only var for now
         internal bool ForceWindowed = false;
-        internal bool CheckForUpdatesOnStartup = true;
+        //internal bool CheckForUpdatesOnStartup = true;
 #endif
     }
 }

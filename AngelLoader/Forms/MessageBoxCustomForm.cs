@@ -22,21 +22,7 @@ namespace AngelLoader.Forms
             SIID_ERROR = 80
         }
 
-        [Flags]
-        [SuppressMessage("ReSharper", "IdentifierTypo")]
-        private enum SHGSI : uint
-        {
-            //SHGSI_ICONLOCATION = 0,
-            SHGSI_ICON = 0x000000100,
-            /*
-            SHGSI_SYSICONINDEX = 0x000004000,
-            SHGSI_LINKOVERLAY = 0x000008000,
-            SHGSI_SELECTED = 0x000010000,
-            SHGSI_LARGEICON = 0x000000000,
-            SHGSI_SMALLICON = 0x000000001,
-            SHGSI_SHELLICONSIZE = 0x000000004
-            */
-        }
+        private const uint SHGSI_ICON = 0x000000100;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
@@ -54,7 +40,7 @@ namespace AngelLoader.Forms
 
         [DllImport("Shell32.dll", SetLastError = false)]
         [SuppressMessage("ReSharper", "IdentifierTypo")]
-        private static extern int SHGetStockIconInfo(SHSTOCKICONID siid, SHGSI uFlags, ref SHSTOCKICONINFO psii);
+        private static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool DestroyIcon(IntPtr hIcon);
@@ -225,7 +211,7 @@ namespace AngelLoader.Forms
 
                 sii.cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO));
 
-                int result = SHGetStockIconInfo(sysIcon, SHGSI.SHGSI_ICON, ref sii);
+                int result = SHGetStockIconInfo(sysIcon, SHGSI_ICON, ref sii);
                 Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
 
                 IconPictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();

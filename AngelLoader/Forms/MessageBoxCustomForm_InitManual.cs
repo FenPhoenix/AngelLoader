@@ -17,7 +17,7 @@
             BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
             Cancel_Button = new System.Windows.Forms.Button();
             OKButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(IconPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)IconPictureBox).BeginInit();
             ContentTLP.SuspendLayout();
             MainFLP.SuspendLayout();
             SelectButtonsFLP.SuspendLayout();
@@ -163,7 +163,7 @@
             ShowInTaskbar = false;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             FormClosing += MessageBoxCustomForm_FormClosing;
-            ((System.ComponentModel.ISupportInitialize)(IconPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)IconPictureBox).EndInit();
             ContentTLP.ResumeLayout(false);
             MainFLP.ResumeLayout(false);
             MainFLP.PerformLayout();
