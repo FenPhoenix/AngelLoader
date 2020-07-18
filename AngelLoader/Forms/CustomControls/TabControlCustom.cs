@@ -76,13 +76,28 @@ namespace AngelLoader.Forms.CustomControls
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            (_, _dragTab) = GetTabAtPoint(e.Location);
+            if (e.Button == MouseButtons.Left) (_, _dragTab) = GetTabAtPoint(e.Location);
             base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            // Fix: Ensure we don't start dragging a tab again after we've released the button.
+            _dragTab = null;
+            base.OnMouseUp(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left || _dragTab == null || TabCount <= 1) return;
+            // Run the base event handler if we're not actually dragging a tab
+            if (e.Button != MouseButtons.Left || _dragTab == null || TabCount <= 1)
+            {
+                base.OnMouseMove(e);
+                return;
+            }
+
+            // If we are dragging a tab, don't run the handler, because we want to be "modal" and block so nothing
+            // weird happens
 
             int dragTabIndex = TabPages.IndexOf(_dragTab);
             var (bDragTabIndex, _) = FindBackingTab(_dragTab);
@@ -110,8 +125,6 @@ namespace AngelLoader.Forms.CustomControls
             _backingTabList[bNewTabIndex].TabPage = _dragTab!;
 
             SelectedTab = _dragTab;
-
-            base.OnMouseMove(e);
         }
 
         private (int BackingTabIndex, TabPage? TabPage)
