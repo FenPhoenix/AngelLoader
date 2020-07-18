@@ -60,8 +60,8 @@ namespace AngelLoader.DataClasses
 
     internal sealed class TopRightTabData
     {
-        private int _position;
-        internal int Position { get => _position; set => _position = value.Clamp(0, TopRightTabsData.Count - 1); }
+        private int _displayIndex;
+        internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, TopRightTabsData.Count - 1); }
 
         internal bool Visible = true;
     }
@@ -78,7 +78,7 @@ namespace AngelLoader.DataClasses
 
         internal TopRightTab SelectedTab = TopRightTab.Statistics;
 
-        internal TopRightTabsData() => ResetAllPositions();
+        internal TopRightTabsData() => ResetAllDisplayIndexes();
 
         internal TopRightTabData StatsTab => Tabs[(int)TopRightTab.Statistics];
         internal TopRightTabData EditFMTab => Tabs[(int)TopRightTab.EditFM];
@@ -88,7 +88,7 @@ namespace AngelLoader.DataClasses
 
         internal void EnsureValidity()
         {
-            #region Fallback if multiple tabs have the same position
+            #region Fallback if multiple tabs have the same display index
 
             int[] set = InitializedArray(Count, -1);
 
@@ -97,14 +97,14 @@ namespace AngelLoader.DataClasses
             {
                 for (int j = 0; j < set.Length; j++)
                 {
-                    if (set[j] == Tabs[i].Position)
+                    if (set[j] == Tabs[i].DisplayIndex)
                     {
-                        ResetAllPositions();
+                        ResetAllDisplayIndexes();
                         goto breakout;
                     }
                 }
 
-                set[i] = Tabs[i].Position;
+                set[i] = Tabs[i].DisplayIndex;
             }
 
             breakout:
@@ -139,9 +139,9 @@ namespace AngelLoader.DataClasses
             for (int i = 0; i < Count; i++) Tabs[i].Visible = visible;
         }
 
-        private void ResetAllPositions()
+        private void ResetAllDisplayIndexes()
         {
-            for (int i = 0; i < Count; i++) Tabs[i].Position = i;
+            for (int i = 0; i < Count; i++) Tabs[i].DisplayIndex = i;
         }
     }
 

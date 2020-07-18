@@ -898,7 +898,6 @@ namespace AngelLoader.Forms
             StatisticsTabPage.Controls.Add(StatsScanCustomResourcesButton);
             StatisticsTabPage.Controls.Add(StatsCheckBoxesPanel);
             StatisticsTabPage.Controls.Add(CustomResourcesLabel);
-            StatisticsTabPage.Name = nameof(StatisticsTabPage);
             StatisticsTabPage.Size = new Size(526, 284);
             StatisticsTabPage.TabIndex = 0;
             // 
@@ -1043,7 +1042,6 @@ namespace AngelLoader.Forms
             EditFMTabPage.Controls.Add(EditFMAuthorTextBox);
             EditFMTabPage.Controls.Add(EditFMAuthorLabel);
             EditFMTabPage.Controls.Add(EditFMTitleLabel);
-            EditFMTabPage.Name = nameof(EditFMTabPage);
             EditFMTabPage.Size = new Size(526, 284);
             EditFMTabPage.TabIndex = 2;
             // 
@@ -1252,7 +1250,6 @@ namespace AngelLoader.Forms
             // 
             CommentTabPage.BackColor = SystemColors.Control;
             CommentTabPage.Controls.Add(CommentTextBox);
-            CommentTabPage.Name = nameof(CommentTabPage);
             CommentTabPage.Size = new Size(526, 284);
             CommentTabPage.TabIndex = 0;
             // 
@@ -1276,7 +1273,6 @@ namespace AngelLoader.Forms
             TagsTabPage.Controls.Add(AddRemoveTagFLP);
             TagsTabPage.Controls.Add(TagsTreeView);
             TagsTabPage.Controls.Add(TagsTabAutoScrollMarker);
-            TagsTabPage.Name = nameof(TagsTabPage);
             TagsTabPage.Size = new Size(526, 284);
             TagsTabPage.TabIndex = 1;
             // 
@@ -1351,7 +1347,6 @@ namespace AngelLoader.Forms
             PatchTabPage.BackColor = SystemColors.Control;
             PatchTabPage.Controls.Add(PatchMainPanel);
             PatchTabPage.Controls.Add(PatchFMNotInstalledLabel);
-            PatchTabPage.Name = nameof(PatchTabPage);
             PatchTabPage.Size = new Size(526, 284);
             PatchTabPage.TabIndex = 3;
             // 

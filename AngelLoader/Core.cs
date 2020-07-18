@@ -1515,7 +1515,7 @@ namespace AngelLoader
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                Config.TopRightTabsData.Tabs[i].Position = topRightTabsData.Tabs[i].Position;
+                Config.TopRightTabsData.Tabs[i].DisplayIndex = topRightTabsData.Tabs[i].DisplayIndex;
                 Config.TopRightTabsData.Tabs[i].Visible = topRightTabsData.Tabs[i].Visible;
             }
 

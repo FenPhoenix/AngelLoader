@@ -551,27 +551,27 @@ namespace AngelLoader
                 else if (lineTS.StartsWithFast_NoNullChecks("StatsTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabsData.StatsTab.Position = result;
+                    config.TopRightTabsData.StatsTab.DisplayIndex = result;
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("EditFMTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabsData.EditFMTab.Position = result;
+                    config.TopRightTabsData.EditFMTab.DisplayIndex = result;
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("CommentTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabsData.CommentTab.Position = result;
+                    config.TopRightTabsData.CommentTab.DisplayIndex = result;
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("TagsTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabsData.TagsTab.Position = result;
+                    config.TopRightTabsData.TagsTab.DisplayIndex = result;
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("PatchTabPosition="))
                 {
                     int.TryParse(val, out int result);
-                    config.TopRightTabsData.PatchTab.Position = result;
+                    config.TopRightTabsData.PatchTab.DisplayIndex = result;
                 }
                 else if (lineTS.StartsWithFast_NoNullChecks("StatsTabVisible="))
                 {
@@ -848,11 +848,11 @@ namespace AngelLoader
             sb.AppendLine("GameTab=" + config.GameTab);
             sb.AppendLine("TopRightTab=" + config.TopRightTabsData.SelectedTab);
 
-            sb.AppendLine("StatsTabPosition=" + config.TopRightTabsData.StatsTab.Position);
-            sb.AppendLine("EditFMTabPosition=" + config.TopRightTabsData.EditFMTab.Position);
-            sb.AppendLine("CommentTabPosition=" + config.TopRightTabsData.CommentTab.Position);
-            sb.AppendLine("TagsTabPosition=" + config.TopRightTabsData.TagsTab.Position);
-            sb.AppendLine("PatchTabPosition=" + config.TopRightTabsData.PatchTab.Position);
+            sb.AppendLine("StatsTabPosition=" + config.TopRightTabsData.StatsTab.DisplayIndex);
+            sb.AppendLine("EditFMTabPosition=" + config.TopRightTabsData.EditFMTab.DisplayIndex);
+            sb.AppendLine("CommentTabPosition=" + config.TopRightTabsData.CommentTab.DisplayIndex);
+            sb.AppendLine("TagsTabPosition=" + config.TopRightTabsData.TagsTab.DisplayIndex);
+            sb.AppendLine("PatchTabPosition=" + config.TopRightTabsData.PatchTab.DisplayIndex);
 
             sb.AppendLine("StatsTabVisible=" + config.TopRightTabsData.StatsTab.Visible);
             sb.AppendLine("EditFMTabVisible=" + config.TopRightTabsData.EditFMTab.Visible);

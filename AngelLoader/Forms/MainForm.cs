@@ -848,18 +848,14 @@ namespace AngelLoader.Forms
             var sortedTabPages = new SortedDictionary<int, TabPage>();
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].Position, _topRightTabsInOrder[i]);
+                sortedTabPages.Add(Config.TopRightTabsData.Tabs[i].DisplayIndex, _topRightTabsInOrder[i]);
             }
-
-#if DEBUG
-            // There will be a set of tabs for design purposes already, so we need to get rid of those first
-            TopRightTabControl.TabPages.Clear();
-#endif
 
             var tabs = new List<TabPage>(sortedTabPages.Count);
             foreach (var item in sortedTabPages) tabs.Add(item.Value);
 
-            TopRightTabControl.AddTabsFull(tabs);
+            // This removes any existing tabs so it's fine even for debug
+            TopRightTabControl.SetTabsFull(tabs);
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
@@ -1657,7 +1653,7 @@ namespace AngelLoader.Forms
 
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
-                (topRightTabs.Tabs[i].Position, _) = TopRightTabControl.FindBackingTab(_topRightTabsInOrder[i]);
+                topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_topRightTabsInOrder[i]);
                 topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabsInOrder[i]);
             }
 
@@ -3700,7 +3696,7 @@ namespace AngelLoader.Forms
 
             AssertR(tab != null, nameof(tab) + " is null - tab does not have a corresponding menu item");
 
-            if (!s.Checked && TopRightTabControl.TabPages.Count == 1)
+            if (!s.Checked && TopRightTabControl.TabCount == 1)
             {
                 s.Checked = true;
                 return;

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls
 {
     internal sealed class TabControlCustom : TabControl
     {
-        internal sealed class BackingTab
+        #region Private fields
+
+        private sealed class BackingTab
         {
             internal TabPage TabPage;
             internal bool Visible = true;
@@ -15,25 +18,101 @@ namespace AngelLoader.Forms.CustomControls
         }
 
         private TabPage? _dragTab;
+        // TODO: This is using a specific tab count number, but in theory this class is generic.
+        // I'm only using it for the top-right tabs right now, but remove this capacity initializer if I use it
+        // in another place.
         private readonly List<BackingTab> _backingTabList = new List<BackingTab>(DataClasses.TopRightTabsData.Count);
 
-        public TabControlCustom()
-        {
-            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
-        }
+        #endregion
 
-        internal void AddTabsFull(List<TabPage> tabPages)
+        /// <summary>
+        /// <para>
+        /// Unavailable. Don't try to use (you can't) or you will mess everything up (which is why you can't).
+        /// </para>
+        /// <para>
+        /// Use <see cref="SetTabsFull"/> to set tabs, or <see cref="ClearTabsFull"/> to remove all tabs.
+        /// </para>
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        [PublicAPI]
+        public new object TabPages => throw new InvalidOperationException();
+
+#if !DEBUG
+        /// <summary>
+        /// <para>
+        /// Unavailable. Don't try to use (you can't) or you will mess everything up (which is why you can't).
+        /// </para>
+        /// <para>
+        /// Use <see cref="SetTabsFull"/> to set tabs, or <see cref="ClearTabsFull"/> to remove all tabs.
+        /// </para>
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        [PublicAPI]
+        public new object Controls => throw new InvalidOperationException();
+#endif
+
+        [PublicAPI]
+        public TabControlCustom() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
+
+        #region API methods
+
+        /// <summary>
+        /// Removes all tabs and adds a set of new ones.
+        /// </summary>
+        /// <param name="tabPages"></param>
+        [PublicAPI]
+        public void SetTabsFull(List<TabPage> tabPages)
         {
-            _backingTabList.Clear();
+            ClearTabsFull();
 
             foreach (TabPage tabPage in tabPages)
             {
-                TabPages.Add(tabPage);
+                base.TabPages.Add(tabPage);
                 _backingTabList.Add(new BackingTab(tabPage));
             }
         }
 
-        internal (int Index, BackingTab BackingTab)
+        [PublicAPI]
+        public void ClearTabsFull()
+        {
+            if (TabCount > 0) base.TabPages.Clear();
+            _backingTabList.Clear();
+        }
+
+        /// <summary>
+        /// Shows or hides the specified <see cref="TabPage"/>.
+        /// </summary>
+        /// <param name="tabPage"></param>
+        /// <param name="show"></param>
+        [PublicAPI]
+        public void ShowTab(TabPage tabPage, bool show)
+        {
+            var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
+            if (index < 0 || bt == null) return;
+
+            if (show)
+            {
+                bt.Visible = true;
+                if (!base.TabPages.Contains(bt.TabPage)) base.TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
+            }
+            else
+            {
+                bt.Visible = false;
+                if (base.TabPages.Contains(bt.TabPage)) base.TabPages.Remove(bt.TabPage);
+            }
+        }
+
+        /// <summary>
+        /// Returns the display index of the specified <see cref="TabPage"/>.
+        /// </summary>
+        /// <param name="tabPage"></param>
+        /// <returns></returns>
+        [PublicAPI]
+        public int GetTabDisplayIndex(TabPage tabPage) => FindBackingTab(tabPage).Index;
+
+        #endregion
+
+        private (int Index, BackingTab BackingTab)
         FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
         {
             for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
@@ -43,33 +122,8 @@ namespace AngelLoader.Forms.CustomControls
                 if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
             }
 
-            if (!DesignMode)
-            {
-                throw new Exception(nameof(FindBackingTab) + " couldn't find the specified tab page '" +
-                                    // DOTNAME
-                                    tabPage.Name +
-                                    "'. That's not supposed to happen. All tab pages should always exist in the backing list.");
-            }
-
-            // To keep design mode tab selection happy
-            return (-1, null)!;
-        }
-
-        internal void ShowTab(TabPage tabPage, bool show)
-        {
-            var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
-            if (index < 0 || bt == null) return;
-
-            if (show)
-            {
-                bt.Visible = true;
-                if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
-            }
-            else
-            {
-                bt.Visible = false;
-                if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
-            }
+            // We should never get here!
+            throw new InvalidOperationException("Can't find backing tab?!");
         }
 
         #region Tab reordering
@@ -99,7 +153,7 @@ namespace AngelLoader.Forms.CustomControls
             // If we are dragging a tab, don't run the handler, because we want to be "modal" and block so nothing
             // weird happens
 
-            int dragTabIndex = TabPages.IndexOf(_dragTab);
+            int dragTabIndex = base.TabPages.IndexOf(_dragTab);
             var (bDragTabIndex, _) = FindBackingTab(_dragTab);
 
             Rectangle dragTabRect = GetTabRect(dragTabIndex);
@@ -117,9 +171,9 @@ namespace AngelLoader.Forms.CustomControls
             var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location);
             if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
 
-            int newTabIndex = TabPages.IndexOf(newTab);
-            TabPages[dragTabIndex] = newTab;
-            TabPages[newTabIndex] = _dragTab;
+            int newTabIndex = base.TabPages.IndexOf(newTab);
+            base.TabPages[dragTabIndex] = newTab;
+            base.TabPages[newTabIndex] = _dragTab;
 
             _backingTabList[bDragTabIndex].TabPage = newTab;
             _backingTabList[bNewTabIndex].TabPage = _dragTab!;
@@ -134,7 +188,7 @@ namespace AngelLoader.Forms.CustomControls
             {
                 if (GetTabRect(i).Contains(position))
                 {
-                    TabPage tabPage = TabPages[i];
+                    TabPage tabPage = base.TabPages[i];
                     var (index, backingTab) = FindBackingTab(tabPage);
 
                     return index == -1 || backingTab == null ? (-1, null) : (index, tabPage);
