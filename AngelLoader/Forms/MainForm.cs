@@ -268,7 +268,7 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
                                              string yes, string no, string cancel, ButtonType? defaultButton = null)
         {
-            var yesButton = new TaskDialogButton("");
+            var yesButton = new TaskDialogButton(yes);
             var noButton = new TaskDialogButton(no);
             var cancelButton = new TaskDialogButton(cancel);
 
