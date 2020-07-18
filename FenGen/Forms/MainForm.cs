@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 namespace FenGen.Forms
 {
+    [SuppressMessage("ReSharper", "UnusedType.Global")]
     public partial class MainForm : Form
     {
         public MainForm()
@@ -10,7 +12,9 @@ namespace FenGen.Forms
             InitializeComponent();
         }
 
+#pragma warning disable 1998
         private async void GenerateButton_Click(object sender, EventArgs e)
+#pragma warning restore 1998
         {
             //var sourceFile = Path.Combine(Core.ALProjectPath, @"Common\DataClasses\FanMissionData.cs");
             //var destFile = Path.Combine(Core.ALProjectPath, @"Ini\FMData.cs");

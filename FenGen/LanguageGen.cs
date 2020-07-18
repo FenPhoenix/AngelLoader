@@ -12,14 +12,14 @@ namespace FenGen
 {
     internal static class Language
     {
-        private class IniItem
+        private sealed class IniItem
         {
             internal string Key = "";
             internal string Value = "";
             internal bool IsComment;
         }
 
-        private class IniSection : List<IniItem>
+        private sealed class IniSection : List<IniItem>
         {
             internal IniSection(string name) => Name = name;
             internal readonly string Name;
