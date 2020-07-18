@@ -62,13 +62,10 @@ namespace AngelLoader.Forms
         // Windows will dispose it all anyway
 #pragma warning disable IDE0069 // Disposable fields should be disposed
 
-#if !ReleaseBeta && !ReleasePublic
-        private readonly CheckBox ForceWindowedCheckBox;
-#endif
-
         #region Test / debug
 
 #if !ReleaseBeta && !ReleasePublic
+        private readonly CheckBox ForceWindowedCheckBox;
         private void ForceWindowedCheckBox_CheckedChanged(object sender, EventArgs e) => Config.ForceWindowed = ForceWindowedCheckBox.Checked;
 #endif
 
@@ -271,7 +268,7 @@ namespace AngelLoader.Forms
         AskToContinueWithCancelCustomStrings(string message, string title, TaskDialogIcon? icon, bool showDontAskAgain,
                                              string yes, string no, string cancel, ButtonType? defaultButton = null)
         {
-            var yesButton = new TaskDialogButton(yes);
+            var yesButton = new TaskDialogButton("");
             var noButton = new TaskDialogButton(no);
             var cancelButton = new TaskDialogButton(cancel);
 
@@ -402,89 +399,6 @@ namespace AngelLoader.Forms
 
         private TransparentPanel? ViewBlockingPanel;
         private bool _viewBlocked;
-
-        #endregion
-
-        #region Show menu
-
-        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
-
-        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos, bool unstickMenu = false)
-        {
-            int x = pos == MenuPos.LeftUp || pos == MenuPos.LeftDown || pos == MenuPos.TopRight || pos == MenuPos.BottomRight
-                ? 0
-                : control.Width;
-
-            int y = pos == MenuPos.LeftDown || pos == MenuPos.TopLeft || pos == MenuPos.TopRight || pos == MenuPos.RightDown
-                ? 0
-                : control.Height;
-
-            var direction =
-                pos == MenuPos.LeftUp || pos == MenuPos.TopLeft ? ToolStripDropDownDirection.AboveLeft :
-                pos == MenuPos.RightUp || pos == MenuPos.TopRight ? ToolStripDropDownDirection.AboveRight :
-                pos == MenuPos.LeftDown || pos == MenuPos.BottomLeft ? ToolStripDropDownDirection.BelowLeft :
-                ToolStripDropDownDirection.BelowRight;
-
-            if (unstickMenu)
-            {
-                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
-                // then carry on with the final show below
-                menu.Show();
-                menu.Hide();
-            }
-
-            menu.Show(control, new Point(x, y), direction);
-        }
-
-        #endregion
-
-        #region Filter bar scroll RepeatButtons
-
-        // TODO: Make this use a timer or something?
-        // The thread is fine but the speed accumulates if you click a bunch. Not a big deal I guess but hey.
-        // Single-threading it would also allow it to be packed away in a custom control.
-        private bool _repeatButtonRunning;
-
-        private void FilterBarScrollButtons_Click(object sender, EventArgs e)
-        {
-            if (_repeatButtonRunning) return;
-            int direction = sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
-            InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
-        }
-
-        private void FilterBarScrollButtons_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left) return;
-            RunRepeatButton(sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT);
-        }
-
-        private void RunRepeatButton(int direction)
-        {
-            if (_repeatButtonRunning) return;
-            _repeatButtonRunning = true;
-            Task.Run(() =>
-            {
-                while (_repeatButtonRunning)
-                {
-                    Invoke(new Action(() =>
-                    {
-                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
-                    }));
-                    Thread.Sleep(150);
-                }
-            });
-        }
-
-        private void FilterBarScrollButtons_EnabledChanged(object sender, EventArgs e) => _repeatButtonRunning = false;
-
-        private void FilterBarScrollLeftButton_MouseUp(object sender, MouseEventArgs e) => _repeatButtonRunning = false;
-
-        private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
-        {
-            var senderButton = (Button)sender;
-            var otherButton = senderButton == FilterBarScrollLeftButton ? FilterBarScrollRightButton : FilterBarScrollLeftButton;
-            if (!senderButton.Visible && otherButton.Visible) _repeatButtonRunning = false;
-        }
 
         #endregion
 
@@ -4016,6 +3930,90 @@ namespace AngelLoader.Forms
 
         internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
 
+
+        #region Show menu
+
+        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
+
+        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos, bool unstickMenu = false)
+        {
+            int x = pos == MenuPos.LeftUp || pos == MenuPos.LeftDown || pos == MenuPos.TopRight || pos == MenuPos.BottomRight
+                ? 0
+                : control.Width;
+
+            int y = pos == MenuPos.LeftDown || pos == MenuPos.TopLeft || pos == MenuPos.TopRight || pos == MenuPos.RightDown
+                ? 0
+                : control.Height;
+
+            var direction =
+                pos == MenuPos.LeftUp || pos == MenuPos.TopLeft ? ToolStripDropDownDirection.AboveLeft :
+                pos == MenuPos.RightUp || pos == MenuPos.TopRight ? ToolStripDropDownDirection.AboveRight :
+                pos == MenuPos.LeftDown || pos == MenuPos.BottomLeft ? ToolStripDropDownDirection.BelowLeft :
+                ToolStripDropDownDirection.BelowRight;
+
+            if (unstickMenu)
+            {
+                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
+                // then carry on with the final show below
+                menu.Show();
+                menu.Hide();
+            }
+
+            menu.Show(control, new Point(x, y), direction);
+        }
+
+        #endregion
+
+        #region Filter bar scroll RepeatButtons
+
+        // TODO: Make this use a timer or something?
+        // The thread is fine but the speed accumulates if you click a bunch. Not a big deal I guess but hey.
+        // Single-threading it would also allow it to be packed away in a custom control.
+        private bool _repeatButtonRunning;
+
+        private void FilterBarScrollButtons_Click(object sender, EventArgs e)
+        {
+            if (_repeatButtonRunning) return;
+            int direction = sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT;
+            InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+        }
+
+        private void FilterBarScrollButtons_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+            RunRepeatButton(sender == FilterBarScrollLeftButton ? InteropMisc.SB_LINELEFT : InteropMisc.SB_LINERIGHT);
+        }
+
+        private void RunRepeatButton(int direction)
+        {
+            if (_repeatButtonRunning) return;
+            _repeatButtonRunning = true;
+            Task.Run(() =>
+            {
+                while (_repeatButtonRunning)
+                {
+                    Invoke(new Action(() =>
+                    {
+                        InteropMisc.SendMessage(FilterBarFLP.Handle, InteropMisc.WM_SCROLL, (IntPtr)direction, IntPtr.Zero);
+                    }));
+                    Thread.Sleep(150);
+                }
+            });
+        }
+
+        private void FilterBarScrollButtons_EnabledChanged(object sender, EventArgs e) => _repeatButtonRunning = false;
+
+        private void FilterBarScrollLeftButton_MouseUp(object sender, MouseEventArgs e) => _repeatButtonRunning = false;
+
+        private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
+        {
+            var senderButton = (Button)sender;
+            var otherButton = senderButton == FilterBarScrollLeftButton ? FilterBarScrollRightButton : FilterBarScrollLeftButton;
+            if (!senderButton.Visible && otherButton.Visible) _repeatButtonRunning = false;
+        }
+
+        #endregion
+
         #region Control painting
 
         // Perf: Where feasible, it's way faster to simply draw images vector-style on-the-fly, rather than
@@ -4051,10 +4049,7 @@ namespace AngelLoader.Forms
                 x: ClearFiltersButton.Bounds.Right + 6);
         }
 
-        private void FilterBarFLP_Paint(object sender, PaintEventArgs e)
-        {
-            ControlPainter.PaintControlSeparators(e, -1, 5, 20, _filterLabels);
-        }
+        private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintControlSeparators(e, -1, 5, 20, _filterLabels);
 
         private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlayFMButton(PlayFMButton, e);
 

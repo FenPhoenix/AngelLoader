@@ -8,8 +8,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     internal static class OokiiResources
     {
         internal static readonly string TaskDialogRunningError = "The task dialog is already being displayed.";
-        internal static readonly string TaskDialogNoButtonsError = "The task dialog must have buttons.";
-        internal static readonly string TaskDialogEmptyButtonLabelError = "A custom button cannot have an empty label.";
         internal static readonly string TaskDialogIllegalCrossThreadCallError = "Cross-thread operation not valid: Task dialog accessed from a thread other than the thread it was created on while it is visible.";
     }
 }

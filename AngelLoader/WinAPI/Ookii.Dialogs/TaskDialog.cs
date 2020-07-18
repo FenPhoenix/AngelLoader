@@ -33,7 +33,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         private readonly List<TaskDialogButton> _buttons = new List<TaskDialogButton>();
         private NativeMethods.TASKDIALOGCONFIG _config;
-        private Dictionary<int, TaskDialogButton>? _buttonsById;
         private IntPtr _handle;
 
         private readonly TaskDialogButton _defaultButton;
@@ -54,7 +53,9 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         /// <param name="message">
         /// The dialog's primary content. The default is an empty string ("").
         /// </param>
-        /// <param name="buttons"></param>
+        /// <param name="buttons">
+        /// The buttons to show on the dialog. If no buttons are passed, the dialog will show an OK button.
+        /// </param>
         /// <param name="defaultButton"></param>
         /// <param name="verificationText">
         /// <para>
@@ -116,10 +117,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
             #endregion
 
-            if (buttons == null || buttons.Length == 0)
-            {
-                throw new InvalidOperationException(OokiiResources.TaskDialogNoButtonsError);
-            }
+            if (buttons.Length == 0) buttons = new[] { new TaskDialogButton(ButtonType.Ok) };
 
             _config.pszWindowTitle = title;
 
@@ -254,7 +252,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             _config.dwCommonButtons = 0;
             _config.pButtons = IntPtr.Zero;
             _config.cButtons = 0;
-            List<NativeMethods.TASKDIALOG_BUTTON> buttons = SetupButtons();
+            var (buttons, buttonsById) = SetupButtons();
 
             SetupIcon();
 
@@ -286,7 +284,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
                 IsVerificationChecked = verificationFlagChecked;
 
-                return _buttonsById!.TryGetValue(buttonId, out var selectedButton) ? selectedButton : null;
+                return buttonsById!.TryGetValue(buttonId, out var selectedButton) ? selectedButton : null;
 
                 #endregion
             }
@@ -353,28 +351,25 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             count = (uint)buttons.Count;
         }
 
-        private List<NativeMethods.TASKDIALOG_BUTTON>
+        private (List<NativeMethods.TASKDIALOG_BUTTON> Buttons, Dictionary<int, TaskDialogButton> ButtonsById)
         SetupButtons()
         {
-            _buttonsById = new Dictionary<int, TaskDialogButton>();
+            var buttonsById = new Dictionary<int, TaskDialogButton>();
             var buttons = new List<NativeMethods.TASKDIALOG_BUTTON>();
             _config.nDefaultButton = 0;
             foreach (TaskDialogButton button in _buttons)
             {
-                _buttonsById.Add(button.Id, button);
+                buttonsById.Add(button.Id, button);
 
                 if (_defaultButton == button) _config.nDefaultButton = button.Id;
 
                 if (button.ButtonType == ButtonType.Custom)
                 {
-                    if (button.Text.IsEmpty())
-                    {
-                        throw new InvalidOperationException(OokiiResources.TaskDialogEmptyButtonLabelError);
-                    }
                     buttons.Add(new NativeMethods.TASKDIALOG_BUTTON
                     {
                         nButtonID = button.Id,
-                        pszButtonText = button.Text
+                        // Empty string ("") is not supported and throws a null ref exception, so replace with " "
+                        pszButtonText = button.Text.IsEmpty() ? " " : button.Text
                     });
                 }
                 else
@@ -382,7 +377,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                     _config.dwCommonButtons |= button.ButtonFlag;
                 }
             }
-            return buttons;
+            return (buttons, buttonsById);
         }
 
         private void SetFlag(NativeMethods.TaskDialogFlags flag, bool value)
