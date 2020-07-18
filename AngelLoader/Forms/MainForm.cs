@@ -354,6 +354,7 @@ namespace AngelLoader.Forms
         private readonly ToolStripButtonCustom[] _filterByGameButtonsInOrder;
         private readonly TabPage[] _topRightTabsInOrder;
 
+        private readonly Control[] _filterLabels;
         private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
         private readonly Control[] _bottomAreaSeparatedItems;
 
@@ -795,6 +796,12 @@ namespace AngelLoader.Forms
             };
 
             #region Separated items
+
+            _filterLabels = new Control[]
+            {
+                FilterTitleLabel,
+                FilterAuthorLabel
+            };
 
             _filtersToolStripSeparatedItems = new ToolStripItem[]
             {
@@ -4018,13 +4025,40 @@ namespace AngelLoader.Forms
         // Perf: Where feasible, it's way faster to simply draw images vector-style on-the-fly, rather than
         // pulling rasters from Resources, because Resources is a fat bloated hog with five headcrabs on it
 
-        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintControlSeparators(e, 2, _bottomAreaSeparatedItems);
+        private void BottomLeftButtonsFLP_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintControlSeparators(e, 2, items: _bottomAreaSeparatedItems);
 
         private void FilterIconButtonsToolStrip_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintToolStripSeparators(e, 5, _filtersToolStripSeparatedItems);
 
-        private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e) => PaintRefreshAreaToolStrip(e);
+        private void RefreshAreaToolStrip_Paint(object sender, PaintEventArgs e)
+        {
+            // This one is a special case, so draw it explicitly here
+            Pen s1Pen = ControlPainter.GetSeparatorPenForCurrentVisualStyleMode();
+            const int y1 = 5;
+            const int y2 = 20;
 
-        private void FilterBarFLP_Paint(object sender, PaintEventArgs e) => PaintFilterBarFLP(e);
+            ControlPainter.DrawSeparator(
+                e: e,
+                line1Pen: s1Pen,
+                line1DistanceBackFromLoc: 3,
+                line1Top: y1,
+                line1Bottom: y2,
+                x: RefreshFromDiskButton.Bounds.Location.X);
+
+            ControlPainter.DrawSeparator(
+                e: e,
+                line1Pen: s1Pen,
+                // Right side hack
+                line1DistanceBackFromLoc: 0,
+                line1Top: y1,
+                line1Bottom: y2,
+                // Right side hack
+                x: ClearFiltersButton.Bounds.Right + 6);
+        }
+
+        private void FilterBarFLP_Paint(object sender, PaintEventArgs e)
+        {
+            ControlPainter.PaintControlSeparators(e, -1, 5, 20, _filterLabels);
+        }
 
         private void PlayFMButton_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintPlayFMButton(PlayFMButton, e);
 

@@ -13,6 +13,8 @@ namespace AngelLoader.Forms
         internal static readonly Pen Sep1PenC = new Pen(Color.FromArgb(166, 166, 166));
         internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
+        internal static Pen GetSeparatorPenForCurrentVisualStyleMode() => Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
+
         #region Global
 
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
@@ -254,52 +256,60 @@ namespace AngelLoader.Forms
 
         #region Separators
 
+        // It's ridiculous to instantiate two controls (a ToolStrip and a ToolStripSeparator contained within it)
+        // just to draw two one-pixel-wide lines. Especially when there's a ton of them on the UI. For startup
+        // perf and lightness of weight, we just draw them ourselves.
+
         internal static void PaintToolStripSeparators(PaintEventArgs e, int pixelsFromVerticalEdges,
             params ToolStripItem[] items)
         {
-            Pen s1Pen = Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
-
-            int pfe = pixelsFromVerticalEdges;
+            Pen s1Pen = GetSeparatorPenForCurrentVisualStyleMode();
 
             Rectangle sizeBounds = items[0].Bounds;
 
-            int y1 = sizeBounds.Top + pfe;
-            int y2 = sizeBounds.Bottom - pfe;
+            int y1 = sizeBounds.Top + pixelsFromVerticalEdges;
+            int y2 = sizeBounds.Bottom - pixelsFromVerticalEdges;
 
             for (int i = 0; i < items.Length; i++)
             {
-                int bx = items[i].Bounds.Location.X;
-                int l1s = (items[i].Margin.Left + (i > 0 ? items[i - 1].Margin.Right : 0)) / 2;
-                int l2s = l1s - 1;
-                int sep1x = bx - l1s;
-                int sep2x = bx - l2s;
-                e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                int l1s = (int)Math.Ceiling((double)items[i].Margin.Left / 2);
+                DrawSeparator(e, s1Pen, l1s, y1, y2, items[i].Bounds.Location.X);
             }
         }
 
-        internal static void PaintControlSeparators(PaintEventArgs e, int pixelsFromVerticalEdges,
+        internal static void PaintControlSeparators(
+            PaintEventArgs e,
+            int pixelsFromVerticalEdges,
+            int topOverride = -1,
+            int bottomOverride = -1,
             params Control[] items)
         {
-            Pen s1Pen = Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
-
-            int pfe = pixelsFromVerticalEdges;
+            Pen s1Pen = GetSeparatorPenForCurrentVisualStyleMode();
 
             Rectangle sizeBounds = items[0].Bounds;
 
-            int y1 = sizeBounds.Top + pfe;
-            int y2 = (sizeBounds.Bottom - pfe) - 1;
+            int y1 = topOverride > -1 ? topOverride : sizeBounds.Top + pixelsFromVerticalEdges;
+            int y2 = bottomOverride > -1 ? bottomOverride : (sizeBounds.Bottom - pixelsFromVerticalEdges) - 1;
 
             for (int i = 0; i < items.Length; i++)
             {
-                int bx = items[i].Bounds.Location.X;
                 int l1s = (int)Math.Ceiling((double)items[i].Margin.Left / 2);
-                int l2s = l1s - 1;
-                int sep1x = bx - l1s;
-                int sep2x = bx - l2s;
-                e.Graphics.DrawLine(s1Pen, sep1x, y1, sep1x, y2);
-                e.Graphics.DrawLine(Sep2Pen, sep2x, y1 + 1, sep2x, y2 + 1);
+                DrawSeparator(e, s1Pen, l1s, y1, y2, items[i].Bounds.Location.X);
             }
+        }
+
+        internal static void DrawSeparator(
+            PaintEventArgs e,
+            Pen line1Pen,
+            int line1DistanceBackFromLoc,
+            int line1Top,
+            int line1Bottom,
+            int x)
+        {
+            int sep1x = x - line1DistanceBackFromLoc;
+            int sep2x = (x - line1DistanceBackFromLoc) + 1;
+            e.Graphics.DrawLine(line1Pen, sep1x, line1Top, sep1x, line1Bottom);
+            e.Graphics.DrawLine(Sep2Pen, sep2x, line1Top + 1, sep2x, line1Bottom + 1);
         }
 
         #endregion
