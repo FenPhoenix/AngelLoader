@@ -32,12 +32,10 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
-            this.Test2Button = new System.Windows.Forms.Button();
-            this.TestButton = new System.Windows.Forms.Button();
             this.ScanAllFMsButton = new System.Windows.Forms.Button();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.BottomRightButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -47,9 +45,6 @@
             this.PlayFMButton = new System.Windows.Forms.Button();
             this.PlayOriginalGameButton = new System.Windows.Forms.Button();
             this.WebSearchButton = new System.Windows.Forms.Button();
-            this.DebugLabel = new System.Windows.Forms.Label();
-            this.DebugLabel2 = new System.Windows.Forms.Label();
-            this.EditFMLanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
             this.EverythingPanel = new System.Windows.Forms.Panel();
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
             this.TopSplitContainer = new AngelLoader.Forms.CustomControls.SplitContainerCustom();
@@ -118,6 +113,7 @@
             this.EditFMTabPage = new System.Windows.Forms.TabPage();
             this.EditFMScanLanguagesButton = new System.Windows.Forms.Button();
             this.EditFMLanguageLabel = new System.Windows.Forms.Label();
+            this.EditFMLanguageComboBox = new AngelLoader.Forms.CustomControls.ComboBoxCustom();
             this.EditFMScanForReadmesButton = new System.Windows.Forms.Button();
             this.EditFMScanReleaseDateButton = new System.Windows.Forms.Button();
             this.EditFMScanAuthorButton = new System.Windows.Forms.Button();
@@ -202,26 +198,6 @@
             this.GameTabsImageList.Images.SetKeyName(2, "Thief3_16.png");
             this.GameTabsImageList.Images.SetKeyName(3, "Shock2_16.png");
             // 
-            // Test2Button
-            // 
-            this.Test2Button.Location = new System.Drawing.Point(632, 21);
-            this.Test2Button.Name = "Test2Button";
-            this.Test2Button.Size = new System.Drawing.Size(75, 22);
-            this.Test2Button.TabIndex = 999;
-            this.Test2Button.Text = "Test2";
-            this.Test2Button.UseVisualStyleBackColor = true;
-            this.Test2Button.Click += new System.EventHandler(this.Test2Button_Click);
-            // 
-            // TestButton
-            // 
-            this.TestButton.Location = new System.Drawing.Point(632, 0);
-            this.TestButton.Name = "TestButton";
-            this.TestButton.Size = new System.Drawing.Size(75, 22);
-            this.TestButton.TabIndex = 999;
-            this.TestButton.Text = "Test";
-            this.TestButton.UseVisualStyleBackColor = true;
-            this.TestButton.Click += new System.EventHandler(this.TestButton_Click);
-            // 
             // ScanAllFMsButton
             // 
             this.ScanAllFMsButton.AutoSize = true;
@@ -240,10 +216,6 @@
             // 
             this.BottomPanel.Controls.Add(this.BottomRightButtonsFLP);
             this.BottomPanel.Controls.Add(this.BottomLeftButtonsFLP);
-            this.BottomPanel.Controls.Add(this.DebugLabel);
-            this.BottomPanel.Controls.Add(this.DebugLabel2);
-            this.BottomPanel.Controls.Add(this.Test2Button);
-            this.BottomPanel.Controls.Add(this.TestButton);
             this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.BottomPanel.Location = new System.Drawing.Point(0, 672);
             this.BottomPanel.Name = "BottomPanel";
@@ -326,8 +298,8 @@
             this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_Original_24;
             this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
-            this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+            this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
             this.PlayOriginalGameButton.TabIndex = 57;
@@ -349,34 +321,6 @@
             this.WebSearchButton.UseVisualStyleBackColor = true;
             this.WebSearchButton.Click += new System.EventHandler(this.WebSearchButton_Click);
             this.WebSearchButton.Paint += new System.Windows.Forms.PaintEventHandler(this.WebSearchButton_Paint);
-            // 
-            // DebugLabel
-            // 
-            this.DebugLabel.AutoSize = true;
-            this.DebugLabel.Location = new System.Drawing.Point(712, 8);
-            this.DebugLabel.Name = "DebugLabel";
-            this.DebugLabel.Size = new System.Drawing.Size(71, 13);
-            this.DebugLabel.TabIndex = 29;
-            this.DebugLabel.Text = "[DebugLabel]";
-            // 
-            // DebugLabel2
-            // 
-            this.DebugLabel2.AutoSize = true;
-            this.DebugLabel2.Location = new System.Drawing.Point(712, 24);
-            this.DebugLabel2.Name = "DebugLabel2";
-            this.DebugLabel2.Size = new System.Drawing.Size(77, 13);
-            this.DebugLabel2.TabIndex = 32;
-            this.DebugLabel2.Text = "[DebugLabel2]";
-            // 
-            // EditFMLanguageComboBox
-            // 
-            this.EditFMLanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.EditFMLanguageComboBox.FormattingEnabled = true;
-            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 262);
-            this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
-            this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
-            this.EditFMLanguageComboBox.TabIndex = 32;
-            this.EditFMLanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMLanguageComboBox_SelectedIndexChanged);
             // 
             // EverythingPanel
             // 
@@ -485,8 +429,8 @@
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -511,26 +455,26 @@
             this.DateAddedColumn,
             this.DisabledModsColumn,
             this.CommentColumn});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.FMsDGV.DefaultCellStyle = dataGridViewCellStyle3;
             this.FMsDGV.Location = new System.Drawing.Point(1, 26);
             this.FMsDGV.MultiSelect = false;
             this.FMsDGV.Name = "FMsDGV";
             this.FMsDGV.ReadOnly = true;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.FMsDGV.RowHeadersVisible = false;
             this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
@@ -592,8 +536,8 @@
             // 
             // SizeColumn
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.SizeColumn.DefaultCellStyle = dataGridViewCellStyle2;
             this.SizeColumn.HeaderText = "Size";
             this.SizeColumn.MinimumWidth = 25;
             this.SizeColumn.Name = "SizeColumn";
@@ -660,7 +604,7 @@
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -680,7 +624,7 @@
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -793,7 +737,7 @@
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -811,7 +755,7 @@
             this.FilterShowUnsupportedButton,
             this.FilterShowRecentAtTopButton});
             this.FilterIconButtonsToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(496, 0);
+            this.FilterIconButtonsToolStrip.Location = new System.Drawing.Point(493, 0);
             this.FilterIconButtonsToolStrip.Name = "FilterIconButtonsToolStrip";
             this.FilterIconButtonsToolStrip.PaddingDrawNudge = 0;
             this.FilterIconButtonsToolStrip.Size = new System.Drawing.Size(245, 26);
@@ -927,7 +871,7 @@
             // 
             // RefreshAreaToolStrip
             // 
-            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RefreshAreaToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshAreaToolStrip.CanOverflow = false;
@@ -1074,7 +1018,7 @@
             // 
             // TopRightCollapseButton
             // 
-            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
             this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -1089,8 +1033,8 @@
             // 
             // TopRightTabControl
             // 
-            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
@@ -1319,6 +1263,16 @@
             this.EditFMLanguageLabel.TabIndex = 31;
             this.EditFMLanguageLabel.Text = "Play FM in this language:";
             // 
+            // EditFMLanguageComboBox
+            // 
+            this.EditFMLanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.EditFMLanguageComboBox.FormattingEnabled = true;
+            this.EditFMLanguageComboBox.Location = new System.Drawing.Point(9, 262);
+            this.EditFMLanguageComboBox.Name = "EditFMLanguageComboBox";
+            this.EditFMLanguageComboBox.Size = new System.Drawing.Size(128, 21);
+            this.EditFMLanguageComboBox.TabIndex = 32;
+            this.EditFMLanguageComboBox.SelectedIndexChanged += new System.EventHandler(this.EditFMLanguageComboBox_SelectedIndexChanged);
+            // 
             // EditFMScanForReadmesButton
             // 
             this.EditFMScanForReadmesButton.AutoSize = true;
@@ -1345,7 +1299,7 @@
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(374, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(472, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
@@ -1356,7 +1310,7 @@
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(374, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(472, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
@@ -1368,7 +1322,7 @@
             // 
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(358, 23);
+            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(456, 23);
             this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 15;
@@ -1377,11 +1331,11 @@
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(350, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(448, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
@@ -1487,11 +1441,11 @@
             // 
             // EditFMDisabledModsTextBox
             // 
-            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
-            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(383, 20);
+            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(500, 20);
             this.EditFMDisabledModsTextBox.TabIndex = 29;
             this.EditFMDisabledModsTextBox.TextChanged += new System.EventHandler(this.EditFMDisabledModsTextBox_TextChanged);
             this.EditFMDisabledModsTextBox.Leave += new System.EventHandler(this.EditFMDisabledModsTextBox_Leave);
@@ -1507,11 +1461,11 @@
             // 
             // EditFMAuthorTextBox
             // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(366, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(464, 20);
             this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
@@ -1546,8 +1500,8 @@
             // 
             // CommentTextBox
             // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
             this.CommentTextBox.Multiline = true;
@@ -1588,7 +1542,7 @@
             // 
             // AddTagTextBox
             // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
@@ -1641,8 +1595,8 @@
             // 
             // TagsTreeView
             // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
@@ -1745,7 +1699,7 @@
             // 
             this.PatchFMNotInstalledLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.PatchFMNotInstalledLabel.AutoSize = true;
-            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(-9, 264);
+            this.PatchFMNotInstalledLabel.Location = new System.Drawing.Point(8, 264);
             this.PatchFMNotInstalledLabel.Name = "PatchFMNotInstalledLabel";
             this.PatchFMNotInstalledLabel.Size = new System.Drawing.Size(232, 13);
             this.PatchFMNotInstalledLabel.TabIndex = 45;

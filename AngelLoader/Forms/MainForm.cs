@@ -713,8 +713,9 @@ namespace AngelLoader.Forms
             // designer-generated method and tweaked as I see fit for speed and lazy-loading support.
             // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
             InitComponentManual();
+#endif
 
-#if Release_Testing && !RT_StartupOnly
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
             #region Init debug-only controls
 
             TestButton = new Button();
@@ -730,14 +731,14 @@ namespace AngelLoader.Forms
             TestButton.Location = new Point(632, 0);
             TestButton.Size = new Size(75, 22);
             TestButton.TabIndex = 999;
-            TestButton.Text = "Test";
+            TestButton.Text = @"Test";
             TestButton.UseVisualStyleBackColor = true;
             TestButton.Click += TestButton_Click;
 
             Test2Button.Location = new Point(632, 21);
             Test2Button.Size = new Size(75, 22);
             Test2Button.TabIndex = 999;
-            Test2Button.Text = "Test2";
+            Test2Button.Text = @"Test2";
             Test2Button.UseVisualStyleBackColor = true;
             Test2Button.Click += Test2Button_Click;
 
@@ -745,16 +746,15 @@ namespace AngelLoader.Forms
             DebugLabel.Location = new Point(712, 8);
             DebugLabel.Size = new Size(71, 13);
             DebugLabel.TabIndex = 29;
-            DebugLabel.Text = "[DebugLabel]";
+            DebugLabel.Text = @"[DebugLabel]";
 
             DebugLabel2.AutoSize = true;
             DebugLabel2.Location = new Point(712, 24);
             DebugLabel2.Size = new Size(77, 13);
             DebugLabel2.TabIndex = 32;
-            DebugLabel2.Text = "[DebugLabel2]";
+            DebugLabel2.Text = @"[DebugLabel2]";
 
             #endregion
-#endif
 #endif
 
 #if !ReleaseBeta && !ReleasePublic

@@ -75,6 +75,7 @@ namespace AngelLoader.Forms
             FilterByThief1Button = new ToolStripButtonCustom();
             FilterByThief2Button = new ToolStripButtonCustom();
             FilterByThief3Button = new ToolStripButtonCustom();
+            FilterBySS2Button = new ToolStripButtonCustom();
             FilterTitleLabel = new Label();
             FilterTitleTextBox = new TextBoxCustom();
             FilterAuthorLabel = new Label();
@@ -97,6 +98,7 @@ namespace AngelLoader.Forms
             Thief1TabPage = new TabPage();
             Thief2TabPage = new TabPage();
             Thief3TabPage = new TabPage();
+            SS2TabPage = new TabPage();
             TopRightMenuButton = new Button();
             TopRightCollapseButton = new ArrowButton();
             TopRightTabControl = new TabControlCustom();
@@ -115,6 +117,9 @@ namespace AngelLoader.Forms
             CR_ObjectsCheckBox = new CheckBox();
             CustomResourcesLabel = new Label();
             EditFMTabPage = new TabPage();
+            EditFMScanLanguagesButton = new Button();
+            EditFMLanguageLabel = new Label();
+            EditFMLanguageComboBox = new ComboBoxCustom();
             EditFMScanForReadmesButton = new Button();
             EditFMScanReleaseDateButton = new Button();
             EditFMScanAuthorButton = new Button();
@@ -134,9 +139,6 @@ namespace AngelLoader.Forms
             EditFMAuthorTextBox = new TextBox();
             EditFMAuthorLabel = new Label();
             EditFMTitleLabel = new Label();
-            EditFMLanguageLabel = new Label();
-            EditFMLanguageComboBox = new ComboBoxCustom();
-            EditFMScanLanguagesButton = new Button();
             CommentTabPage = new TabPage();
             CommentTextBox = new TextBox();
             TagsTabPage = new TabPage();
@@ -146,6 +148,7 @@ namespace AngelLoader.Forms
             RemoveTagButton = new Button();
             AddTagFromListButton = new Button();
             TagsTreeView = new TreeView();
+            TagsTabAutoScrollMarker = new Control();
             PatchTabPage = new TabPage();
             PatchMainPanel = new Panel();
             PatchDMLsPanel = new Panel();
@@ -162,9 +165,6 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox = new ComboBoxCustom();
             ReadmeRichTextBox = new RichTextBoxCustom();
             MainToolTip = new ToolTip(components);
-            FilterBySS2Button = new ToolStripButtonCustom();
-            TagsTabAutoScrollMarker = new Control();
-            SS2TabPage = new TabPage();
 
             #endregion
 
@@ -1216,7 +1216,7 @@ namespace AngelLoader.Forms
             // 
             EditFMDisabledModsTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             EditFMDisabledModsTextBox.Location = new Point(8, 192);
-            EditFMDisabledModsTextBox.Size = new Size(502, 20);
+            EditFMDisabledModsTextBox.Size = new Size(500, 20);
             EditFMDisabledModsTextBox.TabIndex = 29;
             EditFMDisabledModsTextBox.TextChanged += EditFMDisabledModsTextBox_TextChanged;
             EditFMDisabledModsTextBox.Leave += EditFMDisabledModsTextBox_Leave;
