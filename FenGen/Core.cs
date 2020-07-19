@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using static FenGen.Misc;
@@ -33,10 +34,18 @@ namespace FenGen
         private static GameSourceEnum? _gamesEnum;
         internal static GameSourceEnum GamesEnum => _gamesEnum ??= Games.FillGamesEnum(_gameSupportFile);
 
+        private static string[]? _csFiles;
+        internal static string[] CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories);
+
+        private static string[]? _designerCSFiles;
+        internal static string[] DesignerCSFiles => _designerCSFiles ??= CSFiles.Where(x => x.EndsWithI(".Designer.cs")).ToArray();
+
         internal static void Clear()
         {
             _gameSupportFile = "";
             _gamesEnum = null;
+            _csFiles = null;
+            _designerCSFiles = null;
         }
     }
 
@@ -288,8 +297,7 @@ namespace FenGen
         {
             var taggedFiles = InitializedArray<List<string>>(genFileTags.Count);
 
-            string[] files = Directory.GetFiles(ALProjectPath, "*.cs", SearchOption.AllDirectories);
-            foreach (string f in files)
+            foreach (string f in Cache.CSFiles)
             {
                 using var sr = new StreamReader(f);
 
