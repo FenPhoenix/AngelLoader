@@ -34,11 +34,11 @@ namespace FenGen
         private static GameSourceEnum? _gamesEnum;
         internal static GameSourceEnum GamesEnum => _gamesEnum ??= Games.FillGamesEnum(_gameSupportFile);
 
-        private static string[]? _csFiles;
-        internal static string[] CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories);
+        private static List<string>? _csFiles;
+        internal static List<string> CSFiles => _csFiles ??= Directory.GetFiles(Core.ALProjectPath, "*.cs", SearchOption.AllDirectories).ToList();
 
-        private static string[]? _designerCSFiles;
-        internal static string[] DesignerCSFiles => _designerCSFiles ??= CSFiles.Where(x => x.EndsWithI(".Designer.cs")).ToArray();
+        private static List<string>? _designerCSFiles;
+        internal static List<string> DesignerCSFiles => _designerCSFiles ??= CSFiles.Where(x => x.EndsWithI(".Designer.cs")).ToList();
 
         internal static void Clear()
         {
@@ -96,7 +96,9 @@ namespace FenGen
             GameSupport,
             VisLoc,
             ExcludeResx,
-            RestoreResx
+            RestoreResx,
+            TrimDesigner,
+            RestoreDesigner
         }
 
         private static readonly Dictionary<string, GenType>
@@ -130,6 +132,7 @@ namespace FenGen
             internal const string GameSupport = "FenGen_GameSupport";
             internal const string FMDataSource = "FenGen_FMDataSource";
             internal const string FMDataDest = "FenGen_FMDataDest";
+            internal const string ExcludeDesigner = "FenGen_ExcludeDesigner";
         }
 
         private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
@@ -315,7 +318,11 @@ namespace FenGen
 
                         for (int i = 0; i < genFileTags.Count; i++)
                         {
-                            if (tag == genFileTags[i])
+                            if (tag == GenFileTags.ExcludeDesigner)
+                            {
+                                Cache.DesignerCSFiles.Remove(f);
+                            }
+                            else if (tag == genFileTags[i])
                             {
                                 taggedFiles[i].Add(f);
                                 break;
