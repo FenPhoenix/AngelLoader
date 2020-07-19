@@ -16,7 +16,14 @@ namespace AngelLoader.Forms.CustomControls
 
         #endregion
 
-        public ProgressPanel() => InitializeComponent();
+        public ProgressPanel()
+        {
+#if DEBUG
+            InitializeComponent();
+#else
+            InitComponentManual();
+#endif
+        }
 
         internal void Inject(MainForm owner) => _owner = owner;
 

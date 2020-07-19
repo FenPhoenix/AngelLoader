@@ -19,7 +19,7 @@
             }
             base.Dispose(disposing);
         }
-
+#if DEBUG
         #region Component Designer generated code
 
         /// <summary> 
@@ -99,6 +99,7 @@
         }
 
         #endregion
+#endif
         private System.Windows.Forms.Button ProgressCancelButton;
         private System.Windows.Forms.Label ProgressPercentLabel;
         private System.Windows.Forms.Label ProgressMessageLabel;
