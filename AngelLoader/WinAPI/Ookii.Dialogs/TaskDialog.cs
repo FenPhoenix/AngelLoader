@@ -22,10 +22,12 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     {
         #region Events
 
+        /*
         /// <summary>
         /// Event raised when the user presses F1 while the dialog has focus.
         /// </summary>
-        //public event EventHandler? HelpRequested; // I might use this, so keeping it
+        public event EventHandler? HelpRequested; // I might use this, so keeping it
+        */
 
         #endregion
 
@@ -403,11 +405,11 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 case NativeMethods.TaskDialogNotifications.VerificationClicked:
                     IsVerificationChecked = (int)wParam == 1;
                     break;
-                /*
-                case NativeMethods.TaskDialogNotifications.Help:
-                    OnHelpRequested(EventArgs.Empty);
-                    break;
-                */
+                    /*
+                    case NativeMethods.TaskDialogNotifications.Help:
+                        OnHelpRequested(EventArgs.Empty);
+                        break;
+                    */
             }
             return 0;
         }
