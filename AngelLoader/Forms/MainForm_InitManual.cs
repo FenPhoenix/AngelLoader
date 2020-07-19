@@ -11,8 +11,6 @@ namespace AngelLoader.Forms
     {
         /*
          Notes:
-            -All unused Name assignments have been removed, except those for the top-right tab pages because
-             they're used for debug purposes.
             -Some Anchor / Dock combos have been kept despite the docs saying they're mutually exclusive, because
              they currently work and I'm not 100% certain which one I should keep. Lowest priority.
         */

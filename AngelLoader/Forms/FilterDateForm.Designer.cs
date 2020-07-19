@@ -19,7 +19,7 @@
             }
             base.Dispose(disposing);
         }
-
+#if DEBUG
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -181,6 +181,7 @@
         }
 
         #endregion
+#endif
 
         private System.Windows.Forms.Button Cancel_Button;
         private System.Windows.Forms.Button OKButton;

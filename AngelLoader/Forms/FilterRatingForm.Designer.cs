@@ -19,7 +19,7 @@
             }
             base.Dispose(disposing);
         }
-
+#if DEBUG
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -137,6 +137,7 @@
         }
 
         #endregion
+#endif
         private System.Windows.Forms.Label FromLabel;
         private System.Windows.Forms.Label ToLabel;
         private System.Windows.Forms.ComboBox FromComboBox;

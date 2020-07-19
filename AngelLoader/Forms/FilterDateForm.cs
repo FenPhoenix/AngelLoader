@@ -15,7 +15,11 @@ namespace AngelLoader.Forms
 
         public FilterDateForm(string title, DateTime? from, DateTime? to)
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
 
             Localize();
 

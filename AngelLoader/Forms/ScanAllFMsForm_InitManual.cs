@@ -2,7 +2,6 @@
 {
     public sealed partial class ScanAllFMsForm
     {
-        // Button widths are kept defined because we pass them as minimum values to the text autosizer
         private void InitComponentManual()
         {
             TitleCheckBox = new System.Windows.Forms.CheckBox();

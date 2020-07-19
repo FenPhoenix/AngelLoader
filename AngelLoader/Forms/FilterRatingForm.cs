@@ -14,7 +14,11 @@ namespace AngelLoader.Forms
 
         public FilterRatingForm(int ratingFrom, int ratingTo, bool outOfFive)
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
 
             Localize();
 

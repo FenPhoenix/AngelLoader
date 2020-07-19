@@ -2,7 +2,6 @@
 {
     public sealed partial class MessageBoxCustomForm
     {
-        // Button widths are kept defined because we pass them as minimum values to the text autosizer
         private void InitComponentManual()
         {
             MessageTopLabel = new System.Windows.Forms.Label();
