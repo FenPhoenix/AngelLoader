@@ -18,14 +18,14 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
     /// </remarks>
     /// <threadsafety static="true" instance="false" />
     [PublicAPI]
-    public sealed class TaskDialog : Component, IWin32Window
+    public sealed class TaskDialog : Component
     {
         #region Events
 
         /// <summary>
         /// Event raised when the user presses F1 while the dialog has focus.
         /// </summary>
-        public event EventHandler? HelpRequested; // I might use this, so keeping it
+        //public event EventHandler? HelpRequested; // I might use this, so keeping it
 
         #endregion
 
@@ -33,7 +33,6 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         private readonly List<TaskDialogButton> _buttons = new List<TaskDialogButton>();
         private NativeMethods.TASKDIALOGCONFIG _config;
-        private IntPtr _handle;
 
         private readonly TaskDialogButton _defaultButton;
 
@@ -231,11 +230,13 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         #region Event methods
 
+        /*
         /// <summary>
         /// Raises the <see cref="HelpRequested"/> event.
         /// </summary>
         /// <param name="e">The <see cref="EventArgs"/> containing the data for the event.</param>
         private void OnHelpRequested(EventArgs e) => HelpRequested?.Invoke(this, e);
+        */
 
         #endregion
 
@@ -243,10 +244,12 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
 
         private TaskDialogButton? ShowDialog(IntPtr owner)
         {
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
             if (IsDialogRunning)
             {
-                throw new InvalidOperationException(OokiiResources.TaskDialogRunningError);
+                throw new InvalidOperationException("The task dialog is already being displayed.");
             }
+#endif
 
             _config.hwndParent = owner;
             _config.dwCommonButtons = 0;
@@ -295,7 +298,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
         }
 
         // Intentionally not using the Handle property, since the cross-thread call check should not be performed here.
-        private bool IsDialogRunning => _handle != IntPtr.Zero;
+        private bool IsDialogRunning => Handle != IntPtr.Zero;
 
         private void SetupIcon()
         {
@@ -392,20 +395,24 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             switch ((NativeMethods.TaskDialogNotifications)uNotification)
             {
                 case NativeMethods.TaskDialogNotifications.Created:
-                    _handle = hwnd;
+                    Handle = hwnd;
                     break;
                 case NativeMethods.TaskDialogNotifications.Destroyed:
-                    _handle = IntPtr.Zero;
+                    Handle = IntPtr.Zero;
                     break;
                 case NativeMethods.TaskDialogNotifications.VerificationClicked:
                     IsVerificationChecked = (int)wParam == 1;
                     break;
+                /*
                 case NativeMethods.TaskDialogNotifications.Help:
                     OnHelpRequested(EventArgs.Empty);
                     break;
+                */
             }
             return 0;
         }
+
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
 
         private void CheckCrossThreadCall()
         {
@@ -416,14 +423,19 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 int threadId = NativeMethods.GetCurrentThreadId();
                 if (windowThreadId != threadId)
                 {
-                    throw new InvalidOperationException(OokiiResources.TaskDialogIllegalCrossThreadCallError);
+                    throw new InvalidOperationException("Cross-thread operation not valid: Task dialog accessed from a thread other than the thread it was created on while it is visible.");
                 }
             }
         }
 
+#endif
+
         #endregion
 
         #region IWin32Window Members
+
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+        private IntPtr _handle;
 
         /// <summary>
         /// Gets the window handle of the task dialog.
@@ -440,7 +452,11 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
                 CheckCrossThreadCall();
                 return _handle;
             }
+            set => _handle = value;
         }
+#else
+        private IntPtr Handle;
+#endif
 
         #endregion
     }
