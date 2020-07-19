@@ -84,7 +84,11 @@ namespace AngelLoader.Forms
         // @CAN_RUN_BEFORE_VIEW_INIT
         internal SettingsForm(ILocalizable? ownerForm, ConfigData config, bool startup, bool cleanStart)
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
 
             // Needed for Esc-to-cancel-drag and stuff
             KeyPreview = true;

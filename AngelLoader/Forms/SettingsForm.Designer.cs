@@ -7,6 +7,7 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+#if DEBUG
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -219,6 +220,8 @@
         }
 
         #endregion
+#endif
+
         private System.Windows.Forms.Panel PagePanel;
         private System.Windows.Forms.FlowLayoutPanel BottomFlowLayoutPanel;
         private System.Windows.Forms.Button Cancel_Button;
