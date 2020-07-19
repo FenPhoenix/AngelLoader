@@ -257,14 +257,24 @@ namespace FenGen
             return true;
         }
 
-        internal static bool StartsWithPlusWhiteSpace(this string str, string value)
+        internal static bool EqualsOrStartsWithPlusWhiteSpaceI(this string str, string value) => str.EqualsI(value) || str.StartsWithPlusWhiteSpaceI(value);
+
+        internal static bool StartsWithPlusWhiteSpaceI(this string str, string value) => str.StartsWithPlusWhiteSpace(value, OrdinalIgnoreCase);
+
+        internal static bool StartsWithPlusWhiteSpace(this string str, string value, StringComparison comparison = Ordinal)
         {
             int valLen;
-            return str.StartsWith(value) &&
+            return str.StartsWith(value, comparison) &&
                    str.Length > (valLen = value.Length) &&
                    char.IsWhiteSpace(str[valLen]);
         }
 
         #endregion
+
+        internal static string RemoveExtension(this string fileName)
+        {
+            int i;
+            return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
+        }
     }
 }

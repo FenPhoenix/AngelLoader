@@ -97,8 +97,7 @@ namespace FenGen
             VisLoc,
             ExcludeResx,
             RestoreResx,
-            TrimDesigner,
-            RestoreDesigner
+            TrimDesigner
         }
 
         private static readonly Dictionary<string, GenType>
@@ -109,14 +108,15 @@ namespace FenGen
             { "-language_t", GenType.LanguageAndAlsoCreateTestIni },
             { "-game_support", GenType.GameSupport },
             { "-exclude_resx", GenType.ExcludeResx },
-            { "-restore_resx", GenType.RestoreResx }
+            { "-restore_resx", GenType.RestoreResx },
+            {"-designer_trim", GenType.TrimDesigner}
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
 #if DEBUG || PROFILING
         private static string GetArg(GenType genType)
         {
-            foreach (var item in ArgToTaskMap)
+            foreach (var item in _argToTaskMap)
             {
                 if (item.Value == genType) return item.Key;
             }
@@ -138,7 +138,7 @@ namespace FenGen
         private static readonly int _genTaskCount = Enum.GetValues(typeof(GenType)).Length;
 
 #if DEBUG
-        private static Forms.MainForm View;
+        private static Forms.MainForm View = null!;
 #endif
 
         internal static readonly string ALSolutionPath = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\..\..\"));
@@ -193,7 +193,8 @@ namespace FenGen
                 GetArg(GenType.FMData),
                 GetArg(GenType.LanguageAndAlsoCreateTestIni),
                 GetArg(GenType.ExcludeResx),
-                GetArg(GenType.RestoreResx)
+                GetArg(GenType.RestoreResx),
+                GetArg(GenType.TrimDesigner)
             };
 #else
             string[] args = Environment.GetCommandLineArgs();
@@ -234,6 +235,7 @@ namespace FenGen
                 return;
             }
 
+            bool forceFindRequiredFiles = false;
             var genFileTags = new List<string>();
             bool gameSupportRequested = GenTaskActive(GenType.FMData) || GenTaskActive(GenType.GameSupport);
             if (gameSupportRequested)
@@ -250,9 +252,13 @@ namespace FenGen
                 genFileTags.Add(GenFileTags.LocalizationSource);
                 genFileTags.Add(GenFileTags.LocalizationDest);
             }
+            if (GenTaskActive(GenType.TrimDesigner))
+            {
+                forceFindRequiredFiles = true;
+            }
 
             Dictionary<string, string>? taggedFilesDict = null;
-            if (genFileTags.Count > 0)
+            if (forceFindRequiredFiles || genFileTags.Count > 0)
             {
                 taggedFilesDict = FindRequiredCodeFiles(genFileTags);
             }
@@ -291,6 +297,10 @@ namespace FenGen
             if (GenTaskActive(GenType.RestoreResx))
             {
                 ExcludeResx.GenerateRestore();
+            }
+            if (GenTaskActive(GenType.TrimDesigner))
+            {
+                DesignerGen.Generate();
             }
         }
 
