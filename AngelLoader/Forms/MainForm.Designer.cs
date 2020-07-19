@@ -1,4 +1,6 @@
-﻿namespace AngelLoader.Forms
+﻿#define FenGen_ExcludeDesigner
+
+namespace AngelLoader.Forms
 {
     sealed partial class MainForm
     {
