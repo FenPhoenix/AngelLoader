@@ -79,6 +79,8 @@
             // Thief3IniBrowseButton
             // 
             this.Thief3IniBrowseButton.AutoSize = true;
+            this.Thief3IniBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Thief3IniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief3IniBrowseButton.Enabled = false;
             this.Thief3IniBrowseButton.Location = new System.Drawing.Point(447, 48);
             this.Thief3IniBrowseButton.Name = "Thief3IniBrowseButton";
@@ -125,6 +127,8 @@
             // Thief2IniBrowseButton
             // 
             this.Thief2IniBrowseButton.AutoSize = true;
+            this.Thief2IniBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Thief2IniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief2IniBrowseButton.Enabled = false;
             this.Thief2IniBrowseButton.Location = new System.Drawing.Point(447, 47);
             this.Thief2IniBrowseButton.Name = "Thief2IniBrowseButton";
@@ -171,6 +175,8 @@
             // Thief1IniBrowseButton
             // 
             this.Thief1IniBrowseButton.AutoSize = true;
+            this.Thief1IniBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Thief1IniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Thief1IniBrowseButton.Enabled = false;
             this.Thief1IniBrowseButton.Location = new System.Drawing.Point(448, 47);
             this.Thief1IniBrowseButton.Name = "Thief1IniBrowseButton";
@@ -226,6 +232,8 @@
             // SS2IniBrowseButton
             // 
             this.SS2IniBrowseButton.AutoSize = true;
+            this.SS2IniBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SS2IniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SS2IniBrowseButton.Enabled = false;
             this.SS2IniBrowseButton.Location = new System.Drawing.Point(447, 48);
             this.SS2IniBrowseButton.Name = "SS2IniBrowseButton";

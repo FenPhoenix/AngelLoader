@@ -136,6 +136,8 @@ namespace AngelLoader.Forms
             // SelectAllButton
             // 
             this.SelectAllButton.AutoSize = true;
+            this.SelectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SelectAllButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.SelectAllButton.Location = new System.Drawing.Point(0, 3);
             this.SelectAllButton.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
             this.SelectAllButton.Name = "SelectAllButton";
@@ -149,6 +151,8 @@ namespace AngelLoader.Forms
             // SelectNoneButton
             // 
             this.SelectNoneButton.AutoSize = true;
+            this.SelectNoneButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SelectNoneButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.SelectNoneButton.Location = new System.Drawing.Point(81, 3);
             this.SelectNoneButton.Name = "SelectNoneButton";
             this.SelectNoneButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -161,6 +165,8 @@ namespace AngelLoader.Forms
             // ScanButton
             // 
             this.ScanButton.AutoSize = true;
+            this.ScanButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ScanButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ScanButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ScanButton.Location = new System.Drawing.Point(257, 3);
             this.ScanButton.Name = "ScanButton";
@@ -173,6 +179,8 @@ namespace AngelLoader.Forms
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(338, 3);
             this.Cancel_Button.Name = "Cancel_Button";

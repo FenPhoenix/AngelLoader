@@ -39,7 +39,7 @@ namespace AngelLoader.Forms.Import
         {
             ChooseDarkLoaderIniLabel.Text = LText.Importing.DarkLoader_ChooseIni;
             AutodetectCheckBox.Text = LText.Global.Autodetect;
-            DarkLoaderIniBrowseButton.SetTextAutoSize(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
+            DarkLoaderIniBrowseButton.SetTextForTextBoxButtonCombo(DarkLoaderIniTextBox, LText.Global.BrowseEllipses);
         }
 
         private static string AutodetectDarkLoaderIni()

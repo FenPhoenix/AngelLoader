@@ -67,6 +67,8 @@
             // DarkLoaderIniBrowseButton
             // 
             this.DarkLoaderIniBrowseButton.AutoSize = true;
+            this.DarkLoaderIniBrowseButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.DarkLoaderIniBrowseButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.DarkLoaderIniBrowseButton.Enabled = false;
             this.DarkLoaderIniBrowseButton.Location = new System.Drawing.Point(448, 55);
             this.DarkLoaderIniBrowseButton.Name = "DarkLoaderIniBrowseButton";

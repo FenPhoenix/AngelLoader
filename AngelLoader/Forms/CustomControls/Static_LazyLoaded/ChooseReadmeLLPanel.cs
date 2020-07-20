@@ -25,7 +25,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 AutoSize = true,
                 Margin = new Padding(0),
                 Padding = new Padding(6, 0, 6, 0),
-                Height = 23,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                MinimumSize = new Size(75, 23),
                 TabIndex = 48,
                 UseVisualStyleBackColor = true
             };
@@ -67,7 +68,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void Localize()
         {
-            if (_constructed) OKButton.SetTextAutoSize(LText.Global.OK, 75);
+            if (_constructed) OKButton.Text = LText.Global.OK;
         }
 
         [UsedImplicitly] // Actually used in an ifdef block

@@ -73,7 +73,7 @@ namespace AngelLoader.Forms.Import
             {
                 GameIniItems[i].GroupBox.Text = GetLocalizedGameName((GameIndex)i);
                 GameIniItems[i].AutodetectCheckBox.Text = LText.Global.Autodetect;
-                GameIniItems[i].BrowseButton.SetTextAutoSize(GameIniItems[i].TextBox, LText.Global.BrowseEllipses);
+                GameIniItems[i].BrowseButton.SetTextForTextBoxButtonCombo(GameIniItems[i].TextBox, LText.Global.BrowseEllipses);
             }
         }
 

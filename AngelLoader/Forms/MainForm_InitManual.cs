@@ -225,9 +225,10 @@ namespace AngelLoader.Forms
             // ScanAllFMsButton
             // 
             ScanAllFMsButton.AutoSize = true;
+            ScanAllFMsButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ScanAllFMsButton.MinimumSize = new Size(0, 36);
             ScanAllFMsButton.Margin = new Padding(15, 3, 0, 3);
             ScanAllFMsButton.Padding = new Padding(33, 0, 6, 0);
-            ScanAllFMsButton.Height = 36;
             ScanAllFMsButton.TabIndex = 59;
             ScanAllFMsButton.UseVisualStyleBackColor = true;
             ScanAllFMsButton.Click += ScanAllFMsButton_Click;
@@ -257,10 +258,11 @@ namespace AngelLoader.Forms
             // SettingsButton
             // 
             SettingsButton.AutoSize = true;
+            SettingsButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            SettingsButton.MinimumSize = new Size(0, 36);
             SettingsButton.Image = Resources.Settings_24;
             SettingsButton.ImageAlign = ContentAlignment.MiddleLeft;
             SettingsButton.Padding = new Padding(6, 0, 6, 0);
-            SettingsButton.Height = 36;
             SettingsButton.TabIndex = 62;
             SettingsButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             SettingsButton.UseVisualStyleBackColor = true;
@@ -269,10 +271,11 @@ namespace AngelLoader.Forms
             // ImportButton
             // 
             ImportButton.AutoSize = true;
+            ImportButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ImportButton.MinimumSize = new Size(0, 36);
             ImportButton.Image = Resources.Import_24;
             ImportButton.ImageAlign = ContentAlignment.MiddleLeft;
             ImportButton.Padding = new Padding(6, 0, 6, 0);
-            ImportButton.Height = 36;
             ImportButton.TabIndex = 61;
             ImportButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             ImportButton.UseVisualStyleBackColor = true;
@@ -293,8 +296,9 @@ namespace AngelLoader.Forms
             // PlayFMButton
             // 
             PlayFMButton.AutoSize = true;
+            PlayFMButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            PlayFMButton.MinimumSize = new Size(91, 36);
             PlayFMButton.Padding = new Padding(28, 0, 6, 0);
-            PlayFMButton.Height = 36;
             PlayFMButton.TabIndex = 56;
             PlayFMButton.UseVisualStyleBackColor = true;
             PlayFMButton.Click += PlayFMButton_Click;
@@ -303,11 +307,12 @@ namespace AngelLoader.Forms
             // PlayOriginalGameButton
             // 
             PlayOriginalGameButton.AutoSize = true;
+            PlayOriginalGameButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            PlayOriginalGameButton.MinimumSize = new Size(0, 36);
             PlayOriginalGameButton.Image = Resources.Play_Original_24;
             PlayOriginalGameButton.ImageAlign = ContentAlignment.MiddleLeft;
             PlayOriginalGameButton.Margin = new Padding(3, 3, 0, 3);
             PlayOriginalGameButton.Padding = new Padding(6, 0, 6, 0);
-            PlayOriginalGameButton.Height = 36;
             PlayOriginalGameButton.TabIndex = 57;
             PlayOriginalGameButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             PlayOriginalGameButton.UseVisualStyleBackColor = true;
@@ -317,9 +322,10 @@ namespace AngelLoader.Forms
             // WebSearchButton
             // 
             WebSearchButton.AutoSize = true;
+            WebSearchButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            WebSearchButton.MinimumSize = new Size(116, 36);
             WebSearchButton.Margin = new Padding(15, 3, 3, 3);
             WebSearchButton.Padding = new Padding(33, 0, 6, 0);
-            WebSearchButton.Height = 36;
             WebSearchButton.TabIndex = 60;
             WebSearchButton.UseVisualStyleBackColor = true;
             WebSearchButton.Click += WebSearchButton_Click;
@@ -901,9 +907,10 @@ namespace AngelLoader.Forms
             // StatsScanCustomResourcesButton
             // 
             StatsScanCustomResourcesButton.AutoSize = true;
+            StatsScanCustomResourcesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            StatsScanCustomResourcesButton.MinimumSize = new Size(0, 23);
             StatsScanCustomResourcesButton.Location = new Point(6, 200);
             StatsScanCustomResourcesButton.Padding = new Padding(13, 0, 0, 0);
-            StatsScanCustomResourcesButton.Height = 23;
             StatsScanCustomResourcesButton.TabIndex = 12;
             StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
             StatsScanCustomResourcesButton.Click += RescanCustomResourcesButton_Click;
@@ -1069,9 +1076,10 @@ namespace AngelLoader.Forms
             // EditFMScanForReadmesButton
             // 
             EditFMScanForReadmesButton.AutoSize = true;
+            EditFMScanForReadmesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            EditFMScanForReadmesButton.MinimumSize = new Size(0, 23);
             EditFMScanForReadmesButton.Location = new Point(8, 299);
             EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
-            EditFMScanForReadmesButton.Height = 23;
             EditFMScanForReadmesButton.TabIndex = 34;
             EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
             EditFMScanForReadmesButton.Click += EditFMScanForReadmesButton_Click;
@@ -1128,9 +1136,10 @@ namespace AngelLoader.Forms
             // EditFMFinishedOnButton
             // 
             EditFMFinishedOnButton.AutoSize = true;
+            EditFMFinishedOnButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            EditFMFinishedOnButton.MinimumSize = new Size(138, 23);
             EditFMFinishedOnButton.Location = new Point(184, 144);
             EditFMFinishedOnButton.Padding = new Padding(6, 0, 6, 0);
-            EditFMFinishedOnButton.Height = 23;
             EditFMFinishedOnButton.TabIndex = 27;
             EditFMFinishedOnButton.UseVisualStyleBackColor = true;
             EditFMFinishedOnButton.Click += EditFMFinishedOnButton_Click;
@@ -1277,9 +1286,10 @@ namespace AngelLoader.Forms
             // 
             AddTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             AddTagButton.AutoSize = true;
+            AddTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            AddTagButton.MinimumSize = new Size(0, 23);
             AddTagButton.Location = new Point(444, 7);
             AddTagButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagButton.Height = 23;
             AddTagButton.TabIndex = 1;
             AddTagButton.UseVisualStyleBackColor = true;
             AddTagButton.Click += AddTagButton_Click;
@@ -1310,10 +1320,11 @@ namespace AngelLoader.Forms
             // 
             RemoveTagButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             RemoveTagButton.AutoSize = true;
+            RemoveTagButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            RemoveTagButton.MinimumSize = new Size(0, 23);
             RemoveTagButton.Location = new Point(392, 0);
             RemoveTagButton.Margin = new Padding(0, 0, 6, 0);
             RemoveTagButton.Padding = new Padding(6, 0, 6, 0);
-            RemoveTagButton.Height = 23;
             RemoveTagButton.TabIndex = 1;
             RemoveTagButton.UseVisualStyleBackColor = true;
             RemoveTagButton.Click += RemoveTagButton_Click;
@@ -1322,10 +1333,11 @@ namespace AngelLoader.Forms
             // 
             AddTagFromListButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             AddTagFromListButton.AutoSize = true;
+            AddTagFromListButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            AddTagFromListButton.MinimumSize = new Size(0, 23);
             AddTagFromListButton.Location = new Point(248, 0);
             AddTagFromListButton.Margin = new Padding(0);
             AddTagFromListButton.Padding = new Padding(6, 0, 6, 0);
-            AddTagFromListButton.Height = 23;
             AddTagFromListButton.TabIndex = 0;
             AddTagFromListButton.UseVisualStyleBackColor = true;
             AddTagFromListButton.Click += AddTagFromListButton_Click;
@@ -1403,8 +1415,9 @@ namespace AngelLoader.Forms
             // PatchOpenFMFolderButton
             // 
             PatchOpenFMFolderButton.AutoSize = true;
+            PatchOpenFMFolderButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            PatchOpenFMFolderButton.MinimumSize = new Size(162, 23);
             PatchOpenFMFolderButton.Location = new Point(7, 128);
-            PatchOpenFMFolderButton.Height = 23;
             PatchOpenFMFolderButton.TabIndex = 44;
             PatchOpenFMFolderButton.UseVisualStyleBackColor = true;
             PatchOpenFMFolderButton.Click += PatchOpenFMFolderButton_Click;

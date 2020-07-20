@@ -252,10 +252,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // Language can change while the form is open, so store original sizes for later use as minimums
-            OKButton.Tag = OKButton.Size;
-            Cancel_Button.Tag = Cancel_Button.Size;
-
             Width = Math.Min(config.SettingsWindowSize.Width, Screen.PrimaryScreen.WorkingArea.Width);
             Height = Math.Min(config.SettingsWindowSize.Height, Screen.PrimaryScreen.WorkingArea.Height);
             MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
@@ -575,8 +571,8 @@ namespace AngelLoader.Forms
             {
                 Text = _startup ? LText.SettingsWindow.StartupTitleText : LText.SettingsWindow.TitleText;
 
-                OKButton.SetTextAutoSize(LText.Global.OK, ((Size)OKButton.Tag).Width);
-                Cancel_Button.SetTextAutoSize(LText.Global.Cancel, ((Size)Cancel_Button.Tag).Width);
+                OKButton.Text = LText.Global.OK;
+                Cancel_Button.Text = LText.Global.Cancel;
 
                 #region Paths tab
 
@@ -589,7 +585,7 @@ namespace AngelLoader.Forms
                     GameIndex gameIndex = (GameIndex)i;
                     GameExeLabels[i].Text = GetLocalizedGameNameColon(gameIndex);
                     GameUseSteamCheckBoxes[i].Text = GetLocalizedGameName(gameIndex);
-                    GameExeBrowseButtons[i].SetTextAutoSize(GameExeTextBoxes[i], LText.Global.BrowseEllipses);
+                    GameExeBrowseButtons[i].SetTextForTextBoxButtonCombo(GameExeTextBoxes[i], LText.Global.BrowseEllipses);
                 }
 
                 PathsPage.PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
@@ -605,8 +601,8 @@ namespace AngelLoader.Forms
                 // Required for the startup version where the lang box is on the same page as paths!
                 PathsPage.FlowLayoutPanel1.PerformLayout();
 
-                PathsPage.BackupPathBrowseButton.SetTextAutoSize(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
-                PathsPage.SteamExeBrowseButton.SetTextAutoSize(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
+                PathsPage.BackupPathBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.BackupPathTextBox, LText.Global.BrowseEllipses);
+                PathsPage.SteamExeBrowseButton.SetTextForTextBoxButtonCombo(PathsPage.SteamExeTextBox, LText.Global.BrowseEllipses);
 
                 PathsPage.GameRequirementsLabel.Text =
                     LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + Environment.NewLine +

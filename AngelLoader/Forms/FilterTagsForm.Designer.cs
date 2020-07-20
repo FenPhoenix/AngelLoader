@@ -50,7 +50,7 @@ namespace AngelLoader.Forms
             // 
             // OriginTreeView
             // 
-            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.OriginTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OriginTreeView.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.OriginTreeView.HideSelection = false;
@@ -62,7 +62,7 @@ namespace AngelLoader.Forms
             // 
             // AndTreeView
             // 
-            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.AndTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.AndTreeView.HideSelection = false;
             this.AndTreeView.Location = new System.Drawing.Point(344, 24);
@@ -72,7 +72,7 @@ namespace AngelLoader.Forms
             // 
             // OrTreeView
             // 
-            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.OrTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.OrTreeView.HideSelection = false;
             this.OrTreeView.Location = new System.Drawing.Point(576, 24);
@@ -82,7 +82,7 @@ namespace AngelLoader.Forms
             // 
             // NotTreeView
             // 
-            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.NotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.NotTreeView.HideSelection = false;
             this.NotTreeView.Location = new System.Drawing.Point(808, 24);
@@ -93,6 +93,7 @@ namespace AngelLoader.Forms
             // AndButton
             // 
             this.AndButton.AutoSize = true;
+            this.AndButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.AndButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AndButton.Location = new System.Drawing.Point(16, 0);
             this.AndButton.Name = "AndButton";
@@ -107,6 +108,7 @@ namespace AngelLoader.Forms
             // OrButton
             // 
             this.OrButton.AutoSize = true;
+            this.OrButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.OrButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.OrButton.Location = new System.Drawing.Point(16, 23);
             this.OrButton.Name = "OrButton";
@@ -121,6 +123,7 @@ namespace AngelLoader.Forms
             // NotButton
             // 
             this.NotButton.AutoSize = true;
+            this.NotButton.MinimumSize = new System.Drawing.Size(80, 23);
             this.NotButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.NotButton.Location = new System.Drawing.Point(16, 46);
             this.NotButton.Name = "NotButton";
@@ -239,6 +242,8 @@ namespace AngelLoader.Forms
             // 
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OKButton.AutoSize = true;
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(881, 3);
             this.OKButton.Name = "OKButton";
@@ -252,6 +257,8 @@ namespace AngelLoader.Forms
             // 
             this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Cancel_Button.AutoSize = true;
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(962, 3);
             this.Cancel_Button.Name = "Cancel_Button";
@@ -265,6 +272,8 @@ namespace AngelLoader.Forms
             // 
             this.ResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ResetButton.AutoSize = true;
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.ResetButton.Location = new System.Drawing.Point(792, 3);
             this.ResetButton.Margin = new System.Windows.Forms.Padding(3, 3, 11, 3);
             this.ResetButton.Name = "ResetButton";

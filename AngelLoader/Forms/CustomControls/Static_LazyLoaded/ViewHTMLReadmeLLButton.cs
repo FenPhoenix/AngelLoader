@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
@@ -10,7 +11,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static void Localize()
         {
-            if (_constructed) Button.SetTextAutoSize(LText.ReadmeArea.ViewHTMLReadme);
+            if (_constructed) Button.Text = LText.ReadmeArea.ViewHTMLReadme;
         }
 
         internal static void Center(Control parent)
@@ -37,7 +38,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 Button.AutoSize = true;
                 // This thing gets centered later so no location is specified here
                 Button.Padding = new Padding(6, 0, 6, 0);
-                Button.Height = 23;
+                Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                Button.MinimumSize = new Size(0, 23);
                 Button.TabIndex = 49;
                 Button.UseVisualStyleBackColor = true;
                 Button.Visible = false;

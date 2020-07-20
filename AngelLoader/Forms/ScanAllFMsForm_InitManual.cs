@@ -1,23 +1,26 @@
-﻿namespace AngelLoader.Forms
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace AngelLoader.Forms
 {
     public sealed partial class ScanAllFMsForm
     {
         private void InitComponentManual()
         {
-            TitleCheckBox = new System.Windows.Forms.CheckBox();
-            AuthorCheckBox = new System.Windows.Forms.CheckBox();
-            GameCheckBox = new System.Windows.Forms.CheckBox();
-            CustomResourcesCheckBox = new System.Windows.Forms.CheckBox();
-            SizeCheckBox = new System.Windows.Forms.CheckBox();
-            ReleaseDateCheckBox = new System.Windows.Forms.CheckBox();
-            TagsCheckBox = new System.Windows.Forms.CheckBox();
-            SelectAllButton = new System.Windows.Forms.Button();
-            SelectNoneButton = new System.Windows.Forms.Button();
-            ScanButton = new System.Windows.Forms.Button();
-            Cancel_Button = new System.Windows.Forms.Button();
-            ScanAllFMsForLabel = new System.Windows.Forms.Label();
-            OKCancelButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
-            SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+            TitleCheckBox = new CheckBox();
+            AuthorCheckBox = new CheckBox();
+            GameCheckBox = new CheckBox();
+            CustomResourcesCheckBox = new CheckBox();
+            SizeCheckBox = new CheckBox();
+            ReleaseDateCheckBox = new CheckBox();
+            TagsCheckBox = new CheckBox();
+            SelectAllButton = new Button();
+            SelectNoneButton = new Button();
+            ScanButton = new Button();
+            Cancel_Button = new Button();
+            ScanAllFMsForLabel = new Label();
+            OKCancelButtonsFLP = new FlowLayoutPanel();
+            SelectButtonsFLP = new FlowLayoutPanel();
             OKCancelButtonsFLP.SuspendLayout();
             SelectButtonsFLP.SuspendLayout();
             SuspendLayout();
@@ -26,7 +29,7 @@
             // 
             TitleCheckBox.AutoSize = true;
             TitleCheckBox.Checked = true;
-            TitleCheckBox.Location = new System.Drawing.Point(16, 40);
+            TitleCheckBox.Location = new Point(16, 40);
             TitleCheckBox.TabIndex = 2;
             TitleCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -34,7 +37,7 @@
             // 
             AuthorCheckBox.AutoSize = true;
             AuthorCheckBox.Checked = true;
-            AuthorCheckBox.Location = new System.Drawing.Point(16, 56);
+            AuthorCheckBox.Location = new Point(16, 56);
             AuthorCheckBox.TabIndex = 3;
             AuthorCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -42,7 +45,7 @@
             // 
             GameCheckBox.AutoSize = true;
             GameCheckBox.Checked = true;
-            GameCheckBox.Location = new System.Drawing.Point(16, 72);
+            GameCheckBox.Location = new Point(16, 72);
             GameCheckBox.TabIndex = 4;
             GameCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -50,7 +53,7 @@
             // 
             CustomResourcesCheckBox.AutoSize = true;
             CustomResourcesCheckBox.Checked = true;
-            CustomResourcesCheckBox.Location = new System.Drawing.Point(16, 88);
+            CustomResourcesCheckBox.Location = new Point(16, 88);
             CustomResourcesCheckBox.TabIndex = 5;
             CustomResourcesCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -58,7 +61,7 @@
             // 
             SizeCheckBox.AutoSize = true;
             SizeCheckBox.Checked = true;
-            SizeCheckBox.Location = new System.Drawing.Point(16, 104);
+            SizeCheckBox.Location = new Point(16, 104);
             SizeCheckBox.TabIndex = 6;
             SizeCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -66,7 +69,7 @@
             // 
             ReleaseDateCheckBox.AutoSize = true;
             ReleaseDateCheckBox.Checked = true;
-            ReleaseDateCheckBox.Location = new System.Drawing.Point(16, 120);
+            ReleaseDateCheckBox.Location = new Point(16, 120);
             ReleaseDateCheckBox.TabIndex = 7;
             ReleaseDateCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -74,15 +77,17 @@
             // 
             TagsCheckBox.AutoSize = true;
             TagsCheckBox.Checked = true;
-            TagsCheckBox.Location = new System.Drawing.Point(16, 136);
+            TagsCheckBox.Location = new Point(16, 136);
             TagsCheckBox.TabIndex = 8;
             TagsCheckBox.UseVisualStyleBackColor = true;
             // 
             // SelectAllButton
             // 
             SelectAllButton.AutoSize = true;
-            SelectAllButton.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
-            SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            SelectAllButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            SelectAllButton.MinimumSize = new Size(0, 23);
+            SelectAllButton.Margin = new Padding(0, 3, 3, 3);
+            SelectAllButton.Padding = new Padding(6, 0, 6, 0);
             SelectAllButton.TabIndex = 0;
             SelectAllButton.UseVisualStyleBackColor = true;
             SelectAllButton.Click += SelectAllButton_Click;
@@ -90,7 +95,9 @@
             // SelectNoneButton
             // 
             SelectNoneButton.AutoSize = true;
-            SelectNoneButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            SelectNoneButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            SelectNoneButton.MinimumSize = new Size(0, 23);
+            SelectNoneButton.Padding = new Padding(6, 0, 6, 0);
             SelectNoneButton.TabIndex = 1;
             SelectNoneButton.UseVisualStyleBackColor = true;
             SelectNoneButton.Click += SelectNoneButton_Click;
@@ -98,49 +105,53 @@
             // ScanButton
             // 
             ScanButton.AutoSize = true;
-            ScanButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            ScanButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            ScanButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            ScanButton.MinimumSize = new Size(75, 23);
+            ScanButton.DialogResult = DialogResult.OK;
+            ScanButton.Padding = new Padding(6, 0, 6, 0);
             ScanButton.TabIndex = 1;
             ScanButton.UseVisualStyleBackColor = true;
             // 
             // Cancel_Button
             // 
             Cancel_Button.AutoSize = true;
-            Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            Cancel_Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            Cancel_Button.MinimumSize = new Size(75, 23);
+            Cancel_Button.DialogResult = DialogResult.Cancel;
+            Cancel_Button.Padding = new Padding(6, 0, 6, 0);
             Cancel_Button.TabIndex = 0;
             Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // ScanAllFMsForLabel
             // 
             ScanAllFMsForLabel.AutoSize = true;
-            ScanAllFMsForLabel.Location = new System.Drawing.Point(16, 16);
+            ScanAllFMsForLabel.Location = new Point(16, 16);
             ScanAllFMsForLabel.TabIndex = 1;
             // 
             // OKCancelButtonsFLP
             // 
             OKCancelButtonsFLP.Controls.Add(Cancel_Button);
             OKCancelButtonsFLP.Controls.Add(ScanButton);
-            OKCancelButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            OKCancelButtonsFLP.Location = new System.Drawing.Point(0, 184);
-            OKCancelButtonsFLP.Size = new System.Drawing.Size(416, 30);
+            OKCancelButtonsFLP.FlowDirection = FlowDirection.RightToLeft;
+            OKCancelButtonsFLP.Location = new Point(0, 184);
+            OKCancelButtonsFLP.Size = new Size(416, 30);
             OKCancelButtonsFLP.TabIndex = 0;
             // 
             // SelectButtonsFLP
             // 
             SelectButtonsFLP.Controls.Add(SelectAllButton);
             SelectButtonsFLP.Controls.Add(SelectNoneButton);
-            SelectButtonsFLP.Location = new System.Drawing.Point(15, 152);
-            SelectButtonsFLP.Size = new System.Drawing.Size(401, 28);
+            SelectButtonsFLP.Location = new Point(15, 152);
+            SelectButtonsFLP.Size = new Size(401, 28);
             SelectButtonsFLP.TabIndex = 9;
             // 
             // ScanAllFMsForm
             // 
             AcceptButton = ScanButton;
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
             CancelButton = Cancel_Button;
-            ClientSize = new System.Drawing.Size(416, 214);
+            ClientSize = new Size(416, 214);
             Controls.Add(SelectButtonsFLP);
             Controls.Add(OKCancelButtonsFLP);
             Controls.Add(ScanAllFMsForLabel);
@@ -151,12 +162,12 @@
             Controls.Add(GameCheckBox);
             Controls.Add(AuthorCheckBox);
             Controls.Add(TitleCheckBox);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = Images.AngelLoader;
             MaximizeBox = false;
             MinimizeBox = false;
             ShowInTaskbar = false;
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterParent;
             FormClosing += ScanAllFMs_FormClosing;
             OKCancelButtonsFLP.ResumeLayout(false);
             OKCancelButtonsFLP.PerformLayout();

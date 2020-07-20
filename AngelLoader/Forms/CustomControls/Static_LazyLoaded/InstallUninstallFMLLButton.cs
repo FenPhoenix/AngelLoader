@@ -28,7 +28,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Button.AutoSizeMode = AutoSizeMode.GrowOnly;
             Button.ImageAlign = ContentAlignment.MiddleLeft;
             Button.Padding = new Padding(6, 0, 6, 0);
-            Button.Height = 36;
+            Button.MinimumSize = new Size(0, 36);
             Button.TabIndex = 58;
             Button.TextImageRelation = TextImageRelation.ImageBeforeText;
             Button.UseVisualStyleBackColor = true;
@@ -59,7 +59,8 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             int uninstStringWidth = TextRenderer.MeasureText(uninstString, Button.Font).Width;
             string longestString = instStringWidth > uninstStringWidth ? instString : uninstString;
 
-            Button.SetTextAutoSize(longestString, preserveHeight: true);
+            // Special case autosize text-set: can't be GrowOrShrink
+            Button.SetTextAutoSize(longestString);
 
             if (!startup) Button.Text = _sayInstall ? LText.MainButtons.InstallFM : LText.MainButtons.UninstallFM;
 

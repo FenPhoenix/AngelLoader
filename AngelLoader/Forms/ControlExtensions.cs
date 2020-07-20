@@ -76,24 +76,16 @@ namespace AngelLoader.Forms
         // layout do the work as we do now.
 
         /// <summary>
-        /// Sets a <see cref="Button"/>'s text, and autosizes it horizontally to accomodate it.
+        /// Special case for buttons that need to be autosized but then have their width adjusted after the fact,
+        /// and so are unable to have GrowOrShrink set.
         /// </summary>
         /// <param name="button"></param>
         /// <param name="text"></param>
-        /// <param name="minWidth"></param>
-        /// <param name="preserveHeight"></param>
-        internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, bool preserveHeight = false)
+        internal static void SetTextAutoSize(this Button button, string text)
         {
-            // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.
-            // TODO: SetTextAutoSize: SetStyle(FixedHeight, true) looks like it would prevent this?
-            // But we want minimum width a lot of the time, so maybe not... Also, we'd need to bloat ourselves up
-            // with a whole custom button class just to be able to use SetStyle (it's a protected method).
             button.Text = "";
             button.Width = 2;
-            if (!preserveHeight) button.Height = 2;
             button.Text = text;
-
-            if (minWidth > -1 && button.Width < minWidth) button.Width = minWidth;
         }
 
         /// <summary>
@@ -103,8 +95,7 @@ namespace AngelLoader.Forms
         /// <param name="button"></param>
         /// <param name="textBox"></param>
         /// <param name="text"></param>
-        /// <param name="minWidth"></param>
-        internal static void SetTextAutoSize(this Button button, TextBox textBox, string text, int minWidth = -1)
+        internal static void SetTextForTextBoxButtonCombo(this Button button, TextBox textBox, string text)
         {
             // Quick fix for this not working if layout is suspended.
             // This will then cause any other controls within the same parent to do their full layout.
@@ -116,7 +107,7 @@ namespace AngelLoader.Forms
 
             int oldWidth = button.Width;
 
-            button.SetTextAutoSize(text, minWidth);
+            button.Text = text;
 
             int diff =
                 button.Width > oldWidth ? -(button.Width - oldWidth) :

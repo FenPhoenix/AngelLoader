@@ -51,8 +51,8 @@ namespace AngelLoader.Forms.Import
             ImportSelectedReadmeCheckBox.Text = LText.Importing.ImportData_SelectedReadme;
             ImportSizeCheckBox.Text = LText.Importing.ImportData_Size;
 
-            OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
-            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
+            OKButton.Text = LText.Global.OK;
+            Cancel_Button.Text = LText.Global.Cancel;
         }
 
         private void ImportFromMultipleInisForm_FormClosing(object sender, FormClosingEventArgs e)

@@ -48,6 +48,8 @@
             // OKButton
             // 
             this.OKButton.AutoSize = true;
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(3, 3);
             this.OKButton.Name = "OKButton";
@@ -60,6 +62,8 @@
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(84, 3);
             this.Cancel_Button.Name = "Cancel_Button";

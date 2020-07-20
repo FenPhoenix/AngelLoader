@@ -11,11 +11,6 @@ namespace AngelLoader.Forms
 {
     public sealed partial class FilterTagsForm : Form
     {
-        // Explicit default widths because AutoSize is true and we don't set text in InitComponentManual(), which
-        // would normally give them their default widths
-        private const int _bottomButtonsDefaultWidth = 75;
-        private const int _addButtonsDefaultWidth = 80;
-
         private readonly Bitmap _arrowRightBmp = new Bitmap(7, 7, PixelFormat.Format32bppPArgb);
 
         private readonly GlobalCatAndTagsList _sourceTags;
@@ -80,9 +75,10 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(cab, LText.TagsFilterBox.ClearAllToolTip);
             }
 
-            AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll, _addButtonsDefaultWidth);
-            OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny, _addButtonsDefaultWidth);
-            NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude, _addButtonsDefaultWidth);
+            // NOTE: These CANNOT be GrowAndShrink because we need to manually grow them here! (special case)
+            AndButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAll);
+            OrButton.SetTextAutoSize(LText.TagsFilterBox.MoveToAny);
+            NotButton.SetTextAutoSize(LText.TagsFilterBox.MoveToExclude);
             int newWidthAll = Math.Max(Math.Max(AndButton.Width, OrButton.Width), NotButton.Width);
             for (int i = 0; i < 3; i++)
             {
@@ -92,9 +88,9 @@ namespace AngelLoader.Forms
                 button.CenterH(MoveButtonsPanel);
             }
 
-            ResetButton.SetTextAutoSize(LText.TagsFilterBox.Reset, _bottomButtonsDefaultWidth);
-            OKButton.SetTextAutoSize(LText.Global.OK, _bottomButtonsDefaultWidth);
-            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, _bottomButtonsDefaultWidth);
+            ResetButton.Text = LText.TagsFilterBox.Reset;
+            OKButton.Text = LText.Global.OK;
+            Cancel_Button.Text = LText.Global.Cancel;
         }
 
         private void FilterTagsForm_Load(object sender, EventArgs e)

@@ -47,10 +47,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        // Explicit default widths because AutoSize is true and we don't set text in InitComponentManual(), which
-        // would normally give them their default widths
-        private const int _buttonDefaultWidth = 75;
-
         private readonly bool _multiChoice;
         private const int _bottomAreaHeight = 42;
         private const int _leftAreaWidth = 60;
@@ -131,8 +127,10 @@ namespace AngelLoader.Forms
                 OKButton.Image = Resources.ExclMarkCircleRed_14;
             }
 
-            OKButton.SetTextAutoSize(okText, _buttonDefaultWidth);
-            Cancel_Button.SetTextAutoSize(cancelText, _buttonDefaultWidth);
+            // This is here instead of in the localize method because it's not really localizing, it's just setting
+            // text that was passed to it. Which in our case actually is localized, but you know.
+            OKButton.Text = okText;
+            Cancel_Button.Text = cancelText;
 
             #endregion
 
@@ -232,7 +230,7 @@ namespace AngelLoader.Forms
         {
             if (_multiChoice)
             {
-                SelectAllButton.SetTextAutoSize(LText.Global.SelectAll, _buttonDefaultWidth);
+                SelectAllButton.Text = LText.Global.SelectAll;
             }
         }
 

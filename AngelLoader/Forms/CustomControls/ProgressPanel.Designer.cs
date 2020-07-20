@@ -38,6 +38,8 @@
             // ProgressCancelButton
             // 
             this.ProgressCancelButton.AutoSize = true;
+            this.ProgressCancelButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ProgressCancelButton.MinimumSize = new System.Drawing.Size(88, 23);
             this.ProgressCancelButton.Location = new System.Drawing.Point(168, 88);
             this.ProgressCancelButton.Name = "ProgressCancelButton";
             this.ProgressCancelButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);

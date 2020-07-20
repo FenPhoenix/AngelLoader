@@ -1,22 +1,26 @@
-﻿namespace AngelLoader.Forms
+﻿using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace AngelLoader.Forms
 {
     public sealed partial class MessageBoxCustomForm
     {
         private void InitComponentManual()
         {
-            MessageTopLabel = new System.Windows.Forms.Label();
-            IconPictureBox = new System.Windows.Forms.PictureBox();
-            ContentTLP = new System.Windows.Forms.TableLayoutPanel();
-            MainFLP = new System.Windows.Forms.FlowLayoutPanel();
-            ChoiceListBox = new System.Windows.Forms.ListBox();
-            SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
-            SelectAllButton = new System.Windows.Forms.Button();
-            MessageBottomLabel = new System.Windows.Forms.Label();
-            OuterTLP = new System.Windows.Forms.TableLayoutPanel();
-            BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-            Cancel_Button = new System.Windows.Forms.Button();
-            OKButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)IconPictureBox).BeginInit();
+            MessageTopLabel = new Label();
+            IconPictureBox = new PictureBox();
+            ContentTLP = new TableLayoutPanel();
+            MainFLP = new FlowLayoutPanel();
+            ChoiceListBox = new ListBox();
+            SelectButtonsFLP = new FlowLayoutPanel();
+            SelectAllButton = new Button();
+            MessageBottomLabel = new Label();
+            OuterTLP = new TableLayoutPanel();
+            BottomFLP = new FlowLayoutPanel();
+            Cancel_Button = new Button();
+            OKButton = new Button();
+            ((ISupportInitialize)IconPictureBox).BeginInit();
             ContentTLP.SuspendLayout();
             MainFLP.SuspendLayout();
             SelectButtonsFLP.SuspendLayout();
@@ -27,32 +31,32 @@
             // MessageTopLabel
             // 
             MessageTopLabel.AutoSize = true;
-            MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 18, 3, 21);
+            MessageTopLabel.Margin = new Padding(0, 18, 3, 21);
             MessageTopLabel.TabIndex = 0;
             // 
             // IconPictureBox
             // 
-            IconPictureBox.Location = new System.Drawing.Point(21, 21);
-            IconPictureBox.Margin = new System.Windows.Forms.Padding(21, 21, 0, 3);
-            IconPictureBox.Size = new System.Drawing.Size(32, 32);
-            IconPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            IconPictureBox.Location = new Point(21, 21);
+            IconPictureBox.Margin = new Padding(21, 21, 0, 3);
+            IconPictureBox.Size = new Size(32, 32);
+            IconPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             IconPictureBox.TabIndex = 1;
             IconPictureBox.TabStop = false;
             // 
             // ContentTLP
             // 
-            ContentTLP.BackColor = System.Drawing.SystemColors.Window;
+            ContentTLP.BackColor = SystemColors.Window;
             ContentTLP.ColumnCount = 2;
-            ContentTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            ContentTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            ContentTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60F));
+            ContentTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             ContentTLP.Controls.Add(IconPictureBox, 0, 0);
             ContentTLP.Controls.Add(MainFLP, 1, 0);
-            ContentTLP.Dock = System.Windows.Forms.DockStyle.Fill;
-            ContentTLP.Location = new System.Drawing.Point(0, 0);
-            ContentTLP.Margin = new System.Windows.Forms.Padding(0);
+            ContentTLP.Dock = DockStyle.Fill;
+            ContentTLP.Location = new Point(0, 0);
+            ContentTLP.Margin = new Padding(0);
             ContentTLP.RowCount = 1;
-            ContentTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            ContentTLP.Size = new System.Drawing.Size(570, 294);
+            ContentTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            ContentTLP.Size = new Size(570, 294);
             ContentTLP.TabIndex = 0;
             // 
             // MainFLP
@@ -61,11 +65,11 @@
             MainFLP.Controls.Add(ChoiceListBox);
             MainFLP.Controls.Add(SelectButtonsFLP);
             MainFLP.Controls.Add(MessageBottomLabel);
-            MainFLP.Dock = System.Windows.Forms.DockStyle.Fill;
-            MainFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            MainFLP.Location = new System.Drawing.Point(60, 0);
-            MainFLP.Margin = new System.Windows.Forms.Padding(0);
-            MainFLP.Size = new System.Drawing.Size(510, 294);
+            MainFLP.Dock = DockStyle.Fill;
+            MainFLP.FlowDirection = FlowDirection.TopDown;
+            MainFLP.Location = new Point(60, 0);
+            MainFLP.Margin = new Padding(0);
+            MainFLP.Size = new Size(510, 294);
             MainFLP.TabIndex = 0;
             // 
             // ChoiceListBox
@@ -73,24 +77,26 @@
             ChoiceListBox.FormattingEnabled = true;
             ChoiceListBox.HorizontalScrollbar = true;
             ChoiceListBox.IntegralHeight = false;
-            ChoiceListBox.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
-            ChoiceListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            ChoiceListBox.Margin = new Padding(0, 3, 3, 0);
+            ChoiceListBox.SelectionMode = SelectionMode.MultiExtended;
             ChoiceListBox.TabIndex = 1;
             ChoiceListBox.SelectedIndexChanged += ChoiceListBox_SelectedIndexChanged;
             // 
             // SelectButtonsFLP
             // 
             SelectButtonsFLP.Controls.Add(SelectAllButton);
-            SelectButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            SelectButtonsFLP.Margin = new System.Windows.Forms.Padding(0);
-            SelectButtonsFLP.Size = new System.Drawing.Size(493, 23);
+            SelectButtonsFLP.FlowDirection = FlowDirection.RightToLeft;
+            SelectButtonsFLP.Margin = new Padding(0);
+            SelectButtonsFLP.Size = new Size(493, 23);
             SelectButtonsFLP.TabIndex = 2;
             // 
             // SelectAllButton
             // 
             SelectAllButton.AutoSize = true;
-            SelectAllButton.Margin = new System.Windows.Forms.Padding(0);
-            SelectAllButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            SelectAllButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            SelectAllButton.MinimumSize = new Size(75, 23);
+            SelectAllButton.Margin = new Padding(0);
+            SelectAllButton.Padding = new Padding(6, 0, 6, 0);
             SelectAllButton.TabIndex = 0;
             SelectAllButton.UseVisualStyleBackColor = true;
             SelectAllButton.Click += SelectAllButton_Click;
@@ -98,71 +104,75 @@
             // MessageBottomLabel
             // 
             MessageBottomLabel.AutoSize = true;
-            MessageBottomLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 21);
+            MessageBottomLabel.Margin = new Padding(0, 3, 3, 21);
             MessageBottomLabel.TabIndex = 3;
             // 
             // OuterTLP
             // 
             OuterTLP.ColumnCount = 1;
-            OuterTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            OuterTLP.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             OuterTLP.Controls.Add(ContentTLP, 0, 0);
             OuterTLP.Controls.Add(BottomFLP, 0, 1);
-            OuterTLP.Dock = System.Windows.Forms.DockStyle.Fill;
-            OuterTLP.Location = new System.Drawing.Point(0, 0);
-            OuterTLP.Margin = new System.Windows.Forms.Padding(0);
+            OuterTLP.Dock = DockStyle.Fill;
+            OuterTLP.Location = new Point(0, 0);
+            OuterTLP.Margin = new Padding(0);
             OuterTLP.RowCount = 2;
-            OuterTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            OuterTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
-            OuterTLP.Size = new System.Drawing.Size(570, 336);
+            OuterTLP.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            OuterTLP.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
+            OuterTLP.Size = new Size(570, 336);
             OuterTLP.TabIndex = 3;
             // 
             // BottomFLP
             // 
-            BottomFLP.BackColor = System.Drawing.SystemColors.Control;
+            BottomFLP.BackColor = SystemColors.Control;
             BottomFLP.Controls.Add(Cancel_Button);
             BottomFLP.Controls.Add(OKButton);
-            BottomFLP.Dock = System.Windows.Forms.DockStyle.Fill;
-            BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            BottomFLP.Location = new System.Drawing.Point(0, 294);
-            BottomFLP.Margin = new System.Windows.Forms.Padding(0);
-            BottomFLP.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            BottomFLP.Size = new System.Drawing.Size(570, 42);
+            BottomFLP.Dock = DockStyle.Fill;
+            BottomFLP.FlowDirection = FlowDirection.RightToLeft;
+            BottomFLP.Location = new Point(0, 294);
+            BottomFLP.Margin = new Padding(0);
+            BottomFLP.Padding = new Padding(0, 0, 10, 0);
+            BottomFLP.Size = new Size(570, 42);
             BottomFLP.TabIndex = 1;
             // 
             // Cancel_Button
             // 
             Cancel_Button.AutoSize = true;
-            Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            Cancel_Button.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
-            Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            Cancel_Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            Cancel_Button.MinimumSize = new Size(75, 23);
+            Cancel_Button.DialogResult = DialogResult.Cancel;
+            Cancel_Button.Margin = new Padding(5, 9, 5, 3);
+            Cancel_Button.Padding = new Padding(6, 0, 6, 0);
             Cancel_Button.TabIndex = 0;
             Cancel_Button.UseVisualStyleBackColor = true;
             // 
             // OKButton
             // 
             OKButton.AutoSize = true;
-            OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            OKButton.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
-            OKButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            OKButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            OKButton.MinimumSize = new Size(75, 23);
+            OKButton.DialogResult = DialogResult.OK;
+            OKButton.Margin = new Padding(5, 9, 5, 3);
+            OKButton.Padding = new Padding(6, 0, 6, 0);
             OKButton.TabIndex = 1;
             OKButton.UseVisualStyleBackColor = true;
             // 
             // MessageBoxCustomForm
             // 
             AcceptButton = Cancel_Button;
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            BackColor = System.Drawing.SystemColors.Window;
+            AutoScaleDimensions = new SizeF(6F, 13F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.Window;
             CancelButton = Cancel_Button;
-            ClientSize = new System.Drawing.Size(570, 336);
+            ClientSize = new Size(570, 336);
             Controls.Add(OuterTLP);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             ShowInTaskbar = false;
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
             FormClosing += MessageBoxCustomForm_FormClosing;
-            ((System.ComponentModel.ISupportInitialize)IconPictureBox).EndInit();
+            ((ISupportInitialize)IconPictureBox).EndInit();
             ContentTLP.ResumeLayout(false);
             MainFLP.ResumeLayout(false);
             MainFLP.PerformLayout();

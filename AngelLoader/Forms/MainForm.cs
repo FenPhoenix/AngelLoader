@@ -868,12 +868,6 @@ namespace AngelLoader.Forms
 
             #endregion
 
-            // Cheap 'n cheesy storage of initial size for minimum-width setting later
-            EditFMFinishedOnButton.Tag = new Size(138, 23);
-            PatchOpenFMFolderButton.Tag = new Size(162, 23);
-            PlayFMButton.Tag = new Size(91, 36);
-            WebSearchButton.Tag = new Size(116, 36);
-
             // EnsureValidity() guarantees selected tab will not be invisible
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
@@ -1349,7 +1343,7 @@ namespace AngelLoader.Forms
                 CR_ScriptsCheckBox.Text = LText.StatisticsTab.Scripts;
                 CR_SubtitlesCheckBox.Text = LText.StatisticsTab.Subtitles;
 
-                StatsScanCustomResourcesButton.SetTextAutoSize(LText.StatisticsTab.RescanCustomResources);
+                StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanCustomResources;
 
                 #endregion
 
@@ -1373,7 +1367,7 @@ namespace AngelLoader.Forms
                     }
                 }
 
-                EditFMFinishedOnButton.SetTextAutoSize(LText.EditFMTab.FinishedOn, ((Size)EditFMFinishedOnButton.Tag).Width);
+                EditFMFinishedOnButton.Text = LText.EditFMTab.FinishedOn;
                 EditFMDisabledModsLabel.Text = LText.EditFMTab.DisabledMods;
                 EditFMDisableAllModsCheckBox.Text = LText.EditFMTab.DisableAllMods;
 
@@ -1384,7 +1378,7 @@ namespace AngelLoader.Forms
 
                 EditFMLanguageLabel.Text = LText.EditFMTab.PlayFMInThisLanguage;
 
-                EditFMScanForReadmesButton.SetTextAutoSize(LText.EditFMTab.RescanForReadmes);
+                EditFMScanForReadmesButton.Text = LText.EditFMTab.RescanForReadmes;
 
                 #endregion
 
@@ -1397,9 +1391,9 @@ namespace AngelLoader.Forms
                 #region Tags tab
 
                 TagsTabPage.Text = LText.TagsTab.TabText;
-                AddTagButton.SetTextAutoSize(AddTagTextBox, LText.TagsTab.AddTag);
-                AddTagFromListButton.SetTextAutoSize(LText.TagsTab.AddFromList);
-                RemoveTagButton.SetTextAutoSize(LText.TagsTab.RemoveTag);
+                AddTagButton.SetTextForTextBoxButtonCombo(AddTagTextBox, LText.TagsTab.AddTag);
+                AddTagFromListButton.Text = LText.TagsTab.AddFromList;
+                RemoveTagButton.Text = LText.TagsTab.RemoveTag;
 
                 #endregion
 
@@ -1411,7 +1405,7 @@ namespace AngelLoader.Forms
                 MainToolTip.SetToolTip(PatchRemoveDMLButton, LText.PatchTab.RemoveDMLPatchToolTip);
                 PatchFMNotInstalledLabel.Text = LText.PatchTab.FMNotInstalled;
                 PatchFMNotInstalledLabel.CenterHV(PatchTabPage);
-                PatchOpenFMFolderButton.SetTextAutoSize(LText.PatchTab.OpenFMFolder, ((Size)PatchOpenFMFolderButton.Tag).Width);
+                PatchOpenFMFolderButton.Text = LText.PatchTab.OpenFMFolder;
 
                 #endregion
 
@@ -1432,18 +1426,18 @@ namespace AngelLoader.Forms
 
                 #region Bottom area
 
-                PlayFMButton.SetTextAutoSize(LText.MainButtons.PlayFM, ((Size)PlayFMButton.Tag).Width, preserveHeight: true);
+                PlayFMButton.Text = LText.MainButtons.PlayFM;
 
                 // Allow button to do its max-string-length layout thing
                 if (startup && !Config.HideUninstallButton) BottomLeftButtonsFLP.ResumeLayout();
                 InstallUninstallFMLLButton.Localize(startup);
                 if (startup && !Config.HideUninstallButton) BottomLeftButtonsFLP.SuspendLayout();
 
-                PlayOriginalGameButton.SetTextAutoSize(LText.MainButtons.PlayOriginalGame, preserveHeight: true);
-                WebSearchButton.SetTextAutoSize(LText.MainButtons.WebSearch, ((Size)WebSearchButton.Tag).Width, preserveHeight: true);
-                ScanAllFMsButton.SetTextAutoSize(LText.MainButtons.ScanAllFMs, preserveHeight: true);
-                ImportButton.SetTextAutoSize(LText.MainButtons.Import, preserveHeight: true);
-                SettingsButton.SetTextAutoSize(LText.MainButtons.Settings, preserveHeight: true);
+                PlayOriginalGameButton.Text = LText.MainButtons.PlayOriginalGame;
+                WebSearchButton.Text = LText.MainButtons.WebSearch;
+                ScanAllFMsButton.Text = LText.MainButtons.ScanAllFMs;
+                ImportButton.Text = LText.MainButtons.Import;
+                SettingsButton.Text = LText.MainButtons.Settings;
 
                 #endregion
 

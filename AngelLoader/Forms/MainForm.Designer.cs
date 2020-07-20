@@ -203,8 +203,10 @@ namespace AngelLoader.Forms
             // ScanAllFMsButton
             // 
             this.ScanAllFMsButton.AutoSize = true;
+            this.ScanAllFMsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ScanAllFMsButton.Location = new System.Drawing.Point(262, 3);
             this.ScanAllFMsButton.Margin = new System.Windows.Forms.Padding(15, 3, 0, 3);
+            this.ScanAllFMsButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.ScanAllFMsButton.Name = "ScanAllFMsButton";
             this.ScanAllFMsButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
             this.ScanAllFMsButton.Size = new System.Drawing.Size(126, 36);
@@ -240,9 +242,11 @@ namespace AngelLoader.Forms
             // SettingsButton
             // 
             this.SettingsButton.AutoSize = true;
+            this.SettingsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.SettingsButton.Image = global::AngelLoader.Properties.Resources.Settings_24;
             this.SettingsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.SettingsButton.Location = new System.Drawing.Point(123, 3);
+            this.SettingsButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.SettingsButton.Name = "SettingsButton";
             this.SettingsButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.SettingsButton.Size = new System.Drawing.Size(100, 36);
@@ -255,9 +259,11 @@ namespace AngelLoader.Forms
             // ImportButton
             // 
             this.ImportButton.AutoSize = true;
+            this.ImportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ImportButton.Image = global::AngelLoader.Properties.Resources.Import_24;
             this.ImportButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ImportButton.Location = new System.Drawing.Point(3, 3);
+            this.ImportButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.ImportButton.Name = "ImportButton";
             this.ImportButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.ImportButton.Size = new System.Drawing.Size(114, 36);
@@ -284,7 +290,9 @@ namespace AngelLoader.Forms
             // PlayFMButton
             // 
             this.PlayFMButton.AutoSize = true;
+            this.PlayFMButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PlayFMButton.Location = new System.Drawing.Point(3, 3);
+            this.PlayFMButton.MinimumSize = new System.Drawing.Size(91, 36);
             this.PlayFMButton.Name = "PlayFMButton";
             this.PlayFMButton.Padding = new System.Windows.Forms.Padding(28, 0, 6, 0);
             this.PlayFMButton.Size = new System.Drawing.Size(91, 36);
@@ -297,10 +305,12 @@ namespace AngelLoader.Forms
             // PlayOriginalGameButton
             // 
             this.PlayOriginalGameButton.AutoSize = true;
+            this.PlayOriginalGameButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PlayOriginalGameButton.Image = global::AngelLoader.Properties.Resources.Play_Original_24;
             this.PlayOriginalGameButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.PlayOriginalGameButton.Location = new System.Drawing.Point(100, 3);
             this.PlayOriginalGameButton.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+            this.PlayOriginalGameButton.MinimumSize = new System.Drawing.Size(0, 36);
             this.PlayOriginalGameButton.Name = "PlayOriginalGameButton";
             this.PlayOriginalGameButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.PlayOriginalGameButton.Size = new System.Drawing.Size(147, 36);
@@ -313,8 +323,10 @@ namespace AngelLoader.Forms
             // WebSearchButton
             // 
             this.WebSearchButton.AutoSize = true;
+            this.WebSearchButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.WebSearchButton.Location = new System.Drawing.Point(403, 3);
             this.WebSearchButton.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
+            this.WebSearchButton.MinimumSize = new System.Drawing.Size(116, 36);
             this.WebSearchButton.Name = "WebSearchButton";
             this.WebSearchButton.Padding = new System.Windows.Forms.Padding(33, 0, 6, 0);
             this.WebSearchButton.Size = new System.Drawing.Size(116, 36);
@@ -431,8 +443,8 @@ namespace AngelLoader.Forms
             this.FMsDGV.AllowUserToDeleteRows = false;
             this.FMsDGV.AllowUserToOrderColumns = true;
             this.FMsDGV.AllowUserToResizeRows = false;
-            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.FMsDGV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -606,7 +618,7 @@ namespace AngelLoader.Forms
             // 
             // FilterBarFLP
             // 
-            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FilterBarFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilterBarFLP.AutoScroll = true;
             this.FilterBarFLP.Controls.Add(this.FilterGameButtonsToolStrip);
@@ -626,7 +638,7 @@ namespace AngelLoader.Forms
             // 
             // FilterGameButtonsToolStrip
             // 
-            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterGameButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterGameButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterGameButtonsToolStrip.CanOverflow = false;
@@ -739,7 +751,7 @@ namespace AngelLoader.Forms
             // 
             // FilterIconButtonsToolStrip
             // 
-            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FilterIconButtonsToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FilterIconButtonsToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.FilterIconButtonsToolStrip.CanOverflow = false;
@@ -872,7 +884,7 @@ namespace AngelLoader.Forms
             // 
             // RefreshAreaToolStrip
             // 
-            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.RefreshAreaToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RefreshAreaToolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.RefreshAreaToolStrip.CanOverflow = false;
@@ -1019,7 +1031,7 @@ namespace AngelLoader.Forms
             // 
             // TopRightCollapseButton
             // 
-            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightCollapseButton.ArrowDirection = AngelLoader.Misc.Direction.Right;
             this.TopRightCollapseButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -1034,8 +1046,8 @@ namespace AngelLoader.Forms
             // 
             // TopRightTabControl
             // 
-            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
             this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
@@ -1064,7 +1076,9 @@ namespace AngelLoader.Forms
             // StatsScanCustomResourcesButton
             // 
             this.StatsScanCustomResourcesButton.AutoSize = true;
+            this.StatsScanCustomResourcesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.StatsScanCustomResourcesButton.Location = new System.Drawing.Point(6, 200);
+            this.StatsScanCustomResourcesButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
             this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(154, 23);
@@ -1277,7 +1291,9 @@ namespace AngelLoader.Forms
             // EditFMScanForReadmesButton
             // 
             this.EditFMScanForReadmesButton.AutoSize = true;
+            this.EditFMScanForReadmesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 299);
+            this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
             this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(128, 23);
@@ -1332,7 +1348,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMTitleTextBox
             // 
-            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.EditFMTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
@@ -1344,7 +1360,9 @@ namespace AngelLoader.Forms
             // EditFMFinishedOnButton
             // 
             this.EditFMFinishedOnButton.AutoSize = true;
+            this.EditFMFinishedOnButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditFMFinishedOnButton.Location = new System.Drawing.Point(184, 144);
+            this.EditFMFinishedOnButton.MinimumSize = new System.Drawing.Size(138, 23);
             this.EditFMFinishedOnButton.Name = "EditFMFinishedOnButton";
             this.EditFMFinishedOnButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.EditFMFinishedOnButton.Size = new System.Drawing.Size(138, 23);
@@ -1442,7 +1460,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMDisabledModsTextBox
             // 
-            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.EditFMDisabledModsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
@@ -1462,7 +1480,7 @@ namespace AngelLoader.Forms
             // 
             // EditFMAuthorTextBox
             // 
-            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.EditFMAuthorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
@@ -1501,8 +1519,8 @@ namespace AngelLoader.Forms
             // 
             // CommentTextBox
             // 
-            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.CommentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CommentTextBox.Location = new System.Drawing.Point(8, 8);
             this.CommentTextBox.Multiline = true;
@@ -1532,7 +1550,9 @@ namespace AngelLoader.Forms
             // 
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
+            this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.AddTagButton.Location = new System.Drawing.Point(447, 7);
+            this.AddTagButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagButton.Size = new System.Drawing.Size(72, 23);
@@ -1543,7 +1563,7 @@ namespace AngelLoader.Forms
             // 
             // AddTagTextBox
             // 
-            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.AddTagTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagTextBox.DisallowedCharacters = ",;";
             this.AddTagTextBox.Location = new System.Drawing.Point(8, 8);
@@ -1570,8 +1590,10 @@ namespace AngelLoader.Forms
             // 
             this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RemoveTagButton.AutoSize = true;
+            this.RemoveTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.RemoveTagButton.Location = new System.Drawing.Point(375, 0);
             this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
+            this.RemoveTagButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.RemoveTagButton.Name = "RemoveTagButton";
             this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.RemoveTagButton.Size = new System.Drawing.Size(144, 23);
@@ -1584,8 +1606,10 @@ namespace AngelLoader.Forms
             // 
             this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagFromListButton.AutoSize = true;
+            this.AddTagFromListButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.AddTagFromListButton.Location = new System.Drawing.Point(231, 0);
             this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
+            this.AddTagFromListButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.AddTagFromListButton.Name = "AddTagFromListButton";
             this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.AddTagFromListButton.Size = new System.Drawing.Size(144, 23);
@@ -1596,8 +1620,8 @@ namespace AngelLoader.Forms
             // 
             // TagsTreeView
             // 
-            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.TagsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TagsTreeView.HideSelection = false;
             this.TagsTreeView.Location = new System.Drawing.Point(8, 32);
@@ -1688,7 +1712,9 @@ namespace AngelLoader.Forms
             // PatchOpenFMFolderButton
             // 
             this.PatchOpenFMFolderButton.AutoSize = true;
+            this.PatchOpenFMFolderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PatchOpenFMFolderButton.Location = new System.Drawing.Point(7, 128);
+            this.PatchOpenFMFolderButton.MinimumSize = new System.Drawing.Size(162, 23);
             this.PatchOpenFMFolderButton.Name = "PatchOpenFMFolderButton";
             this.PatchOpenFMFolderButton.Size = new System.Drawing.Size(162, 23);
             this.PatchOpenFMFolderButton.TabIndex = 44;

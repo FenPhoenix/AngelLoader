@@ -128,6 +128,8 @@ namespace AngelLoader.Forms
             // SelectAllButton
             // 
             this.SelectAllButton.AutoSize = true;
+            this.SelectAllButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SelectAllButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.SelectAllButton.Location = new System.Drawing.Point(418, 0);
             this.SelectAllButton.Margin = new System.Windows.Forms.Padding(0);
             this.SelectAllButton.Name = "SelectAllButton";
@@ -181,6 +183,8 @@ namespace AngelLoader.Forms
             // Cancel_Button
             // 
             this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(75, 23);
             this.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_Button.Location = new System.Drawing.Point(480, 9);
             this.Cancel_Button.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);
@@ -194,6 +198,8 @@ namespace AngelLoader.Forms
             // OKButton
             // 
             this.OKButton.AutoSize = true;
+            this.OKButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.OKButton.MinimumSize = new System.Drawing.Size(75, 23);
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(395, 9);
             this.OKButton.Margin = new System.Windows.Forms.Padding(5, 9, 5, 3);

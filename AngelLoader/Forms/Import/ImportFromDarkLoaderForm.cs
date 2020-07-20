@@ -38,8 +38,8 @@ namespace AngelLoader.Forms.Import
             ImportCommentCheckBox.Text = LText.Importing.ImportData_Comment;
             ImportSizeCheckBox.Text = LText.Importing.ImportData_Size;
 
-            OKButton.SetTextAutoSize(LText.Global.OK, OKButton.Width);
-            Cancel_Button.SetTextAutoSize(LText.Global.Cancel, Cancel_Button.Width);
+            OKButton.Text = LText.Global.OK;
+            Cancel_Button.Text = LText.Global.Cancel;
         }
 
         private void ImportFMDataCheckBox_CheckedChanged(object sender, EventArgs e)

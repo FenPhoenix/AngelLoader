@@ -157,7 +157,7 @@ namespace AngelLoader.Forms.CustomControls
 
         internal void Localize()
         {
-            ProgressCancelButton.SetTextAutoSize(LText.Global.Cancel, ProgressCancelButton.Width);
+            ProgressCancelButton.Text = LText.Global.Cancel;
             ProgressCancelButton.CenterH(this);
         }
 
