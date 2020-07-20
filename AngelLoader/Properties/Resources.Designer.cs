@@ -363,9 +363,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Stars0 {
+        internal static System.Drawing.Bitmap Star_Empty_Half {
             get {
-                object obj = ResourceManager.GetObject("Stars0", resourceCulture);
+                object obj = ResourceManager.GetObject("Star_Empty_Half", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -373,99 +373,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Stars0_5 {
+        internal static System.Drawing.Bitmap Star_Filled_Half {
             get {
-                object obj = ResourceManager.GetObject("Stars0_5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars1 {
-            get {
-                object obj = ResourceManager.GetObject("Stars1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars1_5 {
-            get {
-                object obj = ResourceManager.GetObject("Stars1_5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars2 {
-            get {
-                object obj = ResourceManager.GetObject("Stars2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars2_5 {
-            get {
-                object obj = ResourceManager.GetObject("Stars2_5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars3 {
-            get {
-                object obj = ResourceManager.GetObject("Stars3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars3_5 {
-            get {
-                object obj = ResourceManager.GetObject("Stars3_5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars4 {
-            get {
-                object obj = ResourceManager.GetObject("Stars4", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars4_5 {
-            get {
-                object obj = ResourceManager.GetObject("Stars4_5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Stars5 {
-            get {
-                object obj = ResourceManager.GetObject("Stars5", resourceCulture);
+                object obj = ResourceManager.GetObject("Star_Filled_Half", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1886,27 +1886,9 @@ namespace AngelLoader.Forms
             RedQuestionMarkIcon = Resources.QuestionMarkCircleRed;
             // @LAZYLOAD: Have these be wrapper objects so we can put them in the list without them loading
             // Then grab the internal object down below when we go to display them
-            StarIcons = new[]
-            {
-                Resources.Stars0,
-                Resources.Stars0_5,
-                Resources.Stars1,
-                Resources.Stars1_5,
-                Resources.Stars2,
-                Resources.Stars2_5,
-                Resources.Stars3,
-                Resources.Stars3_5,
-                Resources.Stars4,
-                Resources.Stars4_5,
-                Resources.Stars5
-            };
+            StarIcons = Images.GetRatingImages();
 
-            FinishedOnIcons = new Bitmap[16];
-            FinishedOnIcons[0] = BlankIcon;
-            for (int i = 1; i < FinishedOnIcons.Length; i++)
-            {
-                FinishedOnIcons[i] = Images.GetFinishedOnImage((Difficulty)i);
-            }
+            FinishedOnIcons = Images.GetFinishedOnImages(BlankIcon);
             FinishedOnUnknownIcon = Resources.Finished_Unknown;
 
             // Prevents having to check the bool again forevermore even after we've already set the images.

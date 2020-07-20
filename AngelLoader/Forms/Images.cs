@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using AngelLoader.DataClasses;
@@ -49,43 +50,164 @@ namespace AngelLoader.Forms
 
         #region Finished on
 
-        private static Bitmap? _finishedOnNormal_single;
-        private static Bitmap FinishedOnNormal_Single => _finishedOnNormal_single ??= Resources.Finished_Normal_Icon;
-
-        private static Bitmap? _finishedOnHard_single;
-        private static Bitmap FinishedOnHard_Single => _finishedOnHard_single ??= Resources.Finished_Hard_Icon;
-
-
-        private static Bitmap? _finishedOnExpert_single;
-        private static Bitmap FinishedOnExpert_Single => _finishedOnExpert_single ??= Resources.Finished_Expert_Icon;
-
-
-        private static Bitmap? _finishedOnExtreme_single;
-        private static Bitmap FinishedOnExtreme_Single => _finishedOnExtreme_single ??= Resources.Finished_Extreme_Icon;
-
-        public static Bitmap GetFinishedOnImage(Difficulty difficulty)
+        /// <summary>
+        /// We use positionZeroBitmap so we can be passed an already-constructed BlankIcon bitmap so that we
+        /// don't have to have BlankIcon be in here and subject to a property call and null check every time
+        /// it gets displayed, which is a lot.
+        /// </summary>
+        /// <param name="positionZeroBitmap">Silly hack, see description.</param>
+        /// <returns></returns>
+        public static Bitmap[] GetFinishedOnImages(Bitmap positionZeroBitmap)
         {
-            var list = new List<Bitmap>(4);
-            if (difficulty.HasFlagFast(Difficulty.Normal)) list.Add(FinishedOnNormal_Single);
-            if (difficulty.HasFlagFast(Difficulty.Hard)) list.Add(FinishedOnHard_Single);
-            if (difficulty.HasFlagFast(Difficulty.Expert)) list.Add(FinishedOnExpert_Single);
-            if (difficulty.HasFlagFast(Difficulty.Extreme)) list.Add(FinishedOnExtreme_Single);
+            var retArray = new Bitmap[16];
 
-            int totalWidth = 0;
-            for (int i = 0; i < list.Count; i++) totalWidth += list[i].Width;
-
-            int x = (138 / 2) - (totalWidth / 2);
-
-            Bitmap retBmp = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
-            using var g = Graphics.FromImage(retBmp);
-            for (int i = 0; i < list.Count; i++)
+            Bitmap? _finishedOnNormal_single = null;
+            Bitmap? _finishedOnHard_single = null;
+            Bitmap? _finishedOnExpert_single = null;
+            Bitmap? _finishedOnExtreme_single = null;
+            try
             {
-                Bitmap bmp = list[i];
-                g.DrawImage(bmp, x, 0);
-                x += bmp.Width;
+                #region Image getters
+
+                Bitmap GetFinishedOnNormal_Single() => _finishedOnNormal_single ??= Resources.Finished_Normal_Icon;
+
+                Bitmap GetFinishedOnHard_Single() => _finishedOnHard_single ??= Resources.Finished_Hard_Icon;
+
+                Bitmap GetFinishedOnExpert_Single() => _finishedOnExpert_single ??= Resources.Finished_Expert_Icon;
+
+                Bitmap GetFinishedOnExtreme_Single() => _finishedOnExtreme_single ??= Resources.Finished_Extreme_Icon;
+
+                #endregion
+
+                var list = new List<Bitmap>(4);
+
+                retArray[0] = positionZeroBitmap;
+                for (int ai = 1; ai < retArray.Length; ai++)
+                {
+                    Bitmap canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
+                    Difficulty difficulty = (Difficulty)ai;
+
+                    list.Clear();
+
+                    if (difficulty.HasFlagFast(Difficulty.Normal)) list.Add(GetFinishedOnNormal_Single());
+                    if (difficulty.HasFlagFast(Difficulty.Hard)) list.Add(GetFinishedOnHard_Single());
+                    if (difficulty.HasFlagFast(Difficulty.Expert)) list.Add(GetFinishedOnExpert_Single());
+                    if (difficulty.HasFlagFast(Difficulty.Extreme)) list.Add(GetFinishedOnExtreme_Single());
+
+                    int totalWidth = 0;
+                    for (int i = 0; i < list.Count; i++) totalWidth += list[i].Width;
+
+                    int x = (138 / 2) - (totalWidth / 2);
+
+                    using var g = Graphics.FromImage(canvas);
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        Bitmap subImage = list[i];
+                        g.DrawImage(subImage, x, 0);
+                        x += subImage.Width;
+                    }
+
+                    retArray[ai] = canvas;
+                }
+            }
+            finally
+            {
+                _finishedOnNormal_single?.Dispose();
+                _finishedOnHard_single?.Dispose();
+                _finishedOnExpert_single?.Dispose();
+                _finishedOnExtreme_single?.Dispose();
             }
 
-            return retBmp;
+            return retArray;
+        }
+
+        #endregion
+
+        #region Stars
+
+        public static Bitmap[] GetRatingImages()
+        {
+            const int halfStarWidth = 11;
+            // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
+            const int numRatings = 11;
+
+            var retArray = new Bitmap[numRatings];
+
+            Bitmap? _star_Filled_Left_Half = null;
+            Bitmap? _star_Filled_Right_Half = null;
+            Bitmap? _star_Empty_Left_Half = null;
+            Bitmap? _star_Empty_Right_Half = null;
+            try
+            {
+                #region Image getters
+
+                Bitmap GetFilledLeft() => _star_Filled_Left_Half ??= Resources.Star_Filled_Half;
+
+                Bitmap GetFilledRight()
+                {
+                    if (_star_Filled_Right_Half == null)
+                    {
+                        _star_Filled_Right_Half = Resources.Star_Filled_Half;
+                        _star_Filled_Right_Half.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    }
+                    return _star_Filled_Right_Half;
+                }
+
+                Bitmap GetEmptyLeft() => _star_Empty_Left_Half ??= Resources.Star_Empty_Half;
+
+                Bitmap GetEmptyRight()
+                {
+                    if (_star_Empty_Right_Half == null)
+                    {
+                        _star_Empty_Right_Half = Resources.Star_Empty_Half;
+                        _star_Empty_Right_Half.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    }
+                    return _star_Empty_Right_Half;
+                }
+
+                #endregion
+
+                bool[] bits = new bool[numRatings];
+
+                for (int ai = 0; ai < numRatings; ai++)
+                {
+                    var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
+
+                    Array.Clear(bits, 0, numRatings);
+                    for (int i = 0; i < ai; i++) bits[i] = true;
+
+                    int x = 0;
+                    using (var g = Graphics.FromImage(canvas))
+                    {
+                        for (int i = 0; i < bits.Length; i++)
+                        {
+                            bool bitSet = bits[i];
+                            bool left = i % 2 == 0;
+
+                            if (bitSet)
+                            {
+                                g.DrawImage(left ? GetFilledLeft() : GetFilledRight(), x, 0);
+                            }
+                            else
+                            {
+                                g.DrawImage(left ? GetEmptyLeft() : GetEmptyRight(), x, 0);
+                            }
+                            x += halfStarWidth;
+                        }
+                    }
+
+                    retArray[ai] = canvas;
+                }
+            }
+            finally
+            {
+                _star_Filled_Left_Half?.Dispose();
+                _star_Filled_Right_Half?.Dispose();
+                _star_Empty_Left_Half?.Dispose();
+                _star_Empty_Right_Half?.Dispose();
+            }
+
+            return retArray;
         }
 
         #endregion
