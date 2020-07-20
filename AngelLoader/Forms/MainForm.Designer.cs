@@ -1293,7 +1293,7 @@ namespace AngelLoader.Forms
             this.EditFMScanForReadmesButton.AutoSize = true;
             this.EditFMScanForReadmesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EditFMScanForReadmesButton.Location = new System.Drawing.Point(8, 299);
-            this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(0, 23);
+            this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(130, 23);
             this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
             this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
             this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(128, 23);

@@ -1077,7 +1077,7 @@ namespace AngelLoader.Forms
             // 
             EditFMScanForReadmesButton.AutoSize = true;
             EditFMScanForReadmesButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            EditFMScanForReadmesButton.MinimumSize = new Size(0, 23);
+            EditFMScanForReadmesButton.MinimumSize = new Size(130, 23);
             EditFMScanForReadmesButton.Location = new Point(8, 299);
             EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
             EditFMScanForReadmesButton.TabIndex = 34;
