@@ -1901,27 +1901,12 @@ namespace AngelLoader.Forms
                 Resources.Stars5
             };
 
-            // IMPORTANT: These must be in this exact order, as it matches Difficulty flags.
-            // Any other order and it will pick the wrong image.
-            FinishedOnIcons = new[]
+            FinishedOnIcons = new Bitmap[16];
+            FinishedOnIcons[0] = BlankIcon;
+            for (int i = 1; i < FinishedOnIcons.Length; i++)
             {
-                BlankIcon,
-                Resources.Finished_Normal,
-                Resources.Finished_Hard,
-                Resources.Finished_Normal_Hard,
-                Resources.Finished_Expert,
-                Resources.Finished_Normal_Expert,
-                Resources.Finished_Hard_Expert,
-                Resources.Finished_Normal_Hard_Expert,
-                Resources.Finished_Extreme,
-                Resources.Finished_Normal_Extreme,
-                Resources.Finished_Hard_Extreme,
-                Resources.Finished_Normal_Hard_Extreme,
-                Resources.Finished_Expert_Extreme,
-                Resources.Finished_Normal_Expert_Extreme,
-                Resources.Finished_Hard_Expert_Extreme,
-                Resources.Finished_Normal_Hard_Expert_Extreme
-            };
+                FinishedOnIcons[i] = Images.GetFinishedOnImage((Difficulty)i);
+            }
             FinishedOnUnknownIcon = Resources.Finished_Unknown;
 
             // Prevents having to check the bool again forevermore even after we've already set the images.

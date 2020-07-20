@@ -183,9 +183,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Finished_Expert {
+        internal static System.Drawing.Bitmap Finished_Expert_Icon {
             get {
-                object obj = ResourceManager.GetObject("Finished_Expert", resourceCulture);
+                object obj = ResourceManager.GetObject("Finished_Expert_Icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -193,9 +193,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Finished_Expert_Extreme {
+        internal static System.Drawing.Bitmap Finished_Extreme_Icon {
             get {
-                object obj = ResourceManager.GetObject("Finished_Expert_Extreme", resourceCulture);
+                object obj = ResourceManager.GetObject("Finished_Extreme_Icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,9 +203,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Finished_Extreme {
+        internal static System.Drawing.Bitmap Finished_Hard_Icon {
             get {
-                object obj = ResourceManager.GetObject("Finished_Extreme", resourceCulture);
+                object obj = ResourceManager.GetObject("Finished_Hard_Icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,119 +213,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Finished_Hard {
+        internal static System.Drawing.Bitmap Finished_Normal_Icon {
             get {
-                object obj = ResourceManager.GetObject("Finished_Hard", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Hard_Expert {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Hard_Expert", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Hard_Expert_Extreme {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Hard_Expert_Extreme", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Hard_Extreme {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Hard_Extreme", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Expert {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Expert", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Expert_Extreme {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Expert_Extreme", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Extreme {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Extreme", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Hard {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Hard", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Hard_Expert {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Hard_Expert", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Hard_Expert_Extreme {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Hard_Expert_Extreme", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Hard_Extreme {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Hard_Extreme", resourceCulture);
+                object obj = ResourceManager.GetObject("Finished_Normal_Icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using AngelLoader.DataClasses;
 using AngelLoader.Properties;
 
 namespace AngelLoader.Forms
@@ -41,6 +44,49 @@ namespace AngelLoader.Forms
         private static Bitmap? _shock2_21;
         public static Bitmap Shock2_21 => _shock2_21 ??= Resources.Shock2_21;
         // @GENGAMES (Images): End
+
+        #endregion
+
+        #region Finished on
+
+        private static Bitmap? _finishedOnNormal_single;
+        private static Bitmap FinishedOnNormal_Single => _finishedOnNormal_single ??= Resources.Finished_Normal_Icon;
+
+        private static Bitmap? _finishedOnHard_single;
+        private static Bitmap FinishedOnHard_Single => _finishedOnHard_single ??= Resources.Finished_Hard_Icon;
+
+
+        private static Bitmap? _finishedOnExpert_single;
+        private static Bitmap FinishedOnExpert_Single => _finishedOnExpert_single ??= Resources.Finished_Expert_Icon;
+
+
+        private static Bitmap? _finishedOnExtreme_single;
+        private static Bitmap FinishedOnExtreme_Single => _finishedOnExtreme_single ??= Resources.Finished_Extreme_Icon;
+
+        public static Bitmap GetFinishedOnImage(Difficulty difficulty)
+        {
+            var list = new List<Bitmap>(4);
+            if (difficulty.HasFlagFast(Difficulty.Normal)) list.Add(FinishedOnNormal_Single);
+            if (difficulty.HasFlagFast(Difficulty.Hard)) list.Add(FinishedOnHard_Single);
+            if (difficulty.HasFlagFast(Difficulty.Expert)) list.Add(FinishedOnExpert_Single);
+            if (difficulty.HasFlagFast(Difficulty.Extreme)) list.Add(FinishedOnExtreme_Single);
+
+            int totalWidth = 0;
+            for (int i = 0; i < list.Count; i++) totalWidth += list[i].Width;
+
+            int x = (138 / 2) - (totalWidth / 2);
+
+            Bitmap retBmp = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
+            using var g = Graphics.FromImage(retBmp);
+            for (int i = 0; i < list.Count; i++)
+            {
+                Bitmap bmp = list[i];
+                g.DrawImage(bmp, x, 0);
+                x += bmp.Width;
+            }
+
+            return retBmp;
+        }
 
         #endregion
 

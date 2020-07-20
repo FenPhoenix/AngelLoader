@@ -59,7 +59,7 @@ namespace AngelLoader.DataClasses
     }
 
     [Flags]
-    internal enum Difficulty : uint
+    public enum Difficulty : uint
     {
         [UsedImplicitly]
         None = 0,

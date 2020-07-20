@@ -151,51 +151,6 @@
   <data name="Stars5" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\starrating\stars5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Finished_Expert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_expert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Expert_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_expert_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Hard" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_hard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Hard_Expert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_hard_expert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Hard_Expert_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_hard_expert_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Hard_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_hard_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal_Expert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal_expert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal_Expert_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal_expert_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal_Hard" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal_hard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal_Hard_Expert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal_hard_expert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal_Hard_Expert_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal_hard_expert_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Finished_Normal_Hard_Extreme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_normal_hard_extreme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="RatingExample_FMSel_Number" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ratingexample_fmsel_number.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -306,5 +261,17 @@
   </data>
   <data name="FilterByRating_half" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\filtericons\filterbyrating_half.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Finished_Expert_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\finishedon\finished_expert_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Finished_Extreme_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\finishedon\finished_extreme_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Finished_Hard_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\finishedon\finished_hard_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Finished_Normal_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\finishedon\finished_normal_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
