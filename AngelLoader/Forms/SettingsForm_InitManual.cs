@@ -45,7 +45,7 @@ namespace AngelLoader.Forms
             Cancel_Button.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             Cancel_Button.AutoSize = true;
             Cancel_Button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            Cancel_Button.Size = new Size(75, 23);
+            Cancel_Button.MinimumSize = new Size(75, 23);
             Cancel_Button.DialogResult = DialogResult.Cancel;
             Cancel_Button.Location = new Point(610, 8);
             Cancel_Button.Margin = new Padding(3, 8, 9, 3);

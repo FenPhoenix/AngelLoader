@@ -20,7 +20,6 @@ namespace AngelLoader.Forms.CustomControls
             ProgressCancelButton.MinimumSize = new System.Drawing.Size(88, 23);
             ProgressCancelButton.Location = new System.Drawing.Point(168, 88);
             ProgressCancelButton.Padding = new Padding(6, 0, 6, 0);
-            ProgressCancelButton.Size = new System.Drawing.Size(88, 23);
             ProgressCancelButton.TabIndex = 4;
             ProgressCancelButton.UseVisualStyleBackColor = true;
             ProgressCancelButton.Click += ProgressCancelButton_Click;
