@@ -731,7 +731,6 @@ namespace AngelLoader.Forms
             // 
             FilterByRatingButton.AutoSize = false;
             FilterByRatingButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByRatingButton.Image = Resources.FilterByRating;
             FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
             FilterByRatingButton.Size = new Size(25, 25);
             FilterByRatingButton.Click += FilterByRatingButton_Click;

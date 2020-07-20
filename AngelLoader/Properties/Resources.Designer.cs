@@ -123,9 +123,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FilterByRating {
+        internal static System.Drawing.Bitmap FilterByRating_half {
             get {
-                object obj = ResourceManager.GetObject("FilterByRating", resourceCulture);
+                object obj = ResourceManager.GetObject("FilterByRating_half", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

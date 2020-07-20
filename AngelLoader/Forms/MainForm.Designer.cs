@@ -836,7 +836,6 @@ namespace AngelLoader.Forms
             this.FilterByRatingButton.AutoSize = false;
             this.FilterByRatingButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByRatingButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByRatingButton.Image = global::AngelLoader.Properties.Resources.FilterByRating;
             this.FilterByRatingButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByRatingButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByRatingButton.Name = "FilterByRatingButton";
