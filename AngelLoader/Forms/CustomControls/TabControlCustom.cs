@@ -122,7 +122,11 @@ namespace AngelLoader.Forms.CustomControls
                 if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
             }
 
-            // We should never get here!
+#if DEBUG
+            if (DesignMode) return (-1, null)!;
+#endif
+
+            // We should never get here! (unless we're in infernal-forsaken design mode...!)
             throw new InvalidOperationException("Can't find backing tab?!");
         }
 
