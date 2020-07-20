@@ -85,6 +85,9 @@ namespace AngelLoader.Forms
         internal static void SetTextAutoSize(this Button button, string text, int minWidth = -1, bool preserveHeight = false)
         {
             // Buttons can't be GrowOrShrink because that also shrinks them vertically. So do it manually here.
+            // TODO: SetTextAutoSize: SetStyle(FixedHeight, true) looks like it would prevent this?
+            // But we want minimum width a lot of the time, so maybe not... Also, we'd need to bloat ourselves up
+            // with a whole custom button class just to be able to use SetStyle (it's a protected method).
             button.Text = "";
             button.Width = 2;
             if (!preserveHeight) button.Height = 2;
