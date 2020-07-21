@@ -127,9 +127,6 @@
   <data name="RatingExample_NDL" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ratingexample_ndl.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Finished_Unknown" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\finishedon\finished_unknown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Thief1_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\thief1_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -246,5 +243,8 @@
   </data>
   <data name="Star_Filled_Half" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\starrating\star_filled_half.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Finished_Unknown_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\finishedon\finished_unknown_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

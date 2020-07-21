@@ -50,6 +50,23 @@ namespace AngelLoader.Forms
 
         #region Finished on
 
+        private static Bitmap? _finishedOnUnknown;
+
+        public static Bitmap FinishedOnUnknown
+        {
+            get
+            {
+                if (_finishedOnUnknown == null)
+                {
+                    using Bitmap resBmp = Resources.Finished_Unknown_Icon;
+                    _finishedOnUnknown = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
+                    using var g = Graphics.FromImage(_finishedOnUnknown);
+                    g.DrawImage(resBmp, (138 / 2) - (resBmp.Width / 2), 0);
+                }
+                return _finishedOnUnknown;
+            }
+        }
+
         /// <summary>
         /// We use positionZeroBitmap so we can be passed an already-constructed BlankIcon bitmap so that we
         /// don't have to have BlankIcon be in here and subject to a property call and null check every time

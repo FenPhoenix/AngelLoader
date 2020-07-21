@@ -1883,7 +1883,7 @@ namespace AngelLoader.Forms
             StarIcons = Images.GetRatingImages();
 
             FinishedOnIcons = Images.GetFinishedOnImages(BlankIcon);
-            FinishedOnUnknownIcon = Resources.Finished_Unknown;
+            FinishedOnUnknownIcon = Images.FinishedOnUnknown;
 
             // Prevents having to check the bool again forevermore even after we've already set the images.
             // Taking an extremely minor technique from a data-oriented design talk, heck yeah!

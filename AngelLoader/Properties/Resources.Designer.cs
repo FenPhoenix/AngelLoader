@@ -223,9 +223,9 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Finished_Unknown {
+        internal static System.Drawing.Bitmap Finished_Unknown_Icon {
             get {
-                object obj = ResourceManager.GetObject("Finished_Unknown", resourceCulture);
+                object obj = ResourceManager.GetObject("Finished_Unknown_Icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
