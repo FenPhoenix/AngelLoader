@@ -29,7 +29,11 @@ namespace AngelLoader.Forms
             _progressBoxConstructed = true;
         }
 
-        private void LocalizeProgressBox() => ProgressBox?.Localize();
+        private void LocalizeProgressBox()
+        {
+            if (!_progressBoxConstructed) return;
+            ProgressBox!.Localize();
+        }
 
         internal void EnableEverything(bool enabled)
         {
