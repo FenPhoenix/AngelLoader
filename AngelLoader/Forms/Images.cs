@@ -95,6 +95,9 @@ namespace AngelLoader.Forms
                     if (difficulty.HasFlagFast(Difficulty.Extreme)) list.Add(GetFinishedOnExtreme_Single());
 
                     int totalWidth = 0;
+                    // Some of these images are +-1px width from each other, but they all add up to the full 138px
+                    // width of the canvas, which we really don't want to change as other things depend on it. So
+                    // that's why we get get the width of each individual image , rather than keeping a constant.
                     for (int i = 0; i < list.Count; i++) totalWidth += list[i].Width;
 
                     int x = (138 / 2) - (totalWidth / 2);
@@ -127,6 +130,7 @@ namespace AngelLoader.Forms
 
         public static Bitmap[] GetRatingImages()
         {
+            // Just coincidence that these numbers are the same; don't combine
             const int halfStarWidth = 11;
             // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
             const int numRatings = 11;
