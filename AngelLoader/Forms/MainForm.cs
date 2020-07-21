@@ -657,14 +657,14 @@ namespace AngelLoader.Forms
             BottomPanel.Controls.Add(DebugLabel);
             BottomPanel.Controls.Add(DebugLabel2);
 
-            TestButton.Location = new Point(632, 0);
+            TestButton.Location = new Point(640, 0);
             TestButton.Size = new Size(75, 22);
             TestButton.TabIndex = 999;
             TestButton.Text = @"Test";
             TestButton.UseVisualStyleBackColor = true;
             TestButton.Click += TestButton_Click;
 
-            Test2Button.Location = new Point(632, 21);
+            Test2Button.Location = new Point(640, 21);
             Test2Button.Size = new Size(75, 22);
             Test2Button.TabIndex = 999;
             Test2Button.Text = @"Test2";
@@ -672,13 +672,13 @@ namespace AngelLoader.Forms
             Test2Button.Click += Test2Button_Click;
 
             DebugLabel.AutoSize = true;
-            DebugLabel.Location = new Point(712, 8);
+            DebugLabel.Location = new Point(720, 8);
             DebugLabel.Size = new Size(71, 13);
             DebugLabel.TabIndex = 29;
             DebugLabel.Text = @"[DebugLabel]";
 
             DebugLabel2.AutoSize = true;
-            DebugLabel2.Location = new Point(712, 24);
+            DebugLabel2.Location = new Point(720, 24);
             DebugLabel2.Size = new Size(77, 13);
             DebugLabel2.TabIndex = 32;
             DebugLabel2.Text = @"[DebugLabel2]";

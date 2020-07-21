@@ -109,7 +109,7 @@ namespace FenGen
             { "-game_support", GenType.GameSupport },
             { "-exclude_resx", GenType.ExcludeResx },
             { "-restore_resx", GenType.RestoreResx },
-            {"-designer_trim", GenType.TrimDesigner}
+            { "-designer_trim", GenType.TrimDesigner}
         };
 
         // Only used for debug, so we can explicitly place test arguments into the set
@@ -284,7 +284,8 @@ namespace FenGen
                     taggedFilesDict![GenFileTags.LocalizationSource],
                     taggedFilesDict![GenFileTags.LocalizationDest],
                     englishIni,
-                    testLangIni);
+                    testLangIni,
+                    writeReflectionStyle: args.Contains("-enable_lang_reflection_style_gen"));
             }
             if (GenTaskActive(GenType.GameSupport))
             {

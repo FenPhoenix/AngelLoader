@@ -26,11 +26,11 @@ namespace FenGen
         }
 
         internal static void
-        Generate(string sourceFile, string destFile, string langIniFile, string testLangIniFile = "")
+        Generate(string sourceFile, string destFile, string langIniFile, string testLangIniFile = "", bool writeReflectionStyle = false)
         {
             var (langClassName, sections) = ReadSource(sourceFile);
 
-            WriteDest(langClassName, sections, destFile, langIniFile, testLangIniFile);
+            WriteDest(langClassName, sections, destFile, langIniFile, testLangIniFile, writeReflectionStyle);
         }
 
         private static (string LangClassName, List<IniSection> Sections)
@@ -155,7 +155,7 @@ namespace FenGen
         }
 
         private static void WriteDest(string langClassName, List<IniSection> sections, string destFile,
-                                      string langIniFile, string testLangIniFile)
+                                      string langIniFile, string testLangIniFile, bool writeReflectionStyle = false)
         {
             #region Find the class we're going to write to
 
@@ -189,6 +189,39 @@ namespace FenGen
 
             sb.Append(codeBlock);
             w.WL("{");
+
+            if (writeReflectionStyle)
+            {
+                w.WL("private const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic;");
+                w.WL();
+                w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>>? _lTextFieldGraph;");
+                w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>> LTextFieldGraph");
+                w.WL("{");
+                w.WL("get");
+                w.WL("{");
+                w.WL("if (_lTextFieldGraph == null)");
+                w.WL("{");
+
+                w.WL("_lTextFieldGraph = new Dictionary<string, Dictionary<string, FieldInfo>>();");
+                for (int i = 0; i < sections.Count; i++)
+                {
+                    var section = sections[i];
+                    var dictName = section.Name + "_Dict";
+                    var langSubclass = langClassName + "." + section.Name + "_Class";
+                    w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>();");
+                    w.WL("foreach (var f in typeof(" + langSubclass + ").GetFields(_bfLText))");
+                    w.WL("{");
+                    w.WL(dictName + ".Add(f.Name, f);");
+                    w.WL("}");
+                    w.WL("_lTextFieldGraph.Add(nameof(" + langSubclass + "), " + dictName + ");");
+                }
+
+                w.WL("}");
+                w.WL("return _lTextFieldGraph;");
+                w.WL("}");
+                w.WL("}");
+            }
+
             w.WL(GenMessages.Method);
             w.WL("[MustUseReturnValue]");
             w.WL("internal static " + langClassName + " ReadLocalizationIni(string file)");
@@ -207,16 +240,32 @@ namespace FenGen
                 w.WL("{");
                 w.WL("string lt = lines[i + 1].TrimStart();");
 
-                bool keysElseIf = false;
-                foreach (IniItem item in section)
+                if (writeReflectionStyle)
                 {
-                    if (item.Key.IsEmpty()) continue;
-                    w.WL((keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
+                    w.WL("int eqIndex = lt.IndexOf('=');");
+                    w.WL("if (eqIndex > -1)");
                     w.WL("{");
-                    w.WL("ret." + section.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
+                    w.WL("string key = lt.Substring(0, eqIndex);");
+                    w.WL("if (LTextFieldGraph[\"" + section.Name + "_Class\"].TryGetValue(key, out FieldInfo? value))");
+                    w.WL("{");
+                    w.WL("value.SetValue(ret." + section.Name + ", lt.Substring(eqIndex + 1));");
                     w.WL("}");
-                    if (!keysElseIf) keysElseIf = true;
+                    w.WL("}");
                 }
+                else
+                {
+                    bool keysElseIf = false;
+                    foreach (IniItem item in section)
+                    {
+                        if (item.Key.IsEmpty()) continue;
+                        w.WL((keysElseIf ? "else " : "") + "if (lt.StartsWithFast_NoNullChecks(\"" + item.Key + "=\"))");
+                        w.WL("{");
+                        w.WL("ret." + section.Name + "." + item.Key + " = lt.Substring(" + (item.Key + "=").Length + ");");
+                        w.WL("}");
+                        if (!keysElseIf) keysElseIf = true;
+                    }
+                }
+
                 w.WL("else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')");
                 w.WL("{");
                 w.WL("break;");

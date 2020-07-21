@@ -1,10 +1,30 @@
 #define FenGen_LocalizationDest
 
+// These are for if I switch to the reflection-style codegen in here, because it will need these.
+
+#pragma warning disable IDE0005 // Using directive is unnecessary.
+// ReSharper disable once RedundantUsingDirective
+using System.Collections.Generic;
+// ReSharper disable once RedundantUsingDirective
+using System.Reflection;
+#pragma warning restore IDE0005 // Using directive is unnecessary.
+
 using System.IO;
 using System.Text;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Attributes;
+
+/* PERF_TODO:
+ I've written and tested a new cached-reflection-based codegen for this. Amazingly, the reflection itself took no
+ time at all, but the extra Substring() calls (twice as many by necessity) took ~7ms. It did shave 18K off the
+ file size. That's a huge win for file size, but I don't like adding time to startup, even if it is only 7ms.
+ I *think* if I had access to spans and so on, I could avoid the one extra Substring() call per field by caching
+ spans in the dictionary and then TryGetValue()ing the span of the key rather than the substring.
+ If or when I decide to move to .NET 5 (that's if they make it stop being 10x slower and never mentioning a word
+ about this gargantuanly massive unbelievably blatant blistering searing blindingly obvious show-stopping issue),
+ I can test this and then maybe we can have our cake and eat it too!
+*/
 
 namespace AngelLoader
 {
