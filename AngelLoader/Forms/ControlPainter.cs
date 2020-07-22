@@ -9,6 +9,77 @@ namespace AngelLoader.Forms
     // bogging down startup time, we just draw images ourselves where it's reasonable to do so.
     internal static class ControlPainter
     {
+        #region Path points and types
+
+        // These could be deflate-compressed to save space, or I could scrap the points and just draw a few shapes
+        // on the GraphicsPath if I could figure out how to union them together (rather than one cutting a piece
+        // out of the other like it does currently) and that would save the most space. Wouldn't necessarily work
+        // for every possible image, but some of them at least would be amenable to that.
+        // Regardless, with this empty magnifying glass path, I can get 13 images worth of mileage out of it by
+        // itself or in combination with +, -, and reset-zoom symbols. So I get my space's worth out of this one
+        // for sure. It'll be the same with the finished-on icons when I come to those.
+        // (this array init code was generated)
+        private static readonly float[] _magnifying_glass_empty_exported_points_raw =
+        {
+            59.19173f, 0f, 26.60027f, -2.65E-06f, 0f, 26.60027f, 0f, 59.19173f, 0f, 91.7832f, 26.60027f,
+            118.383f, 59.19173f, 118.3829f, 70.74734f, 118.3829f, 81.54756f, 115.036f, 90.67818f, 109.2667f,
+            113.498f, 132.0865f, 118.3931f, 136.9816f, 126.2747f, 136.9816f, 131.1698f, 132.0865f, 131.6421f,
+            131.6142f, 136.5372f, 126.7191f, 136.5372f, 118.8375f, 131.6421f, 113.9424f, 108.921f, 91.2213f,
+            114.9029f, 81.97736f, 118.3829f, 70.97697f, 118.3829f, 59.19173f, 118.3829f, 26.60027f, 91.7832f, 0f,
+            59.19173f, 0f, 59.19173f, 16.70131f, 82.75785f, 16.70131f, 101.6816f, 35.62561f, 101.6816f,
+            59.19174f, 101.6816f, 82.75784f, 82.75786f, 101.6837f, 59.19173f, 101.6837f, 35.62562f, 101.6837f,
+            16.69924f, 82.75786f, 16.69924f, 59.19174f, 16.69924f, 35.62562f, 35.62562f, 16.70131f, 59.19173f,
+            16.70131f, 59.19173f, 16.70131f
+        };
+
+        private static readonly byte[] _magnifying_glass_empty_exported_types_raw =
+        {
+            0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
+            3, 3, 3, 3, 3, 129
+        };
+
+
+        private static GraphicsPath MakeGraphicsPath(float[] points, byte[] types)
+        {
+            int pointsCount = _magnifying_glass_empty_exported_points_raw.Length;
+            var rawPoints = new PointF[pointsCount / 2];
+            for (int i = 0, j = 0; i < pointsCount; i += 2, j++)
+            {
+                var x = _magnifying_glass_empty_exported_points_raw[i];
+                var y = _magnifying_glass_empty_exported_points_raw[i + 1];
+                rawPoints[j] = new PointF(x, y);
+            }
+            return new GraphicsPath(rawPoints, _magnifying_glass_empty_exported_types_raw);
+        }
+
+        private static GraphicsPath? _magnifierEmptyGPath;
+        private static GraphicsPath MagnifierEmptyGPath =>
+            _magnifierEmptyGPath ??= MakeGraphicsPath(_magnifying_glass_empty_exported_points_raw, _magnifying_glass_empty_exported_types_raw);
+
+        #endregion
+
+        private static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
+        {
+            if (boundsRect.Width < 1 || boundsRect.Height < 1) return;
+
+            g.ResetTransform();
+
+            // Set scale origin
+            float drawRectCenterX = drawRect.Left + (drawRect.Width / 2);
+            float drawRectCenterY = drawRect.Top + (drawRect.Height / 2);
+            // Er, yeah, I don't actually know why these have to be negated... but it works, so oh well...?
+            g.TranslateTransform(-drawRectCenterX, -drawRectCenterY, MatrixOrder.Append);
+
+            // Scale graphic
+            float scaleBothAxes = Math.Min(boundsRect.Width / drawRect.Width, boundsRect.Height / drawRect.Height);
+            g.ScaleTransform(scaleBothAxes, scaleBothAxes, MatrixOrder.Append);
+
+            // Center graphic in bounding rectangle
+            float boundsRectCenterX = boundsRect.Left + (boundsRect.Width / 2);
+            float boundsRectCenterY = boundsRect.Top + (boundsRect.Height / 2);
+            g.TranslateTransform(boundsRectCenterX, boundsRectCenterY, MatrixOrder.Append);
+        }
+
         internal static readonly Pen Sep1Pen = new Pen(Color.FromArgb(189, 189, 189));
         internal static readonly Pen Sep1PenC = new Pen(Color.FromArgb(166, 166, 166));
         internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
@@ -18,6 +89,9 @@ namespace AngelLoader.Forms
         #region Global
 
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
+
+        private static readonly Brush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
+        private static readonly Brush _al_DisabledBrush = new SolidBrush(SystemColors.ControlDark);
 
         #endregion
 
@@ -108,6 +182,7 @@ namespace AngelLoader.Forms
 
         #region Scan
 
+        /*
         private static readonly Pen _scanPen = new Pen(_al_LightBlue, 3);
         private static readonly Pen _scanDisabledPen = new Pen(SystemColors.ControlDark, 3);
         private static readonly Point[] _scanPoints =
@@ -117,6 +192,7 @@ namespace AngelLoader.Forms
             new Point(32, 25),
             new Point(28, 21)
         };
+        */
 
         private static readonly Pen _scanSmallCirclePen = new Pen(_al_LightBlue, 1.8f);
         private static readonly Pen _scanSmallCircleDisabledPen = new Pen(SystemColors.ControlDark, 1.8f);
@@ -229,11 +305,27 @@ namespace AngelLoader.Forms
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
+            /*
             Pen pen = button.Enabled ? _scanPen : _scanDisabledPen;
 
             e.Graphics.DrawEllipse(pen, 11, 7, 18, 18);
             e.Graphics.FillPolygon(pen.Brush, _scanPoints);
             e.Graphics.FillEllipse(pen.Brush, new RectangleF(29, 25, 4.5f, 4.5f));
+            */
+
+            Brush brush = button.Enabled ? _al_LightBlueBrush : _al_DisabledBrush;
+
+            var cr = button.ClientRectangle;
+
+            FitRectInBounds(
+                e.Graphics,
+                MagnifierEmptyGPath.GetBounds(),
+                new RectangleF(
+                    (cr.X + button.Padding.Left) - (cr.Height - 12),
+                    cr.Y + 6,
+                    cr.Height - 12,
+                    cr.Height - 12));
+            e.Graphics.FillPath(brush, MagnifierEmptyGPath);
         }
 
         internal static void PaintScanSmallButtons(Button button, PaintEventArgs e)
