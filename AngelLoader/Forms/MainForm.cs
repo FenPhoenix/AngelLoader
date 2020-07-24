@@ -4051,5 +4051,15 @@ namespace AngelLoader.Forms
         void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintScanSmallButtons((Button)sender, e);
 
         #endregion
+
+        internal void ZoomInToolStripButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomToolStripButtons((ToolStripButton)sender, e, Zoom.In);
+        internal void ZoomOutToolStripButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomToolStripButtons((ToolStripButton)sender, e, Zoom.Out);
+        internal void ZoomResetToolStripButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomToolStripButtons((ToolStripButton)sender, e, Zoom.Reset);
+
+        internal void ZoomInButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.In);
+
+        internal void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Out);
+
+        internal void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Reset);
     }
 }

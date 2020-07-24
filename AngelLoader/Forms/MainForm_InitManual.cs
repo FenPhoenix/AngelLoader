@@ -1451,7 +1451,7 @@ namespace AngelLoader.Forms
             // ZoomInButton
             // 
             ReadmeZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeZoomInButton.BackgroundImage = Images.ZoomIn;
+            //ReadmeZoomInButton.BackgroundImage = Images.ZoomIn;
             ReadmeZoomInButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
             ReadmeZoomInButton.FlatStyle = FlatStyle.Flat;
@@ -1461,13 +1461,14 @@ namespace AngelLoader.Forms
             ReadmeZoomInButton.UseVisualStyleBackColor = false;
             ReadmeZoomInButton.Visible = false;
             ReadmeZoomInButton.Click += ReadmeZoomInButton_Click;
+            ReadmeZoomInButton.Paint += ZoomInButtons_Paint;
             ReadmeZoomInButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ZoomOutButton
             // 
             ReadmeZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ReadmeZoomOutButton.BackColor = SystemColors.Window;
-            ReadmeZoomOutButton.BackgroundImage = Images.ZoomOut;
+            //ReadmeZoomOutButton.BackgroundImage = Images.ZoomOut;
             ReadmeZoomOutButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
             ReadmeZoomOutButton.FlatStyle = FlatStyle.Flat;
@@ -1477,12 +1478,13 @@ namespace AngelLoader.Forms
             ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             ReadmeZoomOutButton.Visible = false;
             ReadmeZoomOutButton.Click += ReadmeZoomOutButton_Click;
+            ReadmeZoomOutButton.Paint += ZoomOutButtons_Paint;
             ReadmeZoomOutButton.MouseLeave += ReadmeArea_MouseLeave;
             // 
             // ResetZoomButton
             // 
             ReadmeResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ReadmeResetZoomButton.BackgroundImage = Images.ZoomReset;
+            //ReadmeResetZoomButton.BackgroundImage = Images.ZoomReset;
             ReadmeResetZoomButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
             ReadmeResetZoomButton.FlatStyle = FlatStyle.Flat;
@@ -1492,6 +1494,7 @@ namespace AngelLoader.Forms
             ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             ReadmeResetZoomButton.Visible = false;
             ReadmeResetZoomButton.Click += ReadmeResetZoomButton_Click;
+            ReadmeResetZoomButton.Paint += ZoomResetButtons_Paint;
             ReadmeResetZoomButton.MouseLeave += ReadmeArea_MouseLeave;
 
             #endregion

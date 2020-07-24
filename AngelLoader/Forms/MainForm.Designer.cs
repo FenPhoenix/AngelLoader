@@ -1081,7 +1081,7 @@ namespace AngelLoader.Forms
             this.StatsScanCustomResourcesButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.StatsScanCustomResourcesButton.Name = "StatsScanCustomResourcesButton";
             this.StatsScanCustomResourcesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(154, 23);
+            this.StatsScanCustomResourcesButton.Size = new System.Drawing.Size(153, 23);
             this.StatsScanCustomResourcesButton.TabIndex = 12;
             this.StatsScanCustomResourcesButton.Text = "Rescan custom resources";
             this.StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
@@ -1296,7 +1296,7 @@ namespace AngelLoader.Forms
             this.EditFMScanForReadmesButton.MinimumSize = new System.Drawing.Size(130, 23);
             this.EditFMScanForReadmesButton.Name = "EditFMScanForReadmesButton";
             this.EditFMScanForReadmesButton.Padding = new System.Windows.Forms.Padding(13, 0, 0, 0);
-            this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(128, 23);
+            this.EditFMScanForReadmesButton.Size = new System.Drawing.Size(130, 23);
             this.EditFMScanForReadmesButton.TabIndex = 34;
             this.EditFMScanForReadmesButton.Text = "Rescan for readmes";
             this.EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
@@ -1316,7 +1316,7 @@ namespace AngelLoader.Forms
             // EditFMScanAuthorButton
             // 
             this.EditFMScanAuthorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(472, 63);
+            this.EditFMScanAuthorButton.Location = new System.Drawing.Point(455, 63);
             this.EditFMScanAuthorButton.Name = "EditFMScanAuthorButton";
             this.EditFMScanAuthorButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanAuthorButton.TabIndex = 19;
@@ -1327,7 +1327,7 @@ namespace AngelLoader.Forms
             // EditFMScanTitleButton
             // 
             this.EditFMScanTitleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.EditFMScanTitleButton.Location = new System.Drawing.Point(472, 23);
+            this.EditFMScanTitleButton.Location = new System.Drawing.Point(455, 23);
             this.EditFMScanTitleButton.Name = "EditFMScanTitleButton";
             this.EditFMScanTitleButton.Size = new System.Drawing.Size(22, 22);
             this.EditFMScanTitleButton.TabIndex = 16;
@@ -1339,7 +1339,7 @@ namespace AngelLoader.Forms
             // 
             this.EditFMAltTitlesArrowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAltTitlesArrowButton.ArrowDirection = AngelLoader.Misc.Direction.Down;
-            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(456, 23);
+            this.EditFMAltTitlesArrowButton.Location = new System.Drawing.Point(439, 23);
             this.EditFMAltTitlesArrowButton.Name = "EditFMAltTitlesArrowButton";
             this.EditFMAltTitlesArrowButton.Size = new System.Drawing.Size(17, 22);
             this.EditFMAltTitlesArrowButton.TabIndex = 15;
@@ -1352,7 +1352,7 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMTitleTextBox.Location = new System.Drawing.Point(8, 24);
             this.EditFMTitleTextBox.Name = "EditFMTitleTextBox";
-            this.EditFMTitleTextBox.Size = new System.Drawing.Size(448, 20);
+            this.EditFMTitleTextBox.Size = new System.Drawing.Size(431, 20);
             this.EditFMTitleTextBox.TabIndex = 14;
             this.EditFMTitleTextBox.TextChanged += new System.EventHandler(this.EditFMTitleTextBox_TextChanged);
             this.EditFMTitleTextBox.Leave += new System.EventHandler(this.EditFMTitleTextBox_Leave);
@@ -1464,7 +1464,7 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMDisabledModsTextBox.Location = new System.Drawing.Point(8, 192);
             this.EditFMDisabledModsTextBox.Name = "EditFMDisabledModsTextBox";
-            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(500, 20);
+            this.EditFMDisabledModsTextBox.Size = new System.Drawing.Size(483, 20);
             this.EditFMDisabledModsTextBox.TabIndex = 29;
             this.EditFMDisabledModsTextBox.TextChanged += new System.EventHandler(this.EditFMDisabledModsTextBox_TextChanged);
             this.EditFMDisabledModsTextBox.Leave += new System.EventHandler(this.EditFMDisabledModsTextBox_Leave);
@@ -1484,7 +1484,7 @@ namespace AngelLoader.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFMAuthorTextBox.Location = new System.Drawing.Point(8, 64);
             this.EditFMAuthorTextBox.Name = "EditFMAuthorTextBox";
-            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(464, 20);
+            this.EditFMAuthorTextBox.Size = new System.Drawing.Size(447, 20);
             this.EditFMAuthorTextBox.TabIndex = 18;
             this.EditFMAuthorTextBox.TextChanged += new System.EventHandler(this.EditFMAuthorTextBox_TextChanged);
             this.EditFMAuthorTextBox.Leave += new System.EventHandler(this.EditFMAuthorTextBox_Leave);
@@ -1551,11 +1551,11 @@ namespace AngelLoader.Forms
             this.AddTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagButton.AutoSize = true;
             this.AddTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagButton.Location = new System.Drawing.Point(447, 7);
+            this.AddTagButton.Location = new System.Drawing.Point(453, 7);
             this.AddTagButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.AddTagButton.Name = "AddTagButton";
             this.AddTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AddTagButton.Size = new System.Drawing.Size(72, 23);
+            this.AddTagButton.Size = new System.Drawing.Size(66, 23);
             this.AddTagButton.TabIndex = 1;
             this.AddTagButton.Text = "Add tag";
             this.AddTagButton.UseVisualStyleBackColor = true;
@@ -1591,12 +1591,12 @@ namespace AngelLoader.Forms
             this.RemoveTagButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RemoveTagButton.AutoSize = true;
             this.RemoveTagButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.RemoveTagButton.Location = new System.Drawing.Point(375, 0);
+            this.RemoveTagButton.Location = new System.Drawing.Point(432, 0);
             this.RemoveTagButton.Margin = new System.Windows.Forms.Padding(0, 0, 6, 0);
             this.RemoveTagButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.RemoveTagButton.Name = "RemoveTagButton";
             this.RemoveTagButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.RemoveTagButton.Size = new System.Drawing.Size(144, 23);
+            this.RemoveTagButton.Size = new System.Drawing.Size(87, 23);
             this.RemoveTagButton.TabIndex = 1;
             this.RemoveTagButton.Text = "Remove tag";
             this.RemoveTagButton.UseVisualStyleBackColor = true;
@@ -1607,12 +1607,12 @@ namespace AngelLoader.Forms
             this.AddTagFromListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AddTagFromListButton.AutoSize = true;
             this.AddTagFromListButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.AddTagFromListButton.Location = new System.Drawing.Point(231, 0);
+            this.AddTagFromListButton.Location = new System.Drawing.Point(337, 0);
             this.AddTagFromListButton.Margin = new System.Windows.Forms.Padding(0);
             this.AddTagFromListButton.MinimumSize = new System.Drawing.Size(0, 23);
             this.AddTagFromListButton.Name = "AddTagFromListButton";
             this.AddTagFromListButton.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.AddTagFromListButton.Size = new System.Drawing.Size(144, 23);
+            this.AddTagFromListButton.Size = new System.Drawing.Size(95, 23);
             this.AddTagFromListButton.TabIndex = 0;
             this.AddTagFromListButton.Text = "Add from list...";
             this.AddTagFromListButton.UseVisualStyleBackColor = true;
@@ -1753,7 +1753,6 @@ namespace AngelLoader.Forms
             // 
             this.ReadmeZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomInButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ReadmeZoomInButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomIn;
             this.ReadmeZoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
             this.ReadmeZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1765,13 +1764,13 @@ namespace AngelLoader.Forms
             this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomInButton.Visible = false;
             this.ReadmeZoomInButton.Click += new System.EventHandler(this.ReadmeZoomInButton_Click);
+            this.ReadmeZoomInButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ZoomInButtons_Paint);
             this.ReadmeZoomInButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeZoomOutButton
             // 
             this.ReadmeZoomOutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeZoomOutButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ReadmeZoomOutButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomOut;
             this.ReadmeZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
             this.ReadmeZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1783,13 +1782,13 @@ namespace AngelLoader.Forms
             this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             this.ReadmeZoomOutButton.Visible = false;
             this.ReadmeZoomOutButton.Click += new System.EventHandler(this.ReadmeZoomOutButton_Click);
+            this.ReadmeZoomOutButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ZoomOutButtons_Paint);
             this.ReadmeZoomOutButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ReadmeResetZoomButton
             // 
             this.ReadmeResetZoomButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ReadmeResetZoomButton.BackColor = System.Drawing.SystemColors.Window;
-            this.ReadmeResetZoomButton.BackgroundImage = global::AngelLoader.Properties.Resources.ZoomReset;
             this.ReadmeResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
             this.ReadmeResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -1801,6 +1800,7 @@ namespace AngelLoader.Forms
             this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             this.ReadmeResetZoomButton.Visible = false;
             this.ReadmeResetZoomButton.Click += new System.EventHandler(this.ReadmeResetZoomButton_Click);
+            this.ReadmeResetZoomButton.Paint += new System.Windows.Forms.PaintEventHandler(this.ZoomResetButtons_Paint);
             this.ReadmeResetZoomButton.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
             // 
             // ChooseReadmeComboBox

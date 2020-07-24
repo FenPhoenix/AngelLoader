@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
@@ -11,6 +12,8 @@ namespace AngelLoader.Forms
     {
         #region Path points and types
 
+        #region Magnifying glass
+
         // These could be deflate-compressed to save space, or I could scrap the points and just draw a few shapes
         // on the GraphicsPath if I could figure out how to union them together (rather than one cutting a piece
         // out of the other like it does currently) and that would save the most space. Wouldn't necessarily work
@@ -19,42 +22,187 @@ namespace AngelLoader.Forms
         // itself or in combination with +, -, and reset-zoom symbols. So I get my space's worth out of this one
         // for sure. It'll be the same with the finished-on icons when I come to those.
         // (this array init code was generated)
-        private static readonly float[] _magnifying_glass_empty_exported_points_raw =
+        private static readonly float[] _magnifying_glass_empty_exported_points_raw = new float[78]
         {
-            59.19173f, 0f, 26.60027f, -2.65E-06f, 0f, 26.60027f, 0f, 59.19173f, 0f, 91.7832f, 26.60027f,
-            118.383f, 59.19173f, 118.3829f, 70.74734f, 118.3829f, 81.54756f, 115.036f, 90.67818f, 109.2667f,
-            113.498f, 132.0865f, 118.3931f, 136.9816f, 126.2747f, 136.9816f, 131.1698f, 132.0865f, 131.6421f,
-            131.6142f, 136.5372f, 126.7191f, 136.5372f, 118.8375f, 131.6421f, 113.9424f, 108.921f, 91.2213f,
-            114.9029f, 81.97736f, 118.3829f, 70.97697f, 118.3829f, 59.19173f, 118.3829f, 26.60027f, 91.7832f, 0f,
-            59.19173f, 0f, 59.19173f, 16.70131f, 82.75785f, 16.70131f, 101.6816f, 35.62561f, 101.6816f,
-            59.19174f, 101.6816f, 82.75784f, 82.75786f, 101.6837f, 59.19173f, 101.6837f, 35.62562f, 101.6837f,
-            16.69924f, 82.75786f, 16.69924f, 59.19174f, 16.69924f, 35.62562f, 35.62562f, 16.70131f, 59.19173f,
-            16.70131f, 59.19173f, 16.70131f
+            223.7168f, 0f, 100.5365f, -1.001575E-05f, 0f, 100.5364f, 0f, 223.7168f, 0f, 346.8972f, 100.5365f,
+            447.4317f, 223.7168f, 447.4316f, 267.3915f, 447.4316f, 308.2113f, 434.7819f, 342.7207f, 412.9766f,
+            428.9688f, 499.2246f, 447.4698f, 517.7256f, 477.2587f, 517.7257f, 495.7598f, 499.2246f, 497.5449f,
+            497.4395f, 516.046f, 478.9384f, 516.046f, 449.1495f, 497.5449f, 430.6484f, 411.6699f, 344.7734f,
+            434.2787f, 309.8357f, 447.4316f, 268.2595f, 447.4316f, 223.7168f, 447.4316f, 100.5364f, 346.8972f,
+            1.894781E-14f, 223.7168f, 0f, 223.7168f, 63.12305f, 312.7856f, 63.12305f, 384.3086f, 134.648f,
+            384.3086f, 223.7168f, 384.3086f, 312.7856f, 312.7856f, 384.3164f, 223.7168f, 384.3164f, 134.648f,
+            384.3164f, 63.11523f, 312.7856f, 63.11523f, 223.7168f, 63.11523f, 134.648f, 134.648f, 63.12305f,
+            223.7168f, 63.12305f, 223.7168f, 63.12305f
         };
 
-        private static readonly byte[] _magnifying_glass_empty_exported_types_raw =
+        private static readonly byte[] _magnifying_glass_empty_exported_types_raw = new byte[39]
         {
             0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
             3, 3, 3, 3, 3, 129
         };
 
+        #endregion
+
+        #region Zoom minus
+
+        private static readonly float[] _zoom_minus_symbol_exported_points_raw =
+        {
+            223.7168f, 0f, 100.5365f, -7.559055E-06f, -3.789561E-14f, 100.5364f, 0f, 223.7168f, 0f, 346.8972f,
+            100.5365f, 447.4317f, 223.7168f, 447.4316f, 267.3916f, 447.4316f, 308.2113f, 434.7819f, 342.7207f,
+            412.9766f, 428.9688f, 499.2246f, 447.4698f, 517.7256f, 477.2587f, 517.7257f, 495.7598f, 499.2246f,
+            497.5449f, 497.4395f, 516.046f, 478.9384f, 516.046f, 449.1495f, 497.5449f, 430.6484f, 411.6699f,
+            344.7734f, 434.2787f, 309.8357f, 447.4316f, 268.2595f, 447.4316f, 223.7168f, 447.4316f, 100.5364f,
+            346.8972f, 0f, 223.7168f, 0f, 223.7168f, 63.12305f, 312.7856f, 63.12305f, 384.3086f, 134.648f,
+            384.3086f, 223.7168f, 384.3086f, 312.7856f, 312.7856f, 384.3164f, 223.7168f, 384.3164f, 134.648f,
+            384.3164f, 63.11523f, 312.7856f, 63.11523f, 223.7168f, 63.11523f, 134.648f, 134.648f, 63.12305f,
+            223.7168f, 63.12305f, 223.7168f, 63.12305f, 111.1855f, 188.3711f, 111.1855f, 254.0723f, 334.8066f,
+            254.0723f, 334.8066f, 188.3711f, 111.1855f, 188.3711f, 111.1855f, 188.3711f
+        };
+
+        private static readonly byte[] _zoom_minus_symbol_exported_types_raw =
+        {
+            0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
+            3, 3, 3, 3, 3, 129, 0, 1, 1, 1, 1, 129
+        };
+
+        #endregion
+
+        #region Zoom plus
+
+        private static readonly float[] _zoom_plus_symbol_exported_points_raw =
+        {
+            223.7168f, 0f, 100.5365f, -1.001575E-05f, 0f, 100.5364f, 0f, 223.7168f, 0f, 346.8972f, 100.5365f,
+            447.4317f, 223.7168f, 447.4316f, 267.3915f, 447.4316f, 308.2113f, 434.7819f, 342.7207f, 412.9766f,
+            428.9688f, 499.2246f, 447.4698f, 517.7256f, 477.2587f, 517.7257f, 495.7598f, 499.2246f, 497.5449f,
+            497.4395f, 516.046f, 478.9384f, 516.046f, 449.1495f, 497.5449f, 430.6484f, 411.6699f, 344.7734f,
+            434.2787f, 309.8357f, 447.4316f, 268.2595f, 447.4316f, 223.7168f, 447.4316f, 100.5364f, 346.8972f,
+            1.894781E-14f, 223.7168f, 0f, 223.7168f, 63.12305f, 312.7856f, 63.12305f, 384.3086f, 134.648f,
+            384.3086f, 223.7168f, 384.3086f, 312.7856f, 312.7856f, 384.3164f, 223.7168f, 384.3164f, 134.648f,
+            384.3164f, 63.11523f, 312.7856f, 63.11523f, 223.7168f, 63.11523f, 134.648f, 134.648f, 63.12305f,
+            223.7168f, 63.12305f, 223.7168f, 63.12305f, 190.1445f, 109.4141f, 190.1445f, 188.3711f, 111.1855f,
+            188.3711f, 111.1855f, 254.0723f, 190.1445f, 254.0723f, 190.1445f, 333.0293f, 255.8457f, 333.0293f,
+            255.8457f, 254.0723f, 334.8066f, 254.0723f, 334.8066f, 188.3711f, 255.8457f, 188.3711f, 255.8457f,
+            109.4141f, 190.1445f, 109.4141f, 190.1445f, 109.4141f
+        };
+
+        private static readonly byte[] _zoom_plus_symbol_exported_types_raw =
+        {
+            0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
+            3, 3, 3, 3, 3, 129, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129
+        };
+
+        #endregion
+
+        #region Zoom reset
+
+        private static readonly float[] _zoom_reset_symbol_exported_points_raw =
+        {
+            223.7168f, 0f, 100.5365f, -1.001575E-05f, 0f, 100.5364f, 0f, 223.7168f, 0f, 346.8972f, 100.5365f,
+            447.4317f, 223.7168f, 447.4316f, 267.3915f, 447.4316f, 308.2113f, 434.7819f, 342.7207f, 412.9766f,
+            428.9688f, 499.2246f, 447.4698f, 517.7256f, 477.2587f, 517.7257f, 495.7598f, 499.2246f, 497.5449f,
+            497.4395f, 516.046f, 478.9384f, 516.046f, 449.1495f, 497.5449f, 430.6484f, 411.6699f, 344.7734f,
+            434.2787f, 309.8357f, 447.4316f, 268.2595f, 447.4316f, 223.7168f, 447.4316f, 100.5364f, 346.8972f,
+            1.894781E-14f, 223.7168f, 0f, 223.7168f, 63.12305f, 312.7856f, 63.12305f, 384.3086f, 134.648f,
+            384.3086f, 223.7168f, 384.3086f, 312.7856f, 312.7856f, 384.3164f, 223.7168f, 384.3164f, 134.648f,
+            384.3164f, 63.11523f, 312.7856f, 63.11523f, 223.7168f, 63.11523f, 134.648f, 134.648f, 63.12305f,
+            223.7168f, 63.12305f, 223.7168f, 63.12305f, 133.7773f, 133.4785f, 133.7773f, 181.3125f, 133.7773f,
+            238.7988f, 181.6113f, 238.7988f, 181.6113f, 181.3125f, 239.0996f, 181.3125f, 239.0996f, 133.4785f,
+            181.6113f, 133.4785f, 133.7773f, 133.4785f, 133.7773f, 133.4785f, 264.0781f, 208.3184f, 264.0781f,
+            265.8047f, 206.5918f, 265.8047f, 206.5918f, 313.6387f, 264.0781f, 313.6387f, 311.9121f, 313.6387f,
+            311.9121f, 265.8047f, 311.9121f, 208.3184f, 264.0781f, 208.3184f, 264.0781f, 208.3184f
+        };
+
+        private static readonly byte[] _zoom_reset_symbol_exported_types_raw =
+        {
+            0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
+            3, 3, 3, 3, 3, 129, 0, 1, 1, 1, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 1, 1, 1, 129
+        };
+
+        #endregion
 
         private static GraphicsPath MakeGraphicsPath(float[] points, byte[] types)
         {
-            int pointsCount = _magnifying_glass_empty_exported_points_raw.Length;
+            int pointsCount = points.Length;
             var rawPoints = new PointF[pointsCount / 2];
             for (int i = 0, j = 0; i < pointsCount; i += 2, j++)
             {
-                var x = _magnifying_glass_empty_exported_points_raw[i];
-                var y = _magnifying_glass_empty_exported_points_raw[i + 1];
+                var x = points[i];
+                var y = points[i + 1];
                 rawPoints[j] = new PointF(x, y);
             }
-            return new GraphicsPath(rawPoints, _magnifying_glass_empty_exported_types_raw);
+            return new GraphicsPath(rawPoints, types);
         }
 
         private static GraphicsPath? _magnifierEmptyGPath;
-        private static GraphicsPath MagnifierEmptyGPath =>
-            _magnifierEmptyGPath ??= MakeGraphicsPath(_magnifying_glass_empty_exported_points_raw, _magnifying_glass_empty_exported_types_raw);
+        private static GraphicsPath MagnifierEmptyGPath => _magnifierEmptyGPath ??=
+            MakeGraphicsPath(_magnifying_glass_empty_exported_points_raw, _magnifying_glass_empty_exported_types_raw);
+
+        private static GraphicsPath? _plusGPath;
+        private static GraphicsPath PlusGPath => _plusGPath ??=
+            MakeGraphicsPath(_zoom_plus_symbol_exported_points_raw, _zoom_plus_symbol_exported_types_raw);
+
+        private static GraphicsPath? _minusGPath;
+        private static GraphicsPath MinusGPath => _minusGPath ??=
+            MakeGraphicsPath(_zoom_minus_symbol_exported_points_raw, _zoom_minus_symbol_exported_types_raw);
+
+        private static GraphicsPath? _zoomResetGPath;
+        private static GraphicsPath ZoomResetGPath => _zoomResetGPath ??=
+            MakeGraphicsPath(_zoom_reset_symbol_exported_points_raw, _zoom_reset_symbol_exported_types_raw);
+
+        private static GraphicsPath ZoomInComplete =>
+            MakeGraphicsPath(_zoom_minus_symbol_exported_points_raw, _zoom_minus_symbol_exported_types_raw);
+        private static GraphicsPath ZoomOutComplete =>
+            MakeGraphicsPath(_zoom_plus_symbol_exported_points_raw, _zoom_plus_symbol_exported_types_raw);
+        private static GraphicsPath ZoomResetComplete =>
+            MakeGraphicsPath(_zoom_reset_symbol_exported_points_raw, _zoom_reset_symbol_exported_types_raw);
+
+        //private static GraphicsPath? _zoomInComplete;
+        //private static GraphicsPath ZoomInComplete
+        //{
+        //    get
+        //    {
+        //        if (_zoomInComplete == null)
+        //        {
+        //            _zoomInComplete = new GraphicsPath();
+        //            _zoomInComplete.AddPath(MagnifierEmptyGPath, true);
+        //            _zoomInComplete.AddPath(PlusGPath, true);
+        //            _zoomInComplete.Flatten();
+        //        }
+        //        return _zoomInComplete;
+        //    }
+        //}
+
+        //private static GraphicsPath? _zoomOutComplete;
+        //private static GraphicsPath ZoomOutComplete
+        //{
+        //    get
+        //    {
+        //        if (_zoomOutComplete == null)
+        //        {
+        //            _zoomOutComplete = new GraphicsPath();
+        //            _zoomOutComplete.AddPath(MagnifierEmptyGPath, false);
+        //            _zoomOutComplete.AddPath(MinusGPath, true);
+        //            ZoomOutComplete.Flatten();
+        //        }
+        //        return _zoomOutComplete;
+        //    }
+        //}
+
+        //private static GraphicsPath? _zoomResetComplete;
+        //private static GraphicsPath ZoomResetComplete
+        //{
+        //    get
+        //    {
+        //        if (_zoomResetComplete == null)
+        //        {
+        //            _zoomResetComplete = new GraphicsPath();
+        //            _zoomResetComplete.AddPath(MagnifierEmptyGPath, true);
+        //            _zoomResetComplete.AddPath(ZoomResetGPath, true);
+        //            _zoomResetComplete.Flatten();
+        //        }
+        //        return _zoomResetComplete;
+        //    }
+        //}
 
         #endregion
 
@@ -91,7 +239,6 @@ namespace AngelLoader.Forms
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
 
         private static readonly Brush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
-        private static readonly Brush _al_DisabledBrush = new SolidBrush(SystemColors.ControlDark);
 
         #endregion
 
@@ -204,6 +351,67 @@ namespace AngelLoader.Forms
 
         #region Buttons
 
+        internal static void PaintZoomButtons(Button button, PaintEventArgs e, Zoom zoomType)
+        {
+            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            }
+
+            Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
+
+            var cr = button.ClientRectangle;
+
+            var gPath = zoomType switch
+            {
+                Zoom.In => ZoomInComplete,
+                Zoom.Out => ZoomOutComplete,
+                _ => ZoomResetComplete
+            };
+
+            FitRectInBounds(
+                e.Graphics,
+                gPath.GetBounds(),
+                new RectangleF(cr.X, cr.Y, cr.Width, cr.Height)
+                //new RectangleF(
+                //    (cr.X + 3f),
+                //    cr.Y + 3f,
+                //    cr.Height - 7,
+                //    cr.Height - 7)
+                );
+            e.Graphics.FillPath(brush, gPath);
+        }
+
+        internal static void PaintZoomToolStripButtons(ToolStripButton button, PaintEventArgs e, Zoom zoomType)
+        {
+            return;
+            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            }
+
+            Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
+
+            var cr = button.Bounds;
+
+            var gPath = zoomType switch
+            {
+                Zoom.In => ZoomInComplete,
+                Zoom.Out => ZoomOutComplete,
+                _ => ZoomResetComplete
+            };
+
+            FitRectInBounds(
+                e.Graphics,
+                gPath.GetBounds(),
+                new RectangleF(
+                    (cr.X + 3f),
+                    cr.Y + 3f,
+                    cr.Height - 7,
+                    cr.Height - 7));
+            e.Graphics.FillPath(brush, MagnifierEmptyGPath);
+        }
+
         internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
         {
             if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
@@ -313,7 +521,7 @@ namespace AngelLoader.Forms
             e.Graphics.FillEllipse(pen.Brush, new RectangleF(29, 25, 4.5f, 4.5f));
             */
 
-            Brush brush = button.Enabled ? _al_LightBlueBrush : _al_DisabledBrush;
+            Brush brush = button.Enabled ? _al_LightBlueBrush : SystemBrushes.ControlDark;
 
             var cr = button.ClientRectangle;
 
@@ -335,6 +543,7 @@ namespace AngelLoader.Forms
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             }
 
+            /*
             Pen pen = button.Enabled ? _scanSmallCirclePen : _scanSmallCircleDisabledPen;
             Pen hPen = button.Enabled ? _scanSmallHandlePen : _scanSmallHandleDisabledPen;
 
@@ -342,6 +551,21 @@ namespace AngelLoader.Forms
 
             e.Graphics.DrawLine(hPen, 13, 13, 16.5f, 16.5f);
             e.Graphics.FillEllipse(pen.Brush, _scanSmallHandleRect);
+            */
+
+            Brush brush = button.Enabled ? _al_LightBlueBrush : SystemBrushes.ControlDark;
+
+            var cr = button.ClientRectangle;
+
+            FitRectInBounds(
+                e.Graphics,
+                MagnifierEmptyGPath.GetBounds(),
+                new RectangleF(
+                    (cr.X + 3f),//- (cr.Height - 4),
+                    cr.Y + 3f,
+                    cr.Height - 7,
+                    cr.Height - 7));
+            e.Graphics.FillPath(brush, MagnifierEmptyGPath);
         }
 
         #endregion

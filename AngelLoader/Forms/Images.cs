@@ -242,14 +242,14 @@ namespace AngelLoader.Forms
         private static Bitmap? _uninstall_24;
         public static Bitmap Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
 
-        private static Bitmap? _zoomIn;
-        public static Bitmap ZoomIn => _zoomIn ??= Resources.ZoomIn;
+        //private static Bitmap? _zoomIn;
+        //public static Bitmap ZoomIn => _zoomIn ??= Resources.ZoomIn;
 
-        private static Bitmap? _zoomOut;
-        public static Bitmap ZoomOut => _zoomOut ??= Resources.ZoomOut;
+        //private static Bitmap? _zoomOut;
+        //public static Bitmap ZoomOut => _zoomOut ??= Resources.ZoomOut;
 
-        private static Bitmap? _zoomReset;
-        public static Bitmap ZoomReset => _zoomReset ??= Resources.ZoomReset;
+        //private static Bitmap? _zoomReset;
+        //public static Bitmap ZoomReset => _zoomReset ??= Resources.ZoomReset;
 
         private static Bitmap? _refresh;
         public static Bitmap Refresh => _refresh ??= Resources.Refresh;

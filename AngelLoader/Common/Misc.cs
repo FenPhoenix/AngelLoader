@@ -50,6 +50,8 @@ namespace AngelLoader
             internal const int GB = MB * 1024;
         }
 
+        public enum Zoom { In, Out, Reset }
+
         // Public for param accessibility reasons or whatever
         public enum ProgressTasks
         {
