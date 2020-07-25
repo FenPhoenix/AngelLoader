@@ -20,30 +20,27 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             owner.RefreshAreaToolStrip.Items.Insert(0, ResetZoomButton);
             ResetZoomButton.AutoSize = false;
             ResetZoomButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            //ResetZoomButton.Image = Images.ZoomReset;
             ResetZoomButton.Margin = new Padding(0);
             ResetZoomButton.Size = new Size(25, 25);
-            ResetZoomButton.Paint += owner.ZoomResetToolStripButtons_Paint;
+            ResetZoomButton.Image = Images.GetZoomImage(ResetZoomButton.ContentRectangle.Width, ResetZoomButton.ContentRectangle.Height, Zoom.Reset);
             ResetZoomButton.Click += owner.FMsListResetZoomButton_Click;
 
             ZoomOutButton = new ToolStripButtonCustom();
             owner.RefreshAreaToolStrip.Items.Insert(0, ZoomOutButton);
             ZoomOutButton.AutoSize = false;
             ZoomOutButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            //ZoomOutButton.Image = Images.ZoomOut;
             ZoomOutButton.Margin = new Padding(0);
             ZoomOutButton.Size = new Size(25, 25);
-            ZoomOutButton.Paint += owner.ZoomOutToolStripButtons_Paint;
+            ZoomOutButton.Image = Images.GetZoomImage(ZoomOutButton.ContentRectangle.Width, ZoomOutButton.ContentRectangle.Height, Zoom.Out);
             ZoomOutButton.Click += owner.FMsListZoomOutButton_Click;
 
             ZoomInButton = new ToolStripButtonCustom();
             owner.RefreshAreaToolStrip.Items.Insert(0, ZoomInButton);
             ZoomInButton.AutoSize = false;
             ZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            //ZoomInButton.Image = Images.ZoomIn;
             ZoomInButton.Margin = new Padding(0);
             ZoomInButton.Size = new Size(25, 25);
-            ZoomInButton.Paint += owner.ZoomInToolStripButtons_Paint;
+            ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle.Width, ZoomInButton.ContentRectangle.Height, Zoom.In);
             ZoomInButton.Click += owner.FMsListZoomInButton_Click;
 
             _constructed = true;

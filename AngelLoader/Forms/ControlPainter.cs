@@ -12,6 +12,27 @@ namespace AngelLoader.Forms
     {
         #region Path points and types
 
+        #region Plus/minus
+
+        private static readonly float[] _plusSymbolPoints =
+        {
+            51.71002f, 34.41495f, 51.71002f, 51.30281f, 34.82216f, 51.30281f, 34.82216f, 65.74844f, 51.71002f,
+            65.74844f, 51.71002f, 82.63629f, 66.15565f, 82.63629f, 66.15565f, 65.74844f, 83.0435f, 65.74844f,
+            83.0435f, 51.30281f, 66.15565f, 51.30281f, 66.15565f, 34.41495f, 51.71002f, 34.41495f
+        };
+
+        private static readonly byte[] _plusSymbolBytes = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129 };
+
+        private static readonly float[] _minusSymbolPoints =
+        {
+            83.04366f, 65.74826f, 83.04366f, 51.30262f, 34.8222f, 51.30262f, 34.8222f, 65.74826f, 83.04366f,
+            65.74826f
+        };
+
+        private static readonly byte[] _minusSymbolBytes = { 0, 1, 1, 1, 129 };
+
+        #endregion
+
         #region Magnifying glass
 
         // These could be deflate-compressed to save space, or I could scrap the points and just draw a few shapes
@@ -22,7 +43,7 @@ namespace AngelLoader.Forms
         // itself or in combination with +, -, and reset-zoom symbols. So I get my space's worth out of this one
         // for sure. It'll be the same with the finished-on icons when I come to those.
         // (this array init code was generated)
-        private static readonly float[] _magnifying_glass_empty_exported_points_raw = new float[78]
+        private static readonly float[] _magnifying_glass_empty_exported_points_raw =
         {
             59.19173f, 0f, 26.60027f, -2.65E-06f, 0f, 26.60027f, 0f, 59.19173f, 0f, 91.7832f, 26.60027f,
             118.383f, 59.19173f, 118.3829f, 70.74734f, 118.3829f, 81.54756f, 115.036f, 90.67818f, 109.2667f,
@@ -35,7 +56,7 @@ namespace AngelLoader.Forms
             16.70131f, 59.19173f, 16.70131f
         };
 
-        private static readonly byte[] _magnifying_glass_empty_exported_types_raw = new byte[39]
+        private static readonly byte[] _magnifying_glass_empty_exported_types_raw =
         {
             0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
             3, 3, 3, 3, 3, 129
@@ -43,53 +64,28 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Zoom minus
-
-        private static readonly float[] _zoom_minus_symbol_exported_points_raw =
+        private static readonly float[][] _zoomTypePoints =
         {
-            83.04366f, 65.74826f, 83.04366f, 51.30262f, 34.8222f, 51.30262f, 34.8222f, 65.74826f, 83.04366f,
-            65.74826f
+            _plusSymbolPoints,
+            _minusSymbolPoints,
+            // Zoom reset
+            new[]
+            {
+                35.39526f, 35.31619f, 35.39526f, 47.97226f, 35.39526f, 63.18219f, 48.05133f, 63.18219f,
+                48.05133f, 47.97226f, 63.26177f, 47.97226f, 63.26177f, 35.31619f, 48.05133f, 35.31619f,
+                35.39526f, 35.31619f, 69.87067f, 55.11757f, 69.87067f, 70.32749f, 54.66074f, 70.32749f,
+                54.66074f, 82.98357f, 69.87067f, 82.98357f, 82.52675f, 82.98357f, 82.52675f, 70.32749f,
+                82.52675f, 55.11757f, 69.87067f, 55.11757f
+            }
         };
 
-        private static readonly byte[] _zoom_minus_symbol_exported_types_raw =
+        private static readonly byte[][] _zoomTypeTypes =
         {
-            0, 1, 1, 1, 129
+            _plusSymbolBytes,
+            _minusSymbolBytes,
+            // Zoom reset
+            new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 1, 1, 129 }
         };
-
-        #endregion
-
-        #region Zoom plus
-
-        private static readonly float[] _zoom_plus_symbol_exported_points_raw =
-        {
-            51.71002f, 34.41495f, 51.71002f, 51.30281f, 34.82216f, 51.30281f, 34.82216f, 65.74844f, 51.71002f,
-            65.74844f, 51.71002f, 82.63629f, 66.15565f, 82.63629f, 66.15565f, 65.74844f, 83.0435f, 65.74844f,
-            83.0435f, 51.30281f, 66.15565f, 51.30281f, 66.15565f, 34.41495f, 51.71002f, 34.41495f
-        };
-
-        private static readonly byte[] _zoom_plus_symbol_exported_types_raw =
-        {
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129
-        };
-
-        #endregion
-
-        #region Zoom reset
-
-        private static readonly float[] _zoom_reset_symbol_exported_points_raw =
-        {
-            35.39526f, 35.31619f, 35.39526f, 47.97226f, 35.39526f, 63.18219f, 48.05133f, 63.18219f, 48.05133f,
-            47.97226f, 63.26177f, 47.97226f, 63.26177f, 35.31619f, 48.05133f, 35.31619f, 35.39526f, 35.31619f,
-            69.87067f, 55.11757f, 69.87067f, 70.32749f, 54.66074f, 70.32749f, 54.66074f, 82.98357f, 69.87067f,
-            82.98357f, 82.52675f, 82.98357f, 82.52675f, 70.32749f, 82.52675f, 55.11757f, 69.87067f, 55.11757f
-        };
-
-        private static readonly byte[] _zoom_reset_symbol_exported_types_raw =
-        {
-            0, 1, 1, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 1, 1, 129
-        };
-
-        #endregion
 
         private static GraphicsPath MakeGraphicsPath(float[] points, byte[] types)
         {
@@ -108,76 +104,25 @@ namespace AngelLoader.Forms
         private static GraphicsPath MagnifierEmptyGPath => _magnifierEmptyGPath ??=
             MakeGraphicsPath(_magnifying_glass_empty_exported_points_raw, _magnifying_glass_empty_exported_types_raw);
 
-        private static GraphicsPath? _plusGPath;
-        private static GraphicsPath PlusGPath => _plusGPath ??=
-            MakeGraphicsPath(_zoom_plus_symbol_exported_points_raw, _zoom_plus_symbol_exported_types_raw);
+        private static readonly GraphicsPath?[] _zoomImagesComplete = new GraphicsPath[ZoomTypesCount];
 
-        private static GraphicsPath? _minusGPath;
-        private static GraphicsPath MinusGPath => _minusGPath ??=
-            MakeGraphicsPath(_zoom_minus_symbol_exported_points_raw, _zoom_minus_symbol_exported_types_raw);
-
-        private static GraphicsPath? _zoomResetGPath;
-        private static GraphicsPath ZoomResetGPath => _zoomResetGPath ??=
-            MakeGraphicsPath(_zoom_reset_symbol_exported_points_raw, _zoom_reset_symbol_exported_types_raw);
-
-        //private static GraphicsPath ZoomInComplete =>
-        //    MakeGraphicsPath(_zoom_minus_symbol_exported_points_raw, _zoom_minus_symbol_exported_types_raw);
-        //private static GraphicsPath ZoomOutComplete =>
-        //    MakeGraphicsPath(_zoom_plus_symbol_exported_points_raw, _zoom_plus_symbol_exported_types_raw);
-        //private static GraphicsPath ZoomResetComplete =>
-        //    MakeGraphicsPath(_zoom_reset_symbol_exported_points_raw, _zoom_reset_symbol_exported_types_raw);
-
-        private static GraphicsPath? _zoomInComplete;
-        private static GraphicsPath ZoomInComplete
+        public static GraphicsPath GetZoomImageComplete(Zoom zoomType)
         {
-            get
+            int index = (int)zoomType;
+            if (_zoomImagesComplete[index] == null)
             {
-                if (_zoomInComplete == null)
-                {
-                    _zoomInComplete = new GraphicsPath();
-                    _zoomInComplete.AddPath(MagnifierEmptyGPath, true);
-                    _zoomInComplete.AddPath(PlusGPath, true);
-                    _zoomInComplete.Flatten();
-                }
-                return _zoomInComplete;
-            }
-        }
+                var gp = new GraphicsPath();
+                gp.AddPath(MagnifierEmptyGPath, true);
+                gp.AddPath(MakeGraphicsPath(_zoomTypePoints[index], _zoomTypeTypes[index]), true);
 
-        private static GraphicsPath? _zoomOutComplete;
-        private static GraphicsPath ZoomOutComplete
-        {
-            get
-            {
-                if (_zoomOutComplete == null)
-                {
-                    _zoomOutComplete = new GraphicsPath();
-                    _zoomOutComplete.AddPath(MagnifierEmptyGPath, false);
-                    _zoomOutComplete.AddPath(MinusGPath, true);
-                    ZoomOutComplete.Flatten();
-                }
-                return _zoomOutComplete;
+                _zoomImagesComplete[index] = gp;
             }
-        }
-
-        private static GraphicsPath? _zoomResetComplete;
-        private static GraphicsPath ZoomResetComplete
-        {
-            get
-            {
-                if (_zoomResetComplete == null)
-                {
-                    _zoomResetComplete = new GraphicsPath();
-                    _zoomResetComplete.AddPath(MagnifierEmptyGPath, true);
-                    _zoomResetComplete.AddPath(ZoomResetGPath, true);
-                    _zoomResetComplete.Flatten();
-                }
-                return _zoomResetComplete;
-            }
+            return _zoomImagesComplete[index]!;
         }
 
         #endregion
 
-        private static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
+        internal static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
         {
             if (boundsRect.Width < 1 || boundsRect.Height < 1) return;
 
@@ -208,7 +153,6 @@ namespace AngelLoader.Forms
         #region Global
 
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
-
         private static readonly Brush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
 
         #endregion
@@ -331,56 +275,9 @@ namespace AngelLoader.Forms
 
             Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
 
-            var cr = button.ClientRectangle;
-
-            var gPath = zoomType switch
-            {
-                Zoom.In => ZoomInComplete,
-                Zoom.Out => ZoomOutComplete,
-                _ => ZoomResetComplete
-            };
-
-            FitRectInBounds(
-                e.Graphics,
-                gPath.GetBounds(),
-                new RectangleF(cr.X, cr.Y, cr.Width, cr.Height)
-                //new RectangleF(
-                //    (cr.X + 3f),
-                //    cr.Y + 3f,
-                //    cr.Height - 7,
-                //    cr.Height - 7)
-                );
+            var gPath = GetZoomImageComplete(zoomType);
+            FitRectInBounds(e.Graphics, gPath.GetBounds(), button.ClientRectangle);
             e.Graphics.FillPath(brush, gPath);
-        }
-
-        internal static void PaintZoomToolStripButtons(ToolStripButton button, PaintEventArgs e, Zoom zoomType)
-        {
-            return;
-            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            }
-
-            Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
-
-            var cr = button.Bounds;
-
-            var gPath = zoomType switch
-            {
-                Zoom.In => ZoomInComplete,
-                Zoom.Out => ZoomOutComplete,
-                _ => ZoomResetComplete
-            };
-
-            FitRectInBounds(
-                e.Graphics,
-                gPath.GetBounds(),
-                new RectangleF(
-                    (cr.X + 3f),
-                    cr.Y + 3f,
-                    cr.Height - 7,
-                    cr.Height - 7));
-            e.Graphics.FillPath(brush, MagnifierEmptyGPath);
         }
 
         internal static void PaintPlayFMButton(Button button, PaintEventArgs e)

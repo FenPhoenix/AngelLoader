@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using AngelLoader.DataClasses;
 using AngelLoader.Properties;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms
 {
@@ -242,14 +244,30 @@ namespace AngelLoader.Forms
         private static Bitmap? _uninstall_24;
         public static Bitmap Uninstall_24 => _uninstall_24 ??= Resources.Uninstall_24;
 
-        //private static Bitmap? _zoomIn;
-        //public static Bitmap ZoomIn => _zoomIn ??= Resources.ZoomIn;
+        #region Zoom
 
-        //private static Bitmap? _zoomOut;
-        //public static Bitmap ZoomOut => _zoomOut ??= Resources.ZoomOut;
+        private static readonly Bitmap?[] _zoomImages = new Bitmap?[ZoomTypesCount];
+        // We can't use the Paint even to paint the image on ToolStrip crap, as it's tool strip crap, you know.
+        // It just bugs out in various different ways. So we just paint on an image and set their image to that.
+        // Reconstruct param is for when we're changing size/scale and need to redraw it.
+        public static Bitmap GetZoomImage(int width, int height, Zoom zoomType, bool reconstruct = false)
+        {
+            int index = (int)zoomType;
+            if (reconstruct || _zoomImages[index] == null)
+            {
+                _zoomImages[index] = new Bitmap(width, height);
+                using var g = Graphics.FromImage(_zoomImages[index]!);
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                ControlPainter.FitRectInBounds(
+                    g,
+                    ControlPainter.GetZoomImageComplete(zoomType).GetBounds(),
+                    new RectangleF(0, 0, width, height));
+                g.FillPath(Brushes.Black, ControlPainter.GetZoomImageComplete(zoomType));
+            }
+            return _zoomImages[index]!;
+        }
 
-        //private static Bitmap? _zoomReset;
-        //public static Bitmap ZoomReset => _zoomReset ??= Resources.ZoomReset;
+        #endregion
 
         private static Bitmap? _refresh;
         public static Bitmap Refresh => _refresh ??= Resources.Refresh;

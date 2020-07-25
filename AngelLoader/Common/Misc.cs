@@ -51,6 +51,7 @@ namespace AngelLoader
         }
 
         public enum Zoom { In, Out, Reset }
+        public static readonly int ZoomTypesCount = Enum.GetValues(typeof(Zoom)).Length;
 
         // Public for param accessibility reasons or whatever
         public enum ProgressTasks
