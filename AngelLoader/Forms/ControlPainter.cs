@@ -12,27 +12,6 @@ namespace AngelLoader.Forms
     {
         #region Path points and types
 
-        #region Plus/minus
-
-        private static readonly float[] _plusSymbolPoints =
-        {
-            51.71002f, 34.41495f, 51.71002f, 51.30281f, 34.82216f, 51.30281f, 34.82216f, 65.74844f, 51.71002f,
-            65.74844f, 51.71002f, 82.63629f, 66.15565f, 82.63629f, 66.15565f, 65.74844f, 83.0435f, 65.74844f,
-            83.0435f, 51.30281f, 66.15565f, 51.30281f, 66.15565f, 34.41495f, 51.71002f, 34.41495f
-        };
-
-        private static readonly byte[] _plusSymbolBytes = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129 };
-
-        private static readonly float[] _minusSymbolPoints =
-        {
-            83.04366f, 65.74826f, 83.04366f, 51.30262f, 34.8222f, 51.30262f, 34.8222f, 65.74826f, 83.04366f,
-            65.74826f
-        };
-
-        private static readonly byte[] _minusSymbolBytes = { 0, 1, 1, 1, 129 };
-
-        #endregion
-
         #region Magnifying glass
 
         // These could be deflate-compressed to save space, or I could scrap the points and just draw a few shapes
@@ -66,8 +45,19 @@ namespace AngelLoader.Forms
 
         private static readonly float[][] _zoomTypePoints =
         {
-            _plusSymbolPoints,
-            _minusSymbolPoints,
+            // Zoom in (plus)
+            new[]
+            {
+                51.71002f, 34.41495f, 51.71002f, 51.30281f, 34.82216f, 51.30281f, 34.82216f, 65.74844f,
+                51.71002f, 65.74844f, 51.71002f, 82.63629f, 66.15565f, 82.63629f, 66.15565f, 65.74844f, 83.0435f,
+                65.74844f, 83.0435f, 51.30281f, 66.15565f, 51.30281f, 66.15565f, 34.41495f, 51.71002f, 34.41495f
+            },
+            // Zoom out (minus)
+            new[]
+            {
+                83.04366f, 65.74826f, 83.04366f, 51.30262f, 34.8222f, 51.30262f, 34.8222f, 65.74826f, 83.04366f,
+                65.74826f
+            },
             // Zoom reset
             new[]
             {
@@ -81,8 +71,10 @@ namespace AngelLoader.Forms
 
         private static readonly byte[][] _zoomTypeTypes =
         {
-            _plusSymbolBytes,
-            _minusSymbolBytes,
+            // Zoom in (plus)
+            new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129 },
+            // Zoom out (minus)
+            new byte[] { 0, 1, 1, 1, 129 },
             // Zoom reset
             new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 1, 1, 129 }
         };
