@@ -38,7 +38,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             owner.RefreshAreaToolStrip.Items.Insert(0, ZoomInButton);
             ZoomInButton.AutoSize = false;
             ZoomInButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            ZoomInButton.Margin = new Padding(0);
+            ZoomInButton.Margin = new Padding(2, 0, 0, 0);
             ZoomInButton.Size = new Size(25, 25);
             ZoomInButton.Image = Images.GetZoomImage(ZoomInButton.ContentRectangle.Width, ZoomInButton.ContentRectangle.Height, Zoom.In);
             ZoomInButton.Click += owner.FMsListZoomInButton_Click;

@@ -1440,7 +1440,7 @@ namespace AngelLoader.Forms
             ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
             ReadmeFullScreenButton.FlatStyle = FlatStyle.Flat;
             ReadmeFullScreenButton.Location = new Point(1616, 8);
-            ReadmeFullScreenButton.Size = new Size(20, 20);
+            ReadmeFullScreenButton.Size = new Size(21, 21);
             ReadmeFullScreenButton.TabIndex = 55;
             ReadmeFullScreenButton.UseVisualStyleBackColor = false;
             ReadmeFullScreenButton.Visible = false;
@@ -1451,12 +1451,11 @@ namespace AngelLoader.Forms
             // ZoomInButton
             // 
             ReadmeZoomInButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            //ReadmeZoomInButton.BackgroundImage = Images.ZoomIn;
             ReadmeZoomInButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
             ReadmeZoomInButton.FlatStyle = FlatStyle.Flat;
             ReadmeZoomInButton.Location = new Point(1534, 8);
-            ReadmeZoomInButton.Size = new Size(20, 20);
+            ReadmeZoomInButton.Size = new Size(21, 21);
             ReadmeZoomInButton.TabIndex = 52;
             ReadmeZoomInButton.UseVisualStyleBackColor = false;
             ReadmeZoomInButton.Visible = false;
@@ -1468,12 +1467,11 @@ namespace AngelLoader.Forms
             // 
             ReadmeZoomOutButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ReadmeZoomOutButton.BackColor = SystemColors.Window;
-            //ReadmeZoomOutButton.BackgroundImage = Images.ZoomOut;
             ReadmeZoomOutButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
             ReadmeZoomOutButton.FlatStyle = FlatStyle.Flat;
-            ReadmeZoomOutButton.Location = new Point(1558, 8);
-            ReadmeZoomOutButton.Size = new Size(20, 20);
+            ReadmeZoomOutButton.Location = new Point(1559, 8);
+            ReadmeZoomOutButton.Size = new Size(21, 21);
             ReadmeZoomOutButton.TabIndex = 53;
             ReadmeZoomOutButton.UseVisualStyleBackColor = false;
             ReadmeZoomOutButton.Visible = false;
@@ -1484,12 +1482,11 @@ namespace AngelLoader.Forms
             // ResetZoomButton
             // 
             ReadmeResetZoomButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            //ReadmeResetZoomButton.BackgroundImage = Images.ZoomReset;
             ReadmeResetZoomButton.BackgroundImageLayout = ImageLayout.Zoom;
             ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
             ReadmeResetZoomButton.FlatStyle = FlatStyle.Flat;
-            ReadmeResetZoomButton.Location = new Point(1582, 8);
-            ReadmeResetZoomButton.Size = new Size(20, 20);
+            ReadmeResetZoomButton.Location = new Point(1584, 8);
+            ReadmeResetZoomButton.Size = new Size(21, 21);
             ReadmeResetZoomButton.TabIndex = 54;
             ReadmeResetZoomButton.UseVisualStyleBackColor = false;
             ReadmeResetZoomButton.Visible = false;

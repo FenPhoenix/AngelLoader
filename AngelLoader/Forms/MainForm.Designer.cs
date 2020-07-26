@@ -1740,7 +1740,7 @@ namespace AngelLoader.Forms
             this.ReadmeFullScreenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1616, 8);
             this.ReadmeFullScreenButton.Name = "ReadmeFullScreenButton";
-            this.ReadmeFullScreenButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeFullScreenButton.Size = new System.Drawing.Size(21, 21);
             this.ReadmeFullScreenButton.TabIndex = 55;
             this.MainToolTip.SetToolTip(this.ReadmeFullScreenButton, "Fullscreen");
             this.ReadmeFullScreenButton.UseVisualStyleBackColor = false;
@@ -1758,7 +1758,7 @@ namespace AngelLoader.Forms
             this.ReadmeZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ReadmeZoomInButton.Location = new System.Drawing.Point(1534, 8);
             this.ReadmeZoomInButton.Name = "ReadmeZoomInButton";
-            this.ReadmeZoomInButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeZoomInButton.Size = new System.Drawing.Size(21, 21);
             this.ReadmeZoomInButton.TabIndex = 52;
             this.MainToolTip.SetToolTip(this.ReadmeZoomInButton, "Zoom in");
             this.ReadmeZoomInButton.UseVisualStyleBackColor = false;
@@ -1774,9 +1774,9 @@ namespace AngelLoader.Forms
             this.ReadmeZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
             this.ReadmeZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1558, 8);
+            this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1559, 8);
             this.ReadmeZoomOutButton.Name = "ReadmeZoomOutButton";
-            this.ReadmeZoomOutButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeZoomOutButton.Size = new System.Drawing.Size(21, 21);
             this.ReadmeZoomOutButton.TabIndex = 53;
             this.MainToolTip.SetToolTip(this.ReadmeZoomOutButton, "Zoom out");
             this.ReadmeZoomOutButton.UseVisualStyleBackColor = false;
@@ -1792,9 +1792,9 @@ namespace AngelLoader.Forms
             this.ReadmeResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
             this.ReadmeResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1582, 8);
+            this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1584, 8);
             this.ReadmeResetZoomButton.Name = "ReadmeResetZoomButton";
-            this.ReadmeResetZoomButton.Size = new System.Drawing.Size(20, 20);
+            this.ReadmeResetZoomButton.Size = new System.Drawing.Size(21, 21);
             this.ReadmeResetZoomButton.TabIndex = 54;
             this.MainToolTip.SetToolTip(this.ReadmeResetZoomButton, "Reset zoom");
             this.ReadmeResetZoomButton.UseVisualStyleBackColor = false;
