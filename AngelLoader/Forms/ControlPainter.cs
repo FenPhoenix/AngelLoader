@@ -22,7 +22,7 @@ namespace AngelLoader.Forms
         // itself or in combination with +, -, and reset-zoom symbols. So I get my space's worth out of this one
         // for sure. It'll be the same with the finished-on icons when I come to those.
         // (this array init code was generated)
-        private static readonly float[] _magnifying_glass_empty_exported_points_raw =
+        private static readonly float[] _magnifierEmptyPoints =
         {
             59.19173f, 0f, 26.60027f, -2.65E-06f, 0f, 26.60027f, 0f, 59.19173f, 0f, 91.7832f, 26.60027f,
             118.383f, 59.19173f, 118.3829f, 70.74734f, 118.3829f, 81.54756f, 115.036f, 90.67818f, 109.2667f,
@@ -35,13 +35,18 @@ namespace AngelLoader.Forms
             16.70131f, 59.19173f, 16.70131f
         };
 
-        private static readonly byte[] _magnifying_glass_empty_exported_types_raw =
+        private static readonly byte[] _magnifierEmptyTypes =
         {
             0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
             3, 3, 3, 3, 3, 129
         };
 
+        private static GraphicsPath? _magnifierEmptyGPath;
+        private static GraphicsPath MagnifierEmptyGPath => _magnifierEmptyGPath ??= MakeGraphicsPath(_magnifierEmptyPoints, _magnifierEmptyTypes);
+
         #endregion
+
+        #region Zoom symbols
 
         private static readonly float[][] _zoomTypePoints =
         {
@@ -79,23 +84,6 @@ namespace AngelLoader.Forms
             new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 1, 1, 129 }
         };
 
-        private static GraphicsPath MakeGraphicsPath(float[] points, byte[] types)
-        {
-            int pointsCount = points.Length;
-            var rawPoints = new PointF[pointsCount / 2];
-            for (int i = 0, j = 0; i < pointsCount; i += 2, j++)
-            {
-                var x = points[i];
-                var y = points[i + 1];
-                rawPoints[j] = new PointF(x, y);
-            }
-            return new GraphicsPath(rawPoints, types);
-        }
-
-        private static GraphicsPath? _magnifierEmptyGPath;
-        private static GraphicsPath MagnifierEmptyGPath => _magnifierEmptyGPath ??=
-            MakeGraphicsPath(_magnifying_glass_empty_exported_points_raw, _magnifying_glass_empty_exported_types_raw);
-
         private static readonly GraphicsPath?[] _zoomImagesComplete = new GraphicsPath[ZoomTypesCount];
 
         public static GraphicsPath GetZoomImageComplete(Zoom zoomType)
@@ -113,6 +101,23 @@ namespace AngelLoader.Forms
         }
 
         #endregion
+
+        #endregion
+
+        #region Vector helpers
+
+        private static GraphicsPath MakeGraphicsPath(float[] points, byte[] types)
+        {
+            int pointsCount = points.Length;
+            var rawPoints = new PointF[pointsCount / 2];
+            for (int i = 0, j = 0; i < pointsCount; i += 2, j++)
+            {
+                var x = points[i];
+                var y = points[i + 1];
+                rawPoints[j] = new PointF(x, y);
+            }
+            return new GraphicsPath(rawPoints, types);
+        }
 
         internal static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
         {
@@ -136,16 +141,18 @@ namespace AngelLoader.Forms
             g.TranslateTransform(boundsRectCenterX, boundsRectCenterY, MatrixOrder.Append);
         }
 
+        #endregion
+
+        #region Global
+
         internal static readonly Pen Sep1Pen = new Pen(Color.FromArgb(189, 189, 189));
         internal static readonly Pen Sep1PenC = new Pen(Color.FromArgb(166, 166, 166));
         internal static readonly Pen Sep2Pen = new Pen(Color.FromArgb(255, 255, 255));
 
-        internal static Pen GetSeparatorPenForCurrentVisualStyleMode() => Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
-
-        #region Global
-
         private static readonly Color _al_LightBlue = Color.FromArgb(4, 125, 202);
         private static readonly Brush _al_LightBlueBrush = new SolidBrush(_al_LightBlue);
+
+        internal static Pen GetSeparatorPenForCurrentVisualStyleMode() => Application.RenderWithVisualStyles ? Sep1Pen : Sep1PenC;
 
         #endregion
 
@@ -258,12 +265,14 @@ namespace AngelLoader.Forms
 
         #region Buttons
 
+        private static void SetSmoothingMode(PaintEventArgs e, SmoothingMode mode)
+        {
+            if (e.Graphics.SmoothingMode != mode) e.Graphics.SmoothingMode = mode;
+        }
+
         internal static void PaintZoomButtons(Button button, PaintEventArgs e, Zoom zoomType)
         {
-            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            }
+            SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
             Brush brush = button.Enabled ? Brushes.Black : SystemBrushes.ControlDark;
 
@@ -274,10 +283,7 @@ namespace AngelLoader.Forms
 
         internal static void PaintPlayFMButton(Button button, PaintEventArgs e)
         {
-            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            }
+            SetSmoothingMode(e, SmoothingMode.AntiAlias);
             e.Graphics.FillPolygon(button.Enabled ? _playArrowBrush : SystemBrushes.ControlDark, _playArrowPoints);
         }
 
@@ -322,10 +328,7 @@ namespace AngelLoader.Forms
                 new Point(wh - 4, hh - 3)
             };
 
-            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            }
+            SetSmoothingMode(e, SmoothingMode.AntiAlias);
             e.Graphics.FillPolygon(button.Enabled ? Brushes.Black : SystemBrushes.ControlDark, ps);
         }
 
@@ -336,10 +339,7 @@ namespace AngelLoader.Forms
 
         internal static void PaintWebSearchButton(Button button, PaintEventArgs e)
         {
-            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            }
+            SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
             Pen pen = button.Enabled ? _webSearchCirclePen : _webSearchCircleDisabledPen;
 
@@ -368,10 +368,7 @@ namespace AngelLoader.Forms
 
         internal static void PaintScanAllFMsButton(Button button, PaintEventArgs e)
         {
-            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            }
+            SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
             /*
             Pen pen = button.Enabled ? _scanPen : _scanDisabledPen;
@@ -398,10 +395,7 @@ namespace AngelLoader.Forms
 
         internal static void PaintScanSmallButtons(Button button, PaintEventArgs e)
         {
-            if (e.Graphics.SmoothingMode != SmoothingMode.AntiAlias)
-            {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            }
+            SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
             /*
             Pen pen = button.Enabled ? _scanSmallCirclePen : _scanSmallCircleDisabledPen;
