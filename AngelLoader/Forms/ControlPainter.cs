@@ -141,6 +141,11 @@ namespace AngelLoader.Forms
             g.TranslateTransform(boundsRectCenterX, boundsRectCenterY, MatrixOrder.Append);
         }
 
+        private static void SetSmoothingMode(PaintEventArgs e, SmoothingMode mode)
+        {
+            if (e.Graphics.SmoothingMode != mode) e.Graphics.SmoothingMode = mode;
+        }
+
         #endregion
 
         #region Global
@@ -264,11 +269,6 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Buttons
-
-        private static void SetSmoothingMode(PaintEventArgs e, SmoothingMode mode)
-        {
-            if (e.Graphics.SmoothingMode != mode) e.Graphics.SmoothingMode = mode;
-        }
 
         internal static void PaintZoomButtons(Button button, PaintEventArgs e, Zoom zoomType)
         {
