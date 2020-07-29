@@ -124,6 +124,10 @@ namespace AngelLoader.Forms
         internal static readonly Brush ExtremeCheckOutlineBrush = new SolidBrush(Color.FromArgb(19, 1, 100));
         internal static readonly Brush ExtremeCheckFillBrush = new SolidBrush(Color.FromArgb(0, 53, 226));
 
+        internal static readonly Brush UnknownCheckOutlineBrush = new SolidBrush(Color.FromArgb(100, 100, 100));
+        internal static readonly Brush UnknownCheckFillBrush = new SolidBrush(Color.FromArgb(170, 170, 170));
+
+
         // * approximated by eye (we don't have high enough res versions of these to copy the outline color)
 
         // Inner path starts at index 14

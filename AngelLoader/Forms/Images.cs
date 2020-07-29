@@ -60,7 +60,7 @@ namespace AngelLoader.Forms
             {
                 if (_finishedOnUnknown == null)
                 {
-                    using Bitmap resBmp = Resources.Finished_Unknown_Icon;
+                    using Bitmap resBmp = FillFinishedOnBitmap(Difficulty.None);
                     _finishedOnUnknown = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
                     using var g = Graphics.FromImage(_finishedOnUnknown);
                     g.DrawImage(resBmp, (138 / 2) - (resBmp.Width / 2), 0);
@@ -78,7 +78,8 @@ namespace AngelLoader.Forms
                 Difficulty.Normal => (34, ControlPainter.NormalCheckOutlineBrush, ControlPainter.NormalCheckFillBrush),
                 Difficulty.Hard => (35, ControlPainter.HardCheckOutlineBrush, ControlPainter.HardCheckFillBrush),
                 Difficulty.Expert => (35, ControlPainter.ExpertCheckOutlineBrush, ControlPainter.ExpertCheckFillBrush),
-                _ => (34, ControlPainter.ExtremeCheckOutlineBrush, ControlPainter.ExtremeCheckFillBrush)
+                Difficulty.Extreme => (34, ControlPainter.ExtremeCheckOutlineBrush, ControlPainter.ExtremeCheckFillBrush),
+                _ => (36, ControlPainter.UnknownCheckOutlineBrush, ControlPainter.UnknownCheckFillBrush)
             };
 
             var bmp = new Bitmap(width, 32, PixelFormat.Format32bppPArgb);
