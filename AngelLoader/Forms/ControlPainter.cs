@@ -102,6 +102,53 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Finished checkmarks
+
+        // Colors (R/G/B, outline/fill):
+        // Green:  3/100/1,      0/170/0
+        // Yellow: 196/157/2,    255/210/0
+        // Red:    135/2/2,      216/0/0
+        // Blue:   19/1/100,     0/53/226
+        // Grey:   100/100/100*, 170/170/170
+        // Filter: 14/101/139*,  89/159/203
+
+        internal static readonly Brush NormalCheckOutlineBrush = new SolidBrush(Color.FromArgb(3, 100, 1));
+        internal static readonly Brush NormalCheckFillBrush = new SolidBrush(Color.FromArgb(0, 170, 0));
+
+        internal static readonly Brush HardCheckOutlineBrush = new SolidBrush(Color.FromArgb(196, 157, 2));
+        internal static readonly Brush HardCheckFillBrush = new SolidBrush(Color.FromArgb(255, 210, 0));
+
+        internal static readonly Brush ExpertCheckOutlineBrush = new SolidBrush(Color.FromArgb(135, 2, 2));
+        internal static readonly Brush ExpertCheckFillBrush = new SolidBrush(Color.FromArgb(216, 0, 0));
+
+        internal static readonly Brush ExtremeCheckOutlineBrush = new SolidBrush(Color.FromArgb(19, 1, 100));
+        internal static readonly Brush ExtremeCheckFillBrush = new SolidBrush(Color.FromArgb(0, 53, 226));
+
+        // * approximated by eye (we don't have high enough res versions of these to copy the outline color)
+
+        // Inner path starts at index 14
+        private static readonly float[] _finishedCheckPoints =
+        {
+            65.75464f, 3.180167f, 29.22405f, 47.79398f, 10.8f, 30.83739f, -0.1080037f, 42.47338f, 30.86943f,
+            71.04063f, 78.09653f, 13.29531f, 65.75464f, 3.180167f, 66.03886f, 6.043559f, 75.23571f, 13.58057f,
+            30.66118f, 68.08215f, 2.778125f, 42.36847f, 10.90528f, 33.69872f, 29.43231f, 50.75039f, 66.03886f,
+            6.043559f
+        };
+
+        // Inner path starts at index 7
+        private static readonly byte[] _finishedCheckTypes =
+        {
+            0, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 129
+        };
+
+        internal static readonly PointF[] FinishedCheckInnerPoints = new PointF[7];
+        internal static readonly byte[] FinishedCheckInnerTypes = new byte[7];
+
+        private static GraphicsPath? _finishedCheckGPath;
+        internal static GraphicsPath FinishedCheckGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
+
+        #endregion
+
         #endregion
 
         #region Vector helpers

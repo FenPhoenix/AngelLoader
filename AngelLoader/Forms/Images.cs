@@ -69,14 +69,60 @@ namespace AngelLoader.Forms
             }
         }
 
+        private static Bitmap FillFinishedOnBitmap(Difficulty difficulty)
+        {
+            // Variations in image widths (34,35,36) are intentional to keep the same dimensions as the old
+            // raster images used to have, so that the new vector ones are drop-in replacements.
+            var (width, outlineBrush, fillBrush) = difficulty switch
+            {
+                Difficulty.Normal => (34, ControlPainter.NormalCheckOutlineBrush, ControlPainter.NormalCheckFillBrush),
+                Difficulty.Hard => (35, ControlPainter.HardCheckOutlineBrush, ControlPainter.HardCheckFillBrush),
+                Difficulty.Expert => (35, ControlPainter.ExpertCheckOutlineBrush, ControlPainter.ExpertCheckFillBrush),
+                _ => (34, ControlPainter.ExtremeCheckOutlineBrush, ControlPainter.ExtremeCheckFillBrush)
+            };
+
+            var bmp = new Bitmap(width, 32, PixelFormat.Format32bppPArgb);
+
+            using var g = Graphics.FromImage(bmp);
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            var gp = ControlPainter.FinishedCheckGPath;
+
+            ControlPainter.FitRectInBounds(
+                g,
+                gp.GetBounds(),
+                new RectangleF(0, 0, width, 32f));
+
+            g.FillPath(
+                outlineBrush,
+                gp);
+
+            const int pointsCount = 14;
+            for (int i = 0, j = 7; j < pointsCount; i++, j++)
+            {
+                ControlPainter.FinishedCheckInnerPoints[i] = gp.PathPoints[j];
+                ControlPainter.FinishedCheckInnerTypes[i] = gp.PathTypes[j];
+            }
+
+            using var innerGP = new GraphicsPath(
+                ControlPainter.FinishedCheckInnerPoints,
+                ControlPainter.FinishedCheckInnerTypes);
+
+            g.FillPath(fillBrush, innerGP);
+
+            return bmp;
+        }
+
         /// <summary>
         /// We use positionZeroBitmap so we can be passed an already-constructed BlankIcon bitmap so that we
         /// don't have to have BlankIcon be in here and subject to a property call and null check every time
         /// it gets displayed, which is a lot.
         /// </summary>
         /// <param name="positionZeroBitmap">Silly hack, see description.</param>
+        /// <param name="regenerate"></param>
         /// <returns></returns>
-        public static Bitmap[] GetFinishedOnImages(Bitmap positionZeroBitmap)
+        public static Bitmap[] GetFinishedOnImages(Bitmap positionZeroBitmap, bool regenerate = false)
         {
             var retArray = new Bitmap[16];
 
@@ -88,13 +134,41 @@ namespace AngelLoader.Forms
             {
                 #region Image getters
 
-                Bitmap GetFinishedOnNormal_Single() => _finishedOnNormal_single ??= Resources.Finished_Normal_Icon;
+                Bitmap GetFinishedOnNormal_Single()
+                {
+                    if (regenerate || _finishedOnNormal_single == null)
+                    {
+                        _finishedOnNormal_single = FillFinishedOnBitmap(Difficulty.Normal);
+                    }
+                    return _finishedOnNormal_single;
+                }
 
-                Bitmap GetFinishedOnHard_Single() => _finishedOnHard_single ??= Resources.Finished_Hard_Icon;
+                Bitmap GetFinishedOnHard_Single()
+                {
+                    if (regenerate || _finishedOnHard_single == null)
+                    {
+                        _finishedOnHard_single = FillFinishedOnBitmap(Difficulty.Hard);
+                    }
+                    return _finishedOnHard_single;
+                }
 
-                Bitmap GetFinishedOnExpert_Single() => _finishedOnExpert_single ??= Resources.Finished_Expert_Icon;
+                Bitmap GetFinishedOnExpert_Single()
+                {
+                    if (regenerate || _finishedOnExpert_single == null)
+                    {
+                        _finishedOnExpert_single = FillFinishedOnBitmap(Difficulty.Expert);
+                    }
+                    return _finishedOnExpert_single;
+                }
 
-                Bitmap GetFinishedOnExtreme_Single() => _finishedOnExtreme_single ??= Resources.Finished_Extreme_Icon;
+                Bitmap GetFinishedOnExtreme_Single()
+                {
+                    if (regenerate || _finishedOnExtreme_single == null)
+                    {
+                        _finishedOnExtreme_single = FillFinishedOnBitmap(Difficulty.Extreme);
+                    }
+                    return _finishedOnExtreme_single;
+                }
 
                 #endregion
 

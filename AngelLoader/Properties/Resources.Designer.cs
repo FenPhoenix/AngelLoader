@@ -183,46 +183,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Finished_Expert_Icon {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Expert_Icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Extreme_Icon {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Extreme_Icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Hard_Icon {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Hard_Icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Finished_Normal_Icon {
-            get {
-                object obj = ResourceManager.GetObject("Finished_Normal_Icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Finished_Unknown_Icon {
             get {
                 object obj = ResourceManager.GetObject("Finished_Unknown_Icon", resourceCulture);
