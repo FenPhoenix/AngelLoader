@@ -144,6 +144,33 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        #region Stars
+
+        private static readonly float[] _starPoints =
+        {
+            /* outer */
+            50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
+            50f, 0f,
+            /* middle */
+            50f, 9f, 61.5f, 36.5f, 91f, 39f, 69f, 58.5f, 75.5f, 87.5f, 50f, 72f, 24.5f, 87.5f, 31f, 58.5f, 9f,
+            39f, 38.5f, 36.5f, 50f, 9f,
+            /* inner */
+            50f, 22f, 42f, 41f, 21f, 43f, 36.5f, 56.5f, 32f, 77f, 50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f,
+            58f, 41f, 50f, 22f
+        };
+
+        private static readonly byte[] _starTypes =
+        {
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129
+        };
+
+        private static GraphicsPath? _starGPath;
+        internal static GraphicsPath StarGPath => _starGPath ??= MakeGraphicsPath(_starPoints, _starTypes);
+        
+        #endregion
+
         #endregion
 
         #region Vector helpers
