@@ -103,16 +103,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FilterByFinished {
-            get {
-                object obj = ResourceManager.GetObject("FilterByFinished", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap FilterByLastPlayed {
             get {
                 object obj = ResourceManager.GetObject("FilterByLastPlayed", resourceCulture);
@@ -146,16 +136,6 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap FilterByTags {
             get {
                 object obj = ResourceManager.GetObject("FilterByTags", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap FilterByUnfinished {
-            get {
-                object obj = ResourceManager.GetObject("FilterByUnfinished", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

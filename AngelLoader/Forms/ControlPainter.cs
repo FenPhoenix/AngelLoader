@@ -104,14 +104,6 @@ namespace AngelLoader.Forms
 
         #region Finished checkmarks
 
-        // Colors (R/G/B, outline/fill):
-        // Green:  3/100/1,      0/170/0
-        // Yellow: 196/157/2,    255/210/0
-        // Red:    135/2/2,      216/0/0
-        // Blue:   19/1/100,     0/53/226
-        // Grey:   100/100/100*, 170/170/170
-        // Filter: 14/101/139*,  89/159/203
-
         internal static readonly Brush NormalCheckOutlineBrush = new SolidBrush(Color.FromArgb(3, 100, 1));
         internal static readonly Brush NormalCheckFillBrush = new SolidBrush(Color.FromArgb(0, 170, 0));
 
@@ -127,8 +119,8 @@ namespace AngelLoader.Forms
         internal static readonly Brush UnknownCheckOutlineBrush = new SolidBrush(Color.FromArgb(100, 100, 100));
         internal static readonly Brush UnknownCheckFillBrush = new SolidBrush(Color.FromArgb(170, 170, 170));
 
-
-        // * approximated by eye (we don't have high enough res versions of these to copy the outline color)
+        internal static readonly Brush FinishedOnFilterOutlineBrush = new SolidBrush(Color.FromArgb(14, 101, 139));
+        internal static readonly Brush FinishedOnFilterFillBrush = new SolidBrush(Color.FromArgb(89, 159, 203));
 
         // Inner path starts at index 14
         private static readonly float[] _finishedCheckPoints =
@@ -148,7 +140,7 @@ namespace AngelLoader.Forms
         internal static readonly byte[] FinishedCheckInnerTypes = new byte[7];
 
         private static GraphicsPath? _finishedCheckGPath;
-        internal static GraphicsPath FinishedCheckGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
+        internal static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
 
         #endregion
 

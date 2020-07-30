@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Properties;
 using static AngelLoader.Misc;
@@ -718,7 +719,7 @@ namespace AngelLoader.Forms
             FilterByFinishedButton.AutoSize = false;
             FilterByFinishedButton.CheckOnClick = true;
             FilterByFinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByFinishedButton.Image = Resources.FilterByFinished;
+            FilterByFinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
             FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByFinishedButton.Size = new Size(25, 25);
             FilterByFinishedButton.Click += FilterByFinishedButton_Click;
@@ -728,7 +729,7 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton.AutoSize = false;
             FilterByUnfinishedButton.CheckOnClick = true;
             FilterByUnfinishedButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            FilterByUnfinishedButton.Image = Resources.FilterByUnfinished;
+            FilterByUnfinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
             FilterByUnfinishedButton.Margin = new Padding(0);
             FilterByUnfinishedButton.Size = new Size(25, 25);
             FilterByUnfinishedButton.Click += FilterByUnfinishedButton_Click;
@@ -737,6 +738,7 @@ namespace AngelLoader.Forms
             // 
             FilterByRatingButton.AutoSize = false;
             FilterByRatingButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            FilterByRatingButton.Image = Images.FilterByRating;
             FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
             FilterByRatingButton.Size = new Size(25, 25);
             FilterByRatingButton.Click += FilterByRatingButton_Click;

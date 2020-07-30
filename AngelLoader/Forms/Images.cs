@@ -69,48 +69,64 @@ namespace AngelLoader.Forms
             }
         }
 
-        private static Bitmap FillFinishedOnBitmap(Difficulty difficulty)
+        public static Bitmap FillFinishedOnBitmap(Difficulty difficulty, bool filterFinished = false, bool filterUnfinished = false)
         {
-            // Variations in image widths (34,35,36) are intentional to keep the same dimensions as the old
-            // raster images used to have, so that the new vector ones are drop-in replacements.
-            var (width, outlineBrush, fillBrush) = difficulty switch
+            int width, height;
+            Brush outlineBrush, fillBrush;
+            if (filterFinished || filterUnfinished)
             {
-                Difficulty.Normal => (34, ControlPainter.NormalCheckOutlineBrush, ControlPainter.NormalCheckFillBrush),
-                Difficulty.Hard => (35, ControlPainter.HardCheckOutlineBrush, ControlPainter.HardCheckFillBrush),
-                Difficulty.Expert => (35, ControlPainter.ExpertCheckOutlineBrush, ControlPainter.ExpertCheckFillBrush),
-                Difficulty.Extreme => (34, ControlPainter.ExtremeCheckOutlineBrush, ControlPainter.ExtremeCheckFillBrush),
-                _ => (36, ControlPainter.UnknownCheckOutlineBrush, ControlPainter.UnknownCheckFillBrush)
-            };
+                width = 32;
+                height = 32;
+                outlineBrush = ControlPainter.FinishedOnFilterOutlineBrush;
+                fillBrush = ControlPainter.FinishedOnFilterFillBrush;
+            }
+            else
+            {
+                height = 32;
+                // Variations in image widths (34,35,36) are intentional to keep the same dimensions as the old
+                // raster images used to have, so that the new vector ones are drop-in replacements.
+                (width, outlineBrush, fillBrush) = difficulty switch
+                {
+                    Difficulty.Normal => (34, ControlPainter.NormalCheckOutlineBrush, ControlPainter.NormalCheckFillBrush),
+                    Difficulty.Hard => (35, ControlPainter.HardCheckOutlineBrush, ControlPainter.HardCheckFillBrush),
+                    Difficulty.Expert => (35, ControlPainter.ExpertCheckOutlineBrush, ControlPainter.ExpertCheckFillBrush),
+                    Difficulty.Extreme => (34, ControlPainter.ExtremeCheckOutlineBrush, ControlPainter.ExtremeCheckFillBrush),
+                    _ => (36, ControlPainter.UnknownCheckOutlineBrush, ControlPainter.UnknownCheckFillBrush)
+                };
+            }
 
-            var bmp = new Bitmap(width, 32, PixelFormat.Format32bppPArgb);
+            var bmp = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
 
             using var g = Graphics.FromImage(bmp);
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            var gp = ControlPainter.FinishedCheckGPath;
+            var gp = ControlPainter.FinishedCheckOutlineGPath;
 
             ControlPainter.FitRectInBounds(
                 g,
                 gp.GetBounds(),
-                new RectangleF(0, 0, width, 32f));
+                new RectangleF(0, 0, width, height));
 
             g.FillPath(
                 outlineBrush,
                 gp);
 
-            const int pointsCount = 14;
-            for (int i = 0, j = 7; j < pointsCount; i++, j++)
+            if (!filterUnfinished)
             {
-                ControlPainter.FinishedCheckInnerPoints[i] = gp.PathPoints[j];
-                ControlPainter.FinishedCheckInnerTypes[i] = gp.PathTypes[j];
+                const int pointsCount = 14;
+                for (int i = 0, j = 7; j < pointsCount; i++, j++)
+                {
+                    ControlPainter.FinishedCheckInnerPoints[i] = gp.PathPoints[j];
+                    ControlPainter.FinishedCheckInnerTypes[i] = gp.PathTypes[j];
+                }
+
+                using var innerGP = new GraphicsPath(
+                    ControlPainter.FinishedCheckInnerPoints,
+                    ControlPainter.FinishedCheckInnerTypes);
+
+                g.FillPath(fillBrush, innerGP);
             }
-
-            using var innerGP = new GraphicsPath(
-                ControlPainter.FinishedCheckInnerPoints,
-                ControlPainter.FinishedCheckInnerTypes);
-
-            g.FillPath(fillBrush, innerGP);
 
             return bmp;
         }
@@ -221,6 +237,25 @@ namespace AngelLoader.Forms
         #endregion
 
         #region Stars
+
+        private static Bitmap? _filterByRating;
+        public static Bitmap FilterByRating
+        {
+            get
+            {
+                if (_filterByRating == null)
+                {
+                    using var frb1 = Resources.FilterByRating_half;
+                    using var frb2 = (Bitmap)frb1.Clone();
+                    frb2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    _filterByRating = new Bitmap(32, 32, PixelFormat.Format32bppPArgb);
+                    using var g = Graphics.FromImage(_filterByRating);
+                    g.DrawImage(frb1, 0, 0);
+                    g.DrawImage(frb2, 16, 0);
+                }
+                return _filterByRating;
+            }
+        }
 
         public static Bitmap[] GetRatingImages()
         {

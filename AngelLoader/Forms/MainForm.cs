@@ -629,21 +629,6 @@ namespace AngelLoader.Forms
             InitComponentManual();
 #endif
 
-            using (var frb1 = Resources.FilterByRating_half)
-            using (var frb2 = (Bitmap)frb1.Clone())
-            {
-                frb2.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                var filterRatingIcon = new Bitmap(32, 32, PixelFormat.Format32bppPArgb);
-                using (var g = Graphics.FromImage(filterRatingIcon))
-                {
-                    g.DrawImage(frb1, 0, 0);
-                    g.DrawImage(frb2, 16, 0);
-                }
-
-                FilterByRatingButton.Image = filterRatingIcon;
-            }
-
-
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
             #region Init debug-only controls
 
