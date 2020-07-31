@@ -82,15 +82,9 @@ namespace AngelLoader
                             if (gameExeExists[i]) SetGameDataFromDisk((GameIndex)i, storeConfigInfo: true);
                         }
 
-                        Error error =
-                            // Must be first, otherwise other stuff overrides it and then we don't act on it
-                            !Directory.Exists(Config.FMsBackupPath) ? Error.BackupPathNotSpecified :
-                            gameExeExists.All(x => false) ? Error.NoGamesSpecified :
-                            Error.None;
-
                         #endregion
 
-                        openSettings = error == Error.BackupPathNotSpecified;
+                        openSettings = !Directory.Exists(Config.FMsBackupPath);
                     }
                     catch (Exception ex)
                     {

@@ -3,9 +3,9 @@
     internal enum Error
     {
         None,
+        /*
         NoGamesSpecified,
         BackupPathNotSpecified,
-        /*
         CamModIniNotFound,
         T1CamModIniNotFound,
         T2CamModIniNotFound,
