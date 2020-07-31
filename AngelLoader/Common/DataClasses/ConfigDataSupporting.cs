@@ -368,7 +368,7 @@ namespace AngelLoader.DataClasses
 
         internal void ClearAllSelectedFMs()
         {
-            for (int i = 0; i < SelectedFMs.Length; i++) SelectedFMs[i].Clear();
+            for (int i = 0; i < SupportedGameCount; i++) SelectedFMs[i].Clear();
         }
 
         internal void ClearAllFilters()
