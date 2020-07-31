@@ -276,5 +276,7 @@ namespace FenGen
             int i;
             return (i = fileName.LastIndexOf('.')) == -1 ? fileName : fileName.Substring(0, i);
         }
+
+        internal static string FirstCharToLower(this string str) => char.ToLowerInvariant(str[0]) + str.Substring(1);
     }
 }

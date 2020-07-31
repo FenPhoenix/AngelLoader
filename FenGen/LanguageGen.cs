@@ -28,12 +28,12 @@ namespace FenGen
         internal static void
         Generate(string sourceFile, string destFile, string langIniFile, string testLangIniFile = "", bool writeReflectionStyle = false)
         {
-            var (langClassName, sections) = ReadSource(sourceFile);
+            var (langClassName, sections, classNames) = ReadSource(sourceFile);
 
-            WriteDest(langClassName, sections, destFile, langIniFile, testLangIniFile, writeReflectionStyle);
+            WriteDest(langClassName, sections, classNames, destFile, langIniFile, testLangIniFile, writeReflectionStyle);
         }
 
-        private static (string LangClassName, List<IniSection> Sections)
+        private static (string LangClassName, List<IniSection> Sections, List<string> ClassNames)
         ReadSource(string file)
         {
             string code = File.ReadAllText(file);
@@ -55,6 +55,7 @@ namespace FenGen
             }
 
             var sections = new List<IniSection>();
+            var classNames = new List<string>();
 
             // Now through again to get the language string names from the nested classes
             foreach (SyntaxNode cn in childNodes)
@@ -67,7 +68,9 @@ namespace FenGen
 
                 if (members.Length == 0) continue;
 
-                string sectionInstanceName = classInstanceDict[childClass.Identifier.ToString()];
+                string childClassIdentifier = childClass.Identifier.ToString();
+                string sectionInstanceName = classInstanceDict[childClassIdentifier];
+                classNames.Add(childClassIdentifier);
                 var section = new IniSection(sectionInstanceName);
 
                 foreach (SyntaxNode m in members)
@@ -151,11 +154,17 @@ namespace FenGen
             }
 
             string lTextClassId = lTextClass.Identifier.ToString();
-            return (lTextClassId, sections);
+            return (lTextClassId, sections, classNames);
         }
 
-        private static void WriteDest(string langClassName, List<IniSection> sections, string destFile,
-                                      string langIniFile, string testLangIniFile, bool writeReflectionStyle = false)
+        private static void WriteDest(
+            string langClassName,
+            List<IniSection> sections,
+            List<string> classNames,
+            string destFile,
+            string langIniFile,
+            string testLangIniFile,
+            bool writeReflectionStyle = false)
         {
             #region Find the class we're going to write to
 
@@ -190,54 +199,89 @@ namespace FenGen
             sb.Append(codeBlock);
             w.WL("{");
 
-            if (writeReflectionStyle)
-            {
-                w.WL("private const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic;");
-                w.WL();
-                w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>>? _lTextFieldGraph;");
-                w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>> LTextFieldGraph");
-                w.WL("{");
-                w.WL("get");
-                w.WL("{");
-                w.WL("if (_lTextFieldGraph == null)");
-                w.WL("{");
+            #region Old static dictionary style
 
-                w.WL("_lTextFieldGraph = new Dictionary<string, Dictionary<string, FieldInfo>>();");
-                for (int i = 0; i < sections.Count; i++)
-                {
-                    var section = sections[i];
-                    var dictName = section.Name + "_Dict";
-                    var langSubclass = langClassName + "." + section.Name + "_Class";
-                    w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>();");
-                    w.WL("foreach (var f in typeof(" + langSubclass + ").GetFields(_bfLText))");
-                    w.WL("{");
-                    w.WL(dictName + ".Add(f.Name, f);");
-                    w.WL("}");
-                    w.WL("_lTextFieldGraph.Add(nameof(" + langSubclass + "), " + dictName + ");");
-                }
+            //if (writeReflectionStyle)
+            //{
+            //    w.WL("private const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic;");
+            //    w.WL();
+            //    w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>>? _lTextFieldGraph;");
+            //    w.WL("private static Dictionary<string, Dictionary<string, FieldInfo>> LTextFieldGraph");
+            //    w.WL("{");
+            //    w.WL("get");
+            //    w.WL("{");
+            //    w.WL("if (_lTextFieldGraph == null)");
+            //    w.WL("{");
 
-                w.WL("}");
-                w.WL("return _lTextFieldGraph;");
-                w.WL("}");
-                w.WL("}");
-            }
+            //    w.WL("_lTextFieldGraph = new Dictionary<string, Dictionary<string, FieldInfo>>(" + sections.Count + ");");
+            //    for (int i = 0; i < sections.Count; i++)
+            //    {
+            //        var section = sections[i];
+            //        var dictName = section.Name + "_Dict";
+            //        var langSubclass = langClassName + "." + classNames[i];
+            //        var curFieldsName = section.Name.FirstCharToLower() + "Fields";
+            //        w.WL("var " + curFieldsName + " = typeof(" + langSubclass + ").GetFields(_bfLText);");
+            //        w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>(" + curFieldsName + ".Length);");
+            //        w.WL("foreach (var f in " + curFieldsName + ")");
+            //        w.WL("{");
+            //        w.WL(dictName + ".Add(f.Name, f);");
+            //        w.WL("}");
+            //        w.WL("_lTextFieldGraph.Add(nameof(" + langSubclass + "), " + dictName + ");");
+            //    }
+
+            //    w.WL("}");
+            //    w.WL("return _lTextFieldGraph;");
+            //    w.WL("}");
+            //    w.WL("}");
+            //    w.WL();
+            //}
+
+            #endregion
 
             w.WL(GenMessages.Method);
             w.WL("[MustUseReturnValue]");
             w.WL("internal static " + langClassName + " ReadLocalizationIni(string file)");
             w.WL("{");
+            if (writeReflectionStyle)
+            {
+                w.WL("#region Dictionary setup");
+                w.WL();
+                w.WL("const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic;");
+                w.WL();
+
+                for (int i = 0; i < sections.Count; i++)
+                {
+                    var section = sections[i];
+                    var dictName = section.Name + "_Dict";
+                    var langSubclass = langClassName + "." + classNames[i];
+                    var curFieldsName = section.Name.FirstCharToLower() + "Fields";
+                    w.WL("var " + curFieldsName + " = typeof(" + langSubclass + ").GetFields(_bfLText);");
+                    w.WL("var " + dictName + " = new Dictionary<string, FieldInfo>(" + curFieldsName + ".Length);");
+                    w.WL("foreach (var f in " + curFieldsName + ")");
+                    w.WL("{");
+                    w.WL(dictName + ".Add(f.Name, f);");
+                    w.WL("}");
+                }
+                w.WL();
+                w.WL("#endregion");
+                w.WL();
+            }
             w.WL("var ret = new " + langClassName + "();");
             w.WL("string[] lines = File.ReadAllLines(file, Encoding.UTF8);");
-            w.WL("for (int i = 0; i < lines.Length; i++)");
+            w.WL("int linesLength = lines.Length;");
+            w.WL("for (int i = 0; i < linesLength; i++)");
             w.WL("{");
             w.WL("string lineT = lines[i].Trim();");
             bool sectElseIf = false;
-            foreach (var section in sections)
+            for (int i = 0; i < sections.Count; i++)
             {
+                var section = sections[i];
+
                 w.WL((sectElseIf ? "else " : "") + "if (lineT == \"[" + section.Name + "]\")");
                 w.WL("{");
-                w.WL("while (i < lines.Length - 1)");
+                w.WL("while (i < linesLength - 1)");
                 w.WL("{");
+                w.WL("int ltLength;");
                 w.WL("string lt = lines[i + 1].TrimStart();");
 
                 if (writeReflectionStyle)
@@ -246,7 +290,7 @@ namespace FenGen
                     w.WL("if (eqIndex > -1)");
                     w.WL("{");
                     w.WL("string key = lt.Substring(0, eqIndex);");
-                    w.WL("if (LTextFieldGraph[\"" + section.Name + "_Class\"].TryGetValue(key, out FieldInfo? value))");
+                    w.WL("if (" + section.Name + "_Dict.TryGetValue(key, out FieldInfo value))");
                     w.WL("{");
                     w.WL("value.SetValue(ret." + section.Name + ", lt.Substring(eqIndex + 1));");
                     w.WL("}");
@@ -266,7 +310,7 @@ namespace FenGen
                     }
                 }
 
-                w.WL("else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')");
+                w.WL("else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')");
                 w.WL("{");
                 w.WL("break;");
                 w.WL("}");

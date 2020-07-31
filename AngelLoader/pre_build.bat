@@ -13,8 +13,8 @@ rem Autogenerate code
 rem ---
 set FenGen="%SolutionDir%FenGen\bin\Release\net472\FenGen.exe"
 
-set fenGenArgs=-fmdata -language_t
-rem set fenGenArgs=-fmdata -language_t -enable_lang_reflection_style_gen
+rem set fenGenArgs=-fmdata -language_t
+set fenGenArgs=-fmdata -language_t -enable_lang_reflection_style_gen
 
 %FenGen% %fenGenArgs%
 rem ---

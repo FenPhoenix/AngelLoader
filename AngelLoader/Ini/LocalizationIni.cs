@@ -1,7 +1,7 @@
 #define FenGen_LocalizationDest
 
-// These are for if I switch to the reflection-style codegen in here, because it will need these.
-
+// These are for the reflection-style codegen in case it's enabled. If it's disabled, these aren't necessary, but
+// I still want to keep them around so I don't have to keep adding them back.
 #pragma warning disable IDE0005 // Using directive is unnecessary.
 // ReSharper disable once RedundantUsingDirective
 using System.Collections.Generic;
@@ -15,15 +15,13 @@ using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.Attributes;
 
-/* PERF_TODO:
- I've written and tested a new cached-reflection-based codegen for this. Amazingly, the reflection itself took no
- time at all, but the extra Substring() calls (twice as many by necessity) took ~7ms. It did shave 18K off the
- file size. That's a huge win for file size, but I don't like adding time to startup, even if it is only 7ms.
- I *think* if I had access to spans and so on, I could avoid the one extra Substring() call per field by caching
- spans in the dictionary and then TryGetValue()ing the span of the key rather than the substring.
- If or when I decide to move to .NET 5 (that's if they make it stop being 10x slower and never mentioning a word
- about this gargantuanly massive unbelievably blatant blistering searing blindingly obvious show-stopping issue),
- I can test this and then maybe we can have our cake and eat it too!
+/*
+ New cached reflection method (2020-07-31):
+ -exe size: -20K
+ -aggregate time taken on startup call for 500 calls: +25%
+ -single-run time taken on startup call (with in-code Stopwatch): -62% (~5.5 new vs ~14.5 old)
+ -single-run time taken on Settings form call (with in-code Stopwatch): about equal
+ -Both old and new methods are unmeasurably fast (with the profiler) for a single call, so I'm good with this tradeoff.
 */
 
 namespace AngelLoader
@@ -35,21 +33,173 @@ namespace AngelLoader
         [MustUseReturnValue]
         internal static LText_Class ReadLocalizationIni(string file)
         {
+            #region Dictionary setup
+
+            const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic;
+
+            var metaFields = typeof(LText_Class.Meta_Class).GetFields(_bfLText);
+            var Meta_Dict = new Dictionary<string, FieldInfo>(metaFields.Length);
+            foreach (var f in metaFields)
+            {
+                Meta_Dict.Add(f.Name, f);
+            }
+            var globalFields = typeof(LText_Class.Global_Class).GetFields(_bfLText);
+            var Global_Dict = new Dictionary<string, FieldInfo>(globalFields.Length);
+            foreach (var f in globalFields)
+            {
+                Global_Dict.Add(f.Name, f);
+            }
+            var browseDialogsFields = typeof(LText_Class.BrowseDialogs_Class).GetFields(_bfLText);
+            var BrowseDialogs_Dict = new Dictionary<string, FieldInfo>(browseDialogsFields.Length);
+            foreach (var f in browseDialogsFields)
+            {
+                BrowseDialogs_Dict.Add(f.Name, f);
+            }
+            var alertMessagesFields = typeof(LText_Class.AlertMessages_Class).GetFields(_bfLText);
+            var AlertMessages_Dict = new Dictionary<string, FieldInfo>(alertMessagesFields.Length);
+            foreach (var f in alertMessagesFields)
+            {
+                AlertMessages_Dict.Add(f.Name, f);
+            }
+            var fMDeletionFields = typeof(LText_Class.FMDeletion_Class).GetFields(_bfLText);
+            var FMDeletion_Dict = new Dictionary<string, FieldInfo>(fMDeletionFields.Length);
+            foreach (var f in fMDeletionFields)
+            {
+                FMDeletion_Dict.Add(f.Name, f);
+            }
+            var difficultiesFields = typeof(LText_Class.Difficulties_Class).GetFields(_bfLText);
+            var Difficulties_Dict = new Dictionary<string, FieldInfo>(difficultiesFields.Length);
+            foreach (var f in difficultiesFields)
+            {
+                Difficulties_Dict.Add(f.Name, f);
+            }
+            var filterBarFields = typeof(LText_Class.FilterBar_Class).GetFields(_bfLText);
+            var FilterBar_Dict = new Dictionary<string, FieldInfo>(filterBarFields.Length);
+            foreach (var f in filterBarFields)
+            {
+                FilterBar_Dict.Add(f.Name, f);
+            }
+            var fMsListFields = typeof(LText_Class.FMsList_Class).GetFields(_bfLText);
+            var FMsList_Dict = new Dictionary<string, FieldInfo>(fMsListFields.Length);
+            foreach (var f in fMsListFields)
+            {
+                FMsList_Dict.Add(f.Name, f);
+            }
+            var statisticsTabFields = typeof(LText_Class.StatisticsTab_Class).GetFields(_bfLText);
+            var StatisticsTab_Dict = new Dictionary<string, FieldInfo>(statisticsTabFields.Length);
+            foreach (var f in statisticsTabFields)
+            {
+                StatisticsTab_Dict.Add(f.Name, f);
+            }
+            var editFMTabFields = typeof(LText_Class.EditFMTab_Class).GetFields(_bfLText);
+            var EditFMTab_Dict = new Dictionary<string, FieldInfo>(editFMTabFields.Length);
+            foreach (var f in editFMTabFields)
+            {
+                EditFMTab_Dict.Add(f.Name, f);
+            }
+            var commentTabFields = typeof(LText_Class.CommentTab_Class).GetFields(_bfLText);
+            var CommentTab_Dict = new Dictionary<string, FieldInfo>(commentTabFields.Length);
+            foreach (var f in commentTabFields)
+            {
+                CommentTab_Dict.Add(f.Name, f);
+            }
+            var tagsTabFields = typeof(LText_Class.TagsTab_Class).GetFields(_bfLText);
+            var TagsTab_Dict = new Dictionary<string, FieldInfo>(tagsTabFields.Length);
+            foreach (var f in tagsTabFields)
+            {
+                TagsTab_Dict.Add(f.Name, f);
+            }
+            var patchTabFields = typeof(LText_Class.PatchTab_Class).GetFields(_bfLText);
+            var PatchTab_Dict = new Dictionary<string, FieldInfo>(patchTabFields.Length);
+            foreach (var f in patchTabFields)
+            {
+                PatchTab_Dict.Add(f.Name, f);
+            }
+            var readmeAreaFields = typeof(LText_Class.ReadmeArea_Class).GetFields(_bfLText);
+            var ReadmeArea_Dict = new Dictionary<string, FieldInfo>(readmeAreaFields.Length);
+            foreach (var f in readmeAreaFields)
+            {
+                ReadmeArea_Dict.Add(f.Name, f);
+            }
+            var playOriginalGameMenuFields = typeof(LText_Class.PlayOriginalGameMenu_Class).GetFields(_bfLText);
+            var PlayOriginalGameMenu_Dict = new Dictionary<string, FieldInfo>(playOriginalGameMenuFields.Length);
+            foreach (var f in playOriginalGameMenuFields)
+            {
+                PlayOriginalGameMenu_Dict.Add(f.Name, f);
+            }
+            var mainButtonsFields = typeof(LText_Class.MainButtons_Class).GetFields(_bfLText);
+            var MainButtons_Dict = new Dictionary<string, FieldInfo>(mainButtonsFields.Length);
+            foreach (var f in mainButtonsFields)
+            {
+                MainButtons_Dict.Add(f.Name, f);
+            }
+            var progressBoxFields = typeof(LText_Class.ProgressBox_Class).GetFields(_bfLText);
+            var ProgressBox_Dict = new Dictionary<string, FieldInfo>(progressBoxFields.Length);
+            foreach (var f in progressBoxFields)
+            {
+                ProgressBox_Dict.Add(f.Name, f);
+            }
+            var settingsWindowFields = typeof(LText_Class.SettingsWindow_Class).GetFields(_bfLText);
+            var SettingsWindow_Dict = new Dictionary<string, FieldInfo>(settingsWindowFields.Length);
+            foreach (var f in settingsWindowFields)
+            {
+                SettingsWindow_Dict.Add(f.Name, f);
+            }
+            var dateFilterBoxFields = typeof(LText_Class.DateFilterBox_Class).GetFields(_bfLText);
+            var DateFilterBox_Dict = new Dictionary<string, FieldInfo>(dateFilterBoxFields.Length);
+            foreach (var f in dateFilterBoxFields)
+            {
+                DateFilterBox_Dict.Add(f.Name, f);
+            }
+            var tagsFilterBoxFields = typeof(LText_Class.TagsFilterBox_Class).GetFields(_bfLText);
+            var TagsFilterBox_Dict = new Dictionary<string, FieldInfo>(tagsFilterBoxFields.Length);
+            foreach (var f in tagsFilterBoxFields)
+            {
+                TagsFilterBox_Dict.Add(f.Name, f);
+            }
+            var ratingFilterBoxFields = typeof(LText_Class.RatingFilterBox_Class).GetFields(_bfLText);
+            var RatingFilterBox_Dict = new Dictionary<string, FieldInfo>(ratingFilterBoxFields.Length);
+            foreach (var f in ratingFilterBoxFields)
+            {
+                RatingFilterBox_Dict.Add(f.Name, f);
+            }
+            var importingFields = typeof(LText_Class.Importing_Class).GetFields(_bfLText);
+            var Importing_Dict = new Dictionary<string, FieldInfo>(importingFields.Length);
+            foreach (var f in importingFields)
+            {
+                Importing_Dict.Add(f.Name, f);
+            }
+            var scanAllFMsBoxFields = typeof(LText_Class.ScanAllFMsBox_Class).GetFields(_bfLText);
+            var ScanAllFMsBox_Dict = new Dictionary<string, FieldInfo>(scanAllFMsBoxFields.Length);
+            foreach (var f in scanAllFMsBoxFields)
+            {
+                ScanAllFMsBox_Dict.Add(f.Name, f);
+            }
+
+            #endregion
+
             var ret = new LText_Class();
             string[] lines = File.ReadAllLines(file, Encoding.UTF8);
-            for (int i = 0; i < lines.Length; i++)
+            int linesLength = lines.Length;
+            for (int i = 0; i < linesLength; i++)
             {
                 string lineT = lines[i].Trim();
                 if (lineT == "[Meta]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TranslatedLanguageName="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.Meta.TranslatedLanguageName = lt.Substring(23);
+                            string key = lt.Substring(0, eqIndex);
+                            if (Meta_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.Meta, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -58,126 +208,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[Global]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("OK="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.Global.OK = lt.Substring(3);
+                            string key = lt.Substring(0, eqIndex);
+                            if (Global_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.Global, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Cancel="))
-                        {
-                            ret.Global.Cancel = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("BrowseEllipses="))
-                        {
-                            ret.Global.BrowseEllipses = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Add="))
-                        {
-                            ret.Global.Add = lt.Substring(4);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AddEllipses="))
-                        {
-                            ret.Global.AddEllipses = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Remove="))
-                        {
-                            ret.Global.Remove = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RemoveEllipses="))
-                        {
-                            ret.Global.RemoveEllipses = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Reset="))
-                        {
-                            ret.Global.Reset = lt.Substring(6);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Autodetect="))
-                        {
-                            ret.Global.Autodetect = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SelectAll="))
-                        {
-                            ret.Global.SelectAll = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SelectNone="))
-                        {
-                            ret.Global.SelectNone = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Unrated="))
-                        {
-                            ret.Global.Unrated = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("None="))
-                        {
-                            ret.Global.None = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CustomTagInCategory="))
-                        {
-                            ret.Global.CustomTagInCategory = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("KilobyteShort="))
-                        {
-                            ret.Global.KilobyteShort = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("MegabyteShort="))
-                        {
-                            ret.Global.MegabyteShort = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("GigabyteShort="))
-                        {
-                            ret.Global.GigabyteShort = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief1="))
-                        {
-                            ret.Global.Thief1 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2="))
-                        {
-                            ret.Global.Thief2 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief3="))
-                        {
-                            ret.Global.Thief3 = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SystemShock2="))
-                        {
-                            ret.Global.SystemShock2 = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief1_Short="))
-                        {
-                            ret.Global.Thief1_Short = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Short="))
-                        {
-                            ret.Global.Thief2_Short = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief3_Short="))
-                        {
-                            ret.Global.Thief3_Short = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SystemShock2_Short="))
-                        {
-                            ret.Global.SystemShock2_Short = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief1_Colon="))
-                        {
-                            ret.Global.Thief1_Colon = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Colon="))
-                        {
-                            ret.Global.Thief2_Colon = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief3_Colon="))
-                        {
-                            ret.Global.Thief3_Colon = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SystemShock2_Colon="))
-                        {
-                            ret.Global.SystemShock2_Colon = lt.Substring(19);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -186,26 +230,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[BrowseDialogs]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("AllFiles="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.BrowseDialogs.AllFiles = lt.Substring(9);
+                            string key = lt.Substring(0, eqIndex);
+                            if (BrowseDialogs_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.BrowseDialogs, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("ExeFiles="))
-                        {
-                            ret.BrowseDialogs.ExeFiles = lt.Substring(9);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("IniFiles="))
-                        {
-                            ret.BrowseDialogs.IniFiles = lt.Substring(9);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DMLFiles="))
-                        {
-                            ret.BrowseDialogs.DMLFiles = lt.Substring(9);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -214,218 +252,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[AlertMessages]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Alert="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.AlertMessages.Alert = lt.Substring(6);
+                            string key = lt.Substring(0, eqIndex);
+                            if (AlertMessages_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.AlertMessages, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Warning="))
-                        {
-                            ret.AlertMessages.Warning = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Error="))
-                        {
-                            ret.AlertMessages.Error = lt.Substring(6);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Confirm="))
-                        {
-                            ret.AlertMessages.Confirm = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall="))
-                        {
-                            ret.AlertMessages.Uninstall = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("BackUp="))
-                        {
-                            ret.AlertMessages.BackUp = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DontBackUp="))
-                        {
-                            ret.AlertMessages.DontBackUp = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMArchive="))
-                        {
-                            ret.AlertMessages.DeleteFMArchive = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DontAskAgain="))
-                        {
-                            ret.AlertMessages.DontAskAgain = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AppClosing_OperationInProgress="))
-                        {
-                            ret.AlertMessages.AppClosing_OperationInProgress = lt.Substring(31);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("WebSearchURL_ProblemOpening="))
-                        {
-                            ret.AlertMessages.WebSearchURL_ProblemOpening = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Install_UnknownGameType="))
-                        {
-                            ret.AlertMessages.Install_UnknownGameType = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Install_UnsupportedGameType="))
-                        {
-                            ret.AlertMessages.Install_UnsupportedGameType = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Install_ArchiveNotFound="))
-                        {
-                            ret.AlertMessages.Install_ArchiveNotFound = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Install_ExecutableNotFound="))
-                        {
-                            ret.AlertMessages.Install_ExecutableNotFound = lt.Substring(27);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Install_FMInstallPathNotFound="))
-                        {
-                            ret.AlertMessages.Install_FMInstallPathNotFound = lt.Substring(30);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Install_GameIsRunning="))
-                        {
-                            ret.AlertMessages.Install_GameIsRunning = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_Confirm="))
-                        {
-                            ret.AlertMessages.Uninstall_Confirm = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_GameIsRunning="))
-                        {
-                            ret.AlertMessages.Uninstall_GameIsRunning = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_FMAlreadyUninstalled="))
-                        {
-                            ret.AlertMessages.Uninstall_FMAlreadyUninstalled = lt.Substring(31);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_ArchiveNotFound="))
-                        {
-                            ret.AlertMessages.Uninstall_ArchiveNotFound = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_UninstallNotCompleted="))
-                        {
-                            ret.AlertMessages.Uninstall_UninstallNotCompleted = lt.Substring(32);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_BackupSavesAndScreenshots="))
-                        {
-                            ret.AlertMessages.Uninstall_BackupSavesAndScreenshots = lt.Substring(36);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_BackupAllData="))
-                        {
-                            ret.AlertMessages.Uninstall_BackupAllData = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_BackupChooseNoNote="))
-                        {
-                            ret.AlertMessages.Uninstall_BackupChooseNoNote = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Uninstall_FailedFullyOrPartially="))
-                        {
-                            ret.AlertMessages.Uninstall_FailedFullyOrPartially = lt.Substring(33);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FileConversion_GameIsRunning="))
-                        {
-                            ret.AlertMessages.FileConversion_GameIsRunning = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Play_ExecutableNotFound="))
-                        {
-                            ret.AlertMessages.Play_ExecutableNotFound = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Play_GamePathNotFound="))
-                        {
-                            ret.AlertMessages.Play_GamePathNotFound = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Play_ExecutableNotFoundFM="))
-                        {
-                            ret.AlertMessages.Play_ExecutableNotFoundFM = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Play_AnyGameIsRunning="))
-                        {
-                            ret.AlertMessages.Play_AnyGameIsRunning = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Play_UnknownGameType="))
-                        {
-                            ret.AlertMessages.Play_UnknownGameType = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Play_ConfirmMessage="))
-                        {
-                            ret.AlertMessages.Play_ConfirmMessage = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DromEd_ExecutableNotFound="))
-                        {
-                            ret.AlertMessages.DromEd_ExecutableNotFound = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ShockEd_ExecutableNotFound="))
-                        {
-                            ret.AlertMessages.ShockEd_ExecutableNotFound = lt.Substring(27);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DromEd_UnknownGameType="))
-                        {
-                            ret.AlertMessages.DromEd_UnknownGameType = lt.Substring(23);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Thief2_Multiplayer_ExecutableNotFound="))
-                        {
-                            ret.AlertMessages.Thief2_Multiplayer_ExecutableNotFound = lt.Substring(38);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Patch_AddDML_InstallDirNotFound="))
-                        {
-                            ret.AlertMessages.Patch_AddDML_InstallDirNotFound = lt.Substring(32);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Patch_AddDML_UnableToAdd="))
-                        {
-                            ret.AlertMessages.Patch_AddDML_UnableToAdd = lt.Substring(25);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Patch_RemoveDML_InstallDirNotFound="))
-                        {
-                            ret.AlertMessages.Patch_RemoveDML_InstallDirNotFound = lt.Substring(35);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Patch_RemoveDML_UnableToRemove="))
-                        {
-                            ret.AlertMessages.Patch_RemoveDML_UnableToRemove = lt.Substring(31);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Patch_FMFolderNotFound="))
-                        {
-                            ret.AlertMessages.Patch_FMFolderNotFound = lt.Substring(23);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Misc_SneakyOptionsIniNotFound="))
-                        {
-                            ret.AlertMessages.Misc_SneakyOptionsIniNotFound = lt.Substring(30);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Misc_FMMarkedInstalledButNotInstalled="))
-                        {
-                            ret.AlertMessages.Misc_FMMarkedInstalledButNotInstalled = lt.Substring(38);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Extract_ZipExtractFailedFullyOrPartially="))
-                        {
-                            ret.AlertMessages.Extract_ZipExtractFailedFullyOrPartially = lt.Substring(41);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Extract_SevenZipExtractFailedFullyOrPartially="))
-                        {
-                            ret.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially = lt.Substring(46);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Scan_ExceptionInScanOne="))
-                        {
-                            ret.AlertMessages.Scan_ExceptionInScanOne = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Scan_ExceptionInScanMultiple="))
-                        {
-                            ret.AlertMessages.Scan_ExceptionInScanMultiple = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FindFMs_ExceptionReadingFMDataIni="))
-                        {
-                            ret.AlertMessages.FindFMs_ExceptionReadingFMDataIni = lt.Substring(34);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DeleteFM_UnableToDelete="))
-                        {
-                            ret.AlertMessages.DeleteFM_UnableToDelete = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Help_HelpFileNotFound="))
-                        {
-                            ret.AlertMessages.Help_HelpFileNotFound = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Help_UnableToOpenHelpFile="))
-                        {
-                            ret.AlertMessages.Help_UnableToOpenHelpFile = lt.Substring(26);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -434,30 +274,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[FMDeletion]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("ArchiveNotFound="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.FMDeletion.ArchiveNotFound = lt.Substring(16);
+                            string key = lt.Substring(0, eqIndex);
+                            if (FMDeletion_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.FMDeletion, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("AboutToDelete="))
-                        {
-                            ret.FMDeletion.AboutToDelete = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DuplicateArchivesFound="))
-                        {
-                            ret.FMDeletion.DuplicateArchivesFound = lt.Substring(23);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DeleteFM="))
-                        {
-                            ret.FMDeletion.DeleteFM = lt.Substring(9);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DeleteFMs="))
-                        {
-                            ret.FMDeletion.DeleteFMs = lt.Substring(10);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -466,38 +296,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[Difficulties]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Easy="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.Difficulties.Easy = lt.Substring(5);
+                            string key = lt.Substring(0, eqIndex);
+                            if (Difficulties_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.Difficulties, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Normal="))
-                        {
-                            ret.Difficulties.Normal = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Hard="))
-                        {
-                            ret.Difficulties.Hard = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Expert="))
-                        {
-                            ret.Difficulties.Expert = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Extreme="))
-                        {
-                            ret.Difficulties.Extreme = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Impossible="))
-                        {
-                            ret.Difficulties.Impossible = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Unknown="))
-                        {
-                            ret.Difficulties.Unknown = lt.Substring(8);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -506,66 +318,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[FilterBar]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Title="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.FilterBar.Title = lt.Substring(6);
+                            string key = lt.Substring(0, eqIndex);
+                            if (FilterBar_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.FilterBar, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Author="))
-                        {
-                            ret.FilterBar.Author = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ReleaseDateToolTip="))
-                        {
-                            ret.FilterBar.ReleaseDateToolTip = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("LastPlayedToolTip="))
-                        {
-                            ret.FilterBar.LastPlayedToolTip = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("TagsToolTip="))
-                        {
-                            ret.FilterBar.TagsToolTip = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FinishedToolTip="))
-                        {
-                            ret.FilterBar.FinishedToolTip = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("UnfinishedToolTip="))
-                        {
-                            ret.FilterBar.UnfinishedToolTip = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RatingToolTip="))
-                        {
-                            ret.FilterBar.RatingToolTip = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ShowUnsupported="))
-                        {
-                            ret.FilterBar.ShowUnsupported = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ShowRecentAtTop="))
-                        {
-                            ret.FilterBar.ShowRecentAtTop = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RefreshFromDiskButtonToolTip="))
-                        {
-                            ret.FilterBar.RefreshFromDiskButtonToolTip = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RefreshFilteredListButtonToolTip="))
-                        {
-                            ret.FilterBar.RefreshFilteredListButtonToolTip = lt.Substring(33);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ClearFiltersButtonToolTip="))
-                        {
-                            ret.FilterBar.ClearFiltersButtonToolTip = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ResetLayoutButtonToolTip="))
-                        {
-                            ret.FilterBar.ResetLayoutButtonToolTip = lt.Substring(25);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -574,146 +340,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[FMsList]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("ZoomInToolTip="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.FMsList.ZoomInToolTip = lt.Substring(14);
+                            string key = lt.Substring(0, eqIndex);
+                            if (FMsList_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.FMsList, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("ZoomOutToolTip="))
-                        {
-                            ret.FMsList.ZoomOutToolTip = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ResetZoomToolTip="))
-                        {
-                            ret.FMsList.ResetZoomToolTip = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("GameColumn="))
-                        {
-                            ret.FMsList.GameColumn = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("InstalledColumn="))
-                        {
-                            ret.FMsList.InstalledColumn = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("TitleColumn="))
-                        {
-                            ret.FMsList.TitleColumn = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ArchiveColumn="))
-                        {
-                            ret.FMsList.ArchiveColumn = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AuthorColumn="))
-                        {
-                            ret.FMsList.AuthorColumn = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("SizeColumn="))
-                        {
-                            ret.FMsList.SizeColumn = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RatingColumn="))
-                        {
-                            ret.FMsList.RatingColumn = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FinishedColumn="))
-                        {
-                            ret.FMsList.FinishedColumn = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ReleaseDateColumn="))
-                        {
-                            ret.FMsList.ReleaseDateColumn = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("LastPlayedColumn="))
-                        {
-                            ret.FMsList.LastPlayedColumn = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DateAddedColumn="))
-                        {
-                            ret.FMsList.DateAddedColumn = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DisabledModsColumn="))
-                        {
-                            ret.FMsList.DisabledModsColumn = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CommentColumn="))
-                        {
-                            ret.FMsList.CommentColumn = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AllModsDisabledMessage="))
-                        {
-                            ret.FMsList.AllModsDisabledMessage = lt.Substring(23);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ColumnMenu_ResetAllColumnsToVisible="))
-                        {
-                            ret.FMsList.ColumnMenu_ResetAllColumnsToVisible = lt.Substring(36);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ColumnMenu_ResetAllColumnWidths="))
-                        {
-                            ret.FMsList.ColumnMenu_ResetAllColumnWidths = lt.Substring(32);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ColumnMenu_ResetAllColumnPositions="))
-                        {
-                            ret.FMsList.ColumnMenu_ResetAllColumnPositions = lt.Substring(35);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_PlayFM="))
-                        {
-                            ret.FMsList.FMMenu_PlayFM = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_PlayFM_Multiplayer="))
-                        {
-                            ret.FMsList.FMMenu_PlayFM_Multiplayer = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_InstallFM="))
-                        {
-                            ret.FMsList.FMMenu_InstallFM = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_UninstallFM="))
-                        {
-                            ret.FMsList.FMMenu_UninstallFM = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_DeleteFM="))
-                        {
-                            ret.FMsList.FMMenu_DeleteFM = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_OpenInDromEd="))
-                        {
-                            ret.FMsList.FMMenu_OpenInDromEd = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_OpenInShockEd="))
-                        {
-                            ret.FMsList.FMMenu_OpenInShockEd = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_Rating="))
-                        {
-                            ret.FMsList.FMMenu_Rating = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_FinishedOn="))
-                        {
-                            ret.FMsList.FMMenu_FinishedOn = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_ConvertAudio="))
-                        {
-                            ret.FMsList.FMMenu_ConvertAudio = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_ScanFM="))
-                        {
-                            ret.FMsList.FMMenu_ScanFM = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMMenu_WebSearch="))
-                        {
-                            ret.FMsList.FMMenu_WebSearch = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ConvertAudioMenu_ConvertWAVsTo16Bit="))
-                        {
-                            ret.FMsList.ConvertAudioMenu_ConvertWAVsTo16Bit = lt.Substring(36);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ConvertAudioMenu_ConvertOGGsToWAVs="))
-                        {
-                            ret.FMsList.ConvertAudioMenu_ConvertOGGsToWAVs = lt.Substring(35);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -722,74 +362,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[StatisticsTab]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TabText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.StatisticsTab.TabText = lt.Substring(8);
+                            string key = lt.Substring(0, eqIndex);
+                            if (StatisticsTab_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.StatisticsTab, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("CustomResources="))
-                        {
-                            ret.StatisticsTab.CustomResources = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CustomResourcesNotScanned="))
-                        {
-                            ret.StatisticsTab.CustomResourcesNotScanned = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CustomResourcesNotSupportedForThief3="))
-                        {
-                            ret.StatisticsTab.CustomResourcesNotSupportedForThief3 = lt.Substring(37);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("NoFMSelected="))
-                        {
-                            ret.StatisticsTab.NoFMSelected = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Map="))
-                        {
-                            ret.StatisticsTab.Map = lt.Substring(4);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Automap="))
-                        {
-                            ret.StatisticsTab.Automap = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Textures="))
-                        {
-                            ret.StatisticsTab.Textures = lt.Substring(9);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Sounds="))
-                        {
-                            ret.StatisticsTab.Sounds = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Movies="))
-                        {
-                            ret.StatisticsTab.Movies = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Objects="))
-                        {
-                            ret.StatisticsTab.Objects = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Creatures="))
-                        {
-                            ret.StatisticsTab.Creatures = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Motions="))
-                        {
-                            ret.StatisticsTab.Motions = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Scripts="))
-                        {
-                            ret.StatisticsTab.Scripts = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Subtitles="))
-                        {
-                            ret.StatisticsTab.Subtitles = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RescanCustomResources="))
-                        {
-                            ret.StatisticsTab.RescanCustomResources = lt.Substring(22);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -798,74 +384,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[EditFMTab]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TabText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.EditFMTab.TabText = lt.Substring(8);
+                            string key = lt.Substring(0, eqIndex);
+                            if (EditFMTab_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.EditFMTab, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("Title="))
-                        {
-                            ret.EditFMTab.Title = lt.Substring(6);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Author="))
-                        {
-                            ret.EditFMTab.Author = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ReleaseDate="))
-                        {
-                            ret.EditFMTab.ReleaseDate = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("LastPlayed="))
-                        {
-                            ret.EditFMTab.LastPlayed = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Rating="))
-                        {
-                            ret.EditFMTab.Rating = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FinishedOn="))
-                        {
-                            ret.EditFMTab.FinishedOn = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DisabledMods="))
-                        {
-                            ret.EditFMTab.DisabledMods = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DisableAllMods="))
-                        {
-                            ret.EditFMTab.DisableAllMods = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("PlayFMInThisLanguage="))
-                        {
-                            ret.EditFMTab.PlayFMInThisLanguage = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DefaultLanguage="))
-                        {
-                            ret.EditFMTab.DefaultLanguage = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RescanTitleToolTip="))
-                        {
-                            ret.EditFMTab.RescanTitleToolTip = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RescanAuthorToolTip="))
-                        {
-                            ret.EditFMTab.RescanAuthorToolTip = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RescanReleaseDateToolTip="))
-                        {
-                            ret.EditFMTab.RescanReleaseDateToolTip = lt.Substring(25);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RescanLanguages="))
-                        {
-                            ret.EditFMTab.RescanLanguages = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RescanForReadmes="))
-                        {
-                            ret.EditFMTab.RescanForReadmes = lt.Substring(17);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -874,14 +406,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[CommentTab]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TabText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.CommentTab.TabText = lt.Substring(8);
+                            string key = lt.Substring(0, eqIndex);
+                            if (CommentTab_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.CommentTab, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -890,34 +428,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[TagsTab]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TabText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.TagsTab.TabText = lt.Substring(8);
+                            string key = lt.Substring(0, eqIndex);
+                            if (TagsTab_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.TagsTab, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("AddTag="))
-                        {
-                            ret.TagsTab.AddTag = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AddFromList="))
-                        {
-                            ret.TagsTab.AddFromList = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RemoveTag="))
-                        {
-                            ret.TagsTab.RemoveTag = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AskRemoveCategory="))
-                        {
-                            ret.TagsTab.AskRemoveCategory = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AskRemoveTag="))
-                        {
-                            ret.TagsTab.AskRemoveTag = lt.Substring(13);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -926,34 +450,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[PatchTab]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TabText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.PatchTab.TabText = lt.Substring(8);
+                            string key = lt.Substring(0, eqIndex);
+                            if (PatchTab_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.PatchTab, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("DMLPatchesApplied="))
-                        {
-                            ret.PatchTab.DMLPatchesApplied = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("AddDMLPatchToolTip="))
-                        {
-                            ret.PatchTab.AddDMLPatchToolTip = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("RemoveDMLPatchToolTip="))
-                        {
-                            ret.PatchTab.RemoveDMLPatchToolTip = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMNotInstalled="))
-                        {
-                            ret.PatchTab.FMNotInstalled = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("OpenFMFolder="))
-                        {
-                            ret.PatchTab.OpenFMFolder = lt.Substring(13);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -962,38 +472,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[ReadmeArea]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("ViewHTMLReadme="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.ReadmeArea.ViewHTMLReadme = lt.Substring(15);
+                            string key = lt.Substring(0, eqIndex);
+                            if (ReadmeArea_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.ReadmeArea, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("ZoomInToolTip="))
-                        {
-                            ret.ReadmeArea.ZoomInToolTip = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ZoomOutToolTip="))
-                        {
-                            ret.ReadmeArea.ZoomOutToolTip = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ResetZoomToolTip="))
-                        {
-                            ret.ReadmeArea.ResetZoomToolTip = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FullScreenToolTip="))
-                        {
-                            ret.ReadmeArea.FullScreenToolTip = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("NoReadmeFound="))
-                        {
-                            ret.ReadmeArea.NoReadmeFound = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("UnableToLoadReadme="))
-                        {
-                            ret.ReadmeArea.UnableToLoadReadme = lt.Substring(19);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1002,14 +494,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[PlayOriginalGameMenu]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Thief2_Multiplayer="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.PlayOriginalGameMenu.Thief2_Multiplayer = lt.Substring(19);
+                            string key = lt.Substring(0, eqIndex);
+                            if (PlayOriginalGameMenu_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.PlayOriginalGameMenu, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1018,42 +516,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[MainButtons]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("PlayFM="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.MainButtons.PlayFM = lt.Substring(7);
+                            string key = lt.Substring(0, eqIndex);
+                            if (MainButtons_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.MainButtons, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("InstallFM="))
-                        {
-                            ret.MainButtons.InstallFM = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("UninstallFM="))
-                        {
-                            ret.MainButtons.UninstallFM = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("PlayOriginalGame="))
-                        {
-                            ret.MainButtons.PlayOriginalGame = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("WebSearch="))
-                        {
-                            ret.MainButtons.WebSearch = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ScanAllFMs="))
-                        {
-                            ret.MainButtons.ScanAllFMs = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Import="))
-                        {
-                            ret.MainButtons.Import = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Settings="))
-                        {
-                            ret.MainButtons.Settings = lt.Substring(9);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1062,66 +538,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[ProgressBox]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("Scanning="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.ProgressBox.Scanning = lt.Substring(9);
+                            string key = lt.Substring(0, eqIndex);
+                            if (ProgressBox_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.ProgressBox, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("InstallingFM="))
-                        {
-                            ret.ProgressBox.InstallingFM = lt.Substring(13);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("UninstallingFM="))
-                        {
-                            ret.ProgressBox.UninstallingFM = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ConvertingFiles="))
-                        {
-                            ret.ProgressBox.ConvertingFiles = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CheckingInstalledFMs="))
-                        {
-                            ret.ProgressBox.CheckingInstalledFMs = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ReportScanningFirst="))
-                        {
-                            ret.ProgressBox.ReportScanningFirst = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ReportScanningBetweenNumAndTotal="))
-                        {
-                            ret.ProgressBox.ReportScanningBetweenNumAndTotal = lt.Substring(33);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ReportScanningLast="))
-                        {
-                            ret.ProgressBox.ReportScanningLast = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CancelingInstall="))
-                        {
-                            ret.ProgressBox.CancelingInstall = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportingFromDarkLoader="))
-                        {
-                            ret.ProgressBox.ImportingFromDarkLoader = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportingFromNewDarkLoader="))
-                        {
-                            ret.ProgressBox.ImportingFromNewDarkLoader = lt.Substring(27);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportingFromFMSel="))
-                        {
-                            ret.ProgressBox.ImportingFromFMSel = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CachingReadmeFiles="))
-                        {
-                            ret.ProgressBox.CachingReadmeFiles = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DeletingFMArchive="))
-                        {
-                            ret.ProgressBox.DeletingFMArchive = lt.Substring(18);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1130,242 +560,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[SettingsWindow]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TitleText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.SettingsWindow.TitleText = lt.Substring(10);
+                            string key = lt.Substring(0, eqIndex);
+                            if (SettingsWindow_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.SettingsWindow, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("StartupTitleText="))
-                        {
-                            ret.SettingsWindow.StartupTitleText = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_TabText="))
-                        {
-                            ret.SettingsWindow.Paths_TabText = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("InitialSettings_TabText="))
-                        {
-                            ret.SettingsWindow.InitialSettings_TabText = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_PathsToGameExes="))
-                        {
-                            ret.SettingsWindow.Paths_PathsToGameExes = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_DarkEngineGamesRequireNewDark="))
-                        {
-                            ret.SettingsWindow.Paths_DarkEngineGamesRequireNewDark = lt.Substring(36);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_Thief3RequiresSneakyUpgrade="))
-                        {
-                            ret.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade = lt.Substring(34);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_SteamOptions="))
-                        {
-                            ret.SettingsWindow.Paths_SteamOptions = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_PathToSteamExecutable="))
-                        {
-                            ret.SettingsWindow.Paths_PathToSteamExecutable = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_LaunchTheseGamesThroughSteam="))
-                        {
-                            ret.SettingsWindow.Paths_LaunchTheseGamesThroughSteam = lt.Substring(35);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_Other="))
-                        {
-                            ret.SettingsWindow.Paths_Other = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_BackupPath="))
-                        {
-                            ret.SettingsWindow.Paths_BackupPath = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_FMArchivePaths="))
-                        {
-                            ret.SettingsWindow.Paths_FMArchivePaths = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_IncludeSubfolders="))
-                        {
-                            ret.SettingsWindow.Paths_IncludeSubfolders = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_BackupPath_Info="))
-                        {
-                            ret.SettingsWindow.Paths_BackupPath_Info = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_AddArchivePathToolTip="))
-                        {
-                            ret.SettingsWindow.Paths_AddArchivePathToolTip = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_RemoveArchivePathToolTip="))
-                        {
-                            ret.SettingsWindow.Paths_RemoveArchivePathToolTip = lt.Substring(31);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Paths_ErrorSomePathsAreInvalid="))
-                        {
-                            ret.SettingsWindow.Paths_ErrorSomePathsAreInvalid = lt.Substring(31);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_TabText="))
-                        {
-                            ret.SettingsWindow.FMDisplay_TabText = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_GameOrganization="))
-                        {
-                            ret.SettingsWindow.FMDisplay_GameOrganization = lt.Substring(27);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_GameOrganizationByTab="))
-                        {
-                            ret.SettingsWindow.FMDisplay_GameOrganizationByTab = lt.Substring(32);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_UseShortGameTabNames="))
-                        {
-                            ret.SettingsWindow.FMDisplay_UseShortGameTabNames = lt.Substring(31);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_GameOrganizationOneList="))
-                        {
-                            ret.SettingsWindow.FMDisplay_GameOrganizationOneList = lt.Substring(34);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_Sorting="))
-                        {
-                            ret.SettingsWindow.FMDisplay_Sorting = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_IgnoreArticles="))
-                        {
-                            ret.SettingsWindow.FMDisplay_IgnoreArticles = lt.Substring(25);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_MoveArticlesToEnd="))
-                        {
-                            ret.SettingsWindow.FMDisplay_MoveArticlesToEnd = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RatingDisplayStyle="))
-                        {
-                            ret.SettingsWindow.FMDisplay_RatingDisplayStyle = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RatingDisplayStyleNDL="))
-                        {
-                            ret.SettingsWindow.FMDisplay_RatingDisplayStyleNDL = lt.Substring(32);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RatingDisplayStyleFMSel="))
-                        {
-                            ret.SettingsWindow.FMDisplay_RatingDisplayStyleFMSel = lt.Substring(34);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RatingDisplayStyleUseStars="))
-                        {
-                            ret.SettingsWindow.FMDisplay_RatingDisplayStyleUseStars = lt.Substring(37);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_DateFormat="))
-                        {
-                            ret.SettingsWindow.FMDisplay_DateFormat = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_CurrentCultureShort="))
-                        {
-                            ret.SettingsWindow.FMDisplay_CurrentCultureShort = lt.Substring(30);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_CurrentCultureLong="))
-                        {
-                            ret.SettingsWindow.FMDisplay_CurrentCultureLong = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_Custom="))
-                        {
-                            ret.SettingsWindow.FMDisplay_Custom = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RecentFMs="))
-                        {
-                            ret.SettingsWindow.FMDisplay_RecentFMs = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("FMDisplay_RecentFMs_MaxDays="))
-                        {
-                            ret.SettingsWindow.FMDisplay_RecentFMs_MaxDays = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_TabText="))
-                        {
-                            ret.SettingsWindow.Other_TabText = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_FMFileConversion="))
-                        {
-                            ret.SettingsWindow.Other_FMFileConversion = lt.Substring(23);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ConvertWAVsTo16BitOnInstall="))
-                        {
-                            ret.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall = lt.Substring(34);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ConvertOGGsToWAVsOnInstall="))
-                        {
-                            ret.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall = lt.Substring(33);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_UninstallingFMs="))
-                        {
-                            ret.SettingsWindow.Other_UninstallingFMs = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ConfirmBeforeUninstalling="))
-                        {
-                            ret.SettingsWindow.Other_ConfirmBeforeUninstalling = lt.Substring(32);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_WhenUninstallingBackUp="))
-                        {
-                            ret.SettingsWindow.Other_WhenUninstallingBackUp = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_BackUpSavesAndScreenshotsOnly="))
-                        {
-                            ret.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly = lt.Substring(36);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_BackUpAllChangedFiles="))
-                        {
-                            ret.SettingsWindow.Other_BackUpAllChangedFiles = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_BackUpAlwaysAsk="))
-                        {
-                            ret.SettingsWindow.Other_BackUpAlwaysAsk = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_Language="))
-                        {
-                            ret.SettingsWindow.Other_Language = lt.Substring(15);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_WebSearch="))
-                        {
-                            ret.SettingsWindow.Other_WebSearch = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_WebSearchURL="))
-                        {
-                            ret.SettingsWindow.Other_WebSearchURL = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_WebSearchTitleVar="))
-                        {
-                            ret.SettingsWindow.Other_WebSearchTitleVar = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_WebSearchResetToolTip="))
-                        {
-                            ret.SettingsWindow.Other_WebSearchResetToolTip = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ConfirmPlayOnDCOrEnter="))
-                        {
-                            ret.SettingsWindow.Other_ConfirmPlayOnDCOrEnter = lt.Substring(29);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ConfirmPlayOnDCOrEnter_Ask="))
-                        {
-                            ret.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask = lt.Substring(33);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ShowOrHideInterfaceElements="))
-                        {
-                            ret.SettingsWindow.Other_ShowOrHideInterfaceElements = lt.Substring(34);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_HideUninstallButton="))
-                        {
-                            ret.SettingsWindow.Other_HideUninstallButton = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_HideFMListZoomButtons="))
-                        {
-                            ret.SettingsWindow.Other_HideFMListZoomButtons = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ReadmeBox="))
-                        {
-                            ret.SettingsWindow.Other_ReadmeBox = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Other_ReadmeUseFixedWidthFont="))
-                        {
-                            ret.SettingsWindow.Other_ReadmeUseFixedWidthFont = lt.Substring(30);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1374,34 +582,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[DateFilterBox]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("ReleaseDateTitleText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.DateFilterBox.ReleaseDateTitleText = lt.Substring(21);
+                            string key = lt.Substring(0, eqIndex);
+                            if (DateFilterBox_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.DateFilterBox, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("LastPlayedTitleText="))
-                        {
-                            ret.DateFilterBox.LastPlayedTitleText = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("From="))
-                        {
-                            ret.DateFilterBox.From = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("To="))
-                        {
-                            ret.DateFilterBox.To = lt.Substring(3);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("NoMinimum="))
-                        {
-                            ret.DateFilterBox.NoMinimum = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("NoMaximum="))
-                        {
-                            ret.DateFilterBox.NoMaximum = lt.Substring(10);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1410,50 +604,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[TagsFilterBox]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TitleText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.TagsFilterBox.TitleText = lt.Substring(10);
+                            string key = lt.Substring(0, eqIndex);
+                            if (TagsFilterBox_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.TagsFilterBox, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("MoveToAll="))
-                        {
-                            ret.TagsFilterBox.MoveToAll = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("MoveToAny="))
-                        {
-                            ret.TagsFilterBox.MoveToAny = lt.Substring(10);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("MoveToExclude="))
-                        {
-                            ret.TagsFilterBox.MoveToExclude = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Reset="))
-                        {
-                            ret.TagsFilterBox.Reset = lt.Substring(6);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("IncludeAll="))
-                        {
-                            ret.TagsFilterBox.IncludeAll = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("IncludeAny="))
-                        {
-                            ret.TagsFilterBox.IncludeAny = lt.Substring(11);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Exclude="))
-                        {
-                            ret.TagsFilterBox.Exclude = lt.Substring(8);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ClearSelectedToolTip="))
-                        {
-                            ret.TagsFilterBox.ClearSelectedToolTip = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ClearAllToolTip="))
-                        {
-                            ret.TagsFilterBox.ClearAllToolTip = lt.Substring(16);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1462,22 +626,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[RatingFilterBox]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TitleText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.RatingFilterBox.TitleText = lt.Substring(10);
+                            string key = lt.Substring(0, eqIndex);
+                            if (RatingFilterBox_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.RatingFilterBox, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("From="))
-                        {
-                            ret.RatingFilterBox.From = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("To="))
-                        {
-                            ret.RatingFilterBox.To = lt.Substring(3);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1486,102 +648,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[Importing]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("NothingWasImported="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.Importing.NothingWasImported = lt.Substring(19);
+                            string key = lt.Substring(0, eqIndex);
+                            if (Importing_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.Importing, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("SelectedFileIsNotAValidPath="))
-                        {
-                            ret.Importing.SelectedFileIsNotAValidPath = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportFromDarkLoader_TitleText="))
-                        {
-                            ret.Importing.ImportFromDarkLoader_TitleText = lt.Substring(31);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_ChooseIni="))
-                        {
-                            ret.Importing.DarkLoader_ChooseIni = lt.Substring(21);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_ImportFMData="))
-                        {
-                            ret.Importing.DarkLoader_ImportFMData = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_ImportSaves="))
-                        {
-                            ret.Importing.DarkLoader_ImportSaves = lt.Substring(23);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_SelectedFileIsNotDarkLoaderIni="))
-                        {
-                            ret.Importing.DarkLoader_SelectedFileIsNotDarkLoaderIni = lt.Substring(42);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_SelectedDarkLoaderIniWasNotFound="))
-                        {
-                            ret.Importing.DarkLoader_SelectedDarkLoaderIniWasNotFound = lt.Substring(44);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("DarkLoader_NoArchiveDirsFound="))
-                        {
-                            ret.Importing.DarkLoader_NoArchiveDirsFound = lt.Substring(30);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportFromNewDarkLoader_TitleText="))
-                        {
-                            ret.Importing.ImportFromNewDarkLoader_TitleText = lt.Substring(34);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportFromFMSel_TitleText="))
-                        {
-                            ret.Importing.ImportFromFMSel_TitleText = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ChooseNewDarkLoaderIniFiles="))
-                        {
-                            ret.Importing.ChooseNewDarkLoaderIniFiles = lt.Substring(28);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ChooseFMSelIniFiles="))
-                        {
-                            ret.Importing.ChooseFMSelIniFiles = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Title="))
-                        {
-                            ret.Importing.ImportData_Title = lt.Substring(17);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_ReleaseDate="))
-                        {
-                            ret.Importing.ImportData_ReleaseDate = lt.Substring(23);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_LastPlayed="))
-                        {
-                            ret.Importing.ImportData_LastPlayed = lt.Substring(22);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Finished="))
-                        {
-                            ret.Importing.ImportData_Finished = lt.Substring(20);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Comment="))
-                        {
-                            ret.Importing.ImportData_Comment = lt.Substring(19);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Rating="))
-                        {
-                            ret.Importing.ImportData_Rating = lt.Substring(18);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_DisabledMods="))
-                        {
-                            ret.Importing.ImportData_DisabledMods = lt.Substring(24);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Tags="))
-                        {
-                            ret.Importing.ImportData_Tags = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_SelectedReadme="))
-                        {
-                            ret.Importing.ImportData_SelectedReadme = lt.Substring(26);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ImportData_Size="))
-                        {
-                            ret.Importing.ImportData_Size = lt.Substring(16);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
@@ -1590,54 +670,20 @@ namespace AngelLoader
                 }
                 else if (lineT == "[ScanAllFMsBox]")
                 {
-                    while (i < lines.Length - 1)
+                    while (i < linesLength - 1)
                     {
+                        int ltLength;
                         string lt = lines[i + 1].TrimStart();
-                        if (lt.StartsWithFast_NoNullChecks("TitleText="))
+                        int eqIndex = lt.IndexOf('=');
+                        if (eqIndex > -1)
                         {
-                            ret.ScanAllFMsBox.TitleText = lt.Substring(10);
+                            string key = lt.Substring(0, eqIndex);
+                            if (ScanAllFMsBox_Dict.TryGetValue(key, out FieldInfo value))
+                            {
+                                value.SetValue(ret.ScanAllFMsBox, lt.Substring(eqIndex + 1));
+                            }
                         }
-                        else if (lt.StartsWithFast_NoNullChecks("ScanAllFMsFor="))
-                        {
-                            ret.ScanAllFMsBox.ScanAllFMsFor = lt.Substring(14);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Title="))
-                        {
-                            ret.ScanAllFMsBox.Title = lt.Substring(6);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Author="))
-                        {
-                            ret.ScanAllFMsBox.Author = lt.Substring(7);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Game="))
-                        {
-                            ret.ScanAllFMsBox.Game = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("CustomResources="))
-                        {
-                            ret.ScanAllFMsBox.CustomResources = lt.Substring(16);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Size="))
-                        {
-                            ret.ScanAllFMsBox.Size = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("ReleaseDate="))
-                        {
-                            ret.ScanAllFMsBox.ReleaseDate = lt.Substring(12);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Tags="))
-                        {
-                            ret.ScanAllFMsBox.Tags = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("Scan="))
-                        {
-                            ret.ScanAllFMsBox.Scan = lt.Substring(5);
-                        }
-                        else if (lt.StartsWithFast_NoNullChecks("NothingWasScanned="))
-                        {
-                            ret.ScanAllFMsBox.NothingWasScanned = lt.Substring(18);
-                        }
-                        else if (lt.Length > 0 && lt[0] == '[' && lt[lt.Length - 1] == ']')
+                        else if ((ltLength = lt.Length) > 0 && lt[0] == '[' && lt[ltLength - 1] == ']')
                         {
                             break;
                         }
