@@ -108,7 +108,12 @@ namespace AngelLoader
 
                 for (int i = 0; i < fmsToScan.Count; i++)
                 {
-                    var fm = fmsToScan[i];
+                    FanMission fm = fmsToScan[i];
+
+                    // Fix: if our deleted FM was an archive and we tried to scan it, we would return Unsupported
+                    // and blank a bunch of the fields.
+                    if (fm.MarkedDeleted) continue;
+
                     string fmArchivePath = await Task.Run(() => FMArchives.FindFirstMatch(fm.Archive, archivePaths));
                     if (!fm.Archive.IsEmpty() && !fmArchivePath.IsEmpty())
                     {
