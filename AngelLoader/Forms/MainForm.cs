@@ -837,21 +837,6 @@ namespace AngelLoader.Forms
 
             FilterShowRecentAtTopButton.Checked = Config.ShowRecentAtTop;
 
-            #region Autosize menus
-
-            // NOTE: This region is now empty cause all the menus are now programmatically defined and lazy-loaded,
-            // but for future reference, this is how you gotta do it if you want to keep them designer-generated:
-
-            // --- old notes ---
-
-            // This is another hack to fix behavior caused by the UI designer. When you select a menu, it appears
-            // and adds an extra "Type Here" item to the bottom. This item counts as part of the height, and so
-            // the height ends up including an item that only actually appears in the designer, causing the menu
-            // to be shown in the wrong location when you call Show() with the height as a parameter. Setting a
-            // menu's size to empty causes it to autosize back to its actual proper size. I swear, this stuff.
-
-            #endregion
-
             // EnsureValidity() guarantees selected tab will not be invisible
             for (int i = 0; i < TopRightTabsData.Count; i++)
             {
