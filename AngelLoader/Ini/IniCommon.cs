@@ -345,8 +345,9 @@ namespace AngelLoader
 
         private static void ReadFinishedStates(Filter filter, string val)
         {
-            var list = val.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
-                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            var list = val
+                .Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
             foreach (string finishedState in list)
             {
