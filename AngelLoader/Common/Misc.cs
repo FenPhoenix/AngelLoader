@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using AngelLoader.DataClasses;
 
@@ -7,7 +8,8 @@ namespace AngelLoader
 {
     public static partial class Misc
     {
-        internal const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
+        // ReSharper disable once ConvertToConstant.Global
+        internal static readonly string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
 
         #region Global mutable state
 
@@ -71,27 +73,29 @@ namespace AngelLoader
 
         internal enum ReadmeType { PlainText, RichText, HTML, GLML }
 
+        // Non-consts for file size; these aren't perf-critical at all
+        [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
         internal static class HelpSections
         {
-            internal const string InitialSettings = "#initial_setup";
-            internal const string PathsSettings = "#settings_paths_section";
-            internal const string FMDisplaySettings = "#settings_fm_display_section";
-            internal const string OtherSettings = "#settings_other_section";
+            internal static readonly string InitialSettings = "#initial_setup";
+            internal static readonly string PathsSettings = "#settings_paths_section";
+            internal static readonly string FMDisplaySettings = "#settings_fm_display_section";
+            internal static readonly string OtherSettings = "#settings_other_section";
 
-            //internal const string FMBackupPath = "#fm_backup_path";
+            //internal static readonly string FMBackupPath = "#fm_backup_path";
 
-            internal const string MainWindow = "#main_window";
-            internal const string MissionList = "#mission_list";
-            internal const string ColumnHeaderContextMenu = "#column_header_context_menu";
-            internal const string FMContextMenu = "#fm_context_menu";
+            internal static readonly string MainWindow = "#main_window";
+            internal static readonly string MissionList = "#mission_list";
+            internal static readonly string ColumnHeaderContextMenu = "#column_header_context_menu";
+            internal static readonly string FMContextMenu = "#fm_context_menu";
 
-            internal const string StatsTab = "#stats_tab";
-            internal const string EditFMTab = "#edit_fm_tab";
-            internal const string CommentTab = "#comment_tab";
-            internal const string TagsTab = "#tags_tab";
-            internal const string PatchTab = "#patch_tab";
+            internal static readonly string StatsTab = "#stats_tab";
+            internal static readonly string EditFMTab = "#edit_fm_tab";
+            internal static readonly string CommentTab = "#comment_tab";
+            internal static readonly string TagsTab = "#tags_tab";
+            internal static readonly string PatchTab = "#patch_tab";
 
-            internal const string ReadmeArea = "#readme_area";
+            internal static readonly string ReadmeArea = "#readme_area";
         }
 
         #endregion

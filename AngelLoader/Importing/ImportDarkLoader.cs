@@ -16,6 +16,8 @@ namespace AngelLoader.Importing
     {
         #region Private fields
 
+        // TODO: Make these non-static
+
         private static readonly string[] _nonFMHeaders =
         {
             "[options]",
