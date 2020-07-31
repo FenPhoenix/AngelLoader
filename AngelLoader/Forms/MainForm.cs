@@ -801,7 +801,6 @@ namespace AngelLoader.Forms
             // The other Rating column, there has to be two, one for text and one for images
             RatingImageColumn = new DataGridViewImageColumn
             {
-                HeaderText = LText.FMsList.RatingColumn,
                 ImageLayout = DataGridViewImageCellLayout.Zoom,
                 ReadOnly = true,
                 Width = _ratingImageColumnWidth,
