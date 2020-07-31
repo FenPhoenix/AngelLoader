@@ -110,12 +110,15 @@ namespace FMScanner
                 "current search pattern: '" + pattern + "'");
         }
 
+        // TODO: FastIO: One single 1-element static array for the convenience of not having to pass it every call
+        private static readonly char[] CA_Backslash = { '\\' };
+
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         private static bool FirstFileExists(FastIOSearchOption searchOption, string path, params string[] searchPatterns)
         {
             // Vital, path must not have a trailing separator
             // We also normalize manually to all backslashes because we use \\?\ which skips normalization
-            path = path.Replace('/', '\\').TrimEnd(FMConstants.CA_Backslash);
+            path = path.Replace('/', '\\').TrimEnd(CA_Backslash);
 
             bool pathContainsInvalidChars = false;
             char[] invalidChars = Path.GetInvalidPathChars();

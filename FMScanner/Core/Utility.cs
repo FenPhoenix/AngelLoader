@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using static System.StringComparison;
-using static FMScanner.Regexes;
 
 namespace FMScanner
 {
@@ -786,30 +783,5 @@ namespace FMScanner
         #endregion
 
         internal static int GetPercentFromValue(int current, int total) => (100 * current) / total;
-
-        internal static bool StringToDate(string dateString, out DateTime dateTime)
-        {
-            dateString = dateString.Replace(",", " ");
-            dateString = Regex.Replace(dateString, @"\s+", @" ");
-            dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
-            dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
-            dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
-
-            // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-            Match match = DaySuffixesRegex.Match(dateString);
-            if (match.Success)
-            {
-                Group suffix = match.Groups["Suffix"];
-                dateString = dateString.Substring(0, suffix.Index) +
-                             dateString.Substring(suffix.Index + suffix.Length);
-            }
-
-            // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
-            // want to fail, and not assume the current year.
-            bool success = DateTime.TryParseExact(dateString, FMConstants.DateFormats,
-                DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result);
-            dateTime = success ? result : new DateTime();
-            return success;
-        }
     }
 }

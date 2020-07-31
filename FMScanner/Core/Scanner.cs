@@ -25,17 +25,15 @@ using FMScanner.SimpleHelpers;
 using JetBrains.Annotations;
 using SevenZip;
 using static System.StringComparison;
-using static FMScanner.Constants;
-using static FMScanner.FMConstants;
 using static FMScanner.Logger;
-using static FMScanner.Regexes;
+using static FMScanner.Scanner.Constants;
 using static FMScanner.Utility;
 
 namespace FMScanner
 {
     [SuppressMessage("ReSharper", "ArrangeStaticMemberQualifier")]
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public sealed class Scanner : IDisposable
+    public sealed partial class Scanner : IDisposable
     {
 #if DEBUG
         private readonly Stopwatch _overallTimer = new Stopwatch();
@@ -879,7 +877,7 @@ namespace FMScanner
 
         #region Set tags
 
-        private static void SetLangTags(ScannedFMData fmData, bool englishIsUncertain)
+        private void SetLangTags(ScannedFMData fmData, bool englishIsUncertain)
         {
             if (fmData.Languages.Length == 0) return;
 
@@ -908,7 +906,7 @@ namespace FMScanner
             }
         }
 
-        private static void SetMiscTag(ScannedFMData fmData, string tag)
+        private void SetMiscTag(ScannedFMData fmData, string tag)
         {
             if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
 
@@ -1686,7 +1684,7 @@ namespace FMScanner
         // Because RTF files can have embedded images, their size can far exceed that normally expected of a
         // readme. To save time and memory, this method strips out such large data blocks before passing the
         // result to a WinForms RichTextBox for final conversion to plain text.
-        private static bool GetRtfFileLinesAndText(Stream stream, int streamLength, RichTextBox rtfBox)
+        private bool GetRtfFileLinesAndText(Stream stream, int streamLength, RichTextBox rtfBox)
         {
             static bool ByteArrayStartsWith(byte[] first, byte[] second)
             {
@@ -1721,20 +1719,20 @@ namespace FMScanner
                 {
                     if (i < streamLength - 11)
                     {
-                        stream.Read(RtfTags.Bytes11, 0, RtfTags.Bytes11.Length);
+                        stream.Read(RtfTags_Bytes11, 0, RtfTags_Bytes11.Length);
 
-                        if (ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.shppict) ||
-                           ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.objdata) ||
-                           ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.nonshppict) ||
-                           ByteArrayStartsWith(RtfTags.Bytes11, RtfTags.pict))
+                        if (ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_shppict) ||
+                           ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_objdata) ||
+                           ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_nonshppict) ||
+                           ByteArrayStartsWith(RtfTags_Bytes11, RtfTags_pict))
                         {
                             stack++;
-                            stream.Position -= RtfTags.Bytes11.Length;
+                            stream.Position -= RtfTags_Bytes11.Length;
                             continue;
                         }
 
                         if (stack > 0) stack++;
-                        stream.Position -= RtfTags.Bytes11.Length;
+                        stream.Position -= RtfTags_Bytes11.Length;
                     }
                 }
                 else if (b == '}' && stack > 0)
@@ -1841,13 +1839,13 @@ namespace FMScanner
                         : new BinaryReader(new FileStream(readmeFileOnDisk, FileMode.Open, FileAccess.Read), Encoding.ASCII, leaveOpen: false))
                     {
                         // Null is a stupid micro-optimization so we don't waste a 6-byte alloc.
-                        rtfHeader = br.BaseStream.Length >= RtfTags.HeaderBytesLength
-                            ? br.ReadBytes(RtfTags.HeaderBytesLength)
+                        rtfHeader = br.BaseStream.Length >= RtfTags_HeaderBytesLength
+                            ? br.ReadBytes(RtfTags_HeaderBytesLength)
                             : null;
                     }
                     if (_fmIsZip) readmeStream!.Position = 0;
 
-                    if (rtfHeader != null && rtfHeader.SequenceEqual(RtfTags.HeaderBytes))
+                    if (rtfHeader != null && rtfHeader.SequenceEqual(RtfTags_HeaderBytes))
                     {
                         bool success;
                         if (_fmIsZip)
@@ -2016,7 +2014,7 @@ namespace FMScanner
             return ret;
         }
 
-        private static string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
+        private string GetValueFromLines(SpecialLogic specialLogic, string[] keys, List<string> lines)
         {
             for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
             {
@@ -2108,7 +2106,7 @@ namespace FMScanner
             return "";
         }
 
-        private static string CleanupValue(string value)
+        private string CleanupValue(string value)
         {
             if (value.IsEmpty()) return value;
 
@@ -2365,7 +2363,7 @@ namespace FMScanner
 
             #region Read title(s).str file
 
-            foreach (string titlesFileLocation in FMFiles.TitlesStrLocations)
+            foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
             {
                 NameAndIndex titlesFile = _fmIsZip
                     ? stringsDirFiles.FirstOrDefault(x => x.Name.PathEqualsI(titlesFileLocation))
@@ -2419,7 +2417,7 @@ namespace FMScanner
             return tfLinesD;
         }
 
-        private static string CleanupTitle(string value)
+        private string CleanupTitle(string value)
         {
             if (value.IsEmpty()) return value;
 
@@ -2454,7 +2452,7 @@ namespace FMScanner
 
         #region Author
 
-        private static string GetAuthorFromTopOfReadme(List<string> lines, List<string>? titles)
+        private string GetAuthorFromTopOfReadme(List<string> lines, List<string>? titles)
         {
             if (lines.Count == 0) return "";
 
@@ -2515,7 +2513,7 @@ namespace FMScanner
             return "";
         }
 
-        private static string GetAuthorFromText(string text)
+        private string GetAuthorFromText(string text)
         {
             for (int i = 0; i < AuthorRegexes.Length; i++)
             {
@@ -2579,11 +2577,11 @@ namespace FMScanner
 
         private string GetAuthorFromCopyrightMessage()
         {
-            static string AuthorCopyrightRegexesMatch(string line)
+            static string AuthorCopyrightRegexesMatch(string line, Regex[] authorMissionCopyrightRegexes)
             {
-                for (int i = 0; i < AuthorMissionCopyrightRegexes.Length; i++)
+                for (int i = 0; i < authorMissionCopyrightRegexes.Length; i++)
                 {
-                    Match match = AuthorMissionCopyrightRegexes[i].Match(line);
+                    Match match = authorMissionCopyrightRegexes[i].Match(line);
                     if (match.Success) return match.Groups["Author"].Value;
                 }
                 return "";
@@ -2621,7 +2619,7 @@ namespace FMScanner
                         pastFirstLineOfCopyrightSection = true;
                     }
 
-                    author = AuthorCopyrightRegexesMatch(line);
+                    author = AuthorCopyrightRegexesMatch(line, AuthorMissionCopyrightRegexes);
                     if (!author.IsEmpty())
                     {
                         foundAuthor = true;
@@ -2645,7 +2643,7 @@ namespace FMScanner
             return author;
         }
 
-        private static string CleanupCopyrightAuthor(string author)
+        private string CleanupCopyrightAuthor(string author)
         {
             author = author.Trim().RemoveSurroundingParentheses();
 
@@ -2734,7 +2732,7 @@ namespace FMScanner
         }
 
         // TODO: Add all missing languages, and implement language detection for non-folder-specified FMs
-        private static (List<string> Langs, bool EnglishIsUncertain)
+        private (List<string> Langs, bool EnglishIsUncertain)
         GetLanguages(List<NameAndIndex> baseDirFiles, List<NameAndIndex> booksDirFiles,
                      List<NameAndIndex> intrfaceDirFiles, List<NameAndIndex> stringsDirFiles)
         {
@@ -3118,7 +3116,7 @@ namespace FMScanner
                 // For zips, since we can't seek within the stream, the fastest way to find our string is just to
                 // brute-force straight through.
                 Stream stream = gamFileExists ? gamFileZipEntry!.Open() : misFileZipEntry!.Open();
-                ret.Game = StreamContainsIdentString(stream, MisFileStrings.Thief2UniqueString)
+                ret.Game = StreamContainsIdentString(stream, Thief2UniqueString)
                     ? Game.Thief2
                     : Game.Thief1;
             }
@@ -3139,12 +3137,12 @@ namespace FMScanner
                     uint offset = br.ReadUInt32();
                     uint length = br.ReadUInt32();
 
-                    if (!header.Contains(MisFileStrings.OBJ_MAP)) continue;
+                    if (!header.Contains(OBJ_MAP)) continue;
 
                     br.BaseStream.Position = offset;
 
                     byte[] content = br.ReadBytes((int)length);
-                    ret.Game = content.Contains(MisFileStrings.Thief2UniqueString)
+                    ret.Game = content.Contains(Thief2UniqueString)
                         ? Game.Thief2
                         : Game.Thief1;
                     break;
@@ -3162,14 +3160,14 @@ namespace FMScanner
             // can still at least have an accurate detection while I work on a new version that takes the new
             // MAPPARAM location into account.
 
-            static bool SS2MisFilesPresent(List<NameAndIndex> misFiles)
+            static bool SS2MisFilesPresent(List<NameAndIndex> misFiles, string[] ss2MisFiles)
             {
                 for (int mfI = 0; mfI < misFiles.Count; mfI++)
                 {
                     string fn = misFiles[mfI].Name;
-                    for (int ss2mfI = 0; ss2mfI < FMFiles.SS2MisFiles.Length; ss2mfI++)
+                    for (int ss2mfI = 0; ss2mfI < ss2MisFiles.Length; ss2mfI++)
                     {
-                        if (fn.EqualsI(FMFiles.SS2MisFiles[ss2mfI]))
+                        if (fn.EqualsI(ss2MisFiles[ss2mfI]))
                         {
                             return true;
                         }
@@ -3180,13 +3178,13 @@ namespace FMScanner
             }
 
             // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
-            if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles)))
+            if (ret.Game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(usedMisFiles, FMFiles_SS2MisFiles)))
             {
                 Stream stream = _fmIsZip
                     ? misFileZipEntry!.Open()
                     : new FileStream(misFileOnDisk!, FileMode.Open, FileAccess.Read);
 
-                if (StreamContainsIdentString(stream, MisFileStrings.MAPPARAM))
+                if (StreamContainsIdentString(stream, MAPPARAM))
                 {
                     ret.Game = Game.SS2;
                 }
@@ -3199,7 +3197,7 @@ namespace FMScanner
             return ret;
         }
 
-        private static string GetNewDarkVersionFromText(string text)
+        private string GetNewDarkVersionFromText(string text)
         {
             string version = "";
 
@@ -3353,6 +3351,31 @@ namespace FMScanner
         }
 
         #endregion
+
+        private bool StringToDate(string dateString, out DateTime dateTime)
+        {
+            dateString = dateString.Replace(",", " ");
+            dateString = Regex.Replace(dateString, @"\s+", @" ");
+            dateString = Regex.Replace(dateString, @"\s+-\s+", "-");
+            dateString = Regex.Replace(dateString, @"\s+/\s+", "/");
+            dateString = Regex.Replace(dateString, @"\s+of\s+", " ");
+
+            // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
+            Match match = DaySuffixesRegex.Match(dateString);
+            if (match.Success)
+            {
+                Group suffix = match.Groups["Suffix"];
+                dateString = dateString.Substring(0, suffix.Index) +
+                             dateString.Substring(suffix.Index + suffix.Length);
+            }
+
+            // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
+            // want to fail, and not assume the current year.
+            bool success = DateTime.TryParseExact(dateString, DateFormats,
+                DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out DateTime result);
+            dateTime = success ? result : new DateTime();
+            return success;
+        }
 
         #endregion
 

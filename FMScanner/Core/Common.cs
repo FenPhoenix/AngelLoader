@@ -14,72 +14,100 @@ namespace FMScanner
         internal const int GB = MB * 1024;
     }
 
-    internal static class Constants
+    /*
+     2020-07-31: This stuff is now part of the non-static Scanner class so it can be garbage-collected, rather
+     than being static and sticking around forever. This stuff will only be instantiated once per scan (whether
+     for single or multiple FMs) so allocations and GC pressure aren't really a problem. The only time we would
+     do a bunch of single-FM scans in a row would be if the user just went through the list scanning everything
+     manually one after another, which would take forever and no one would do. Or if they cancelled the all-FMs
+     scan and then ran down the list selecting every FM one after another, thus auto-scanning them. If they do
+     that, then meh. It'll be slow anyway in that case.
+    */
+    public sealed partial class Scanner
     {
-        internal const char uldq = '\u201C'; // Unicode left double-quote
-        internal const char urdq = '\u201D'; // Unicode right double-quote
-    }
 
-    internal static class FMDirs
-    {
-        // PERF: const string concatenation is free (const concats are done at compile time), so do it to lessen
-        // the chance of error.
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        internal static class Constants
+        {
+            internal const char uldq = '\u201C'; // Unicode left double-quote
+            internal const char urdq = '\u201D'; // Unicode right double-quote
+        }
 
-        internal const string Books = "books";
-        internal const string Fam = "fam";
-        internal const string Intrface = "intrface";
-        internal const string Mesh = "mesh";
-        internal const string Motions = "motions";
-        internal const string Movies = "movies";
-        internal const string Cutscenes = "cutscenes"; // SS2 only
-        internal const string Obj = "obj";
-        internal const string Scripts = "scripts";
-        internal const string Snd = "snd";
-        internal const string Snd2 = "snd2"; // SS2 only
-        internal const string Strings = "strings";
-        internal const string Subtitles = "subtitles";
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        private static class FMDirs
+        {
+            // PERF: const string concatenation is free (const concats are done at compile time), so do it to lessen
+            // the chance of error.
 
-        internal const string BooksS = Books + "/";
-        internal const string FamS = Fam + "/";
-        internal const string IntrfaceS = Intrface + "/";
-        internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
-        internal const string MeshS = Mesh + "/";
-        internal const string MotionsS = Motions + "/";
-        internal const string MoviesS = Movies + "/";
-        internal const string CutscenesS = Cutscenes + "/"; // SS2 only
-        internal const string ObjS = Obj + "/";
-        internal const string ScriptsS = Scripts + "/";
-        internal const string SndS = Snd + "/";
-        internal const string Snd2S = Snd2 + "/"; // SS2 only
-        internal const string StringsS = Strings + "/";
-        internal const string SubtitlesS = Subtitles + "/";
+            internal const string Books = "books";
+            internal const string Fam = "fam";
+            internal const string Intrface = "intrface";
+            internal const string Mesh = "mesh";
+            internal const string Motions = "motions";
+            internal const string Movies = "movies";
+            internal const string Cutscenes = "cutscenes"; // SS2 only
+            internal const string Obj = "obj";
+            internal const string Scripts = "scripts";
+            internal const string Snd = "snd";
+            internal const string Snd2 = "snd2"; // SS2 only
+            internal const string Strings = "strings";
+            internal const string Subtitles = "subtitles";
 
-        internal const string T3FMExtras1 = "Fan Mission Extras";
-        internal const string T3FMExtras2 = "FanMissionExtras";
-        internal const string T3FMExtras1S = T3FMExtras1 + "/";
-        internal const string T3FMExtras2S = T3FMExtras2 + "/";
+            internal const string BooksS = Books + "/";
+            internal const string FamS = Fam + "/";
+            internal const string IntrfaceS = Intrface + "/";
+            internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
+            internal const string MeshS = Mesh + "/";
+            internal const string MotionsS = Motions + "/";
+            internal const string MoviesS = Movies + "/";
+            internal const string CutscenesS = Cutscenes + "/"; // SS2 only
+            internal const string ObjS = Obj + "/";
+            internal const string ScriptsS = Scripts + "/";
+            internal const string SndS = Snd + "/";
+            internal const string Snd2S = Snd2 + "/"; // SS2 only
+            internal const string StringsS = Strings + "/";
+            internal const string SubtitlesS = Subtitles + "/";
 
-        internal const string T3DetectS = "Content/T3/Maps/";
-        internal const int T3DetectSLen = 16; // workaround for .NET 4.7.2 not inlining const string lengths
-    }
+            internal const string T3FMExtras1 = "Fan Mission Extras";
+            internal const string T3FMExtras2 = "FanMissionExtras";
+            internal const string T3FMExtras1S = T3FMExtras1 + "/";
+            internal const string T3FMExtras2S = T3FMExtras2 + "/";
 
-    internal static class FMFiles
-    {
-        internal const string SS2Fingerprint1 = "/usemsg.str";
-        internal const string SS2Fingerprint2 = "/savename.str";
-        internal const string SS2Fingerprint3 = "/objlooks.str";
-        internal const string SS2Fingerprint4 = "/OBJSHORT.str";
+            internal const string T3DetectS = "Content/T3/Maps/";
+            internal const int T3DetectSLen = 16; // workaround for .NET 4.7.2 not inlining const string lengths
+        }
 
-        internal const string IntrfaceEnglishNewGameStrS = "intrface/english/newgame.str";
-        internal const string IntrfaceNewGameStrS = "intrface/newgame.str";
-        internal const string DscNewGameStrS = "/newgame.str";
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [SuppressMessage("ReSharper", "CommentTypo")]
+        private static class FMFiles
+        {
+            internal const string SS2Fingerprint1 = "/usemsg.str";
+            internal const string SS2Fingerprint2 = "/savename.str";
+            internal const string SS2Fingerprint3 = "/objlooks.str";
+            internal const string SS2Fingerprint4 = "/OBJSHORT.str";
 
-        internal const string StringsMissFlag = "strings/missflag.str";
-        internal const string StringsEnglishMissFlag = "strings/english/missflag.str";
-        internal const string SMissFlag = "/missflag.str";
+            internal const string IntrfaceEnglishNewGameStrS = "intrface/english/newgame.str";
+            internal const string IntrfaceNewGameStrS = "intrface/newgame.str";
+            internal const string DscNewGameStrS = "/newgame.str";
 
-        internal static readonly string[]
-        TitlesStrLocations =
+            internal const string StringsMissFlag = "strings/missflag.str";
+            internal const string StringsEnglishMissFlag = "strings/english/missflag.str";
+            internal const string SMissFlag = "/missflag.str";
+
+            // Telliamed's fminfo.xml file, used in a grand total of three missions
+            internal const string FMInfoXml = "fminfo.xml";
+
+            // fm.ini, a NewDark (or just FMSel?) file
+            internal const string FMIni = "fm.ini";
+
+            // System Shock 2 file
+            internal const string ModIni = "mod.ini";
+        }
+
+        #region Non-const FM Files
+
+        private readonly string[]
+        FMFiles_TitlesStrLocations =
         {
             // Do not change search order: strings/english, strings, strings/[any other language]
             "strings/english/titles.str",
@@ -110,18 +138,10 @@ namespace FMScanner
             "strings/spanish/title.str"
         };
 
-        // Telliamed's fminfo.xml file, used in a grand total of three missions
-        internal const string FMInfoXml = "fminfo.xml";
-
-        // fm.ini, a NewDark (or just FMSel?) file
-        internal const string FMIni = "fm.ini";
-
-        // System Shock 2 file
-        internal const string ModIni = "mod.ini";
-
         // Used for SS2 fingerprinting for the game type scan fallback
-        internal static readonly string[]
-        SS2MisFiles =
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        private readonly string[]
+        FMFiles_SS2MisFiles =
         {
             "command1.mis",
             "command2.mis",
@@ -147,46 +167,45 @@ namespace FMScanner
             "shodan.mis",
             "station.mis"
         };
-    }
 
-    // Used for stripping RTF files of embedded images before scanning (performance and memory optimization)
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal static class RtfTags
-    {
-        internal static readonly byte[] HeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
-        internal const int HeaderBytesLength = 6; // stupid micro-optimization
-        internal static readonly byte[] shppict = Encoding.ASCII.GetBytes(@"\*\shppict");
-        internal static readonly byte[] objdata = Encoding.ASCII.GetBytes(@"\*\objdata");
-        internal static readonly byte[] nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
-        internal static readonly byte[] pict = Encoding.ASCII.GetBytes(@"\pict");
-        internal static readonly byte[] Bytes11 = new byte[11];
-    }
+        #endregion
 
-    internal static class FMConstants
-    {
+        #region RTF
+
+        private readonly byte[] RtfTags_HeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
+        private const int RtfTags_HeaderBytesLength = 6; // stupid micro-optimization
+        // ReSharper disable IdentifierTypo
+        // ReSharper disable StringLiteralTypo
+        private readonly byte[] RtfTags_shppict = Encoding.ASCII.GetBytes(@"\*\shppict");
+        private readonly byte[] RtfTags_objdata = Encoding.ASCII.GetBytes(@"\*\objdata");
+        private readonly byte[] RtfTags_nonshppict = Encoding.ASCII.GetBytes(@"\nonshppict");
+        // ReSharper restore StringLiteralTypo
+        // ReSharper restore IdentifierTypo
+        private readonly byte[] RtfTags_pict = Encoding.ASCII.GetBytes(@"\pict");
+        private readonly byte[] RtfTags_Bytes11 = new byte[11];
+
+        #endregion
+
         #region Preallocated arrays
 
         // Perf, for passing to params[]-taking methods so we don't allocate all the time
 
-        internal static readonly char[] CA_Period = { '.' };
-        internal static readonly char[] CA_Asterisk = { '*' };
-        internal static readonly char[] CA_Hyphen = { '-' };
-        internal static readonly char[] CA_CommaSemicolon = { ',', ';' };
-        internal static readonly char[] CA_Backslash = { '\\' };
-        internal static readonly char[] CA_DoubleQuote = { '\"' };
-        internal static readonly char[] CA_UnicodeQuotes = { Constants.uldq, Constants.urdq };
-        internal static readonly string[] SA_CRLF = { "\r\n" };
-        internal static readonly string[] SA_DoubleSpaces = { "  " };
-        internal static readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
-        internal static readonly string[] SA_AllFiles = { "*" };
-        internal static readonly string[] SA_AllBinFiles = { "*.bin" };
-        internal static readonly string[] SA_AllSubFiles = { "*.sub" };
+        private readonly char[] CA_Period = { '.' };
+        private readonly char[] CA_Asterisk = { '*' };
+        private readonly char[] CA_Hyphen = { '-' };
+        private readonly char[] CA_CommaSemicolon = { ',', ';' };
+        private readonly char[] CA_DoubleQuote = { '\"' };
+        private readonly char[] CA_UnicodeQuotes = { Constants.uldq, Constants.urdq };
+        private readonly string[] SA_CRLF = { "\r\n" };
+        private readonly string[] SA_DoubleSpaces = { "  " };
+        private readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
+        private readonly string[] SA_AllFiles = { "*" };
+        private readonly string[] SA_AllBinFiles = { "*.bin" };
+        private readonly string[] SA_AllSubFiles = { "*.sub" };
 
         #region Field detect strings
 
-        internal static readonly string[] SA_TitleDetect =
+        private readonly string[] SA_TitleDetect =
         {
             "Title of the Mission", "Title of the mission",
             "Title", "Mission Title", "Mission title", "Mission Name", "Mission name", "Level Name",
@@ -198,7 +217,7 @@ namespace FMScanner
             "Fan Mission/Map Name"
         };
 
-        internal static readonly string[] SA_AuthorDetect =
+        private readonly string[] SA_AuthorDetect =
         {
             "Author", "Authors", "Autor",
             "Created by", "Devised by", "Designed by", "Author=", "Made by",
@@ -208,17 +227,19 @@ namespace FMScanner
             "Fan Mission/Map Author"
         };
 
-        internal static readonly string[] SA_ReleaseDateDetect =
+        private readonly string[] SA_ReleaseDateDetect =
         {
             "Date Of Release", "Date of Release",
             "Date of release", "Release Date", "Release date"
         };
 
-        internal static readonly string[] SA_VersionDetect = { "Version" };
+        private readonly string[] SA_VersionDetect = { "Version" };
 
         #endregion
 
         #endregion
+
+        #region Extension and file pattern arrays
 
         // Ordered by number of actual total occurrences across all FMs:
         // gif: 153,294
@@ -227,24 +248,26 @@ namespace FMScanner
         // dds: 11,647
         // png: 11,290
         // bmp: 657
-        internal static readonly string[] ImageFileExtensions = { ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp" };
-        internal static readonly string[] ImageFilePatterns = { "*.gif", "*.pcx", "*.tga", "*.dds", "*.png", "*.bmp" };
+        private readonly string[] ImageFileExtensions = { ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp" };
+        private readonly string[] ImageFilePatterns = { "*.gif", "*.pcx", "*.tga", "*.dds", "*.png", "*.bmp" };
 
-        internal static readonly string[] MotionFilePatterns = { "*.mc", "*.mi" };
-        internal static readonly string[] MotionFileExtensions = { ".mc", ".mi" };
+        private readonly string[] MotionFilePatterns = { "*.mc", "*.mi" };
+        private readonly string[] MotionFileExtensions = { ".mc", ".mi" };
 
         // .osm for the classic scripts; .nut for Squirrel scripts for NewDark >= 1.25
-        internal static readonly string[] ScriptFileExtensions = { ".osm", ".nut" };
+        private readonly string[] ScriptFileExtensions = { ".osm", ".nut" };
+
+        #endregion
 
         #region Languages
 
         // NOTE: I think this was for GetLanguages() for the planned accuracy update?
-        //internal static string[] LanguageDirs { get; } = { FMDirs.Books, FMDirs.Intrface, FMDirs.Strings };
+        //private string[] LanguageDirs { get; } = { FMDirs.Books, FMDirs.Intrface, FMDirs.Strings };
 
         // Perf micro-optimization: don't create a new list if we're only returning English
-        internal static readonly List<string> EnglishOnly = new List<string> { "english" };
+        private readonly List<string> EnglishOnly = new List<string> { "english" };
 
-        internal static readonly string[]
+        private readonly string[]
         Languages =
         {
             "english",
@@ -262,7 +285,7 @@ namespace FMScanner
 
         // Perf: avoids concats
 
-        internal static readonly string[]
+        private readonly string[]
         Languages_FS_Lang_FS =
         {
             "/english/",
@@ -278,7 +301,7 @@ namespace FMScanner
             "/spanish/"
         };
 
-        internal static readonly string[]
+        private readonly string[]
         Languages_FS_Lang_Language_FS =
         {
             "/english Language/",
@@ -295,7 +318,7 @@ namespace FMScanner
         };
 
         // Cheesy hack because it wasn't designed this way
-        internal static readonly Dictionary<string, string>
+        private readonly Dictionary<string, string>
         LanguagesC = new Dictionary<string, string>
         {
             { "english", "English" },
@@ -313,7 +336,7 @@ namespace FMScanner
 
         #endregion
 
-        internal static readonly string[]
+        private readonly string[]
         DateFormats =
         {
             "MMM d yy",
@@ -383,64 +406,70 @@ namespace FMScanner
 
             // TODO: Ambiguous months and days might pose a problem?
         };
-    }
 
-    internal static class MisFileStrings
-    {
-        internal static readonly byte[] OBJ_MAP = Encoding.ASCII.GetBytes("OBJ_MAP");
+        #region Game detect strings
 
-        internal static readonly byte[] Thief2UniqueString = Encoding.ASCII.GetBytes("RopeyArrow");
+        // ReSharper disable StringLiteralTypo
+        // ReSharper disable IdentifierTypo
+
+        private readonly byte[] OBJ_MAP = Encoding.ASCII.GetBytes("OBJ_MAP");
+
+        private readonly byte[] Thief2UniqueString = Encoding.ASCII.GetBytes("RopeyArrow");
 
         // SS2-only detection string
-        internal static readonly byte[] MAPPARAM = Encoding.ASCII.GetBytes("MAPPARAM");
-    }
+        private readonly byte[] MAPPARAM = Encoding.ASCII.GetBytes("MAPPARAM");
 
-    // Putting regexes in here is a perf optimization: static (initialized only once) and Compiled increases
-    // their performance by a huge amount. And as we know, regexes need all the performance help they can get.
-    internal static class Regexes
-    {
-        internal static readonly Regex GLMLTagRegex =
+        // ReSharper restore IdentifierTypo
+        // ReSharper restore StringLiteralTypo
+
+        #endregion
+
+        #region Regexes
+
+        // PERF: Making regexes compiled increases their performance by a huge amount. And as we know, regexes
+        // need all the performance help they can get.
+        private readonly Regex GLMLTagRegex =
             new Regex(@"\[/?GL[A-Z]+\]", RegexOptions.Compiled);
 
-        internal static readonly Regex AThief3Mission =
+        private readonly Regex AThief3Mission =
             new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly",
                 RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-        internal static readonly Regex OpenParenSpacesRegex =
+        private readonly Regex OpenParenSpacesRegex =
             new Regex(@"\(\s+", RegexOptions.Compiled);
 
-        internal static readonly Regex CloseParenSpacesRegex =
+        private readonly Regex CloseParenSpacesRegex =
             new Regex(@"\s+\)", RegexOptions.Compiled);
 
-        internal static readonly Regex DaySuffixesRegex =
+        private readonly Regex DaySuffixesRegex =
             new Regex(@"\d(?<Suffix>(st|nd|rd|th)).+",
                 RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-        internal static readonly Regex VersionExclude1Regex =
+        private readonly Regex VersionExclude1Regex =
             new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
 
-        internal static readonly Regex TitleAnyConsecutiveLettersRegex =
+        private readonly Regex TitleAnyConsecutiveLettersRegex =
             new Regex(@"\w\w", RegexOptions.Compiled);
 
         // TODO: [a-z] is only ASCII letters, so it won't catch lowercase other stuff I guess
-        internal static readonly Regex TitleContainsLowerCaseCharsRegex =
+        private readonly Regex TitleContainsLowerCaseCharsRegex =
             new Regex(@"[a-z]", RegexOptions.Compiled);
 
-        internal static readonly Regex AuthorEmailRegex =
+        private readonly Regex AuthorEmailRegex =
             new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
 
         // This doesn't need to be a regex really, but it takes like 5.4 microseconds per FM, so, yeah
-        internal static readonly Regex NewGameStrTitleRegex =
+        private readonly Regex NewGameStrTitleRegex =
             new Regex(@"^skip_training\:\s*""(?<Title>.+)""",
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         // TODO: This one looks iffy though
-        internal static readonly Regex VersionFirstNumberRegex =
+        private readonly Regex VersionFirstNumberRegex =
             new Regex(@"[0123456789\.]+", RegexOptions.Compiled);
 
         // Much, much faster to iterate through possible regex matches, common ones first
         // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
-        internal static readonly Regex[] NewDarkVersionRegexes =
+        private readonly Regex[] NewDarkVersionRegexes =
         {
             new Regex(@"NewDark (?<Version>\d\.\d+)",
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled |
@@ -476,7 +505,7 @@ namespace FMScanner
             // @"((?<Name>(""*New *Dark""*( Version| Patch)*|Dark *Engine|(?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief *2|Thief *II|The Metal Age)) *V?(\.| )*(?<Version>\d\.\d+)|\D(?<Version>\d\.\d+) +(version of |(?!\r\n).?)New *Dark(?! *\d\.\d+)|Thief Gold( Patch)* (?<Version>(?!1\.33|1\.37)\d\.\d+))",
         };
 
-        internal static readonly Regex[] AuthorRegexes =
+        private readonly Regex[] AuthorRegexes =
         {
             new Regex(
                 @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
@@ -504,7 +533,7 @@ namespace FMScanner
 
         // Unicode 00A9 = copyright symbol
 
-        internal static readonly Regex[] AuthorMissionCopyrightRegexes =
+        private readonly Regex[] AuthorMissionCopyrightRegexes =
         {
             new Regex(
                 //language=regexp
@@ -528,46 +557,48 @@ namespace FMScanner
         // This one is only to be used if we know the above line says "Copyright" or something, because it has
         // an @ as an option for a copyright symbol (used by some Theker missions) and we want to be sure it
         // means what we think it means.
-        internal static readonly Regex AuthorGeneralCopyrightIncludeAtSymbolRegex =
+        private readonly Regex AuthorGeneralCopyrightIncludeAtSymbolRegex =
             new Regex(
                 //language=regexp
                 @"^(Copyright )?(\(c\)|\u00A9|@) ?" + _copyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-        internal static readonly Regex AuthorGeneralCopyrightRegex =
+        private readonly Regex AuthorGeneralCopyrightRegex =
             new Regex(
                 //language=regexp
                 @"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-        internal static readonly Regex CopyrightAuthorYearRegex = new Regex(@" \d+.*$", RegexOptions.Compiled);
+        private readonly Regex CopyrightAuthorYearRegex = new Regex(@" \d+.*$", RegexOptions.Compiled);
 
-        internal static readonly Regex TitleByAuthorRegex =
+        private readonly Regex TitleByAuthorRegex =
             new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-    }
 
-    /// <summary>
-    /// Specialized (therefore fast) sort for titles.str lines only. Anything else is likely to throw an
-    /// IndexOutOfRangeException.
-    /// </summary>
-    internal sealed class TitlesStrNaturalNumericSort : IComparer<string>
-    {
-        public int Compare(string x, string y)
+        #endregion
+
+        /// <summary>
+        /// Specialized (therefore fast) sort for titles.str lines only. Anything else is likely to throw an
+        /// IndexOutOfRangeException.
+        /// </summary>
+        private sealed class TitlesStrNaturalNumericSort : IComparer<string>
         {
-            if (x == y) return 0;
-            if (x.IsEmpty()) return -1;
-            if (y.IsEmpty()) return 1;
+            public int Compare(string x, string y)
+            {
+                if (x == y) return 0;
+                if (x.IsEmpty()) return -1;
+                if (y.IsEmpty()) return 1;
 
-            int xIndex1;
-            string xNum = x.Substring(xIndex1 = x.IndexOf('_') + 1, x.IndexOf(':') - xIndex1);
-            int yIndex1;
-            string yNum = y.Substring(yIndex1 = y.IndexOf('_') + 1, y.IndexOf(':') - yIndex1);
+                int xIndex1;
+                string xNum = x.Substring(xIndex1 = x.IndexOf('_') + 1, x.IndexOf(':') - xIndex1);
+                int yIndex1;
+                string yNum = y.Substring(yIndex1 = y.IndexOf('_') + 1, y.IndexOf(':') - yIndex1);
 
-            while (xNum.Length < yNum.Length) xNum = '0' + xNum;
-            while (yNum.Length < xNum.Length) yNum = '0' + yNum;
+                while (xNum.Length < yNum.Length) xNum = '0' + xNum;
+                while (yNum.Length < xNum.Length) yNum = '0' + yNum;
 
-            return string.CompareOrdinal(xNum, yNum);
+                return string.CompareOrdinal(xNum, yNum);
+            }
         }
     }
 }
