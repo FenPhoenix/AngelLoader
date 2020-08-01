@@ -694,7 +694,7 @@ namespace AngelLoader.Forms
             FilterByReleaseDateButton.Image = Resources.FilterByReleaseDate;
             FilterByReleaseDateButton.Margin = new Padding(6, 0, 0, 0);
             FilterByReleaseDateButton.Size = new Size(25, 25);
-            FilterByReleaseDateButton.Click += FilterByReleaseDateButton_Click;
+            FilterByReleaseDateButton.Click += FilterByDateButtons_Click;
             // 
             // FilterByLastPlayedButton
             // 
@@ -703,7 +703,7 @@ namespace AngelLoader.Forms
             FilterByLastPlayedButton.Image = Resources.FilterByLastPlayed;
             FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
-            FilterByLastPlayedButton.Click += FilterByLastPlayedButton_Click;
+            FilterByLastPlayedButton.Click += FilterByDateButtons_Click;
             // 
             // FilterByTagsButton
             // 

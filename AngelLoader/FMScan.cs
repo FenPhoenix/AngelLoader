@@ -17,21 +17,25 @@ namespace AngelLoader
 
         internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions? scanOptions = null)
         {
-            if (await ScanFM(fm, scanOptions)) await Core.View.RefreshSelectedFM(refreshReadme: false);
+            if (await ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
+            {
+                await Core.View.RefreshSelectedFM(refreshReadme: false);
+            }
         }
-
-        internal static async Task<bool> ScanFM(FanMission fm, FMScanner.ScanOptions? scanOptions = null) =>
-            await ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true);
 
         /// <summary>
         /// Scans a list of FMs using the specified scan options. Pass null for default scan options.
+        /// <para>
+        /// To scan a single FM, just pass a list with a single FM in it. ScanFM() has been removed because it
+        /// just added an extra await for only a very tiny convenience.
+        /// </para>
         /// </summary>
         /// <param name="fmsToScan"></param>
         /// <param name="scanOptions">Pass null for default scan options.</param>
         /// <param name="scanFullIfNew"></param>
         /// <param name="hideBoxIfZip"></param>
         /// <returns></returns>
-        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions? scanOptions,
+        internal static async Task<bool> ScanFMs(List<FanMission> fmsToScan, FMScanner.ScanOptions? scanOptions = null,
                                                  bool scanFullIfNew = false, bool hideBoxIfZip = false)
         {
             #region Local functions

@@ -2537,7 +2537,10 @@ namespace AngelLoader.Forms
             {
                 using (new DisableKeyPresses(this))
                 {
-                    if (await FMScan.ScanFM(fm)) RefreshSelectedFMRowOnly();
+                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
+                    {
+                        RefreshSelectedFMRowOnly();
+                    }
                 }
             }
 
@@ -3739,25 +3742,12 @@ namespace AngelLoader.Forms
             await SortAndSetFilter(keepSelection: false);
         }
 
-        private async void FilterByReleaseDateButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: false);
-
-        private async void FilterByLastPlayedButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: true);
-
-        private async void FilterByTagsButton_Click(object sender, EventArgs e) => await OpenFilterTags();
-
-        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
-
-        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
-
-        private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenRatingFilter();
-
-        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
-
-        private async void FilterShowRecentAtTopButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: false);
-
-        private async Task OpenDateFilter(bool lastPlayed)
+        private async void FilterByDateButtons_Click(object sender, EventArgs e)
         {
-            var button = lastPlayed ? FilterByLastPlayedButton : FilterByReleaseDateButton;
+            // Avoid an extra await by putting this right in the event handler
+            var button = (ToolStripButtonCustom)sender;
+
+            bool lastPlayed = button == FilterByLastPlayedButton;
             DateTime? fromDate = lastPlayed ? FMsDGV.Filter.LastPlayedFrom : FMsDGV.Filter.ReleaseDateFrom;
             DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
             string title = lastPlayed ? LText.DateFilterBox.LastPlayedTitleText : LText.DateFilterBox.ReleaseDateTitleText;
@@ -3778,6 +3768,52 @@ namespace AngelLoader.Forms
             UpdateDateLabel(lastPlayed);
             await SortAndSetFilter();
         }
+
+        private async void FilterByTagsButton_Click(object sender, EventArgs e)
+        {
+            // Avoid an extra await by putting this right in the event handler
+            using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
+            {
+                if (tf.ShowDialog() != DialogResult.OK) return;
+
+                tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
+                FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
+            }
+
+            await SortAndSetFilter();
+        }
+
+        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+
+        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+
+        private async void FilterByRatingButton_Click(object sender, EventArgs e)
+        {
+            // Avoid an extra await by putting this right in the event handler
+            bool outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
+            using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
+            {
+                f.Location =
+                    FilterBarFLP.PointToScreen(new Point(
+                        FilterIconButtonsToolStrip.Location.X +
+                        FilterByRatingButton.Bounds.X,
+                        FilterIconButtonsToolStrip.Location.Y +
+                        FilterByRatingButton.Bounds.Y +
+                        FilterByRatingButton.Height));
+
+                if (f.ShowDialog() != DialogResult.OK) return;
+                FMsDGV.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
+                FilterByRatingButton.Checked =
+                    !(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10);
+            }
+
+            UpdateRatingLabel();
+            await SortAndSetFilter();
+        }
+
+        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+
+        private async void FilterShowRecentAtTopButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: false);
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
         {
@@ -3811,42 +3847,6 @@ namespace AngelLoader.Forms
             {
                 if (suspendResume) FilterBarFLP.ResumeDrawing();
             }
-        }
-
-        private async Task OpenRatingFilter()
-        {
-            bool outOfFive = Config.RatingDisplayStyle == RatingDisplayStyle.FMSel;
-            using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, outOfFive))
-            {
-                f.Location =
-                    FilterBarFLP.PointToScreen(new Point(
-                        FilterIconButtonsToolStrip.Location.X +
-                        FilterByRatingButton.Bounds.X,
-                        FilterIconButtonsToolStrip.Location.Y +
-                        FilterByRatingButton.Bounds.Y +
-                        FilterByRatingButton.Height));
-
-                if (f.ShowDialog() != DialogResult.OK) return;
-                FMsDGV.Filter.SetRatingFromAndTo(f.RatingFrom, f.RatingTo);
-                FilterByRatingButton.Checked =
-                    !(FMsDGV.Filter.RatingFrom == -1 && FMsDGV.Filter.RatingTo == 10);
-            }
-
-            UpdateRatingLabel();
-            await SortAndSetFilter();
-        }
-
-        private async Task OpenFilterTags()
-        {
-            using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
-            {
-                if (tf.ShowDialog() != DialogResult.OK) return;
-
-                tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
-                FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
-            }
-
-            await SortAndSetFilter();
         }
 
         #region Filter bar right-hand controls

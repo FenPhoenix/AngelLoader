@@ -787,7 +787,7 @@ namespace AngelLoader.Forms
             this.FilterByReleaseDateButton.Name = "FilterByReleaseDateButton";
             this.FilterByReleaseDateButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByReleaseDateButton.ToolTipText = "Release date";
-            this.FilterByReleaseDateButton.Click += new System.EventHandler(this.FilterByReleaseDateButton_Click);
+            this.FilterByReleaseDateButton.Click += new System.EventHandler(this.FilterByDateButtons_Click);
             // 
             // FilterByLastPlayedButton
             // 
@@ -800,7 +800,7 @@ namespace AngelLoader.Forms
             this.FilterByLastPlayedButton.Name = "FilterByLastPlayedButton";
             this.FilterByLastPlayedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByLastPlayedButton.ToolTipText = "Last played";
-            this.FilterByLastPlayedButton.Click += new System.EventHandler(this.FilterByLastPlayedButton_Click);
+            this.FilterByLastPlayedButton.Click += new System.EventHandler(this.FilterByDateButtons_Click);
             // 
             // FilterByTagsButton
             // 
