@@ -4021,12 +4021,24 @@ namespace AngelLoader.Forms
 #endif
         void ScanIconButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintScanSmallButtons((Button)sender, e);
 
+        private
+#if !DEBUG
+        static
+#endif
+        void ZoomInButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.In);
+
+        private
+#if !DEBUG
+        static
+#endif
+        void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Out);
+
+        private
+#if !DEBUG
+        static
+#endif
+        void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Reset);
+
         #endregion
-
-        private void ZoomInButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.In);
-
-        private void ZoomOutButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Out);
-
-        private void ZoomResetButtons_Paint(object sender, PaintEventArgs e) => ControlPainter.PaintZoomButtons((Button)sender, e, Zoom.Reset);
     }
 }
