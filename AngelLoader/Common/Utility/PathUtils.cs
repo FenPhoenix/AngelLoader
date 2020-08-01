@@ -99,6 +99,9 @@ namespace AngelLoader
             return false;
         }
 
+        #region Disabled until needed
+
+        /*
         /// <summary>
         /// Counts the total occurrences of both directory separator characters in <paramref name="value"/>.
         /// </summary>
@@ -110,6 +113,31 @@ namespace AngelLoader
             int count = 0;
             for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
             return count;
+        }
+        */
+
+        #endregion
+
+        /// <summary>
+        /// Returns the number of directory separators in a string, earlying-out once it's counted <paramref name="maxToCount"/>
+        /// occurrences.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="maxToCount">The maximum number of occurrences to count before earlying-out.</param>
+        /// <returns></returns>
+        internal static int CountDirSepsUpToAmount(this string value, int maxToCount)
+        {
+            int foundCount = 0;
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i].IsDirSep())
+                {
+                    foundCount++;
+                    if (foundCount == maxToCount) break;
+                }
+            }
+
+            return foundCount;
         }
 
         #region Disabled until needed

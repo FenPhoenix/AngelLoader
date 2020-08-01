@@ -2894,7 +2894,9 @@ namespace AngelLoader.Forms
         {
             using (new DisableEvents(this))
             {
-                foreach (string f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f, f.GetFileNameFast());
+                // @DIRSEP: To backslashes for each file, to prevent selection misses.
+                // I thought I accounted for this with backslashing the selected readme, but they all need to be.
+                foreach (string f in readmeFiles) ChooseReadmeComboBox.AddFullItem(f.ToBackSlashes(), f.GetFileNameFast());
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
             }
         }

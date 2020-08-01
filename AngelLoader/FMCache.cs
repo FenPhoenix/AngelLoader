@@ -275,7 +275,7 @@ namespace AngelLoader
                     var re = archive.Entries[f.Index];
 
                     // 128k is generous. Any text or markup sort of file should be WELL under that.
-                    if (re.Length > 131_072) continue;
+                    if (re.Length > ByteSize.KB * 128) continue;
 
                     string content;
                     using (var es = re.Open())
@@ -328,7 +328,7 @@ namespace AngelLoader
                     if (!fn.IsValidReadme() || entry.Length == 0) continue;
 
                     string? t3ReadmeDir = null;
-                    int dirSeps = fn.CountDirSeps();
+                    int dirSeps = fn.CountDirSepsUpToAmount(2);
                     if (dirSeps == 1)
                     {
                         if (fn.PathStartsWithI(_t3ReadmeDir1S))
@@ -389,7 +389,7 @@ namespace AngelLoader
                         string fn = entry.FileName;
                         int dirSeps;
                         if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                            (((dirSeps = fn.CountDirSeps()) == 1 &&
+                            (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
                               (fn.PathStartsWithI(_t3ReadmeDir1S) ||
                                fn.PathStartsWithI(_t3ReadmeDir2S))) ||
                              dirSeps == 0))
