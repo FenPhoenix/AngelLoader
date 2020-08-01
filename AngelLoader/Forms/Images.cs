@@ -81,8 +81,8 @@ namespace AngelLoader.Forms
             Brush outlineBrush, fillBrush;
             if (filterFinished || filterUnfinished)
             {
-                width = 32;
-                height = 32;
+                width = 24;
+                height = 24;
                 outlineBrush = ControlPainter.FinishedOnFilterOutlineBrush;
                 fillBrush = ControlPainter.FinishedOnFilterFillBrush;
             }
@@ -251,144 +251,76 @@ namespace AngelLoader.Forms
             {
                 if (_filterByRating == null)
                 {
-                    //using var frb1 = Resources.FilterByRating_half;
-                    //using var frb2 = (Bitmap)frb1.Clone();
-                    //frb2.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                    _filterByRating = new Bitmap(32, 32, PixelFormat.Format32bppPArgb);
-                    //using var g = Graphics.FromImage(_filterByRating);
-                    //g.DrawImage(frb1, 0, 0);
-                    //g.DrawImage(frb2, 16, 0);
+                    const int px = 24;
+
+                    _filterByRating = new Bitmap(px, px, PixelFormat.Format32bppPArgb);
+                    using var g = Graphics.FromImage(_filterByRating);
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    ControlPainter.FitRectInBounds(g, ControlPainter.StarFullGPath.GetBounds(), new RectangleF(0, 0, px, px));
+                    DrawStarImage(g, ControlPainter.StarFullGPath);
                 }
                 return _filterByRating;
             }
         }
 
+        // PERF_TODO: Images: DrawStarImage
+        // This could be made a lot faster by using the FinishedOn method of just drawing each image once to a
+        // bitmap each, then just drawing those bitmaps as we go along. 6ms to create all the rating image bitmaps
+        // currently.
+        private static void DrawStarImage(Graphics g, GraphicsPath gp)
+        {
+            PointF[] points = new PointF[11];
+            byte[] types = new byte[11];
+
+            Brush[] brushes = { ControlPainter.StarOutlineBrush, ControlPainter.StarFillBrush, Brushes.White };
+
+            int elemCount = 11;
+
+            for (int i = 0, pos = 0; i < 3; i++, pos += 11)
+            {
+                if (i == 2)
+                {
+                    if ((elemCount = gp.PointCount - 22) == 0) return;
+                    Array.Resize(ref points, elemCount);
+                    Array.Resize(ref types, elemCount);
+                }
+
+                Array.Copy(gp.PathPoints, pos, points, 0, elemCount);
+                Array.Copy(gp.PathTypes, pos, types, 0, elemCount);
+
+                using var individualGP = new GraphicsPath(points, types);
+                g.FillPath(brushes[i], individualGP);
+            }
+        }
+
         public static Bitmap[] GetRatingImages()
         {
-            // Just coincidence that these numbers are the same; don't combine
-            //const int halfStarWidth = 11;
             // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
             const int numRatings = 11;
 
             var retArray = new Bitmap[numRatings];
 
-            var eGP = ControlPainter.StarEmptyGPath;
-            var reGP = ControlPainter.StarRightEmptyGPath;
-            var fGP = ControlPainter.StarFullGPath;
-
             bool[] bits = new bool[numRatings];
 
-            for (int ai = 0; ai < numRatings; ai++)
+            RectangleF drawBounds = ControlPainter.StarEmptyGPath.GetBounds();
+
+            for (int bi = 0; bi < numRatings; bi++)
             {
                 var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
 
-                Array.Clear(bits, 0, numRatings);
-                for (int i = 0; i < ai; i++) bits[i] = true;
+                using var g = Graphics.FromImage(canvas);
 
-                //int x = 0;
-                using (var g = Graphics.FromImage(canvas))
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                for (int i = 0; i < bits.Length - 1; i += 2)
                 {
-                    g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    var drawBounds = eGP.GetBounds();
-                    //for (int i = 0; i < bits.Length; i++)
-                    //{
-                    //    bool bitSet = bits[i];
-                    //    bool left = i % 2 == 0;
-
-                    //    if (bitSet)
-                    //    {
-                    //        g.DrawImage(left ? GetFilledLeft() : GetFilledRight(), x, 0);
-                    //    }
-                    //    else
-                    //    {
-                    //        g.DrawImage(left ? GetEmptyLeft() : GetEmptyRight(), x, 0);
-                    //    }
-                    //    x += halfStarWidth;
-                    //}
-                    for (int i2 = 0; i2 < bits.Length - 1; i2 += 2)
-                    {
-                        var fitBounds = new RectangleF((i2 / 2) * 22, 5, 22, 22);
-                        ControlPainter.FitRectInBounds(g, drawBounds, fitBounds);
-
-                        bool bit1Set = bits[i2];
-                        bool bit2Set = bits[i2 + 1];
-
-                        if (bit1Set)
-                        {
-                            if (bit2Set)
-                            {
-                                // draw full
-                                PointF[] oGPPoints = new PointF[11];
-                                byte[] oGPTypes = new byte[11];
-                                Array.Copy(fGP.PathPoints, 0, oGPPoints, 0, 11);
-                                Array.Copy(fGP.PathTypes, 0, oGPTypes, 0, 11);
-                                var oGP = new GraphicsPath(oGPPoints, oGPTypes);
-
-                                PointF[] mGPPoints = new PointF[11];
-                                byte[] mGPTypes = new byte[11];
-                                Array.Copy(fGP.PathPoints, 11, mGPPoints, 0, 11);
-                                Array.Copy(fGP.PathTypes, 11, mGPTypes, 0, 11);
-                                var mGP = new GraphicsPath(mGPPoints, mGPTypes);
-
-                                g.FillPath(ControlPainter.StarOutlineBrush, oGP);
-                                g.FillPath(ControlPainter.StarFillBrush, mGP);
-                            }
-                            else
-                            {
-                                // draw right empty
-                                PointF[] oGPPoints = new PointF[11];
-                                byte[] oGPTypes = new byte[11];
-                                Array.Copy(reGP.PathPoints, 0, oGPPoints, 0, 11);
-                                Array.Copy(reGP.PathTypes, 0, oGPTypes, 0, 11);
-                                var oGP = new GraphicsPath(oGPPoints, oGPTypes);
-
-                                PointF[] mGPPoints = new PointF[11];
-                                byte[] mGPTypes = new byte[11];
-                                Array.Copy(reGP.PathPoints, 11, mGPPoints, 0, 11);
-                                Array.Copy(reGP.PathTypes, 11, mGPTypes, 0, 11);
-                                var mGP = new GraphicsPath(mGPPoints, mGPTypes);
-
-                                PointF[] iGPPoints = new PointF[7];
-                                byte[] iGPTypes = new byte[7];
-                                Array.Copy(reGP.PathPoints, 22, iGPPoints, 0, 7);
-                                Array.Copy(reGP.PathTypes, 22, iGPTypes, 0, 7);
-                                var iGP = new GraphicsPath(iGPPoints, iGPTypes);
-
-                                g.FillPath(ControlPainter.StarOutlineBrush, oGP);
-                                g.FillPath(ControlPainter.StarFillBrush, mGP);
-                                g.FillPath(Brushes.White, iGP);
-                            }
-                        }
-                        else
-                        {
-                            // draw empty
-                            PointF[] oGPPoints = new PointF[11];
-                            byte[] oGPTypes = new byte[11];
-                            Array.Copy(eGP.PathPoints, 0, oGPPoints, 0, 11);
-                            Array.Copy(eGP.PathTypes, 0, oGPTypes, 0, 11);
-                            var oGP = new GraphicsPath(oGPPoints, oGPTypes);
-
-                            PointF[] mGPPoints = new PointF[11];
-                            byte[] mGPTypes = new byte[11];
-                            Array.Copy(eGP.PathPoints, 11, mGPPoints, 0, 11);
-                            Array.Copy(eGP.PathTypes, 11, mGPTypes, 0, 11);
-                            var mGP = new GraphicsPath(mGPPoints, mGPTypes);
-
-                            PointF[] iGPPoints = new PointF[11];
-                            byte[] iGPTypes = new byte[11];
-                            Array.Copy(eGP.PathPoints, 22, iGPPoints, 0, 11);
-                            Array.Copy(eGP.PathTypes, 22, iGPTypes, 0, 11);
-                            var iGP = new GraphicsPath(iGPPoints, iGPTypes);
-
-                            g.FillPath(ControlPainter.StarOutlineBrush, oGP);
-                            g.FillPath(ControlPainter.StarFillBrush, mGP);
-                            g.FillPath(Brushes.White, iGP);
-                        }
-                    }
+                    ControlPainter.FitRectInBounds(g, drawBounds, new RectangleF((i / 2) * 22, 5, 22, 22));
+                    DrawStarImage(g, bits[i] ? bits[i + 1] ? ControlPainter.StarFullGPath : ControlPainter.StarRightEmptyGPath : ControlPainter.StarEmptyGPath);
                 }
 
-                retArray[ai] = canvas;
+                bits[bi] = true;
+
+                retArray[bi] = canvas;
             }
 
             return retArray;
@@ -408,13 +340,13 @@ namespace AngelLoader.Forms
         #region Zoom
 
         private static readonly Bitmap?[] _zoomImages = new Bitmap?[ZoomTypesCount];
-        // We can't use the Paint even to paint the image on ToolStrip crap, as it's tool strip crap, you know.
+        // We can't use the Paint event to paint the image on ToolStrip crap, as it's tool strip crap, you know.
         // It just bugs out in various different ways. So we just paint on an image and set their image to that.
-        // Reconstruct param is for when we're changing size/scale and need to redraw it.
-        public static Bitmap GetZoomImage(int width, int height, Zoom zoomType, bool reconstruct = false)
+        // Regenerate param is for when we're changing size/scale and need to redraw it.
+        public static Bitmap GetZoomImage(int width, int height, Zoom zoomType, bool regenerate = false)
         {
             int index = (int)zoomType;
-            if (reconstruct || _zoomImages[index] == null)
+            if (regenerate || _zoomImages[index] == null)
             {
                 _zoomImages[index] = new Bitmap(width, height);
                 using var g = Graphics.FromImage(_zoomImages[index]!);

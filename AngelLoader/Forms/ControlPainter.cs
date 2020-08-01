@@ -35,11 +35,12 @@ namespace AngelLoader.Forms
             16.70131f, 59.19173f, 16.70131f
         };
 
-        private static readonly byte[] _magnifierEmptyTypes =
-        {
-            0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 3, 3, 3, 131, 0, 3, 3, 3, 3, 3, 3, 3,
-            3, 3, 3, 3, 3, 129
-        };
+        private static readonly byte[] _magnifierEmptyTypes = MakeTypeArray(
+            (3, 9, 0, 1),
+            (3, 3, -1, 1),
+            (3, 3, -1, 1),
+            (3, 5, -1, 131),
+            (3, 12, 0, 129));
 
         private static GraphicsPath? _magnifierEmptyGPath;
         private static GraphicsPath MagnifierEmptyGPath => _magnifierEmptyGPath ??= MakeGraphicsPath(_magnifierEmptyPoints, _magnifierEmptyTypes);
@@ -77,11 +78,11 @@ namespace AngelLoader.Forms
         private static readonly byte[][] _zoomTypeTypes =
         {
             // Zoom in (plus)
-            new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129 },
+            MakeTypeArray((1, 11, 0, 129)),
             // Zoom out (minus)
-            new byte[] { 0, 1, 1, 1, 129 },
+            MakeTypeArray((1, 3, 0, 129)),
             // Zoom reset
-            new byte[] { 0, 1, 1, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 1, 1, 129 }
+            MakeTypeArray((1, 7, 0, 129), (1, 7, 0, 129))
         };
 
         private static readonly GraphicsPath?[] _zoomImagesComplete = new GraphicsPath[ZoomTypesCount];
@@ -131,10 +132,7 @@ namespace AngelLoader.Forms
         };
 
         // Inner path starts at index 7
-        private static readonly byte[] _finishedCheckTypes =
-        {
-            0, 1, 1, 1, 1, 1, 129, 0, 1, 1, 1, 1, 1, 129
-        };
+        private static readonly byte[] _finishedCheckTypes = MakeTypeArray((1, 5, 0, 129), (1, 5, 0, 129));
 
         internal static readonly PointF[] FinishedCheckInnerPoints = new PointF[7];
         internal static readonly byte[] FinishedCheckInnerTypes = new byte[7];
@@ -144,71 +142,109 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        private static byte[] MakeTypeArray(params (byte FillValue, int FillCount, int Prefix, int Suffix)[] sets)
+        {
+            int setsLen = sets.Length;
+            int totalArrayLen = 0;
+
+            for (int i = 0; i < setsLen; i++)
+            {
+                var set = sets[i];
+                totalArrayLen += set.FillCount + (set.Prefix > -1 ? 1 : 0) + (set.Suffix > -1 ? 1 : 0);
+            }
+
+            var ret = new byte[totalArrayLen];
+
+            int pos = 0;
+            for (int i = 0; i < setsLen; i++)
+            {
+                var set = sets[i];
+                if (set.Prefix > -1) ret[pos++] = (byte)set.Prefix;
+                int j;
+                for (j = pos; j < pos + set.FillCount; j++)
+                {
+                    ret[j] = set.FillValue;
+                }
+                pos = j;
+                if (set.Suffix > -1) ret[pos++] = (byte)set.Suffix;
+            }
+
+            return ret;
+        }
+
         #region Stars
 
-        private static readonly float[] _starEmptyPoints = new float[66]
+        private static readonly float[] _starOuterPoints =
         {
-            /* outer */
             50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
-            50f, 0f,
-            /* middle */
-            50f, 9f, 61.5f, 36.5f, 91f, 39f, 69f, 58.5f, 75.5f, 87.5f, 50f, 72f, 24.5f, 87.5f, 31f, 58.5f, 9f,
-            39f, 38.5f, 36.5f, 50f, 9f,
-            /* inner */
-            50f, 22f, 42f, 41f, 21f, 43f, 36.5f, 56.5f, 32f, 77f, 50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f,
-            58f, 41f, 50f, 22f
+            50f, 0f
         };
 
-        private static readonly byte[] _starEmptyTypes = new byte[33]
+        private static readonly float[] _starMiddlePoints =
         {
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129
-        };
-
-        private static readonly float[] _starRightEmptyPoints = new float[]
-        {
-            /* outer */
-            50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
-            50f, 0f,
-            /* middle */
-            50f, 9f, 61.5f, 36.5f, 91f, 39f, 69f, 58.5f, 75.5f, 87.5f, 50f, 72f, 24.5f, 87.5f, 31f, 58.5f, 9f,
-            39f, 38.5f, 36.5f, 50f, 9f,
-            /* inner */
-            50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f, 58f, 41f, 50f, 22f, 50f, 66f
-        };
-
-        private static readonly byte[] _starRightEmptyTypes = new byte[]
-        {
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
-            0, 1, 1, 1, 1, 1, 129
-        };
-
-        private static readonly float[] _starFullPoints = new float[44]
-        {
-            /* outer */
-            50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
-            50f, 0f,
-            /* middle */
             50f, 9f, 61.5f, 36.5f, 91f, 39f, 69f, 58.5f, 75.5f, 87.5f, 50f, 72f, 24.5f, 87.5f, 31f, 58.5f, 9f,
             39f, 38.5f, 36.5f, 50f, 9f
         };
 
-        private static readonly byte[] _starFullTypes = new byte[22]
+        private static readonly float[] _starInnerFullPoints =
         {
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129
+            50f, 22f, 42f, 41f, 21f, 43f, 36.5f, 56.5f, 32f, 77f, 50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f,
+            58f, 41f, 50f, 22f
         };
 
+        private static readonly float[] _starInnerRightHalfPoints =
+        {
+            50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f, 58f, 41f, 50f, 22f, 50f, 66f
+        };
+
+        private static readonly byte[] _starMainTypes = MakeTypeArray((1, 9, 0, 129));
+
+        private static readonly byte[] _starInnerRightHalfTypes = MakeTypeArray((1, 5, 0, 129));
+
         private static GraphicsPath? _starEmptyGPath;
-        internal static GraphicsPath StarEmptyGPath => _starEmptyGPath ??= MakeGraphicsPath(_starEmptyPoints, _starEmptyTypes);
+        internal static GraphicsPath StarEmptyGPath
+        {
+            get
+            {
+                if (_starEmptyGPath == null)
+                {
+                    float[] points = CombineArrays(_starOuterPoints, _starMiddlePoints, _starInnerFullPoints);
+                    byte[] types = CombineArrays(_starMainTypes, _starMainTypes, _starMainTypes);
+                    _starEmptyGPath = MakeGraphicsPath(points, types);
+                }
+                return _starEmptyGPath;
+            }
+        }
 
         private static GraphicsPath? _starRightEmptyGPath;
-        internal static GraphicsPath StarRightEmptyGPath => _starRightEmptyGPath ??= MakeGraphicsPath(_starRightEmptyPoints, _starRightEmptyTypes);
+        internal static GraphicsPath StarRightEmptyGPath
+        {
+            get
+            {
+                if (_starRightEmptyGPath == null)
+                {
+                    float[] points = CombineArrays(_starOuterPoints, _starMiddlePoints, _starInnerRightHalfPoints);
+                    byte[] types = CombineArrays(_starMainTypes, _starMainTypes, _starInnerRightHalfTypes);
+                    _starRightEmptyGPath = MakeGraphicsPath(points, types);
+                }
+                return _starRightEmptyGPath;
+            }
+        }
 
         private static GraphicsPath? _starFullGPath;
-        internal static GraphicsPath StarFullGPath => _starFullGPath ??= MakeGraphicsPath(_starFullPoints, _starFullTypes);
+        internal static GraphicsPath StarFullGPath
+        {
+            get
+            {
+                if (_starFullGPath == null)
+                {
+                    float[] points = CombineArrays(_starOuterPoints, _starMiddlePoints);
+                    byte[] types = CombineArrays(_starMainTypes, _starMainTypes);
+                    _starFullGPath = MakeGraphicsPath(points, types);
+                }
+                return _starFullGPath;
+            }
+        }
 
         internal static readonly Brush StarOutlineBrush = new SolidBrush(Color.FromArgb(192, 113, 0));
         internal static readonly Brush StarFillBrush = new SolidBrush(Color.FromArgb(255, 180, 0));

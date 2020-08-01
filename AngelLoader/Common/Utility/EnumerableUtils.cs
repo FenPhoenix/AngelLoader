@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AngelLoader
 {
@@ -56,6 +57,30 @@ namespace AngelLoader
         }
 
         #endregion
+
+        internal static T[] CombineArrays<T>(params T[][] arrays)
+        {
+            int totalLen = 0;
+            for (int i = 0; i < arrays.Length; i++)
+            {
+                totalLen += arrays[i].Length;
+            }
+
+            T[] ret = new T[totalLen];
+
+            int pos = 0;
+            for (int i = 0; i < arrays.Length; i++)
+            {
+                T[] array = arrays[i];
+                int arrayLen = array.Length;
+
+                Array.Copy(array, 0, ret, pos, arrayLen);
+
+                pos += arrayLen;
+            }
+
+            return ret;
+        }
 
         #region Clear and add
 
