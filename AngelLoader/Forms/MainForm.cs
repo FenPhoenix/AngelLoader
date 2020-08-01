@@ -2179,16 +2179,32 @@ namespace AngelLoader.Forms
         }
 
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal async void ImportFromDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromDarkLoader();
+        internal async void ImportMenuItems_Click(object sender, EventArgs e)
+        {
+            // This is only hooked up after construct, so we know these menu items are initialized
+            if (sender == ImportFromLLMenu.ImportFromDarkLoaderMenuItem)
+            {
+                await ImportCommon.ImportFromDarkLoader();
+            }
+            else
+            {
+                await ImportCommon.ImportFromNDLOrFMSel(sender == ImportFromLLMenu.ImportFromFMSelMenuItem
+                    ? ImportType.FMSel
+                    : ImportType.NewDarkLoader);
+            }
+        }
 
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal async void ImportFromFMSelMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromNDLOrFMSel(ImportType.FMSel);
+        private async void SettingsButton_Click(object sender, EventArgs e)
+        {
+            var ret = Core.OpenSettings();
+            if (ret.Canceled) return;
 
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
-        internal async void ImportFromNewDarkLoaderMenuItem_Click(object sender, EventArgs e) => await ImportCommon.ImportFromNDLOrFMSel(ImportType.NewDarkLoader);
-
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-        private async void SettingsButton_Click(object sender, EventArgs e) => await Core.OpenSettings();
+            if (ret.ScanNewFMs) await FMScan.ScanNewFMs();
+            // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
+            // If I store the selected FM up above the Find(), I can make the FM not have to reload if
+            // it's still selected
+            if (ret.SortAndSetFilter) await SortAndSetFilter(keepSelection: ret.KeepSel, forceDisplayFM: true);
+        }
 
         #endregion
 
@@ -2999,14 +3015,26 @@ namespace AngelLoader.Forms
 
         #region Top-right area
 
-        #region Statistics tab
-
-        private async void RescanCustomResourcesButton_Click(object sender, EventArgs e)
+        // Hook them all up to one event handler to avoid extraneous async/awaits
+        private async void FieldScanButtons_Click(object sender, EventArgs e)
         {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanCustomResources: true));
-        }
+            if (sender == EditFMScanForReadmesButton)
+            {
+                Ini.WriteFullFMDataIni();
+                await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
+            }
+            else
+            {
+                var scanOptions =
+                    sender == EditFMScanTitleButton ? FMScanner.ScanOptions.FalseDefault(scanTitle: true) :
+                    sender == EditFMScanAuthorButton ? FMScanner.ScanOptions.FalseDefault(scanAuthor: true) :
+                    sender == EditFMScanReleaseDateButton ? FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true) :
+                    //sender == StatsScanCustomResourcesButton
+                    FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
 
-        #endregion
+                await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), scanOptions);
+            }
+        }
 
         #region Edit FM tab
 
@@ -3139,31 +3167,10 @@ namespace AngelLoader.Forms
             ShowMenu(FMsDGV.GetFinishedOnMenu(), EditFMFinishedOnButton, MenuPos.BottomRight, unstickMenu: true);
         }
 
-        private async void EditFMScanTitleButton_Click(object sender, EventArgs e)
-        {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanTitle: true));
-        }
-
-        private async void EditFMScanAuthorButton_Click(object sender, EventArgs e)
-        {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanAuthor: true));
-        }
-
-        private async void EditFMScanReleaseDateButton_Click(object sender, EventArgs e)
-        {
-            await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true));
-        }
-
         private void EditFMScanLanguagesButton_Click(object sender, EventArgs e)
         {
             ScanAndFillLanguagesBox(FMsDGV.GetSelectedFM(), forceScan: true);
             Ini.WriteFullFMDataIni();
-        }
-
-        private async void EditFMScanForReadmesButton_Click(object sender, EventArgs e)
-        {
-            Ini.WriteFullFMDataIni();
-            await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
         }
 
         #endregion
@@ -3729,19 +3736,6 @@ namespace AngelLoader.Forms
 
         #region Filter bar controls
 
-        private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            await SortAndSetFilter();
-        }
-
-        private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            // Don't keep selection for these ones, cause you want to end up on the FM you typed as soon as possible
-            await SortAndSetFilter(keepSelection: false);
-        }
-
         private async void FilterByDateButtons_Click(object sender, EventArgs e)
         {
             // Avoid an extra await by putting this right in the event handler
@@ -3783,10 +3777,6 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
-        private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
-
-        private async void FilterByUnfinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
-
         private async void FilterByRatingButton_Click(object sender, EventArgs e)
         {
             // Avoid an extra await by putting this right in the event handler
@@ -3810,10 +3800,6 @@ namespace AngelLoader.Forms
             UpdateRatingLabel();
             await SortAndSetFilter();
         }
-
-        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
-
-        private async void FilterShowRecentAtTopButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: false);
 
         private void UpdateDateLabel(bool lastPlayed, bool suspendResume = true)
         {
@@ -3857,15 +3843,30 @@ namespace AngelLoader.Forms
 
         internal void FMsListResetZoomButton_Click(object sender, EventArgs e) => ZoomFMsDGV(ZoomFMsDGVType.ResetZoom);
 
-        [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-        private async void RefreshFromDiskButton_Click(object sender, EventArgs e) => await Core.RefreshFMsListFromDisk();
-
-        private async void RefreshFiltersButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
-
-        private async void ClearFiltersButton_Click(object sender, EventArgs e)
+        // A ton of things in one event handler to cut down on async/awaits
+        private async void SortAndSetFiltersButtons_Click(object sender, EventArgs e)
         {
-            ClearUIAndCurrentInternalFilter();
-            await SortAndSetFilter();
+            if (sender == RefreshFromDiskButton)
+            {
+                await Core.RefreshFMsListFromDisk();
+            }
+            else
+            {
+                bool senderIsTextBox = sender == FilterTitleTextBox ||
+                                       sender == FilterAuthorTextBox;
+                bool senderIsGameButton = _filterByGameButtonsInOrder.Contains(sender);
+
+                if ((senderIsTextBox || senderIsGameButton) && EventsDisabled)
+                {
+                    return;
+                }
+
+                if (sender == ClearFiltersButton) ClearUIAndCurrentInternalFilter();
+
+                // Don't keep selection for these ones, cause you want to end up on the FM you typed as soon as possible
+                bool keepSel = sender != FilterShowRecentAtTopButton && !senderIsTextBox;
+                await SortAndSetFilter(keepSelection: keepSel);
+            }
         }
 
         #endregion

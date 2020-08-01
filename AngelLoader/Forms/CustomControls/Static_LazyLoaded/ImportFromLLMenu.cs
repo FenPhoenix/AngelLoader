@@ -9,9 +9,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
 
         internal static ContextMenuStrip ImportFromMenu = null!;
 
-        private static ToolStripMenuItem ImportFromDarkLoaderMenuItem = null!;
-        private static ToolStripMenuItem ImportFromFMSelMenuItem = null!;
-        private static ToolStripMenuItem ImportFromNewDarkLoaderMenuItem = null!;
+        internal static ToolStripMenuItem ImportFromDarkLoaderMenuItem = null!;
+        internal static ToolStripMenuItem ImportFromFMSelMenuItem = null!;
+        internal static ToolStripMenuItem ImportFromNewDarkLoaderMenuItem = null!;
 
         internal static void Construct(MainForm form, IContainer components)
         {
@@ -31,9 +31,9 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
                 ImportFromNewDarkLoaderMenuItem
             });
 
-            ImportFromDarkLoaderMenuItem.Click += form.ImportFromDarkLoaderMenuItem_Click;
-            ImportFromFMSelMenuItem.Click += form.ImportFromFMSelMenuItem_Click;
-            ImportFromNewDarkLoaderMenuItem.Click += form.ImportFromNewDarkLoaderMenuItem_Click;
+            ImportFromDarkLoaderMenuItem.Click += form.ImportMenuItems_Click;
+            ImportFromFMSelMenuItem.Click += form.ImportMenuItems_Click;
+            ImportFromNewDarkLoaderMenuItem.Click += form.ImportMenuItems_Click;
 
             _constructed = true;
         }

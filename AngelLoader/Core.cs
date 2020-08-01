@@ -168,26 +168,23 @@ namespace AngelLoader
 
             if (openSettings)
             {
+                OpenSettings(startup: true, cleanStart: cleanStart);
+            }
+            else
+            {
                 // Eliding await so that we don't have to be async and run the state machine and lose time. This
                 // will be the last line run in this method and nothing does anything up the call stack, so it's
                 // safe. Don't put this inside a try block, or it won't be safe. It has to really be the last
                 // thing run in the method.
-#pragma warning disable 4014
-                OpenSettings(startup: true, cleanStart: cleanStart);
-#pragma warning restore 4014
-                // ReSharper disable once RedundantJumpStatement
-                return; // return for clarity of intent
-            }
-            else
-            {
-                // async, but same as above
                 // View won't be null here
                 View.FinishInitAndShow();
             }
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
-        public static async Task OpenSettings(bool startup = false, bool cleanStart = false)
+        // We return bools signifying which awaitable tasks to run, so we can avoid this method having to be async
+        public static (bool Canceled, bool ScanNewFMs, bool SortAndSetFilter, bool KeepSel)
+        OpenSettings(bool startup = false, bool cleanStart = false)
         {
             using var sf = new SettingsForm(View, Config, startup, cleanStart);
 
@@ -212,7 +209,7 @@ namespace AngelLoader
                 // Since nothing of consequence has yet happened, it's okay to do the brutal quit
                 // We know the game paths by now, so we can do this
                 if (startup) EnvironmentExitDoShutdownTasks(0);
-                return;
+                return (true, false, false, false);
             }
 
             #region Set changed bools
@@ -327,11 +324,8 @@ namespace AngelLoader
                     findFMsTask.Wait();
                 }
                 // Again, last line and nothing up the call stack, so call without await.
-#pragma warning disable 4014
                 View.FinishInitAndShow();
-#pragma warning restore 4014
-
-                return;
+                return (false, false, false, false);
             }
 
             // From this point on, we're not in startup mode.
@@ -429,22 +423,20 @@ namespace AngelLoader
 
             #endregion
 
-            #region Call appropriate refresh method (if applicable)
+            #region Return bools for appropriate refresh method (if applicable)
+
+            var ret = (Canceled: false, ScanNewFMs: false, SortAndSetFilter: false, KeepSel: false);
 
             if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged ||
                 daysRecentChanged)
             {
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    if (FMsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs();
+                    if (FMsViewListUnscanned.Count > 0) ret.ScanNewFMs = true;
                 }
 
-                bool keepSel = !gameOrganizationChanged;
-
-                // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
-                // If I store the selected FM up above the Find(), I can make the FM not have to reload if
-                // it's still selected
-                await View.SortAndSetFilter(keepSelection: keepSel, forceDisplayFM: true);
+                ret.KeepSel = !gameOrganizationChanged;
+                ret.SortAndSetFilter = true;
             }
             else if (dateFormatChanged || languageChanged)
             {
@@ -452,6 +444,8 @@ namespace AngelLoader
             }
 
             #endregion
+
+            return ret;
         }
 
         /// <summary>

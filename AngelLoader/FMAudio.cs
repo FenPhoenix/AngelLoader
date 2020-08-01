@@ -165,11 +165,6 @@ namespace AngelLoader
             }
         }
 
-        // Dark engine games can't play MP3s, so they must be converted in all cases.
-        // This one won't be called anywhere except during install, because it always runs during install so
-        // there's no need to make it optional elsewhere. So we don't need to have a check bool or anything.
-        internal static async Task ConvertMP3sToWAVs(FanMission fm) => await ConvertToWAVs(fm, "*.mp3");
-
         // From the FMSel manual:
         // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
         // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
@@ -197,43 +192,7 @@ namespace AngelLoader
             }
         }
 
-        #endregion
-
-        #region Helpers
-
-        private static (bool Success, bool RefreshSelectedFM)
-        ChecksPassed(FanMission fm)
-        {
-            if (!fm.Installed || !GameIsDark(fm.Game)) return (false, false);
-
-            string gameExe = Config.GetGameExeUnsafe(fm.Game);
-            string gameName = GetLocalizedGameName(fm.Game);
-            if (GameIsRunning(gameExe))
-            {
-                Core.View.ShowAlert(
-                    gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
-                    LText.AlertMessages.Alert);
-
-                return (false, false);
-            }
-
-            if (!FMIsReallyInstalled(fm))
-            {
-                bool yes = Core.View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
-                    LText.AlertMessages.Alert);
-                if (yes) fm.Installed = false;
-
-                return (false, true);
-            }
-
-            return (true, false);
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private static async Task ConvertToWAVs(FanMission fm, string pattern)
+        internal static async Task ConvertToWAVs(FanMission fm, string pattern)
         {
             if (!GameIsDark(fm.Game)) return;
 
@@ -296,6 +255,38 @@ namespace AngelLoader
                     Log("Exception in file conversion", ex);
                 }
             });
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private static (bool Success, bool RefreshSelectedFM)
+        ChecksPassed(FanMission fm)
+        {
+            if (!fm.Installed || !GameIsDark(fm.Game)) return (false, false);
+
+            string gameExe = Config.GetGameExeUnsafe(fm.Game);
+            string gameName = GetLocalizedGameName(fm.Game);
+            if (GameIsRunning(gameExe))
+            {
+                Core.View.ShowAlert(
+                    gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
+                    LText.AlertMessages.Alert);
+
+                return (false, false);
+            }
+
+            if (!FMIsReallyInstalled(fm))
+            {
+                bool yes = Core.View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
+                    LText.AlertMessages.Alert);
+                if (yes) fm.Installed = false;
+
+                return (false, true);
+            }
+
+            return (true, false);
         }
 
         private static List<string> GetFMSoundPathsByGame(FanMission fm)

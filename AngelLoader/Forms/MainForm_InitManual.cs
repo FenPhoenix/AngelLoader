@@ -604,7 +604,7 @@ namespace AngelLoader.Forms
             FilterByThief1Button.Image = Images.Thief1_21;
             FilterByThief1Button.Margin = new Padding(0);
             FilterByThief1Button.Size = new Size(25, 25);
-            FilterByThief1Button.Click += FilterByGameCheckButtons_Click;
+            FilterByThief1Button.Click += SortAndSetFiltersButtons_Click;
             // 
             // FilterByThief2Button
             // 
@@ -614,7 +614,7 @@ namespace AngelLoader.Forms
             FilterByThief2Button.Image = Images.Thief2_21;
             FilterByThief2Button.Margin = new Padding(0);
             FilterByThief2Button.Size = new Size(25, 25);
-            FilterByThief2Button.Click += FilterByGameCheckButtons_Click;
+            FilterByThief2Button.Click += SortAndSetFiltersButtons_Click;
             // 
             // FilterByThief3Button
             // 
@@ -624,7 +624,7 @@ namespace AngelLoader.Forms
             FilterByThief3Button.Image = Images.Thief3_21;
             FilterByThief3Button.Margin = new Padding(0);
             FilterByThief3Button.Size = new Size(25, 25);
-            FilterByThief3Button.Click += FilterByGameCheckButtons_Click;
+            FilterByThief3Button.Click += SortAndSetFiltersButtons_Click;
             // 
             // TagsTabAutoScrollMarker
             // 
@@ -639,7 +639,7 @@ namespace AngelLoader.Forms
             // Extra 2 padding on the right: Fix slight visual glitch on the right side
             FilterBySS2Button.Margin = new Padding(0, 0, 2, 0);
             FilterBySS2Button.Size = new Size(25, 25);
-            FilterBySS2Button.Click += FilterByGameCheckButtons_Click;
+            FilterBySS2Button.Click += SortAndSetFiltersButtons_Click;
             // 
             // FilterTitleLabel
             // 
@@ -651,7 +651,7 @@ namespace AngelLoader.Forms
             // 
             FilterTitleTextBox.Size = new Size(144, 20);
             FilterTitleTextBox.TabIndex = 6;
-            FilterTitleTextBox.TextChanged += FilterTextBoxes_TextChanged;
+            FilterTitleTextBox.TextChanged += SortAndSetFiltersButtons_Click;
             // 
             // FilterAuthorLabel
             // 
@@ -663,7 +663,7 @@ namespace AngelLoader.Forms
             // 
             FilterAuthorTextBox.Size = new Size(144, 20);
             FilterAuthorTextBox.TabIndex = 8;
-            FilterAuthorTextBox.TextChanged += FilterTextBoxes_TextChanged;
+            FilterAuthorTextBox.TextChanged += SortAndSetFiltersButtons_Click;
             // 
             // FilterIconButtonsToolStrip
             // 
@@ -722,7 +722,7 @@ namespace AngelLoader.Forms
             FilterByFinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterFinished: true);
             FilterByFinishedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByFinishedButton.Size = new Size(25, 25);
-            FilterByFinishedButton.Click += FilterByFinishedButton_Click;
+            FilterByFinishedButton.Click += SortAndSetFiltersButtons_Click;
             // 
             // FilterByUnfinishedButton
             // 
@@ -732,7 +732,7 @@ namespace AngelLoader.Forms
             FilterByUnfinishedButton.Image = Images.FillFinishedOnBitmap(Difficulty.None, filterUnfinished: true);
             FilterByUnfinishedButton.Margin = new Padding(0);
             FilterByUnfinishedButton.Size = new Size(25, 25);
-            FilterByUnfinishedButton.Click += FilterByUnfinishedButton_Click;
+            FilterByUnfinishedButton.Click += SortAndSetFiltersButtons_Click;
             // 
             // FilterByRatingButton
             // 
@@ -751,7 +751,7 @@ namespace AngelLoader.Forms
             FilterShowUnsupportedButton.Image = Resources.Show_Unsupported;
             FilterShowUnsupportedButton.Margin = new Padding(6, 0, 0, 0);
             FilterShowUnsupportedButton.Size = new Size(25, 25);
-            FilterShowUnsupportedButton.Click += FilterShowUnsupportedButton_Click;
+            FilterShowUnsupportedButton.Click += SortAndSetFiltersButtons_Click;
             // 
             // FilterShowRecentAtTopButton
             // 
@@ -761,7 +761,7 @@ namespace AngelLoader.Forms
             FilterShowRecentAtTopButton.Image = Resources.FilterShowRecentAtTop;
             FilterShowRecentAtTopButton.Margin = new Padding(6, 0, 2, 0);
             FilterShowRecentAtTopButton.Size = new Size(25, 25);
-            FilterShowRecentAtTopButton.Click += FilterShowRecentAtTopButton_Click;
+            FilterShowRecentAtTopButton.Click += SortAndSetFiltersButtons_Click;
             // 
             // RefreshAreaToolStrip
             // 
@@ -789,7 +789,7 @@ namespace AngelLoader.Forms
             RefreshFromDiskButton.Image = Resources.FindNewFMs_21;
             RefreshFromDiskButton.Margin = new Padding(0);
             RefreshFromDiskButton.Size = new Size(25, 25);
-            RefreshFromDiskButton.Click += RefreshFromDiskButton_Click;
+            RefreshFromDiskButton.Click += SortAndSetFiltersButtons_Click;
             RefreshFromDiskButton.Margin = new Padding(6, 0, 0, 0);
             // 
             // RefreshFiltersButton
@@ -799,7 +799,7 @@ namespace AngelLoader.Forms
             RefreshFiltersButton.Image = Images.Refresh;
             RefreshFiltersButton.Margin = new Padding(0);
             RefreshFiltersButton.Size = new Size(25, 25);
-            RefreshFiltersButton.Click += RefreshFiltersButton_Click;
+            RefreshFiltersButton.Click += SortAndSetFiltersButtons_Click;
             // 
             // ClearFiltersButton
             // 
@@ -809,7 +809,7 @@ namespace AngelLoader.Forms
             // 1 pixel to the bottom margin to prevent the bottom from getting cut off for some reason
             ClearFiltersButton.Margin = new Padding(0, 0, 9, 1);
             ClearFiltersButton.Size = new Size(25, 25);
-            ClearFiltersButton.Click += ClearFiltersButton_Click;
+            ClearFiltersButton.Click += SortAndSetFiltersButtons_Click;
             // 
             // ResetLayoutButton
             // 
@@ -915,7 +915,7 @@ namespace AngelLoader.Forms
             StatsScanCustomResourcesButton.Padding = new Padding(13, 0, 0, 0);
             StatsScanCustomResourcesButton.TabIndex = 12;
             StatsScanCustomResourcesButton.UseVisualStyleBackColor = true;
-            StatsScanCustomResourcesButton.Click += RescanCustomResourcesButton_Click;
+            StatsScanCustomResourcesButton.Click += FieldScanButtons_Click;
             StatsScanCustomResourcesButton.Paint += ScanIconButtons_Paint;
             // 
             // StatsCheckBoxesPanel
@@ -1084,7 +1084,7 @@ namespace AngelLoader.Forms
             EditFMScanForReadmesButton.Padding = new Padding(13, 0, 0, 0);
             EditFMScanForReadmesButton.TabIndex = 34;
             EditFMScanForReadmesButton.UseVisualStyleBackColor = true;
-            EditFMScanForReadmesButton.Click += EditFMScanForReadmesButton_Click;
+            EditFMScanForReadmesButton.Click += FieldScanButtons_Click;
             EditFMScanForReadmesButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMScanReleaseDateButton
@@ -1093,7 +1093,7 @@ namespace AngelLoader.Forms
             EditFMScanReleaseDateButton.Size = new Size(22, 22);
             EditFMScanReleaseDateButton.TabIndex = 22;
             EditFMScanReleaseDateButton.UseVisualStyleBackColor = true;
-            EditFMScanReleaseDateButton.Click += EditFMScanReleaseDateButton_Click;
+            EditFMScanReleaseDateButton.Click += FieldScanButtons_Click;
             EditFMScanReleaseDateButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMScanAuthorButton
@@ -1103,7 +1103,7 @@ namespace AngelLoader.Forms
             EditFMScanAuthorButton.Size = new Size(22, 22);
             EditFMScanAuthorButton.TabIndex = 19;
             EditFMScanAuthorButton.UseVisualStyleBackColor = true;
-            EditFMScanAuthorButton.Click += EditFMScanAuthorButton_Click;
+            EditFMScanAuthorButton.Click += FieldScanButtons_Click;
             EditFMScanAuthorButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMScanTitleButton
@@ -1113,7 +1113,7 @@ namespace AngelLoader.Forms
             EditFMScanTitleButton.Size = new Size(22, 22);
             EditFMScanTitleButton.TabIndex = 16;
             EditFMScanTitleButton.UseVisualStyleBackColor = true;
-            EditFMScanTitleButton.Click += EditFMScanTitleButton_Click;
+            EditFMScanTitleButton.Click += FieldScanButtons_Click;
             EditFMScanTitleButton.Paint += ScanIconButtons_Paint;
             // 
             // EditFMAltTitlesDropDownButton

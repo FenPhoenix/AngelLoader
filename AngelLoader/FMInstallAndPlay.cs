@@ -547,7 +547,12 @@ namespace AngelLoader
                 {
                     Core.View.ShowProgressBox(ProgressTasks.ConvertFiles);
 
-                    await FMAudio.ConvertMP3sToWAVs(fm);
+                    // Dark engine games can't play MP3s, so they must be converted in all cases.
+                    // This one won't be called anywhere except during install, because it always runs during
+                    // install so there's no need to make it optional elsewhere. So we don't need to have a
+                    // check bool or anything.
+                    // Slightly leaky API for the purpose of avoiding async/awaits.
+                    await FMAudio.ConvertToWAVs(fm, "*.mp3");
                     if (Config.ConvertOGGsToWAVsOnInstall) await FMAudio.ConvertOGGsToWAVs(fm, false);
                     if (Config.ConvertWAVsTo16BitOnInstall) await FMAudio.ConvertWAVsTo16Bit(fm, false);
                 }
