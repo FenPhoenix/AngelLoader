@@ -251,13 +251,13 @@ namespace AngelLoader.Forms
             {
                 if (_filterByRating == null)
                 {
-                    using var frb1 = Resources.FilterByRating_half;
-                    using var frb2 = (Bitmap)frb1.Clone();
-                    frb2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    //using var frb1 = Resources.FilterByRating_half;
+                    //using var frb2 = (Bitmap)frb1.Clone();
+                    //frb2.RotateFlip(RotateFlipType.RotateNoneFlipX);
                     _filterByRating = new Bitmap(32, 32, PixelFormat.Format32bppPArgb);
-                    using var g = Graphics.FromImage(_filterByRating);
-                    g.DrawImage(frb1, 0, 0);
-                    g.DrawImage(frb2, 16, 0);
+                    //using var g = Graphics.FromImage(_filterByRating);
+                    //g.DrawImage(frb1, 0, 0);
+                    //g.DrawImage(frb2, 16, 0);
                 }
                 return _filterByRating;
             }
@@ -266,84 +266,129 @@ namespace AngelLoader.Forms
         public static Bitmap[] GetRatingImages()
         {
             // Just coincidence that these numbers are the same; don't combine
-            const int halfStarWidth = 11;
+            //const int halfStarWidth = 11;
             // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
             const int numRatings = 11;
 
             var retArray = new Bitmap[numRatings];
 
-            Bitmap? _star_Filled_Left_Half = null;
-            Bitmap? _star_Filled_Right_Half = null;
-            Bitmap? _star_Empty_Left_Half = null;
-            Bitmap? _star_Empty_Right_Half = null;
-            try
+            var eGP = ControlPainter.StarEmptyGPath;
+            var reGP = ControlPainter.StarRightEmptyGPath;
+            var fGP = ControlPainter.StarFullGPath;
+
+            bool[] bits = new bool[numRatings];
+
+            for (int ai = 0; ai < numRatings; ai++)
             {
-                #region Image getters
+                var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
 
-                Bitmap GetFilledLeft() => _star_Filled_Left_Half ??= Resources.Star_Filled_Half;
+                Array.Clear(bits, 0, numRatings);
+                for (int i = 0; i < ai; i++) bits[i] = true;
 
-                Bitmap GetFilledRight()
+                //int x = 0;
+                using (var g = Graphics.FromImage(canvas))
                 {
-                    if (_star_Filled_Right_Half == null)
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                    var drawBounds = eGP.GetBounds();
+                    //for (int i = 0; i < bits.Length; i++)
+                    //{
+                    //    bool bitSet = bits[i];
+                    //    bool left = i % 2 == 0;
+
+                    //    if (bitSet)
+                    //    {
+                    //        g.DrawImage(left ? GetFilledLeft() : GetFilledRight(), x, 0);
+                    //    }
+                    //    else
+                    //    {
+                    //        g.DrawImage(left ? GetEmptyLeft() : GetEmptyRight(), x, 0);
+                    //    }
+                    //    x += halfStarWidth;
+                    //}
+                    for (int i2 = 0; i2 < bits.Length - 1; i2 += 2)
                     {
-                        _star_Filled_Right_Half = Resources.Star_Filled_Half;
-                        _star_Filled_Right_Half.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                    }
-                    return _star_Filled_Right_Half;
-                }
+                        var fitBounds = new RectangleF((i2 / 2) * 22, 5, 22, 22);
+                        ControlPainter.FitRectInBounds(g, drawBounds, fitBounds);
 
-                Bitmap GetEmptyLeft() => _star_Empty_Left_Half ??= Resources.Star_Empty_Half;
+                        bool bit1Set = bits[i2];
+                        bool bit2Set = bits[i2 + 1];
 
-                Bitmap GetEmptyRight()
-                {
-                    if (_star_Empty_Right_Half == null)
-                    {
-                        _star_Empty_Right_Half = Resources.Star_Empty_Half;
-                        _star_Empty_Right_Half.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                    }
-                    return _star_Empty_Right_Half;
-                }
-
-                #endregion
-
-                bool[] bits = new bool[numRatings];
-
-                for (int ai = 0; ai < numRatings; ai++)
-                {
-                    var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
-
-                    Array.Clear(bits, 0, numRatings);
-                    for (int i = 0; i < ai; i++) bits[i] = true;
-
-                    int x = 0;
-                    using (var g = Graphics.FromImage(canvas))
-                    {
-                        for (int i = 0; i < bits.Length; i++)
+                        if (bit1Set)
                         {
-                            bool bitSet = bits[i];
-                            bool left = i % 2 == 0;
-
-                            if (bitSet)
+                            if (bit2Set)
                             {
-                                g.DrawImage(left ? GetFilledLeft() : GetFilledRight(), x, 0);
+                                // draw full
+                                PointF[] oGPPoints = new PointF[11];
+                                byte[] oGPTypes = new byte[11];
+                                Array.Copy(fGP.PathPoints, 0, oGPPoints, 0, 11);
+                                Array.Copy(fGP.PathTypes, 0, oGPTypes, 0, 11);
+                                var oGP = new GraphicsPath(oGPPoints, oGPTypes);
+
+                                PointF[] mGPPoints = new PointF[11];
+                                byte[] mGPTypes = new byte[11];
+                                Array.Copy(fGP.PathPoints, 11, mGPPoints, 0, 11);
+                                Array.Copy(fGP.PathTypes, 11, mGPTypes, 0, 11);
+                                var mGP = new GraphicsPath(mGPPoints, mGPTypes);
+
+                                g.FillPath(ControlPainter.StarOutlineBrush, oGP);
+                                g.FillPath(ControlPainter.StarFillBrush, mGP);
                             }
                             else
                             {
-                                g.DrawImage(left ? GetEmptyLeft() : GetEmptyRight(), x, 0);
+                                // draw right empty
+                                PointF[] oGPPoints = new PointF[11];
+                                byte[] oGPTypes = new byte[11];
+                                Array.Copy(reGP.PathPoints, 0, oGPPoints, 0, 11);
+                                Array.Copy(reGP.PathTypes, 0, oGPTypes, 0, 11);
+                                var oGP = new GraphicsPath(oGPPoints, oGPTypes);
+
+                                PointF[] mGPPoints = new PointF[11];
+                                byte[] mGPTypes = new byte[11];
+                                Array.Copy(reGP.PathPoints, 11, mGPPoints, 0, 11);
+                                Array.Copy(reGP.PathTypes, 11, mGPTypes, 0, 11);
+                                var mGP = new GraphicsPath(mGPPoints, mGPTypes);
+
+                                PointF[] iGPPoints = new PointF[7];
+                                byte[] iGPTypes = new byte[7];
+                                Array.Copy(reGP.PathPoints, 22, iGPPoints, 0, 7);
+                                Array.Copy(reGP.PathTypes, 22, iGPTypes, 0, 7);
+                                var iGP = new GraphicsPath(iGPPoints, iGPTypes);
+
+                                g.FillPath(ControlPainter.StarOutlineBrush, oGP);
+                                g.FillPath(ControlPainter.StarFillBrush, mGP);
+                                g.FillPath(Brushes.White, iGP);
                             }
-                            x += halfStarWidth;
+                        }
+                        else
+                        {
+                            // draw empty
+                            PointF[] oGPPoints = new PointF[11];
+                            byte[] oGPTypes = new byte[11];
+                            Array.Copy(eGP.PathPoints, 0, oGPPoints, 0, 11);
+                            Array.Copy(eGP.PathTypes, 0, oGPTypes, 0, 11);
+                            var oGP = new GraphicsPath(oGPPoints, oGPTypes);
+
+                            PointF[] mGPPoints = new PointF[11];
+                            byte[] mGPTypes = new byte[11];
+                            Array.Copy(eGP.PathPoints, 11, mGPPoints, 0, 11);
+                            Array.Copy(eGP.PathTypes, 11, mGPTypes, 0, 11);
+                            var mGP = new GraphicsPath(mGPPoints, mGPTypes);
+
+                            PointF[] iGPPoints = new PointF[11];
+                            byte[] iGPTypes = new byte[11];
+                            Array.Copy(eGP.PathPoints, 22, iGPPoints, 0, 11);
+                            Array.Copy(eGP.PathTypes, 22, iGPTypes, 0, 11);
+                            var iGP = new GraphicsPath(iGPPoints, iGPTypes);
+
+                            g.FillPath(ControlPainter.StarOutlineBrush, oGP);
+                            g.FillPath(ControlPainter.StarFillBrush, mGP);
+                            g.FillPath(Brushes.White, iGP);
                         }
                     }
-
-                    retArray[ai] = canvas;
                 }
-            }
-            finally
-            {
-                _star_Filled_Left_Half?.Dispose();
-                _star_Filled_Right_Half?.Dispose();
-                _star_Empty_Left_Half?.Dispose();
-                _star_Empty_Right_Half?.Dispose();
+
+                retArray[ai] = canvas;
             }
 
             return retArray;

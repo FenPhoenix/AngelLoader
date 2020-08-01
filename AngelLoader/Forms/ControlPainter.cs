@@ -146,7 +146,7 @@ namespace AngelLoader.Forms
 
         #region Stars
 
-        private static readonly float[] _starPoints =
+        private static readonly float[] _starEmptyPoints = new float[66]
         {
             /* outer */
             50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
@@ -159,16 +159,60 @@ namespace AngelLoader.Forms
             58f, 41f, 50f, 22f
         };
 
-        private static readonly byte[] _starTypes =
+        private static readonly byte[] _starEmptyTypes = new byte[33]
         {
             0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
             0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
             0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129
         };
 
-        private static GraphicsPath? _starGPath;
-        internal static GraphicsPath StarGPath => _starGPath ??= MakeGraphicsPath(_starPoints, _starTypes);
-        
+        private static readonly float[] _starRightEmptyPoints = new float[]
+        {
+            /* outer */
+            50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
+            50f, 0f,
+            /* middle */
+            50f, 9f, 61.5f, 36.5f, 91f, 39f, 69f, 58.5f, 75.5f, 87.5f, 50f, 72f, 24.5f, 87.5f, 31f, 58.5f, 9f,
+            39f, 38.5f, 36.5f, 50f, 9f,
+            /* inner */
+            50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f, 58f, 41f, 50f, 22f, 50f, 66f
+        };
+
+        private static readonly byte[] _starRightEmptyTypes = new byte[]
+        {
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
+            0, 1, 1, 1, 1, 1, 129
+        };
+
+        private static readonly float[] _starFullPoints = new float[44]
+        {
+            /* outer */
+            50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
+            50f, 0f,
+            /* middle */
+            50f, 9f, 61.5f, 36.5f, 91f, 39f, 69f, 58.5f, 75.5f, 87.5f, 50f, 72f, 24.5f, 87.5f, 31f, 58.5f, 9f,
+            39f, 38.5f, 36.5f, 50f, 9f
+        };
+
+        private static readonly byte[] _starFullTypes = new byte[22]
+        {
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 129
+        };
+
+        private static GraphicsPath? _starEmptyGPath;
+        internal static GraphicsPath StarEmptyGPath => _starEmptyGPath ??= MakeGraphicsPath(_starEmptyPoints, _starEmptyTypes);
+
+        private static GraphicsPath? _starRightEmptyGPath;
+        internal static GraphicsPath StarRightEmptyGPath => _starRightEmptyGPath ??= MakeGraphicsPath(_starRightEmptyPoints, _starRightEmptyTypes);
+
+        private static GraphicsPath? _starFullGPath;
+        internal static GraphicsPath StarFullGPath => _starFullGPath ??= MakeGraphicsPath(_starFullPoints, _starFullTypes);
+
+        internal static readonly Brush StarOutlineBrush = new SolidBrush(Color.FromArgb(192, 113, 0));
+        internal static readonly Brush StarFillBrush = new SolidBrush(Color.FromArgb(255, 180, 0));
+
         #endregion
 
         #endregion

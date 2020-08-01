@@ -113,16 +113,6 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FilterByRating_half {
-            get {
-                object obj = ResourceManager.GetObject("FilterByRating_half", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap FilterByReleaseDate {
             get {
                 object obj = ResourceManager.GetObject("FilterByReleaseDate", resourceCulture);
@@ -286,26 +276,6 @@ namespace AngelLoader.Properties {
         internal static System.Drawing.Bitmap Show_Unsupported {
             get {
                 object obj = ResourceManager.GetObject("Show_Unsupported", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Star_Empty_Half {
-            get {
-                object obj = ResourceManager.GetObject("Star_Empty_Half", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Star_Filled_Half {
-            get {
-                object obj = ResourceManager.GetObject("Star_Filled_Half", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
