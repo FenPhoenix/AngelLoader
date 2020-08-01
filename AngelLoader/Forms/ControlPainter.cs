@@ -142,31 +142,32 @@ namespace AngelLoader.Forms
 
         #endregion
 
+        // Believe it or not, I actually save space by having this massive complicated method rather than a few
+        // very small byte arrays. I guess byte arrays must take up more space than you might think, or something.
         private static byte[] MakeTypeArray(params (byte FillValue, int FillCount, int Prefix, int Suffix)[] sets)
         {
             int setsLen = sets.Length;
-            int totalArrayLen = 0;
 
+            int totalArrayLen = 0;
             for (int i = 0; i < setsLen; i++)
             {
-                var set = sets[i];
-                totalArrayLen += set.FillCount + (set.Prefix > -1 ? 1 : 0) + (set.Suffix > -1 ? 1 : 0);
+                var (_, fillCount, prefix, suffix) = sets[i];
+                totalArrayLen += fillCount + (prefix > -1 ? 1 : 0) + (suffix > -1 ? 1 : 0);
             }
-
-            var ret = new byte[totalArrayLen];
+            byte[] ret = new byte[totalArrayLen];
 
             int pos = 0;
             for (int i = 0; i < setsLen; i++)
             {
-                var set = sets[i];
-                if (set.Prefix > -1) ret[pos++] = (byte)set.Prefix;
+                var (fillValue, fillCount, prefix, suffix) = sets[i];
+
+                if (prefix > -1) ret[pos++] = (byte)prefix;
+
                 int j;
-                for (j = pos; j < pos + set.FillCount; j++)
-                {
-                    ret[j] = set.FillValue;
-                }
+                for (j = pos; j < pos + fillCount; j++) ret[j] = fillValue;
                 pos = j;
-                if (set.Suffix > -1) ret[pos++] = (byte)set.Suffix;
+
+                if (suffix > -1) ret[pos++] = (byte)suffix;
             }
 
             return ret;
