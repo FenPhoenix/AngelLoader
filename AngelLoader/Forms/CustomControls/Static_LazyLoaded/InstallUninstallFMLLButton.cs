@@ -27,6 +27,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Button.AutoSize = true;
             Button.AutoSizeMode = AutoSizeMode.GrowOnly;
             Button.ImageAlign = ContentAlignment.MiddleLeft;
+            Button.Margin = new Padding(3, 3, 0, 3);
             Button.Padding = new Padding(6, 0, 6, 0);
             Button.MinimumSize = new Size(0, 36);
             Button.TabIndex = 58;

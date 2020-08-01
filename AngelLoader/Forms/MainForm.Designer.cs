@@ -821,7 +821,7 @@ namespace AngelLoader.Forms
             this.FilterByFinishedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByFinishedButton.CheckOnClick = true;
             this.FilterByFinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByFinishedButton.Image = Images.FillFinishedOnBitmap(AngelLoader.DataClasses.Difficulty.None, filterFinished: true);
+            this.FilterByFinishedButton.Image = Images.Debug_Finished;
             this.FilterByFinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByFinishedButton.Margin = new System.Windows.Forms.Padding(6, 0, 0, 0);
             this.FilterByFinishedButton.Name = "FilterByFinishedButton";
@@ -835,7 +835,7 @@ namespace AngelLoader.Forms
             this.FilterByUnfinishedButton.BackColor = System.Drawing.SystemColors.Control;
             this.FilterByUnfinishedButton.CheckOnClick = true;
             this.FilterByUnfinishedButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.FilterByUnfinishedButton.Image = Images.FillFinishedOnBitmap(AngelLoader.DataClasses.Difficulty.None, filterUnfinished: true);
+            this.FilterByUnfinishedButton.Image = Images.Debug_Unfinished;
             this.FilterByUnfinishedButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FilterByUnfinishedButton.Margin = new System.Windows.Forms.Padding(0);
             this.FilterByUnfinishedButton.Name = "FilterByUnfinishedButton";

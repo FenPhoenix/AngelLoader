@@ -1443,58 +1443,6 @@ namespace AngelLoader.Forms
             if (!startup) RefreshFMsListKeepSelection();
         }
 
-        private void SetUIFilterValues(Filter filter)
-        {
-            using (new DisableEvents(this))
-            {
-                FilterBarFLP.SuspendDrawing();
-                try
-                {
-                    FilterTitleTextBox.Text = filter.Title;
-                    FilterAuthorTextBox.Text = filter.Author;
-                    FilterShowUnsupportedButton.Checked = filter.ShowUnsupported;
-
-                    FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
-
-                    FilterByFinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Finished);
-                    FilterByUnfinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Unfinished);
-
-                    FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
-                    UpdateRatingLabel(suspendResume: false);
-
-                    FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
-                    UpdateDateLabel(lastPlayed: false, suspendResume: false);
-
-                    FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
-                    UpdateDateLabel(lastPlayed: true, suspendResume: false);
-                }
-                finally
-                {
-                    FilterBarFLP.ResumeDrawing();
-                }
-            }
-        }
-
-        private void PositionFilterBarAfterTabs()
-        {
-            int filterBarAfterTabsX;
-            // In case I decide to allow a variable number of tabs based on which games are defined
-            if (GamesTabControl.TabCount == 0)
-            {
-                filterBarAfterTabsX = 0;
-            }
-            else
-            {
-                var lastRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
-                filterBarAfterTabsX = lastRect.X + lastRect.Width + 5;
-            }
-
-            FilterBarFLP.Location = new Point(filterBarAfterTabsX, FilterBarFLP.Location.Y);
-            SetFilterBarWidth();
-        }
-
-        private void SetFilterBarWidth() => FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
-
         // Separate so we can call it from _Load on startup (because it needs the form to be loaded to layout the
         // controls properly) but keep the rest of the work before load
         private void ChangeFilterControlsForGameType()
@@ -1747,6 +1695,30 @@ namespace AngelLoader.Forms
             catch (Exception)
             {
                 // no room is available to display rows
+            }
+        }
+
+        private void SortFMsDGV(Column column, SortOrder sortDirection)
+        {
+            FMsDGV.CurrentSortedColumn = column;
+            FMsDGV.CurrentSortDirection = sortDirection;
+
+            Core.SortFMsViewList(column, sortDirection);
+
+            // Perf: doing it this way is significantly faster than the old method of indiscriminately setting
+            // all columns to None and then setting the current one back to the CurrentSortDirection glyph again
+            int intCol = (int)column;
+            for (int i = 0; i < FMsDGV.Columns.Count; i++)
+            {
+                DataGridViewColumn c = FMsDGV.Columns[i];
+                if (i == intCol && c.HeaderCell.SortGlyphDirection != FMsDGV.CurrentSortDirection)
+                {
+                    c.HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
+                }
+                else if (i != intCol && c.HeaderCell.SortGlyphDirection != SortOrder.None)
+                {
+                    c.HeaderCell.SortGlyphDirection = SortOrder.None;
+                }
             }
         }
 
@@ -2112,7 +2084,9 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Bottom bar (left side)
+        #region Bottom bar
+
+        #region Left side
 
         #region Install/Play buttons
 
@@ -2194,7 +2168,9 @@ namespace AngelLoader.Forms
 
         private void WebSearchButton_Click(object sender, EventArgs e) => Core.OpenWebSearchUrl(FMsDGV.GetSelectedFM().Title);
 
-        #region Bottom bar (right side)
+        #endregion
+
+        #region Right side
 
         private void ImportButton_Click(object sender, EventArgs e)
         {
@@ -2325,19 +2301,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private async Task OpenFilterTags()
-        {
-            using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
-            {
-                if (tf.ShowDialog() != DialogResult.OK) return;
-
-                tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
-                FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
-            }
-
-            await SortAndSetFilter();
-        }
-
         #region Refresh FMs list
 
         public void RefreshSelectedFMRowOnly() => FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
@@ -2459,30 +2422,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        private void SortFMsDGV(Column column, SortOrder sortDirection)
-        {
-            FMsDGV.CurrentSortedColumn = column;
-            FMsDGV.CurrentSortDirection = sortDirection;
-
-            Core.SortFMsViewList(column, sortDirection);
-
-            // Perf: doing it this way is significantly faster than the old method of indiscriminately setting
-            // all columns to None and then setting the current one back to the CurrentSortDirection glyph again
-            int intCol = (int)column;
-            for (int i = 0; i < FMsDGV.Columns.Count; i++)
-            {
-                DataGridViewColumn c = FMsDGV.Columns[i];
-                if (i == intCol && c.HeaderCell.SortGlyphDirection != FMsDGV.CurrentSortDirection)
-                {
-                    c.HeaderCell.SortGlyphDirection = FMsDGV.CurrentSortDirection;
-                }
-                else if (i != intCol && c.HeaderCell.SortGlyphDirection != SortOrder.None)
-                {
-                    c.HeaderCell.SortGlyphDirection = SortOrder.None;
-                }
-            }
-        }
 
         #region FM display
 
@@ -2996,19 +2935,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            // Don't keep selection for these ones, cause you want to end up on the FM you typed as soon as possible
-            await SortAndSetFilter(keepSelection: false);
-        }
-
-        private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
-        {
-            if (EventsDisabled) return;
-            await SortAndSetFilter();
-        }
-
         #region Game tabs
 
         private (SelectedFM GameSelFM, Filter GameFilter)
@@ -3067,13 +2993,6 @@ namespace AngelLoader.Forms
         }
 
         #endregion
-
-        private void ResetLayoutButton_Click(object sender, EventArgs e)
-        {
-            MainSplitContainer.ResetSplitterPercent();
-            TopSplitContainer.ResetSplitterPercent();
-            if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
-        }
 
         #region Top-right area
 
@@ -3670,6 +3589,8 @@ namespace AngelLoader.Forms
             ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
         }
 
+        internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
+
         #endregion
 
         private void FiltersFlowLayoutPanel_SizeChanged(object sender, EventArgs e) => SetFilterBarScrollButtons();
@@ -3751,11 +3672,78 @@ namespace AngelLoader.Forms
             }
         }
 
+        private void SetUIFilterValues(Filter filter)
+        {
+            using (new DisableEvents(this))
+            {
+                FilterBarFLP.SuspendDrawing();
+                try
+                {
+                    FilterTitleTextBox.Text = filter.Title;
+                    FilterAuthorTextBox.Text = filter.Author;
+                    FilterShowUnsupportedButton.Checked = filter.ShowUnsupported;
+
+                    FilterByTagsButton.Checked = !filter.Tags.IsEmpty();
+
+                    FilterByFinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Finished);
+                    FilterByUnfinishedButton.Checked = filter.Finished.HasFlagFast(FinishedState.Unfinished);
+
+                    FilterByRatingButton.Checked = !(filter.RatingFrom == -1 && filter.RatingTo == 10);
+                    UpdateRatingLabel(suspendResume: false);
+
+                    FilterByReleaseDateButton.Checked = filter.ReleaseDateFrom != null || filter.ReleaseDateTo != null;
+                    UpdateDateLabel(lastPlayed: false, suspendResume: false);
+
+                    FilterByLastPlayedButton.Checked = filter.LastPlayedFrom != null || filter.LastPlayedTo != null;
+                    UpdateDateLabel(lastPlayed: true, suspendResume: false);
+                }
+                finally
+                {
+                    FilterBarFLP.ResumeDrawing();
+                }
+            }
+        }
+
+        private void PositionFilterBarAfterTabs()
+        {
+            int filterBarAfterTabsX;
+            // In case I decide to allow a variable number of tabs based on which games are defined
+            if (GamesTabControl.TabCount == 0)
+            {
+                filterBarAfterTabsX = 0;
+            }
+            else
+            {
+                var lastRect = GamesTabControl.GetTabRect(GamesTabControl.TabCount - 1);
+                filterBarAfterTabsX = lastRect.X + lastRect.Width + 5;
+            }
+
+            FilterBarFLP.Location = new Point(filterBarAfterTabsX, FilterBarFLP.Location.Y);
+            SetFilterBarWidth();
+        }
+
+        private void SetFilterBarWidth() => FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
+
         #region Filter bar controls
 
-        private async void FilterShowRecentAtTopButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: false);
+        private async void FilterByGameCheckButtons_Click(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            await SortAndSetFilter();
+        }
 
-        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
+        private async void FilterTextBoxes_TextChanged(object sender, EventArgs e)
+        {
+            if (EventsDisabled) return;
+            // Don't keep selection for these ones, cause you want to end up on the FM you typed as soon as possible
+            await SortAndSetFilter(keepSelection: false);
+        }
+
+        private async void FilterByReleaseDateButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: false);
+
+        private async void FilterByLastPlayedButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: true);
+
+        private async void FilterByTagsButton_Click(object sender, EventArgs e) => await OpenFilterTags();
 
         private async void FilterByFinishedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
@@ -3763,11 +3751,9 @@ namespace AngelLoader.Forms
 
         private async void FilterByRatingButton_Click(object sender, EventArgs e) => await OpenRatingFilter();
 
-        private async void FilterByTagsButton_Click(object sender, EventArgs e) => await OpenFilterTags();
+        private async void FilterShowUnsupportedButton_Click(object sender, EventArgs e) => await SortAndSetFilter();
 
-        private async void FilterByReleaseDateButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: false);
-
-        private async void FilterByLastPlayedButton_Click(object sender, EventArgs e) => await OpenDateFilter(lastPlayed: true);
+        private async void FilterShowRecentAtTopButton_Click(object sender, EventArgs e) => await SortAndSetFilter(keepSelection: false);
 
         private async Task OpenDateFilter(bool lastPlayed)
         {
@@ -3850,7 +3836,18 @@ namespace AngelLoader.Forms
             await SortAndSetFilter();
         }
 
-        #endregion
+        private async Task OpenFilterTags()
+        {
+            using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
+            {
+                if (tf.ShowDialog() != DialogResult.OK) return;
+
+                tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
+                FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
+            }
+
+            await SortAndSetFilter();
+        }
 
         #region Filter bar right-hand controls
 
@@ -3869,42 +3866,6 @@ namespace AngelLoader.Forms
         {
             ClearUIAndCurrentInternalFilter();
             await SortAndSetFilter();
-        }
-
-        #endregion
-
-        internal void ViewHTMLReadmeButton_Click(object sender, EventArgs e) => Core.ViewHTMLReadme(FMsDGV.GetSelectedFM());
-
-
-        #region Show menu
-
-        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
-
-        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos, bool unstickMenu = false)
-        {
-            int x = pos == MenuPos.LeftUp || pos == MenuPos.LeftDown || pos == MenuPos.TopRight || pos == MenuPos.BottomRight
-                ? 0
-                : control.Width;
-
-            int y = pos == MenuPos.LeftDown || pos == MenuPos.TopLeft || pos == MenuPos.TopRight || pos == MenuPos.RightDown
-                ? 0
-                : control.Height;
-
-            var direction =
-                pos == MenuPos.LeftUp || pos == MenuPos.TopLeft ? ToolStripDropDownDirection.AboveLeft :
-                pos == MenuPos.RightUp || pos == MenuPos.TopRight ? ToolStripDropDownDirection.AboveRight :
-                pos == MenuPos.LeftDown || pos == MenuPos.BottomLeft ? ToolStripDropDownDirection.BelowLeft :
-                ToolStripDropDownDirection.BelowRight;
-
-            if (unstickMenu)
-            {
-                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
-                // then carry on with the final show below
-                menu.Show();
-                menu.Hide();
-            }
-
-            menu.Show(control, new Point(x, y), direction);
         }
 
         #endregion
@@ -3955,6 +3916,48 @@ namespace AngelLoader.Forms
             var senderButton = (Button)sender;
             var otherButton = senderButton == FilterBarScrollLeftButton ? FilterBarScrollRightButton : FilterBarScrollLeftButton;
             if (!senderButton.Visible && otherButton.Visible) _repeatButtonRunning = false;
+        }
+
+        #endregion
+
+        #endregion
+
+        private void ResetLayoutButton_Click(object sender, EventArgs e)
+        {
+            MainSplitContainer.ResetSplitterPercent();
+            TopSplitContainer.ResetSplitterPercent();
+            if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
+        }
+
+        #region Show menu
+
+        private enum MenuPos { LeftUp, LeftDown, TopLeft, TopRight, RightUp, RightDown, BottomLeft, BottomRight }
+
+        private static void ShowMenu(ContextMenuStrip menu, Control control, MenuPos pos, bool unstickMenu = false)
+        {
+            int x = pos == MenuPos.LeftUp || pos == MenuPos.LeftDown || pos == MenuPos.TopRight || pos == MenuPos.BottomRight
+                ? 0
+                : control.Width;
+
+            int y = pos == MenuPos.LeftDown || pos == MenuPos.TopLeft || pos == MenuPos.TopRight || pos == MenuPos.RightDown
+                ? 0
+                : control.Height;
+
+            var direction =
+                pos == MenuPos.LeftUp || pos == MenuPos.TopLeft ? ToolStripDropDownDirection.AboveLeft :
+                pos == MenuPos.RightUp || pos == MenuPos.TopRight ? ToolStripDropDownDirection.AboveRight :
+                pos == MenuPos.LeftDown || pos == MenuPos.BottomLeft ? ToolStripDropDownDirection.BelowLeft :
+                ToolStripDropDownDirection.BelowRight;
+
+            if (unstickMenu)
+            {
+                // If menu is stuck to a submenu or something, we need to show and hide it once to get it unstuck,
+                // then carry on with the final show below
+                menu.Show();
+                menu.Hide();
+            }
+
+            menu.Show(control, new Point(x, y), direction);
         }
 
         #endregion
