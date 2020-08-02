@@ -71,7 +71,7 @@ namespace AngelLoader
                                 ushort bits = br.ReadUInt16();
                                 return bits;
                             }
-                            catch (Exception)
+                            catch
                             {
                                 return 0;
                             }

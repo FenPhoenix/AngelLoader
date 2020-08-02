@@ -851,7 +851,7 @@ namespace AngelLoader
                     Directory.Delete(path, recursive: true);
                     return true;
                 }
-                catch (Exception)
+                catch
                 {
                     try
                     {
@@ -871,7 +871,7 @@ namespace AngelLoader
 
                         triedReadOnlyRemove = true;
                     }
-                    catch (Exception)
+                    catch
                     {
                         return false;
                     }

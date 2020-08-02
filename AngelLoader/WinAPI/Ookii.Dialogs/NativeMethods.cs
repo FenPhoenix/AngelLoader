@@ -36,7 +36,7 @@ namespace AngelLoader.WinAPI.Ookii.Dialogs
             //RadioButtonClicked = 6,     // wParam = Radio Button ID
             //DialogConstructed = 7,
             VerificationClicked = 8,    // wParam = 1 if checkbox checked, 0 if not, lParam is unused and always 0
-            Help = 9,
+            //Help = 9,
             //ExpandoButtonClicked = 10   // wParam = 0 (dialog is now collapsed), wParam != 0 (dialog is now expanded)
         }
 

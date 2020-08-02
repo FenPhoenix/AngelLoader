@@ -408,13 +408,13 @@ namespace AngelLoader.Forms
             new Point(32, 25),
             new Point(28, 21)
         };
-        */
 
         private static readonly Pen _scanSmallCirclePen = new Pen(_al_LightBlue, 1.8f);
         private static readonly Pen _scanSmallCircleDisabledPen = new Pen(SystemColors.ControlDark, 1.8f);
         private static readonly Pen _scanSmallHandlePen = new Pen(_al_LightBlue, 2.6f);
         private static readonly Pen _scanSmallHandleDisabledPen = new Pen(SystemColors.ControlDark, 2.6f);
         private static readonly RectangleF _scanSmallHandleRect = new RectangleF(15, 15, 2.4f, 2.4f);
+        */
 
         #endregion
 

@@ -103,7 +103,7 @@ namespace AngelLoader.Forms
 
         object InvokeSync(Delegate method);
 
-        object InvokeSync(Delegate method, params object[] args);
+        //object InvokeSync(Delegate method, params object[] args);
 
         #endregion
 

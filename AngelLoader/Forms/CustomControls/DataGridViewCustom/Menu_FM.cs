@@ -634,14 +634,14 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private void RatingMenuItems_Click(object sender, EventArgs e)
+        private async void RatingMenuItems_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < RatingMenuItem!.DropDownItems.Count; i++)
             {
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
                     GetSelectedFM().Rating = i - 1;
-                    _owner.RefreshSelectedFM(refreshReadme: false);
+                    await _owner.RefreshSelectedFM(refreshReadme: false);
                     Ini.WriteFullFMDataIni();
                     break;
                 }

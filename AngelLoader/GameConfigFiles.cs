@@ -116,7 +116,7 @@ namespace AngelLoader
                 {
                     path = RelativeToAbsolute(gamePath, path);
                 }
-                catch (Exception)
+                catch
                 {
                     error = Error.None;
                     return (CreateAndReturnFMsPath(), fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader);
@@ -353,7 +353,7 @@ namespace AngelLoader
                         {
                             return RelativeToAbsolute(_gamePath, path);
                         }
-                        catch (Exception)
+                        catch
                         {
                             return "";
                         }

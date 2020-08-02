@@ -1685,7 +1685,7 @@ namespace AngelLoader.Forms
                     (FMsDGV.SelectedRows[0].Index - (FMsDGV.DisplayedRowCount(true) / 2))
                     .Clamp(0, FMsDGV.RowCount - 1);
             }
-            catch (Exception)
+            catch
             {
                 // no room is available to display rows
             }
@@ -2317,11 +2317,11 @@ namespace AngelLoader.Forms
 
         public void RefreshSelectedFMRowOnly() => FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-        public async Task RefreshSelectedFM(bool refreshReadme)
+        public Task RefreshSelectedFM(bool refreshReadme)
         {
             FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-            await DisplaySelectedFM(refreshReadme);
+            return DisplaySelectedFM(refreshReadme);
         }
 
         /// <summary>
