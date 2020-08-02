@@ -30,10 +30,6 @@ namespace AngelLoader
 
         #region Cheap hacks
 
-        // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned FMs.
-        // This will contain indexes into FMDataIniList (not FMsViewList!)
-        internal static readonly List<int> FMsViewListUnscanned = new List<int>();
-
         // Stupid hack for perf and nice UX when deleting FMs (we filter out deleted ones until the next find from
         // disk, when we remove them properly)
         internal static bool OneOrMoreFMsAreMarkedDeleted;

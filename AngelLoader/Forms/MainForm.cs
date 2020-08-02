@@ -870,7 +870,7 @@ namespace AngelLoader.Forms
         }
 
         // This one can't be multithreaded because it depends on the FMs list
-        public async Task FinishInitAndShow()
+        public async Task FinishInitAndShow(List<int>? fmsViewListUnscanned)
         {
             if (Visible) return;
 
@@ -879,10 +879,10 @@ namespace AngelLoader.Forms
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
             // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (FMsViewListUnscanned.Count > 0)
+            if (fmsViewListUnscanned?.Count > 0)
             {
                 Show();
-                await FMScan.ScanNewFMs();
+                await FMScan.ScanNewFMs(fmsViewListUnscanned);
             }
 
             Core.SetFilter();
@@ -2090,7 +2090,11 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
+        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e)
+        {
+            var fm = FMsDGV.GetSelectedFM();
+            await (fm.Installed ? FMInstallAndPlay.UninstallFM(fm) : FMInstallAndPlay.InstallFM(fm));
+        }
 
         private async void PlayFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 
@@ -2199,7 +2203,7 @@ namespace AngelLoader.Forms
             var ret = Core.OpenSettings();
             if (ret.Canceled) return;
 
-            if (ret.ScanNewFMs) await FMScan.ScanNewFMs();
+            if (ret.FMsViewListUnscanned?.Count > 0) await FMScan.ScanNewFMs(ret.FMsViewListUnscanned);
             // TODO: forceDisplayFM is always true so that this always works, but it could be smarter
             // If I store the selected FM up above the Find(), I can make the FM not have to reload if
             // it's still selected

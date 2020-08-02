@@ -16,7 +16,9 @@ namespace AngelLoader
         // MT: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
         // So don't touch anything the other touches: anything affecting the view.
         // @CAN_RUN_BEFORE_VIEW_INIT
-        internal static void Find(bool startup = false)
+        /// <param name="startup"></param>
+        /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
+        internal static List<int> Find(bool startup = false)
         {
             if (!startup)
             {
@@ -77,7 +79,7 @@ namespace AngelLoader
                     {
                         FMDataIniList.ClearAndAdd(backupList);
                         FMsViewList.ClearAndAdd(viewBackupList);
-                        return;
+                        return new List<int>();
                     }
                 }
             }
@@ -195,7 +197,13 @@ namespace AngelLoader
 
             SetInstalledNames();
 
-            BuildViewList(fmArchives, perGameInstFMDirsList);
+            // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned
+            // FMs. This will contain indexes into FMDataIniList (not FMsViewList!)
+            var fmsViewListUnscanned = new List<int>(FMDataIniList.Count);
+
+            BuildViewList(fmArchives, perGameInstFMDirsList, fmsViewListUnscanned);
+
+            return fmsViewListUnscanned;
 
             /*
              TODO: There's an extreme corner case where duplicate FMs can appear in the list
@@ -523,10 +531,11 @@ namespace AngelLoader
             }
         }
 
-        private static void BuildViewList(List<string> fmArchives, List<List<string>> perGameInstalledFMDirsList)
+        private static void BuildViewList(
+            List<string> fmArchives,
+            List<List<string>> perGameInstalledFMDirsList,
+            List<int> fmsViewListUnscanned)
         {
-            FMsViewListUnscanned.Clear();
-
             var boolsList = new List<bool?>(SupportedGameCount);
             for (int i = 0; i < SupportedGameCount; i++) boolsList.Add(null);
 
@@ -594,7 +603,7 @@ namespace AngelLoader
                 #endregion
 
                 // Perf so we don't have to iterate the list again later
-                if (FMNeedsScan(fm)) FMsViewListUnscanned.Add(i);
+                if (FMNeedsScan(fm)) fmsViewListUnscanned.Add(i);
 
                 fm.Title =
                     !fm.Title.IsEmpty() ? fm.Title :

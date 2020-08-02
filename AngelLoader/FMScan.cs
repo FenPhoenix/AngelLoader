@@ -308,29 +308,13 @@ namespace AngelLoader
 
         internal static void CancelScan() => _scanCts.CancelIfNotDisposed();
 
-        internal static async Task ScanNewFMs()
+        internal static async Task ScanNewFMs(List<int> fmsViewListUnscanned)
         {
             var fmsToScan = new List<FanMission>();
 
-            try
-            {
-                // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
-                // (not FMsViewList)
-                foreach (int index in FMsViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
-            }
-            catch
-            {
-                // Cheap fallback in case something goes wrong, because what we're doing is a little iffy
-                fmsToScan.Clear();
-                // Since we're doing it manually here, we can pull from FMsViewList for perf (it'll be the same
-                // size or smaller than FMDataIniList)
-                foreach (FanMission fm in FMsViewList) if (FMNeedsScan(fm)) fmsToScan.Add(fm);
-            }
-            finally
-            {
-                // Critical that this gets cleared immediately after use!
-                FMsViewListUnscanned.Clear();
-            }
+            // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
+            // (not FMsViewList)
+            foreach (int index in fmsViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
 
             if (fmsToScan.Count > 0)
             {
@@ -342,14 +326,12 @@ namespace AngelLoader
                 {
                     Log("Exception in ScanFMs", ex);
                 }
+                finally
+                {
+                    // Just in case
+                    fmsViewListUnscanned.Clear();
+                }
             }
-        }
-
-        internal static async Task FindNewFMsAndScanNew()
-        {
-            FindFMs.Find();
-            // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
-            if (FMsViewListUnscanned.Count > 0) await ScanNewFMs();
         }
 
         internal static async Task ScanAndFind(List<FanMission> fms, FMScanner.ScanOptions scanOptions)

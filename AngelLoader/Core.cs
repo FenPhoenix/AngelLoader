@@ -42,6 +42,9 @@ namespace AngelLoader
             bool openSettings;
             // This is if we have no config file; in that case we assume we're starting for the first time ever
             bool cleanStart = false;
+
+            List<int>? fmsViewListUnscanned = null;
+
             try
             {
                 #region Create required directories
@@ -141,7 +144,7 @@ namespace AngelLoader
                 {
                     #region Parallel load
 
-                    using Task findFMsTask = Task.Run(() => FindFMs.Find(startup: true));
+                    using Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true));
 
                     // It's safe to overlap this with Find(), but not with MainForm.ctor()
                     configTask.Wait();
@@ -177,13 +180,13 @@ namespace AngelLoader
                 // safe. Don't put this inside a try block, or it won't be safe. It has to really be the last
                 // thing run in the method.
                 // View won't be null here
-                View.FinishInitAndShow();
+                View.FinishInitAndShow(fmsViewListUnscanned!);
             }
         }
 
         // @CAN_RUN_BEFORE_VIEW_INIT
         // We return bools signifying which awaitable tasks to run, so we can avoid this method having to be async
-        public static (bool Canceled, bool ScanNewFMs, bool SortAndSetFilter, bool KeepSel)
+        public static (bool Canceled, List<int>? FMsViewListUnscanned, bool SortAndSetFilter, bool KeepSel)
         OpenSettings(bool startup = false, bool cleanStart = false)
         {
             using var sf = new SettingsForm(View, Config, startup, cleanStart);
@@ -209,7 +212,7 @@ namespace AngelLoader
                 // Since nothing of consequence has yet happened, it's okay to do the brutal quit
                 // We know the game paths by now, so we can do this
                 if (startup) EnvironmentExitDoShutdownTasks(0);
-                return (true, false, false, false);
+                return (true, null, false, false);
             }
 
             #region Set changed bools
@@ -306,6 +309,8 @@ namespace AngelLoader
 
             #endregion
 
+            List<int>? fmsViewListUnscanned = null;
+
             if (startup)
             {
                 Config.Language = sf.OutConfig.Language;
@@ -315,7 +320,7 @@ namespace AngelLoader
                 Ini.WriteConfigIni();
 
                 // We have to do this here because we won't have before
-                using (Task findFMsTask = Task.Run(() => FindFMs.Find(startup: true)))
+                using (Task findFMsTask = Task.Run(() => fmsViewListUnscanned = FindFMs.Find(startup: true)))
                 {
                     // Have to do the full View init sequence here, because we skipped them all before
                     View = new MainForm();
@@ -324,8 +329,8 @@ namespace AngelLoader
                     findFMsTask.Wait();
                 }
                 // Again, last line and nothing up the call stack, so call without await.
-                View.FinishInitAndShow();
-                return (false, false, false, false);
+                View.FinishInitAndShow(fmsViewListUnscanned!);
+                return (false, null, false, false);
             }
 
             // From this point on, we're not in startup mode.
@@ -396,7 +401,7 @@ namespace AngelLoader
 
             if (archivePathsChanged || gamePathsChanged)
             {
-                FindFMs.Find();
+                fmsViewListUnscanned = FindFMs.Find();
             }
             if (gameOrganizationChanged)
             {
@@ -425,14 +430,17 @@ namespace AngelLoader
 
             #region Return bools for appropriate refresh method (if applicable)
 
-            var ret = (Canceled: false, ScanNewFMs: false, SortAndSetFilter: false, KeepSel: false);
+            var ret = (Canceled: false, FMsViewListUnscanned: (List<int>?)null, SortAndSetFilter: false, KeepSel: false);
 
             if (archivePathsChanged || gamePathsChanged || gameOrganizationChanged || articlesChanged ||
                 daysRecentChanged)
             {
                 if (archivePathsChanged || gamePathsChanged)
                 {
-                    if (FMsViewListUnscanned.Count > 0) ret.ScanNewFMs = true;
+                    if (fmsViewListUnscanned!.Count > 0)
+                    {
+                        ret.FMsViewListUnscanned = fmsViewListUnscanned;
+                    }
                 }
 
                 ret.KeepSel = !gameOrganizationChanged;
@@ -619,7 +627,12 @@ namespace AngelLoader
         public static async Task RefreshFMsListFromDisk()
         {
             SelectedFM? selFM = View.GetSelectedFMPosInfo();
-            using (new DisableEvents(View)) await FMScan.FindNewFMsAndScanNew();
+            using (new DisableEvents(View))
+            {
+                var fmsViewListUnscanned = FindFMs.Find();
+                // This await call takes 15ms just to make the call alone(?!) so don't do it unless we have to
+                if (fmsViewListUnscanned.Count > 0) await FMScan.ScanNewFMs(fmsViewListUnscanned);
+            }
             await View.SortAndSetFilter(selFM, forceDisplayFM: true);
         }
 

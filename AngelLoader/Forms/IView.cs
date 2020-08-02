@@ -39,7 +39,7 @@ namespace AngelLoader.Forms
         /// Call this only after the FindFMs() thread has finished.
         /// </summary>
         /// <returns></returns>
-        Task FinishInitAndShow();
+        Task FinishInitAndShow(List<int> fmsViewListUnscanned);
 
         void ShowOnly();
 
@@ -104,10 +104,6 @@ namespace AngelLoader.Forms
         object InvokeSync(Delegate method);
 
         object InvokeSync(Delegate method, params object[] args);
-
-        object InvokeAsync(Delegate method);
-
-        object InvokeAsync(Delegate method, params object[] args);
 
         #endregion
 

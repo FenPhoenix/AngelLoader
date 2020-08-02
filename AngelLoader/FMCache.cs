@@ -212,7 +212,7 @@ namespace AngelLoader
             }
             else
             {
-                await SevenZipExtract(fmArchivePath, fmCachePath, readmes);
+                await Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath, readmes));
             }
 
             fm.NoReadmes = readmes.Count == 0;
@@ -364,76 +364,71 @@ namespace AngelLoader
             }
         }
 
-        private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
+        private static void SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
         {
-            // Critical
-            Core.View.ShowOnly();
-
-            await Task.Run(() =>
+            try
             {
+                // Critical
+                Core.View.InvokeSync(new Action(() => Core.View.ShowOnly()));
+
+                // Block the view immediately after starting another thread, because otherwise we could end
+                // up allowing multiple of these to be called and all that insanity...
+                Core.View.InvokeSync(new Action(() => Core.View.ShowProgressBox(ProgressTasks.CacheFM)));
+
+                Directory.CreateDirectory(fmCachePath);
+
+                using var extractor = new SevenZipExtractor(fmArchivePath);
+
+                var indexesList = new List<int>();
+                uint extractorFilesCount = extractor.FilesCount;
+                for (int i = 0; i < extractorFilesCount; i++)
+                {
+                    var entry = extractor.ArchiveFileData[i];
+                    string fn = entry.FileName;
+                    int dirSeps;
+                    if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
+                        (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
+                          (fn.PathStartsWithI(_t3ReadmeDir1S) ||
+                           fn.PathStartsWithI(_t3ReadmeDir2S))) ||
+                         dirSeps == 0))
+                    {
+                        indexesList.Add(i);
+                        readmes.Add(entry.FileName);
+                    }
+                }
+
+                if (indexesList.Count == 0) return;
+
+                extractor.FileExtractionFinished += (sender, e) =>
+                {
+                    // This event gets fired for every file, even skipped files. So check if it's actually
+                    // one of ours.
+                    if (indexesList.Contains(e.FileInfo.Index))
+                    {
+                        SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
+                    }
+
+                    var percent = GetPercentFromValue(e.FileInfo.Index, (int)extractorFilesCount);
+                    Core.View.InvokeSync(new Action(() => Core.View.ReportCachingProgress(percent)));
+                };
+
                 try
                 {
-                    // Block the view immediately after starting another thread, because otherwise we could end
-                    // up allowing multiple of these to be called and all that insanity...
-                    Core.View.InvokeAsync(new Action(() => Core.View.ShowProgressBox(ProgressTasks.CacheFM)));
-
-                    Directory.CreateDirectory(fmCachePath);
-
-                    using var extractor = new SevenZipExtractor(fmArchivePath);
-
-                    var indexesList = new List<int>();
-                    uint extractorFilesCount = extractor.FilesCount;
-                    for (int i = 0; i < extractorFilesCount; i++)
-                    {
-                        var entry = extractor.ArchiveFileData[i];
-                        string fn = entry.FileName;
-                        int dirSeps;
-                        if (entry.FileName.IsValidReadme() && entry.Size > 0 &&
-                            (((dirSeps = fn.CountDirSepsUpToAmount(2)) == 1 &&
-                              (fn.PathStartsWithI(_t3ReadmeDir1S) ||
-                               fn.PathStartsWithI(_t3ReadmeDir2S))) ||
-                             dirSeps == 0))
-                        {
-                            indexesList.Add(i);
-                            readmes.Add(entry.FileName);
-                        }
-                    }
-
-                    if (indexesList.Count == 0) return;
-
-                    extractor.Extracting += (sender, e) =>
-                    {
-                        Core.View.InvokeAsync(new Action(() => Core.View.ReportCachingProgress(e.PercentDone)));
-                    };
-
-                    extractor.FileExtractionFinished += (sender, e) =>
-                    {
-                        // This event gets fired for every file, even skipped files. So check if it's actually
-                        // one of ours.
-                        if (indexesList.Contains(e.FileInfo.Index))
-                        {
-                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmCachePath, e.FileInfo.FileName));
-                        }
-                    };
-
-                    try
-                    {
-                        extractor.ExtractFiles(fmCachePath, indexesList.ToArray());
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Exception in 7z ExtractFiles() call", ex);
-                    }
+                    extractor.ExtractFiles(fmCachePath, indexesList.ToArray());
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception in 7z extract to cache", ex);
+                    Log("Exception in 7z ExtractFiles() call", ex);
                 }
-                finally
-                {
-                    Core.View.InvokeAsync(new Action(Core.View.HideProgressBox));
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                Log("Exception in 7z extract to cache", ex);
+            }
+            finally
+            {
+                Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
+            }
         }
 
         #endregion

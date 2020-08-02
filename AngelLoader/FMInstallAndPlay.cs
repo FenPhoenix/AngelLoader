@@ -21,8 +21,6 @@ namespace AngelLoader
     {
         private static CancellationTokenSource _extractCts = new CancellationTokenSource();
 
-        internal static async Task InstallOrUninstall(FanMission fm) => await (fm.Installed ? UninstallFM(fm) : InstallFM(fm));
-
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
         {
             if (!GameIsKnownAndSupported(fm.Game))
@@ -84,7 +82,7 @@ namespace AngelLoader
             var sv = GetSteamValues(game, playMP);
             if (sv.Success) (_, gameExe, workingPath, args) = sv;
 
-            WriteStubCommFile(null, gamePath);
+            WriteStubCommFile(null, gamePath, originalT3: game == GameIndex.Thief3);
 
             StartExe(gameExe, workingPath, args);
 
@@ -223,14 +221,14 @@ namespace AngelLoader
             }
         }
 
-        private static void WriteStubCommFile(FanMission? fm, string gamePath)
+        private static void WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false)
         {
             string sLanguage = "";
             bool? bForceLanguage = null;
 
             if (fm == null)
             {
-                GameConfigFiles.SetCamCfgLanguage(gamePath, "");
+                if (!originalT3) GameConfigFiles.SetCamCfgLanguage(gamePath, "");
             }
             else if (GameIsDark(fm.Game))
             {
@@ -504,8 +502,8 @@ namespace AngelLoader
 
             // Framework zip extracting is much faster, so use it if possible
             bool canceled = fmArchivePath.ExtIsZip()
-                ? !await InstallFMZip(fmArchivePath, fmInstalledPath)
-                : !await InstallFMSevenZip(fmArchivePath, fmInstalledPath);
+                ? !await Task.Run(() => InstallFMZip(fmArchivePath, fmInstalledPath))
+                : !await Task.Run(() => InstallFMSevenZip(fmArchivePath, fmInstalledPath));
 
             if (canceled)
             {
@@ -584,125 +582,120 @@ namespace AngelLoader
             return true;
         }
 
-        private static async Task<bool> InstallFMZip(string fmArchivePath, string fmInstalledPath)
+        private static bool InstallFMZip(string fmArchivePath, string fmInstalledPath)
         {
             bool canceled = false;
 
-            await Task.Run(() =>
+            try
             {
-                try
+                Directory.CreateDirectory(fmInstalledPath);
+
+                using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
+                    ZipArchiveMode.Read, leaveOpen: false);
+
+                int filesCount = archive.Entries.Count;
+                for (int i = 0; i < filesCount; i++)
                 {
-                    Directory.CreateDirectory(fmInstalledPath);
+                    var entry = archive.Entries[i];
 
-                    using var archive = new ZipArchive(new FileStream(fmArchivePath, FileMode.Open, FileAccess.Read),
-                        ZipArchiveMode.Read, leaveOpen: false);
+                    string fileName = entry.FullName;
 
-                    int filesCount = archive.Entries.Count;
-                    for (int i = 0; i < filesCount; i++)
+                    if (fileName[fileName.Length - 1].IsDirSep()) continue;
+
+                    if (fileName.ContainsDirSep())
                     {
-                        var entry = archive.Entries[i];
+                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                            fileName.Substring(0, fileName.LastIndexOfDirSep())));
+                    }
 
-                        string fileName = entry.FullName;
+                    string extractedName = Path.Combine(fmInstalledPath, fileName);
+                    entry.ExtractToFile(extractedName, overwrite: true);
 
-                        if (fileName[fileName.Length - 1].IsDirSep()) continue;
+                    File_UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
 
-                        if (fileName.ContainsDirSep())
-                        {
-                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                fileName.Substring(0, fileName.LastIndexOfDirSep())));
-                        }
+                    int percent = GetPercentFromValue(i + 1, filesCount);
 
-                        string extractedName = Path.Combine(fmInstalledPath, fileName);
-                        entry.ExtractToFile(extractedName, overwrite: true);
+                    Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
 
-                        File_UnSetReadOnly(Path.Combine(fmInstalledPath, extractedName));
-
-                        int percent = GetPercentFromValue(i + 1, filesCount);
-
-                        Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(percent)));
-
-                        if (_extractCts.Token.IsCancellationRequested)
-                        {
-                            canceled = true;
-                            return;
-                        }
+                    if (_extractCts.Token.IsCancellationRequested)
+                    {
+                        canceled = true;
+                        return false;
                     }
                 }
-                catch (Exception ex)
-                {
-                    Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-                    Core.View.InvokeSync(new Action(() =>
-                        Core.View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
-                            LText.AlertMessages.Alert)));
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                Log("Exception while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+                Core.View.InvokeSync(new Action(() =>
+                    Core.View.ShowAlert(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                        LText.AlertMessages.Alert)));
+            }
 
             return !canceled;
         }
 
-        private static async Task<bool> InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
+        private static bool InstallFMSevenZip(string fmArchivePath, string fmInstalledPath)
         {
             bool canceled = false;
 
-            await Task.Run(() =>
+            try
             {
+                Directory.CreateDirectory(fmInstalledPath);
+
+                using var extractor = new SevenZipExtractor(fmArchivePath);
+
+                extractor.Extracting += (sender, e) =>
+                {
+                    if (!canceled && _extractCts.Token.IsCancellationRequested)
+                    {
+                        canceled = true;
+                    }
+                    if (canceled)
+                    {
+                        Core.View.InvokeSync(new Action(Core.View.SetCancelingFMInstall));
+                        return;
+                    }
+                    Core.View.InvokeSync(new Action(() => Core.View.ReportFMExtractProgress(e.PercentDone)));
+                };
+
+                extractor.FileExtractionFinished += (sender, e) =>
+                {
+                    // We're extracting all the files, so we don't need to do an index check here.
+                    if (!e.FileInfo.IsDirectory)
+                    {
+                        // We don't need to set timestamps because we're using ExtractArchive(), but we
+                        // call this to remove the ReadOnly attribute
+                        // TODO: Unset readonly for directories too
+                        SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
+                    }
+
+                    if (_extractCts.Token.IsCancellationRequested)
+                    {
+                        Core.View.InvokeSync(new Action(Core.View.SetCancelingFMInstall));
+                        canceled = true;
+                        e.Cancel = true;
+                    }
+                };
+
                 try
                 {
-                    Directory.CreateDirectory(fmInstalledPath);
-
-                    using var extractor = new SevenZipExtractor(fmArchivePath);
-
-                    extractor.Extracting += (sender, e) =>
-                    {
-                        if (!canceled && _extractCts.Token.IsCancellationRequested)
-                        {
-                            canceled = true;
-                        }
-                        if (canceled)
-                        {
-                            Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
-                            return;
-                        }
-                        Core.View.InvokeAsync(new Action(() => Core.View.ReportFMExtractProgress(e.PercentDone)));
-                    };
-
-                    extractor.FileExtractionFinished += (sender, e) =>
-                    {
-                        // We're extracting all the files, so we don't need to do an index check here.
-                        if (!e.FileInfo.IsDirectory)
-                        {
-                            // We don't need to set timestamps because we're using ExtractArchive(), but we
-                            // call this to remove the ReadOnly attribute
-                            // TODO: Unset readonly for directories too
-                            SetFileAttributesFromSevenZipEntry(e.FileInfo, Path.Combine(fmInstalledPath, e.FileInfo.FileName));
-                        }
-
-                        if (_extractCts.Token.IsCancellationRequested)
-                        {
-                            Core.View.InvokeAsync(new Action(Core.View.SetCancelingFMInstall));
-                            canceled = true;
-                            e.Cancel = true;
-                        }
-                    };
-
-                    try
-                    {
-                        extractor.ExtractArchive(fmInstalledPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Throws a weird exception even if everything's fine
-                        Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
-                    }
+                    extractor.ExtractArchive(fmInstalledPath);
                 }
                 catch (Exception ex)
                 {
-                    Log("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
-                    Core.View.InvokeSync(new Action(() =>
-                       Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
-                           LText.AlertMessages.Alert)));
+                    // Throws a weird exception even if everything's fine
+                    Log("extractor.ExtractArchive(fmInstalledPath) exception (probably ignorable)", ex);
                 }
-            });
+
+            }
+            catch (Exception ex)
+            {
+                Log("Exception extracting 7z " + fmArchivePath + " to " + fmInstalledPath, ex);
+                Core.View.InvokeSync(new Action(() =>
+                   Core.View.ShowAlert(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                       LText.AlertMessages.Alert)));
+            }
 
             return !canceled;
         }
@@ -713,7 +706,7 @@ namespace AngelLoader
 
         #region Uninstall
 
-        private static async Task UninstallFM(FanMission fm)
+        internal static async Task UninstallFM(FanMission fm)
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return;
 
@@ -784,6 +777,10 @@ namespace AngelLoader
                 // don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
                 // archive folder on initial setup, and hasn't imported from NDL by this point.
 
+                #region Backup
+
+                bool doBackup;
+
                 if (Config.BackupAlwaysAsk)
                 {
                     string message = Config.BackupFMData == BackupFMData.SavesAndScreensOnly
@@ -798,15 +795,19 @@ namespace AngelLoader
                     if (cancel) return;
 
                     Config.BackupAlwaysAsk = !dontAskAgain;
-                    if (cont) await BackupFM(fm, fmInstalledPath, fmArchivePath);
+                    doBackup = cont;
                 }
                 else
                 {
-                    await BackupFM(fm, fmInstalledPath, fmArchivePath);
+                    doBackup = true;
                 }
 
+                if (doBackup) await BackupFM(fm, fmInstalledPath, fmArchivePath);
+
+                #endregion
+
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
-                if (!await DeleteFMInstalledDirectory(fmInstalledPath))
+                if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
                     // TODO: Make option to open the folder in Explorer and delete it manually?
                     Core.View.ShowAlert(LText.AlertMessages.Uninstall_UninstallNotCompleted, LText.AlertMessages.Alert);
@@ -838,49 +839,46 @@ namespace AngelLoader
             }
         }
 
-        private static async Task<bool> DeleteFMInstalledDirectory(string path)
+        private static bool DeleteFMInstalledDirectory(string path)
         {
-            return await Task.Run(() =>
-            {
-                bool triedReadOnlyRemove = false;
+            bool triedReadOnlyRemove = false;
 
-                // Failsafe cause this is nasty
-                for (int i = 0; i < 2; i++)
+            // Failsafe cause this is nasty
+            for (int i = 0; i < 2; i++)
+            {
+                try
+                {
+                    Directory.Delete(path, recursive: true);
+                    return true;
+                }
+                catch (Exception)
                 {
                     try
                     {
-                        Directory.Delete(path, recursive: true);
-                        return true;
+                        if (triedReadOnlyRemove) return false;
+
+                        // FMs installed by us will not have any readonly attributes set, so we work on the
+                        // assumption that this is the rarer case and only do this extra work if we need to.
+                        foreach (string f in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+                        {
+                            new FileInfo(f).IsReadOnly = false;
+                        }
+
+                        foreach (string d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                        {
+                            Dir_UnSetReadOnly(d);
+                        }
+
+                        triedReadOnlyRemove = true;
                     }
                     catch (Exception)
                     {
-                        try
-                        {
-                            if (triedReadOnlyRemove) return false;
-
-                            // FMs installed by us will not have any readonly attributes set, so we work on the
-                            // assumption that this is the rarer case and only do this extra work if we need to.
-                            foreach (string f in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
-                            {
-                                new FileInfo(f).IsReadOnly = false;
-                            }
-
-                            foreach (string d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
-                            {
-                                Dir_UnSetReadOnly(d);
-                            }
-
-                            triedReadOnlyRemove = true;
-                        }
-                        catch (Exception)
-                        {
-                            return false;
-                        }
+                        return false;
                     }
                 }
+            }
 
-                return false;
-            });
+            return false;
         }
 
         #endregion
