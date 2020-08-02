@@ -787,7 +787,7 @@ namespace AngelLoader.Forms
             this.FilterByReleaseDateButton.Name = "FilterByReleaseDateButton";
             this.FilterByReleaseDateButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByReleaseDateButton.ToolTipText = "Release date";
-            this.FilterByReleaseDateButton.Click += new System.EventHandler(this.FilterByDateButtons_Click);
+            this.FilterByReleaseDateButton.Click += new System.EventHandler(this.FilterWindowOpenButtons_Click);
             // 
             // FilterByLastPlayedButton
             // 
@@ -800,7 +800,7 @@ namespace AngelLoader.Forms
             this.FilterByLastPlayedButton.Name = "FilterByLastPlayedButton";
             this.FilterByLastPlayedButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByLastPlayedButton.ToolTipText = "Last played";
-            this.FilterByLastPlayedButton.Click += new System.EventHandler(this.FilterByDateButtons_Click);
+            this.FilterByLastPlayedButton.Click += new System.EventHandler(this.FilterWindowOpenButtons_Click);
             // 
             // FilterByTagsButton
             // 
@@ -813,7 +813,7 @@ namespace AngelLoader.Forms
             this.FilterByTagsButton.Name = "FilterByTagsButton";
             this.FilterByTagsButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByTagsButton.ToolTipText = "Tags";
-            this.FilterByTagsButton.Click += new System.EventHandler(this.FilterByTagsButton_Click);
+            this.FilterByTagsButton.Click += new System.EventHandler(this.FilterWindowOpenButtons_Click);
             // 
             // FilterByFinishedButton
             // 
@@ -854,7 +854,7 @@ namespace AngelLoader.Forms
             this.FilterByRatingButton.Name = "FilterByRatingButton";
             this.FilterByRatingButton.Size = new System.Drawing.Size(25, 25);
             this.FilterByRatingButton.ToolTipText = "Rating";
-            this.FilterByRatingButton.Click += new System.EventHandler(this.FilterByRatingButton_Click);
+            this.FilterByRatingButton.Click += new System.EventHandler(this.FilterWindowOpenButtons_Click);
             // 
             // FilterShowUnsupportedButton
             // 

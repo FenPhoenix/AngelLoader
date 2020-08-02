@@ -694,7 +694,7 @@ namespace AngelLoader.Forms
             FilterByReleaseDateButton.Image = Resources.FilterByReleaseDate;
             FilterByReleaseDateButton.Margin = new Padding(6, 0, 0, 0);
             FilterByReleaseDateButton.Size = new Size(25, 25);
-            FilterByReleaseDateButton.Click += FilterByDateButtons_Click;
+            FilterByReleaseDateButton.Click += FilterWindowOpenButtons_Click;
             // 
             // FilterByLastPlayedButton
             // 
@@ -703,7 +703,7 @@ namespace AngelLoader.Forms
             FilterByLastPlayedButton.Image = Resources.FilterByLastPlayed;
             FilterByLastPlayedButton.Margin = new Padding(6, 0, 0, 0);
             FilterByLastPlayedButton.Size = new Size(25, 25);
-            FilterByLastPlayedButton.Click += FilterByDateButtons_Click;
+            FilterByLastPlayedButton.Click += FilterWindowOpenButtons_Click;
             // 
             // FilterByTagsButton
             // 
@@ -712,7 +712,7 @@ namespace AngelLoader.Forms
             FilterByTagsButton.Image = Resources.FilterByTags;
             FilterByTagsButton.Margin = new Padding(6, 0, 0, 0);
             FilterByTagsButton.Size = new Size(25, 25);
-            FilterByTagsButton.Click += FilterByTagsButton_Click;
+            FilterByTagsButton.Click += FilterWindowOpenButtons_Click;
             // 
             // FilterByFinishedButton
             // 
@@ -741,7 +741,7 @@ namespace AngelLoader.Forms
             FilterByRatingButton.Image = Images.FilterByRating;
             FilterByRatingButton.Margin = new Padding(6, 0, 0, 0);
             FilterByRatingButton.Size = new Size(25, 25);
-            FilterByRatingButton.Click += FilterByRatingButton_Click;
+            FilterByRatingButton.Click += FilterWindowOpenButtons_Click;
             // 
             // FilterShowUnsupportedButton
             // 

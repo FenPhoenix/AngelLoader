@@ -218,14 +218,14 @@ namespace AngelLoader.Forms.CustomControls
             #region Event hookups
 
             FMContextMenu.Opening += FMContextMenu_Opening;
-            PlayFMMenuItem.Click += PlayFMMenuItem_Click;
-            PlayFMInMPMenuItem.Click += PlayFMInMPMenuItem_Click;
-            InstallUninstallMenuItem.Click += InstallUninstallMenuItem_Click;
-            DeleteFMMenuItem.Click += DeleteFMMenuItem_Click;
-            OpenInDromEdMenuItem.Click += OpenInDromEdMenuItem_Click;
-            ScanFMMenuItem.Click += ScanFMMenuItem_Click;
-            ConvertWAVsTo16BitMenuItem.Click += ConvertWAVsTo16BitMenuItem_Click;
-            ConvertOGGsToWAVsMenuItem.Click += ConvertOGGsToWAVsMenuItem_Click;
+            PlayFMMenuItem.Click += AsyncMenuItems_Click;
+            PlayFMInMPMenuItem.Click += AsyncMenuItems_Click;
+            InstallUninstallMenuItem.Click += AsyncMenuItems_Click;
+            DeleteFMMenuItem.Click += AsyncMenuItems_Click;
+            OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
+            ScanFMMenuItem.Click += AsyncMenuItems_Click;
+            ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
+            ConvertOGGsToWAVsMenuItem.Click += AsyncMenuItems_Click;
 
             foreach (ToolStripMenuItem item in RatingMenuItem.DropDownItems)
             {
@@ -602,25 +602,36 @@ namespace AngelLoader.Forms.CustomControls
             if (RowCount == 0 || SelectedRows.Count == 0) e.Cancel = true;
         }
 
-        private async void PlayFMMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM());
-
-        private async void PlayFMInMPMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: true);
-
-        private async void InstallUninstallMenuItem_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(GetSelectedFM());
-
-        private async void DeleteFMMenuItem_Click(object sender, EventArgs e) => await FMArchives.Delete(GetSelectedFM());
-
-        private async void OpenInDromEdMenuItem_Click(object sender, EventArgs e)
+        // Extra async/await avoidance
+        private async void AsyncMenuItems_Click(object sender, EventArgs e)
         {
-            var fm = GetSelectedFM();
-            if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
+            if (sender == PlayFMMenuItem || sender == PlayFMInMPMenuItem)
+            {
+                await FMInstallAndPlay.InstallIfNeededAndPlay(GetSelectedFM(), playMP: sender == PlayFMInMPMenuItem);
+            }
+            else if (sender == InstallUninstallMenuItem)
+            {
+                await FMInstallAndPlay.InstallOrUninstall(GetSelectedFM());
+            }
+            else if (sender == DeleteFMMenuItem)
+            {
+                await FMArchives.Delete(GetSelectedFM());
+            }
+            else if (sender == OpenInDromEdMenuItem)
+            {
+                var fm = GetSelectedFM();
+                if (fm.Installed || await FMInstallAndPlay.InstallFM(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
+            }
+            else if (sender == ScanFMMenuItem)
+            {
+                await FMScan.ScanFMAndRefresh(GetSelectedFM());
+            }
+            else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
+            {
+                var convertType = sender == ConvertWAVsTo16BitMenuItem ? AudioConvert.WAVToWAV16 : AudioConvert.OGGToWAV;
+                await FMAudio.ConvertToWAVs(GetSelectedFM(), convertType, true);
+            }
         }
-
-        private async void ScanFMMenuItem_Click(object sender, EventArgs e) => await FMScan.ScanFMAndRefresh(GetSelectedFM());
-
-        private async void ConvertWAVsTo16BitMenuItem_Click(object sender, EventArgs e) => await FMAudio.ConvertWAVsTo16Bit(GetSelectedFM(), true);
-
-        private async void ConvertOGGsToWAVsMenuItem_Click(object sender, EventArgs e) => await FMAudio.ConvertOGGsToWAVs(GetSelectedFM(), true);
 
         private void RatingMenuItems_Click(object sender, EventArgs e)
         {

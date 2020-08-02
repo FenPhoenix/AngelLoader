@@ -73,6 +73,8 @@ namespace AngelLoader
 
         internal enum ReadmeType { PlainText, RichText, HTML, GLML }
 
+        internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
+
         // Non-consts for file size; these aren't perf-critical at all
         [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
         internal static class HelpSections
