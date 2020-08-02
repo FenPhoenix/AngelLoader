@@ -611,8 +611,7 @@ namespace AngelLoader.Forms.CustomControls
             }
             else if (sender == InstallUninstallMenuItem)
             {
-                var fm = GetSelectedFM();
-                await (fm.Installed ? FMInstallAndPlay.UninstallFM(fm) : FMInstallAndPlay.InstallFM(fm));
+                await FMInstallAndPlay.InstallOrUninstall(GetSelectedFM());
             }
             else if (sender == DeleteFMMenuItem)
             {

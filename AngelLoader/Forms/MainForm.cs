@@ -2082,11 +2082,7 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e)
-        {
-            var fm = FMsDGV.GetSelectedFM();
-            await (fm.Installed ? FMInstallAndPlay.UninstallFM(fm) : FMInstallAndPlay.InstallFM(fm));
-        }
+        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
 
         private async void PlayFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
 

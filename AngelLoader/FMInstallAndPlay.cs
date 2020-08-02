@@ -21,6 +21,8 @@ namespace AngelLoader
     {
         private static CancellationTokenSource _extractCts = new CancellationTokenSource();
 
+        internal static Task InstallOrUninstall(FanMission fm) => fm.Installed ? UninstallFM(fm) : InstallFM(fm);
+
         internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
         {
             if (!GameIsKnownAndSupported(fm.Game))
@@ -706,7 +708,7 @@ namespace AngelLoader
 
         #region Uninstall
 
-        internal static async Task UninstallFM(FanMission fm)
+        private static async Task UninstallFM(FanMission fm)
         {
             if (!fm.Installed || !GameIsKnownAndSupported(fm.Game)) return;
 
