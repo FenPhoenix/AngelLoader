@@ -501,9 +501,9 @@ namespace AngelLoader
             Core.View.ShowProgressBox(ProgressTasks.InstallFM);
 
             // Framework zip extracting is much faster, so use it if possible
-            bool canceled = fmArchivePath.ExtIsZip()
-                ? !await Task.Run(() => InstallFMZip(fmArchivePath, fmInstalledPath))
-                : !await Task.Run(() => InstallFMSevenZip(fmArchivePath, fmInstalledPath));
+            bool canceled = !await (fmArchivePath.ExtIsZip()
+                ? Task.Run(() => InstallFMZip(fmArchivePath, fmInstalledPath))
+                : Task.Run(() => InstallFMSevenZip(fmArchivePath, fmInstalledPath)));
 
             if (canceled)
             {

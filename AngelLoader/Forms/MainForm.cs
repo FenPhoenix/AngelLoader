@@ -91,8 +91,6 @@ namespace AngelLoader.Forms
 
         public object InvokeSync(Delegate method) => Invoke(method);
         public object InvokeSync(Delegate method, params object[] args) => Invoke(method, args);
-        public object InvokeAsync(Delegate method) => BeginInvoke(method);
-        public object InvokeAsync(Delegate method, params object[] args) => BeginInvoke(method, args);
 
         #endregion
 
@@ -556,8 +554,12 @@ namespace AngelLoader.Forms
                 int wParam = (int)m.WParam;
                 if (wParam == (int)Keys.F1 && CanFocus)
                 {
-                    static bool AnyControlFocusedIn(Control control)
+                    int stackCounter = 0;
+                    bool AnyControlFocusedIn(Control control)
                     {
+                        stackCounter++;
+                        if (stackCounter > 100) return false;
+
                         if (control.Focused) return true;
 
                         for (int i = 0; i < control.Controls.Count; i++)
@@ -572,30 +574,21 @@ namespace AngelLoader.Forms
                         (TopRightTabControl.Focused && TopRightTabControl.SelectedTab == tabPage) ||
                         AnyControlFocusedIn(tabPage);
 
-                    string section;
-                    try
-                    {
-                        section =
-                            !EverythingPanel.Enabled ? HelpSections.MainWindow :
-                            FMsDGV.FMContextMenuVisible ? HelpSections.FMContextMenu :
-                            FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
-                            // TODO: We could try to be clever and take mouse position into account in some cases?
-                            AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
-                            TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
-                            AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
-                            AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
-                            // Add tag dropdown is in EverythingPanel, not tags tab page
-                            AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
-                            AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
-                            AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
-                            // TODO: Handle bottom area controls (we need a whole other section delimiter in the help file)
-                            HelpSections.MainWindow;
-                    }
-                    // Paranoid fallback
-                    catch (StackOverflowException)
-                    {
-                        section = HelpSections.MainWindow;
-                    }
+                    string section =
+                        !EverythingPanel.Enabled ? HelpSections.MainWindow :
+                        FMsDGV.FMContextMenuVisible ? HelpSections.FMContextMenu :
+                        FMsDGV.ColumnHeaderMenuVisible ? HelpSections.ColumnHeaderContextMenu :
+                        // TODO: We could try to be clever and take mouse position into account in some cases?
+                        AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
+                        TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
+                        AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
+                        AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
+                        // Add tag dropdown is in EverythingPanel, not tags tab page
+                        AnyControlFocusedInTabPage(TagsTabPage) || AddTagLLDropDown.Focused ? HelpSections.TagsTab :
+                        AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
+                        AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
+                        // TODO: Handle bottom area controls (we need a whole other section delimiter in the help file)
+                        HelpSections.MainWindow;
 
                     Core.OpenHelpFile(section);
                 }
@@ -1847,8 +1840,7 @@ namespace AngelLoader.Forms
             {
                 DateFormat.CurrentCultureShort => dt.ToShortDateString(),
                 DateFormat.CurrentCultureLong => dt.ToLongDateString(),
-                DateFormat.Custom => dt.ToString(Config.DateCustomFormatString),
-                _ => throw new Exception("Config.DateFormat is not what it should be!")
+                _ => dt.ToString(Config.DateCustomFormatString),
             };
 
             static string FormatSize(ulong size) =>
@@ -2401,7 +2393,7 @@ namespace AngelLoader.Forms
                                 FMsDGV.FirstDisplayedScrollingRowIndex = (row - selFM.IndexFromTop).ClampToZero();
                             }
                         }
-                        catch (Exception)
+                        catch
                         {
                             // no room is available to display rows
                         }
@@ -3769,13 +3761,11 @@ namespace AngelLoader.Forms
             }
             else if (sender == FilterByTagsButton)
             {
-                using (var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags))
-                {
-                    if (tf.ShowDialog() != DialogResult.OK) return;
+                using var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags);
+                if (tf.ShowDialog() != DialogResult.OK) return;
 
-                    tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
-                    FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
-                }
+                tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
+                FilterByTagsButton.Checked = !FMsDGV.Filter.Tags.IsEmpty();
             }
             else if (sender == FilterByRatingButton)
             {

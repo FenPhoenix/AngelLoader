@@ -57,20 +57,145 @@ namespace AngelLoader
         // a button, so don't worry about it
         internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)
         {
+            #region Local functions
+
+            static void ClearCacheDir(FanMission fm)
+            {
+                string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
+                if (!fmCachePath.TrimEnd(CA_BS_FS).PathEqualsI(Paths.FMsCache.TrimEnd(CA_BS_FS)) && Directory.Exists(fmCachePath))
+                {
+                    try
+                    {
+                        foreach (string f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
+                        foreach (string d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Exception clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
+                    }
+                }
+            }
+
+            // Does not check basePath for existence, so check it first before calling.
+            static List<string> GetValidReadmes(string basePath)
+            {
+                string[] readmePaths =
+                {
+                basePath,
+                Path.Combine(basePath, _t3ReadmeDir1),
+                Path.Combine(basePath, _t3ReadmeDir2)
+            };
+
+                var readmes = new List<string>();
+
+                for (int i = 0; i < readmePaths.Length; i++)
+                {
+                    string readmePath = readmePaths[i];
+
+                    // We assume the first dir exists (to prevent an expensive duplicate check), so only check for others
+                    if (i == 0 || Directory.Exists(readmePath))
+                    {
+                        foreach (string fn in FastIO.GetFilesTopOnly(readmePath, "*"))
+                        {
+                            if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
+                            {
+                                readmes.Add(fn.Substring(basePath.Length + 1));
+                            }
+                        }
+                    }
+                }
+
+                return readmes;
+            }
+
+            #endregion
+
             if (fm.Game == Game.Unsupported)
             {
-                if (!fm.InstalledDir.IsEmpty())
-                {
-                    ClearCacheDir(fm);
-                }
+                if (!fm.InstalledDir.IsEmpty()) ClearCacheDir(fm);
                 return new CacheData();
             }
 
             try
             {
-                return FMIsReallyInstalled(fm)
-                    ? GetCacheableDataInFMInstalledDir(fm)
-                    : await GetCacheableDataInFMCacheDir(fm, refreshCache);
+                if (FMIsReallyInstalled(fm))
+                {
+                    string fmReadmesBasePath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
+                    return new CacheData(GetValidReadmes(fmReadmesBasePath));
+                }
+                else
+                {
+                    var readmes = new List<string>();
+
+                    string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
+
+                    if (!refreshCache)
+                    {
+                        if (Directory.Exists(fmCachePath))
+                        {
+                            readmes = GetValidReadmes(fmCachePath);
+                            if (readmes.Count > 0) return new CacheData(readmes);
+                        }
+
+                        if (fm.NoReadmes) return new CacheData();
+                    }
+
+                    #region Refresh cache from archive
+
+                    // This is in the same method in order to avoid unnecessary async/await machinery
+
+                    readmes.Clear();
+                    ClearCacheDir(fm);
+
+                    string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
+
+                    // In weird situations this could be true, so just say none and at least don't crash
+                    if (fmArchivePath.IsEmpty()) return new CacheData();
+
+                    if (fm.Archive.ExtIsZip())
+                    {
+                        ZipExtract(fmArchivePath, fmCachePath, readmes);
+
+                        // TODO: Support HTML ref extraction for .7z files too
+                        // Will require full extract for the same reason scan does - we need to scan files to
+                        // know what other files to scan, etc. and a full extract is with 99.9999% certainty
+                        // going to be faster than chugging through the whole thing over and over and over for
+                        // each new file we find we need
+
+                        // Guard check so we don't do useless HTML work if we don't have any HTML readmes
+                        bool htmlReadmeExists = false;
+                        for (int i = 0; i < readmes.Count; i++)
+                        {
+                            if (readmes[i].ExtIsHtml())
+                            {
+                                htmlReadmeExists = true;
+                                break;
+                            }
+                        }
+
+                        if (htmlReadmeExists && Directory.Exists(fmCachePath))
+                        {
+                            try
+                            {
+                                ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log("Exception in " + nameof(ExtractHTMLRefFiles), ex);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        await Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath, readmes));
+                    }
+
+                    fm.NoReadmes = readmes.Count == 0;
+
+                    #endregion
+
+                    return new CacheData(readmes);
+                }
             }
             catch (Exception ex)
             {
@@ -78,151 +203,6 @@ namespace AngelLoader
                 return new CacheData();
             }
         }
-
-        #region Helpers
-
-        private static void ClearCacheDir(FanMission fm)
-        {
-            string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
-            if (!fmCachePath.TrimEnd(CA_BS_FS).PathEqualsI(Paths.FMsCache.TrimEnd(CA_BS_FS)) && Directory.Exists(fmCachePath))
-            {
-                try
-                {
-                    foreach (string f in FastIO.GetFilesTopOnly(fmCachePath, "*")) File.Delete(f);
-                    foreach (string d in FastIO.GetDirsTopOnly(fmCachePath, "*")) Directory.Delete(d, recursive: true);
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception clearing files in FM cache for " + fm.Archive + " / " + fm.InstalledDir, ex);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Does not check <paramref name="basePath"/> for existence, so check it first before calling.
-        /// </summary>
-        /// <param name="basePath"></param>
-        /// <returns></returns>
-        private static List<string> GetValidReadmes(string basePath)
-        {
-            string[] readmePaths =
-            {
-                basePath,
-                Path.Combine(basePath, _t3ReadmeDir1),
-                Path.Combine(basePath, _t3ReadmeDir2)
-            };
-
-            var readmes = new List<string>();
-
-            for (int i = 0; i < readmePaths.Length; i++)
-            {
-                string readmePath = readmePaths[i];
-
-                // We assume the first dir exists (to prevent an expensive duplicate check), so only check for others
-                if (i == 0 || Directory.Exists(readmePath))
-                {
-                    foreach (string fn in FastIO.GetFilesTopOnly(readmePath, "*"))
-                    {
-                        if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
-                        {
-                            readmes.Add(fn.Substring(basePath.Length + 1));
-                        }
-                    }
-                }
-            }
-
-            return readmes;
-        }
-
-        #endregion
-
-        #region Get cacheable data
-
-        private static CacheData GetCacheableDataInFMInstalledDir(FanMission fm)
-        {
-            AssertR(fm.Installed, "fm.Installed is false when it should be true");
-
-            string fmReadmesBasePath = Path.Combine(Config.GetFMInstallPathUnsafe(fm.Game), fm.InstalledDir);
-
-            return new CacheData(GetValidReadmes(fmReadmesBasePath));
-        }
-
-        private static async Task<CacheData> GetCacheableDataInFMCacheDir(FanMission fm, bool refreshCache)
-        {
-            AssertR(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
-
-            var readmes = new List<string>();
-
-            string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
-
-            if (!refreshCache)
-            {
-                if (Directory.Exists(fmCachePath))
-                {
-                    readmes = GetValidReadmes(fmCachePath);
-                    if (readmes.Count > 0) return new CacheData(readmes);
-                }
-
-                if (fm.NoReadmes) return new CacheData();
-            }
-
-            #region Refresh cache from archive
-
-            // This is in the same method in order to avoid unnecessary async/await machinery
-
-            readmes.Clear();
-            ClearCacheDir(fm);
-
-            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive);
-
-            // In weird situations this could be true, so just say none and at least don't crash
-            if (fmArchivePath.IsEmpty()) return new CacheData();
-
-            if (fm.Archive.ExtIsZip())
-            {
-                ZipExtract(fmArchivePath, fmCachePath, readmes);
-
-                // TODO: Support HTML ref extraction for .7z files too
-                // Will require full extract for the same reason scan does - we need to scan files to know what
-                // other files to scan, etc. and a full extract is with 99.9999% certainty going to be faster
-                // than chugging through the whole thing over and over and over for each new file we find we need
-
-                // Guard check so we don't do useless HTML work if we don't have any HTML readmes
-                bool htmlReadmeExists = false;
-                for (int i = 0; i < readmes.Count; i++)
-                {
-                    if (readmes[i].ExtIsHtml())
-                    {
-                        htmlReadmeExists = true;
-                        break;
-                    }
-                }
-
-                if (htmlReadmeExists && Directory.Exists(fmCachePath))
-                {
-                    try
-                    {
-                        ExtractHTMLRefFiles(fmArchivePath, fmCachePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Exception in " + nameof(ExtractHTMLRefFiles), ex);
-                    }
-                }
-            }
-            else
-            {
-                await Task.Run(() => SevenZipExtract(fmArchivePath, fmCachePath, readmes));
-            }
-
-            fm.NoReadmes = readmes.Count == 0;
-
-            #endregion
-
-            return new CacheData(readmes);
-        }
-
-        #endregion
 
         #region Extract
 
