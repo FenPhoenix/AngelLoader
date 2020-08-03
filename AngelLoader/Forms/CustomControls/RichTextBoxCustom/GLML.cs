@@ -308,7 +308,6 @@ namespace AngelLoader.Forms.CustomControls
         #region HTML named entities
 
         private static Dictionary<string, string>? _htmlNamedEntities;
-
         private static Dictionary<string, string> HTMLNamedEntities
         {
             get
@@ -353,11 +352,12 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        // Deflated bytes for HTML entities. When inflated, the format is: "Key=value," etc. Inflates to ASCII chars.
+        // Deflated bytes for HTML entities. Inflates to ASCII chars. When inflated, the format is: "Key=value," etc.
         // We store this compressed because no known GLML file actually even uses named entities (as of 2020-08-03
         // and to the best of my knowledge), and we don't want to waste space on stuff we probably won't even need.
         // Entities are copied direct from the HTML 5.2 spec.
         // We don't support ones that map to multiple chars. We're already being ridiculous enough here.
+        // SIZE_TODO: We gain about 10K in file size from having this. Not too terribly bad considering.
         private static readonly byte[] _htmlEntitiesDeflatedBytes =
         {
             125, 93, 91, 119, 219, 56, 175, 253, 67, 124, 176, 110, 150, 244, 144, 135, 182, 73, 155, 206, 180,
