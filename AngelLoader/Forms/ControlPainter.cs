@@ -105,6 +105,23 @@ namespace AngelLoader.Forms
 
         #region Finished checkmarks
 
+        // Inner path starts at index 14
+        private static readonly float[] _finishedCheckPoints =
+        {
+            65.75464f, 3.180167f, 29.22405f, 47.79398f, 10.8f, 30.83739f, -0.1080037f, 42.47338f, 30.86943f,
+            71.04063f, 78.09653f, 13.29531f, 65.75464f, 3.180167f, 66.03886f, 7.544f, 73.736f, 13.58057f,
+            30.66118f, 66.582f, 4.278f, 42.36847f, 10.90528f, 35.199f, 29.43231f, 52.25f, 66.03886f, 7.544f
+        };
+
+        // Inner path starts at index 7
+        private static readonly byte[] _finishedCheckTypes = MakeTypeArray((1, 5, 0, 129), (1, 5, 0, 129));
+
+        internal static readonly PointF[] FinishedCheckInnerPoints = new PointF[7];
+        internal static readonly byte[] FinishedCheckInnerTypes = new byte[7];
+
+        private static GraphicsPath? _finishedCheckGPath;
+        internal static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
+
         internal static readonly Brush NormalCheckOutlineBrush = new SolidBrush(Color.FromArgb(3, 100, 1));
         internal static readonly Brush NormalCheckFillBrush = new SolidBrush(Color.FromArgb(0, 170, 0));
 
@@ -123,55 +140,7 @@ namespace AngelLoader.Forms
         internal static readonly Brush FinishedOnFilterOutlineBrush = new SolidBrush(Color.FromArgb(14, 101, 139));
         internal static readonly Brush FinishedOnFilterFillBrush = new SolidBrush(Color.FromArgb(89, 159, 203));
 
-        // Inner path starts at index 14
-        private static readonly float[] _finishedCheckPoints =
-        {
-            65.75464f, 3.180167f, 29.22405f, 47.79398f, 10.8f, 30.83739f, -0.1080037f, 42.47338f, 30.86943f,
-            71.04063f, 78.09653f, 13.29531f, 65.75464f, 3.180167f, 66.03886f, 7.544f, 73.736f, 13.58057f,
-            30.66118f, 66.582f, 4.278f, 42.36847f, 10.90528f, 35.199f, 29.43231f, 52.25f, 66.03886f, 7.544f
-        };
-
-        // Inner path starts at index 7
-        private static readonly byte[] _finishedCheckTypes = MakeTypeArray((1, 5, 0, 129), (1, 5, 0, 129));
-
-        internal static readonly PointF[] FinishedCheckInnerPoints = new PointF[7];
-        internal static readonly byte[] FinishedCheckInnerTypes = new byte[7];
-
-        private static GraphicsPath? _finishedCheckGPath;
-        internal static GraphicsPath FinishedCheckOutlineGPath => _finishedCheckGPath ??= MakeGraphicsPath(_finishedCheckPoints, _finishedCheckTypes);
-
         #endregion
-
-        // Believe it or not, I actually save space by having this massive complicated method rather than a few
-        // very small byte arrays. I guess byte arrays must take up more space than you might think, or something.
-        private static byte[] MakeTypeArray(params (byte FillValue, int FillCount, int Prefix, int Suffix)[] sets)
-        {
-            int setsLen = sets.Length;
-
-            int totalArrayLen = 0;
-            for (int i = 0; i < setsLen; i++)
-            {
-                var (_, fillCount, prefix, suffix) = sets[i];
-                totalArrayLen += fillCount + (prefix > -1 ? 1 : 0) + (suffix > -1 ? 1 : 0);
-            }
-            byte[] ret = new byte[totalArrayLen];
-
-            int pos = 0;
-            for (int i = 0; i < setsLen; i++)
-            {
-                var (fillValue, fillCount, prefix, suffix) = sets[i];
-
-                if (prefix > -1) ret[pos++] = (byte)prefix;
-
-                int j;
-                for (j = pos; j < pos + fillCount; j++) ret[j] = fillValue;
-                pos = j;
-
-                if (suffix > -1) ret[pos++] = (byte)suffix;
-            }
-
-            return ret;
-        }
 
         #region Stars
 
@@ -256,15 +225,44 @@ namespace AngelLoader.Forms
 
         #region Vector helpers
 
+        // Believe it or not, I actually save space by having this massive complicated method rather than a few
+        // very small byte arrays. I guess byte arrays must take up more space than you might think, or something.
+        private static byte[] MakeTypeArray(params (byte FillValue, int FillCount, int Prefix, int Suffix)[] sets)
+        {
+            int setsLen = sets.Length;
+
+            int totalArrayLen = 0;
+            for (int i = 0; i < setsLen; i++)
+            {
+                var (_, fillCount, prefix, suffix) = sets[i];
+                totalArrayLen += fillCount + (prefix > -1 ? 1 : 0) + (suffix > -1 ? 1 : 0);
+            }
+            byte[] ret = new byte[totalArrayLen];
+
+            int pos = 0;
+            for (int i = 0; i < setsLen; i++)
+            {
+                var (fillValue, fillCount, prefix, suffix) = sets[i];
+
+                if (prefix > -1) ret[pos++] = (byte)prefix;
+
+                int j;
+                for (j = pos; j < pos + fillCount; j++) ret[j] = fillValue;
+                pos = j;
+
+                if (suffix > -1) ret[pos++] = (byte)suffix;
+            }
+
+            return ret;
+        }
+
         private static GraphicsPath MakeGraphicsPath(float[] points, byte[] types)
         {
             int pointsCount = points.Length;
             var rawPoints = new PointF[pointsCount / 2];
             for (int i = 0, j = 0; i < pointsCount; i += 2, j++)
             {
-                var x = points[i];
-                var y = points[i + 1];
-                rawPoints[j] = new PointF(x, y);
+                rawPoints[j] = new PointF(points[i], points[i + 1]);
             }
             return new GraphicsPath(rawPoints, types);
         }

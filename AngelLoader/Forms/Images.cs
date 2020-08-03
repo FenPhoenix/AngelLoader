@@ -143,9 +143,8 @@ namespace AngelLoader.Forms
         /// it gets displayed, which is a lot.
         /// </summary>
         /// <param name="positionZeroBitmap">Silly hack, see description.</param>
-        /// <param name="regenerate"></param>
         /// <returns></returns>
-        public static Bitmap[] GetFinishedOnImages(Bitmap positionZeroBitmap, bool regenerate = false)
+        public static Bitmap[] GetFinishedOnImages(Bitmap positionZeroBitmap)
         {
             var retArray = new Bitmap[16];
 
@@ -157,41 +156,10 @@ namespace AngelLoader.Forms
             {
                 #region Image getters
 
-                Bitmap GetFinishedOnNormal_Single()
-                {
-                    if (regenerate || _finishedOnNormal_single == null)
-                    {
-                        _finishedOnNormal_single = FillFinishedOnBitmap(Difficulty.Normal);
-                    }
-                    return _finishedOnNormal_single;
-                }
-
-                Bitmap GetFinishedOnHard_Single()
-                {
-                    if (regenerate || _finishedOnHard_single == null)
-                    {
-                        _finishedOnHard_single = FillFinishedOnBitmap(Difficulty.Hard);
-                    }
-                    return _finishedOnHard_single;
-                }
-
-                Bitmap GetFinishedOnExpert_Single()
-                {
-                    if (regenerate || _finishedOnExpert_single == null)
-                    {
-                        _finishedOnExpert_single = FillFinishedOnBitmap(Difficulty.Expert);
-                    }
-                    return _finishedOnExpert_single;
-                }
-
-                Bitmap GetFinishedOnExtreme_Single()
-                {
-                    if (regenerate || _finishedOnExtreme_single == null)
-                    {
-                        _finishedOnExtreme_single = FillFinishedOnBitmap(Difficulty.Extreme);
-                    }
-                    return _finishedOnExtreme_single;
-                }
+                Bitmap GetFinishedOnNormal_Single() => _finishedOnNormal_single ??= FillFinishedOnBitmap(Difficulty.Normal);
+                Bitmap GetFinishedOnHard_Single() => _finishedOnHard_single ??= FillFinishedOnBitmap(Difficulty.Hard);
+                Bitmap GetFinishedOnExpert_Single() => _finishedOnExpert_single ??= FillFinishedOnBitmap(Difficulty.Expert);
+                Bitmap GetFinishedOnExtreme_Single() => _finishedOnExtreme_single ??= FillFinishedOnBitmap(Difficulty.Extreme);
 
                 #endregion
 
@@ -213,7 +181,7 @@ namespace AngelLoader.Forms
                     int totalWidth = 0;
                     // Some of these images are +-1px width from each other, but they all add up to the full 138px
                     // width of the canvas, which we really don't want to change as other things depend on it. So
-                    // that's why we get get the width of each individual image , rather than keeping a constant.
+                    // that's why we get the width of each individual image , rather than keeping a constant.
                     for (int i = 0; i < list.Count; i++) totalWidth += list[i].Width;
 
                     int x = (138 / 2) - (totalWidth / 2);
@@ -245,32 +213,18 @@ namespace AngelLoader.Forms
         #region Stars
 
         private static Bitmap? _filterByRating;
-        public static Bitmap FilterByRating
-        {
-            get
-            {
-                if (_filterByRating == null)
-                {
-                    const int px = 24;
+        public static Bitmap FilterByRating => _filterByRating ??= FillStarImage(ControlPainter.StarFullGPath, 24);
 
-                    _filterByRating = new Bitmap(px, px, PixelFormat.Format32bppPArgb);
-                    using var g = Graphics.FromImage(_filterByRating);
-                    g.SmoothingMode = SmoothingMode.AntiAlias;
-                    ControlPainter.FitRectInBounds(g, ControlPainter.StarFullGPath.GetBounds(), new RectangleF(0, 0, px, px));
-                    DrawStarImage(g, ControlPainter.StarFullGPath);
-                }
-                return _filterByRating;
-            }
-        }
-
-        // PERF_TODO: Images: DrawStarImage
-        // This could be made a lot faster by using the FinishedOn method of just drawing each image once to a
-        // bitmap each, then just drawing those bitmaps as we go along. 6ms to create all the rating image bitmaps
-        // currently.
-        private static void DrawStarImage(Graphics g, GraphicsPath gp)
+        private static Bitmap FillStarImage(GraphicsPath gp, int px)
         {
             PointF[] points = new PointF[11];
             byte[] types = new byte[11];
+
+            var bmp = new Bitmap(px, px, PixelFormat.Format32bppPArgb);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            ControlPainter.FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
 
             Brush[] brushes = { ControlPainter.StarOutlineBrush, ControlPainter.StarFillBrush, Brushes.White };
 
@@ -280,7 +234,7 @@ namespace AngelLoader.Forms
             {
                 if (i == 2)
                 {
-                    if ((elemCount = gp.PointCount - 22) == 0) return;
+                    if ((elemCount = gp.PointCount - 22) == 0) break;
                     Array.Resize(ref points, elemCount);
                     Array.Resize(ref types, elemCount);
                 }
@@ -291,36 +245,53 @@ namespace AngelLoader.Forms
                 using var individualGP = new GraphicsPath(points, types);
                 g.FillPath(brushes[i], individualGP);
             }
+
+            return bmp;
         }
 
         public static Bitmap[] GetRatingImages()
         {
             // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
             const int numRatings = 11;
-
-            var retArray = new Bitmap[numRatings];
-
+            Bitmap[] retArray = new Bitmap[numRatings];
             bool[] bits = new bool[numRatings];
 
-            RectangleF drawBounds = ControlPainter.StarEmptyGPath.GetBounds();
-
-            for (int bi = 0; bi < numRatings; bi++)
+            Bitmap? _starEmpty = null;
+            Bitmap? _starRightEmpty = null;
+            Bitmap? _starFull = null;
+            try
             {
-                var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
+                #region Image getters
 
-                using var g = Graphics.FromImage(canvas);
+                Bitmap GetStarEmpty() => _starEmpty ??= FillStarImage(ControlPainter.StarEmptyGPath, 22);
+                Bitmap GetStarRightEmpty() => _starRightEmpty ??= FillStarImage(ControlPainter.StarRightEmptyGPath, 22);
+                Bitmap GetStarFull() => _starFull ??= FillStarImage(ControlPainter.StarFullGPath, 22);
 
-                g.SmoothingMode = SmoothingMode.AntiAlias;
+                #endregion
 
-                for (int i = 0; i < bits.Length - 1; i += 2)
+                for (int bi = 0; bi < numRatings; bi++)
                 {
-                    ControlPainter.FitRectInBounds(g, drawBounds, new RectangleF((i / 2) * 22, 5, 22, 22));
-                    DrawStarImage(g, bits[i] ? bits[i + 1] ? ControlPainter.StarFullGPath : ControlPainter.StarRightEmptyGPath : ControlPainter.StarEmptyGPath);
+                    var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
+
+                    using var g = Graphics.FromImage(canvas);
+
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                    for (int i = 0; i < bits.Length - 1; i += 2)
+                    {
+                        g.DrawImage(bits[i] ? bits[i + 1] ? GetStarFull() : GetStarRightEmpty() : GetStarEmpty(), (i / 2) * 22, 5);
+                    }
+
+                    bits[bi] = true;
+
+                    retArray[bi] = canvas;
                 }
-
-                bits[bi] = true;
-
-                retArray[bi] = canvas;
+            }
+            finally
+            {
+                _starEmpty?.Dispose();
+                _starRightEmpty?.Dispose();
+                _starFull?.Dispose();
             }
 
             return retArray;
