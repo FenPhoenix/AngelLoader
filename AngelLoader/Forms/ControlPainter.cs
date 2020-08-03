@@ -394,28 +394,6 @@ namespace AngelLoader.Forms
 
         #endregion
 
-        #region Scan
-
-        /*
-        private static readonly Pen _scanPen = new Pen(_al_LightBlue, 3);
-        private static readonly Pen _scanDisabledPen = new Pen(SystemColors.ControlDark, 3);
-        private static readonly Point[] _scanPoints =
-        {
-            new Point(26, 25),
-            new Point(29, 28),
-            new Point(32, 25),
-            new Point(28, 21)
-        };
-
-        private static readonly Pen _scanSmallCirclePen = new Pen(_al_LightBlue, 1.8f);
-        private static readonly Pen _scanSmallCircleDisabledPen = new Pen(SystemColors.ControlDark, 1.8f);
-        private static readonly Pen _scanSmallHandlePen = new Pen(_al_LightBlue, 2.6f);
-        private static readonly Pen _scanSmallHandleDisabledPen = new Pen(SystemColors.ControlDark, 2.6f);
-        private static readonly RectangleF _scanSmallHandleRect = new RectangleF(15, 15, 2.4f, 2.4f);
-        */
-
-        #endregion
-
         #region Buttons
 
         internal static void PaintZoomButtons(Button button, PaintEventArgs e, Zoom zoomType)
@@ -518,14 +496,6 @@ namespace AngelLoader.Forms
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
 
-            /*
-            Pen pen = button.Enabled ? _scanPen : _scanDisabledPen;
-
-            e.Graphics.DrawEllipse(pen, 11, 7, 18, 18);
-            e.Graphics.FillPolygon(pen.Brush, _scanPoints);
-            e.Graphics.FillEllipse(pen.Brush, new RectangleF(29, 25, 4.5f, 4.5f));
-            */
-
             Brush brush = button.Enabled ? _al_LightBlueBrush : SystemBrushes.ControlDark;
 
             var cr = button.ClientRectangle;
@@ -544,16 +514,6 @@ namespace AngelLoader.Forms
         internal static void PaintScanSmallButtons(Button button, PaintEventArgs e)
         {
             SetSmoothingMode(e, SmoothingMode.AntiAlias);
-
-            /*
-            Pen pen = button.Enabled ? _scanSmallCirclePen : _scanSmallCircleDisabledPen;
-            Pen hPen = button.Enabled ? _scanSmallHandlePen : _scanSmallHandleDisabledPen;
-
-            e.Graphics.DrawEllipse(pen, 4.25f, 4.25f, 10.6f, 10.6f);
-
-            e.Graphics.DrawLine(hPen, 13, 13, 16.5f, 16.5f);
-            e.Graphics.FillEllipse(pen.Brush, _scanSmallHandleRect);
-            */
 
             Brush brush = button.Enabled ? _al_LightBlueBrush : SystemBrushes.ControlDark;
 
