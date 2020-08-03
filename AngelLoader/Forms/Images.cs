@@ -283,7 +283,6 @@ namespace AngelLoader.Forms
                     }
 
                     bits[bi] = true;
-
                     retArray[bi] = canvas;
                 }
             }
@@ -340,7 +339,46 @@ namespace AngelLoader.Forms
         public static Bitmap RatingExample_NDL => _ratingExample_NDL ??= Resources.RatingExample_NDL;
 
         private static Bitmap? _ratingExample_FMSel_Stars;
-        public static Bitmap RatingExample_FMSel_Stars => _ratingExample_FMSel_Stars ??= Resources.RatingExample_FMSel_Stars;
+        public static Bitmap RatingExample_FMSel_Stars
+        {
+            get
+            {
+                if (_ratingExample_FMSel_Stars == null)
+                {
+                    Bitmap? _starEmpty = null;
+                    Bitmap? _starRightEmpty = null;
+                    Bitmap? _starFull = null;
+                    try
+                    {
+                        const int px = 14;
+
+                        Bitmap GetStarEmpty() => _starEmpty = FillStarImage(ControlPainter.StarEmptyGPath, px);
+                        Bitmap GetStarRightEmpty() => _starRightEmpty = FillStarImage(ControlPainter.StarRightEmptyGPath, px);
+                        Bitmap GetStarFull() => _starFull ??= FillStarImage(ControlPainter.StarFullGPath, px);
+
+                        _ratingExample_FMSel_Stars = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
+                        using var g = Graphics.FromImage(_ratingExample_FMSel_Stars);
+                        g.FillRectangle(Brushes.White, 1, 1, 77, 21);
+                        g.DrawRectangle(new Pen(Color.FromArgb(160, 160, 160)), 0, 0, 78, 22);
+                        g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                        float x = 4;
+                        const float y = 3.5f;
+                        for (int i = 0; i < 3; i++, x += px) g.DrawImage(GetStarFull(), x, y);
+                        g.DrawImage(GetStarRightEmpty(), x, y);
+                        g.DrawImage(GetStarEmpty(), x + px, y);
+                    }
+                    finally
+                    {
+                        _starEmpty?.Dispose();
+                        _starRightEmpty?.Dispose();
+                        _starFull?.Dispose();
+                    }
+
+                }
+                return _ratingExample_FMSel_Stars;
+            }
+        }
 
         private static Bitmap? _ratingExample_FMSel_Number;
         public static Bitmap RatingExample_FMSel_Number => _ratingExample_FMSel_Number ??= Resources.RatingExample_FMSel_Number;
