@@ -322,10 +322,6 @@ namespace AngelLoader
                 {
                     await ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), scanFullIfNew: true);
                 }
-                catch (Exception ex)
-                {
-                    Log("Exception in ScanFMs", ex);
-                }
                 finally
                 {
                     // Just in case
