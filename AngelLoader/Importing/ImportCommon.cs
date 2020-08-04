@@ -148,9 +148,7 @@ namespace AngelLoader.Importing
             {
                 if (file.IsWhiteSpace()) continue;
 
-                bool success = await (importType == ImportType.FMSel
-                    ? ImportFMSel.Import(file, fields)
-                    : ImportNDL.Import(file, fields));
+                await ImportNDLOrFMSel.Import(importType, file, fields);
             }
 
             // Do this no matter what; because we set the row count to 0 the list MUST be refreshed

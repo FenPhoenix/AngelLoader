@@ -61,7 +61,7 @@ namespace AngelLoader.Importing
 
         private static async Task<(ImportError Error, List<FanMission> FMs)>
         ImportInternal(string iniFile, bool importFMData, bool importSaves, bool returnUnmergedFMsList = false,
-            FieldsToImport? fields = null)
+                       FieldsToImport? fields = null)
         {
             #region Local functions
 
@@ -103,19 +103,18 @@ namespace AngelLoader.Importing
 
             #endregion
 
-            string[] lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
 
-            var error = ImportError.None;
+            bool missionDirsRead = false;
+            var archiveDirs = new List<string>();
 
-            if (importFMData)
+            var error = await Task.Run(() =>
             {
-                bool missionDirsRead = false;
-                var archiveDirs = new List<string>();
-
-                error = await Task.Run(() =>
+                try
                 {
-                    try
+                    string[] lines = File.ReadAllLines(iniFile);
+
+                    if (importFMData)
                     {
                         for (int i = 0; i < lines.Length; i++)
                         {
@@ -125,8 +124,8 @@ namespace AngelLoader.Importing
 
                             #region Read archive directories
 
-                            // We need to know the archive dirs before doing anything, because we may need to recreate
-                            // some lossy names (if any bad chars have been removed by DarkLoader).
+                            // We need to know the archive dirs before doing anything, because we may need to
+                            // recreate some lossy names (if any bad chars have been removed by DarkLoader).
                             if (!missionDirsRead && lineTB == "[mission directories]")
                             {
                                 while (i < lines.Length - 1)
@@ -148,8 +147,8 @@ namespace AngelLoader.Importing
                                     return ImportError.NoArchiveDirsFound;
                                 }
 
-                                // Restart from the beginning of the file, this time skipping anything that isn't an
-                                // FM entry
+                                // Restart from the beginning of the file, this time skipping anything that isn't
+                                // an FM entry
                                 i = -1;
                                 missionDirsRead = true;
                                 continue;
@@ -177,10 +176,10 @@ namespace AngelLoader.Importing
                                         // DarkLoader only does zip format
                                         foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
                                         {
-                                            string fn = Path.GetFileNameWithoutExtension(f);
-                                            if (RemoveDLArchiveBadChars(fn).EqualsI(archive))
+                                            string fnNoExt = Path.GetFileNameWithoutExtension(f);
+                                            if (RemoveDLArchiveBadChars(fnNoExt).EqualsI(archive))
                                             {
-                                                archive = fn;
+                                                archive = fnNoExt;
                                                 goto breakout;
                                             }
                                         }
@@ -193,9 +192,6 @@ namespace AngelLoader.Importing
 
                                 breakout:
 
-                                // Add .zip back on; required because everything expects it, and furthermore if there's
-                                // a dot anywhere in the name then everything after it will be treated as the extension
-                                // and is liable to be lopped off at any time
                                 archive += ".zip";
 
                                 ulong.TryParse(size, out ulong sizeBytes);
@@ -206,10 +202,10 @@ namespace AngelLoader.Importing
                                     SizeBytes = sizeBytes
                                 };
 
-                                // We don't import game type, because DarkLoader by default gets it wrong for NewDark
-                                // FMs (the user could have changed it manually in the ini file, and in fact it's
-                                // somewhat likely they would have done so, but still, better to just scan for it
-                                // ourselves later)
+                                // We don't import game type, because DarkLoader by default gets it wrong for
+                                // NewDark FMs (the user could have changed it manually in the ini file, and in
+                                // fact it's somewhat likely they would have done so, but still, better to just
+                                // scan for it ourselves later)
 
                                 while (i < lines.Length - 1)
                                 {
@@ -278,26 +274,34 @@ namespace AngelLoader.Importing
 
                             #endregion
                         }
-                        return ImportError.None;
                     }
-                    catch (Exception ex)
+
+                    if (importSaves)
                     {
-                        Log("Exception in " + nameof(ImportDarkLoader) + "." + nameof(ImportInternal), ex);
-                        return ImportError.Unknown;
+                        try
+                        {
+                            ImportSaves(lines);
+                        }
+                        catch
+                        {
+                            // ignore - keeping same behavior
+                        }
                     }
-                    finally
-                    {
-                        Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
-                    }
-                });
-            }
+
+                    return ImportError.None;
+                }
+                catch (Exception ex)
+                {
+                    Log("Exception in " + nameof(ImportDarkLoader) + "." + nameof(ImportInternal), ex);
+                    return ImportError.Unknown;
+                }
+                finally
+                {
+                    Core.View.InvokeSync(new Action(Core.View.HideProgressBox));
+                }
+            });
 
             if (error != ImportError.None) return (error, fms);
-
-            if (importSaves)
-            {
-                bool success = await ImportSaves(lines);
-            }
 
             var importedFMs = returnUnmergedFMsList
                 ? fms
@@ -306,7 +310,7 @@ namespace AngelLoader.Importing
             return (ImportError.None, importedFMs);
         }
 
-        private static async Task<bool>
+        private static bool
         ImportSaves(string[] lines)
         {
             // We DON'T use game generalization here, because DarkLoader only supports T1/T2/SS2 and will never
@@ -359,29 +363,26 @@ namespace AngelLoader.Importing
 
             if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 
-            await Task.Run(() =>
+            for (int i = 0; i < 3; i++)
             {
-                for (int i = 0; i < 3; i++)
+                if (i == 0 && t1Dir.IsEmpty()) continue;
+                if (i == 1 && t2Dir.IsEmpty()) continue;
+                if (i == 2 && ss2Dir.IsEmpty()) continue;
+
+                string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
+                if (!Directory.Exists(savesPath)) continue;
+
+                string convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+                Directory.CreateDirectory(convertedPath);
+
+                // Converting takes too long, so just copy them to our backup folder and they'll be handled
+                // appropriately next time the user installs an FM
+                foreach (string f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
                 {
-                    if (i == 0 && t1Dir.IsEmpty()) continue;
-                    if (i == 1 && t2Dir.IsEmpty()) continue;
-                    if (i == 2 && ss2Dir.IsEmpty()) continue;
-
-                    string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
-                    if (!Directory.Exists(savesPath)) continue;
-
-                    string convertedPath = Path.Combine(Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
-                    Directory.CreateDirectory(convertedPath);
-
-                    // Converting takes too long, so just copy them to our backup folder and they'll be handled
-                    // appropriately next time the user installs an FM
-                    foreach (string f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
-                    {
-                        string dest = Path.Combine(convertedPath, f.GetFileNameFast());
-                        File.Copy(f, dest, overwrite: true);
-                    }
+                    string dest = Path.Combine(convertedPath, f.GetFileNameFast());
+                    File.Copy(f, dest, overwrite: true);
                 }
-            });
+            }
 
             return true;
         }
