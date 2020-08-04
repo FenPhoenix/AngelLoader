@@ -146,7 +146,7 @@ namespace AngelLoader
                         // technically slow it down some, but the actual perf degradation is negligible. And we
                         // still avoid the n-squared 1.6-million-call nightmare we get with ~1600 FMs in the list.
                         // Nevertheless, we can avoid even this small extra cost if we only have one FM archive
-                        // path, so no harm in keeping the check.
+                        // path, so no harm in keeping the only-one-path check.
                         if ((onlyOnePath || !fmArchivesAndDatesDict.ContainsKey(f)) &&
                             f.ExtIsArchive() &&
                             // @DIRSEP: These are filename only, no need for PathContainsI()
