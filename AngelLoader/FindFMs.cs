@@ -42,11 +42,11 @@ namespace AngelLoader
 
             // Copy FMs to backup lists before clearing, in case we can't read the ini file. We don't want to end
             // up with a blank or incomplete list and then glibly save it out later.
-            var backupList = new List<FanMission>(FMDataIniList.Count);
-            foreach (FanMission fm in FMDataIniList) backupList.Add(fm);
+            FanMission[] backupList = new FanMission[FMDataIniList.Count];
+            FMDataIniList.CopyTo(backupList);
 
-            var viewBackupList = new List<FanMission>(FMsViewList.Count);
-            foreach (FanMission fm in FMsViewList) viewBackupList.Add(fm);
+            FanMission[] viewBackupList = new FanMission[FMsViewList.Count];
+            FMsViewList.CopyTo(viewBackupList);
 
             FMDataIniList.Clear();
             FMsViewList.Clear();
@@ -560,10 +560,9 @@ namespace AngelLoader
         {
             var fmArchivesHash = new HashSet<string>(fmArchives, StringComparer.OrdinalIgnoreCase);
 
-            var boolsList = new List<bool?>(SupportedGameCount);
-            for (int i = 0; i < SupportedGameCount; i++) boolsList.Add(null);
+            bool?[] boolsList = new bool?[SupportedGameCount];
 
-            static bool NotInPerGameList(int gCount, FanMission fm, List<bool?> notInList, List<List<string>> list, bool useBool)
+            static bool NotInPerGameList(int gCount, FanMission fm, bool?[] notInList, List<List<string>> list, bool useBool)
             {
                 if (!GameIsKnownAndSupported(fm.Game)) return false;
                 int intGame = (int)GameToGameIndex(fm.Game);
@@ -603,7 +602,7 @@ namespace AngelLoader
                 #region Checks
 
                 // Attempt to avoid re-searching lists
-                for (int ti = 0; ti < boolsList.Count; ti++) boolsList[ti] = null;
+                for (int ti = 0; ti < boolsList.Length; ti++) boolsList[ti] = null;
 
                 if (fm.Installed &&
                     NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: false))
