@@ -164,12 +164,16 @@ namespace AngelLoader
 
             int fmArchivesAndDatesDictLen = fmArchivesAndDatesDict.Count;
             // PERF_TODO: May want to keep these as dicts later or change other vars to dicts
-            var fmArchives = new List<string>(fmArchivesAndDatesDictLen);
-            var fmArchivesDates = new List<DateTime>(fmArchivesAndDatesDictLen);
-            foreach (var item in fmArchivesAndDatesDict)
+            string[] fmArchives = new string[fmArchivesAndDatesDictLen];
+            DateTime[] fmArchivesDates = new DateTime[fmArchivesAndDatesDictLen];
             {
-                fmArchives.Add(item.Key);
-                fmArchivesDates.Add(item.Value);
+                int i = 0;
+                foreach (var item in fmArchivesAndDatesDict)
+                {
+                    fmArchives[i] = item.Key;
+                    fmArchivesDates[i] = item.Value;
+                    i++;
+                }
             }
 
             #endregion
@@ -236,7 +240,7 @@ namespace AngelLoader
 
         #region Set names
 
-        private static void SetArchiveNames(List<string> fmArchives)
+        private static void SetArchiveNames(string[] fmArchives)
         {
             // Attempt to set archive names for newly found installed FMs (best effort search)
             for (int i = 0; i < FMDataIniList.Count; i++)
@@ -325,13 +329,13 @@ namespace AngelLoader
 
         #region Merge
 
-        private static void MergeNewArchiveFMs(List<string> fmArchives, List<DateTime> dateTimes)
+        private static void MergeNewArchiveFMs(string[] fmArchives, DateTime[] dateTimes)
         {
             // Attempt at a perf optimization: we don't need to search anything we've added onto the end.
             int initCount = FMDataIniList.Count;
             bool[] checkedArray = new bool[initCount];
 
-            for (int ai = 0; ai < fmArchives.Count; ai++)
+            for (int ai = 0; ai < fmArchives.Length; ai++)
             {
                 string archive = fmArchives[ai];
 
@@ -446,7 +450,7 @@ namespace AngelLoader
         #endregion
 
         // PERF_TODO: Keep returning null here for speed? Or even switch to a string/bool combo...?
-        private static string? GetArchiveNameFromInstalledDir(FanMission fm, List<string> archives)
+        private static string? GetArchiveNameFromInstalledDir(FanMission fm, string[] archives)
         {
             // The game type is supposed to be inferred from the installed location, but it could be unknown in
             // the following scenario:
@@ -550,7 +554,7 @@ namespace AngelLoader
         }
 
         private static void BuildViewList(
-            List<string> fmArchives,
+            string[] fmArchives,
             List<List<string>> perGameInstalledFMDirsList,
             List<int> fmsViewListUnscanned)
         {
