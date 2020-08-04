@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -624,7 +625,10 @@ namespace AngelLoader.Forms.CustomControls
             }
             else if (sender == ScanFMMenuItem)
             {
-                await FMScan.ScanFMAndRefresh(GetSelectedFM());
+                if (await FMScan.ScanFMs(new List<FanMission> { GetSelectedFM() }, hideBoxIfZip: true))
+                {
+                    _owner.RefreshSelectedFM();
+                }
             }
             else if (sender == ConvertWAVsTo16BitMenuItem || sender == ConvertOGGsToWAVsMenuItem)
             {

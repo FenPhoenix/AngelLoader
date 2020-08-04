@@ -15,14 +15,6 @@ namespace AngelLoader
     {
         private static CancellationTokenSource _scanCts = new CancellationTokenSource();
 
-        internal static async Task ScanFMAndRefresh(FanMission fm, FMScanner.ScanOptions? scanOptions = null)
-        {
-            if (await ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
-            {
-                Core.View.RefreshSelectedFM();
-            }
-        }
-
         /// <summary>
         /// Scans a list of FMs using the specified scan options. Pass null for default scan options.
         /// <para>
@@ -308,26 +300,19 @@ namespace AngelLoader
 
         internal static void CancelScan() => _scanCts.CancelIfNotDisposed();
 
-        internal static async Task ScanNewFMs(List<int> fmsViewListUnscanned)
+        internal static Task ScanNewFMs(List<int> fmsViewListUnscanned)
         {
+            AssertR(fmsViewListUnscanned.Count > 0, nameof(fmsViewListUnscanned) + ".Count was 0");
+
             var fmsToScan = new List<FanMission>();
 
             // NOTE: We use FMDataIniList index because that's the list that the indexes are pulled from!
             // (not FMsViewList)
             foreach (int index in fmsViewListUnscanned) fmsToScan.Add(FMDataIniList[index]);
+            // Just in case
+            fmsViewListUnscanned.Clear();
 
-            if (fmsToScan.Count > 0)
-            {
-                try
-                {
-                    await ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), scanFullIfNew: true);
-                }
-                finally
-                {
-                    // Just in case
-                    fmsViewListUnscanned.Clear();
-                }
-            }
+            return ScanFMs(fmsToScan, FMScanner.ScanOptions.FalseDefault(scanGameType: true), scanFullIfNew: true);
         }
 
         internal static async Task ScanAndFind(List<FanMission> fms, FMScanner.ScanOptions scanOptions)

@@ -83,16 +83,18 @@ namespace AngelLoader
         /// <param name="game"></param>
         /// <returns></returns>
         /// <exception cref="IndexOutOfRangeException"></exception>
-        internal static GameIndex GameToGameIndex(Game game) => game switch
+        internal static GameIndex GameToGameIndex(Game game)
         {
-            Game.Thief1 => GameIndex.Thief1,
-            Game.Thief2 => GameIndex.Thief2,
-            Game.Thief3 => GameIndex.Thief3,
-            Game.SS2 => GameIndex.SS2,
-            Game.Null => throw new IndexOutOfRangeException(nameof(game) + " was " + nameof(Game.Null) + ", which is not convertible to GameIndex."),
-            Game.Unsupported => throw new IndexOutOfRangeException(nameof(game) + " was " + nameof(Game.Unsupported) + ", which is not convertible to GameIndex."),
-            _ => throw new IndexOutOfRangeException(nameof(game) + " was an out-of-range value which is not convertible to GameIndex.")
-        };
+            AssertR(game != Game.Null && game != Game.Unsupported, nameof(game) + " was out of range: " + game);
+
+            return game switch
+            {
+                Game.Thief1 => GameIndex.Thief1,
+                Game.Thief2 => GameIndex.Thief2,
+                Game.Thief3 => GameIndex.Thief3,
+                _ => GameIndex.SS2
+            };
+        }
 
         /// <summary>
         /// Converts a GameIndex to a Game. Widening conversion, so it will always succeed.
@@ -125,65 +127,71 @@ namespace AngelLoader
 
         internal static string GetLocalizedDifficultyName(Game game, Difficulty difficulty)
         {
+            AssertR(difficulty != 0, nameof(difficulty) + " was out of range: " + difficulty);
+
             // More verbose but also more clear
-            return game == Game.Thief3 ? difficulty switch
+            return game switch
             {
-                Difficulty.Normal => LText.Difficulties.Easy,
-                Difficulty.Hard => LText.Difficulties.Normal,
-                Difficulty.Expert => LText.Difficulties.Hard,
-                Difficulty.Extreme => LText.Difficulties.Expert,
-                _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
-            }
-            : game == Game.SS2 ? difficulty switch
-            {
-                Difficulty.Normal => LText.Difficulties.Easy,
-                Difficulty.Hard => LText.Difficulties.Normal,
-                Difficulty.Expert => LText.Difficulties.Hard,
-                Difficulty.Extreme => LText.Difficulties.Impossible,
-                _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
-            }
-            : difficulty switch
-            {
-                Difficulty.Normal => LText.Difficulties.Normal,
-                Difficulty.Hard => LText.Difficulties.Hard,
-                Difficulty.Expert => LText.Difficulties.Expert,
-                Difficulty.Extreme => LText.Difficulties.Extreme,
-                _ => throw new ArgumentOutOfRangeException(nameof(difficulty) + " is not a valid value")
+                Game.Thief3 => difficulty switch
+                {
+                    Difficulty.Normal => LText.Difficulties.Easy,
+                    Difficulty.Hard => LText.Difficulties.Normal,
+                    Difficulty.Expert => LText.Difficulties.Hard,
+                    _ => LText.Difficulties.Expert
+                },
+                Game.SS2 => difficulty switch
+                {
+                    Difficulty.Normal => LText.Difficulties.Easy,
+                    Difficulty.Hard => LText.Difficulties.Normal,
+                    Difficulty.Expert => LText.Difficulties.Hard,
+                    _ => LText.Difficulties.Impossible
+                },
+                _ => difficulty switch
+                {
+                    Difficulty.Normal => LText.Difficulties.Normal,
+                    Difficulty.Hard => LText.Difficulties.Hard,
+                    Difficulty.Expert => LText.Difficulties.Expert,
+                    _ => LText.Difficulties.Extreme
+                }
             };
         }
 
         internal static string GetLocalizedGameName(GameIndex gameIndex) => GetLocalizedGameName(GameIndexToGame(gameIndex));
 
-        internal static string GetLocalizedGameName(Game game) => game switch
+        internal static string GetLocalizedGameName(Game game)
         {
-            Game.Thief1 => LText.Global.Thief1,
-            Game.Thief2 => LText.Global.Thief2,
-            Game.Thief3 => LText.Global.Thief3,
-            Game.SS2 => LText.Global.SystemShock2,
-            _ => throw new ArgumentOutOfRangeException(nameof(game), game, nameof(GetLocalizedGameName) + @": Game not in range")
-        };
+            AssertR(game != Game.Null && game != Game.Unsupported, nameof(game) + " was out of range: " + game);
 
-        internal static string GetShortLocalizedGameName(GameIndex gameIndex) => GetShortLocalizedGameName(GameIndexToGame(gameIndex));
+            return game switch
+            {
+                Game.Thief1 => LText.Global.Thief1,
+                Game.Thief2 => LText.Global.Thief2,
+                Game.Thief3 => LText.Global.Thief3,
+                _ => LText.Global.SystemShock2
+            };
+        }
 
-        internal static string GetShortLocalizedGameName(Game game) => game switch
+        internal static string GetShortLocalizedGameName(GameIndex gameIndex)
         {
-            Game.Thief1 => LText.Global.Thief1_Short,
-            Game.Thief2 => LText.Global.Thief2_Short,
-            Game.Thief3 => LText.Global.Thief3_Short,
-            Game.SS2 => LText.Global.SystemShock2_Short,
-            _ => throw new ArgumentOutOfRangeException(nameof(game), game, nameof(GetShortLocalizedGameName) + @": Game not in range")
-        };
+            return gameIndex switch
+            {
+                GameIndex.Thief1 => LText.Global.Thief1_Short,
+                GameIndex.Thief2 => LText.Global.Thief2_Short,
+                GameIndex.Thief3 => LText.Global.Thief3_Short,
+                _ => LText.Global.SystemShock2_Short
+            };
+        }
 
-        internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => GetLocalizedGameNameColon(GameIndexToGame(gameIndex));
-
-        internal static string GetLocalizedGameNameColon(Game game) => game switch
+        internal static string GetLocalizedGameNameColon(GameIndex gameIndex)
         {
-            Game.Thief1 => LText.Global.Thief1_Colon,
-            Game.Thief2 => LText.Global.Thief2_Colon,
-            Game.Thief3 => LText.Global.Thief3_Colon,
-            Game.SS2 => LText.Global.SystemShock2_Colon,
-            _ => throw new ArgumentOutOfRangeException(nameof(game), game, nameof(GetLocalizedGameNameColon) + @": Game not in range")
-        };
+            return gameIndex switch
+            {
+                GameIndex.Thief1 => LText.Global.Thief1_Colon,
+                GameIndex.Thief2 => LText.Global.Thief2_Colon,
+                GameIndex.Thief3 => LText.Global.Thief3_Colon,
+                _ => LText.Global.SystemShock2_Colon
+            };
+        }
 
         #endregion
 

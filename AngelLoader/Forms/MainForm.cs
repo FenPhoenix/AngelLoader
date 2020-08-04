@@ -3043,7 +3043,10 @@ namespace AngelLoader.Forms
                     //sender == StatsScanCustomResourcesButton
                     FMScanner.ScanOptions.FalseDefault(scanCustomResources: true);
 
-                await FMScan.ScanFMAndRefresh(FMsDGV.GetSelectedFM(), scanOptions);
+                if (await FMScan.ScanFMs(new List<FanMission> { FMsDGV.GetSelectedFM() }, scanOptions, hideBoxIfZip: true))
+                {
+                    RefreshSelectedFM();
+                }
             }
         }
 

@@ -14,48 +14,6 @@ namespace AngelLoader.Importing
 {
     internal static class ImportDarkLoader
     {
-        #region Private fields
-
-        // MEM_TODO: Make these non-static
-
-        private static readonly string[] _nonFMHeaders =
-        {
-            "[options]",
-            "[window]",
-            "[mission directories]",
-            "[Thief 1]",
-            "[Thief 2]",
-            "[Thief2x]",
-            "[SShock 2]"
-        };
-
-        // Not used - we scan for game types ourselves currently
-        //private enum DLGame
-        //{
-        //    darkGameUnknown = 0, // <- if it hasn't been scanned, it will be this
-        //    darkGameThief = 1,
-        //    darkGameThief2 = 2,
-        //    darkGameT2x = 3,
-        //    darkGameSS2 = 4
-        //}
-
-        private static readonly Regex _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
-
-        #endregion
-
-        #region Helpers
-
-        private static string RemoveDLArchiveBadChars(string archive)
-        {
-            foreach (string s in new[] { "]", "\u0009", "\u000A", "\u000D" }) archive = archive.Replace(s, "");
-            return archive;
-        }
-
-        // Don't replace \r\n or \\ escapes because we use those in the exact same way so no conversion needed
-        private static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
-
-        #endregion
-
         internal static async Task<bool>
         Import(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields)
         {
@@ -105,6 +63,46 @@ namespace AngelLoader.Importing
         ImportInternal(string iniFile, bool importFMData, bool importSaves, bool returnUnmergedFMsList = false,
             FieldsToImport? fields = null)
         {
+            #region Local functions
+
+            static string RemoveDLArchiveBadChars(string archive)
+            {
+                foreach (string s in new[] { "]", "\u0009", "\u000A", "\u000D" }) archive = archive.Replace(s, "");
+                return archive;
+            }
+
+            // Don't replace \r\n or \\ escapes because we use those in the exact same way so no conversion needed
+            static string DLUnescapeChars(string str) => str.Replace(@"\t", "\u0009").Replace(@"\""", "\"");
+
+            #endregion
+
+            #region Data
+
+            string[] _nonFMHeaders =
+            {
+                "[options]",
+                "[window]",
+                "[mission directories]",
+                "[Thief 1]",
+                "[Thief 2]",
+                "[Thief2x]",
+                "[SShock 2]"
+            };
+
+            // Not used - we scan for game types ourselves currently
+            //private enum DLGame
+            //{
+            //    darkGameUnknown = 0, // <- if it hasn't been scanned, it will be this
+            //    darkGameThief = 1,
+            //    darkGameThief2 = 2,
+            //    darkGameT2x = 3,
+            //    darkGameSS2 = 4
+            //}
+
+            Regex _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
+
+            #endregion
+
             string[] lines = await Task.Run(() => File.ReadAllLines(iniFile));
             var fms = new List<FanMission>();
 

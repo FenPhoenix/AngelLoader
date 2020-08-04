@@ -468,8 +468,6 @@ namespace AngelLoader
                 return false;
             }
 
-            AssertR(!fm.InstalledDir.IsEmpty(), "fm.InstalledFolderName is null or empty");
-
             string gameExe = Config.GetGameExeUnsafe(fm.Game);
             string gameName = GetLocalizedGameName(fm.Game);
             if (!File.Exists(gameExe))
