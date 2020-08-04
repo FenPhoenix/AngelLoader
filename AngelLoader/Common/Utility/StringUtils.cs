@@ -145,23 +145,6 @@ namespace AngelLoader
         internal static bool ContainsI(this string[] array, string str) => array.Contains(str, OrdinalIgnoreCase);
 
         [PublicAPI]
-        internal static bool ContainsIRemoveFirstHit(this List<string> list, string str) => list.ContainsRemoveFirstHit(str, OrdinalIgnoreCase);
-
-        [PublicAPI]
-        internal static bool ContainsRemoveFirstHit(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
-        {
-            for (int i = 0; i < value.Count; i++)
-            {
-                if (value[i].Equals(substring, stringComparison))
-                {
-                    value.RemoveAt(i);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        [PublicAPI]
         internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
         {
             for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, stringComparison)) return true;

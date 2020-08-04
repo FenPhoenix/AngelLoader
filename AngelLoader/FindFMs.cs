@@ -127,8 +127,7 @@ namespace AngelLoader
 
             #region Get archives from disk
 
-            var fmArchives = new List<string>();
-            var fmArchivesDates = new List<DateTime>();
+            var fmArchivesAndDatesDict = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 
             var archivePaths = FMArchives.GetFMArchivePaths();
             bool onlyOnePath = archivePaths.Count == 1;
@@ -141,13 +140,19 @@ namespace AngelLoader
                     for (int fi = 0; fi < files.Count; fi++)
                     {
                         string f = files[fi];
-                        // Only do .ContainsI() if we're searching multiple directories. Otherwise we're guaranteed
-                        // no duplicates and can avoid the expensive lookup.
-                        // @DIRSEP: These are filename only, no need for PathContainsI()
-                        if ((onlyOnePath || !fmArchives.ContainsI(f)) && f.ExtIsArchive() && !f.ContainsI(Paths.FMSelBak))
+                        // NOTE: We do a ContainsKey check to keep behavior the same as previously. When we use
+                        // dict[key] = value, it _replaces_ the value with the new one every time. What we want
+                        // is for it to just not touch it at all if the key is already in there. This check does
+                        // technically slow it down some, but the actual perf degradation is negligible. And we
+                        // still avoid the n-squared 1.6-million-call nightmare we get with ~1600 FMs in the list.
+                        // Nevertheless, we can avoid even this small extra cost if we only have one FM archive
+                        // path, so no harm in keeping the check.
+                        if ((onlyOnePath || !fmArchivesAndDatesDict.ContainsKey(f)) &&
+                            f.ExtIsArchive() &&
+                            // @DIRSEP: These are filename only, no need for PathContainsI()
+                            !f.ContainsI(Paths.FMSelBak))
                         {
-                            fmArchives.Add(f);
-                            fmArchivesDates.Add(dateTimes[fi]);
+                            fmArchivesAndDatesDict[f] = dateTimes[fi];
                         }
                     }
                 }
@@ -155,6 +160,16 @@ namespace AngelLoader
                 {
                     Log("Exception getting files in " + archivePaths[ai], ex);
                 }
+            }
+
+            int fmArchivesAndDatesDictLen = fmArchivesAndDatesDict.Count;
+            // PERF_TODO: May want to keep these as dicts later or change other vars to dicts
+            var fmArchives = new List<string>(fmArchivesAndDatesDictLen);
+            var fmArchivesDates = new List<DateTime>(fmArchivesAndDatesDictLen);
+            foreach (var item in fmArchivesAndDatesDict)
+            {
+                fmArchives.Add(item.Key);
+                fmArchivesDates.Add(item.Value);
             }
 
             #endregion
@@ -329,13 +344,16 @@ namespace AngelLoader
                 bool existingFound = false;
                 for (int i = 0; i < initCount; i++)
                 {
-                    var fm = FMDataIniList[i];
+                    FanMission fm = FMDataIniList[i];
 
-                    // This weird syntax is to memoize stuff for perf, but it seems if there's more than three of
-                    // these comparisons(?!) then it either screws up or ReSharper just thinks it will screw up,
-                    // because it then starts complaining that the iterator is never changed in the loop(?!?!)
-                    // But only if more than three comparisons are done(?!?!?!?!?!) AND ONLY THEN IF IT'S NOT IN
-                    // ITS OWN METHOD(?!?!?!?!?!?!?!?!?!) Argh!
+                    // PERF_TODO: Idea for making this not be n-squared:
+                    // Create four different dictionaries (iterate the list four times), each with the key of one
+                    // of the things we're checking here (so one will have keys that are archive.RemoveExtension(),
+                    // one will have keys of archive.ToInstDirNameFMSel(false), etc. Then do max 4 lookups until
+                    // we find something or not. That's 4 iterations and max 4 lookups, which is galactically
+                    // better than the ~578,000 calls we're making currently. Really it hardly even matters how
+                    // lazy we even get with it; just making it not be n-squared and doing absolutely no other
+                    // optimizations whatsoever will still put us in a whole other league of efficiency.
                     if (!checkedArray[i] &&
                         fm.Archive.IsEmpty() &&
                         (fm.InstalledDir.EqualsI(aRemoveExt ??= archive.RemoveExtension()) ||
@@ -395,7 +413,7 @@ namespace AngelLoader
                 bool existingFound = false;
                 for (int i = 0; i < initCount; i++)
                 {
-                    var fm = FMDataIniList[i];
+                    FanMission fm = FMDataIniList[i];
 
                     if (!isEmpty &&
                         // Early-out bool - much faster than checking EqualsI()
@@ -536,6 +554,8 @@ namespace AngelLoader
             List<List<string>> perGameInstalledFMDirsList,
             List<int> fmsViewListUnscanned)
         {
+            var fmArchivesHash = new HashSet<string>(fmArchives, StringComparer.OrdinalIgnoreCase);
+
             var boolsList = new List<bool?>(SupportedGameCount);
             for (int i = 0; i < SupportedGameCount; i++) boolsList.Add(null);
 
@@ -594,8 +614,7 @@ namespace AngelLoader
                 // Good enough?
                 if ((!fm.Installed ||
                      NotInPerGameList(SupportedGameCount, fm, boolsList, perGameInstalledFMDirsList, useBool: true)) &&
-                    // Shrink the list as we get matches so we can reduce our search time as we go
-                    !fmArchives.ContainsIRemoveFirstHit(fm.Archive))
+                    !fmArchivesHash.Contains(fm.Archive))
                 {
                     continue;
                 }

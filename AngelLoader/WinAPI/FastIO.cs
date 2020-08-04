@@ -142,6 +142,13 @@ namespace AngelLoader.WinAPI
         }
 
         // Reimplementing this internal struct for output parity with DirectoryInfo.Get*
+        // Screw it, not touching this one at all and just shutting up all warnings.
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+        [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
+        [SuppressMessage("ReSharper", "RedundantCast")]
+#pragma warning disable IDE0003
+#pragma warning disable IDE0004
         internal struct FILE_TIME
         {
             internal uint ftTimeLow;
@@ -158,6 +165,8 @@ namespace AngelLoader.WinAPI
                 return ((long)this.ftTimeHigh << 32) + (long)this.ftTimeLow;
             }
         }
+#pragma warning restore IDE0004
+#pragma warning restore IDE0003
 
         // ~2.4x faster than GetFiles() - huge boost to cold startup time
         private static List<string> GetFilesTopOnlyInternal(string path, string searchPattern,
