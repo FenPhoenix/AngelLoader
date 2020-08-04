@@ -302,7 +302,7 @@ namespace AngelLoader.Forms
             PlayFMButton.Padding = new Padding(28, 0, 6, 0);
             PlayFMButton.TabIndex = 56;
             PlayFMButton.UseVisualStyleBackColor = true;
-            PlayFMButton.Click += PlayFMButton_Click;
+            PlayFMButton.Click += InstallUninstall_Play_Buttons_Click;
             PlayFMButton.Paint += PlayFMButton_Paint;
             // 
             // PlayOriginalGameButton

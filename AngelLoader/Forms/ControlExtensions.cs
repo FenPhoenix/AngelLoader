@@ -143,5 +143,7 @@ namespace AngelLoader.Forms
                 listBox.SelectedIndex = 0;
             }
         }
+
+        internal static bool EqualsIfNotNull(this object? sender, object? equals) => sender != null && equals != null && sender == equals;
     }
 }

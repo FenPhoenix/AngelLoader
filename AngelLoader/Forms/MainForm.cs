@@ -881,7 +881,7 @@ namespace AngelLoader.Forms
             Core.SetFilter();
             if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, KeepSel.TrueNearest))
             {
-                await DisplaySelectedFM(refreshReadme: true);
+                await DisplaySelectedFM();
             }
 
             FMsDGV.Focus();
@@ -1766,7 +1766,7 @@ namespace AngelLoader.Forms
                     // Fix: when resetting release date filter the readme wouldn't load for the selected FM
                     oldSelectedFM == null)
                 {
-                    await DisplaySelectedFM(refreshReadme: true);
+                    await DisplaySelectedFM();
                 }
             }
         }
@@ -1965,7 +1965,7 @@ namespace AngelLoader.Forms
                 if (selFM != null && FMsDGV.RowSelected() &&
                     selFM.InstalledName != FMsDGV.GetSelectedFM().InstalledDir)
                 {
-                    await DisplaySelectedFM(refreshReadme: true);
+                    await DisplaySelectedFM();
                 }
             }
         }
@@ -2018,7 +2018,7 @@ namespace AngelLoader.Forms
                     _fmsListOneTimeHackRefreshDone = true;
                 }
 
-                await DisplaySelectedFM(refreshReadme: true);
+                await DisplaySelectedFM();
             }
         }
 
@@ -2082,9 +2082,17 @@ namespace AngelLoader.Forms
 
         #region Install/Play buttons
 
-        internal async void InstallUninstallFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
-
-        private async void PlayFMButton_Click(object sender, EventArgs e) => await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
+        internal async void InstallUninstall_Play_Buttons_Click(object sender, EventArgs e)
+        {
+            if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
+            {
+                await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFM());
+            }
+            else if (sender == PlayFMButton)
+            {
+                await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetSelectedFM());
+            }
+        }
 
         #region Play original game
 
@@ -2173,12 +2181,12 @@ namespace AngelLoader.Forms
         [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Global")]
         internal async void ImportMenuItems_Click(object sender, EventArgs e)
         {
-            // This is only hooked up after construct, so we know these menu items are initialized
-            if (sender == ImportFromLLMenu.ImportFromDarkLoaderMenuItem)
+            if (sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromDarkLoaderMenuItem))
             {
                 await ImportCommon.ImportFromDarkLoader();
             }
-            else
+            else if (sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromFMSelMenuItem) ||
+                     sender.EqualsIfNotNull(ImportFromLLMenu.ImportFromNewDarkLoaderMenuItem))
             {
                 await ImportCommon.ImportFromNDLOrFMSel(sender == ImportFromLLMenu.ImportFromFMSelMenuItem
                     ? ImportType.FMSel
@@ -2311,13 +2319,13 @@ namespace AngelLoader.Forms
 
         #region Refresh FMs list
 
-        public void RefreshSelectedFMRowOnly() => FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
-
-        public Task RefreshSelectedFM(bool refreshReadme)
+        public void RefreshSelectedFM(bool rowOnly = false)
         {
             FMsDGV.InvalidateRow(FMsDGV.SelectedRows[0].Index);
 
-            return DisplaySelectedFM(refreshReadme);
+            if (rowOnly) return;
+
+            UpdateTopRightAndBottomBar(FMsDGV.GetSelectedFM());
         }
 
         /// <summary>
@@ -2536,22 +2544,18 @@ namespace AngelLoader.Forms
             StatsCheckBoxesPanel.Hide();
         }
 
-        // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
-        private async Task DisplaySelectedFM(bool refreshReadme, bool refreshCache = false)
+        public void UpdateRatingMenus(int rating, bool disableEvents = false)
         {
-            FanMission fm = FMsDGV.GetSelectedFM();
-
-            if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm.Game) && !fm.MarkedScanned))
+            using (disableEvents ? new DisableEvents(this) : null)
             {
-                using (new DisableKeyPresses(this))
-                {
-                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
-                    {
-                        RefreshSelectedFMRowOnly();
-                    }
-                }
+                FMsDGV.SetRatingMenuItemChecked(rating);
+                EditFMRatingComboBox.SelectedIndex = rating + 1;
             }
+        }
 
+        // @GENGAMES: Lots of game-specific code in here, but I don't see much to be done about it.
+        private void UpdateTopRightAndBottomBar(FanMission fm)
+        {
             bool fmIsT3 = fm.Game == Game.Thief3;
             bool fmIsSS2 = fm.Game == Game.SS2;
 
@@ -2680,8 +2684,7 @@ namespace AngelLoader.Forms
                 EditFMDisabledModsTextBox.Text = fm.DisabledMods;
                 EditFMDisabledModsTextBox.Enabled = !fm.DisableAllMods;
 
-                FMsDGV.SetRatingMenuItemChecked(fm.Rating);
-                EditFMRatingComboBox.SelectedIndex = fm.Rating + 1;
+                UpdateRatingMenus(fm.Rating, disableEvents: false);
 
                 ScanAndFillLanguagesBox(fm, disableEvents: false);
 
@@ -2708,8 +2711,24 @@ namespace AngelLoader.Forms
             DisplayFMTags(fm.Tags);
 
             #endregion
+        }
 
-            if (!refreshReadme) return;
+        private async Task DisplaySelectedFM(bool refreshCache = false)
+        {
+            FanMission fm = FMsDGV.GetSelectedFM();
+
+            if (fm.Game == Game.Null || (GameIsKnownAndSupported(fm.Game) && !fm.MarkedScanned))
+            {
+                using (new DisableKeyPresses(this))
+                {
+                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, hideBoxIfZip: true))
+                    {
+                        RefreshSelectedFM(rowOnly: true);
+                    }
+                }
+            }
+
+            UpdateTopRightAndBottomBar(fm);
 
             var cacheData = await FMCache.GetCacheableData(fm, refreshCache);
 
@@ -3013,7 +3032,7 @@ namespace AngelLoader.Forms
             if (sender == EditFMScanForReadmesButton)
             {
                 Ini.WriteFullFMDataIni();
-                await DisplaySelectedFM(refreshReadme: true, refreshCache: true);
+                await DisplaySelectedFM(refreshCache: true);
             }
             else
             {
@@ -3047,7 +3066,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().Title = EditFMTitleTextBox.Text;
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
         }
 
         private void EditFMTitleTextBox_Leave(object sender, EventArgs e)
@@ -3060,7 +3079,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().Author = EditFMAuthorTextBox.Text;
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
         }
 
         private void EditFMAuthorTextBox_Leave(object sender, EventArgs e)
@@ -3078,7 +3097,7 @@ namespace AngelLoader.Forms
                 ? EditFMReleaseDateDateTimePicker.Value
                 : (DateTime?)null;
 
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -3086,7 +3105,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().ReleaseDate.DateTime = EditFMReleaseDateDateTimePicker.Value;
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -3099,7 +3118,7 @@ namespace AngelLoader.Forms
                 ? EditFMLastPlayedDateTimePicker.Value
                 : (DateTime?)null;
 
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -3107,7 +3126,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().LastPlayed.DateTime = EditFMLastPlayedDateTimePicker.Value;
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -3115,7 +3134,7 @@ namespace AngelLoader.Forms
         {
             if (EventsDisabled) return;
             FMsDGV.GetSelectedFM().DisabledMods = EditFMDisabledModsTextBox.Text;
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
         }
 
         private void EditFMDisabledModsTextBox_Leave(object sender, EventArgs e)
@@ -3130,7 +3149,7 @@ namespace AngelLoader.Forms
             EditFMDisabledModsTextBox.Enabled = !EditFMDisableAllModsCheckBox.Checked;
 
             FMsDGV.GetSelectedFM().DisableAllMods = EditFMDisableAllModsCheckBox.Checked;
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -3140,7 +3159,7 @@ namespace AngelLoader.Forms
             int rating = EditFMRatingComboBox.SelectedIndex - 1;
             FMsDGV.GetSelectedFM().Rating = rating;
             FMsDGV.SetRatingMenuItemChecked(rating);
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 
@@ -3185,7 +3204,7 @@ namespace AngelLoader.Forms
             fm.Comment = CommentTextBox.Text.ToRNEscapes();
             fm.CommentSingleLine = CommentTextBox.Text.ToSingleLineComment(100);
 
-            RefreshSelectedFMRowOnly();
+            RefreshSelectedFM(rowOnly: true);
         }
 
         private void CommentTextBox_Leave(object sender, EventArgs e)

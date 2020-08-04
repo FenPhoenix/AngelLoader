@@ -15,7 +15,7 @@ namespace AngelLoader.DataClasses
     */
 
     [FenGenFMDataSourceClass(writeEmptyValues: false)]
-    internal sealed class FanMission
+    public sealed class FanMission
     {
         // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the
         // normal archive list combine, this will be set to false again. Results in a nice perf gain if there are

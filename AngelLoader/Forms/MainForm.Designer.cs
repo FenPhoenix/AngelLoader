@@ -299,7 +299,7 @@ namespace AngelLoader.Forms
             this.PlayFMButton.TabIndex = 56;
             this.PlayFMButton.Text = "Play FM";
             this.PlayFMButton.UseVisualStyleBackColor = true;
-            this.PlayFMButton.Click += new System.EventHandler(this.PlayFMButton_Click);
+            this.PlayFMButton.Click += new System.EventHandler(this.InstallUninstall_Play_Buttons_Click);
             this.PlayFMButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PlayFMButton_Paint);
             // 
             // PlayOriginalGameButton

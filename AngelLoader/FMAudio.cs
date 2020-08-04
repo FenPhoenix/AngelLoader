@@ -30,12 +30,7 @@ namespace AngelLoader
         {
             if (doChecksAndProgressBox)
             {
-                var (success, refreshFM) = ChecksPassed(fm);
-                if (!success)
-                {
-                    if (refreshFM) await Core.View.RefreshSelectedFM(refreshReadme: false);
-                    return;
-                }
+                if (!ChecksPassed(fm)) return;
             }
 
             if (!GameIsDark(fm.Game)) return;
@@ -241,10 +236,10 @@ namespace AngelLoader
 
         #region Helpers
 
-        private static (bool Success, bool RefreshSelectedFM)
+        private static bool
         ChecksPassed(FanMission fm)
         {
-            if (!fm.Installed || !GameIsDark(fm.Game)) return (false, false);
+            if (!fm.Installed || !GameIsDark(fm.Game)) return false;
 
             string gameExe = Config.GetGameExeUnsafe(fm.Game);
             string gameName = GetLocalizedGameName(fm.Game);
@@ -254,19 +249,23 @@ namespace AngelLoader
                     gameName + ":\r\n" + LText.AlertMessages.FileConversion_GameIsRunning,
                     LText.AlertMessages.Alert);
 
-                return (false, false);
+                return false;
             }
 
             if (!FMIsReallyInstalled(fm))
             {
                 bool yes = Core.View.AskToContinue(LText.AlertMessages.Misc_FMMarkedInstalledButNotInstalled,
                     LText.AlertMessages.Alert);
-                if (yes) fm.Installed = false;
+                if (yes)
+                {
+                    fm.Installed = false;
+                    Core.View.RefreshSelectedFM();
+                }
 
-                return (false, true);
+                return false;
             }
 
-            return (true, false);
+            return true;
         }
 
         private static List<string> GetFMSoundPathsByGame(FanMission fm)

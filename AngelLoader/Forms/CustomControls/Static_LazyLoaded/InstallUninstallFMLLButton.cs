@@ -11,7 +11,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
         private static bool _sayInstall;
         private static bool _enabled;
 
-        private static Button Button = null!;
+        internal static Button Button = null!;
 
         internal static void Construct(MainForm owner)
         {
@@ -33,7 +33,7 @@ namespace AngelLoader.Forms.CustomControls.Static_LazyLoaded
             Button.TabIndex = 58;
             Button.TextImageRelation = TextImageRelation.ImageBeforeText;
             Button.UseVisualStyleBackColor = true;
-            Button.Click += owner.InstallUninstallFMButton_Click;
+            Button.Click += owner.InstallUninstall_Play_Buttons_Click;
 
             Button.Enabled = _enabled;
             SetSayInstallState(_sayInstall);

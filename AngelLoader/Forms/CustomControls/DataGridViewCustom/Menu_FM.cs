@@ -633,14 +633,16 @@ namespace AngelLoader.Forms.CustomControls
             }
         }
 
-        private async void RatingMenuItems_Click(object sender, EventArgs e)
+        private void RatingMenuItems_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < RatingMenuItem!.DropDownItems.Count; i++)
             {
                 if (RatingMenuItem.DropDownItems[i] == sender)
                 {
-                    GetSelectedFM().Rating = i - 1;
-                    await _owner.RefreshSelectedFM(refreshReadme: false);
+                    int rating = i - 1;
+                    GetSelectedFM().Rating = rating;
+                    _owner.RefreshSelectedFM(rowOnly: true);
+                    _owner.UpdateRatingMenus(rating, disableEvents: true);
                     Ini.WriteFullFMDataIni();
                     break;
                 }
@@ -688,7 +690,7 @@ namespace AngelLoader.Forms.CustomControls
                 }
             }
 
-            _owner.RefreshSelectedFMRowOnly();
+            _owner.RefreshSelectedFM(rowOnly: true);
             Ini.WriteFullFMDataIni();
         }
 

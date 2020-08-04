@@ -19,7 +19,7 @@ namespace AngelLoader
         {
             if (await ScanFMs(new List<FanMission> { fm }, scanOptions, hideBoxIfZip: true))
             {
-                await Core.View.RefreshSelectedFM(refreshReadme: false);
+                Core.View.RefreshSelectedFM();
             }
         }
 

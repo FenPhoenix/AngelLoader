@@ -109,11 +109,11 @@ namespace AngelLoader.Forms
 
         #region Refresh
 
-        Task RefreshSelectedFM(bool refreshReadme);
-
-        void RefreshSelectedFMRowOnly();
+        void RefreshSelectedFM(bool rowOnly = false);
 
         void RefreshFMsListKeepSelection();
+
+        void UpdateRatingMenus(int rating, bool disableEvents = false);
 
         #endregion
 
