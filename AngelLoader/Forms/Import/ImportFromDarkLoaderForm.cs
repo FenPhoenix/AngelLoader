@@ -18,7 +18,14 @@ namespace AngelLoader.Forms.Import
 
         internal bool ImportSaves;
 
-        internal ImportFromDarkLoaderForm() => InitializeComponent();
+        internal ImportFromDarkLoaderForm()
+        {
+#if DEBUG
+            InitializeComponent();
+#else
+            InitComponentManual();
+#endif
+        }
 
         private void ImportFromDarkLoaderForm_Load(object sender, EventArgs e) => Localize();
 

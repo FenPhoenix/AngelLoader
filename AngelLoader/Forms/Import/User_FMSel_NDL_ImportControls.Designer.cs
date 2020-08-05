@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+#if DEBUG
         #region Component Designer generated code
 
         /// <summary> 
@@ -277,6 +278,8 @@
         }
 
         #endregion
+#endif
+
         private System.Windows.Forms.GroupBox Thief3GroupBox;
         private System.Windows.Forms.CheckBox Thief3AutodetectCheckBox;
         private System.Windows.Forms.Button Thief3IniBrowseButton;

@@ -25,7 +25,11 @@ namespace AngelLoader.Forms.Import
         public ImportFromMultipleInisForm(ImportType importType)
         {
             ImportType = importType;
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
 
             ImportControls.Init(ImportType);
 

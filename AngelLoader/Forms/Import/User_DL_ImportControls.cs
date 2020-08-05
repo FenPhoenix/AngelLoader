@@ -10,7 +10,11 @@ namespace AngelLoader.Forms.Import
     {
         public User_DL_ImportControls()
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
             DarkLoaderIniTextBox.Text = AutodetectDarkLoaderIni();
         }
 

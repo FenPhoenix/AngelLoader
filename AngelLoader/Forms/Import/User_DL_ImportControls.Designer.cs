@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+#if DEBUG
         #region Component Designer generated code
 
         /// <summary> 
@@ -95,6 +96,7 @@
         }
 
         #endregion
+#endif
 
         private System.Windows.Forms.CheckBox AutodetectCheckBox;
         private System.Windows.Forms.Label ChooseDarkLoaderIniLabel;

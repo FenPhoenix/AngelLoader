@@ -18,7 +18,11 @@ namespace AngelLoader.Forms.Import
 
         public User_FMSel_NDL_ImportControls()
         {
+#if DEBUG
             InitializeComponent();
+#else
+            InitComponentManual();
+#endif
 
             // @GENGAMES (ImportControls): Begin
             GameIniItems = new[]
